@@ -117,6 +117,13 @@ const HEADING = /^h[1-6]$/;
 // empty view reads the rendered attributes), scope (lib/skeleton-record.mjs::surfaceContext: the surface's parent, kind and
 // opener, or null) }. `surface.role` is the page map's role for the surface (lib/skeleton-surface-role.mjs::surfaceRole);
 // `surface.pageMap` the page-map rows (which drawer another row's block draws, for the control that opens it).
+// A list a looping strip renders twice so its scroll joins up (the second half repeats the first) read once; any other list
+// as it is.
+export function onceOfLoop( list ) {
+	const half = list.length / 2;
+	return list.length >= 2 && Number.isInteger( half ) && list.slice( 0, half ).every( ( x, i ) => x === list[ half + i ] ) ? list.slice( 0, half ) : list;
+}
+
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	// The draft's own tokens, so a value the draft writes as a token (`var(--radius-pill)`) is read as its value.
 	const tokens = draftTokenLookup( handoffOf( facts ) );
@@ -201,6 +208,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const col = m.byKey[ e.parentKey ];
 		const sibs = col ? m.blockKids( col ) : [];
 		return !! col && sibs[ 0 ] === e && sibs.length > 1 && ( R.columnHeading?.rowBlocks || [] ).includes( hooks.blockOfKey?.( col.parentKey ) );
+	};
+	// Links each to a different brand of the registry (hooks.brandOf), with brandImageLink on.
+	const brandIconRun = ( ks ) => {
+		const brands = ks.map( ( k ) => hooks.brandOf?.( k ) ?? null );
+		return !! facts.decisions.structural?.brandImageLink && brands.every( Boolean ) && new Set( brands ).size === brands.length;
 	};
 	// A link holding nothing but one image (an <img> or an image placeholder element).
 	const imageLink = ( k ) => {
@@ -503,7 +515,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A custom element the draft uses as an image placeholder (<image-slot>) is the media block.
 		( { e } ) => ( e.tag.includes( '-' ) && specHit( R.mediaElement, e.tag ) ? v( 'mediaElement', { block: R.mediaElement?.block } ) : null ),
 		// A group of links that each hold only an image is a logo wall: a gallery whose items are the links.
-		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } ) : null ),
+		// A run of image links each to a different brand (Instagram, Google, WhatsApp: social profile icons) is no logo wall but
+		// a row of brand icons (decisions structural.brandImageLink); links that all go to one brand (a grid of Instagram posts) stay one.
+		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) && ! brandIconRun( kidsB ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } ) : null ),
 		// The link around a logo goes: the logo block links home itself.
 		// Its children are one or more logos (a mark and a wordmark side by side).
 		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? v( 'homeLink', { action: 'unwrap' } ) : null ),
@@ -522,7 +536,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( ! control || ! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) ) ) {
 				return null;
 			}
-			return kidsB.length ? v( 'backToTop', { block: R.backToTop?.wholeBlock, attributes: { sgsBlockLinkSource: 'top' } } ) : v( 'backToTop', { block: R.backToTop?.lone, attributes: { linkSource: 'top', label: text } } );
+			// Words of the control's own beside a glyph (`<button>Back to top <span>↑</span></button>`) are a button's label: a
+			// container keeps only its child blocks, so those words would be lost; the button's glyph part takes the glyph.
+			const own = m.words( e );
+			return kidsB.length && ! own ? v( 'backToTop', { block: R.backToTop?.wholeBlock, attributes: { sgsBlockLinkSource: 'top' } } ) : v( 'backToTop', { block: R.backToTop?.lone, attributes: { linkSource: 'top', label: own || text } } );
 		},
 		( { e } ) => ( 'iframe' === e.tag && specHit( R.mapEmbed, srcOf( e ) ) ? v( 'mapEmbed', { block: R.mapEmbed?.block, attributes: { displayType: 'map' }, absorb: true, handover: { owner: 'site-info', kind: 'presence', detail: R.mapEmbed.handover } } ) : null ),
 		// A live open or closed line; a second line beside the first is part of the same display.
@@ -867,6 +884,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return null;
 			}
 			const logos = desc( e ).some( isMedia );
+			// A strip of links each naming one item in words, with no picture (a brand strip set in type), is the logo block
+			// showing names: each link's words are one item, a loop doubled for the scroll read once (`marquee.textItems`).
+			const T = R.marquee?.textItems;
+			const names = ! logos && T && kidsB.length >= 2 && kidsB.every( ( k ) => 'a' === k.tag && !! all( k ) ) ? onceOfLoop( kidsB.map( ( k ) => all( k ) ) ) : null;
+			if ( names ) {
+				return v( 'marquee', { block: R.marquee.logoBlock, attributes: { ...T.attributes, [ T.items.setting ]: names.map( ( n ) => ( { [ T.items.text ]: n } ) ) }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: T.handover } } );
+			}
 			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
 				return null;
 			}

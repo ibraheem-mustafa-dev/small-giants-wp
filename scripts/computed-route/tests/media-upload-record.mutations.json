@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/media-upload.mjs", "find": "const known = map.sites?.[ key ]?.files || [];", "replace": "const known = map.sites?.[ site ]?.files || [];", "why": "the copy reads its own empty record and uploads everything again" },
+	{ "file": "lib/media-upload.mjs", "find": "return { map: { ...map, sites: { ...( map.sites || {} ), [ key ]: { files } } }, key, ...report };", "replace": "return { map: { ...map, sites: { ...( map.sites || {} ), [ site ]: { files } } }, key, ...report };", "why": "the copy writes the record under its own name, where no reader looks" },
+	{ "file": "lib/media-upload.mjs", "find": "const key = recordSite( site, ...( targets ? [ targets ] : [] ) );", "replace": "const key = site;", "why": "the old code: the raw site name keys the record" },
+	{ "file": "lib/media-upload.mjs", "find": "const key = recordSite( site, ...( targets ? [ targets ] : [] ) );", "replace": "const key = recordSite( site, ...( targets ? [ { ...targets, [ site ]: { ...targets[ site ], mirrorOf: 'acme-test' } } ] : [] ) );", "why": "every site is taken for a copy (the negative control)" }
+]

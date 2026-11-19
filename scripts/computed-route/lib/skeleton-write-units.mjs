@@ -12,7 +12,7 @@ import { itemSlots } from './skeleton-part-slots.mjs';
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
 
 export function makeUnits( ctx ) {
-	const { m, facts, cls, R, view, overrides, base, rootOf, w, siteLink } = ctx;
+	const { m, facts, cls, R, view, overrides, base, finder, rootOf, w, siteLink } = ctx;
 	const { record, absorbSubtree } = w;
 	const { capsOf, enumOf } = facts;
 	const minLinks = facts.decisions.structural?.linkList?.minLinks ?? 2;
@@ -31,8 +31,11 @@ export function makeUnits( ctx ) {
 		return null;
 	};
 	// A list item link: words of its own, or one piece of text beside bare decorations only (a marker dot, a glyph), which
-	// the list block draws as its marker. One such link alone is a pill button; two or more stacked are a list.
-	const listLink = ( e ) => m.isTextLink( e ) || ( 'a' === e.tag && !! String( e.allText ?? '' ).trim() && m.blockKids( e ).every( ( k ) => ! m.blockKids( k ).length ) && m.blockKids( e ).filter( ( k ) => m.words( k ) ).length <= 1 ) || markerRow( e );
+	// the list block draws as its marker. One such link alone is a pill button; two or more stacked are a list. A link that
+	// paints its own box (a background, a border: a pill) is a button wherever it stands, never a list item (Indus's two
+	// stacked call-to-action pills became one link list).
+	const listLink = ( e ) => ! ( 'a' === e.tag && view?.ownPaint?.( e ) ) && listItemLike( e );
+	const listItemLike = ( e ) => m.isTextLink( e ) || ( 'a' === e.tag && !! String( e.allText ?? '' ).trim() && m.blockKids( e ).every( ( k ) => ! m.blockKids( k ).length ) && m.blockKids( e ).filter( ( k ) => m.words( k ) ).length <= 1 ) || markerRow( e );
 	// A bullet row that is not a link: a marker (rules.dotMarker) beside one piece of text and nothing else.
 	const markerRow = ( e ) => {
 		const kids = m.blockKids( e );
@@ -134,7 +137,9 @@ export function makeUnits( ctx ) {
 		const kinds = [ ...cls.siteInfoKinds( l ) ].filter( ( [ k ] ) => facts.listItem.kinds.includes( k ) ).sort( ( a, b ) => b[ 1 ].w - a[ 1 ].w );
 		return kinds[ 0 ]?.[ 0 ] || null;
 	};
-	function buildList( els ) {
+	// host: the bare wrapper the list block is (rule listWrapper), whose own box (its grid columns, its gaps) the list's own
+	// settings read; the first link stays the draft element of the link part's settings. Without a host the first link is both.
+	function buildList( els, host = null ) {
 		const slug = facts.listSlug;
 		const li = facts.listItem;
 		const handover = [];
@@ -164,11 +169,11 @@ export function makeUnits( ctx ) {
 		own && ev( own, 'db', W.tag, `html_tag_to_core_block: a -> ${ own } (each link on its own)` );
 		const r = finish( C );
 		const first = els.find( ( l ) => ! removedBy( l ) );
-		const node = base( first, slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
+		const node = base( host ?? first, slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
 		handover.length && ( node.handover = handover );
 		// The node's draft element is its first link, which is also the block's link part: the settings calibrated on that part
 		// are read at the same link (decisions structural.linkList.itemSlots, lib/skeleton-part-slots.mjs::itemSlots).
-		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: node.draftRef, settings: facts.decisions.structural?.linkList?.itemSlots, calibrated: ctx.calSettings( slug ) } ).slots : {};
+		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: finder( first ), settings: facts.decisions.structural?.linkList?.itemSlots, calibrated: ctx.calSettings( slug ) } ).slots : {};
 		Object.keys( linkSlots ).length && ( node.draftSlots = { ...node.draftSlots, ...linkSlots } );
 		els.forEach( ( l, i ) => {
 			if ( removedBy( l ) ) {

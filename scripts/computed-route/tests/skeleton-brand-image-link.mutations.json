@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/skeleton-rules.mjs", "find": "kidsB.every( imageLink ) && ! brandIconRun( kidsB ) ?", "replace": "kidsB.every( imageLink ) ?", "why": "the old code: a run of brand icon links is a logo wall" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "brands.every( Boolean ) && new Set( brands ).size === brands.length;", "replace": "brands.every( Boolean );", "why": "links all to one brand (an Instagram feed) are taken for social icons (the negative control)" },
+	{ "file": "lib/skeleton-classify.mjs", "find": "const brandImage = decisions.structural?.brandImageLink && 'a' === e.tag", "replace": "const brandImage = false && 'a' === e.tag", "why": "an image brand link is classified as a row, not as the brand's icon" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "return !! facts.decisions.structural?.brandImageLink && brands.every", "replace": "return brands.every", "why": "the rule runs without its decisions entry" }
+]

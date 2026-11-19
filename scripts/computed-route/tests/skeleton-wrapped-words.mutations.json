@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/skeleton-write-content.mjs", "find": "if ( wrappedBody( block, e ) ) {\n\t\t\treturn { a: { ...a, ...( top.attributes || {} ) }, handover };\n\t\t}", "replace": "", "why": "the old code: the words also land in the attribution" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "if ( ! node.innerBlocks.length && wrappedBody( block, e ) ) {", "replace": "if ( false ) {", "why": "no body child: the quote prints its placeholder body" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "return !! facts.decisions.rules?.wrappedWords?.block && !! composition[ block ]?.wraps_block && !! m.words( e ) && ! m.blockKids( e ).length;", "replace": "return !! facts.decisions.rules?.wrappedWords?.block && !! m.words( e ) && ! m.blockKids( e ).length;", "why": "every block with words takes a body child, a heading included (the negative control)" },
+	{ "file": "lib/skeleton-write-content.mjs", "find": "return !! facts.decisions.rules?.wrappedWords?.block && !! composition[ block ]?.wraps_block", "replace": "return !! composition[ block ]?.wraps_block", "why": "the rule runs without its decisions entry" }
+]

@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": ".flatMap( ( d ) => d.display?.slots || [] ).filter( ( slot ) => ! /:nth-of-type\\(\\d+\\)$/.test( String( slot ) ) );",
+		"replace": ".flatMap( ( d ) => d.display?.slots || [] );",
+		"why": "a repeated item's display is asked for the root's display"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "/:nth-of-type\\(\\d+\\)$/.test( String( slot ) )",
+		"replace": "/:nth-of-type\\(\\d+\\)/.test( String( slot ) )",
+		"why": "a layout element inside a repeated item is dropped too"
+	}
+]

@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/skeleton-rules.mjs", "find": "const names = ! logos && T && kidsB.length >= 2 && kidsB.every( ( k ) => 'a' === k.tag && !! all( k ) ) ? onceOfLoop( kidsB.map( ( k ) => all( k ) ) ) : null;", "replace": "const names = null;", "why": "the old code: a text brand strip outside a page section falls through to a row of buttons" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "kidsB.every( ( k ) => 'a' === k.tag && !! all( k ) )", "replace": "kidsB.every( ( k ) => !! all( k ) )", "why": "plain labels taken for brand links (the negative control)" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "return list.length >= 2 && Number.isInteger( half ) && list.slice( 0, half ).every( ( x, i ) => x === list[ half + i ] ) ? list.slice( 0, half ) : list;", "replace": "return list;", "why": "the doubled loop is kept, every brand twice" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "return list.length >= 2 && Number.isInteger( half ) && list.slice( 0, half ).every( ( x, i ) => x === list[ half + i ] ) ? list.slice( 0, half ) : list;", "replace": "return list.slice( 0, Math.ceil( half ) );", "why": "any list halved, not only a doubled one" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "attributes: { ...T.attributes, [ T.items.setting ]:", "replace": "attributes: { [ T.items.setting ]:", "why": "the strip shows logos, not names" }
+]

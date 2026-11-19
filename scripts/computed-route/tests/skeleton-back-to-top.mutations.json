@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return kidsB.length && ! own ? v( 'backToTop'",
+		"replace": "return kidsB.length ? v( 'backToTop'",
+		"why": "a control's own words beside a glyph become a container and are lost"
+	}
+]

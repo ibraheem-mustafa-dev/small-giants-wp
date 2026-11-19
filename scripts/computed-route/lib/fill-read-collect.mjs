@@ -145,8 +145,22 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 				return r.width > 0 && r.height > 0 && 'none' !== c.display && 'hidden' !== c.visibility && ! n.closest( '[hidden]' );
 			};
 			const rasters = ( el.matches( 'img, video, iframe' ) ? [ el ] : [ ...el.querySelectorAll( 'img, video, iframe' ) ] ).filter( shown );
-			const vectors = ( el.matches( 'svg' ) ? [ el ] : [ ...el.querySelectorAll( 'svg' ) ] ).filter( ( n ) => ! n.parentElement?.closest( 'svg' ) && shown( n ) );
-			const nodes = rasters.length ? rasters : ( 1 === vectors.length ? vectors : [] );
+			// A link's or button's icon inside this element is that control's glyph, never this element's media (the hero's
+			// arrow inside its call-to-action is no hero picture); the element's own svg, or one inside the control it is, counts.
+			const glyph = ( n ) => {
+				const ctl = n.closest( 'a, button, [role="button"]' );
+				return !! ctl && ctl !== el && el.contains( ctl );
+			};
+			const vectors = ( el.matches( 'svg' ) ? [ el ] : [ ...el.querySelectorAll( 'svg' ) ] ).filter( ( n ) => ! n.parentElement?.closest( 'svg' ) && shown( n ) && ! glyph( n ) );
+			// A picture a custom element draws in its shadow root (an <image-slot> photo) is a picture as much as a light-DOM
+			// <img>: while one shows, an inline svg beside it is no media here.
+			const shadowShown = drawn.some( shown );
+			const nodes = rasters.length ? rasters : ( ! shadowShown && 1 === vectors.length ? vectors : [] );
+			// The image placeholders this element is or holds that draw no picture (a custom element whose open shadow root has an
+			// <img> with no address, an <image-slot> the client fills later): { id, placeholder } each, shown ones only.
+			snap.emptyPictures = [ el, ...el.querySelectorAll( '*' ) ]
+				.filter( ( n ) => n.localName.includes( '-' ) && n.shadowRoot && n.shadowRoot.querySelector( 'img' ) && ! shadowImgs( n ).some( ( i ) => '' !== imgSrc( i ) ) && shown( n ) )
+				.map( ( n ) => ( { id: n.id || null, placeholder: n.getAttribute( 'placeholder' ) || null } ) );
 			const read = ( n ) => {
 				const c = getComputedStyle( n );
 				const par = n.parentElement;
@@ -217,6 +231,9 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		// The one inline SVG this element is or holds, as XML with the paint the draft's CSS gave each drawing element written onto it
 		// (fill, stroke and stroke width, a colour equal to the SVG's own colour as currentColor), for the icon writer.
 		const svgs = el.matches( 'svg' ) ? [ el ] : [ ...el.querySelectorAll( 'svg' ) ];
+		// How many glyphs (inline svgs, light DOM) the element is or holds: none is the draft's evidence that a block's own icon
+		// part is absent (lib/fill-resolve.mjs::glyphEvidence).
+		snap.glyphs = svgs.length;
 		snap.svg = null;
 		if ( 1 === svgs.length ) {
 			const [ from ] = svgs;

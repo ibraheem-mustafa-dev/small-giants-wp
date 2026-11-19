@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "&& shown( n ) && ! glyph( n ) );",
+		"replace": "&& shown( n ) );",
+		"why": "a control's glyph counts as the element's media"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "( ! shadowShown && 1 === vectors.length ? vectors : [] )",
+		"replace": "( 1 === vectors.length ? vectors : [] )",
+		"why": "a lone svg outranks a shadow-root photo"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "return !! ctl && ctl !== el && el.contains( ctl );",
+		"replace": "return !! ctl && el.contains( ctl );",
+		"why": "a link's own arrow is no longer the link's media"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "&& ! shadowImgs( n ).some( ( i ) => '' !== imgSrc( i ) ) && shown( n ) )",
+		"replace": "&& shown( n ) )",
+		"why": "a placeholder showing its photo is listed as empty"
+	},
+	{
+		"file": "lib/fill-report.mjs",
+		"find": "\t\t\tout.delete( key );\n",
+		"replace": "\t\t\tif ( out.has( key ) ) { continue; }\n",
+		"why": "the placeholder is listed on the outermost node, not the one that draws it"
+	},
+	{
+		"file": "fill.mjs",
+		"find": "\t\tresult.emptyPictures = emptyPictureRows( { reads, nodes, flat, refOf } );\n",
+		"replace": "\t\tresult.emptyPictures = [];\n",
+		"why": "Fill never lists empty placeholders"
+	}
+]

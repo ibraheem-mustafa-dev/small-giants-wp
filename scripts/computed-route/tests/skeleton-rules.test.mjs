@@ -144,6 +144,13 @@ test( 'backToTop: a back-to-top control holding a label and a glyph is a contain
 	assert.notEqual( byTag( run( tree, { facts: facts( 'backToTop' ) } ), 'button' ).rule, 'backToTop' );
 } );
 
+test( 'MUST FAIL: a back-to-top control whose words are its own beside a glyph is a button labelled with them, the glyph absorbed', () => {
+	const tree = section( [ E( 'button', { words: 'Back to top', attrs: { 'aria-label': 'Back to top' }, snippet: '<button sc-camel-on-click="{{ toTop }}">' }, [ E( 'span', {}, [ svg() ] ) ] ) ] );
+	const r = byTag( run( tree ), 'button' );
+	assert.deepEqual( [ r.block, r.rule, r.attributes.linkSource, r.attributes.label ], [ 'sgs/button', 'backToTop', 'top', 'Back to top' ] );
+	assert.equal( byTag( run( tree ), 'span' ).action, 'absorbed' );
+} );
+
 test( 'mapEmbed: an embedded Google map is business-info\'s map display; MUST FAIL without the rule', () => {
 	const tree = section( [ E( 'iframe', { snippet: '<iframe title="Map" src="https://maps.google.com/maps?q=B11&amp;output=embed" data-dc-tpl="2"></iframe>' } ) ] );
 	const r = byTag( run( tree ), 'iframe' );
@@ -240,6 +247,66 @@ test( 'listWrapper: a bare wrapper of stacked links, or of a grid of links each 
 	assert.equal( r.skeleton[ 0 ].innerBlocks[ 0 ].name, facts().listSlug );
 	assert.deepEqual( r.skeleton[ 0 ].innerBlocks[ 0 ].attributes.items.map( ( i ) => i.text ), [ 'Trade', 'Brands', 'Blog' ] );
 	assert.notEqual( byTag( run( tree, { facts: facts( 'listWrapper' ) } ), 'div' ).action, 'unwrap' );
+} );
+
+test( 'marquee textItems: a looping strip of brand-name links inside its own section is the brand strip showing names, a doubled loop read once; MUST FAIL without textItems or the motion record', () => {
+	const names = [ 'Ray-Ban', 'Gucci', 'Oakley' ];
+	const link = ( w ) => E( 'a', { attrs: { href: '#' }, words: w } );
+	// The page's root, a section of its own (not a page wrapper) and the track inside it: the track is two deep (Eye Care's brand marquee).
+	const tree = E( 'div', {}, [ section( [ E( 'div', {}, [ ...names, ...names ].map( link ) ) ] ), section( [ E( 'h2', { words: 'Best sellers' } ) ] ) ] );
+	const loopKey = 'Root/3';
+	const strip = row( run( tree, { motion: new Set( [ loopKey ] ) } ), ( x ) => 'Root/3#0' === x.key );
+	assert.deepEqual( [ strip.block, strip.rule ], [ 'sgs/brand-strip', 'marquee' ] );
+	assert.deepEqual( strip.attributes, { brandDisplay: 'text', logoLayout: 'row', logos: names.map( ( name ) => ( { name } ) ) } );
+	assert.notEqual( row( run( tree ), ( x ) => 'Root/3#0' === x.key ).block, 'sgs/brand-strip', 'no motion record, no strip' );
+	const off = facts();
+	delete off.decisions.rules.marquee.textItems;
+	assert.notEqual( row( run( tree, { motion: new Set( [ loopKey ] ), facts: off } ), ( x ) => 'Root/3#0' === x.key ).block, 'sgs/brand-strip' );
+	// Negative control: a looping row of plain labels (no links) is not taken for a brand strip.
+	const labels = E( 'div', {}, [ section( [ E( 'div', {}, [ E( 'span', { words: 'Free delivery' } ), E( 'span', { words: 'Next day' } ) ] ) ] ) ] );
+	assert.notEqual( row( run( labels, { motion: new Set( [ loopKey ] ) } ), ( x ) => 'Root/3#0' === x.key ).block, 'sgs/brand-strip' );
+} );
+
+test( 'onceOfLoop reads a list rendered twice once, and leaves any other list whole', async () => {
+	const { onceOfLoop } = await import( '../lib/skeleton-rules.mjs' );
+	assert.deepEqual( onceOfLoop( [ 'a', 'b', 'a', 'b' ] ), [ 'a', 'b' ] );
+	assert.deepEqual( onceOfLoop( [ 'a', 'b', 'c', 'b' ] ), [ 'a', 'b', 'c', 'b' ] );
+	assert.deepEqual( onceOfLoop( [ 'a', 'b', 'c' ] ), [ 'a', 'b', 'c' ] );
+} );
+
+test( 'brandImageLink: image links each to a different brand are the social icons row, not a gallery; image links all to one brand stay a gallery; MUST FAIL without the entry', () => {
+	const icon = ( href, label ) => E( 'a', { attrs: { href, 'aria-label': label } }, [ E( 'img', { attrs: { src: `assets/${ label.toLowerCase() }.svg` } } ) ] );
+	// Eye Care's footer: Instagram, Google and WhatsApp profile links, each holding the brand's glyph as an <img>.
+	const socials = section( [ E( 'div', {}, [ icon( 'https://www.instagram.com/eyecare.birmingham/', 'Instagram' ), icon( 'https://share.google/abc', 'Google Business profile' ), icon( 'https://wa.me/4479605978', 'WhatsApp' ) ] ) ] );
+	const row = byTag( run( socials ), 'div' );
+	assert.equal( row.block, 'sgs/social-icons' );
+	assert.notEqual( row.rule, 'logoGrid' );
+	assert.equal( byTag( run( socials, { facts: facts( 'structural.brandImageLink' ) } ), 'div' ).block, 'sgs/gallery', 'without the entry the run is a logo wall again' );
+	// Negative control: photos that each link to an Instagram post (Mama's feed tiles) are one brand's links: still a gallery.
+	const post = ( n ) => E( 'a', { attrs: { href: `https://www.instagram.com/p/${ n }/` } }, [ E( 'img', { attrs: { src: `assets/feed-${ n }.jpg` } } ) ] );
+	const feed = section( [ E( 'div', { display: 'grid' }, [ post( 1 ), post( 2 ), post( 3 ) ] ) ] );
+	assert.deepEqual( settled( byTag( run( feed ), 'div' ) ), { block: 'sgs/gallery', action: null, rule: 'logoGrid' } );
+} );
+
+test( 'wrappedWords: the own words of a blockquote are the body child of its quote block, never its attribution; MUST FAIL without the entry', () => {
+	const words = 'Had a lovely experience taking my daughter here.';
+	const tree = section( [ E( 'figure', {}, [ E( 'span', { words: 'Anonymous M.' } ), E( 'blockquote', { words } ) ] ) ] );
+	const find = ( r ) => {
+		const out = [];
+		const walk = ( ns ) => ns.forEach( ( n ) => ( 'sgs/quote' === n.name && out.push( n ), walk( n.innerBlocks || [] ) ) );
+		walk( r.skeleton );
+		return out[ 0 ];
+	};
+	const quote = find( run( tree ) );
+	assert.ok( quote, 'the blockquote is the quote block' );
+	assert.equal( quote.attributes.attribution, undefined, 'the words are not the attribution' );
+	assert.deepEqual( quote.innerBlocks.map( ( n ) => [ n.name, n.attributes.text ] ), [ [ 'sgs/text', words ] ] );
+	const off = facts();
+	delete off.decisions.rules.wrappedWords;
+	assert.equal( find( run( tree, { facts: off } ) ).attributes.attribution, words, 'without the entry the old writing stands' );
+	// Negative control: a leaf block (a heading) keeps its words in its own text setting, with no body child.
+	const heading = byTag( run( section( [ E( 'h2', { words: 'What people say' } ) ] ) ), 'h2' );
+	assert.deepEqual( [ heading.block, heading.attributes ], [ 'sgs/heading', { content: 'What people say' } ] );
 } );
 
 test( 'clientBuiltSurface: every row of a surface the client built as a post names that post; MUST FAIL without the rule', () => {

@@ -54,6 +54,23 @@ export function readFailureRows( { reads, nodes, flat, refOf } ) {
 	} );
 }
 
+// Each image placeholder the draft shows with no picture (the read's `emptyPictures` at 1440), once, on the deepest node
+// whose element holds it: a node's element lists its descendants' placeholders too, and the tree's nodes run root-down, so
+// the last node listing a placeholder is the one that draws it. These are pictures the client supplies later: the block
+// gets no picture. nodes: lib/fill-skeleton.mjs::skeletonNodes; flat[index]: the tree node; refOf: its ref.
+export function emptyPictureRows( { reads, nodes, flat, refOf } ) {
+	const at = reads?.widths?.[ 1440 ] || {};
+	const out = new Map();
+	for ( const n of nodes ) {
+		for ( const p of at[ `${ n.index }:` ]?.emptyPictures || [] ) {
+			const key = p.id || `placeholder:${ p.placeholder }`;
+			out.delete( key );
+			out.set( key, { node: refOf( flat[ n.index ] ), block: n.name, id: p.id, placeholder: p.placeholder } );
+		}
+	}
+	return [ ...out.values() ];
+}
+
 const isObj = ( v ) => v && 'object' === typeof v && ! Array.isArray( v );
 
 // The places (`desktop`, `mobile.right`, '' for a whole value) where a write changed its setting: before and after differ.
@@ -102,14 +119,17 @@ export function fillReport( r ) {
 	const settledBy = settledCounts( settled );
 	// The blocks the run resolved without default paint (fill.mjs --allow-missing-paint, lib/paint-gate.mjs::assertPaints).
 	const missingPaint = r.missingPaint || [];
+	// The image placeholders the draft shows with no picture (emptyPictureRows): the client supplies these; no block gets one.
+	const emptyPictures = r.emptyPictures || [];
 	const json = {
-		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets, missingPaint,
+		client: r.client, surface: r.surface, draft: r.draft, nodes: r.nodes, targets: r.targets, missingPaint, emptyPictures,
 		counts: { writes: live, superseded: replaced.size, customCssGaps: gaps.length, unmapped: r.unmapped.length, handover: r.handover.length, notes: r.notes.length, fluid: r.fluid.length, breakpointSteps: r.steps.length, ledgerHeld: r.held.length, alreadyHeld: { total: held.length, ...heldBy }, patchKeys: ( r.snapshotPatch?.entries || [] ).length, unread: ( r.unread || [] ).length, settled: { total: settled.length, ...settledBy }, confirm: ( r.confirm || [] ).length, tokenRefs: ( r.tokenRefs || [] ).filter( ( t ) => 'ref' === t.status ).length, residualCss: { rules: residual.rules.length, bytes: residual.bytes, refused: residual.refused.length, gapRows: residual.gaps.length } },
 		writes, customCssGaps: gaps, residualCss: residual, unmapped: unmappedList( r.unmapped ), alreadyHeld: held.map( ( h ) => ( { property: h.property, value: h.value, node: h.node, block: h.block, slot: h.slot ?? '', state: h.state ?? null, reason: h.heldReason, detail: h.heldDetail } ) ), handover: r.handover, handoverByOwner: counts, spacing: r.spacing, fluid: r.fluid, breakpoints: r.steps, entrances: r.entrances, ledger: r.held, snaps: r.snaps, notes: r.notes, snapshotPatch: r.snapshotPatch || { file: null, entries: [] }, unread: r.unread || [], settled, confirm: r.confirm || [], tokenRefs: r.tokenRefs || [],
 	};
 	const L = [
 		`# Fill: ${ r.surface }`, '',
 		`Client ${ r.client }. Draft: ${ r.draft }. ${ r.nodes } nodes, ${ r.targets } measured elements (draftRef and draftSlots). Fill writes rest-state styles, spacing, presence, words, links and motion (each node's sgsMotion: entrances and hover moves) in one root-down pass; hover, focus and active colour states are Solve's.`, '',
+		...( emptyPictures.length ? [ '## Picture placeholders with no picture', '', 'The draft shows these image placeholders empty: the client supplies the pictures later, so the blocks were given none.', '', '| Node | Block | Placeholder id | Label |', '|---|---|---|---|', ...emptyPictures.map( ( e ) => `| ${ e.node } | ${ e.block } | ${ e.id ?? '' } | ${ e.placeholder ?? '' } |` ), '' ] : [] ),
 		...( missingPaint.length ? [ '## Resolved without default paint', '', `These blocks have no default paint on this site and were named in --allow-missing-paint, so their settings were resolved without it: ${ missingPaint.join( ', ' ) }.`, '' ] : [] ),
 		'| What | Count |', '|---|---|',
 		`| Settings written | ${ live } (and ${ replaced.size } a later write on the same setting replaced, marked \`supersededBy\`) |`,

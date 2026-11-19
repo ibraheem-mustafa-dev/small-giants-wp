@@ -220,6 +220,36 @@ test( 'NEGATIVE slider: controls that scroll nothing, and a track bound to no re
 	assert.equal( any( run( statics, SLIDER_LOGIC() ) ), false, 'children that are not copies of one loop hold no items to draw' );
 } );
 
+// A rail whose arrows find it by its class with a document query (Eye Care's review rail: revPrev / revNext run
+// document.querySelector('.rev-rail').scrollBy), with no ref bound and no dots.
+const RAIL_LOGIC = ( sel = '.rev-rail' ) => `class Component {
+	state = { other: 0 };
+	renderVals() {
+		return {
+			reviews: [ { text: 'Lovely cookies, would buy again.', name: 'Ann' }, { text: 'Soft and filling.', name: 'Bo' }, { text: 'A kind gift.', name: 'Cy' } ],
+			prev: () => { const r = document.querySelector('${ sel }'); if (r) r.scrollBy({left: -712}); },
+			next: () => { const r = document.querySelector('${ sel }'); if (r) r.scrollBy({left: 712}); },
+		};
+	}
+}`;
+const railPage = () => N( 'section', {}, [
+	N( 'div', { attrs: { class: 'rev-rail' }, style: 'display:flex;overflow-x:auto' }, [ slides() ] ),
+	N( 'div', { style: 'display:flex' }, [ N( 'button', { click: 'prev', attrs: { 'aria-label': 'Previous reviews' } } ), N( 'button', { click: 'next', attrs: { 'aria-label': 'More reviews' } } ) ] ),
+] );
+
+test( 'slider classTrack: a rail its arrows find by class with a document query and scroll is the slider; MUST FAIL without the entry', () => {
+	const r = run( railPage(), RAIL_LOGIC() );
+	const track = r.proposal.rows.find( ( x ) => 'slider' === x.rule && 'div' === x.tag );
+	assert.ok( track, 'the rail is the slider' );
+	assert.equal( track.block, 'sgs/testimonial-slider' );
+	assert.equal( track.attributes.showArrows, true );
+	assert.equal( run( railPage(), RAIL_LOGIC(), { off: [ 'slider.classTrack' ] } ).proposal.rows.some( ( x ) => 'slider' === x.rule ), false, 'without the entry a class track is no slider' );
+} );
+
+test( 'NEGATIVE slider classTrack: arrows that query and scroll another class leave the rail alone', () => {
+	assert.equal( run( railPage(), RAIL_LOGIC( '.other-rail' ) ).proposal.rows.some( ( x ) => 'slider' === x.rule ), false );
+} );
+
 // ---- tabs fixtures ----
 const TABS_LOGIC = ( o = {} ) => `class Component {
 	state = { tab: 'a' };

@@ -114,7 +114,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && sibs[ 0 ] === e && sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks;
 	};
 
-	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block } } );
+	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block, brandOf: ( k ) => brandFor( k )[ 0 ]?.brand?.slug ?? null } } );
 	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
 	const fromRule = ( r ) => {
 		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.handovers ? { handovers: r.handovers } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.closedInner ? { closedInner: r.closedInner } : {} ), ...( r.units ? { units: r.units } : {} ), ...( r.slides ? { slides: r.slides } : {} ), ...( r.codeItem ? { codeItem: r.codeItem } : {} ), ...( r.firstItem ? { firstItem: r.firstItem } : {} ), ...( r.glyphNote ? { glyphNote: r.glyphNote } : {} ) };
@@ -223,7 +223,10 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 			add( C, textBlock, 'structure', W.structure, `own words beside inline phrasing content (${ [ ...new Set( descOf( e ).map( ( k ) => k.tag ) ) ].join( ', ' ) }): ${ IT.reason }` );
 			return { ...finish( C ), stale };
 		}
-		if ( bk.length ) {
+		// A link holding nothing but one image, whose address or label a brand of the registry owns (a social profile's icon
+		// drawn as an <img>), is that brand's icon link, as one holding an svg is (decisions structural.brandImageLink).
+		const brandImage = decisions.structural?.brandImageLink && 'a' === e.tag && ! words && 1 === bk.length && 'img' === bk[ 0 ].tag && ! m.blockKids( bk[ 0 ] ).length && brandFor( e ).length > 0;
+		if ( bk.length && ! brandImage ) {
 			const childTops = bk.map( ( k ) => classify( k, null ).candidates[ 0 ]?.block );
 			const same = bk.length > 1 && childTops.every( ( b ) => b && b === childTops[ 0 ] ) ? childTops[ 0 ] : null;
 			for ( const row of facts.rowBlocks.filter( ( r ) => same && r.child === same ) ) {
@@ -239,7 +242,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 			}
 			return { ...finish( C ), stale };
 		}
-		if ( m.isIconLink( e ) ) {
+		if ( m.isIconLink( e ) || brandImage ) {
 			const hit = brandFor( e )[ 0 ];
 			facts.blocksWithCap( 'svg' ).filter( ( b ) => capsOf( b ).includes( 'icon' ) && 'leaf' === composition[ b ]?.composition_role ).forEach( ( b ) => {
 				add( C, b, 'capability', W.capability * 2, `block_capabilities: ${ b } lists svg and icon; the element is a link holding only an svg` );

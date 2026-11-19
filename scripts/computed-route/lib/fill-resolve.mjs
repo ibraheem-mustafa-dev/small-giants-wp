@@ -38,6 +38,22 @@ export function contentWidth( st, rec ) {
 	} ) ?? 1440;
 }
 
+// The draft's evidence that a block's own glyph is absent: a presence path that is an inline svg or holds one (the icon a
+// business line or a list item draws beside its words), named by no target of the node, is false when the draft's own element
+// holds no glyph at any width it is drawn at. An icon the draft draws beside the element, as a block of its own, is not this
+// block's icon. Paths a target names keep their own evidence. cal: the block's calibration; readAt( target, width ): a read.
+export function glyphEvidence( { cal, targets = [], readAt = () => null } ) {
+	const root = targets.find( ( t ) => '' === ( t.slot ?? '' ) );
+	const drawn = root ? CONTENT_WIDTHS.map( ( w ) => readAt( root, w ) ).filter( ( s ) => s && ! s.missing ) : [];
+	if ( ! drawn.length || drawn.some( ( s ) => ! Number.isInteger( s.glyphs ) || s.glyphs > 0 ) ) {
+		return {};
+	}
+	const named = new Set( targets.map( ( t ) => LOOSE( t.slot ?? '' ) ) );
+	const paths = Object.values( cal?.presence || {} ).flatMap( ( e ) => [ ...( e.shows || [] ), ...( e.hides || [] ) ] );
+	const glyph = ( p ) => / > svg(?: > |$)|^svg(?: > |$)/.test( LOOSE( p ) ) || paths.some( ( q ) => LOOSE( q ) === `${ LOOSE( p ) } > svg` );
+	return Object.fromEntries( paths.filter( ( p ) => glyph( p ) && ! named.has( LOOSE( p ) ) ).map( ( p ) => [ p, false ] ) );
+}
+
 // Presence, words and links for one node's elements, and its declared handover (step 5).
 function fillContent( st, rec, ref, cal ) {
 	const node = st.flat[ rec.index ];
@@ -50,6 +66,7 @@ function fillContent( st, rec, ref, cal ) {
 		const s = st.reads.widths[ w ]?.[ t.id ];
 		return !! s && ! s.missing;
 	} ) ] ) );
+	Object.assign( evidence, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ] } ) );
 	const words = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.words ] ) );
 	const hrefs = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.href ] ) );
 	const linkFacts = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing && ( s.target || s.rel || s.id || s.ariaLabel ) ).map( ( [ slot, s ] ) => [ slot, { target: s.target, rel: s.rel, id: s.id, ariaLabel: s.ariaLabel, imageName: s.imageName ?? null } ] ) );

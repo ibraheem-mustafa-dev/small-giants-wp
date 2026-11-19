@@ -28,7 +28,8 @@
 // A stage that did not run (left out of --stages, a WooCommerce page's own, a template copy's apply, a surface skipped) is recorded
 // { ok: true, skipped: <reason> } and printed `skip`. The process exits 1 when any stage failed; --strict also exits 1 when any
 // stage did not run, and lists them. --no-copies adds no template copy to an --only run: a page under a shell builds from the shell
-// already recorded, and fails with a message when none is.
+// already recorded, and fails with a message when none is. A run whose --stages leaves out fill builds and applies the surface's
+// newest Fill (fillOutDir), so a timed-out build is retried with --stages build,apply.
 // The apply stage (apply.mjs for that surface with --write, run one at a time like a build: it writes the site's database and the
 // shared verify.json) sets the existing block settings the Fill and build cannot see, from the draft's runtime, on a local
 // mirror (a page or post surface only: a template copy and a Hostinger target are skipped with a note). Its failure stops the
@@ -194,6 +195,18 @@ export function copyTrees( { surfaces, keys, filled, buildDir } ) {
 		}
 	}
 	return out;
+}
+
+// The folder a surface's later stages read its Fill from (`fillRoot`: sites/<client>/build/qa/fill/<surface>). A run that Fills
+// writes a new stamped folder (`fresh`); a run whose --stages leaves Fill out (a build retried with --stages build,apply) reads
+// the newest stamped folder holding a filled.tree.json, so the build takes the Fill an earlier run wrote. Null when there is none:
+// the build then fails naming the missing tree.
+export function fillOutDir( { fillRoot, fills, fresh, exists = fs.existsSync, list = ( d ) => ( fs.existsSync( d ) ? fs.readdirSync( d ) : [] ) } ) {
+	if ( fills ) {
+		return path.join( fillRoot, fresh );
+	}
+	const done = list( fillRoot ).filter( ( d ) => /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}$/.test( d ) && exists( path.join( fillRoot, d, 'filled.tree.json' ) ) ).sort();
+	return done.length ? path.join( fillRoot, done.at( -1 ) ) : null;
 }
 
 // One stage's record in status.json: { ok, seconds, detail? }; a stage that did not run is { ok: true, skipped: <reason>, seconds: 0 }
@@ -410,16 +423,17 @@ export async function main( argv ) {
 			return;
 		}
 		if ( ! await step( 'propose', async () => {
-			const r = proposeSurface( { client, surface: key, allowMissingPaint } );
+			const r = proposeSurface( { client, surface: key, allowMissingPaint, site } );
 			return proposeDetail( r, { strict } );
 		} ) ) {
 			return;
 		}
-		const out = path.join( build, 'qa', 'fill', key, stamp() );
+		const fillRoot = path.join( build, 'qa', 'fill', key );
+		const out = fillOutDir( { fillRoot, fills: stages.includes( 'fill' ), fresh: stamp() } ) ?? path.join( fillRoot, stamp() );
 		let walkUrl = draftUrl;
 		if ( ! await step( 'fill', async () => {
 			const tail = await exec( 'fill', 'node', [ 'scripts/computed-route/fill.mjs', '--client', client, '--surface', key,
-				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--allow-external', '--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ] );
+				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, '--site', site, '--allow-external', '--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ] );
 			// A state that never rendered is an opener failure, not a Fill that happened to run.
 			const opened = path.join( out, 'opener.json' );
 			const o = fs.existsSync( opened ) ? readJson( opened ) : null;
@@ -453,7 +467,11 @@ export async function main( argv ) {
 		const exec = ctx.exec || execFor( key );
 		const slug = entry.target?.template;
 		let tree;
-		if ( slug ) {
+		// The build's tree is made only when the run builds: a run without build (an inventory, propose or Fill run) never fails
+		// on the tree it would have built, now that a run without fill reads the surface's newest Fill (fillOutDir).
+		if ( ! stages.includes( 'build' ) ) {
+			tree = null;
+		} else if ( slug ) {
 			if ( ! copies[ slug ] ) {
 				return note( key, 'build', false, 0, `no ${ slug } copy was made: ${ { pages: 'none of its pages has a Filled tree', page: 'the page copy has no recorded shell', fill: 'its Fill wrote no tree', whole: 'its Fill wrote no tree' }[ entry.copy?.from ] || 'it names no copy source' }` );
 			}

@@ -1,0 +1,8 @@
+[
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const listLink = ( e ) => ! ( 'a' === e.tag && view?.ownPaint?.( e ) ) && listItemLike( e );",
+		"replace": "const listLink = ( e ) => listItemLike( e );",
+		"why": "a painted pill counts as a list link"
+	}
+]

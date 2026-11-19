@@ -16,7 +16,8 @@ export const db = openDb();
 export const facts = ( repo, off = [] ) => {
 	const f = loadFacts( { db, client: 'fixture-client', repo: REPO } );
 	f.decisions = structuredClone( f.decisions );
-	off.forEach( ( id ) => ( id.startsWith( 'structural.' ) ? delete f.decisions.structural[ id.slice( 11 ) ] : delete f.decisions.rules[ id ] ) );
+	// `structural.<x>` removes a structural entry, `<rule>.<key>` one key of a rule, anything else a whole rule.
+	off.forEach( ( id ) => ( id.startsWith( 'structural.' ) ? delete f.decisions.structural[ id.slice( 11 ) ] : id.includes( '.' ) ? delete f.decisions.rules[ id.split( '.' )[ 0 ] ]?.[ id.split( '.' )[ 1 ] ] : delete f.decisions.rules[ id ] ) );
 	return { ...f, repo };
 };
 

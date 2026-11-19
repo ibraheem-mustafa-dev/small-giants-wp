@@ -3,8 +3,9 @@
  * Shared stylesheet delivery without a request per stylesheet (Spec 32 FR-32-32).
  *
  * WordPress prints one `<link>` per block type and per theme or plugin asset, and every one of them blocks the first
- * paint. This step runs at `wp_head` and `wp_footer` priority 2: after core's own inliner (`wp_maybe_inline_styles`,
- * priority 1) and before anything prints (`wp_print_styles` at `wp_head` priority 8, late styles in the footer). It
+ * paint. This step runs on the `wp_print_styles` action at the last priority, so after core's own inliner
+ * (`wp_maybe_inline_styles`, `wp_head` priority 1) and after every style added or enqueued later in the head, right
+ * before WordPress prints; and at `wp_footer` priority 2 for styles enqueued in the body. It
  * walks the style queue in print order and merges each run of consecutive mergeable handles into the run's first
  * handle, file content first and its inline additions after, so every rule keeps its place in the cascade:
  *   - `inline` (default): the run prints as one `<style>`, so nothing blocks the first paint but the page itself.
@@ -54,7 +55,7 @@ final class Css_Delivery {
 	 * @return void
 	 */
 	public static function register(): void {
-		\add_action( 'wp_head', array( __CLASS__, 'run' ), 2 );
+		\add_action( 'wp_print_styles', array( __CLASS__, 'run' ), PHP_INT_MAX );
 		\add_action( 'wp_footer', array( __CLASS__, 'run' ), 2 );
 	}
 

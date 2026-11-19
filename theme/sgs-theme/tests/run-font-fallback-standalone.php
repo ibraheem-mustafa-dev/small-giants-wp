@@ -96,6 +96,8 @@ namespace SGS\Theme {
 	);
 	$check( false === strpos( $css, 'font-family--body' ) && false === strpos( $css, 'color:red;' ) && false === strpos( $css, '}body{' ), 'a stack cannot close the rule, and a preset of another font gets nothing' );
 	$check( '' === font_fallback_preset_overrides( array( 'theme' => array( $alias( 'body', 'Test, sans-serif' ) ) ) ), 'no face with metrics anywhere gives no rule' );
+	$css = font_fallback_preset_overrides( array( 'theme' => array( $face, $alias( 'bodyFont', 'Test, sans-serif' ), $alias( 'heading2', 'Test, sans-serif' ) ) ) );
+	$check( false !== strpos( $css, '--wp--preset--font-family--body-font:' ) && false !== strpos( $css, '--wp--preset--font-family--heading-2:' ), 'camelCase and numbered slugs get the variable name WordPress prints (body-font, heading-2)' );
 
 	echo "{$pass} passed, {$fail} failed\n";
 	exit( $fail > 0 ? 1 : 0 );

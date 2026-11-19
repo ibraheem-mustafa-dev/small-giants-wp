@@ -125,7 +125,9 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 // to its root (lib/key-space.mjs). `cache`: the calibration cache folder (the route's own by default). A skeleton that uses a block
 // with no default paint on the surface's site is not written (lib/skeleton-context.mjs::assertSkeletonPaints), unless
 // `allowMissingPaint` (--allow-missing-paint) names the block.
-export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [] } ) {
+// `site`: the site the run is aimed at (site-run's --site); the paint gate reads and names it, so its advice never names the
+// mirror the surface entry records. Default: the surface entry's site.
+export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [], site: runSite = null } ) {
 	const p = skeletonPaths( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
 	const { ctx, saved, served, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
@@ -141,7 +143,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ), loadCatalogue( repo, client ) );
 	const site = readSurface( repo, client, surface ).site;
 	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
-	assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
+	assertSkeletonPaints( { skeleton: r.skeleton, site: runSite ?? site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };

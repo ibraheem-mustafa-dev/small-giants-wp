@@ -127,6 +127,19 @@ export function logicReadings( d ) {
 		const own = named( [ fn ] );
 		return own.size ? own : named( fns );
 	};
+	// The class selectors a function scrolls through a document query (`document.querySelector('.rev-rail').scrollBy(…)`):
+	// each `.name` a querySelector call it or a method it reaches passes as a string, when one of them scrolls an element.
+	const scrolledSelectors = ( fn ) => {
+		const fns = reach( fn );
+		const all = fns.flatMap( ( f ) => subtree( d.idx, f ) );
+		const scrolls = all.some( ( n ) => ( 'CallExpression' === n.type && 'MemberExpression' === n.callee.type && SCROLL_CALLS.has( n.callee.property?.name ) )
+			|| ( 'AssignmentExpression' === n.type && 'MemberExpression' === n.left.type && SCROLL_PROPS.has( n.left.property?.name ) ) );
+		if ( ! scrolls ) {
+			return new Set();
+		}
+		return new Set( all.filter( ( n ) => 'CallExpression' === n.type && 'MemberExpression' === n.callee.type && 'querySelector' === n.callee.property?.name && 'string' === typeof literal( n.arguments[ 0 ] ) )
+			.map( ( n ) => literal( n.arguments[ 0 ] ).trim() ).filter( ( sel ) => /^\.[A-Za-z_-][\w-]*$/.test( sel ) ) );
+	};
 	// The timers the component starts: [{ fn, delay }] for each setInterval whose first argument is a function.
 	const timers = () => d.idx.all.filter( ( n ) => 'CallExpression' === n.type && ( 'setInterval' === n.callee.name || 'setInterval' === n.callee.property?.name ) )
 		.map( ( n ) => ( { fn: fnOf( n.arguments[ 0 ] ), delay: literal( n.arguments[ 1 ] ) } ) ).filter( ( t ) => t.fn );
@@ -166,7 +179,7 @@ export function logicReadings( d ) {
 		const values = mine.flatMap( ( w ) => ( w.keyed ? w.value.properties.filter( ( q ) => q.computed ).map( ( q ) => q.value ) : [ w.value ] ) );
 		return values.some( ( v ) => flips( v, key ) ) || ( values.some( clears ) && values.some( ( v ) => ! clears( v ) ) );
 	};
-	return { d, valueOf, fnOf, reach, writesOf, readsOf, scrolledRefs, timers, listElements, itemField, comparedValue, toggles };
+	return { d, valueOf, fnOf, reach, writesOf, readsOf, scrolledRefs, scrolledSelectors, timers, listElements, itemField, comparedValue, toggles };
 }
 
 // o: { m (lib/skeleton-model.mjs), view (lib/skeleton-record.mjs::recordView), facts, R (decisions rules), surface,
@@ -374,7 +387,11 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 			const v = L.d.values.get( bound( t.attrs.ref ) );
 			return isThisMember( v ) ? v.property.name : bound( t.attrs.ref );
 		};
-		for ( const track of m.els.filter( ( e ) => ! m.isPart( e ) && bound( tplOf( e )?.attrs?.ref ) && ! at.has( e.key ) ) ) {
+		// A track is bound to a ref, or carries a class its controls find with a document query and scroll (the draft's
+		// `document.querySelector('.rev-rail').scrollBy(…)`, decisions rules.slider.classTrack).
+		const classesOf = ( t ) => String( t?.attrs?.class ?? '' ).split( /\s+/ ).filter( ( c ) => /^[A-Za-z_-][\w-]*$/.test( c ) );
+		const classTrack = !! R.slider.classTrack;
+		for ( const track of m.els.filter( ( e ) => ! m.isPart( e ) && ( bound( tplOf( e )?.attrs?.ref ) || ( classTrack && classesOf( tplOf( e ) ).length ) ) && ! at.has( e.key ) ) ) {
 			const t = tplOf( track );
 			const L = logic( t.component );
 			const slides = L && ! inNav( track ) ? loopRuns( track ).find( ( r ) => r.length === m.blockKids( track ).length ) : null;
@@ -382,10 +399,12 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 				continue;
 			}
 			const refs = new Set( templates( t.component ).filter( ( x ) => bound( x.attrs?.ref ) ).map( ( x ) => refOf( L, x ) ) );
-			const own = refOf( L, t );
+			const own = bound( t.attrs?.ref ) ? refOf( L, t ) : null;
+			const ownSelectors = classTrack ? new Set( classesOf( t ).map( ( c ) => `.${ c }` ) ) : new Set();
+			const queried = ( fn ) => [ ...L.scrolledSelectors( fn ) ].some( ( sel ) => ownSelectors.has( sel ) );
 			// The state keys the track's own style reads (a transform bound to an index).
 			const styleKeys = new Set( ( t.holes || [] ).filter( ( h ) => /^style:/.test( h.where ) ).flatMap( ( h ) => [ ...L.readsOf( L.valueOf( t, h.path ) ) ] ) );
-			const drives = ( fn ) => L.scrolledRefs( fn, refs ).has( own ) || L.writesOf( fn ).some( ( w ) => styleKeys.has( w.key ) );
+			const drives = ( fn ) => ( null !== own && L.scrolledRefs( fn, refs ).has( own ) ) || queried( fn ) || L.writesOf( fn ).some( ( w ) => styleKeys.has( w.key ) );
 			const controls = m.els.filter( ( c ) => c !== track && ! within( c, track ) && tplOf( c )?.component === t.component && isControl( c ) && drives( handlerOf( L, c ) ) );
 			if ( ! controls.length ) {
 				continue;

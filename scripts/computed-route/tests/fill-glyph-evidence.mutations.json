@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "\tObject.assign( evidence, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ] } ) );\n",
+		"replace": "",
+		"why": "Fill never uses the glyph evidence"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "drawn.some( ( s ) => ! Number.isInteger( s.glyphs ) || s.glyphs > 0 )",
+		"replace": "drawn.some( ( s ) => ! Number.isInteger( s.glyphs ) )",
+		"why": "a draft element holding a glyph still hides the icon"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "paths.filter( ( p ) => glyph( p ) && ! named.has( LOOSE( p ) ) )",
+		"replace": "paths.filter( ( p ) => glyph( p ) )",
+		"why": "a path a target reads loses its own evidence"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "paths.filter( ( p ) => glyph( p ) && ",
+		"replace": "paths.filter( ( p ) => true && ",
+		"why": "a part that is no glyph is taken as absent"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "\t\tsnap.glyphs = svgs.length;\n",
+		"replace": "",
+		"why": "the read records no glyph count"
+	}
+]

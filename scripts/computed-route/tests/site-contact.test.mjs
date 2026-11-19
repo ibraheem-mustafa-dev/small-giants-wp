@@ -128,7 +128,7 @@ test( 'MUST FAIL: every other entry that reaches a site opens with the guard (re
 	assert.ok( opensWith( lib( 'wp-run-session.mjs' ), 'openDetachedSession', 'assertSiteContact(' ), 'openDetachedSession' );
 	assert.ok( opensWith( lib( 'trial-page.mjs' ), 'adminSession', 'assertSiteContact(' ), 'adminSession' );
 	assert.ok( opensWith( lib( 'deploy-hash.mjs' ), 'remoteBlockHash', 'assertSiteContact(' ), 'remoteBlockHash' );
-	assert.match( lib( 'media-upload.mjs' ), /\) \{\n\t\/\/[^\n]*\n\tfetchImpl === fetch && assertSiteContact\( \{ site, readOnly: ! apply \} \);\n\tconst known/, 'uploadMedia' );
+	assert.match( lib( 'media-upload.mjs' ), /\) \{\n\t\/\/[^\n]*\n\tfetchImpl === fetch && assertSiteContact\( \{ site, readOnly: ! apply \} \);\n(?:\t\/\/[^\n]*\n)*\tconst key = recordSite\(/, 'uploadMedia' );
 	assert.ok( opensWith( source( ROUTE, 'apply.mjs' ), 'readBlocks', 'assertSiteContact(' ), 'apply.mjs readBlocks' );
 	assert.ok( opensWith( source( ROUTE, 'apply.mjs' ), 'patch', 'assertSiteContact(' ), 'apply.mjs patch' );
 	assert.ok( opensWith( source( ROUTE, 'shop-load-more-check.mjs' ), 'ssh', 'assertSiteContact( { site, target, readOnly } )' ), 'shop-load-more-check ssh names its site' );

@@ -1,6 +1,9 @@
 {
 	"doc": "Standing, client-free decisions of the skeleton writer (Spec 48 §3.4). Everything a draft element can be asked that the framework database cannot answer: which text patterns are Site Info, which lines exist only because of the designer's brief, which structural shapes are a column label or a link list. A block named here must exist in the framework database (checked on every load by lib/skeleton-facts.mjs::decisionsProblems). Client-specific choices live in sites/<client>/build/skeleton/decisions.json, written by `skeleton.mjs decide`.",
 	"structural": {
+		"brandImageLink": {
+			"reason": "a link holding only one image whose address or label a brand of the registry owns is that brand's icon link, as one holding an svg is, so a run of them becomes the social icons row; a run of image links each to a different brand is no logo wall (logoGrid), while image links that all go to one brand (a grid of Instagram posts) stay one"
+		},
 		"columnLabel": {
 			"block": "sgs/heading",
 			"reason": "the first text child of a wrapper whose other children are a run of links is the column heading"
@@ -450,9 +453,19 @@
 			"block": "sgs/heading",
 			"reason": "the first plain piece of text in a whole-card link titles the card (sgs/heading); text set as a kicker stays a label"
 		},
+		"wrappedWords": {
+			"block": "sgs/text",
+			"reason": "an element's own words in a block that holds its body as inner blocks (it wraps a container, as sgs/quote) are one body child of this block, read at the same draft element; the block's first text setting names another part (the quote's attribution) and its empty body prints the editor placeholder"
+		},
 		"marquee": {
 			"logoBlock": "sgs/brand-strip",
 			"itemBlock": "sgs/trust-bar",
+			"textItems": {
+				"attributes": { "brandDisplay": "text", "logoLayout": "row" },
+				"items": { "setting": "logos", "text": "name" },
+				"handover": "each brand's link: the draft opens the shop filtered by that brand; set each brand's link, or switch the strip's source to the shop's product brands",
+				"reason": "a looping strip of links each naming a brand in words (no picture) is the brand strip showing names (brandDisplay text, in one row), its links' words the brands, a loop doubled for the scroll read once; read wherever it sits, so a brand strip inside its own section is still one"
+			},
 			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7"
 		},
 		"trustBar": {
@@ -784,6 +797,7 @@
 			"id": "slider",
 			"blocks": [ { "block": "sgs/testimonial-slider", "roles": [ "quote", "author" ] } ],
 			"otherCapabilities": [ "carousel", "slider" ],
+			"classTrack": "a track the controls find by its class with a document query (document.querySelector('.rev-rail').scrollBy) is the slider track as a ref-bound one is",
 			"settings": { "arrows": "showArrows", "dots": "showDots", "autoplay": "autoplay", "speed": "autoplaySpeed" },
 			"taughtBy": {
 				"client": "mamas-munches-redesign",
