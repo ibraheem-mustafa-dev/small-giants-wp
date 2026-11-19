@@ -7,22 +7,36 @@
 //     theme-snapshot.json). A run on one site never opens another site's paint file. A local mirror is the same site as
 //     the test site it copies (`mirrorOf` in calibration-targets.json: same build, same database, same snapshot, so the
 //     same paintKey), so a mirror's paint lives in, and is read from, its test site's folder.
+//     A paint file is its folder's (paintOwner): writePaint stamps the folder's site into the file as `paintFolder`, and a
+//     reader takes a file only when the site it belongs to is the reader's own paint folder.
 // Both files carry the `readKey` they were read under (lib/calibrate-props.mjs::READ_KEY); a file read under another
 // list is stale on every site, so a property calibration newly reads is measured everywhere.
 import fs from 'fs';
 import path from 'path';
 import { READ_KEY } from './calibrate-props.mjs';
-import { readTargets } from './site-targets.mjs';
+import { readTargets, SCRATCH_NAME } from './site-targets.mjs';
 
-let mirrors = null;
+let siteTargets = null;
+const targetsNow = () => ( siteTargets ||= readTargets() );
 
-// The site whose paint folder `site` uses: the test site a mirror copies (`mirrorOf`), else the site itself.
-export function paintSite( site ) {
-	if ( ! mirrors ) {
-		const targets = readTargets();
-		mirrors = Object.fromEntries( Object.entries( targets ).filter( ( [ , v ] ) => v.mirrorOf ).map( ( [ k, v ] ) => [ k, v.mirrorOf ] ) );
+// The site whose paint folder `site` uses: the test site a mirror copies (`mirrorOf`), else the site itself. `targets`
+// defaults to both targets files (lib/site-targets.mjs::readTargets), read once.
+export function paintSite( site, targets = targetsNow() ) {
+	return ( Object.hasOwn( targets, String( site ) ) && targets[ site ].mirrorOf ) || site;
+}
+
+// The paint folder a paint file belongs to; `folder` is the folder it sits in. The one rule every paint reader applies
+// (readPaint, so loadCalibration, paintSkip and paintStale): a file stamped by writePaint belongs to its stamp
+// (`paintFolder`). An unstamped file belongs to paintSite( its recorded `site` ), except one whose recorded site is a scratch
+// copy name (lib/site-targets.mjs::SCRATCH_NAME) that no targets file names: that copy has since been removed, and its
+// run wrote the file into the folder of the site it copied, so the file belongs to that folder. A file recorded on a site
+// the targets files name keeps that site's folder, so one copied into another site's folder is still refused there.
+export function paintOwner( paint, folder, targets = targetsNow() ) {
+	if ( paint?.paintFolder ) {
+		return paint.paintFolder;
 	}
-	return mirrors[ site ] || site;
+	const recorded = paint?.site;
+	return SCRATCH_NAME.test( String( recorded ) ) && ! Object.hasOwn( targets, recorded ) ? folder : paintSite( recorded, targets );
 }
 
 // The site whose per-site records (the media map's attachments, the menu map's menu ids) `site` reads: a mirror's
@@ -63,11 +77,12 @@ export function cachedSite( file ) {
 // The block's slot map, or null.
 export const readSlotMap = ( dir, block ) => readJson( slotMapFile( dir, block ) );
 
-// This site's default paint for the block, or null when it has none. A file measured on another site is not this site's
-// (a mirror and its test site count as one site, paintSite).
+// This site's default paint for the block, or null when it has none. A file that belongs to another site's folder
+// (paintOwner) is not this site's; a mirror, its scratch copies and its test site count as one site (paintSite).
 export function readPaint( dir, site, block ) {
 	const paint = readJson( paintFile( dir, site, block ) );
-	return paint && paintSite( paint.site ) === paintSite( site ) ? paint : null;
+	const own = paintSite( site );
+	return paint && paintOwner( paint, own ) === own ? paint : null;
 }
 
 // The split of one calibration object into its slot map and its default paint.
@@ -91,10 +106,11 @@ export function writeSlotMap( dir, block, slotMap ) {
 	fs.writeFileSync( slotMapFile( dir, block ), JSON.stringify( slotMap, null, 1 ) );
 }
 
+// Writes the paint into `site`'s paint folder, stamped with that folder's site (`paintFolder`, paintOwner).
 export function writePaint( dir, site, block, paint ) {
 	const f = paintFile( dir, site, block );
 	fs.mkdirSync( path.dirname( f ), { recursive: true } );
-	fs.writeFileSync( f, JSON.stringify( paint, null, 1 ) );
+	fs.writeFileSync( f, JSON.stringify( { ...paint, paintFolder: paintSite( site ) }, null, 1 ) );
 }
 
 // The calibration a reader works from: the slot map with THIS site's default paint merged in as `elements`. Null when the
