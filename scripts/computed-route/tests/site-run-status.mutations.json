@@ -1,0 +1,164 @@
+[
+	{
+		"file": "site-run.mjs",
+		"find": "\t\t? { ok: true, skipped, seconds: 0, ...( detail ? { detail } : {} ) }",
+		"replace": "\t\t? { ok: false, skipped, seconds: 0, ...( detail ? { detail } : {} ) }",
+		"why": "a skipped stage fails the run"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\t? { ok: true, skipped, seconds: 0,",
+		"replace": "\t\t? { ok: true, seconds: 0,",
+		"why": "the reason is dropped"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "const label = record.skipped ? 'skip' : record.ok ? 'ok  ' : 'FAIL';",
+		"replace": "const label = record.ok ? 'ok  ' : 'FAIL';",
+		"why": "a skipped stage prints ok"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "const label = record.skipped ? 'skip' : record.ok ? 'ok  ' : 'FAIL';",
+		"replace": "const label = record.skipped ? 'skip' : 'ok  ';",
+		"why": "a failed stage prints ok"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "const why = record.skipped ?? record.detail;",
+		"replace": "const why = record.detail;",
+		"why": "the skip reason is not printed"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "r.skipped && out.skipped.push(",
+		"replace": "false && out.skipped.push(",
+		"why": "not-run stages are not listed"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "! r.ok && out.failed.push(",
+		"replace": "false && out.failed.push(",
+		"why": "failed stages are not listed"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "return failed.length || ( strict && skipped.length ) ? 1 : 0;",
+		"replace": "return ( strict && skipped.length ) ? 1 : 0;",
+		"why": "a failed stage exits 0"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "return failed.length || ( strict && skipped.length ) ? 1 : 0;",
+		"replace": "return failed.length ? 1 : 0;",
+		"why": "--strict does not fail a not-run stage"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "return failed.length || ( strict && skipped.length ) ? 1 : 0;",
+		"replace": "return failed.length || skipped.length ? 1 : 0;",
+		"why": "a not-run stage fails without --strict"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "if ( ! only || ! copies ) {",
+		"replace": "if ( ! only ) {",
+		"why": "--no-copies adds the copies"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "if ( reads.length && [ 'propose', 'fill' ].some( ( s ) => stages.includes( s ) ) && ! exists( at( 'facts.json' ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a missing facts.json is not noticed"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "if ( reads.length && [ 'propose', 'fill' ].some(",
+		"replace": "if ( [ 'propose', 'fill' ].some(",
+		"why": "a run with no surface to read needs facts.json"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "[ 'propose', 'fill' ].some( ( s ) => stages.includes( s ) ) && ! exists( at( 'facts.json' ) )",
+		"replace": "true && ! exists( at( 'facts.json' ) )",
+		"why": "a run with no propose or fill stage needs facts.json"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "if ( fromSaved.length && stages.includes( 'inventory' ) && ! exists( at( 'inventories' ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a missing inventories folder is not noticed"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "if ( fromSaved.length && stages.includes( 'inventory' ) &&",
+		"replace": "if ( stages.includes( 'inventory' ) &&",
+		"why": "a plain page needs the inventories folder"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "fromSaved.length && stages.includes( 'inventory' ) && ! exists",
+		"replace": "fromSaved.length && ! exists",
+		"why": "a run with no inventory stage needs the inventories folder"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "! [ 'pages', 'page' ].includes( surfaces[ k ].copy?.from ) && ! surfaces[ k ].noDraft && ! ( isContentOnlySurface( surfaces[ k ] ) && ! withContent )",
+		"replace": "true",
+		"why": "a copy, a draftless or a skipped content-only surface needs the files"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "! ( isContentOnlySurface( surfaces[ k ] ) && ! withContent )",
+		"replace": "true",
+		"why": "a skipped content-only surface needs the files"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "skel?.root?.viaState || 'form' === skel?.kind",
+		"replace": "skel?.root?.viaState",
+		"why": "a form surface needs no saved inventory"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "if ( missingInputs.length ) {\n\t\tthrow new Error(",
+		"replace": "if ( false ) {\n\t\tthrow new Error(",
+		"why": "the run goes on with the files missing"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\t\tnote( key, stage, true, 0, null, 'not in --stages' );\n\t\t\treturn true;",
+		"replace": "\t\t\treturn true;",
+		"why": "a stage left out of --stages leaves no record"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\t\tnote( key, 'apply', true, 0, null, 'not in --stages' );",
+		"replace": "",
+		"why": "an apply stage left out leaves no record"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\treturn runExit( status, { strict } );",
+		"replace": "\treturn 0;",
+		"why": "the run always exits 0"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\tprocess.exitCode = code;",
+		"replace": "",
+		"why": "the exit code is never set"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "if ( ! recorded && ! withCopies ) {",
+		"replace": "if ( false ) {",
+		"why": "a page with no recorded shell builds anyway under --no-copies"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "const keys = runKeys( surfaces, only, { copies: withCopies } );",
+		"replace": "const keys = runKeys( surfaces, only );",
+		"why": "--no-copies is not passed on"
+	}
+]
