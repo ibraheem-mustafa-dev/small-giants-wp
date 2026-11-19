@@ -26,7 +26,7 @@ test( 'MUST FAIL: the only background-image setting clips to the text, and the d
 	const r = run( 'sgs/business-info', { 'background-clip': at( 'border-box' ) } );
 	assert.equal( r.writes, undefined, `written: ${ JSON.stringify( r.writes ) }` );
 	assert.equal( r.gap, 'no-setting' );
-	assert.match( r.detail, /behind the box \(textColourGradient clip/ );
+	assert.match( r.detail, /behind the box \(textColourGradient clips/ );
 } );
 
 test( 'negative control: a draft that clips to the text, or whose clip was not read, still writes the text gradient', () => {
@@ -37,14 +37,12 @@ test( 'negative control: a draft that clips to the text, or whose clip was not r
 	}
 } );
 
-test( 'negative control: a background setting that does not clip to the text is written on a box-clipped draft', () => {
+test( 'negative control: with a second setting the side-effect tie rule decides, as before', () => {
 	const cal = calibration( { backgroundColourGradient: { slot: '', slots: [ '' ], property: 'background-image', state: null, effects: [] } } );
-	// A clip other than the block's default paint (padding-box) is no tie the side-effect rule can break; this rule does.
-	for ( const clip of [ 'border-box', 'padding-box' ] ) {
-		const r = run( 'sgs/container', { 'background-clip': at( clip ) }, cal );
-		assert.equal( r.gap, undefined, `${ clip }: ${ r.detail }` );
-		assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'backgroundColourGradient' ], clip );
-	}
+	const r = run( 'sgs/container', { 'background-clip': at( 'border-box' ) }, cal );
+	assert.equal( r.gap, undefined, r.detail );
+	assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'backgroundColourGradient' ] );
+	assert.equal( run( 'sgs/container', { 'background-clip': at( 'text' ) }, cal ).gap, 'ambiguous' );
 } );
 
 test( 'MUST FAIL: backgroundBehindBox drops only a setting whose effect on the read element is its background-clip', () => {

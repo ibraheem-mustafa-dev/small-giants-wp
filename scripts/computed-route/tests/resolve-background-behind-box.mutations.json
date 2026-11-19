@@ -1,21 +1,21 @@
 [
 	{
 		"file": "lib/resolve.mjs",
-		"find": "if ( 'background-image' === short && ! state ) {",
+		"find": "if ( 'background-image' === short && ! state && 1 === tied.length ) {",
 		"replace": "if ( false ) {",
 		"why": "the text-clip rule never runs"
 	},
 	{
 		"file": "lib/resolve.mjs",
-		"find": "if ( behind.dropped.length && ! behind.rows.length ) {",
-		"replace": "if ( false ) {",
-		"why": "a text gradient left alone is written anyway"
+		"find": "if ( 'background-image' === short && ! state && 1 === tied.length ) {",
+		"replace": "if ( 'background-image' === short && ! state ) {",
+		"why": "the rule also acts on a tie"
 	},
 	{
 		"file": "lib/resolve.mjs",
-		"find": "tied = behind.rows;",
-		"replace": "tied = tied;",
-		"why": "the dropped text gradient stays in a tie"
+		"find": "if ( behind.dropped.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a text gradient left alone is written anyway"
 	},
 	{
 		"file": "lib/resolve-side-effects.mjs",

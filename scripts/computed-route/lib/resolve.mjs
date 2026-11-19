@@ -603,13 +603,13 @@ export function resolve( input, ctx ) {
 		const named = 'display' === prop ? `no layout setting holds display:${ [ ...new Set( Object.values( perWidth ) ) ].join( ', ' ) } on ${ block } "${ slot }"` : `no ${ prop } setting on ${ block } paints "${ slot }"`;
 		return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, `${ named } (candidates: ${ rows.map( ( r ) => r.attr_name ).join( ', ' ) })` );
 	}
-	// A text gradient cannot give a background the draft paints behind its box (lib/resolve-side-effects.mjs::backgroundBehindBox).
-	if ( 'background-image' === short && ! state ) {
+	// A lone text gradient cannot give a background the draft paints behind its box (lib/resolve-side-effects.mjs::backgroundBehindBox);
+	// a tie between settings goes to the side-effect rule below.
+	if ( 'background-image' === short && ! state && 1 === tied.length ) {
 		const behind = backgroundBehindBox( tied, { effectsOf: ( r ) => ctx.calibration.settings?.[ r.attr_name ]?.effects, slot, same: ( p, s ) => loose( p ) === s, siblings: input.siblings || {} } );
-		if ( behind.dropped.length && ! behind.rows.length ) {
-			return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, `no background-image setting on ${ block } paints "${ slot }" behind the box (${ behind.dropped.map( ( r ) => r.attr_name ).join( ', ' ) } clip the background to the text, and the draft's background-clip is ${ [ ...new Set( Object.values( input.siblings[ 'background-clip' ] ) ) ].join( ', ' ) })` );
+		if ( behind.dropped.length ) {
+			return resolveDiscovered( { ...input, state }, ctx.calibration ) || noSetting( { ...input, state }, ctx, `no background-image setting on ${ block } paints "${ slot }" behind the box (${ behind.dropped.map( ( r ) => r.attr_name ).join( ', ' ) } clips the background to the text, and the draft's background-clip is ${ [ ...new Set( Object.values( input.siblings[ 'background-clip' ] ) ) ].join( ', ' ) })` );
 		}
-		tied = behind.rows;
 	}
 	const split = ( rows ) => {
 		const f = rows.filter( ( r ) => 'flat_sibling' === r.tier_shape );

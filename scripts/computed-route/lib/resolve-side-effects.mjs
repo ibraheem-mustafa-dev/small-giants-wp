@@ -29,7 +29,8 @@ export function sideEffectFree( rows, { effectsOf, slot, same, siblings = {}, pa
 // text gradient: calibration lists the read element's `background-clip` among its effects) paints the gradient into the letters
 // and clears the text colour, so it cannot give a gradient the draft paints behind the box and clips to the box. The draft's own
 // background-clip decides: `text` (at any width) keeps every row; a clip the draft states as anything else drops the rows that
-// clip to text; an unread clip keeps every row. A gradient sized and placed as an underline is such a background. Returns
+// clip to text; an unread clip keeps every row. A gradient sized and placed as an underline is such a background. lib/resolve.mjs
+// asks only for a lone row: a tie between settings goes to `sideEffectFree`. Returns
 // { rows, dropped }: `rows` are the rows that remain (empty when every row clips to text), `dropped` the rows removed.
 // rows: the tied rows (attr_name); effectsOf, slot, same, siblings: as sideEffectFree.
 export function backgroundBehindBox( rows, { effectsOf, slot, same, siblings = {} } ) {
