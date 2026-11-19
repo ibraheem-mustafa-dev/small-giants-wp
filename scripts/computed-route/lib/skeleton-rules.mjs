@@ -25,6 +25,7 @@ import { widgetModel } from './skeleton-widgets.mjs';
 import { keptSvg } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
+import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -720,6 +721,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const keys = handlerKeys( e );
 		return ownedDrawers.find( ( d ) => opensOn( d.surface, keys ) ) ?? null;
 	};
+	// The modal, flow or form row of the page map a button or link opens (lib/skeleton-openers.mjs), or null.
+	const openTargets = R.surfaceOpener ? openerTargets( { pageMap: surface.pageMap || [], folder: handoffOf( facts ) } ) : [];
+	const opensSurface = ( e ) => ( openTargets.length && [ 'a', 'button' ].includes( e.tag ) && handlerOf( e ) ? openedBy( controlWrites( { folder: handoffOf( facts ), component: view.entry( e )?.template.component, handler: handlerOf( e ) } ), openTargets, scope?.id ?? null ) : null );
 	// The owning block's trigger settings drawn from the control (the entry's `trigger` names the block's settings): words
 	// beside a count make a pill with that label, no words an icon; a count that paints its own box is a bubble, else plain;
 	// a count showing zero at rest keeps showing it; a typed aria-label is the trigger's accessible name.
@@ -807,6 +811,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e } ) => {
 			const d = opensOwnedDrawer( e );
 			return d ? v( 'blockPartOpener', { block: d.own.block, absorb: true, attributes: { ...( d.own.attributes || {} ), ...triggerOf( e, d.own.trigger ) }, reason: `${ R.blockPartOpener.reason }; it opens ${ d.surface.id } (${ d.surface.name }), which the page map holds as the ${ d.part.kind } part "${ d.part.label }" of the ${ d.row.slug } row` } ) : null;
+		},
+		// A control that opens a modal, flow or form row is a button linking the target's anchor (rules.surfaceOpener); the surface
+		// holding it gets the target's frame (lib/skeleton-openers.mjs::surfaceFrames, called by lib/skeleton-propose.mjs).
+		( { e } ) => {
+			const t = opensSurface( e );
+			return t ? v( 'surfaceOpener', { block: R.surfaceOpener.button.block, absorb: true, attributes: openerAttributes( t, ( m.words( e ) || textLeaves( e ).map( ( k ) => m.words( k ) ).join( ' ' ) ).replace( /\s+/g, ' ' ).trim(), R.surfaceOpener ), reason: `${ R.surfaceOpener.reason }; it opens the ${ t.kind } ${ t.slug }` } ) : null;
 		},
 		// A WooCommerce page's commerce region is WooCommerce's working piece, an ordinary block that draws the region
 		// itself (rules.commerceRegion): the region's children are absorbed into it.

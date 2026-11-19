@@ -16,6 +16,7 @@ import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, item
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { scIfFields } from './form-scif-fields.mjs';
+import { surfaceFrames, openerTargets, frameSettings, surfaceRow, surfaceOpenerControls, openerListItems } from './skeleton-openers.mjs';
 import { handoffOf } from './draft-tokens.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
 import { fieldInputSlot } from './skeleton-form-slots.mjs';
@@ -383,6 +384,16 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// from the draft's template (lib/form-scif-fields.mjs); the form root's row names them.
 	const scIf = 'form' === surfaceKind ? scIfFields( skeleton, { factRecord, surfaceId: scope?.id, folder: handoffOf( facts ), rules: R, has: ( b, a ) => !! facts.attr?.( b, a ) } ) : null;
 	scIf?.notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...scIf.notes ] );
+	// The frame of each modal or flow the page map lists this surface's row as opening, placed once, a list item opening one
+	// linked to its anchor, and a modal row's post kept to its dialog's inner content (lib/skeleton-openers.mjs).
+	if ( R.surfaceOpener ) {
+		const keyOfNode = new Map( Object.entries( nodeOfKey ).map( ( [ k, n ] ) => [ n, k ] ) );
+		const id = surfaceId ?? scope?.id ?? null;
+		const targets = openerTargets( { pageMap, folder: handoffOf( facts ) } );
+		openerListItems( skeleton, surfaceOpenerControls( { factRecord, surfaceId: id, targets, folder: handoffOf( facts ) } ), facts.listItem );
+		const framed = surfaceFrames( { tree: skeleton, targets, row: surfaceRow( { pageMap, surfaceId: id, surface, folder: handoffOf( facts ) } ), pageMap, R, factRecord, folder: handoffOf( facts ), settings: frameSettings( db, R.surfaceOpener.frame.block ), has: ( b, a ) => !! facts.attr?.( b, a ), keyOf: ( n ) => ( keyOfNode.has( n ) && m.byKey[ keyOfNode.get( n ) ] ? view.entry( m.byKey[ keyOfNode.get( n ) ] )?.template?.key ?? null : null ) } );
+		framed.notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...framed.notes ] );
+	}
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
 	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
 	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).

@@ -733,6 +733,14 @@
 			"scope": "in a surface of kind header, a button or link whose click handler (a renderVals key of its component) writes a state key that a drawer's surfaces.json state holds at true, where the page map holds that drawer as a part with owner `block` of a row whose template names its owning block in rules.blockOwnedPart.byTemplate (lib/skeleton-handler-opens.mjs, lib/skeleton-surface-role.mjs::blockPartSurfaces)",
 			"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23)"
 		},
+		"surfaceOpener": {
+			"id": "surfaceOpener",
+			"scope": "a button or link whose click handler makes every opening write of a modal, choice flow or form row of the page map (lib/skeleton-openers.mjs, the reading of lib/intake-pagemap-openers.mjs), on any surface but the target's own",
+			"button": { "block": "sgs/button", "label": "label", "url": "url" },
+			"frame": { "block": "sgs/modal", "anchor": "anchor", "attributes": { "triggerStyle": "none" }, "closeOnOverlay": "closeOnOverlay", "ref": "modalRef", "scrim": "scrimColour", "fullscreen": { "size": "fullscreen" }, "parts": { "backdrop": "backdrop", "dialog": "dialog", "close": "close" }, "hosts": [ "sgs_footer", "sgs_header" ] },
+			"flow": { "linked": "flowIsLinked", "id": "flowId" },
+			"reason": "a control that opens a modal, starts a flow or fills a form is a button linking the target's anchor, and the target's frame (an sgs/modal with no trigger of its own, holding the linked flow for a flow) is placed once on the surface holding it, the footer or header's frame serving every page; the draft's backdrop, panel and close control are the frame's own settings and only the dialog's inner content is the modal post (Spec 48 FR-48-95, Bean 2026-10-28)"
+		},
 		"choiceFlow": {
 			"id": "choiceFlow",
 			"postType": "sgs_choice_flow",
