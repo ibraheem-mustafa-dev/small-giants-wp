@@ -150,6 +150,66 @@ test( 'MUST FAIL: a wrapper of stacked bands is read through: a band of links ab
 	shaped( r );
 } );
 
+// A painted band (Root/30) around a width wrapper (Root/31) holding a call to action (Root/32), the link grid (Root/2) and a
+// legal line (Root/34), all stacked, below two stacked strips (Root/10, Root/12): the grid is two levels down.
+const bandAround = () => [
+	el( 'Root/30#0', 'Root/1#0', 'div', '', { box: place( 0, 100, 400, 260 ) } ),
+	el( 'Root/31#0', 'Root/30#0', 'div', '', { depth: 2, box: place( 20, 120, 360, 220 ) } ),
+	el( 'Root/32#0', 'Root/31#0', 'div', '', { depth: 3, box: place( 20, 120, 360, 40 ) } ), el( 'Root/33#0', 'Root/32#0', 'h2', 'Hungry?', { depth: 4, box: place( 20, 120, 360, 40 ) } ),
+	el( 'Root/2#0', 'Root/31#0', 'div', '', { depth: 3, box: place( 20, 170, 360, 100 ), display: 'grid' } ), ...column( 3, 'Root/2#0', place( 20, 170, 100, 100 ), 'Shop', 4 ), ...column( 6, 'Root/2#0', place( 170, 170, 100, 100 ), 'Help', 4 ),
+	el( 'Root/34#0', 'Root/31#0', 'div', '', { depth: 3, box: place( 20, 290, 360, 30 ) } ), el( 'Root/35#0', 'Root/34#0', 'span', '(c) 2026', { depth: 4, box: place( 20, 290, 360, 30 ) } ),
+];
+
+test( 'MUST FAIL: with no grid among the root\'s children, the child holding the grid deeper down (a painted band) is the columns row and the strips stacked above it are the top row', () => {
+	const els = [ root(), ...strip( 10, 20, 'Instagram' ), ...strip( 12, 60, 'Marquee' ), ...bandAround() ];
+	const plan = footerPlanOf( els );
+	assert.deepEqual( [ plan.mode, plan.top.map( ( x ) => x.key ), plan.columns.map( ( x ) => x.key ), plan.bottom ], [ 'holds', [ 'Root/10#0', 'Root/12#0' ], [ 'Root/30#0' ], [] ] );
+	const r = run( inv( els ) );
+	assert.equal( rows( r )[ 1 ].draftRef?.tpl, 'Root/30#0', 'the band is the columns row itself, so its paint is the row\'s' );
+	assert.deepEqual( [ slotOf( r, 'Root/10#0' ), slotOf( r, 'Root/12#0' ), slotOf( r, 'Root/2#0' ), slotOf( r, 'Root/34#0' ) ], [ 'top', 'top', 'columns', 'columns' ] );
+	assert.deepEqual( r.problems, [] );
+	shaped( r );
+} );
+
+test( 'MUST FAIL: a row with no layout of its own whose children the draft stacks takes the rule\'s stackedRow settings (a keyless row of two strips, and a band row in block flow)', () => {
+	const F = facts().decisions.rules.footerSlots;
+	assert.deepEqual( F.stackedRow, { layout: 'grid', columns: { desktop: 1, tablet: 1, mobile: 1 } } );
+	const r = run( inv( [ root(), ...strip( 10, 20, 'Instagram' ), ...strip( 12, 60, 'Marquee' ), ...bandAround() ] ) );
+	const pick = ( n ) => Object.fromEntries( Object.keys( F.stackedRow ).map( ( k ) => [ k, n.attributes[ k ] ] ) );
+	assert.deepEqual( pick( rows( r )[ 0 ] ), F.stackedRow, 'the keyless top row stacks its two strips' );
+	assert.deepEqual( pick( rows( r )[ 1 ] ), F.stackedRow, 'the band row (display block) stacks its call to action, grid and legal line' );
+	assert.deepEqual( rows( r )[ 2 ].attributes, { rowSlot: 'bottom' }, 'an empty row takes nothing' );
+	assert.deepEqual( decisionsProblems( facts() ), [] );
+	const f = facts();
+	const bad = { ...f, decisions: { ...f.decisions, rules: { ...f.decisions.rules, footerSlots: { ...F, stackedRow: { noSuchSetting: 1 } } } } };
+	assert.ok( decisionsProblems( bad ).some( ( p ) => /stackedRow\.noSuchSetting must name a structural setting/.test( p ) ) );
+	const styled = { ...f, decisions: { ...f.decisions, rules: { ...f.decisions.rules, footerSlots: { ...F, stackedRow: { gap: { desktop: '0px' } } } } } };
+	assert.ok( decisionsProblems( styled ).some( ( p ) => /stackedRow\.gap must name a structural setting/.test( p ) ), 'a style setting is refused' );
+	assert.deepEqual( lintSkeleton( r.skeleton, db ), [] );
+	shaped( r );
+} );
+
+test( 'a row whose element is a grid keeps its own layout, and a row whose children sit side by side takes no stackedRow (the stacking rule does not fire)', () => {
+	const r = run( inv( [ root(), ...grid() ] ) );
+	assert.equal( rows( r )[ 1 ].attributes.layout, 'grid' );
+	assert.equal( rows( r )[ 1 ].attributes.columns, undefined );
+	const flexStrip = [ el( 'Root/20#0', 'Root/1#0', 'div', '', { box: place( 0, 300, 400, 30 ), display: 'flex' } ), el( 'Root/21#0', 'Root/20#0', 'span', 'Legal', { depth: 2, box: place( 0, 300, 400, 30 ) } ) ];
+	const legal = run( inv( [ root(), ...grid(), ...flexStrip ] ) );
+	assert.deepEqual( [ rows( legal )[ 2 ].attributes.layout, rows( legal )[ 2 ].attributes.columns ], [ 'flex', undefined ], 'a flex strip row keeps its flex layout though its one child stacks' );
+	const pair = [ el( 'Root/10#0', 'Root/1#0', 'div', '', { box: place( 0, 60, 180, 30 ) } ), el( 'Root/11#0', 'Root/10#0', 'span', 'Left', { depth: 2, box: place( 0, 60, 180, 30 ) } ), el( 'Root/12#0', 'Root/1#0', 'div', '', { box: place( 200, 60, 180, 30 ) } ), el( 'Root/13#0', 'Root/12#0', 'span', 'Right', { depth: 2, box: place( 200, 60, 180, 30 ) } ) ];
+	const side = run( inv( [ root(), ...pair ] ) );
+	assert.equal( rows( side )[ 1 ].innerBlocks.length, 2 );
+	assert.equal( rows( side )[ 1 ].attributes.columns, undefined, 'two strips side by side are not stacked' );
+} );
+
+test( 'a grid that floats inside an in-flow child, or no grid at all, leaves the footer in one columns row (the holding rule does not fire)', () => {
+	const floatingGrid = [ el( 'Root/40#0', 'Root/1#0', 'div', '', { box: place( 0, 300, 400, 100 ) } ), el( 'Root/2#0', 'Root/40#0', 'div', '', { depth: 2, box: place( 0, 300, 400, 100 ), display: 'grid', position: FIXED } ), ...column( 3, 'Root/2#0', place( 0, 300, 100, 100 ), 'Shop', 3 ), ...column( 6, 'Root/2#0', place( 150, 300, 100, 100 ), 'Help', 3 ) ];
+	const plan = footerPlanOf( [ root(), ...strip( 10, 20, 'Above' ), ...strip( 12, 60, 'Below' ), ...floatingGrid ] );
+	assert.deepEqual( [ plan.mode, plan.columns.map( ( x ) => x.key ) ], [ 'none', [ 'Root/10#0', 'Root/12#0', 'Root/40#0' ] ] );
+	const stackedOnly = footerPlanOf( [ root(), ...strip( 10, 20, 'Above' ), el( 'Root/30#0', 'Root/1#0', 'div', '', { box: place( 0, 100, 400, 100 ) } ), ...column( 3, 'Root/30#0', place( 0, 100, 100, 50 ), 'Shop', 2 ), ...column( 6, 'Root/30#0', place( 0, 150, 100, 50 ), 'Help', 2 ) ] );
+	assert.equal( stackedOnly.mode, 'none', 'link groups stacked inside a child are not a grid it holds' );
+} );
+
 test( 'a link column (a heading over its links, stacked) is never read through: the band of the root\'s own columns stays whole', () => {
 	const cols = [ ...column( 3, 'Root/1#0', place( 0, 100, 100, 100 ), 'Shop', 1 ), ...column( 6, 'Root/1#0', place( 150, 100, 100, 100 ), 'Help', 1 ) ];
 	const plan = footerPlanOf( [ root(), ...cols ] );

@@ -62,14 +62,18 @@ export function footerPlan( kids, { subtree, kidsOf, declared = () => null } ) {
 	const flow = all.filter( ( k ) => ! floating.includes( k ) );
 	// Of two or more grids, the one holding the most links is the columns; the others are strips above or below it.
 	const linksIn = ( k ) => subtree( k ).filter( href ).length;
+	const most = ( list ) => list.reduce( ( a, b ) => ( linksIn( b ) > linksIn( a ) ? b : a ) );
 	const grids = flow.filter( isGrid );
 	const band = grids.length ? [] : sideBySide( flow.filter( linkGroup ) );
-	const mains = grids.length ? [ grids.reduce( ( a, b ) => ( linksIn( b ) > linksIn( a ) ? b : a ) ) ] : band.length >= 2 ? band : [];
+	// With neither, an in-flow child holding an in-flow grid deeper down (a painted band around a width wrapper, which the
+	// plan does not read through because its paint belongs to a row) is the columns row's element.
+	const holders = grids.length || band.length >= 2 ? [] : flow.filter( ( k ) => subtree( k ).slice( 1 ).some( ( d ) => ! isFloating( d, declared ) && isGrid( d ) ) );
+	const mains = grids.length ? [ most( grids ) ] : band.length >= 2 ? band : holders.length ? [ most( holders ) ] : [];
 	if ( ! mains.length ) {
 		return { mode: 'none', top: [], columns: flow, bottom: [], floating, through: passed };
 	}
 	const split = insideStrips( flow, { holdsMain: ( k ) => mains.includes( k ), declared } );
-	return { mode: grids.length ? 'grid' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: split.bottom, floating, through: passed };
+	return { mode: grids.length ? 'grid' : holders.length ? 'holds' : 'band', top: [ ...split.top ].reverse(), columns: split.main, bottom: split.bottom, floating, through: passed };
 }
 
 // The proposal part. c: { R, m, inventory, contentAttrs, base, record, hosts, buildChildren, buildNode, slotProblems,
@@ -91,6 +95,16 @@ export function buildFooterRows( e, block, c ) {
 	}
 	c.setStripRoots( beside.map( ( x ) => x.key ) );
 	plan.through.forEach( ( x ) => c.unwrap( x ) );
+	// A row with no layout of its own (a keyless row, or one whose element's display is no layout the row block offers) whose
+	// in-flow children the draft stacks takes the rule's stackedRow settings: the row block's default lays children out as
+	// columns, so stacked bands would sit side by side.
+	const stackRow = ( row ) => {
+		const els = row.innerBlocks.map( ( n ) => byKey.get( n.draftRef?.tpl ) ).filter( ( x ) => x && ! isFloating( x, c.declared ) );
+		if ( F.stackedRow && undefined === row.attributes.layout && els.length && ! sideBySide( els ).length ) {
+			Object.assign( row.attributes, structuredClone( F.stackedRow ) );
+		}
+		return row;
+	};
 	// One element is the row itself (its descendants are the row's children, its attributes the row's, floating elements
 	// after them); several go inside a keyless row, one built node each (a built row block gives its children to the row).
 	function slotRow( el, slot ) {
@@ -138,5 +152,5 @@ export function buildFooterRows( e, block, c ) {
 		plan.top.length ? rowOf( 'top', plan.top ) : rowNode( 'top', [] ),
 		plan.columns.length ? rowOf( 'columns', plan.columns ) : rowNode( 'columns', [] ),
 		plan.bottom.length || floats.length ? rowOf( 'bottom', plan.bottom, floats ) : rowNode( 'bottom', [] ),
-	];
+	].map( stackRow );
 }
