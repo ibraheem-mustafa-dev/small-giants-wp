@@ -1,6 +1,7 @@
 // One property of one element, from the draft's measured values to the setting writes (FR-47-4 step 2). Every write
 // comes from lib/resolve.mjs::resolve (R-47-3); this module decides only which tiers differ from what the node already
 // shows (R-47-5), tries the slots a setting could paint, and turns a fluid size into a clamp() where the setting takes one.
+import { contentSelectors } from './fill-content-selector.mjs';
 import { resolve, splitProperty, LOOSE } from './resolve.mjs';
 import { samePaint, paintCanon, PX_TOL } from './css-equivalence/tolerance.mjs';
 import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.mjs';
@@ -307,7 +308,10 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // Returns { status: 'equal' | 'written' | 'gap', slot, writes?, included?, how?: 'tiers' | 'single' | 'clamp', fluid?, gap?, detail? }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
-	const { node, owned = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
+	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
+	// The skeleton's content selectors (Site Info's displayType) stay as written: a look never changes which parts a block renders.
+	const selectors = contentSelectors( { db, block, attributes: node.attributes, calibration } );
+	const owned = Object.keys( selectors ).length ? { ...selectors, ...( given || {} ) } : given;
 	const contextOf = ( w ) => ( { position: siblings.position?.[ w ], direction: siblings.direction?.[ w ], ...contextAt( w ) } );
 	const known = knownPaths( calibration ).map( LOOSE );
 	let firstGap = null;
