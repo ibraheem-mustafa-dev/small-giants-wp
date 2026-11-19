@@ -40,6 +40,8 @@ export const PASS = 'residual-css';
 export const PAGE_CAP_BYTES = 20 * 1024;
 
 const MOTION = /^(transition|animation)(-|$)/;
+// The background sizes under which an image fills the element's box (a gradient has no size of its own).
+const FILLS_BOX = /^(auto|cover|contain|100%|auto auto|100% 100%|100% auto|auto 100%)$/;
 // Properties that size or place the element in its parent's layout: written only where the draft states them at every
 // read width, so a rule never holds one width's layout at another.
 const LAYOUT = /^(display|position|top|right|bottom|left|inset(-.+)?|float|clear|(min-|max-)?(width|height)|(min-|max-)?(inline|block)-size|flex(-.+)?|grid(-.+)?|order|justify-.+|align-.+|place-.+|gap|row-gap|column-gap|margin(-.+)?|aspect-ratio)$/;
@@ -339,6 +341,16 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				} ).filter( Boolean );
 				if ( differs.length ) {
 					refuse( r, `${ prop } lays out children, and the block's part lays them out differently from the draft's element (${ differs.join( '; ' ) })` );
+					continue;
+				}
+			}
+			// A background image the draft sizes (a gradient underline: 0% wide, or a 1px strip at the bottom edge) is not the whole of
+			// its background: a rule holding only the image fills the box, and the size, position and repeat are not carried. A size not
+			// read is undefined, which `find` returns as no match.
+			if ( 'background-image' === prop ) {
+				const sized = widths.map( ( w ) => reads.widths?.[ w ]?.[ target.id ]?.styles?.[ 'background-size' ] ).find( ( v ) => ! FILLS_BOX.test( String( v ).trim() ) );
+				if ( undefined !== sized ) {
+					refuse( r, `the draft sizes this background (background-size ${ sized }), and a rule holding only the image would fill the whole box; the size, position and repeat are not carried` );
 					continue;
 				}
 			}

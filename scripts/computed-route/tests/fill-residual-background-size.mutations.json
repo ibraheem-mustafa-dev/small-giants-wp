@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "if ( 'background-image' === prop ) {\n\t\t\t\tconst sized",
+		"replace": "if ( false ) {\n\t\t\t\tconst sized",
+		"why": "a sized background is written as the bare image"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "const FILLS_BOX = /^(auto|cover|contain|100%|auto auto|100% 100%|100% auto|auto 100%)$/;",
+		"replace": "const FILLS_BOX = /^(auto)$/;",
+		"why": "a background that fills the box is refused"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "const FILLS_BOX = /^(auto|cover|contain|100%|auto auto|100% 100%|100% auto|auto 100%)$/;",
+		"replace": "const FILLS_BOX = /^(auto|cover|contain|100%|auto auto|100% 100%|100% auto|auto 100%|0% 1px|100% 1px|12px 12px)$/;",
+		"why": "an underline strip is taken for a fill"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "export const TIE_PROPS = [ 'background-clip', 'background-size' ];",
+		"replace": "export const TIE_PROPS = [ 'background-clip' ];",
+		"why": "the size is not read"
+	}
+]
