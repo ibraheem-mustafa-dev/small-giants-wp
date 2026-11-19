@@ -2,6 +2,9 @@
 	"name": "sgs-computed-route",
 	"version": "1.0.0",
 	"private": true,
+	"scripts": {
+		"test": "node tools/run-tests.mjs"
+	},
 	"type": "module",
 	"description": "The computed-route's own pinned third-party packages (Spec 48 FR-48-75). Route code imports them from this folder's node_modules only.",
 	"dependencies": {

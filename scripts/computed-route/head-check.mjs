@@ -10,6 +10,7 @@ import { staticCensus } from './lib/intake-census.mjs';
 import { loadExport } from './lib/intake-routing.mjs';
 import { readHead } from './lib/intake-head.mjs';
 import { fontCheck, headCheck, loadedFamilies, tokenFonts } from './lib/head-check.mjs';
+import { assertSiteContact } from './lib/site-contact.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -51,6 +52,7 @@ if ( fs.existsSync( snapshotFile ) ) {
 problems.push( ...head.unhandled.map( ( u ) => `${ u.draftId }: ${ u.line }` ) );
 const url = opt( '--url' );
 if ( url ) {
+	assertSiteContact( { readOnly: true } );
 	const res = await fetch( url, { headers: { 'User-Agent': 'Mozilla/5.0 SGS head-check' } } );
 	problems.push( ...headCheck( head, await res.text(), { siteTitle: opt( '--site-title' ) } ) );
 }

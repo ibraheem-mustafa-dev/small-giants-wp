@@ -1,0 +1,200 @@
+[
+	{
+		"file": "../lib/no-site.js",
+		"find": "return Boolean( env.SGS_NO_SITE ) && '0' !== env.SGS_NO_SITE;",
+		"replace": "return false;",
+		"why": "the switch is never on"
+	},
+	{
+		"file": "../lib/no-site.js",
+		"find": "return Boolean( env.SGS_NO_SITE ) && '0' !== env.SGS_NO_SITE;",
+		"replace": "return Boolean( env.SGS_NO_SITE );",
+		"why": "SGS_NO_SITE=0 turns the switch on"
+	},
+	{
+		"file": "lib/site-contact.mjs",
+		"find": "noSite.assertMayContactSite( env );",
+		"replace": "",
+		"why": "the kill switch is not checked"
+	},
+	{
+		"file": "lib/site-contact.mjs",
+		"find": "if ( readOnly ) {",
+		"replace": "if ( false ) {",
+		"why": "a read is refused on a protected target"
+	},
+	{
+		"file": "lib/site-contact.mjs",
+		"find": "if ( readOnly ) {",
+		"replace": "if ( true ) {",
+		"why": "a write is allowed on a protected target"
+	},
+	{
+		"file": "lib/site-contact.mjs",
+		"find": "if ( 'string' === typeof why && why ) {",
+		"replace": "if ( false ) {",
+		"why": "a protected target is never refused"
+	},
+	{
+		"file": "lib/site-contact.mjs",
+		"find": "( targets ?? readTargets() )[ site ]?.protected",
+		"replace": "undefined",
+		"why": "a protected site named only by its name is not found"
+	},
+	{
+		"file": "lib/calibration-refs.mjs",
+		"find": "const guard = () => assertSiteContact( { site, target, readOnly } );",
+		"replace": "const guard = () => {};",
+		"why": "wpCommand never checks the guard"
+	},
+	{
+		"file": "lib/calibration-refs.mjs",
+		"find": "const guard = () => assertSiteContact( { site, target, readOnly } );",
+		"replace": "const guard = () => assertSiteContact( { site, target, readOnly: true } );",
+		"why": "every wp-cli call counts as a read"
+	},
+	{
+		"file": "lib/calibration-refs.mjs",
+		"find": "const wp = wpCommand( target, site, repo, options );",
+		"replace": "const wp = wpCommand( target, site, repo );",
+		"why": "wpEvalRunner drops its options"
+	},
+	{
+		"file": "lib/build-compare.mjs",
+		"find": "\tassertSiteContact( { readOnly: true } );\n\tconst dir = `${ remotePlugin( site ) }/build/blocks`;",
+		"replace": "\tconst dir = `${ remotePlugin( site ) }/build/blocks`;",
+		"why": "remoteFiles runs its ssh listing under the switch"
+	},
+	{
+		"file": "lib/deploy-hash.mjs",
+		"find": "export function remoteBlockHash( site, short, run = execFileSync ) {\n\tassertSiteContact( { readOnly: true } );",
+		"replace": "export function remoteBlockHash( site, short, run = execFileSync ) {",
+		"why": "remoteBlockHash runs ssh under the switch"
+	},
+	{
+		"file": "lib/tree.mjs",
+		"find": "\tnull !== sshArgs && assertSiteContact( { readOnly: true } );\n",
+		"replace": "",
+		"why": "assertQuiet runs ssh under the switch"
+	},
+	{
+		"file": "lib/trial-page.mjs",
+		"find": "export async function adminSession( ctx, env, key ) {\n\tassertSiteContact( { readOnly: true } );",
+		"replace": "export async function adminSession( ctx, env, key ) {",
+		"why": "adminSession logs in under the switch"
+	},
+	{
+		"file": "lib/media-upload.mjs",
+		"find": "\tfetchImpl === fetch && assertSiteContact( { site, readOnly: ! apply } );\n",
+		"replace": "",
+		"why": "uploadMedia calls a site under the switch"
+	},
+	{
+		"file": "lib/wp-run-session.mjs",
+		"find": "export async function openRunSession( site, env, timeout = 120000 ) {\n\tassertSiteContact( { site } );",
+		"replace": "export async function openRunSession( site, env, timeout = 120000 ) {",
+		"why": "openRunSession opens a login session unguarded"
+	},
+	{
+		"file": "lib/wp-run-session.mjs",
+		"find": "export async function openDetachedSession( site, env, timeout = 120000 ) {\n\tassertSiteContact( { site } );",
+		"replace": "export async function openDetachedSession( site, env, timeout = 120000 ) {",
+		"why": "openDetachedSession starts its browser unguarded"
+	},
+	{
+		"file": "../lib/wp-session.js",
+		"find": "async function ensureLoggedIn( page, { url, user, pwd }, timeout = 60000 ) {\n\tassertMayContactSite();",
+		"replace": "async function ensureLoggedIn( page, { url, user, pwd }, timeout = 60000 ) {",
+		"why": "the shared login runs under the switch"
+	},
+	{
+		"file": "../wp-build-page.js",
+		"find": "\ttry {\n\t\tnoSite.assertMayContactSite();\n\t} catch ( e ) {\n\t\tfail( 1, e.message );\n\t}\n",
+		"replace": "",
+		"why": "the page build never checks the switch"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "function readBlocks( site, posts, tmp ) {\n\tassertSiteContact( { site, readOnly: true } );\n",
+		"replace": "function readBlocks( site, posts, tmp ) {\n",
+		"why": "the applier reads a site's blocks under the switch"
+	},
+	{
+		"file": "apply.mjs",
+		"find": "\tassertSiteContact( { site, readOnly: dry } );\n",
+		"replace": "",
+		"why": "the applier patches a site under the switch"
+	},
+	{
+		"file": "head-check.mjs",
+		"find": "\tassertSiteContact( { readOnly: true } );\n\tconst res = await fetch(",
+		"replace": "\tconst res = await fetch(",
+		"why": "head-check fetches a page under the switch"
+	},
+	{
+		"file": "tools/mutate.mjs",
+		"find": "env: { ...process.env, SGS_NO_SITE: '1' }",
+		"replace": "env: { ...process.env }",
+		"why": "the mutation checker's test processes may reach a site"
+	},
+	{
+		"file": "tools/run-tests.mjs",
+		"find": "env: { ...env, SGS_NO_SITE: '1' }",
+		"replace": "env: { ...env }",
+		"why": "the test runner's processes may reach a site"
+	},
+	{
+		"file": "package.json",
+		"find": "\"test\": \"node tools/run-tests.mjs\"",
+		"replace": "\"test\": \"node --test\"",
+		"why": "npm test runs without the switch"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "if ( ! text ) {\n\t\t\t\tproblems.push( `tests/${ f } spawns",
+		"replace": "if ( false ) {\n\t\t\t\tproblems.push( `tests/${ f } spawns",
+		"why": "an unlisted spawn passes"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "} else if ( 'string' !== typeof why && ! /SGS_NO_SITE/.test( src ) ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a live test that cannot skip itself passes"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "Object.keys( scripts ).filter( ( s ) => ! seen.has(",
+		"replace": "Object.keys( scripts ).filter( ( s ) => seen.has(",
+		"why": "a stale allow-list entry passes"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "const OUTSIDE_ENTRY_POINTS = [ 'wp-build-page.js', 'draft-live-walk.mjs' ];",
+		"replace": "const OUTSIDE_ENTRY_POINTS = [];",
+		"why": "wp-build-page.js and the walker are not entry points"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "const mask = maskStringsAndComments( src );",
+		"replace": "const mask = src;",
+		"why": "a call written in a string or comment counts"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "named.length && ( bound[ m[ 1 ] ] = named );",
+		"replace": "",
+		"why": "a spawn through a constant is not seen"
+	},
+	{
+		"file": "lint.mjs",
+		"find": "/(?:^|[(,=:[!&|?{};]|\\breturn|\\btypeof)\\s*$/.test( out )",
+		"replace": "false",
+		"why": "a regular expression holding a quote hides the code after it"
+	},
+	{
+		"file": "lib/media-upload.mjs",
+		"find": "fetchImpl === fetch && assertSiteContact(",
+		"replace": "assertSiteContact(",
+		"why": "a test's own fetch is refused by the switch too"
+	}
+]

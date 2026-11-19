@@ -12,6 +12,7 @@ import { wpCommand } from './lib/calibration-refs.mjs';
 import { ShopFixturesError, applyFixtures, imageChoice, planFixtureVariesBy, planFixtures } from './lib/shop-fixtures.mjs';
 import { VariesByError } from './lib/shop-fixtures-variesby.mjs';
 import { wpFetch } from './lib/shop-fixtures-wp.mjs';
+import { assertSiteContact } from './lib/site-contact.mjs';
 import { assertUnprotected, readTargets } from './lib/site-targets.mjs';
 
 // The sites the fixtures may be written to: fresh test sites that hold no client content.
@@ -53,12 +54,13 @@ if ( args.includes( '--apply' ) ) {
 		process.exit( 2 );
 	}
 }
-const wp = wpCommand( target, site, repo );
+const wp = wpCommand( target, site, repo, { readOnly: ! args.includes( '--apply' ) } );
 const mirror = /^\/\/wsl\.localhost\//.test( target.pluginDir || '' );
 
 try {
 	const creds = mirror ? { url: 'http://localhost', auth: 'wp-cli' } : siteCredentials( secretsRepo, site );
-	const fetchImpl = mirror ? wpFetch( wp ) : fetch;
+	// A hosted site's REST calls pass the site-contact guard too (a dry run only reads).
+	const fetchImpl = mirror ? wpFetch( wp ) : ( ...a ) => assertSiteContact( { site, readOnly: ! args.includes( '--apply' ) } ) ?? fetch( ...a );
 	if ( args.includes( '--apply' ) ) {
 		const r = await applyFixtures( { repo, client, site, creds, fetchImpl, wp } );
 		console.log( r.created.length ? `created: ${ r.created.join( ', ' ) }${ r.imageUploaded ? ' (image uploaded)' : '' }` : 'nothing to create: every fixture already exists' );

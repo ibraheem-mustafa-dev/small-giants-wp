@@ -8,6 +8,8 @@
 //   - a route file other than lib/site-targets.mjs and the tests names calibration-targets.json as a path in code (comments and
 //     messages are fine): the site targets are read through lib/site-targets.mjs::readTargets, which adds the local scratch
 //     entries and the protected rule (a direct read would see neither);
+//   - a test under tests/ spawns a route entry point (a top-level .mjs command, wp-build-page.js, draft-live-walk.mjs) that
+//     data/offline-test-spawns.json does not list with its reason, or lists and the test no longer spawns (lintTestSpawns);
 //   - a route file (tests included) names the plugin's node_modules folder; the route imports its third-party packages
 //     from its own pinned install (FR-48-75);
 //   - a --tree carries a core `style` attribute or a native_wp setting (both serialise as inline style, Spec 32), or a
@@ -48,6 +50,140 @@ const TARGETS_PATH = /(['"`])(?:[^'"`\r\n]*[\\/])?calibration-targets\.json\1/;
 export function readsTargetsFile( src ) {
 	const code = src.replace( /\/\*[\s\S]*?\*\//g, '' ).replace( /^\s*\/\/.*$/gm, '' ).replace( /([;{}),])\s*\/\/.*$/gm, '$1' );
 	return TARGETS_PATH.test( code );
+}
+
+// The route's entry points: every top-level .mjs command of the route folder, and the two scripts outside it that reach a site.
+const OUTSIDE_ENTRY_POINTS = [ 'wp-build-page.js', 'draft-live-walk.mjs' ];
+export const entryPoints = ( root ) => [ ...fs.readdirSync( root, { withFileTypes: true } ).filter( ( f ) => f.isFile() && /\.mjs$/.test( f.name ) ).map( ( f ) => f.name ), ...OUTSIDE_ENTRY_POINTS ];
+
+// The part of `src` from the open parenthesis at `open` to its match.
+function balanced( src, open ) {
+	let depth = 0;
+	for ( let i = open; i < src.length; i++ ) {
+		if ( '(' === src[ i ] ) {
+			depth++;
+		} else if ( ')' === src[ i ] && 0 === --depth ) {
+			return src.slice( open, i + 1 );
+		}
+	}
+	return src.slice( open );
+}
+
+// Whether `text` names the script: as a quoted name or as the end of a path (`'x.mjs'`, `'../x.mjs'`, `${ dir }\x.mjs`).
+const namesScript = ( text, name ) => [ `'${ name }'`, `"${ name }"`, `/${ name }`, `\\${ name }` ].some( ( t ) => text.includes( t ) );
+
+// The entry points a test source spawns: a spawn, execFile, fork or exec call whose arguments name one, directly or through a
+// constant bound to its path (`const CLI = path.join( HERE, '..', 'x.mjs' )`).
+export function spawnedEntryPoints( src, entries ) {
+	// Calls are found in `mask` (comments and string contents blanked, so a call written inside a string or a comment is no call);
+	// their arguments and the constants' values are read from `src` at the same offsets.
+	const mask = maskStringsAndComments( src );
+	const bound = {};
+	for ( const m of mask.matchAll( /(?:const|let)\s+(\w+)\s*=\s*([^;]*);/g ) ) {
+		const named = entries.filter( ( e ) => namesScript( src.slice( m.index, m.index + m[ 0 ].length ), e ) );
+		named.length && ( bound[ m[ 1 ] ] = named );
+	}
+	const out = new Set();
+	for ( const call of mask.matchAll( /(?<![.\w])(?:spawn|spawnSync|execFile|execFileSync|fork|exec|execSync)\s*\(/g ) ) {
+		const open = call.index + call[ 0 ].length - 1;
+		const length = balanced( mask, open ).length;
+		const args = src.slice( open, open + length );
+		entries.filter( ( e ) => namesScript( args, e ) ).forEach( ( e ) => out.add( e ) );
+		const code = mask.slice( open, open + length );
+		for ( const [ id, named ] of Object.entries( bound ) ) {
+			new RegExp( `\\b${ id }\\b` ).test( code ) && named.forEach( ( e ) => out.add( e ) );
+		}
+	}
+	return [ ...out ].sort();
+}
+
+// `src` with the inside of every comment and string, single, double or template, replaced by spaces (newlines and offsets kept).
+// A regular expression literal is not told apart from division: a quote inside one can blank code after it, so this is a
+// heuristic for the test sources it reads, which a test of its own pins.
+export function maskStringsAndComments( src ) {
+	let out = '';
+	let state = null;
+	let inClass = false;
+	for ( let i = 0; i < src.length; i++ ) {
+		const c = src[ i ];
+		const next = src[ i + 1 ];
+		if ( null === state ) {
+			if ( '/' === c && '/' === next ) {
+				state = '//';
+			} else if ( '/' === c && '*' === next ) {
+				state = '/*';
+			} else if ( [ "'", '"', '`' ].includes( c ) ) {
+				state = c;
+			} else if ( '/' === c && /(?:^|[(,=:[!&|?{};]|\breturn|\btypeof)\s*$/.test( out ) ) {
+				// A slash after an operator, an opening bracket or a statement end starts a regular expression literal.
+				state = 're';
+				inClass = false;
+			}
+			out += c;
+		} else if ( 're' === state ) {
+			if ( '\\' === c ) {
+				out += '  ';
+				i++;
+			} else {
+				'[' === c && ( inClass = true );
+				']' === c && ( inClass = false );
+				'/' === c && ! inClass ? ( state = null, out += c ) : ( out += '\n' === c ? c : ' ' );
+			}
+		} else if ( '//' === state ) {
+			'\n' === c ? ( state = null, out += c ) : ( out += ' ' );
+		} else if ( '/*' === state ) {
+			if ( '*' === c && '/' === next ) {
+				state = null;
+				out += '*/';
+				i++;
+			} else {
+				out += '\n' === c ? c : ' ';
+			}
+		} else if ( '\\' === c ) {
+			out += ' ' + ( '\n' === next ? '\n' : ' ' );
+			i++;
+		} else if ( c === state ) {
+			state = null;
+			out += c;
+		} else {
+			out += '\n' === c ? c : ' ';
+		}
+	}
+	return out;
+}
+
+// A test never starts a route command: one that reaches a site would reach it from a test, and the mutation checker runs tests
+// with their guards removed. A spawn is allowed only when data/offline-test-spawns.json lists the test and the script with the
+// reason the command cannot reach a site on the arguments the test gives (`{ "x.test.mjs": { "x.mjs": "reason" } }`); an entry
+// shaped `{ "live": "reason" }` is a test that reaches a site on purpose and must read SGS_NO_SITE to skip itself. An entry the
+// test no longer matches is stale.
+export function lintTestSpawns( root ) {
+	const dir = path.join( root, 'tests' );
+	const listFile = path.join( root, 'data', 'offline-test-spawns.json' );
+	if ( ! fs.existsSync( dir ) ) {
+		return [];
+	}
+	const allowed = fs.existsSync( listFile ) ? JSON.parse( fs.readFileSync( listFile, 'utf8' ) ) : {};
+	const entries = entryPoints( root );
+	const problems = [];
+	const seen = new Set();
+	for ( const f of fs.readdirSync( dir ).filter( ( x ) => /\.test\.mjs$/.test( x ) ) ) {
+		const src = fs.readFileSync( path.join( dir, f ), 'utf8' );
+		for ( const script of spawnedEntryPoints( src, entries ) ) {
+			seen.add( `${ f }|${ script }` );
+			const why = allowed[ f ]?.[ script ];
+			const text = 'string' === typeof why ? why : why?.live;
+			if ( ! text ) {
+				problems.push( `tests/${ f } spawns ${ script }, a route entry point that can reach a site: call its functions instead, or list it with its reason in data/offline-test-spawns.json` );
+			} else if ( 'string' !== typeof why && ! /SGS_NO_SITE/.test( src ) ) {
+				problems.push( `tests/${ f } spawns ${ script } and reaches a site on purpose, but never reads SGS_NO_SITE to skip itself` );
+			}
+		}
+	}
+	for ( const [ f, scripts ] of Object.entries( allowed ) ) {
+		Object.keys( scripts ).filter( ( s ) => ! seen.has( `${ f }|${ s }` ) ).forEach( ( s ) => problems.push( `data/offline-test-spawns.json lists ${ f } spawning ${ s }, which that test no longer does: remove the entry` ) );
+	}
+	return problems;
 }
 
 // Every file under the route folder, relative and with forward slashes.
@@ -112,6 +248,7 @@ export function lintFolder( root ) {
 			}
 		}
 	}
+	problems.push( ...lintTestSpawns( root ) );
 	return problems;
 }
 

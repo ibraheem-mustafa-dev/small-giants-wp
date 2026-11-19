@@ -126,7 +126,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	// object is checked on the site first: a block whose reference is unsupplied or missing is reported and not built.
 	const refs = refsFor( targets, site );
 	const roles = [ ...new Set( dueBlocks.filter( ( b ) => fixtures[ b ] && ! resolveFixture( fixtures[ b ], refs ).missing.length ).flatMap( ( b ) => fixtureRoles( fixtures[ b ] ) ) ) ];
-	const exists = roles.length ? checkRefsExist( refs, roles, wpEvalRunner( target, site, REPO ) ) : {};
+	const exists = roles.length ? checkRefsExist( refs, roles, wpEvalRunner( target, site, REPO, { readOnly: true } ) ) : {};
 	const gate = refGate( dueBlocks, fixtures, refs, exists, site );
 	gate.blocked.forEach( ( r ) => console.log( JSON.stringify( r ) ) );
 	const blocks = dueBlocks.filter( ( b ) => ! gate.blocked.some( ( r ) => r.block === b ) );

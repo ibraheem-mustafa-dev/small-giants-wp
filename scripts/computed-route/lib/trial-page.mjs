@@ -3,6 +3,7 @@
 // the page's own sheets, removed rules deleted where they sit) and gives it back exactly. Every in-page function here
 // is self-contained, so it can be passed to page.evaluate.
 import fs from 'fs';
+import { assertSiteContact } from './site-contact.mjs';
 
 // The env file's KEY=value lines.
 export const readEnv = ( file ) => Object.fromEntries( fs.readFileSync( file, 'utf8' ).split( /\r?\n/ ).filter( ( l ) => /^[A-Z0-9_]+=/.test( l ) ).map( ( l ) => [ l.slice( 0, l.indexOf( '=' ) ), l.slice( l.indexOf( '=' ) + 1 ).trim().replace( /^["']|["']$/g, '' ) ] ) );
@@ -10,6 +11,7 @@ export const readEnv = ( file ) => Object.fromEntries( fs.readFileSync( file, 'u
 // Logs in on a new page of ctx and returns { api( path, init ) -> { status, body }, close }. env: readEnv's map; key:
 // the site key (WP_URL_<key>, WP_USER_<key>, WP_PWD_<key>).
 export async function adminSession( ctx, env, key ) {
+	assertSiteContact( { readOnly: true } );
 	const base = env[ `WP_URL_${ key }` ].replace( /\/+$/, '' );
 	const page = await ctx.newPage();
 	await page.goto( `${ base }/wp-login.php`, { waitUntil: 'domcontentloaded' } );

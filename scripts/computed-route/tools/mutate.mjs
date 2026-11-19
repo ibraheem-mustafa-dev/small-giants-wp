@@ -34,7 +34,7 @@ process.on( 'exit', restore );
 
 // { tests, fail } from one TAP run of the test file; null when the run did not finish.
 function runTests() {
-	const r = spawnSync( process.execPath, [ '--test', '--test-reporter=tap', testFile ], { cwd: dir, maxBuffer: 64 * 1024 * 1024, timeout: 120000 } );
+	const r = spawnSync( process.execPath, [ '--test', '--test-reporter=tap', testFile ], { cwd: dir, maxBuffer: 64 * 1024 * 1024, timeout: 120000, env: { ...process.env, SGS_NO_SITE: '1' } } );
 	const out = Buffer.from( r.stdout || '' ).toString( 'utf8' ) + Buffer.from( r.stderr || '' ).toString( 'utf8' );
 	const tests = out.match( /^# tests (\d+)$/m );
 	const fail = out.match( /^# fail (\d+)$/m );

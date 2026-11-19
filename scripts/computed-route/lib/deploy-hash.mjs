@@ -5,6 +5,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
+import { assertSiteContact } from './site-contact.mjs';
 
 // The SSH arguments for the shared host (every hosted test site lives on it).
 export const SSH = [ '-i', path.join( process.env.USERPROFILE || process.env.HOME, '.ssh', 'id_ed25519' ), '-p', '65002', '-o', 'ConnectTimeout=20', 'u945238940@141.136.39.73' ];
@@ -72,12 +73,13 @@ export function localBlockHash( dir ) {
 	return keyOf( lines );
 }
 
-export function remoteBlockHash( site, short ) {
+export function remoteBlockHash( site, short, run = execFileSync ) {
+	assertSiteContact( { readOnly: true } );
 	const dir = `${ remotePlugin( site ) }/build/blocks/${ short }`;
-	const listed = execFileSync( 'ssh', [ ...SSH, `cd ${ dir } && find . -type f -exec md5sum {} +` ], { encoding: 'utf8', timeout: 60000 } ).trim().split( '\n' ).map( ( l ) => l.trim() );
+	const listed = run( 'ssh', [ ...SSH, `cd ${ dir } && find . -type f -exec md5sum {} +` ], { encoding: 'utf8', timeout: 60000 } ).trim().split( '\n' ).map( ( l ) => l.trim() );
 	const lines = listed.filter( ( l ) => ! BUNDLE_TEXT.test( l.slice( 34 ) ) );
 	for ( const rel of listed.map( ( l ) => l.slice( 34 ) ).filter( ( r ) => BUNDLE_TEXT.test( r ) && ! EDITOR_ONLY.test( r ) ) ) {
-		const text = execFileSync( 'ssh', [ ...SSH, `cat ${ dir }/${ rel.slice( 2 ) }` ], { encoding: 'utf8', timeout: 60000 } );
+		const text = run( 'ssh', [ ...SSH, `cat ${ dir }/${ rel.slice( 2 ) }` ], { encoding: 'utf8', timeout: 60000 } );
 		lines.push( `${ md5( normaliseBundle( rel, text ) ) }  ${ rel }` );
 	}
 	return keyOf( lines );

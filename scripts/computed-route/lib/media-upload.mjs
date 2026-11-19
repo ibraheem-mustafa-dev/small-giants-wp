@@ -10,6 +10,7 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { assertSiteContact } from './site-contact.mjs';
 import { downloadStock, stockDownloadUrl, stockFileName, stockKey, stockSurvey } from './media-stock.mjs';
 
 export const IMAGE_TYPES = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.svg': 'image/svg+xml' };
@@ -116,6 +117,8 @@ async function postMedia( fetchImpl, creds, label, name, type, bytes ) {
 // photo IDs the draft holds without painting (never uploaded) and `failed` the stock downloads that did not complete
 // (the run goes on without them).
 export async function uploadMedia( { repo, client, site, map, creds, fetchImpl = fetch, apply = false, log = () => {}, survey = stockSurvey( repo, client ), stock = survey.painted } ) {
+	// The real fetch reaches the site; a caller's own fetchImpl (a test's fake, shop-fixtures' guarded one) is its own business.
+	fetchImpl === fetch && assertSiteContact( { site, readOnly: ! apply } );
 	const known = map.sites?.[ site ]?.files || [];
 	const handoffPrefix = `sites/${ client }/handoff/`;
 	const manifest = manifestSums( repo, client );

@@ -55,7 +55,7 @@ const optional = ( file ) => ( fs.existsSync( file ) ? readJson( file ) : null )
 try {
 	const target = readTargets()[ site ];
 	if ( ! target?.envFile || ! target?.envKey ) {
-		throw new Error( `${ site } has no envFile and envKey in the site targets (calibration-targets.json or calibration-targets.local.json)` );
+		throw new Error( `calibration-targets.json has no envFile and envKey for ${ site }` );
 	}
 	const drafts = readJson( path.join( dir, 'handoff', 'MANIFEST.json' ) ).entry_drafts || [];
 	if ( ! drafts.length ) {

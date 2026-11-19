@@ -12,6 +12,7 @@ import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { chromium } from 'playwright';
 import { submitForm } from './lib/form-submit-page.mjs';
+import { assertSiteContact } from './lib/site-contact.mjs';
 import { formSettingsOf, formFieldsOf, successVerdict, originalRecipient, targetSite, sshEndpoint, formSlug, likeLiteral } from './lib/form-submit-run.mjs';
 
 const args = process.argv.slice( 2 );
@@ -44,7 +45,7 @@ if ( ! endpoint ) {
 const SSH = [ '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=20', '-i', path.join( process.env.HOME || process.env.USERPROFILE, '.ssh', 'id_ed25519' ), '-p', endpoint.port, endpoint.userHost ];
 // One `wp` command on the site; each argument is single-quoted for the remote shell.
 const quote = ( x ) => `'${ String( x ).replace( /'/g, `'\\''` ) }'`;
-const wp = ( ...a ) => execFileSync( 'ssh', [ ...SSH, `cd ${ site.root } && wp ${ a.map( quote ).join( ' ' ) }` ], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } ).trim();
+const wp = ( ...a ) => assertSiteContact() ?? execFileSync( 'ssh', [ ...SSH, `cd ${ site.root } && wp ${ a.map( quote ).join( ' ' ) }` ], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 } ).trim();
 const sql = ( q ) => wp( 'db', 'query', q, '--skip-column-names' );
 // A site value as a PHP single-quoted literal: only `\` and `'` are special there, so nothing in it runs as PHP.
 const phpLiteral = ( v ) => `'${ String( v ?? '' ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) }'`;

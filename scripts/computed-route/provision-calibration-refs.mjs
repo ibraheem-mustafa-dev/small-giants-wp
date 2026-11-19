@@ -87,7 +87,7 @@ function run( argv ) {
 		console.error( `${ o.site } is a local mirror: provision ${ target.mirrorOf || 'its test site' }, then refresh the mirror; it inherits the refs` );
 		return 2;
 	}
-	const wp = wpCommand( target, o.site, REPO );
+	const wp = wpCommand( target, o.site, REPO, { readOnly: o.dryRun } );
 	let state;
 	let kept;
 	const refs = refsFor( targets, o.site );

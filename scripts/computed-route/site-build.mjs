@@ -88,7 +88,7 @@ if ( apply ) {
 }
 if ( args.includes( '--catalogue' ) ) {
 	try {
-		process.exit( runCatalogue( { repo, client, site, runPhp: wpEvalRunner( target, site, repo ), apply } ) );
+		process.exit( runCatalogue( { repo, client, site, runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -96,7 +96,7 @@ if ( args.includes( '--catalogue' ) ) {
 }
 if ( args.includes( '--store-visible' ) ) {
 	try {
-		process.exit( runStoreVisible( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo ), apply } ) );
+		process.exit( runStoreVisible( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -104,7 +104,7 @@ if ( args.includes( '--store-visible' ) ) {
 }
 if ( args.includes( '--flow-links' ) ) {
 	try {
-		process.exit( runFlowLinks( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo ), apply } ) );
+		process.exit( runFlowLinks( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -113,7 +113,7 @@ if ( args.includes( '--flow-links' ) ) {
 if ( args.includes( '--menus' ) ) {
 	try {
 		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
-		const runPhp = wpEvalRunner( target, site, repo );
+		const runPhp = wpEvalRunner( target, site, repo, { readOnly: ! apply } );
 		const planFor = () => {
 			const link = readLinkTextReport( { repo, client } );
 			const state = readState( runPhp, rows );
@@ -122,7 +122,7 @@ if ( args.includes( '--menus' ) ) {
 			plan.notes.push( ...link.conflicts );
 			return { plan, superseded: supersededItems( rows, state, link.text, readSurfaces( repo, client ), menuLinks ), state };
 		};
-		const code = runMenus( { planFor, apply, wp: wpCommand( target, site, repo ), applyPhase } );
+		const code = runMenus( { planFor, apply, wp: wpCommand( target, site, repo, { readOnly: ! apply } ), applyPhase } );
 		if ( 0 === code && apply ) {
 			writeMenuMap( path.join( repo, 'sites', client, 'build', 'menu-map.json' ), site, readState( runPhp, rows ).menus );
 		}
@@ -160,8 +160,8 @@ const print = ( plan ) => {
 try {
 	// The rows as this site sees them: ids written for another site name nothing here.
 	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
-	const runPhp = wpEvalRunner( target, site, repo );
-	const wp = wpCommand( target, site, repo );
+	const runPhp = wpEvalRunner( target, site, repo, { readOnly: ! apply } );
+	const wp = wpCommand( target, site, repo, { readOnly: ! apply } );
 	const ids = {};
 	let rows = original;
 	const plan = () => {

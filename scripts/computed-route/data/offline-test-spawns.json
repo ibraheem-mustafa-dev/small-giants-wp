@@ -1,0 +1,47 @@
+{
+	"backlog-recheck.test.mjs": {
+		"backlog-recheck.mjs": "the backlog it is given names a client with no surfaces.json, so the command stops before gate-chain.mjs::defaultProbes (the only step that reaches a site); a backlog row of a real client would probe its live site"
+	},
+	"census-all.test.mjs": {
+		"census-all.mjs": "--root names a temporary folder of qa report files; the command reads reports and the calibration cache and calls no wp-cli, REST, session or login function"
+	},
+	"census-conservation.test.mjs": {
+		"census.mjs": "reads a fixture client's qa reports under SGS_REPO_ROOT (a temporary folder) and the framework DB; its only browser use is the local draft server"
+	},
+	"delivery-map-live.test.mjs": {
+		"delivery-map.mjs": "--status reads the delivery plan, git and verify.json; it calls no site function (its only lib/tree.mjs import is walk)"
+	},
+	"delivery-split.test.mjs": {
+		"delivery-map.mjs": "--status --verify reads a verify.json file, the plan and git; it calls no site function"
+	},
+	"fill-census.test.mjs": {
+		"census.mjs": "reads a fixture client's qa reports under SGS_REPO_ROOT (a temporary folder) and the framework DB; its only browser use is the local draft server"
+	},
+	"framework-backlog.test.mjs": {
+		"framework-backlog.mjs": "--sites names a temporary folder of gaps.json files; the command merges them into the backlog file and calls no site function"
+	},
+	"intake-command.test.mjs": {
+		"intake.mjs": "runs on a fixture draft export in the local replay sandbox (the draft's own recorded requests); no --site is given and the one provisioning dry run in lib/intake-siteinfo.mjs has no caller"
+	},
+	"intake-finalise.test.mjs": {
+		"intake.mjs": "runs on a fixture draft export in the local replay sandbox; no --site is given and the one provisioning dry run in lib/intake-siteinfo.mjs has no caller"
+	},
+	"lint.test.mjs": {
+		"draft-live-walk.mjs": "--lint exits after the config lint and a mispaired config exits 1 before any browser opens; the temporary config names no live address, so the walk could not open a site if the lint let it through"
+	},
+	"manifest-build.test.mjs": {
+		"manifest.mjs": "reads a temporary client's handoff, page map and the framework DB and writes surfaces.json there; its import closure has no wp-cli, REST, session or browser call"
+	},
+	"sweep.test.mjs": {
+		"sweep.mjs": "reads and rewrites framework files named by the test; its import closure is three modules with no wp-cli, REST, session or browser call"
+	},
+	"verify-live.test.mjs": {
+		"verify-live.mjs": "--site is only a host name recorded on each row and checked against deploy_common.py; the command reads measurement files and git and fetches nothing"
+	},
+	"wp-build-page-inserter-defaults.test.mjs": {
+		"wp-build-page.js": { "live": "a live test on the canary (REST and a page build), skipped when the secrets file is absent or SGS_NO_SITE is set" }
+	},
+	"wp-build-page-surface-shape.test.mjs": {
+		"wp-build-page.js": "the two-root footer tree is refused (exit 4) before any step reaches a site, and its env file names 127.0.0.1:1; the kill switch sits before the first browser step, so a missing refusal ends at SGS_NO_SITE instead of a login"
+	}
+}

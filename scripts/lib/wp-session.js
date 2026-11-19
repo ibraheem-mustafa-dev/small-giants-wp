@@ -15,6 +15,7 @@
 'use strict';
 
 const net = require( 'net' );
+const { assertMayContactSite } = require( './no-site' );
 
 // Every connection to the shared browser sees each page dialog; with no listener each one auto-handles it, and the
 // one that loses the race throws "No dialog is showing" and crashes its process. A listener replaces Playwright's
@@ -107,6 +108,7 @@ async function connectShared( chromium ) {
  * @return {Promise<boolean>} True when the form was filled, false when an existing session was reused.
  */
 async function ensureLoggedIn( page, { url, user, pwd }, timeout = 60000 ) {
+	assertMayContactSite();
 	await page.goto( `${ url }/wp-admin/`, { waitUntil: 'domcontentloaded', timeout } );
 	if ( ! /wp-login\.php/.test( page.url() ) ) {
 		return false;
