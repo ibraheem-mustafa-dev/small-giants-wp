@@ -17,12 +17,14 @@ import { classMethod, isFn } from './intake-ast.mjs';
 import { ref, resolveRefs, propRefs, returnsOf, oneString } from './intake-ast-eval.mjs';
 
 // The template holes that print an item's content: its words, its address, and an image's source.
-const CONTENT_WHERE = /^(?:text|attr:(?:href|src|data-src|alt|id))$/;
+const CONTENT_WHERE = /^(?:text|attr:(?:href|src|data-src|alt|id|aria-label))$/;
 const IMAGE_TAGS = new Set( [ 'img', 'image-slot' ] );
 
 // The item field one template hole prints, or null: { head, name, image } for a content hole whose path has a head and a field.
-export function holeField( hole, tag ) {
-	if ( ! CONTENT_WHERE.test( hole?.where || '' ) || 'string' !== typeof hole.path ) {
+// An `aria-label` hole is a field only for an element with no words of its own (`labelled`: a tile that is a link or button
+// naming itself by its label): beside words it repeats them.
+export function holeField( hole, tag, labelled = false ) {
+	if ( ! CONTENT_WHERE.test( hole?.where || '' ) || 'string' !== typeof hole.path || ( 'attr:aria-label' === hole.where && ! labelled ) ) {
 		return null;
 	}
 	const image = IMAGE_TAGS.has( tag ) && /^attr:(?:id|src|data-src)$/.test( hole.where );
@@ -56,6 +58,15 @@ function subtreeOf( inventory, rootKey ) {
 
 const loopsOf = ( e ) => ( e?.membership || [] ).filter( ( m ) => 'sc-for' === m.kind );
 
+// A loop the draft's code repeats so a scrolling strip has no gap draws its list twice: when the second half of the copies repeats
+// the first half and every item holds something (a word, an address), the list is the first half. Items holding nothing (pictures
+// whose address the inventory does not keep) cannot be told apart, so they are never folded.
+export function readOnce( items ) {
+	const half = items.length / 2;
+	const held = ( it ) => Object.values( it ).some( ( v ) => null !== v && undefined !== v && '' !== v );
+	return items.length >= 4 && items.every( held ) && items.slice( 0, half ).every( ( it, i ) => JSON.stringify( it ) === JSON.stringify( items[ half + i ] ) ) ? items.slice( 0, half ) : items;
+}
+
 // The loop items the rendered inventory shows inside `rootKey`: the outermost loop inside the element whose copies print
 // fields of its own variable. null when the element holds no such loop.
 export function loopItems( { inventory, facts, rootKey, rootComponent = null } ) {
@@ -69,7 +80,7 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 	for ( const e of els ) {
 		const t = factOf( facts, e.key, rootComponent );
 		for ( const h of t?.holes || [] ) {
-			const f = holeField( h, t.realTag || t.tag );
+			const f = holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() );
 			const loop = f && loopsOf( e ).find( ( m ) => m.as === f.head && ! outer.has( String( m.tpl ) ) );
 			if ( loop ) {
 				const l = loops.get( String( loop.tpl ) ) ?? { tpl: String( loop.tpl ), as: loop.as, depth: loopsOf( e ).indexOf( loop ) };
@@ -97,7 +108,7 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 		} );
 		for ( const e of within ) {
 			const t = factOf( facts, e.key, rootComponent );
-			const own = ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag ) ).filter( ( f ) => f && f.head === loop.as );
+			const own = ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() ) ).filter( ( f ) => f && f.head === loop.as );
 			const texts = own.filter( ( f ) => f.text );
 			for ( const f of own ) {
 				fields.set( f.name, { name: f.name, image: f.image } );
@@ -114,7 +125,8 @@ export function loopItems( { inventory, facts, rootKey, rootComponent = null } )
 		}
 		return item;
 	} );
-	return { items, fields: [ ...fields.values() ], source: `loop ${ loop.as } (sc-for ${ loop.tpl }), ${ items.length } rendered copies`, reason: null };
+	const once = readOnce( items );
+	return { items: once, fields: [ ...fields.values() ], source: `loop ${ loop.as } (sc-for ${ loop.tpl }), ${ items.length } rendered copies${ once.length < items.length ? `, a loop doubled for a scroll read once (${ once.length } items)` : '' }`, reason: null };
 }
 
 // What the draft's renderVals returns (the template's root data), for a parsed logic index.

@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "|alt|id|aria-label))$/;",
+		"replace": "|alt|id))$/;",
+		"why": "an aria-label is never a field"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "( 'attr:aria-label' === hole.where && ! labelled ) ) {",
+		"replace": "false ) {",
+		"why": "an aria-label beside words of its own is a field"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() );\n\t\t\tconst loop",
+		"replace": "holeField( h, t.realTag || t.tag, true );\n\t\t\tconst loop",
+		"why": "the loop search ignores whether the tile has words"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": ".map( ( h ) => holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() ) )",
+		"replace": ".map( ( h ) => holeField( h, t.realTag || t.tag, true ) )",
+		"why": "the item's own fields ignore whether the tile has words"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "const once = readOnce( items );",
+		"replace": "const once = items;",
+		"why": "a doubled loop is read twice"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "return items.length >= 4 &&",
+		"replace": "return items.length >= 2 &&",
+		"why": "two items are folded"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "&& items.every( held ) &&",
+		"replace": "&&",
+		"why": "items holding nothing are folded"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "JSON.stringify( it ) === JSON.stringify( items[ half + i ] ) )",
+		"replace": "true )",
+		"why": "a second half that differs is folded"
+	}
+]
