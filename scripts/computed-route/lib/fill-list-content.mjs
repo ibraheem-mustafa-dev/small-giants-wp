@@ -169,6 +169,37 @@ export function itemAttrs( item, { map, keys, media, pages = null, label } ) {
 	return { attrs, rows };
 }
 
+// The item keys a block names its items by: a string key the block declares technical (block.json role `technical`) whose
+// primary role is identity (data/item-roles.json: `key`, `_key`, `value`, `code`). The draft never draws them, and a block
+// may skip an item without one (sgs/option-picker renders no pill with an empty `key`).
+export const identityKeys = ( keys ) => keys.filter( ( k ) => 'technical' === k.role && 'string' === k.type && 'identity' === keyRoles( k )[ 0 ] );
+
+// Each built item's identity keys the draft left empty, written from the item's own words as a slug unique in the list
+// (`Ordering & delivery` -> `ordering-delivery`, a repeat -> `-2`), else `item-<n>`. A key the draft filled is kept.
+export function withIdentity( built, keys ) {
+	const ids = identityKeys( keys );
+	if ( ! ids.length ) {
+		return built;
+	}
+	const wordsOfItem = ( attrs ) => keys.filter( ( k ) => ! ids.includes( k ) && [ 'title', 'author', 'description', 'quote' ].includes( keyRoles( k )[ 0 ] ) ).map( ( k ) => attrs[ k.key ] ).find( ( v ) => 'string' === typeof v && v.trim() ) ?? '';
+	const slug = ( s ) => String( s ).replace( /<[^>]+>/g, '' ).toLowerCase().replace( /[^a-z0-9]+/g, '-' ).replace( /^-+|-+$/g, '' );
+	const out = [];
+	for ( const [ i, b ] of built.entries() ) {
+		const attrs = { ...b.attrs };
+		for ( const k of ids.filter( ( x ) => undefined === attrs[ x.key ] || '' === attrs[ x.key ] ) ) {
+			const base = slug( wordsOfItem( attrs ) ) || `item-${ i + 1 }`;
+			const taken = new Set( [ ...out, ...built.slice( i + 1 ) ].map( ( x ) => x.attrs[ k.key ] ).filter( Boolean ) );
+			let id = base;
+			for ( let n = 2; taken.has( id ); n++ ) {
+				id = `${ base }-${ n }`;
+			}
+			attrs[ k.key ] = id;
+		}
+		out.push( { ...b, attrs } );
+	}
+	return out;
+}
+
 // The list with each item's picture the draft draws: where the list has one picture field and the element draws exactly one
 // picture per item (lib/fill-read-collect.mjs `pictures`, in document order), an item whose own value names no uploaded
 // picture (an image placeholder the draft fills at run time) takes the picture drawn in its place.
@@ -193,7 +224,7 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 		return out;
 	}
 	const { map, unmatched } = matchFields( list.fields, target.keys );
-	const built = list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }` } ) );
+	const built = withIdentity( list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }` } ) ), target.keys );
 	const fields = Object.entries( map ).map( ( [ f, k ] ) => `${ f } -> ${ k }` ).join( ', ' ) || 'none matched';
 	if ( kids.length ) {
 		if ( kids.length !== built.length ) {
@@ -215,7 +246,8 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 	}
 	// Items holding nothing the block shows (only a link, or nothing) would replace the block's items with empty ones: one
 	// row names the list, never a row per item the block does not take.
-	if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => 'link' !== keyRole( k ) ) ) ) {
+	const named = new Set( identityKeys( target.keys ).map( ( k ) => k.key ) );
+	if ( ! built.some( ( b ) => Object.keys( b.attrs ).some( ( k ) => 'link' !== keyRole( k ) && ! named.has( k ) ) ) ) {
 		out.rows.push( { field: '(items)', value: String( built.length ), reason: `the draft's ${ built.length } items carry no words or uploaded picture ${ block } can show, so its ${ where } are not written` } );
 		return out;
 	}

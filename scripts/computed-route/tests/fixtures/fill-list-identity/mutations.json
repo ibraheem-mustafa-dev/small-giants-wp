@@ -1,0 +1,44 @@
+[
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "\tconst built = withIdentity( list.items.map(",
+  "replace": "\tconst built = ( ( b ) => b )( list.items.map(",
+  "why": "no item gets a key: the chip row prints nothing"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "export const identityKeys = ( keys ) => keys.filter( ( k ) => 'technical' === k.role && 'string' === k.type && 'identity' === keyRoles( k )[ 0 ] );",
+  "replace": "export const identityKeys = ( keys ) => keys.filter( ( k ) => 'string' === k.type && 'identity' === keyRoles( k )[ 0 ] );",
+  "why": "an untechnical value key is given a made-up name"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "export const identityKeys = ( keys ) => keys.filter( ( k ) => 'technical' === k.role && 'string' === k.type && 'identity' === keyRoles( k )[ 0 ] );",
+  "replace": "export const identityKeys = ( keys ) => keys.filter( ( k ) => 'technical' === k.role && 'string' === k.type );",
+  "why": "a technical key that is no identity (linkRel) is written"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "\t\t\tfor ( let n = 2; taken.has( id ); n++ ) {",
+  "replace": "\t\t\tfor ( let n = 2; false; n++ ) {",
+  "why": "two items with one label share a key"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "\t\tfor ( const k of ids.filter( ( x ) => undefined === attrs[ x.key ] || '' === attrs[ x.key ] ) ) {",
+  "replace": "\t\tfor ( const k of ids ) {",
+  "why": "the draft's own key is replaced"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "'link' !== keyRole( k ) && ! named.has( k )",
+  "replace": "'link' !== keyRole( k )",
+  "why": "a wordless list is written for its made-up keys"
+ },
+ {
+  "file": "lib/fill-list-content.mjs",
+  "find": "const base = slug( wordsOfItem( attrs ) ) || `item-${ i + 1 }`;",
+  "replace": "const base = `item-${ i + 1 }`;",
+  "why": "the key is not read from the item's words"
+ }
+]
