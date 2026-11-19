@@ -1,0 +1,36 @@
+{
+ "_about": "Pages the Stage C per-instance CSS survey renders on this client's local mirror, and their recorded baseline (plugins/sgs-blocks/scripts/stage-c/stage_c.py).",
+ "mirror": "local-mamas",
+ "pages": {
+  "home": "/",
+  "shop": "/shop/",
+  "product": "/product/taster-trio/",
+  "basket": "/cart/"
+ },
+ "baseline": {
+  "home": {
+   "bytes": 414388,
+   "rules": 3178,
+   "distinct_bodies": 1083,
+   "has_rules": 74
+  },
+  "shop": {
+   "bytes": 218264,
+   "rules": 1652,
+   "distinct_bodies": 669,
+   "has_rules": 53
+  },
+  "product": {
+   "bytes": 241917,
+   "rules": 1741,
+   "distinct_bodies": 775,
+   "has_rules": 50
+  },
+  "basket": {
+   "bytes": 188845,
+   "rules": 1319,
+   "distinct_bodies": 647,
+   "has_rules": 46
+  }
+ }
+}

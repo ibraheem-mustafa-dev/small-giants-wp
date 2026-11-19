@@ -8,15 +8,15 @@ Every SGS block prints the CSS for its own settings as a `<style>` tag in its HT
 names the code that writes that CSS and how much of it repeats.
 
   --install <mirror>[,<mirror>]   copy survey-probe.php into each local mirror's mu-plugins (it is inert unless asked)
-  --survey [--json]               render each page in PAGES on its mirror with the probe on and report, per page: bytes,
+  --survey [--json]               render each page every sites/<client>/stage-c.json lists, on that client's mirror, with the probe on and report, per page: bytes,
                                   rules, distinct rule bodies, and the emitters ranked by bytes, each with the bytes a
                                   repeated body costs (a body printed again under another selector in the same context)
   --fix                           the worklist: emitters ranked by bytes across every page, with a sample rule for each
   --check                         exit 1 when a page's collected CSS has more bytes, rules or :has() rules than the
-                                  recorded baseline (a :has() selector makes the browser search the subtree of every
+                                  baseline recorded in its client's sites/<client>/stage-c.json (a :has() selector makes the browser search the subtree of every
                                   element it could match: Mama's product page 4.9 s of style work with them, 1.5 s
                                   without, 2026-11-19)
-                                  (BASELINE_FILE); --record writes the current survey as the baseline
+                                  --record writes the current survey as each client's baseline
   --compare <before> <after>      two snapshot folders (written by --survey --snapshot <dir>): for each page, the value
                                   every element ends up with for every property, at 375, 768 and 1440 px, read from ALL
                                   of the page's `<style>` CSS (inline delivery prints every stylesheet in the page), must
@@ -49,18 +49,26 @@ HERE = Path(__file__).resolve().parent
 PLUGIN = HERE.parent.parent
 ROOT = PLUGIN.parent.parent
 PROBE = HERE / "survey-probe.php"
-BASELINE_FILE = PLUGIN / "reports" / "stage-c-baseline.json"
 TARGETS_FILE = ROOT / "scripts" / "computed-route" / "calibration-targets.json"
 
-# The pages the plan's Task 1 names: Mama's Home, Shop, a product and the basket, and one page on each other mirror.
-PAGES = [
-    ("mamas-home", "local-mamas", "/"),
-    ("mamas-shop", "local-mamas", "/shop/"),
-    ("mamas-product", "local-mamas", "/product/taster-trio/"),
-    ("mamas-basket", "local-mamas", "/cart/"),
-    ("indus-home", "local-indus", "/"),
-    ("eye-care-home", "local-eye-care", "/"),
-]
+SITES = ROOT / "sites"
+SITE_FILE = "stage-c.json"  # sites/<client>/stage-c.json: {"mirror": <local mirror key>, "pages": {label: path}, "baseline": {...}}
+
+
+def site_files() -> list[Path]:
+    """Every client folder that lists pages for this survey."""
+    return sorted(SITES.glob(f"*/{SITE_FILE}"))
+
+
+def pages() -> list[tuple[str, str, str, Path]]:
+    """(label, mirror, path, site file) for every page every client lists; the label is '<client folder>/<page>'."""
+    out = []
+    for f in site_files():
+        d = json.loads(f.read_text(encoding="utf-8"))
+        for label, path in d["pages"].items():
+            out.append((f"{f.parent.name}/{label}", d["mirror"], path, f))
+    return out
+
 
 PROFILES = {  # width px, hover/pointer capability
     "375": {"width": 375, "hover": False},
@@ -295,14 +303,14 @@ def summarise(rules: list[dict], total_bytes: int) -> dict:
 
 def survey(snapshot: Path | None, only: str | None) -> dict:
     report = {}
-    for label, mname, path in PAGES:
-        if only and label not in only.split(","):
+    for label, mname, path, site in pages():
+        if only and label not in only.split(",") and site.parent.name not in only.split(","):
             continue
-        data, html = render_page(label, mname, path)
-        report[label] = {"mirror": mname, "path": path, **analyse(data)}
+        data, html = render_page(label.replace("/", "-"), mname, path)
+        report[label] = {"mirror": mname, "path": path, "site_file": str(site), **analyse(data)}
         if snapshot:
             snapshot.mkdir(parents=True, exist_ok=True)
-            (snapshot / f"{label}.html").write_text(html, encoding="utf-8")
+            (snapshot / f"{label.replace('/', '--')}.html").write_text(html, encoding="utf-8")
     return report
 
 
@@ -636,7 +644,7 @@ def main() -> int:
     ap.add_argument("--unplant", action="store_true")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--snapshot", type=Path, help="with --survey: save each page's HTML here (for --compare)")
-    ap.add_argument("--pages", help="comma-separated page labels (default: all)")
+    ap.add_argument("--pages", help="comma-separated client folders or <client>/<page> labels (default: all)")
     args = ap.parse_args()
 
     if args.self_test:
@@ -663,14 +671,17 @@ def main() -> int:
         report = survey(args.snapshot, args.pages)
         if args.check:
             if args.record:
-                BASELINE_FILE.parent.mkdir(parents=True, exist_ok=True)
-                BASELINE_FILE.write_text(json.dumps({k: {"bytes": v["bytes"], "rules": v["rules"], "distinct_bodies": v["distinct_bodies"], "has_rules": v["has_rules"]} for k, v in report.items()}, indent=1) + "\n", encoding="utf-8")
-                print(f"recorded {BASELINE_FILE}")
+                for f in sorted({v["site_file"] for v in report.values()}):
+                    d = json.loads(Path(f).read_text(encoding="utf-8"))
+                    for k, v in report.items():
+                        if v["site_file"] == f:
+                            d.setdefault("baseline", {})[k.split("/", 1)[1]] = {kk: v[kk] for kk in ("bytes", "rules", "distinct_bodies", "has_rules")}
+                    Path(f).write_text(json.dumps(d, indent=1) + "\n", encoding="utf-8", newline="\n")
+                    print(f"recorded {f}")
                 return 0
-            base = json.loads(BASELINE_FILE.read_text(encoding="utf-8"))
             bad = 0
             for k, v in report.items():
-                b = base.get(k)
+                b = json.loads(Path(v["site_file"]).read_text(encoding="utf-8")).get("baseline", {}).get(k.split("/", 1)[1])
                 if not b:
                     continue
                 over = v["bytes"] > b["bytes"] or v["rules"] > b["rules"] or v["has_rules"] > b.get("has_rules", v["has_rules"])
