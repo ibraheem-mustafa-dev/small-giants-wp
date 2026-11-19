@@ -2064,7 +2064,7 @@ The JSON Schema (draft 2020-12) files for these records live in `scripts/compute
 
 Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-hover`, `getter`, `renderVals-key`, `handler`, `timer`, `observer`, `waapi`, `transition`, `keyframes`, `ref`, `data-hook`, `helmet-script`, `helmet-font`, `link`, `template-element`).
 
-**Page map row:** each item of `sites/<client>/build/page-map.json` (FR-48-30). A surface row paired with a `handoff/surfaces.json` record names it in `draftId` (`surfaces.json <id>`), and the surfaces manifest matches a row to its record by that id first. A `product` row whose page opens a choice flow names that flow row's slug in `opensFlow` (FR-48-30), which the site build writes as each product's `_sgs_choice_flow` (FR-48-55).
+**Page map row:** each item of `sites/<client>/build/page-map.json` (FR-48-30). A surface row paired with a `handoff/surfaces.json` record names it in `draftId` (`surfaces.json <id>`), and the surfaces manifest matches a row to its record by that id first. A `product` row whose page opens a choice flow names that flow row's slug in `opensFlow` (FR-48-30), which the site build writes as each product's `_sgs_choice_flow` (FR-48-55). Every row holding a control that opens a modal, flow or form row lists each target in `opens` (`kind` modal, flow or form, the target row's `slug`, and `buyBox` on a product row's flow entry when the buy box itself opens it; FR-48-95).
 
 ```json
 { "type": "object", "required": ["slug", "title", "postType", "collection", "id"], "additionalProperties": false,
@@ -2083,6 +2083,9 @@ Each key is a construct kind (`sc-if`, `sc-for`, `dc-import`, `binding`, `style-
       "additionalProperties": false, "properties": { "kind": { "type": "string" }, "label": { "type": "string" },
         "owner": { "enum": ["block", "woocommerce", "page", "draft-notes"] }, "draftId": { "type": "string" } } } },
     "draftId": { "type": "string", "pattern": "^surfaces\\.json \\S+$" },
+    "opens": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["kind", "slug"],
+      "properties": { "kind": { "enum": ["modal", "flow", "form"] }, "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "buyBox": { "const": true } } } },
     "opensFlow": { "type": "string", "pattern": "^[a-z0-9-]+$" },
     "id": { "type": ["integer", "null"] } } }
 ```
