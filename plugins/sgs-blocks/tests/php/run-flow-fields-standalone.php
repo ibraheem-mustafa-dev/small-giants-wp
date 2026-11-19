@@ -52,6 +52,20 @@ namespace {
 	function sanitize_text_field( $s ) {
 		return trim( strip_tags( $s ) );
 	}
+	function sanitize_textarea_field( $s ) {
+		return trim( implode( "
+", array_map( 'trim', explode( "
+", strip_tags( $s ) ) ) ) );
+	}
+	function apply_filters( $tag, $value ) {
+		return $GLOBALS['filters'][ $tag ] ?? $value;
+	}
+	function is_wp_error( $x ) {
+		return $x instanceof WP_Error;
+	}
+	function wp_unslash( $s ) {
+		return stripslashes( $s );
+	}
 	function absint( $n ) {
 		return abs( (int) $n );
 	}
@@ -74,6 +88,9 @@ namespace {
 		return $r instanceof WP_Error ? $r->code : 'ok';
 	}
 
+	function wp_json_encode_stub( $v ) {
+		return json_encode( $v );
+	}
 	$f = 'SGS\Blocks\sgs_flow_fields_sanitise';
 
 	$ok = $f(
@@ -121,6 +138,55 @@ namespace {
 	check( array( 'Flavour', 'Your prescription', 'Gift note', 'Wrapped' ) === array_column( $line->meta, 0 ), 'the order line keeps every answer, hidden ones included' );
 	$rows = \SGS\Blocks\Flow_Fields_Cart::get_item_data( array(), array( \SGS\Blocks\Flow_Fields_Cart::KEY => $bag ) );
 	check( array( 'Flavour', 'Gift note' ) === array_column( $rows, 'name' ), 'the bag, cart and checkout rows leave out the hidden answers' );
+
+	// The buy box note (Spec 27 FR-27-PS8): a longer cap, line breaks kept, markup stripped, and it reaches the order line.
+	$note = $f( array( array( 'label' => 'Allergies or dietary needs?', 'value' => "Vegan
+<b>no nuts</b>", 'note' => true ) ), 'abc' );
+	check( is_array( $note ) && "Vegan
+no nuts" === $note[0]['value'], 'a note keeps its line break and loses markup' );
+	$long_note = $f( array( array( 'label' => 'Allergies or dietary needs?', 'value' => str_repeat( 'N', 1500 ), 'note' => true ) ), 'abc' );
+	check( 1000 === mb_strlen( $long_note[0]['value'] ), 'a note is capped at the server ceiling (1000), not the 200 of an answer' );
+	$GLOBALS['filters']['sgs_buybox_note_max_length'] = 300;
+	$capped = $f( array( array( 'label' => 'Allergies or dietary needs?', 'value' => str_repeat( 'N', 500 ), 'note' => true ) ), 'abc' );
+	check( 300 === mb_strlen( $capped[0]['value'] ), 'the ceiling follows the sgs_buybox_note_max_length filter' );
+	unset( $GLOBALS['filters']['sgs_buybox_note_max_length'] );
+	$not_note = $f( array( array( 'label' => 'Plain', 'value' => str_repeat( 'N', 500 ) ) ), 'abc' );
+	check( 200 === mb_strlen( $not_note[0]['value'] ), 'a row without the note flag keeps the 200 cap' );
+	check( array() === $f( array( array( 'label' => 'Allergies or dietary needs?', 'value' => " 
+ ", 'note' => true ) ), 'abc' ), 'an empty note is dropped' );
+
+	// The express payment buttons send plain fields; they become the same row.
+	$_POST = array();
+	check( null === \SGS\Blocks\sgs_buybox_note_row_from_post(), 'no sgs_note field: no row' );
+	$_POST = array( 'sgs_note' => '   ', 'sgs_note_label' => 'Allergies' );
+	check( null === \SGS\Blocks\sgs_buybox_note_row_from_post(), 'a blank sgs_note makes no row' );
+	$_POST = array( 'sgs_note' => array( 'x' ) );
+	check( null === \SGS\Blocks\sgs_buybox_note_row_from_post(), 'a non-text sgs_note makes no row' );
+	$_POST = array( 'sgs_note' => 'Egg-free', 'sgs_note_label' => 'Allergies or dietary needs?' );
+	$row   = \SGS\Blocks\sgs_buybox_note_row_from_post();
+	check( is_array( $row ) && true === $row['note'] && 'Allergies or dietary needs?' === $row['label'] && 'Egg-free' === $row['value'], 'sgs_note and sgs_note_label make one note row' );
+	$_POST = array( 'sgs_note' => 'Egg-free' );
+	check( 'Note' === \SGS\Blocks\sgs_buybox_note_row_from_post()['label'], 'a missing label falls back to "Note"' );
+
+	$_POST = array( 'sgs_note' => str_repeat( 'N', 1500 ), 'sgs_note_label' => 'Allergies or dietary needs?' );
+	$data  = \SGS\Blocks\Flow_Fields_Cart::add_cart_item_data( array(), 1, 0 );
+	check( 1000 === mb_strlen( $data[ \SGS\Blocks\Flow_Fields_Cart::KEY ][0]['value'] ), 'an express add keeps the note, capped on the server' );
+	$_POST = array( 'sgs_note' => 'Egg-free', 'sgs_note_label' => 'Allergies or dietary needs?' );
+	$data  = \SGS\Blocks\Flow_Fields_Cart::add_cart_item_data( array( \SGS\Blocks\Flow_Fields_Cart::RAW_KEY => array( array( 'label' => 'Flavour', 'value' => 'Oreo' ) ) ), 1, 0 );
+	check( array( 'Flavour', 'Allergies or dietary needs?' ) === array_column( $data[ \SGS\Blocks\Flow_Fields_Cart::KEY ], 'label' ), 'the express note joins the answers already on the add' );
+	$_POST = array();
+	$data  = \SGS\Blocks\Flow_Fields_Cart::add_cart_item_data( array(), 1, 0 );
+	check( array() === $data, 'an add with no note and no answers is unchanged' );
+	$line = new WC_Order_Item_Product();
+	\SGS\Blocks\Flow_Fields_Cart::copy_to_order_line_item( $line, 'key', array( \SGS\Blocks\Flow_Fields_Cart::KEY => $note ), new WC_Order() );
+	check( array( array( 'Allergies or dietary needs?', "Vegan
+no nuts" ) ) === $line->meta, 'the order line carries the note under its label' );
+	$rows = \SGS\Blocks\Flow_Fields_Cart::get_item_data( array(), array( \SGS\Blocks\Flow_Fields_Cart::KEY => $note ) );
+	check( array( 'Allergies or dietary needs?' ) === array_column( $rows, 'name' ), 'the basket, cart and checkout line shows the note under its label' );
+	// Two lines that differ only by note are two lines: WooCommerce hashes the cart item data, which holds the row.
+	$a = \SGS\Blocks\Flow_Fields_Cart::add_cart_item_data( array( \SGS\Blocks\Flow_Fields_Cart::RAW_KEY => array( array( 'label' => 'N', 'value' => 'one', 'note' => true ) ) ), 1, 0 );
+	$b = \SGS\Blocks\Flow_Fields_Cart::add_cart_item_data( array( \SGS\Blocks\Flow_Fields_Cart::RAW_KEY => array( array( 'label' => 'N', 'value' => 'two', 'note' => true ) ) ), 1, 0 );
+	check( md5( wp_json_encode_stub( $a ) ) !== md5( wp_json_encode_stub( $b ) ), 'two notes make different cart item data, so WooCommerce keeps two lines' );
 
 	echo PHP_EOL, '==== ', ( 0 === $failures ? 'all passed' : "$failures failed" ), ' ====', PHP_EOL;
 	exit( 0 === $failures ? 0 : 1 );

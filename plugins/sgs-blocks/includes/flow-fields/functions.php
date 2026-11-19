@@ -23,6 +23,9 @@ const SGS_FLOW_FIELDS_LABEL_MAX = 60;
 /** Longest value kept, in characters. */
 const SGS_FLOW_FIELDS_VALUE_MAX = 200;
 
+/** Longest buy box note kept, in characters (filter `sgs_buybox_note_max_length`; the block's own limit sits below it). */
+const SGS_FLOW_FIELDS_NOTE_MAX = 1000;
+
 /** Attachment meta holding the cart session that uploaded a flow file. */
 const SGS_FLOW_FILE_OWNER_META = '_sgs_flow_upload_owner';
 
@@ -71,7 +74,12 @@ if ( ! function_exists( __NAMESPACE__ . '\sgs_flow_fields_sanitise' ) ) {
 			}
 
 			$value = isset( $entry['value'] ) && is_scalar( $entry['value'] ) ? (string) $entry['value'] : '';
-			$value = mb_substr( sanitize_text_field( $value ), 0, SGS_FLOW_FIELDS_VALUE_MAX );
+			// The buy box's free-text note (Spec 27 FR-27-PS8): line breaks kept, a longer cap than an answer's.
+			if ( isset( $entry['note'] ) && true === filter_var( $entry['note'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE ) ) {
+				$value = mb_substr( sanitize_textarea_field( $value ), 0, sgs_buybox_note_max_length() );
+			} else {
+				$value = mb_substr( sanitize_text_field( $value ), 0, SGS_FLOW_FIELDS_VALUE_MAX );
+			}
 			if ( '' === $value ) {
 				continue;
 			}
@@ -87,6 +95,41 @@ if ( ! function_exists( __NAMESPACE__ . '\sgs_flow_fields_sanitise' ) ) {
 		}
 
 		return $out;
+	}
+}
+
+if ( ! function_exists( __NAMESPACE__ . '\sgs_buybox_note_max_length' ) ) {
+	/**
+	 * The most characters a buy box note may hold on the server, whatever the browser sent.
+	 *
+	 * @return int At least 1.
+	 */
+	function sgs_buybox_note_max_length(): int {
+		return max( 1, (int) apply_filters( 'sgs_buybox_note_max_length', SGS_FLOW_FIELDS_NOTE_MAX ) );
+	}
+}
+
+if ( ! function_exists( __NAMESPACE__ . '\sgs_buybox_note_row_from_post' ) ) {
+	/**
+	 * The note an express payment button sends as plain request fields (`sgs_note`, `sgs_note_label`), shaped as one
+	 * `fields` row for sgs_flow_fields_sanitise(), which cleans and caps it. Null when the request carries none.
+	 *
+	 * @return array{label:string,value:string,note:bool}|null
+	 */
+	function sgs_buybox_note_row_from_post(): ?array {
+		if ( ! isset( $_POST['sgs_note'] ) || ! is_scalar( $_POST['sgs_note'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce's own add-to-cart request carries no nonce; the value is cleaned and capped in sgs_flow_fields_sanitise().
+			return null;
+		}
+		$value = wp_unslash( (string) $_POST['sgs_note'] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- cleaned in sgs_flow_fields_sanitise().
+		if ( '' === trim( $value ) ) {
+			return null;
+		}
+		$label = isset( $_POST['sgs_note_label'] ) && is_scalar( $_POST['sgs_note_label'] ) ? wp_unslash( (string) $_POST['sgs_note_label'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- cleaned in sgs_flow_fields_sanitise().
+		return array(
+			'label' => '' !== trim( $label ) ? $label : __( 'Note', 'sgs-blocks' ),
+			'value' => $value,
+			'note'  => true,
+		);
 	}
 }
 

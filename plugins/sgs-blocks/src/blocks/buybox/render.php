@@ -47,6 +47,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/buybox-modal-cta.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-guided.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-pinned-product.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-linked-flow.php';
+require_once dirname( __DIR__, 3 ) . '/includes/buybox-note.php';
 require_once __DIR__ . '/extras.php';
 require_once __DIR__ . '/picker-label-map.php';
 require_once dirname( __DIR__, 3 ) . '/includes/buybox-picker-band.php';
@@ -1567,6 +1568,13 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 		<?php echo $buybox_extras_before_cart_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WP core InnerBlocks output, already rendered + escaped by WP_Block::render(). ?>
 	</div>
 	<?php endif; ?>
+
+	<?php
+	// ── 8c-iv. Optional free-text note (noteField, Spec 27 FR-27-PS8), the last choice before the add. The modal CTA collects nothing, so it gets no note.
+	if ( ! $add_to_cart_opens_modal ) {
+		echo sgs_buybox_note_html( sgs_buybox_note_config( $attributes ), (int) $buybox_post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
+	}
+	?>
 
 <?php
 	// Pick a set with the button under the picture (pickSideButton): the CTA below is held, then put in the side column.

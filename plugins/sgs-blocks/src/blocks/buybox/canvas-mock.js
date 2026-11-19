@@ -962,6 +962,22 @@ function SampleValueLadder( { attributes, tier } ) {
  * @param {Object} props.attributes Block attributes.
  * @return {JSX.Element} The notify panel.
  */
+/** The note box as the shop's visitors see it before Add to basket (render: includes/buybox-note.php). */
+function SampleNote( { attributes } ) {
+	const max = parseInt( attributes.noteMaxLength, 10 ) || 300;
+	return (
+		<div className="sgs-buybox__note" aria-hidden="true">
+			<span className="sgs-buybox__note-label">
+				{ attributes.noteLabel || __( 'Allergies or dietary needs?', 'sgs-blocks' ) }
+				{ true === attributes.noteRequired && <span className="sgs-buybox__note-required"> *</span> }
+			</span>
+			{ attributes.noteHint && <p className="sgs-buybox__note-hint">{ attributes.noteHint }</p> }
+			<textarea className="sgs-buybox__note-input" rows={ 3 } readOnly tabIndex={ -1 } />
+			<span className="sgs-buybox__note-count">{ `0 / ${ max }` }</span>
+		</div>
+	);
+}
+
 function SampleNotifyForm( { attributes } ) {
 	return (
 		<div className="sgs-buybox__notify" aria-hidden="true">
@@ -1504,6 +1520,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 						) }
 					</>
 				) }
+				{ true === attributes.noteField && <SampleNote attributes={ attributes } /> }
 				{ ! sideCart && cartForm }
 				{ false !== attributes.notifyEnabled && (
 					<SampleNotifyForm attributes={ attributes } />

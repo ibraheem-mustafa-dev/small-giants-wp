@@ -49,6 +49,12 @@ final class Flow_Fields_Cart {
 	 */
 	public static function add_cart_item_data( array $cart_item_data, int $product_id, int $variation_id ): array {
 		unset( $product_id, $variation_id );
+		// An express payment button sends the buy box note as plain request fields; it joins the list the proxy built.
+		$note = sgs_buybox_note_row_from_post();
+		if ( null !== $note ) {
+			$list                            = isset( $cart_item_data[ self::RAW_KEY ] ) && \is_array( $cart_item_data[ self::RAW_KEY ] ) ? $cart_item_data[ self::RAW_KEY ] : array();
+			$cart_item_data[ self::RAW_KEY ] = \array_merge( $list, array( $note ) );
+		}
 		if ( ! \array_key_exists( self::RAW_KEY, $cart_item_data ) ) {
 			return $cart_item_data;
 		}

@@ -17,6 +17,7 @@ import { BuyboxStickerPanels } from './inspector-sticker';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
 import ProductPinPanel from './ProductPinPanel';
+import NotePanel from './NotePanel';
 import ConfiguratorPanel, { configuratorColourRows } from './ConfiguratorPanel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
@@ -119,6 +120,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			<GuidedPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ConfiguratorPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ProductPinPanel attributes={ attributes } setAttributes={ setAttributes } />
+			<NotePanel attributes={ attributes } setAttributes={ setAttributes } />
 			<InspectorControls>
 				<RowWrapPanel
 					rows={ [

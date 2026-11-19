@@ -1385,3 +1385,58 @@ body {
 :where(.sgs-buybox .sgs-buybox__picker-label-link) {
 	padding-bottom: 1px;
 }
+
+/* ----------------------------------------------------------------
+   Note box (noteField, Spec 27 FR-27-PS8): a label, an optional hint and a text box before Add to basket.
+   The box takes the look of the shop's other text inputs (the form field tokens).
+   ---------------------------------------------------------------- */
+.sgs-buybox__note {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+}
+
+.sgs-buybox__note-hint,
+.sgs-buybox__note-error {
+	margin: 0;
+}
+
+:where(.sgs-buybox__note-label) {
+	font-weight: 700;
+}
+
+:where(.sgs-buybox__note-hint),
+:where(.sgs-buybox__note-count) {
+	font-size: 0.875em;
+}
+
+:where(.sgs-buybox__note-error) {
+	font-weight: 700;
+}
+
+/* WooCommerce's blocktheme stylesheet gives every label on a shop page a bottom margin (`.woocommerce-page label`, 0,1,1). */
+.sgs-buybox .sgs-buybox__note-label {
+	margin: 0;
+}
+
+.sgs-buybox__note-input {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--sgs-field-edge-colour, var(--wp--preset--color--border, #ccc));
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+	background-color: var(--wp--preset--color--surface, #fff);
+	font: inherit;
+	resize: vertical;
+}
+
+:where(.sgs-buybox__note-input) {
+	color: var(--wp--preset--color--text, #1e1e1e);
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	line-height: 1.5;
+}
+
+.sgs-buybox__note-input[aria-invalid="true"] {
+	border-color: var(--wp--preset--color--error, #b32d2e);
+}

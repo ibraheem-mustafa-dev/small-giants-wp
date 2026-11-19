@@ -1232,6 +1232,33 @@
 			"default": "Notify me",
 			"description": "Heading/label for the back-in-stock notify-me form."
 		},
+		"noteField": {
+			"type": "boolean",
+			"default": false,
+			"description": "Print a free-text note box before Add to basket (for example 'Allergies or dietary needs?'). The shopper's text travels with the add and shows on the basket line, checkout, order and order emails. Off by default."
+		},
+		"noteLabel": {
+			"type": "string",
+			"default": "Allergies or dietary needs?",
+			"description": "The note box's label. It also names the row on the basket line and the order."
+		},
+		"noteHint": {
+			"type": "string",
+			"default": "",
+			"description": "Optional help text under the note label, for example 'For example vegan, egg-free or nut-free'. Empty prints none."
+		},
+		"noteRequired": {
+			"type": "boolean",
+			"default": false,
+			"description": "Make the note compulsory: Add to basket and the express payment buttons wait until the shopper has written something."
+		},
+		"noteMaxLength": {
+			"type": "integer",
+			"default": 300,
+			"minimum": 1,
+			"maximum": 1000,
+			"description": "The most characters the note may hold (1 to 1000)."
+		},
 		"addToCartLabel": {
 			"type": "string",
 			"default": "",
@@ -3916,6 +3943,7 @@
 		"file:./notify-view.js",
 		"file:./guided.js",
 		"file:./sticky-bar.js",
-		"file:./configurator-view.js"
+		"file:./configurator-view.js",
+		"file:./note-view.js"
 	]
 }

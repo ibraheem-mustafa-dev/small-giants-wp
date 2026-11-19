@@ -920,6 +920,20 @@ function buildAddBody( ctx ) {
 		}
 	}
 
+	// Buy box note (Spec 27 FR-27-PS8): note-view.js keeps the text as one {label, value, note} row, which rides in `fields`
+	// beside the guided answers; the server cleans and caps it (sgs_flow_fields_sanitise).
+	const extraNoteRaw = cardRefForFields ? cardRefForFields.dataset.extraNote : '';
+	if ( extraNoteRaw ) {
+		try {
+			const noteRow = JSON.parse( extraNoteRaw );
+			if ( noteRow && 'string' === typeof noteRow.value && '' !== noteRow.value ) {
+				body.fields = [ ...( body.fields || [] ), noteRow ];
+			}
+		} catch {
+			// Malformed JSON: add without the note.
+		}
+	}
+
 	// Buy box "Pick a set": configurator-view.js keeps the picks as JSON on the card root; the server checks
 	// every slug and builds the cart row (Configurator_Picks), so only slugs and counts travel.
 	const extraPicksRaw = cardRefForFields ? cardRefForFields.dataset.extraPicks : '';
@@ -978,9 +992,12 @@ function expressPlugin() {
  */
 function expressFields( ctx ) {
 	const built = buildAddBody( ctx );
+	// The buy box note travels as plain request fields; the server reads them like the no-JS form (sgs_buybox_note_row_from_post).
+	const noteRow = built && Array.isArray( built.body.fields ) ? built.body.fields.find( ( row ) => row && row.note ) : null;
+	const noteFields = noteRow ? { sgs_note: noteRow.value, sgs_note_label: noteRow.label } : {};
 	const picks = built && built.body.picks;
 	if ( ! picks ) {
-		return {};
+		return noteFields;
 	}
 	const slugs = {};
 	const counts = {};
@@ -990,10 +1007,10 @@ function expressFields( ctx ) {
 			counts[ group ] = Object.fromEntries( rows.map( ( row ) => [ row.slug, row.count ] ) );
 		}
 	}
-	return { sgs_picks: slugs, sgs_pick_counts: counts };
+	return { sgs_picks: slugs, sgs_pick_counts: counts, ...noteFields };
 }
 
-/** True when the buy box's own "Add to basket" would go ahead: in stock, nothing pending, a variation chosen, picks complete. */
+/** True when the buy box's own "Add to basket" would go ahead: in stock, nothing pending, a variation chosen, picks complete, a compulsory note written. */
 function expressUsable( ctx, ref ) {
 	if ( ctx.pending || ! ctx.inStock || ! buildAddBody( ctx ) ) {
 		return false;
@@ -1001,7 +1018,7 @@ function expressUsable( ctx, ref ) {
 	if ( ctx.combos && Object.keys( ctx.combos ).length && ! ( parseInt( ctx.selectedVariationId, 10 ) > 0 ) ) {
 		return false;
 	}
-	return '0' !== ref.dataset.sgsPicksReady;
+	return '0' !== ref.dataset.sgsPicksReady && '0' !== ref.dataset.sgsNoteReady;
 }
 
 function expressAddFilters( wc ) {
