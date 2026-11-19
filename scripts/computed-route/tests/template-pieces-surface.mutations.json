@@ -1,0 +1,9 @@
+[
+	{"file": "lib/template-pieces-surface.mjs", "find": "if ( ! key || ! piecesFor( key, data ).length ) {", "replace": "if ( ! key ) {", "why": "a template with no pieces is rewritten and reported"},
+	{"file": "lib/template-pieces-surface.mjs", "find": "if ( ! key || ! piecesFor( key, data ).length ) {", "replace": "if ( ! piecesFor( key, data ).length && false ) {", "why": "a surface that builds no template is passed"},
+	{"file": "lib/template-pieces-surface.mjs", "find": "\tfs.writeFileSync( skeletonFile, `${ JSON.stringify( got.tree, null, '\\t' ) }\\n` );\n", "replace": "", "why": "the skeleton keeps no piece"},
+	{"file": "lib/template-pieces-surface.mjs", "find": "rootComponent: entry?.draftIndex ? pageKeyOf( entry.draftIndex ) : null", "replace": "rootComponent: null", "why": "the served root's component is not named"},
+	{"file": "lib/template-pieces-surface.mjs", "find": "inventory: fs.existsSync( inventoryFile ) ? readJson( inventoryFile ) : null", "replace": "inventory: null", "why": "the inventory is not handed to the builders"},
+	{"file": "lib/template-pieces-surface.mjs", "find": "\tif ( strict ) {\n\t\tthrow new Error( said );\n\t}\n", "replace": "", "why": "strict does not fail the stage"},
+	{"file": "lib/template-pieces-surface.mjs", "find": "\tif ( ! r.problems.length ) {\n\t\treturn counts;\n\t}\n", "replace": "", "why": "a clean pass reports an empty problem list"}
+]
