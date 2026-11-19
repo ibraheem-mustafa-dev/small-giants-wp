@@ -429,7 +429,9 @@
 		"logoGrid": {
 			"minItems": 3,
 			"block": "sgs/gallery",
-			"reason": "a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items"
+			"reason": "a group of three or more links that each hold only an image (a logo wall) is sgs/gallery with a link per image; the links are its items",
+			"itemSlots": [ "tileBorderRadius" ],
+			"itemSlotsReason": "the tiles' look (border, radius, background, padding) is the block's tile settings, calibrated on its first item: the draft's first link is read there"
 		},
 		"cardTitle": {
 			"block": "sgs/heading",

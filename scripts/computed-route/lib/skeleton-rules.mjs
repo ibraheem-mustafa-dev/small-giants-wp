@@ -502,7 +502,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A custom element the draft uses as an image placeholder (<image-slot>) is the media block.
 		( { e } ) => ( e.tag.includes( '-' ) && specHit( R.mediaElement, e.tag ) ? v( 'mediaElement', { block: R.mediaElement?.block } ) : null ),
 		// A group of links that each hold only an image is a logo wall: a gallery whose items are the links.
-		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true } ) : null ),
+		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } ) : null ),
 		// The link around a logo goes: the logo block links home itself.
 		// Its children are one or more logos (a mark and a wordmark side by side).
 		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? v( 'homeLink', { action: 'unwrap' } ) : null ),
