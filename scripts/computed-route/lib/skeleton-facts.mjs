@@ -134,6 +134,10 @@ export function decisionsProblems( facts ) {
 	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ), ...( ci.slots || [] ), ...( ci.plain ? [ ci.plain.setting ] : [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
 		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );
 	}
+	const ti = r.marquee?.textItems;
+	if ( ti && [ ti.items?.setting, ...Object.keys( ti.attributes || {} ) ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) ) ) {
+		problems.push( `rules.marquee.textItems must name an items setting and settings ${ r.marquee.logoBlock } has` );
+	}
 	Object.keys( r.footerSlots?.stackedRow || {} ).filter( ( a ) => ! facts.attr( r.footerSlots.rowBlock, a ) || facts.attr( r.footerSlots.rowBlock, a ).css_property ).forEach( ( a ) => problems.push( `rules.footerSlots.stackedRow.${ a } must name a structural setting ${ r.footerSlots.rowBlock } has (no CSS property: a skeleton carries no style value)` ) );
 	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
 	// database), or a known SGS block; its money pattern compiles.

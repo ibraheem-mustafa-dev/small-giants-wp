@@ -242,6 +242,31 @@ test( 'listWrapper: a bare wrapper of stacked links, or of a grid of links each 
 	assert.notEqual( byTag( run( tree, { facts: facts( 'listWrapper' ) } ), 'div' ).action, 'unwrap' );
 } );
 
+test( 'marquee textItems: a looping strip of brand-name links inside its own section is the brand strip showing names, a doubled loop read once; MUST FAIL without textItems or the motion record', () => {
+	const names = [ 'Ray-Ban', 'Gucci', 'Oakley' ];
+	const link = ( w ) => E( 'a', { attrs: { href: '#' }, words: w } );
+	// The page's root, a section of its own (not a page wrapper) and the track inside it: the track is two deep (Eye Care's brand marquee).
+	const tree = E( 'div', {}, [ section( [ E( 'div', {}, [ ...names, ...names ].map( link ) ) ] ), section( [ E( 'h2', { words: 'Best sellers' } ) ] ) ] );
+	const loopKey = 'Root/3';
+	const strip = row( run( tree, { motion: new Set( [ loopKey ] ) } ), ( x ) => 'Root/3#0' === x.key );
+	assert.deepEqual( [ strip.block, strip.rule ], [ 'sgs/brand-strip', 'marquee' ] );
+	assert.deepEqual( strip.attributes, { brandDisplay: 'text', logoLayout: 'row', logos: names.map( ( name ) => ( { name } ) ) } );
+	assert.notEqual( row( run( tree ), ( x ) => 'Root/3#0' === x.key ).block, 'sgs/brand-strip', 'no motion record, no strip' );
+	const off = facts();
+	delete off.decisions.rules.marquee.textItems;
+	assert.notEqual( row( run( tree, { motion: new Set( [ loopKey ] ), facts: off } ), ( x ) => 'Root/3#0' === x.key ).block, 'sgs/brand-strip' );
+	// Negative control: a looping row of plain labels (no links) is not taken for a brand strip.
+	const labels = E( 'div', {}, [ section( [ E( 'div', {}, [ E( 'span', { words: 'Free delivery' } ), E( 'span', { words: 'Next day' } ) ] ) ] ) ] );
+	assert.notEqual( row( run( labels, { motion: new Set( [ loopKey ] ) } ), ( x ) => 'Root/3#0' === x.key ).block, 'sgs/brand-strip' );
+} );
+
+test( 'onceOfLoop reads a list rendered twice once, and leaves any other list whole', async () => {
+	const { onceOfLoop } = await import( '../lib/skeleton-rules.mjs' );
+	assert.deepEqual( onceOfLoop( [ 'a', 'b', 'a', 'b' ] ), [ 'a', 'b' ] );
+	assert.deepEqual( onceOfLoop( [ 'a', 'b', 'c', 'b' ] ), [ 'a', 'b', 'c', 'b' ] );
+	assert.deepEqual( onceOfLoop( [ 'a', 'b', 'c' ] ), [ 'a', 'b', 'c' ] );
+} );
+
 test( 'clientBuiltSurface: every row of a surface the client built as a post names that post; MUST FAIL without the rule', () => {
 	const built = { site: 'canary', postType: 'sgs_drawer', postId: 1 };
 	const tree = E( 'div', {}, [ E( 'span', { words: 'Menu' } ) ] );

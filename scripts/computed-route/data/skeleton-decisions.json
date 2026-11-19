@@ -453,6 +453,12 @@
 		"marquee": {
 			"logoBlock": "sgs/brand-strip",
 			"itemBlock": "sgs/trust-bar",
+			"textItems": {
+				"attributes": { "brandDisplay": "text", "logoLayout": "row" },
+				"items": { "setting": "logos", "text": "name" },
+				"handover": "each brand's link: the draft opens the shop filtered by that brand; set each brand's link, or switch the strip's source to the shop's product brands",
+				"reason": "a looping strip of links each naming a brand in words (no picture) is the brand strip showing names (brandDisplay text, in one row), its links' words the brands, a loop doubled for the scroll read once; read wherever it sits, so a brand strip inside its own section is still one"
+			},
 			"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7"
 		},
 		"trustBar": {

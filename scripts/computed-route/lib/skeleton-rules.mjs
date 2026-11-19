@@ -117,6 +117,13 @@ const HEADING = /^h[1-6]$/;
 // empty view reads the rendered attributes), scope (lib/skeleton-record.mjs::surfaceContext: the surface's parent, kind and
 // opener, or null) }. `surface.role` is the page map's role for the surface (lib/skeleton-surface-role.mjs::surfaceRole);
 // `surface.pageMap` the page-map rows (which drawer another row's block draws, for the control that opens it).
+// A list a looping strip renders twice so its scroll joins up (the second half repeats the first) read once; any other list
+// as it is.
+export function onceOfLoop( list ) {
+	const half = list.length / 2;
+	return list.length >= 2 && Number.isInteger( half ) && list.slice( 0, half ).every( ( x, i ) => x === list[ half + i ] ) ? list.slice( 0, half ) : list;
+}
+
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	// The draft's own tokens, so a value the draft writes as a token (`var(--radius-pill)`) is read as its value.
 	const tokens = draftTokenLookup( handoffOf( facts ) );
@@ -867,6 +874,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return null;
 			}
 			const logos = desc( e ).some( isMedia );
+			// A strip of links each naming one item in words, with no picture (a brand strip set in type), is the logo block
+			// showing names: each link's words are one item, a loop doubled for the scroll read once (`marquee.textItems`).
+			const T = R.marquee?.textItems;
+			const names = ! logos && T && kidsB.length >= 2 && kidsB.every( ( k ) => 'a' === k.tag && !! all( k ) ) ? onceOfLoop( kidsB.map( ( k ) => all( k ) ) ) : null;
+			if ( names ) {
+				return v( 'marquee', { block: R.marquee.logoBlock, attributes: { ...T.attributes, [ T.items.setting ]: names.map( ( n ) => ( { [ T.items.text ]: n } ) ) }, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: T.handover } } );
+			}
 			if ( ! logos && ! pageSection( e, R.marquee?.itemBlock ) ) {
 				return null;
 			}
