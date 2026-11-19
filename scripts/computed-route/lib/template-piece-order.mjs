@@ -190,7 +190,7 @@ function placeValues( ctx, piece, r ) {
 			let format = null;
 			if ( 'text-content' === role ) {
 				const text = sourceText( draft, record[ holder ] );
-				const hole = new RegExp( `\\{\\{\\s*${ h.expr.replace( /[.$]/g, '\\$&' ) }\\s*\\}\\}` );
+				const hole = new RegExp( `\\{\\{\\s*${ h.expr.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ) }\\s*\\}\\}` );
 				if ( null === text || ! hole.test( text ) ) {
 					problems.push( `the words around {{ ${ h.expr } }} in ${ holder } cannot be read from the draft source, so the order's ${ h.key } is not bound` );
 					continue;

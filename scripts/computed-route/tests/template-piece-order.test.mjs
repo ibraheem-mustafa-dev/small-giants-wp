@@ -91,7 +91,7 @@ function plant( template = TEMPLATE, logic = LOGIC, samples = SAMPLES ) {
 		VOID.has( m[ 2 ] ) || stack.push( e );
 	}
 	for ( const e of Object.values( elements ) ) {
-		[ ...e.template.words.matchAll( /\{\{\s*([\w.]+)\s*\}\}/g ) ].forEach( ( h, i ) => e.template.holes.push( { id: `text#${ i }`, where: 'text', expr: h[ 1 ] } ) );
+		[ ...e.template.words.matchAll( /\{\{\s*([^}]+?)\s*\}\}/g ) ].forEach( ( h, i ) => e.template.holes.push( { id: `text#${ i }`, where: 'text', expr: h[ 1 ] } ) );
 		for ( const h of e.template.holes ) {
 			const vs = samples[ h.expr ];
 			vs && ( e.logic.holes[ h.id ] = { 1440: { v: vs.map( ( v ) => ( { t: typeof v, v } ) ) } } );
@@ -289,6 +289,27 @@ test( 'MUST FAIL: the words around a value come from the draft source, and a sec
 	tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 2 ].draftRef = { tpl: `Root/${ p.split( '/' )[ 1 ] }#0` };
 	const got = place( { key: 'order-confirmation', tree, factRecord: record, rootComponent: 'Page', draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS }, { id: 'order-number', find: 'order-values' } );
 	assert.match( got.problems.join( '\n' ), /holds another value beside \{\{ no \}\} \("Order \{\{ no \}\} baked on \{\{ when \}\}"\): one binding shows one order fact/ );
+} );
+
+test( 'MUST FAIL: a value whose expression holds regular-expression characters is found in the draft source and bound like any other', () => {
+	// `no || ''` and `+no` name the order number the way `no` does (lib/shop-parts-logic.mjs::valuesOf reads the name inside them),
+	// and their `|`, `+` and `(` are not pattern characters when the words around the value are found.
+	for ( const expr of [ "no || ''", '+no', '(no)' ] ) {
+		const { draft, record } = plant( TEMPLATE.replace( '{{ no }}', `{{ ${ expr } }}` ), LOGIC, { ...SAMPLES, [ expr ]: [ 'AB-1001' ] } );
+		const got = place( { key: 'order-confirmation', tree: plantedTree( record ), factRecord: record, rootComponent: 'Page', draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS }, { id: 'order-number', find: 'order-values' } );
+		assert.deepEqual( got.problems.filter( ( p ) => /\{\{ no|\{\{ \+no|\{\{ \(no/.test( p ) ), [], expr );
+		const bound = got.placed.find( ( p ) => 'number' === p.key );
+		assert.equal( bound?.format, 'Order %s. We emailed you.', expr );
+	}
+	// Negative control: a plain name binds as before, and a text whose braces do not hold the value is still refused.
+	const plain = plant();
+	const ok = place( { key: 'order-confirmation', tree: plantedTree( plain.record ), factRecord: plain.record, rootComponent: 'Page', draft: plain.draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS }, { id: 'order-number', find: 'order-values' } );
+	assert.equal( ok.placed.find( ( p ) => 'number' === p.key )?.format, 'Order %s. We emailed you.' );
+	const other = plant( TEMPLATE.replace( '{{ no }}', '{{ no || \'\' }}' ), LOGIC, { ...SAMPLES, "no || ''": [ 'AB-1001' ] } );
+	const wrong = structuredClone( other.record );
+	Object.values( wrong.elements ).forEach( ( e ) => e.template.holes.forEach( ( h ) => "no || ''" === h.expr && ( h.expr = "no || 'x'" ) ) );
+	const refused = place( { key: 'order-confirmation', tree: plantedTree( wrong ), factRecord: wrong, rootComponent: 'Page', draft: other.draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS }, { id: 'order-number', find: 'order-values' } );
+	assert.equal( refused.placed.find( ( p ) => 'number' === p.key ), undefined );
 } );
 
 test( 'MUST FAIL: the plugin facts are read from the plugin, and the order facts file is refused where the plugin or database disagree', () => {
