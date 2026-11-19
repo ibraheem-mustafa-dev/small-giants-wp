@@ -78,7 +78,8 @@ test( 'a served inventory applies decisions saved in intake space; an import cha
 	const own = { block: 'sgs/heading', signature: `${ sig.tag }|${ sig.words.replace( /\s+/g, ' ' ).trim() }` };
 	const chain = `${ ROOT }>Child@5#0/3#0`;
 	const seen = [];
-	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }${ KEY_PATH }` ]: own, [ chain ]: own } } } } );
+	// No site: the real proposer's blocks have no default paint for a fixture site, and a site's paint gate is not this test's subject.
+	const f = fixture( { entry: { intakeSurface: 'site-footer' }, decisions: { surfaces: { 'site-footer': { [ `${ ROOT }${ KEY_PATH }` ]: own, [ chain ]: own } } } } );
 	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
 	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ KEY, chain ] );
 	const real = proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db } );
@@ -126,7 +127,8 @@ test( 'key-space helpers rewrite only a root-host key', () => {
 } );
 
 test( 'MUST FAIL: main passes its repo option to every call: propose reads and writes the given repo, never the default one', async () => {
-	const f = fixture();
+	// No site, as above: the real proposer runs, and no fixture site has default paint.
+	const f = fixture( { entry: { intakeSurface: 'site-footer' } } );
 	const other = 'zz-repo-option-client';
 	fs.renameSync( path.join( f.repo, 'sites', CLIENT ), path.join( f.repo, 'sites', other ) );
 	const log = console.log;

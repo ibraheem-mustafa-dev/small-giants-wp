@@ -13,6 +13,7 @@ import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb, statesVocabulary } from './lib/db.mjs';
 import { loadCalibration } from './lib/cache.mjs';
+import { assertPaints, treeBlocks } from './lib/paint-gate.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve, resolveViaAncestor } from './lib/resolve.mjs';
 import { readTree, writeTree, addRefs, nodeByRef, setAttr, assertWritable, assertQuiet } from './lib/tree.mjs';
@@ -495,21 +496,28 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		console.error( `${ s.walkerFull || s.walker } has no refPrefix: rows would carry no ref` );
 		process.exit( 2 );
 	}
-	const outDir = path.resolve( flag( '--out' ) || path.join( buildDir, 'qa', 'solve', surface, new Date().toISOString().replace( /[:.]/g, '-' ).slice( 0, 19 ) ) );
-	fs.mkdirSync( outDir, { recursive: true } );
-	assertWritable( s.target, { calibrationTargets: targets, surfaces } );
-	const refs = detectReferences();
 	// The default paint is read from the site this surface is built on (--site, else the surface's own `site`).
 	if ( ! s.site ) {
 		console.error( `surface "${ surface }" names no site in surfaces.json and no --site was given, so there is no default paint to read` );
 		process.exit( 2 );
 	}
 	const calFor = calibrationForSite( s.site );
+	const tree = readTree( treeFile );
+	// Every block of the tree has this site's default paint, or the run stops here, before any output (lib/paint-gate.mjs).
+	try {
+		assertPaints( { blocks: treeBlocks( tree ), calFor, site: s.site, client, what: `solve ${ surface }` } );
+	} catch ( e ) {
+		console.error( e.message );
+		process.exit( 2 );
+	}
+	const outDir = path.resolve( flag( '--out' ) || path.join( buildDir, 'qa', 'solve', surface, new Date().toISOString().replace( /[:.]/g, '-' ).slice( 0, 19 ) ) );
+	fs.mkdirSync( outDir, { recursive: true } );
+	assertWritable( s.target, { calibrationTargets: targets, surfaces } );
+	const refs = detectReferences();
 	// FR-48-14: the fact record and origin map the ancestor hop's loop-body check reads (lib/solve-loop-body.mjs).
 	const { loopBody, note: loopNote } = solveLoopBody( { repo: REPO, client, surface, draftIndex: s.draftIndex } );
 	console.log( `solve ${ surface }: ${ loopNote }` );
 	const ctx = { db: openDb(), snapshot: loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ), log: [], calFor, loopBody };
-	const tree = readTree( treeFile );
 	const added = addRefs( tree, surface );
 	writeTree( treeFile, tree );
 	const refused = refusalsFor( loadReasons(), client, surface );

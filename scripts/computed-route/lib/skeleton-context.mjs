@@ -7,17 +7,26 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadCalibration } from './cache.mjs';
+import { assertPaints, treeBlocks } from './paint-gate.mjs';
 import { formLinksFor } from './skeleton-form-link.mjs';
 import { detectReferences } from './references.mjs';
 import { draftLinksFor } from './draft-link.mjs';
 
 const CACHE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'cache' );
 
+// The calibration of a block on a site (lib/cache.mjs::loadCalibration over the route's cache), the reader the two below and
+// assertSkeletonPaints share. `dir` is the cache folder (tests point it at a fixture).
+export const calibrationsAt = ( site, dir = CACHE ) => ( slug ) => loadCalibration( dir, slug, site );
+
 // The calibration cache's element keys for a block on a site (slot targets), or none when it has no default paint there.
-export const calKeysFor = ( site ) => ( slug ) => Object.keys( loadCalibration( CACHE, slug, site )?.elements || {} );
+export const calKeysFor = ( site, dir = CACHE ) => ( slug ) => Object.keys( calibrationsAt( site, dir )( slug )?.elements || {} );
 
 // The calibration's settings (each with the slot it was measured on) for a block on a site.
-export const calSettingsFor = ( site ) => ( slug ) => loadCalibration( CACHE, slug, site )?.settings || {};
+export const calSettingsFor = ( site, dir = CACHE ) => ( slug ) => calibrationsAt( site, dir )( slug )?.settings || {};
+
+// A proposed skeleton is written only when every block it uses has `site`'s default paint, since calKeysFor reads none
+// for a block without it (lib/paint-gate.mjs::assertPaints). No site: nothing to check.
+export const assertSkeletonPaints = ( { skeleton, site, client, what, cache: dir = CACHE } ) => assertPaints( { blocks: treeBlocks( skeleton ), calFor: calibrationsAt( site, dir ), site, client, what } );
 
 const readJson = ( file, fallback ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : fallback );
 
@@ -34,8 +43,9 @@ export function siteOf( { repo, client, slug } ) {
 	return Object.values( surfaces ).find( ( s ) => s && s.intakeSurface === slug )?.site || null;
 }
 
-// Everything proposeSkeleton takes beyond the inventory and the decisions, for one intake skeleton.
-export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ) } ) {
+// Everything proposeSkeleton takes beyond the inventory and the decisions, for one intake skeleton. `cache`: the calibration
+// cache folder (the route's own by default).
+export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ), cache = CACHE } ) {
 	const refs = detectReferences();
-	return { calKeys: calKeysFor( site ), calSettings: calSettingsFor( site ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
+	return { calKeys: calKeysFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
 }

@@ -26,7 +26,6 @@ import { loadFacts, decisionsProblems, REPO } from './skeleton-facts.mjs';
 import { readDecisions, skeletonDir } from './skeleton-finalise.mjs';
 import { readRouting } from './intake-routing.mjs';
 import { stateRouteHash } from './state-route.mjs';
-import { loadCalibration } from './cache.mjs';
 import { openDb } from './db.mjs';
 import { reachCalls } from './intake-reach-calls.mjs';
 import { setDraftState, reachDraftState, fireTrigger, snapshotDraftState, restoreDraftState } from './intake-state.mjs';
@@ -38,7 +37,7 @@ import { templateOf } from './intake-run-collapse.mjs';
 import { sourcesOf } from './freshness.mjs';
 import { fingerprintsOf } from './identity.mjs';
 import { carriedIds } from './skeleton-carried.mjs';
-import { siteOf } from './skeleton-context.mjs';
+import { siteOf, calKeysFor, assertSkeletonPaints } from './skeleton-context.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const SURFACE_KINDS = [ 'header', 'footer', 'drawer', 'menu', 'form', 'modal', 'global', 'page' ];
@@ -372,7 +371,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 	const ownDb = ! db && ! facts;
 	const theDb = db || ( facts ? null : openDb() );
 	const f = factsFor( { db: theDb, client, repo, facts } );
-	const calKeys = site ? ( s ) => Object.keys( loadCalibration( path.join( HERE, '..', 'cache' ), s, site )?.elements || {} ) : () => [];
+	const calKeys = calKeysFor( site );
 	const sources = inventoriesDir ? sourcesOf( folder ) : null;
 	// The state keys each component writes from the viewport width: a state bounding one opens only at the widths inside it.
 	const widthKeys = widthStateKeys( readBreakpoints( { folder } ) );
@@ -460,6 +459,7 @@ export async function proposeSkeletons( { folder, harPath, surfaces, client, db 
 							throw new Error( f.error );
 						}
 						const r = propose( { inventory, facts: f.facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: builtFor( s ), clientDecisions: f.clientDecisions, carried: carriedIds( { repo, client, site: siteOf( { repo, client, slug: s.slug } ) } ), calKeys, formLinks: formLinks(), refs, draftLinks: draftLinks(), db: theDb } );
+						assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }` } );
 						// A width another state opened (the same state at its other breakpoint) is named in `statesAt`.
 						const other = open ? Object.entries( open.ways ).filter( ( [ , x ] ) => x !== open.opener ).map( ( [ w, x ] ) => [ w, x.state ] ) : [];
 						const opened = open && { ...open.opener, at: open.at, readAt: open.readAt, ...( other.length ? { statesAt: Object.fromEntries( other ) } : {} ), tried: open.tried };

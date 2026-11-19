@@ -58,6 +58,7 @@ import { walkerConfigs, WALK_WIDTHS } from './lib/fill-config.mjs';
 import { walkerStates, walkRefusalRows } from './lib/walker-states.mjs';
 import { fillReport, unmappedList, readFailureRows, passSettled } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
+import { assertPaints, treeBlocks } from './lib/paint-gate.mjs';
 import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
@@ -142,6 +143,9 @@ export async function fillSurface( o ) {
 		throw new Error( `the skeleton is not valid (R-47-10):\n- ${ problems.join( '\n- ' ) }` );
 	}
 	const skeleton = expandSiteInfoRows( authored );
+	// Every block of the skeleton has this site's default paint, or the run stops here, before any output (lib/paint-gate.mjs).
+	const calFor = calibrationLoader( entry.site, o.cache );
+	assertPaints( { blocks: treeBlocks( skeleton ), calFor, site: entry.site, client: o.client, what: `fill ${ o.surface }` } );
 	const outDir = path.resolve( o.out || path.join( buildDir, 'qa', 'fill', o.surface, stamp() ) );
 	fs.mkdirSync( outDir, { recursive: true } );
 	const tree = cleanTree( skeleton );
@@ -194,7 +198,6 @@ export async function fillSurface( o ) {
 		const readUrl = readUrlOf( { url, opener, record: skeletonRecord, routing: intakeData?.routing } );
 		opener && log( opener.state ? `state opener: ${ describeWays( opener ) } on ${ opener.component }${ opener.route && '*' !== opener.route ? ` at ${ opener.route }` : '' }${ opener.dropped.length ? ` (not offered: ${ opener.dropped.map( ( d ) => d.key ).join( ', ' ) })` : '' }` : `state opener refused: ${ opener.refused.map( ( r ) => r.reason ).join( '; ' ) }` );
 		// FR-48-60 to FR-48-62: the draft elements of the shop parts (build/shop-parts.json locators) are measured at their parts' slots.
-		const calFor = calibrationLoader( entry.site, o.cache );
 		const shopRecord = loadShopParts( buildDir );
 		const shopTargets = shopPartTargets( { record: shopRecord, nodes, facts, rootComponent: intakeParts.rootComponent, db, calFor } );
 		// The skeleton inventory beside the skeleton: the draft rendered on this surface (the list pass reads a loop's copies

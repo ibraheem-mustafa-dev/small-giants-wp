@@ -1,6 +1,7 @@
 // A Fill run that aborts leaves the tracked sites/<client>/build/<surface>.origin.json as it was (fill.mjs::fillSurface writes
 // it with the run's outputs): a draft folder with no page to serve is refused after the skeleton is read, and the half-resolved
-// origin map is never written.
+// origin map is never written. The run reads an empty calibration cache, so no block has a slot map and the paint gate
+// (lib/paint-gate.mjs) has nothing to stop on.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -23,7 +24,7 @@ function fixture() {
 test( 'MUST FAIL: a run refused for its draft page writes no origin file, and one already there is left unchanged', async () => {
 	const f = fixture();
 	try {
-		const run = () => fillSurface( { repo: f.repo, client: 'acme', surface: 'home', skeleton: path.join( f.work, 'skeleton.json' ), draftDir: path.join( f.work, 'draft' ), liveUrl: 'http://127.0.0.1:9/', out: path.join( f.work, 'out' ) } );
+		const run = () => fillSurface( { repo: f.repo, client: 'acme', surface: 'home', skeleton: path.join( f.work, 'skeleton.json' ), draftDir: path.join( f.work, 'draft' ), liveUrl: 'http://127.0.0.1:9/', out: path.join( f.work, 'out' ), cache: path.join( f.work, 'cache' ) } );
 		await assert.rejects( run, /serves no page at its root/ );
 		assert.equal( fs.existsSync( f.origin ), false, 'no origin file from an aborted run' );
 		fs.writeFileSync( f.origin, '{"kept":true}\n' );
