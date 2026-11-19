@@ -469,6 +469,22 @@ python plugins/sgs-blocks/scripts/sync-container-wrapping-blocks.py
 
 `node_modules/`, `src/`, `package*.json` and `.gitignore` are not needed on the server; `theme/sgs-theme/styles/*.json` stays empty (client snapshots live at `sites/<client>/theme-snapshot.json`).
 
+### Going live on a client domain
+
+The pass criteria are `.claude/specs/go-live-checklist.md`; this is how to do the search, analytics and running steps (its Section 7). Run every write on the live domain as an administrator script over SSH, dry run first, after a database backup.
+
+1. **Back up.** `bash scripts/local-wp/backup-remote-db.sh <target> <label>` writes a verified dump to `~/backups/db/` on the server. It keeps the newest 12 per host, labelled ones included, so copy a dump you must keep for longer.
+2. **Slim SEO.** Install and activate it, then set its features and each main page's description with a script shaped like `sites/mamas-munches-redesign/build/seo/slim-live.php` (copy it into the client's folder and rewrite the descriptions): `ssh hd "cd <site path> && wp --user=1 eval-file - dry" < slim-live.php`, read the output, then run it without `dry`. It turns on only meta title, meta description, meta robots, Open Graph, Twitter cards, canonical URL, rel links and image alt; schema, sitemaps, breadcrumbs, redirection and feed stay off because the framework prints those itself (`a9c651ad9` taught the framework to recognise Slim SEO). Write descriptions without prices, pack sizes or dates: the client changes those.
+3. **Flush the rewrite rules.** `wp rewrite flush`, then `curl -sI https://<domain>/wp-sitemap.xml` must answer 200. Activating Slim SEO without this left the core sitemap 404 for an hour.
+4. **Search Console.** Add a domain property (a DNS TXT record), submit `/wp-sitemap.xml`, and run URL Inspection's live test on the home page and a product page. This is the only trustworthy crawler check on Hostinger: a request that claims to be Googlebot or Bingbot from an ordinary connection gets 403, and GPTBot gets 429, while the real crawlers get in.
+5. **Redirects.** Install the Redirection plugin and add one 301 per address of the previous site; check each with `curl -sI`.
+6. **Site Kit.** Install it as the client's dashboard and connect Search Console and Analytics. Where Tag Manager already carries the Analytics tag, switch off Site Kit's "Place Google Analytics code", or Analytics counts every page twice.
+7. **Payment plugin updates.** Hostinger's hPanel auto-updates plugins on its own schedule, separately from WordPress's per-plugin setting (it updated the Stripe plugin and Tag Manager on Mama's Munches' launch day). Auto-updates stay on for every plugin, payment plugins included (Bean, 2026-11-19: a manual update would be forgotten). Record the gateway plugin's version at launch, and after any gateway update check basket, checkout and the card form.
+8. **Return and shipping facts.** Fill `sgs_configurator_returns` and `sgs_configurator_shipping` (shapes in `includes/class-product-offer-policy.php::Product_Offer_Policy`) from the client's Terms page, and show Bean two plain-English lines to confirm with the client before writing them.
+9. **Site icon.** Set one in Settings > General, and check the home page prints a `rel="icon"` link (on Hostinger `/favicon.ico` can stay a static 404 whatever WordPress holds).
+10. **Merchant Center.** Verify and claim the domain in Google Merchant Center and turn free listings on, with the same return and shipping facts as step 8; then run Google's Rich Results Test on one product address.
+11. **Cloudflare and HTTPS.** Where the domain runs through Cloudflare, keep Bot Fight Mode and "Block AI bots" off (they refuse real crawlers too), and turn HSTS on (six months, no preload).
+
 ---
 
 ## Local WordPress mirrors (WSL)

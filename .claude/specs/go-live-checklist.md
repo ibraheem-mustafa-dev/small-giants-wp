@@ -1,15 +1,15 @@
 ---
 doc_type: reference
-version: "1.0"
+version: "1.1"
 spec_ref: .claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md#fr-30-13
-last_verified: 2026-10-09
+last_verified: 2026-11-18
 purpose: Repeatable pre-launch gate run before any SGS client shop takes real money.
 scope: Run once per client, top-to-bottom. Every item must be ✅ or a recorded conscious N/A before the shop accepts live payments.
 ---
 
 # SGS WooCommerce Shop — Go-Live Checklist
 
-**Version:** 1.0  
+**Version:** 1.1  
 **Spec source:** `.claude/specs/27-SGS-VARIABLE-PRODUCT-CONFIGURATOR.md` §FR-30-13  
 **Applies to:** every SGS client shop before first live payment is taken.
 
@@ -97,10 +97,33 @@ Example URL used in probes: `https://sandybrown-nightingale-600381.hostingersite
 
 ---
 
+## Section 7 — Search, analytics and running the shop
+
+Learned on the first live launch (Mama's Munches, 2026-11-18). How to do each step is in `.claude/dev-setup.md` §Going live on a client domain. The framework already prints the Organisation, WebSite, Product and breadcrumb data, the sitemap rules, canonicals and the `noindex` on store pages, so the SEO plugin only adds what the framework lacks.
+
+| ID | What to verify | Named probe | Pass criteria | Status |
+|----|----------------|-------------|---------------|--------|
+| SR-1 | Slim SEO is set up with only the features the framework lacks | SSH: `wp option get slim_seo --format=json` and read `features`. Then `curl -s https://<client-domain>/product/<variable-product-slug>/ \| grep -c '"@type":"ProductGroup"'` and `curl -s https://<client-domain>/ \| grep -c '<meta name="description"'` | `features` holds exactly `meta_title`, `meta_description`, `meta_robots`, `open_graph`, `twitter_cards`, `canonical_url`, `rel_links`, `images_alt` (schema, sitemaps, breadcrumbs, redirection and feed stay off). A variable product page prints exactly one `ProductGroup` (its variants are `Product` nodes inside it, so count the group, not every `Product`); a simple product prints one top-level `Product` and no group. Every page prints one description. | ☐ |
+| SR-2 | The rewrite rules are flushed after an SEO plugin is activated or its features change | SSH: `wp rewrite flush`, then `curl -sI https://<client-domain>/wp-sitemap.xml` | The sitemap answers 200. Activating Slim SEO without a flush left the core sitemap answering 404 for an hour. | ☐ |
+| SR-3 | Every main page and product has a description written for search results, with no prices or pack sizes | For each main page and product: `curl -s <url> \| grep -o '<meta name="description" content="[^"]*"'` | One description per page, 120 to 160 characters, naming what the page offers. No price, pack size, stock level or date: the client changes those, and a description that disagrees with the page loses trust. | ☐ |
+| SR-4 | Search Console proves the real Googlebot can crawl the site | Search Console: add a **domain property** (verified by a DNS TXT record), submit `https://<client-domain>/wp-sitemap.xml`, then run URL Inspection's **live test** on the home page and one product page. Optional and cheap: import the property into Bing Webmaster Tools. | Both live tests report the page can be indexed. Where the domain runs through Cloudflare, Bot Fight Mode and "Block AI bots" are off. Do not judge crawler access with `curl`: requests that claim to be Googlebot or Bingbot from an ordinary connection get 403 on Hostinger, and GPTBot gets 429, while the real crawlers get in. | ☐ |
+| SR-5 | Redirects run through the Redirection plugin, and every address of the previous site lands on its new page | Redirection is installed; Slim SEO's own redirection feature stays off (SR-1). For each old address: `curl -sI <old-url> \| grep -iE '^(HTTP\|location)'` | Each old address answers one 301 to its new page; no chains, no 404s. If the old redirects already live elsewhere (a host rule or `.htaccess`), record where, and add new ones in Redirection only. | ☐ |
+| SR-6 | Site Kit is the client's dashboard, and the Analytics tag fires once | Site Kit is connected to Search Console and Analytics. Where Tag Manager already places the Analytics tag, Site Kit's "Place Google Analytics code" is off (`wp option get googlesitekit_analytics-4_settings --format=json`, key `useSnippet`). Then `curl -s https://<client-domain>/ \| grep -c 'googletagmanager.com/gtag/js'` | `useSnippet` is `false` when Tag Manager carries the tag, and the grep returns 0 (Tag Manager loads Analytics itself); Analytics' real-time view shows one page view per page load. | ☐ |
+| SR-7 | The database backup tool works on the live domain before any content edit | `bash scripts/local-wp/backup-remote-db.sh <target> pre-launch` | It exits 0 and the dump is listed in `~/backups/db/` on the server. Run it before every content or settings edit after launch. | ☐ |
+| SR-8 | The payment plugin's version and update policy are recorded | SSH: `wp plugin get <gateway-plugin> --field=version`; hPanel > WordPress > the site > auto-updates, for the gateway plugin | Version recorded in the run log, and Hostinger's auto-updates stay on for every plugin, payment plugins included (Bean, 2026-11-19: a manual update would be forgotten; Hostinger's own auto-update, not WordPress's, updated the Stripe plugin and Tag Manager on launch day). After any update of the gateway: basket, checkout and a card form check. | ☐ |
+| SR-9 | Return and shipping facts are published from the Terms page | SSH: `wp option get sgs_configurator_returns --format=json` and `wp option get sgs_configurator_shipping --format=json`; then `curl -s https://<client-domain>/product/<slug>/ \| grep -oE '"(hasMerchantReturnPolicy\|shippingDetails)"'` | Both options are filled (shapes in `includes/class-product-offer-policy.php::Product_Offer_Policy`) with values read from the Terms page, and the client has confirmed two plain-English lines (shaped like "Returns: within <n> days, <condition>, <who pays postage>." and "Delivery: <countries>, <carrier>, <n> to <n> working days."). Both keys print on a product page, SE-1 passes, and Google's Rich Results Test (search.google.com/test/rich-results) on one product address shows Product snippets and Merchant listings with no errors. | ☐ |
+| SR-10 | A site icon is set | WP Admin > Settings > General > Site Icon (option `site_icon`). Then `curl -s https://<client-domain>/ \| grep -c 'rel="icon"'` and `curl -sI https://<client-domain>/favicon.ico` | At least one `rel="icon"` link on the home page. Read the `/favicon.ico` status for information only: on Hostinger it can stay a static 404 that never reaches WordPress. | ☐ |
+| SR-11 | Google Merchant Center free listings are on | Merchant Center: the domain is verified and claimed, free listings are on, and its return and shipping settings match SR-9 | Merchant Center lists the products as approved for free listings (allow a few days after launch). Product markup alone does not put a shop in Google's Shopping tab. | ☐ |
+| SR-12 | `llms.txt` holds only working links | `curl -s https://<client-domain>/llms.txt`, then `curl -sI` each address in it | Every link answers 200. The framework builds the file from published pages, so a link to a page the previous site had (a refunds page, for example) means a menu or setting still points at it. | ☐ |
+| SR-13 | The browser is told to use HTTPS only | `curl -sI https://<client-domain>/ \| grep -i strict-transport-security` | A `Strict-Transport-Security` header with a max-age of at least six months (Cloudflare > SSL/TLS > Edge Certificates > HSTS; no preload). | ☐ |
+
+---
+
 ## Per-Client Run Log
 
 | Client | Live domain | Launch date | Run by | Result | Notes / blocked items |
 |--------|-------------|-------------|--------|--------|-----------------------|
+| Mama's Munches | mamasmunches.com | 2026-11-18 | Claude | Live, taking card payments | Section 7 was written after this launch. Open: a payment by a real wallet, a real card payment with its webhook (PL-1), SR-5 (Redirection not installed), SR-6 (Site Kit not installed), SR-9 (both options empty), SR-10 (no site icon), SR-11 (Merchant Center not set up), SR-12 (`llms.txt` links the old refunds page), SR-13 (no HSTS header). |
 
 Add one row per client run.
 
