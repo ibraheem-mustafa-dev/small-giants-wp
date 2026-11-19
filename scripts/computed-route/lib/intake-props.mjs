@@ -49,16 +49,23 @@ export function declaredProps( text ) {
 	return { props: {} };
 }
 
-// The values one mount passes for a prop: { values, how, why? }. A literal attribute is its value; `{{ key }}` is read
-// through the parent's renderVals key on its syntax tree (every string literal in it that is an option); anything
-// else is unresolved with why.
-function mountValues( parent, raw, options ) {
+// A hole that holds a constant (`{{ true }}`, `{{ 5 }}`, `{{ 'lg' }}`): the runtime passes that value as it is.
+const CONSTANT = /^\s*(?:(true|false|null|-?\d+(?:\.\d+)?)|'([^'\\]*)'|"([^"\\]*)")\s*$/;
+
+// The values one mount passes for a prop: { values, how, why? }. A literal attribute is its value, and so is a hole
+// holding a constant (`required="{{ true }}"`); `{{ key }}` is read through the parent's renderVals key on its syntax
+// tree (every string literal in it that is an option); anything else is unresolved with why.
+export function mountValues( parent, raw, options ) {
 	const hole = /^\s*\{\{([\s\S]+?)\}\}\s*$/.exec( raw );
 	if ( ! raw.includes( '{{' ) ) {
 		return { values: [ raw ], how: 'literal' };
 	}
 	if ( ! hole ) {
 		return { values: [], how: 'bound', why: `${ raw } mixes text and a binding` };
+	}
+	const constant = CONSTANT.exec( hole[ 1 ] );
+	if ( constant ) {
+		return { values: [ constant[ 1 ] ?? constant[ 2 ] ?? constant[ 3 ] ], how: 'literal' };
 	}
 	const root = hole[ 1 ].trim().split( /[.[\s(]/ )[ 0 ];
 	const m = logicModel( parent );

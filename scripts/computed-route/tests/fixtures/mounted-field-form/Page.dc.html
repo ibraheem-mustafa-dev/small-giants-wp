@@ -1,0 +1,25 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<main>
+<section aria-label="Contact">
+  <h1>Contact</h1><a href="Home.dc.html">Home</a>
+  <form onSubmit="{{ send }}">
+    <dc-import name="Field" version="standard" label="Your name" required="{{ true }}"></dc-import>
+    <dc-import name="Field" version="standard" label="Message" multiline="{{ true }}"></dc-import>
+    <button type="submit">Send</button>
+  </form>
+</section>
+<section aria-label="Updates">
+  <dc-import name="Newsletter"></dc-import>
+</section>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    return { send: (e) => e.preventDefault() };
+  }
+}
+</script>
+</body></html>

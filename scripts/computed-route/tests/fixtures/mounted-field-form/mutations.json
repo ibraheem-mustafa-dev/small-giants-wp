@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "! chrome && ! inParentForm.has( d.file ) &&",
+		"replace": "! chrome &&",
+		"why": "a field component mounted in a form is a form again"
+	},
+	{
+		"file": "lib/intake-pagemap-surfaces.mjs",
+		"find": "'dc-import' === t.name && ancestors( t ).some( ( u ) => 'form' === u.name )",
+		"replace": "'dc-import' === t.name",
+		"why": "every mounted component counts as inside a form, so a component of fields outside any form is no longer one"
+	}
+]

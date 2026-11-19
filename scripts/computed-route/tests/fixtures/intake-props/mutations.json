@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/intake-props.mjs",
+		"find": "\tif ( constant ) {",
+		"replace": "\tif ( false && constant ) {",
+		"why": "a constant hole goes back to the renderVals lookup"
+	},
+	{
+		"file": "lib/intake-props.mjs",
+		"find": "(true|false|null|-?",
+		"replace": "(true|false|null|NEVER-?",
+		"why": "a numeric constant is no longer read"
+	},
+	{
+		"file": "lib/intake-props.mjs",
+		"find": ")|'([^'",
+		"replace": ")|'(NEVER[^'",
+		"why": "a single-quoted string constant is no longer read"
+	},
+	{
+		"file": "lib/intake-props.mjs",
+		"find": "values: [ constant[ 1 ] ?? constant[ 2 ] ?? constant[ 3 ] ]",
+		"replace": "values: [ constant[ 1 ] ?? constant[ 2 ] ]",
+		"why": "a double-quoted string constant yields nothing"
+	}
+]

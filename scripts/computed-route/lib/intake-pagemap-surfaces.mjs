@@ -405,6 +405,12 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 			copies.set( key, [ ...( copies.get( key ) || [] ), { d, node: r.node } ] );
 		}
 	}
+	// A component a parent mounts inside its own <form> is a part of that form (a field, a button), never a form of its
+	// own, however many field elements its branches hold (a Field component draws an input or a textarea).
+	const inParentForm = new Set();
+	for ( const [ , tree ] of trees ) {
+		tree.nodes.filter( ( t ) => 'dc-import' === t.name && ancestors( t ).some( ( u ) => 'form' === u.name ) ).forEach( ( t ) => inParentForm.add( `${ attrOf( t, 'name' ) }.dc.html` ) );
+	}
 	const repeated = [ ...copies.values() ].filter( ( list ) => new Set( list.map( ( c ) => c.d.file ) ).size >= 2 );
 	const siteWide = new Set( repeated.map( ( list ) => list[ 0 ].node ) );
 	const dropped = new Set( repeated.flatMap( ( list ) => list.slice( 1 ).map( ( c ) => c.node ) ) );
@@ -421,7 +427,7 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 		const page = ( node ) => ( [ node, ...ancestors( node ) ].some( ( u ) => siteWide.has( u ) ) ? null : pageOf( d, node, routeKeys ) );
 		tree.nodes.forEach( ( t ) => pageAt.set( `${ d.file }:${ t.line }:${ t.col }`, () => page( t ) ) );
 		tree.nodes.filter( ( t ) => 'input' === t.name && 'password' === attrOf( t, 'type' ) ).forEach( ( t ) => accountPages.add( page( t ) ) );
-		if ( component && ( tree.nodes.some( ( t ) => 'form' === t.name ) || ( ! chrome && tree.nodes.filter( ( t ) => FIELDS.has( t.name ) ).length >= 2 ) ) ) {
+		if ( component && ( tree.nodes.some( ( t ) => 'form' === t.name ) || ( ! chrome && ! inParentForm.has( d.file ) && tree.nodes.filter( ( t ) => FIELDS.has( t.name ) ).length >= 2 ) ) ) {
 			formComponents.add( d.file );
 			surfaces.push( { kind: 'form', page: null, label: stem( d.file ), title: stem( d.file ).replace( /([a-z])([A-Z])/g, '$1 $2' ), route: null, dc: stem( d.file ), draftId: `${ d.file } (dc-import)` } );
 		} else {
