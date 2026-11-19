@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/part-look-compare.mjs",
+		"find": "const tablet = t.tablet ?? t.desktop;",
+		"replace": "const tablet = t.tablet;",
+		"why": "a missing tablet value is not the desktop one"
+	},
+	{
+		"file": "lib/part-look-compare.mjs",
+		"find": "const colour = site?.palette?.find( ( t ) => t.slug === v )?.colour;",
+		"replace": "const colour = undefined;",
+		"why": "a palette slug is not resolved to its colour"
+	},
+	{
+		"file": "lib/part-look-compare.mjs",
+		"find": "if ( blockKey && ! table.rows[ row ][ blockKey ] ) {",
+		"replace": "if ( false ) {",
+		"why": "a look-table row with no selector for the block is not a known fault"
+	},
+	{
+		"file": "lib/part-look-compare.mjs",
+		"find": "! site?.palette?.some( ( t ) => t.slug === saved[ attr ] )",
+		"replace": "false",
+		"why": "an unresolvable saved colour is not noted"
+	},
+	{
+		"file": "lib/part-look-compare.mjs",
+		"find": ".filter( ( e ) => e.knownFault ).length,",
+		"replace": ".length,",
+		"why": "every value counts as known not to paint"
+	},
+	{
+		"file": "lib/part-look-compare.mjs",
+		"find": "return { x: lengths[ 0 ] ?? 0,",
+		"replace": "return { x: 0,",
+		"why": "a shadow's first offset is ignored"
+	},
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "if ( ! SCRATCH_NAME.test( String( site ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the write path accepts a site that is not a scratch copy"
+	},
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "\tassertUnprotected( site, targets );\n",
+		"replace": "",
+		"why": "the write path does not check the target's protection"
+	},
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "if ( ! WSL_SITE.test( site ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the read accepts a site that is not a local mirror"
+	},
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "rules: ( css.match( /\\{/g ) || [] ).length,",
+		"replace": "rules: 0,",
+		"why": "the Custom CSS rules are not counted"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": ".find( ( f ) => f && f !== account )",
+		"replace": ".find( ( f ) => f )",
+		"why": "the sign-in page is the account's own file"
+	}
+]

@@ -1,0 +1,1310 @@
+{
+	"_comment": "How to find each shop look part's element in a client draft (lib/fill-part-look.mjs). A part is keyed by the framework database's css_element for the group's blocks (block_attributes.css_element), so the look table's rows and the older named settings are covered the same way. A locator names structure only: input type, ARIA role, autocomplete token, tag, position, repeated siblings, the kind of text an element holds (currency, count, words, none), what it holds and where it sits; the grammar is documented in lib/fill-part-look-page.mjs. Wording is never a signal. A part with no entry has no locator and shows in the report as such. `pages` roles are filled from the client's page map at run time (the file each WooCommerce page's draft lives in).",
+	"surfaces": {
+		"cart": {
+			"group": "wc",
+			"block": "woocommerce/cart",
+			"pageRole": "cart"
+		},
+		"checkout": {
+			"group": "wc",
+			"block": "woocommerce/checkout",
+			"pageRole": "checkout"
+		},
+		"my-account": {
+			"group": "account",
+			"block": "sgs/account",
+			"pageRole": "account",
+			"alsoRead": [
+				"signin"
+			]
+		},
+		"header": {
+			"group": "drawer",
+			"block": "sgs/cart",
+			"pageRole": "cart"
+		}
+	},
+	"groups": {
+		"wc": {
+			"anchors": {
+				"totalsRow": {
+					"from": "page",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"dl"
+						]
+					}
+				},
+				"summary": {
+					"any": [
+						{
+							"from": "page",
+							"match": {
+								"hasAll": [
+									{
+										"childText": [
+											"words",
+											"currency"
+										]
+									},
+									{
+										"linksTo": "checkout",
+										"control": true
+									}
+								]
+							},
+							"smallest": true
+						},
+						{
+							"from": "page",
+							"match": {
+								"hasAll": [
+									{
+										"childText": [
+											"words",
+											"currency"
+										]
+									},
+									{
+										"repeats": true,
+										"minChildren": 2,
+										"tag": [
+											"div",
+											"li",
+											"tr",
+											"article"
+										],
+										"has": {
+											"text": "currency"
+										},
+										"hasMany": {
+											"match": {
+												"ownText": true,
+												"text": "words",
+												"control": false
+											},
+											"atLeast": 2
+										}
+									}
+								]
+							},
+							"smallest": true
+						}
+					]
+				},
+				"lines": {
+					"from": "page",
+					"match": {
+						"repeats": true,
+						"minChildren": 2,
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"article"
+						],
+						"has": {
+							"text": "currency"
+						},
+						"hasMany": {
+							"match": {
+								"ownText": true,
+								"text": "words",
+								"control": false
+							},
+							"atLeast": 2
+						}
+					}
+				},
+				"couponRow": {
+					"from": "summary",
+					"match": {
+						"hasAll": [
+							{
+								"tag": [
+									"input"
+								]
+							},
+							{
+								"tag": [
+									"button"
+								]
+							}
+						],
+						"lacks": {
+							"text": "currency"
+						}
+					},
+					"smallest": true
+				},
+				"fields": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"inputType": [
+							"",
+							"text",
+							"email",
+							"tel",
+							"search",
+							"number"
+						],
+						"control": true,
+						"notInAnchor": "couponRow"
+					}
+				},
+				"legends": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"legend"
+						]
+					}
+				},
+				"radioCards": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"button",
+							"label"
+						],
+						"repeats": true,
+						"hasAll": [
+							{
+								"text": "currency"
+							},
+							{
+								"square": true,
+								"text": "none"
+							}
+						],
+						"inside": {
+							"tag": [
+								"fieldset"
+							]
+						}
+					}
+				},
+				"placeOrder": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"type": [
+							"submit"
+						]
+					},
+					"pick": "last"
+				},
+				"checkoutLink": {
+					"from": "summary",
+					"match": {
+						"control": true,
+						"linksTo": "checkout",
+						"tag": [
+							"a",
+							"button"
+						]
+					},
+					"smallest": true
+				}
+			},
+			"parts": {
+				"field-input": {
+					"sameAs": "fields"
+				},
+				"field-text-input": {
+					"sameAs": "fields"
+				},
+				"field-label": {
+					"from": "fields",
+					"self": true,
+					"match": {},
+					"rel": "label"
+				},
+				"field-wrap": {
+					"from": "fields",
+					"self": true,
+					"match": {},
+					"rel": "wrapper"
+				},
+				"field-in-step": {
+					"sameAs": "field-wrap"
+				},
+				"checkbox-input": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"inputType": [
+							"checkbox"
+						]
+					},
+					"blocks": [
+						"woocommerce/checkout"
+					]
+				},
+				"checkbox-wrap-label": {
+					"match": {
+						"tag": [
+							"input"
+						],
+						"inputType": [
+							"checkbox"
+						]
+					},
+					"rel": "label",
+					"blocks": [
+						"woocommerce/checkout"
+					],
+					"from": "page"
+				},
+				"checkbox-label": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"inputType": [
+							"checkbox"
+						]
+					},
+					"rel": [
+						"label",
+						{
+							"child": {
+								"ownText": true,
+								"text": "words"
+							}
+						}
+					],
+					"blocks": [
+						"woocommerce/checkout"
+					]
+				},
+				"step": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"fieldset"
+						],
+						"has": {
+							"tag": [
+								"legend"
+							]
+						}
+					}
+				},
+				"step-title": {
+					"sameAs": "legends"
+				},
+				"step-heading": {
+					"sameAs": "legends"
+				},
+				"payment-method": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"fieldset"
+						],
+						"has": {
+							"autocomplete": [
+								"cc-number"
+							]
+						}
+					}
+				},
+				"shipping-fields": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"fieldset"
+						],
+						"has": {
+							"autocomplete": [
+								"address-line1"
+							]
+						}
+					}
+				},
+				"delivery-step": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"fieldset"
+						],
+						"holdsAnchor": "radioCards"
+					}
+				},
+				"shipping-option": {
+					"from": "page",
+					"match": {
+						"holdsAnchor": "radioCards"
+					},
+					"smallest": true
+				},
+				"option": {
+					"sameAs": "radioCards"
+				},
+				"delivery-card-title": {
+					"from": "radioCards",
+					"match": {
+						"ownText": true,
+						"text": "words"
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 0
+					}
+				},
+				"shipping-label": {
+					"sameAs": "delivery-card-title"
+				},
+				"delivery-card-description": {
+					"from": "radioCards",
+					"match": {
+						"ownText": true,
+						"text": "words"
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 1
+					}
+				},
+				"shipping-description": {
+					"sameAs": "delivery-card-description"
+				},
+				"shipping-secondary": {
+					"from": "radioCards",
+					"match": {
+						"ownText": true,
+						"text": "currency"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"login-prompt": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"div",
+							"p"
+						],
+						"linksTo": [
+							"account",
+							"signin"
+						],
+						"text": "words"
+					},
+					"smallest": true
+				},
+				"notice": {
+					"from": "page",
+					"match": {
+						"role": [
+							"alert",
+							"status"
+						]
+					}
+				},
+				"summary": {
+					"sameAs": "summary"
+				},
+				"summary-heading": {
+					"from": "summary",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"pick": "first"
+				},
+				"summary-title-text": {
+					"sameAs": "summary-heading"
+				},
+				"layout": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "summary"
+					}
+				},
+				"summary-row-label": {
+					"from": "summary",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"dl"
+						]
+					},
+					"pick": "allButLast",
+					"rel": {
+						"childIndex": 0,
+						"deepest": true
+					}
+				},
+				"summary-row-value": {
+					"from": "summary",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"dl"
+						]
+					},
+					"pick": "allButLast",
+					"rel": {
+						"childIndex": 1,
+						"deepest": true
+					}
+				},
+				"total-label": {
+					"from": "summary",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"dl"
+						]
+					},
+					"pick": "last",
+					"rel": {
+						"childIndex": 0,
+						"deepest": true
+					}
+				},
+				"total-value": {
+					"from": "summary",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"dl"
+						]
+					},
+					"pick": "last",
+					"rel": {
+						"childIndex": 1,
+						"deepest": true
+					}
+				},
+				"total-row": {
+					"from": "summary",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"dl"
+						]
+					},
+					"pick": "last"
+				},
+				"totals-footer-item": {
+					"sameAs": "total-row"
+				},
+				"totals-item": {
+					"from": "summary",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"dl"
+						]
+					}
+				},
+				"coupon-section": {
+					"sameAs": "couponRow"
+				},
+				"coupon-panel": {
+					"sameAs": "couponRow"
+				},
+				"coupon-apply": {
+					"from": "couponRow",
+					"match": {
+						"tag": [
+							"button"
+						]
+					}
+				},
+				"primary-button": {
+					"any": [
+						{
+							"sameAs": "checkoutLink"
+						},
+						{
+							"sameAs": "placeOrder"
+						}
+					]
+				},
+				"button-primary": {
+					"sameAs": "primary-button"
+				},
+				"actions": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "placeOrder"
+					}
+				},
+				"line-item": {
+					"sameAs": "lines"
+				},
+				"item": {
+					"sameAs": "lines"
+				},
+				"cart-items-wrap": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "lines"
+					},
+					"smallest": true
+				},
+				"line-item-image": {
+					"from": "lines",
+					"match": {
+						"paint": "image",
+						"square": true
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"item-image": {
+					"sameAs": "line-item-image"
+				},
+				"item-image-img": {
+					"from": "lines",
+					"match": {
+						"tag": [
+							"img"
+						]
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"line-item-name": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 0
+					}
+				},
+				"item-name": {
+					"sameAs": "line-item-name"
+				},
+				"line-item-variant": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 1
+					}
+				},
+				"item-variant": {
+					"sameAs": "line-item-variant"
+				},
+				"line-item-price": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "currency"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"item-price": {
+					"sameAs": "line-item-price"
+				},
+				"line-item-stepper": {
+					"from": "lines",
+					"match": {
+						"hasAll": [
+							{
+								"text": "count"
+							}
+						],
+						"hasMany": {
+							"match": {
+								"tag": [
+									"button"
+								]
+							},
+							"atLeast": 2
+						}
+					},
+					"perRoot": true,
+					"smallest": true
+				},
+				"item-stepper": {
+					"sameAs": "line-item-stepper"
+				},
+				"line-item-remove": {
+					"from": "lines",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"text": "words"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"item-remove": {
+					"sameAs": "line-item-remove"
+				}
+			}
+		},
+		"account": {
+			"anchors": {
+				"fields": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"inputType": [
+							"",
+							"text",
+							"email",
+							"tel",
+							"search",
+							"number",
+							"password"
+						],
+						"control": true
+					}
+				},
+				"signedOutCard": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"div",
+							"section"
+						],
+						"hasAll": [
+							{
+								"role": [
+									"heading"
+								]
+							},
+							{
+								"tag": [
+									"p"
+								]
+							},
+							{
+								"tag": [
+									"a"
+								],
+								"linksTo": [
+									"signin"
+								]
+							}
+						],
+						"inside": {
+							"tag": [
+								"main"
+							]
+						}
+					},
+					"smallest": true
+				},
+				"title": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"h1"
+						]
+					},
+					"pick": "first"
+				}
+			},
+			"parts": {
+				"fieldInput": {
+					"sameAs": "fields"
+				},
+				"fieldLabel": {
+					"from": "fields",
+					"self": true,
+					"match": {},
+					"rel": "label"
+				},
+				"signedOutCard": {
+					"sameAs": "signedOutCard"
+				},
+				"signed-out-heading": {
+					"from": "signedOutCard",
+					"match": {
+						"role": [
+							"heading"
+						]
+					},
+					"pick": "first"
+				},
+				"signed-out-copy": {
+					"from": "signedOutCard",
+					"match": {
+						"tag": [
+							"p"
+						]
+					},
+					"pick": "first"
+				},
+				"signedOutCopy": {
+					"sameAs": "signed-out-copy"
+				},
+				"signed-out-button": {
+					"from": "signedOutCard",
+					"match": {
+						"tag": [
+							"a"
+						],
+						"linksTo": [
+							"signin"
+						]
+					}
+				},
+				"header-title": {
+					"sameAs": "title"
+				},
+				"headerTitle": {
+					"sameAs": "title"
+				},
+				"header-eyebrow": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"h1"
+						]
+					},
+					"pick": "first",
+					"rel": {
+						"sibling": -1,
+						"deepest": true
+					}
+				},
+				"headerEyebrow": {
+					"sameAs": "header-eyebrow"
+				},
+				"auth-tabs": {
+					"from": "page",
+					"match": {
+						"role": [
+							"tablist"
+						]
+					}
+				},
+				"auth-tab": {
+					"from": "page",
+					"match": {
+						"role": [
+							"tab"
+						]
+					}
+				},
+				"loginButton": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"type": [
+							"submit"
+						]
+					},
+					"pick": "first"
+				}
+			}
+		},
+		"drawer": {
+			"anchors": {
+				"drawer": {
+					"any": [
+						{
+							"from": "page",
+							"match": {
+								"scope": "overlay",
+								"position": [
+									"fixed"
+								],
+								"hasAll": [
+									{
+										"text": "currency"
+									},
+									{
+										"linksTo": "checkout"
+									}
+								]
+							},
+							"smallest": true
+						},
+						{
+							"from": "page",
+							"match": {
+								"scope": "overlay",
+								"hasAll": [
+									{
+										"childText": [
+											"words",
+											"currency"
+										]
+									},
+									{
+										"repeats": true,
+										"minChildren": 2,
+										"tag": [
+											"div",
+											"li",
+											"article"
+										],
+										"has": {
+											"text": "currency"
+										},
+										"hasMany": {
+											"match": {
+												"ownText": true,
+												"text": "words",
+												"control": false
+											},
+											"atLeast": 2
+										}
+									}
+								]
+							},
+							"smallest": true
+						}
+					]
+				},
+				"lines": {
+					"from": "drawer",
+					"match": {
+						"repeats": true,
+						"minChildren": 2,
+						"tag": [
+							"div",
+							"li",
+							"article"
+						],
+						"has": {
+							"text": "currency"
+						},
+						"hasMany": {
+							"match": {
+								"ownText": true,
+								"text": "words",
+								"control": false
+							},
+							"atLeast": 2
+						}
+					}
+				},
+				"track": {
+					"from": "drawer",
+					"match": {
+						"tag": [
+							"div"
+						],
+						"text": "none",
+						"minChildren": 1,
+						"has": {
+							"text": "none"
+						},
+						"lacks": {
+							"tag": [
+								"img",
+								"svg"
+							]
+						}
+					},
+					"smallest": true
+				},
+				"heading": {
+					"from": "drawer",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"pick": "first"
+				},
+				"trigger": {
+					"from": "page",
+					"match": {
+						"scope": "chrome",
+						"tag": [
+							"button"
+						],
+						"hasAll": [
+							{
+								"text": "count"
+							},
+							{
+								"ownText": true,
+								"text": "words"
+							}
+						]
+					},
+					"pick": "first"
+				},
+				"band": {
+					"from": "drawer",
+					"match": {
+						"holdsAnchor": "track",
+						"has": {
+							"ownText": true,
+							"text": "words"
+						}
+					},
+					"smallest": true
+				},
+				"iconTrigger": {
+					"from": "page",
+					"match": {
+						"scope": "chrome",
+						"tag": [
+							"button"
+						],
+						"has": {
+							"text": "count"
+						},
+						"lacks": {
+							"ownText": true,
+							"text": "words"
+						}
+					},
+					"pick": "first"
+				}
+			},
+			"parts": {
+				"panel": {
+					"sameAs": "drawer"
+				},
+				"panelFrame": {
+					"sameAs": "drawer"
+				},
+				"panel-heading": {
+					"sameAs": "heading"
+				},
+				"panelHead": {
+					"from": "drawer",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"pick": "first",
+					"rel": "parent"
+				},
+				"panelClose": {
+					"from": "drawer",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"text": "any"
+					},
+					"pick": "first"
+				},
+				"scrim": {
+					"from": "page",
+					"match": {
+						"scope": "overlay",
+						"position": [
+							"fixed",
+							"absolute"
+						],
+						"text": "none",
+						"maxChildren": 0
+					},
+					"pick": "first"
+				},
+				"freeDeliveryTrack": {
+					"sameAs": "track"
+				},
+				"freeDeliveryFill": {
+					"from": "track",
+					"match": {
+						"text": "none"
+					},
+					"pick": "first"
+				},
+				"freeDeliveryBar": {
+					"sameAs": "track"
+				},
+				"freeDeliveryBand": {
+					"sameAs": "band"
+				},
+				"freeDeliveryText": {
+					"from": "band",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"pick": "first"
+				},
+				"free-delivery-text": {
+					"sameAs": "freeDeliveryText"
+				},
+				"item": {
+					"sameAs": "lines"
+				},
+				"panelBody": {
+					"from": "drawer",
+					"match": {
+						"parentOfAnchor": "lines"
+					},
+					"smallest": true
+				},
+				"itemThumb": {
+					"from": "lines",
+					"match": {
+						"paint": "image",
+						"square": true
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"item-name": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 0
+					}
+				},
+				"itemDetail": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 1
+					}
+				},
+				"item-details": {
+					"sameAs": "itemDetail"
+				},
+				"item-price": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "currency"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"item-stepper": {
+					"from": "lines",
+					"match": {
+						"hasAll": [
+							{
+								"text": "count"
+							}
+						],
+						"hasMany": {
+							"match": {
+								"tag": [
+									"button"
+								]
+							},
+							"atLeast": 2
+						}
+					},
+					"perRoot": true,
+					"smallest": true
+				},
+				"itemQty": {
+					"sameAs": "item-stepper"
+				},
+				"itemRemove": {
+					"from": "lines",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"text": "words"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"subtotal": {
+					"from": "drawer",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						]
+					},
+					"pick": "last"
+				},
+				"subtotalValue": {
+					"from": "drawer",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						]
+					},
+					"pick": "last",
+					"rel": {
+						"childIndex": 1,
+						"deepest": true
+					}
+				},
+				"panelTaxNote": {
+					"from": "drawer",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false,
+						"tag": [
+							"div",
+							"p"
+						]
+					},
+					"pick": "last"
+				},
+				"panelNote": {
+					"sameAs": "panelTaxNote"
+				},
+				"panel-note": {
+					"sameAs": "panelTaxNote"
+				},
+				"panel-tax-note": {
+					"sameAs": "panelTaxNote"
+				},
+				"checkout": {
+					"from": "drawer",
+					"match": {
+						"control": true,
+						"tag": [
+							"a",
+							"button"
+						],
+						"linksTo": "checkout"
+					},
+					"smallest": true
+				},
+				"panel-checkout": {
+					"sameAs": "checkout"
+				},
+				"panelView": {
+					"from": "drawer",
+					"match": {
+						"control": true,
+						"tag": [
+							"a"
+						],
+						"linksTo": "cart"
+					},
+					"smallest": true
+				},
+				"panel-view": {
+					"sameAs": "panelView"
+				},
+				"panelFooter": {
+					"from": "drawer",
+					"match": {
+						"hasAll": [
+							{
+								"linksTo": "checkout",
+								"control": true
+							},
+							{
+								"childText": [
+									"words",
+									"currency"
+								]
+							}
+						]
+					},
+					"smallest": true
+				},
+				"trigger": {
+					"sameAs": "trigger"
+				},
+				"pill": {
+					"sameAs": "trigger"
+				},
+				"badge": {
+					"any": [
+						{
+							"from": "trigger",
+							"match": {
+								"text": "count"
+							},
+							"pick": "first"
+						},
+						{
+							"from": "iconTrigger",
+							"match": {
+								"text": "count"
+							},
+							"pick": "first"
+						}
+					]
+				},
+				"icon": {
+					"sameAs": "iconTrigger"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,8597 @@
+{
+ "_about": "Mama's Munches Confirmation.dc.html elements of sites/mamas-munches-redesign/build/intake/facts.json (template and logic only), taken 2026-11-19 for tests/template-piece-order.test.mjs: the fact record is gitignored, the draft it was read from is committed",
+ "elements": {
+  "Confirmation/0": {
+   "template": {
+    "key": "Confirmation/0",
+    "component": "Confirmation",
+    "n": "0",
+    "tag": "sc-helmet",
+    "realTag": "helmet",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": null,
+    "realParent": null,
+    "parentChain": [],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 2
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/1": {
+   "template": {
+    "key": "Confirmation/1",
+    "component": "Confirmation",
+    "n": "1",
+    "tag": "title",
+    "realTag": "title",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/0",
+    "realParent": "Confirmation/0",
+    "parentChain": [
+     "Confirmation/0"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": true,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Order confirmed · Mama's Munches",
+    "srcLine": 3
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/2": {
+   "template": {
+    "key": "Confirmation/2",
+    "component": "Confirmation",
+    "n": "2",
+    "tag": "link",
+    "realTag": "link",
+    "attrs": {
+     "rel": "preconnect",
+     "href": "https://fonts.googleapis.com"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/0",
+    "realParent": "Confirmation/0",
+    "parentChain": [
+     "Confirmation/0"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": true,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 4
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/3": {
+   "template": {
+    "key": "Confirmation/3",
+    "component": "Confirmation",
+    "n": "3",
+    "tag": "link",
+    "realTag": "link",
+    "attrs": {
+     "href": "https://fonts.googleapis.com/css2?family=Young+Serif&family=Karla:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap",
+     "rel": "stylesheet"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/0",
+    "realParent": "Confirmation/0",
+    "parentChain": [
+     "Confirmation/0"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": true,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 5
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/4": {
+   "template": {
+    "key": "Confirmation/4",
+    "component": "Confirmation",
+    "n": "4",
+    "tag": "script",
+    "realTag": "script",
+    "attrs": {
+     "src": "store.js"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/0",
+    "realParent": "Confirmation/0",
+    "parentChain": [
+     "Confirmation/0"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": true,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 6
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/5": {
+   "template": {
+    "key": "Confirmation/5",
+    "component": "Confirmation",
+    "n": "5",
+    "tag": "style",
+    "realTag": "style",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/0",
+    "realParent": "Confirmation/0",
+    "parentChain": [
+     "Confirmation/0"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": true,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 7
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/6": {
+   "template": {
+    "key": "Confirmation/6",
+    "component": "Confirmation",
+    "n": "6",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {
+     "data-screen-label": "Order confirmed"
+    },
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(251, 243, 220)"
+      ],
+      [
+       "min-height",
+       "100vh"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": null,
+    "realParent": null,
+    "parentChain": [],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {
+     "data-screen-label": "Order confirmed"
+    },
+    "events": [],
+    "words": "",
+    "srcLine": 9
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/7": {
+   "template": {
+    "key": "Confirmation/7",
+    "component": "Confirmation",
+    "n": "7",
+    "tag": "dc-import",
+    "realTag": "dc-import",
+    "attrs": {
+     "current": "",
+     "hint-size": "100%,96px",
+     "name": "SiteHeader"
+    },
+    "style": {
+     "static": [
+      [
+       "position",
+       "sticky"
+      ],
+      [
+       "top",
+       "-32px"
+      ],
+      [
+       "z-index",
+       "50"
+      ],
+      [
+       "display",
+       "block"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/6",
+    "realParent": "Confirmation/6",
+    "parentChain": [
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "name": "SiteHeader",
+     "props": [
+      "current"
+     ]
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 10
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/8": {
+   "template": {
+    "key": "Confirmation/8",
+    "component": "Confirmation",
+    "n": "8",
+    "tag": "main",
+    "realTag": "main",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/6",
+    "realParent": "Confirmation/6",
+    "parentChain": [
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 11
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/9": {
+   "template": {
+    "key": "Confirmation/9",
+    "component": "Confirmation",
+    "n": "9",
+    "tag": "section",
+    "realTag": "section",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(245, 194, 200)"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "overflow-x",
+       "hidden"
+      ],
+      [
+       "overflow-y",
+       "hidden"
+      ]
+     ],
+     "holes": [
+      "style:padding#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:padding#0",
+      "where": "style:padding",
+      "expr": "L.heroPad",
+      "path": "L.heroPad",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/8",
+    "realParent": "Confirmation/8",
+    "parentChain": [
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 12
+   },
+   "logic": {
+    "holes": {
+     "style:padding#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "40px 20px 48px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "56px 32px 64px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "72px 40px 80px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/10": {
+   "template": {
+    "key": "Confirmation/10",
+    "component": "Confirmation",
+    "n": "10",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "max-width",
+       "900px"
+      ],
+      [
+       "margin-top",
+       "0px"
+      ],
+      [
+       "margin-right",
+       "auto"
+      ],
+      [
+       "margin-bottom",
+       "0px"
+      ],
+      [
+       "margin-left",
+       "auto"
+      ],
+      [
+       "text-align",
+       "center"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "flex-direction",
+       "column"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "row-gap",
+       "16px"
+      ],
+      [
+       "column-gap",
+       "16px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/9",
+    "realParent": "Confirmation/9",
+    "parentChain": [
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 13
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/11": {
+   "template": {
+    "key": "Confirmation/11",
+    "component": "Confirmation",
+    "n": "11",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {
+     "ref": "{{ badgeRef }}"
+    },
+    "style": {
+     "static": [
+      [
+       "width",
+       "110px"
+      ],
+      [
+       "height",
+       "110px"
+      ],
+      [
+       "border-top-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "999px"
+      ],
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(249, 207, 110)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "box-shadow",
+       "rgb(58, 42, 34) 5px 5px 0px"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "justify-content",
+       "center"
+      ],
+      [
+       "font-size",
+       "52px"
+      ],
+      [
+       "transform",
+       "rotate(-8deg)"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:ref#0",
+      "where": "attr:ref",
+      "expr": "badgeRef",
+      "path": "badgeRef",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/10",
+    "realParent": "Confirmation/10",
+    "parentChain": [
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": "{{ badgeRef }}",
+    "hooks": {},
+    "events": [],
+    "words": "✓",
+    "srcLine": 14
+   },
+   "logic": {
+    "holes": {
+     "attr:ref#0": {
+      "375": {
+       "v": [
+        {
+         "t": "object",
+         "keys": [
+          "current"
+         ]
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "object",
+         "keys": [
+          "current"
+         ]
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "object",
+         "keys": [
+          "current"
+         ]
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/12": {
+   "template": {
+    "key": "Confirmation/12",
+    "component": "Confirmation",
+    "n": "12",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "Caveat, cursive"
+      ],
+      [
+       "font-size",
+       "32px"
+      ],
+      [
+       "color",
+       "rgb(142, 52, 68)"
+      ],
+      [
+       "line-height",
+       "1"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/10",
+    "realParent": "Confirmation/10",
+    "parentChain": [
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "thank you, lovely",
+    "srcLine": 15
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/13": {
+   "template": {
+    "key": "Confirmation/13",
+    "component": "Confirmation",
+    "n": "13",
+    "tag": "h1",
+    "realTag": "h1",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "margin-top",
+       "0px"
+      ],
+      [
+       "margin-right",
+       "0px"
+      ],
+      [
+       "margin-bottom",
+       "0px"
+      ],
+      [
+       "margin-left",
+       "0px"
+      ],
+      [
+       "font-family",
+       "\"Young Serif\", Georgia, serif"
+      ],
+      [
+       "font-weight",
+       "400"
+      ],
+      [
+       "line-height",
+       "1"
+      ],
+      [
+       "letter-spacing",
+       "-0.02em"
+      ],
+      [
+       "text-wrap-mode",
+       "initial"
+      ],
+      [
+       "text-wrap-style",
+       "balance"
+      ]
+     ],
+     "holes": [
+      "style:font-size#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:font-size#0",
+      "where": "style:font-size",
+      "expr": "L.h1",
+      "path": "L.h1",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/10",
+    "realParent": "Confirmation/10",
+    "parentChain": [
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Your order’s in. Zainab’s warming the oven.",
+    "srcLine": 16
+   },
+   "logic": {
+    "holes": {
+     "style:font-size#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "38px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "48px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "60px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/14": {
+   "template": {
+    "key": "Confirmation/14",
+    "component": "Confirmation",
+    "n": "14",
+    "tag": "p",
+    "realTag": "p",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "margin-top",
+       "0px"
+      ],
+      [
+       "margin-right",
+       "0px"
+      ],
+      [
+       "margin-bottom",
+       "0px"
+      ],
+      [
+       "margin-left",
+       "0px"
+      ],
+      [
+       "font-size",
+       "18px"
+      ],
+      [
+       "line-height",
+       "1.55"
+      ],
+      [
+       "color",
+       "rgb(78, 60, 49)"
+      ],
+      [
+       "max-width",
+       "560px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/10",
+    "realParent": "Confirmation/10",
+    "parentChain": [
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Order . We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.",
+    "srcLine": 17
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/15": {
+   "template": {
+    "key": "Confirmation/15",
+    "component": "Confirmation",
+    "n": "15",
+    "tag": "b",
+    "realTag": "b",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "color",
+       "rgb(58, 42, 34)"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "no",
+      "path": "no",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/14",
+    "realParent": "Confirmation/14",
+    "parentChain": [
+     "Confirmation/14",
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ no }}",
+    "srcLine": 17
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "MM-1042"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "MM-1042"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "MM-1042"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/16": {
+   "template": {
+    "key": "Confirmation/16",
+    "component": "Confirmation",
+    "n": "16",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "display",
+       "inline-flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "row-gap",
+       "10px"
+      ],
+      [
+       "column-gap",
+       "10px"
+      ],
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(255, 250, 240)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "999px"
+      ],
+      [
+       "padding-top",
+       "8px"
+      ],
+      [
+       "padding-right",
+       "18px"
+      ],
+      [
+       "padding-bottom",
+       "8px"
+      ],
+      [
+       "padding-left",
+       "8px"
+      ],
+      [
+       "box-shadow",
+       "rgb(58, 42, 34) 4px 4px 0px"
+      ],
+      [
+       "font-size",
+       "16px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/10",
+    "realParent": "Confirmation/10",
+    "parentChain": [
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 18
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/17": {
+   "template": {
+    "key": "Confirmation/17",
+    "component": "Confirmation",
+    "n": "17",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "width",
+       "36px"
+      ],
+      [
+       "height",
+       "36px"
+      ],
+      [
+       "border-top-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "999px"
+      ],
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(249, 207, 110)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "justify-content",
+       "center"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/16",
+    "realParent": "Confirmation/16",
+    "parentChain": [
+     "Confirmation/16",
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "✦",
+    "srcLine": 18
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/18": {
+   "template": {
+    "key": "Confirmation/18",
+    "component": "Confirmation",
+    "n": "18",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "arrive",
+      "path": "arrive",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/16",
+    "realParent": "Confirmation/16",
+    "parentChain": [
+     "Confirmation/16",
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Baking on · with you from {{ arrive }}",
+    "srcLine": 18
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Wed 25 Nov"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Wed 25 Nov"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Wed 25 Nov"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/19": {
+   "template": {
+    "key": "Confirmation/19",
+    "component": "Confirmation",
+    "n": "19",
+    "tag": "b",
+    "realTag": "b",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "bakeDate",
+      "path": "bakeDate",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/18",
+    "realParent": "Confirmation/18",
+    "parentChain": [
+     "Confirmation/18",
+     "Confirmation/16",
+     "Confirmation/10",
+     "Confirmation/9",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ bakeDate }}",
+    "srcLine": 18
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Mon 23 Nov"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Mon 23 Nov"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Mon 23 Nov"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/20": {
+   "template": {
+    "key": "Confirmation/20",
+    "component": "Confirmation",
+    "n": "20",
+    "tag": "section",
+    "realTag": "section",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": [
+      "style:padding#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:padding#0",
+      "where": "style:padding",
+      "expr": "L.secPad",
+      "path": "L.secPad",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/8",
+    "realParent": "Confirmation/8",
+    "parentChain": [
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 22
+   },
+   "logic": {
+    "holes": {
+     "style:padding#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "40px 20px 64px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "56px 32px 80px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "72px 40px 104px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/21": {
+   "template": {
+    "key": "Confirmation/21",
+    "component": "Confirmation",
+    "n": "21",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "max-width",
+       "1000px"
+      ],
+      [
+       "margin-top",
+       "0px"
+      ],
+      [
+       "margin-right",
+       "auto"
+      ],
+      [
+       "margin-bottom",
+       "0px"
+      ],
+      [
+       "margin-left",
+       "auto"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "flex-direction",
+       "column"
+      ]
+     ],
+     "holes": [
+      "style:gap#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:gap#0",
+      "where": "style:gap",
+      "expr": "L.gap",
+      "path": "L.gap",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/20",
+    "realParent": "Confirmation/20",
+    "parentChain": [
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 23
+   },
+   "logic": {
+    "holes": {
+     "style:gap#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "20px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "24px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "28px"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/22": {
+   "template": {
+    "key": "Confirmation/22",
+    "component": "Confirmation",
+    "n": "22",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "display",
+       "grid"
+      ],
+      [
+       "row-gap",
+       "14px"
+      ],
+      [
+       "column-gap",
+       "14px"
+      ]
+     ],
+     "holes": [
+      "style:grid-template-columns#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:grid-template-columns#0",
+      "where": "style:grid-template-columns",
+      "expr": "L.steps",
+      "path": "L.steps",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/21",
+    "realParent": "Confirmation/21",
+    "parentChain": [
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 24
+   },
+   "logic": {
+    "holes": {
+     "style:grid-template-columns#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "1fr 1fr"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "repeat(4, 1fr)"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "repeat(4, 1fr)"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/23": {
+   "template": {
+    "key": "Confirmation/23",
+    "component": "Confirmation",
+    "n": "23",
+    "tag": "sc-for",
+    "realTag": "sc-for",
+    "attrs": {
+     "list": "{{ steps }}",
+     "as": "s",
+     "hint-placeholder-count": "0"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:list#0",
+      "where": "attr:list",
+      "expr": "steps",
+      "path": "steps",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/22",
+    "realParent": "Confirmation/22",
+    "parentChain": [
+     "Confirmation/22",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "list": "{{ steps }}",
+     "as": "s"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 25
+   },
+   "logic": {
+    "holes": {
+     "attr:list#0": {
+      "375": {
+       "v": [
+        {
+         "t": "array",
+         "n": 4
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "array",
+         "n": 4
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "array",
+         "n": 4
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/24": {
+   "template": {
+    "key": "Confirmation/24",
+    "component": "Confirmation",
+    "n": "24",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "22px"
+      ],
+      [
+       "border-top-right-radius",
+       "22px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "22px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "22px"
+      ],
+      [
+       "padding-top",
+       "18px"
+      ],
+      [
+       "padding-right",
+       "18px"
+      ],
+      [
+       "padding-bottom",
+       "18px"
+      ],
+      [
+       "padding-left",
+       "18px"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "flex-direction",
+       "column"
+      ],
+      [
+       "row-gap",
+       "8px"
+      ],
+      [
+       "column-gap",
+       "8px"
+      ]
+     ],
+     "holes": [
+      "style:background#0",
+      "style:box-shadow#1"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:background#0",
+      "where": "style:background",
+      "expr": "s.bg",
+      "path": "s.bg",
+      "whole": true
+     },
+     {
+      "id": "style:box-shadow#1",
+      "where": "style:box-shadow",
+      "expr": "s.shadow",
+      "path": "s.shadow",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/23",
+    "realParent": "Confirmation/22",
+    "parentChain": [
+     "Confirmation/23",
+     "Confirmation/22",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/23",
+       "list": "{{ steps }}",
+       "as": "s"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 26
+   },
+   "logic": {
+    "holes": {
+     "style:background#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "#F9CF6E"
+        },
+        {
+         "t": "string",
+         "v": "#FFFAF0"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "#F9CF6E"
+        },
+        {
+         "t": "string",
+         "v": "#FFFAF0"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "#F9CF6E"
+        },
+        {
+         "t": "string",
+         "v": "#FFFAF0"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      }
+     },
+     "style:box-shadow#1": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "4px 4px 0 #3A2A22"
+        },
+        {
+         "t": "string",
+         "v": "none"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "4px 4px 0 #3A2A22"
+        },
+        {
+         "t": "string",
+         "v": "none"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "4px 4px 0 #3A2A22"
+        },
+        {
+         "t": "string",
+         "v": "none"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/25": {
+   "template": {
+    "key": "Confirmation/25",
+    "component": "Confirmation",
+    "n": "25",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "width",
+       "40px"
+      ],
+      [
+       "height",
+       "40px"
+      ],
+      [
+       "border-top-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(255, 250, 240)"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "justify-content",
+       "center"
+      ],
+      [
+       "font-weight",
+       "700"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "s.icon",
+      "path": "s.icon",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/24",
+    "realParent": "Confirmation/24",
+    "parentChain": [
+     "Confirmation/24",
+     "Confirmation/23",
+     "Confirmation/22",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/23",
+       "list": "{{ steps }}",
+       "as": "s"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ s.icon }}",
+    "srcLine": 27
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "✓"
+        },
+        {
+         "t": "string",
+         "v": "✦"
+        },
+        {
+         "t": "string",
+         "v": "→"
+        },
+        {
+         "t": "string",
+         "v": "♥"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "✓"
+        },
+        {
+         "t": "string",
+         "v": "✦"
+        },
+        {
+         "t": "string",
+         "v": "→"
+        },
+        {
+         "t": "string",
+         "v": "♥"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "✓"
+        },
+        {
+         "t": "string",
+         "v": "✦"
+        },
+        {
+         "t": "string",
+         "v": "→"
+        },
+        {
+         "t": "string",
+         "v": "♥"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/26": {
+   "template": {
+    "key": "Confirmation/26",
+    "component": "Confirmation",
+    "n": "26",
+    "tag": "b",
+    "realTag": "b",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "\"Young Serif\", serif"
+      ],
+      [
+       "font-weight",
+       "400"
+      ],
+      [
+       "font-size",
+       "20px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "s.t",
+      "path": "s.t",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/24",
+    "realParent": "Confirmation/24",
+    "parentChain": [
+     "Confirmation/24",
+     "Confirmation/23",
+     "Confirmation/22",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/23",
+       "list": "{{ steps }}",
+       "as": "s"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ s.t }}",
+    "srcLine": 28
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Order placed"
+        },
+        {
+         "t": "string",
+         "v": "Baking"
+        },
+        {
+         "t": "string",
+         "v": "Posted"
+        },
+        {
+         "t": "string",
+         "v": "With you"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Order placed"
+        },
+        {
+         "t": "string",
+         "v": "Baking"
+        },
+        {
+         "t": "string",
+         "v": "Posted"
+        },
+        {
+         "t": "string",
+         "v": "With you"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Order placed"
+        },
+        {
+         "t": "string",
+         "v": "Baking"
+        },
+        {
+         "t": "string",
+         "v": "Posted"
+        },
+        {
+         "t": "string",
+         "v": "With you"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/27": {
+   "template": {
+    "key": "Confirmation/27",
+    "component": "Confirmation",
+    "n": "27",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-size",
+       "14px"
+      ],
+      [
+       "line-height",
+       "1.45"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "s.d",
+      "path": "s.d",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/24",
+    "realParent": "Confirmation/24",
+    "parentChain": [
+     "Confirmation/24",
+     "Confirmation/23",
+     "Confirmation/22",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/23",
+       "list": "{{ steps }}",
+       "as": "s"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ s.d }}",
+    "srcLine": 29
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Just now"
+        },
+        {
+         "t": "string",
+         "v": "Zainab bakes it fresh on Mon 23 Nov"
+        },
+        {
+         "t": "string",
+         "v": "Royal Mail Tracked, link by email"
+        },
+        {
+         "t": "string",
+         "v": "Usually in 3–5 days"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Just now"
+        },
+        {
+         "t": "string",
+         "v": "Zainab bakes it fresh on Mon 23 Nov"
+        },
+        {
+         "t": "string",
+         "v": "Royal Mail Tracked, link by email"
+        },
+        {
+         "t": "string",
+         "v": "Usually in 3–5 days"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Just now"
+        },
+        {
+         "t": "string",
+         "v": "Zainab bakes it fresh on Mon 23 Nov"
+        },
+        {
+         "t": "string",
+         "v": "Royal Mail Tracked, link by email"
+        },
+        {
+         "t": "string",
+         "v": "Usually in 3–5 days"
+        }
+       ],
+       "n": 4,
+       "loop": true
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/28": {
+   "template": {
+    "key": "Confirmation/28",
+    "component": "Confirmation",
+    "n": "28",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "display",
+       "grid"
+      ],
+      [
+       "row-gap",
+       "20px"
+      ],
+      [
+       "column-gap",
+       "20px"
+      ],
+      [
+       "align-items",
+       "start"
+      ]
+     ],
+     "holes": [
+      "style:grid-template-columns#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:grid-template-columns#0",
+      "where": "style:grid-template-columns",
+      "expr": "L.two",
+      "path": "L.two",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/21",
+    "realParent": "Confirmation/21",
+    "parentChain": [
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 34
+   },
+   "logic": {
+    "holes": {
+     "style:grid-template-columns#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "1fr"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "1fr 1fr"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "1fr 1fr"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/29": {
+   "template": {
+    "key": "Confirmation/29",
+    "component": "Confirmation",
+    "n": "29",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(255, 250, 240)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "26px"
+      ],
+      [
+       "border-top-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "26px"
+      ],
+      [
+       "padding-top",
+       "22px"
+      ],
+      [
+       "padding-right",
+       "22px"
+      ],
+      [
+       "padding-bottom",
+       "22px"
+      ],
+      [
+       "padding-left",
+       "22px"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "flex-direction",
+       "column"
+      ],
+      [
+       "row-gap",
+       "12px"
+      ],
+      [
+       "column-gap",
+       "12px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/28",
+    "realParent": "Confirmation/28",
+    "parentChain": [
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 35
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/30": {
+   "template": {
+    "key": "Confirmation/30",
+    "component": "Confirmation",
+    "n": "30",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "\"Young Serif\", serif"
+      ],
+      [
+       "font-size",
+       "22px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/29",
+    "realParent": "Confirmation/29",
+    "parentChain": [
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "What’s coming",
+    "srcLine": 36
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/31": {
+   "template": {
+    "key": "Confirmation/31",
+    "component": "Confirmation",
+    "n": "31",
+    "tag": "sc-for",
+    "realTag": "sc-for",
+    "attrs": {
+     "list": "{{ items }}",
+     "as": "it",
+     "hint-placeholder-count": "0"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:list#0",
+      "where": "attr:list",
+      "expr": "items",
+      "path": "items",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/29",
+    "realParent": "Confirmation/29",
+    "parentChain": [
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "list": "{{ items }}",
+     "as": "it"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 37
+   },
+   "logic": {
+    "holes": {
+     "attr:list#0": {
+      "375": {
+       "v": [
+        {
+         "t": "array",
+         "n": 1
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "array",
+         "n": 1
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "array",
+         "n": 1
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/32": {
+   "template": {
+    "key": "Confirmation/32",
+    "component": "Confirmation",
+    "n": "32",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "display",
+       "grid"
+      ],
+      [
+       "grid-template-columns",
+       "56px 1fr auto"
+      ],
+      [
+       "row-gap",
+       "12px"
+      ],
+      [
+       "column-gap",
+       "12px"
+      ],
+      [
+       "align-items",
+       "center"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/31",
+    "realParent": "Confirmation/29",
+    "parentChain": [
+     "Confirmation/31",
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/31",
+       "list": "{{ items }}",
+       "as": "it"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 37
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/33": {
+   "template": {
+    "key": "Confirmation/33",
+    "component": "Confirmation",
+    "n": "33",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "width",
+       "56px"
+      ],
+      [
+       "height",
+       "56px"
+      ],
+      [
+       "border-top-left-radius",
+       "12px"
+      ],
+      [
+       "border-top-right-radius",
+       "12px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "12px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "12px"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "background-size",
+       "cover"
+      ],
+      [
+       "background-position-x",
+       "center"
+      ],
+      [
+       "background-position-y",
+       "center"
+      ]
+     ],
+     "holes": [
+      "style:background-image#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:background-image#0",
+      "where": "style:background-image",
+      "expr": "it.bg",
+      "path": "it.bg",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/32",
+    "realParent": "Confirmation/32",
+    "parentChain": [
+     "Confirmation/32",
+     "Confirmation/31",
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/31",
+       "list": "{{ items }}",
+       "as": "it"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 37
+   },
+   "logic": {
+    "holes": {
+     "style:background-image#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "url(assets/photo-pair-love.jpg)"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "url(assets/photo-pair-love.jpg)"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "url(assets/photo-pair-love.jpg)"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/34": {
+   "template": {
+    "key": "Confirmation/34",
+    "component": "Confirmation",
+    "n": "34",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "min-width",
+       "0px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/32",
+    "realParent": "Confirmation/32",
+    "parentChain": [
+     "Confirmation/32",
+     "Confirmation/31",
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/31",
+       "list": "{{ items }}",
+       "as": "it"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 37
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/35": {
+   "template": {
+    "key": "Confirmation/35",
+    "component": "Confirmation",
+    "n": "35",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-weight",
+       "700"
+      ],
+      [
+       "font-size",
+       "15px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "it.qty",
+      "path": "it.qty",
+      "whole": false
+     },
+     {
+      "id": "text#1",
+      "where": "text",
+      "expr": "it.name",
+      "path": "it.name",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/34",
+    "realParent": "Confirmation/34",
+    "parentChain": [
+     "Confirmation/34",
+     "Confirmation/32",
+     "Confirmation/31",
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/31",
+       "list": "{{ items }}",
+       "as": "it"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ it.qty }} × {{ it.name }}",
+    "srcLine": 37
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "number",
+         "v": 1
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "number",
+         "v": 1
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "number",
+         "v": 1
+        }
+       ],
+       "n": 1,
+       "loop": true
+      }
+     },
+     "text#1": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Zookies · 20 pack"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Zookies · 20 pack"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Zookies · 20 pack"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/36": {
+   "template": {
+    "key": "Confirmation/36",
+    "component": "Confirmation",
+    "n": "36",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-size",
+       "13px"
+      ],
+      [
+       "color",
+       "rgb(94, 74, 61)"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "it.variant",
+      "path": "it.variant",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/34",
+    "realParent": "Confirmation/34",
+    "parentChain": [
+     "Confirmation/34",
+     "Confirmation/32",
+     "Confirmation/31",
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/31",
+       "list": "{{ items }}",
+       "as": "it"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ it.variant }}",
+    "srcLine": 37
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Classic oat · milk choc chips · strawberry"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Classic oat · milk choc chips · strawberry"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Classic oat · milk choc chips · strawberry"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/37": {
+   "template": {
+    "key": "Confirmation/37",
+    "component": "Confirmation",
+    "n": "37",
+    "tag": "b",
+    "realTag": "b",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "it.total",
+      "path": "it.total",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/32",
+    "realParent": "Confirmation/32",
+    "parentChain": [
+     "Confirmation/32",
+     "Confirmation/31",
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [
+      {
+       "key": "Confirmation/31",
+       "list": "{{ items }}",
+       "as": "it"
+      }
+     ],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": true,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ it.total }}",
+    "srcLine": 37
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "£21.50"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "£21.50"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "£21.50"
+        }
+       ],
+       "n": 1,
+       "loop": true
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/38": {
+   "template": {
+    "key": "Confirmation/38",
+    "component": "Confirmation",
+    "n": "38",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "justify-content",
+       "space-between"
+      ],
+      [
+       "align-items",
+       "baseline"
+      ],
+      [
+       "padding-top",
+       "12px"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "dashed"
+      ],
+      [
+       "border-top-color",
+       "rgba(58, 42, 34, 0.3)"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/29",
+    "realParent": "Confirmation/29",
+    "parentChain": [
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 38
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/39": {
+   "template": {
+    "key": "Confirmation/39",
+    "component": "Confirmation",
+    "n": "39",
+    "tag": "b",
+    "realTag": "b",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/38",
+    "realParent": "Confirmation/38",
+    "parentChain": [
+     "Confirmation/38",
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Paid",
+    "srcLine": 38
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/40": {
+   "template": {
+    "key": "Confirmation/40",
+    "component": "Confirmation",
+    "n": "40",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "\"Young Serif\", serif"
+      ],
+      [
+       "font-size",
+       "26px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "totalText",
+      "path": "totalText",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/38",
+    "realParent": "Confirmation/38",
+    "parentChain": [
+     "Confirmation/38",
+     "Confirmation/29",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ totalText }}",
+    "srcLine": 38
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "£21.50"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "£21.50"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "£21.50"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/41": {
+   "template": {
+    "key": "Confirmation/41",
+    "component": "Confirmation",
+    "n": "41",
+    "tag": "sc-if",
+    "realTag": "sc-if",
+    "attrs": {
+     "value": "{{ hasNote }}",
+     "hint-placeholder-val": "{{ false }}"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:value#0",
+      "where": "attr:value",
+      "expr": "hasNote",
+      "path": "hasNote",
+      "whole": true
+     },
+     {
+      "id": "attr:hint-placeholder-val#1",
+      "where": "attr:hint-placeholder-val",
+      "expr": "false",
+      "path": "false",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/28",
+    "realParent": "Confirmation/28",
+    "parentChain": [
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "value": "{{ hasNote }}"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 40
+   },
+   "logic": {
+    "holes": {
+     "attr:value#0": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "attr:hint-placeholder-val#1": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    },
+    "width": null,
+    "via": "!!note"
+   }
+  },
+  "Confirmation/42": {
+   "template": {
+    "key": "Confirmation/42",
+    "component": "Confirmation",
+    "n": "42",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "position",
+       "relative"
+      ],
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(255, 250, 240)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "6px"
+      ],
+      [
+       "border-top-right-radius",
+       "6px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "6px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "6px"
+      ],
+      [
+       "padding-top",
+       "30px"
+      ],
+      [
+       "padding-right",
+       "24px"
+      ],
+      [
+       "padding-bottom",
+       "22px"
+      ],
+      [
+       "padding-left",
+       "24px"
+      ],
+      [
+       "transform",
+       "rotate(2deg)"
+      ],
+      [
+       "box-shadow",
+       "rgb(58, 42, 34) 6px 6px 0px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/41",
+    "realParent": "Confirmation/28",
+    "parentChain": [
+     "Confirmation/41",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/41",
+       "value": "{{ hasNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 41
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/43": {
+   "template": {
+    "key": "Confirmation/43",
+    "component": "Confirmation",
+    "n": "43",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {
+     "aria-hidden": "true"
+    },
+    "style": {
+     "static": [
+      [
+       "position",
+       "absolute"
+      ],
+      [
+       "top",
+       "-12px"
+      ],
+      [
+       "left",
+       "50%"
+      ],
+      [
+       "width",
+       "90px"
+      ],
+      [
+       "height",
+       "24px"
+      ],
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgba(249, 207, 110, 0.85)"
+      ],
+      [
+       "transform",
+       "translateX(-50%) rotate(-3deg)"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/42",
+    "realParent": "Confirmation/42",
+    "parentChain": [
+     "Confirmation/42",
+     "Confirmation/41",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/41",
+       "value": "{{ hasNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 42
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/44": {
+   "template": {
+    "key": "Confirmation/44",
+    "component": "Confirmation",
+    "n": "44",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-size",
+       "13px"
+      ],
+      [
+       "font-weight",
+       "700"
+      ],
+      [
+       "letter-spacing",
+       "0.06em"
+      ],
+      [
+       "text-transform",
+       "uppercase"
+      ],
+      [
+       "margin-bottom",
+       "8px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/42",
+    "realParent": "Confirmation/42",
+    "parentChain": [
+     "Confirmation/42",
+     "Confirmation/41",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/41",
+       "value": "{{ hasNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Your note, going in the box",
+    "srcLine": 43
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/45": {
+   "template": {
+    "key": "Confirmation/45",
+    "component": "Confirmation",
+    "n": "45",
+    "tag": "sc-if",
+    "realTag": "sc-if",
+    "attrs": {
+     "value": "{{ hasTo }}",
+     "hint-placeholder-val": "{{ false }}"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:value#0",
+      "where": "attr:value",
+      "expr": "hasTo",
+      "path": "hasTo",
+      "whole": true
+     },
+     {
+      "id": "attr:hint-placeholder-val#1",
+      "where": "attr:hint-placeholder-val",
+      "expr": "false",
+      "path": "false",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/42",
+    "realParent": "Confirmation/42",
+    "parentChain": [
+     "Confirmation/42",
+     "Confirmation/41",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/41",
+       "value": "{{ hasNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "value": "{{ hasTo }}"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 44
+   },
+   "logic": {
+    "holes": {
+     "attr:value#0": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "attr:hint-placeholder-val#1": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    },
+    "width": null,
+    "via": "!!(o.gift && o.gift.to)"
+   }
+  },
+  "Confirmation/46": {
+   "template": {
+    "key": "Confirmation/46",
+    "component": "Confirmation",
+    "n": "46",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "Caveat, cursive"
+      ],
+      [
+       "font-size",
+       "30px"
+      ],
+      [
+       "line-height",
+       "1.1"
+      ],
+      [
+       "margin-bottom",
+       "4px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "giftTo",
+      "path": "giftTo",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/45",
+    "realParent": "Confirmation/42",
+    "parentChain": [
+     "Confirmation/45",
+     "Confirmation/42",
+     "Confirmation/41",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/45",
+       "value": "{{ hasTo }}"
+      },
+      {
+       "key": "Confirmation/41",
+       "value": "{{ hasNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Dear {{ giftTo }},",
+    "srcLine": 44
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": ""
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": ""
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": ""
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/47": {
+   "template": {
+    "key": "Confirmation/47",
+    "component": "Confirmation",
+    "n": "47",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "Caveat, cursive"
+      ],
+      [
+       "font-size",
+       "28px"
+      ],
+      [
+       "line-height",
+       "1.2"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "note",
+      "path": "note",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/42",
+    "realParent": "Confirmation/42",
+    "parentChain": [
+     "Confirmation/42",
+     "Confirmation/41",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/41",
+       "value": "{{ hasNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ note }}",
+    "srcLine": 45
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": ""
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": ""
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": ""
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/48": {
+   "template": {
+    "key": "Confirmation/48",
+    "component": "Confirmation",
+    "n": "48",
+    "tag": "sc-if",
+    "realTag": "sc-if",
+    "attrs": {
+     "value": "{{ noNote }}",
+     "hint-placeholder-val": "{{ true }}"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:value#0",
+      "where": "attr:value",
+      "expr": "noNote",
+      "path": "noNote",
+      "whole": true
+     },
+     {
+      "id": "attr:hint-placeholder-val#1",
+      "where": "attr:hint-placeholder-val",
+      "expr": "true",
+      "path": "true",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/28",
+    "realParent": "Confirmation/28",
+    "parentChain": [
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "value": "{{ noNote }}"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 48
+   },
+   "logic": {
+    "holes": {
+     "attr:value#0": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "attr:hint-placeholder-val#1": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    },
+    "width": null,
+    "via": "!note"
+   }
+  },
+  "Confirmation/49": {
+   "template": {
+    "key": "Confirmation/49",
+    "component": "Confirmation",
+    "n": "49",
+    "tag": "a",
+    "realTag": "a",
+    "attrs": {
+     "href": "Product.dc.html?id=trial"
+    },
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(252, 235, 190)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "26px"
+      ],
+      [
+       "border-top-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "26px"
+      ],
+      [
+       "padding-top",
+       "22px"
+      ],
+      [
+       "padding-right",
+       "22px"
+      ],
+      [
+       "padding-bottom",
+       "22px"
+      ],
+      [
+       "padding-left",
+       "22px"
+      ],
+      [
+       "text-decoration-line",
+       "none"
+      ],
+      [
+       "text-decoration-thickness",
+       "initial"
+      ],
+      [
+       "text-decoration-style",
+       "initial"
+      ],
+      [
+       "text-decoration-color",
+       "initial"
+      ],
+      [
+       "color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "flex-direction",
+       "column"
+      ],
+      [
+       "row-gap",
+       "8px"
+      ],
+      [
+       "column-gap",
+       "8px"
+      ],
+      [
+       "transition-behavior",
+       "normal, normal"
+      ],
+      [
+       "transition-duration",
+       "0.3s, 0.3s"
+      ],
+      [
+       "transition-timing-function",
+       "cubic-bezier(0.3, 1.4, 0.5, 1), ease"
+      ],
+      [
+       "transition-delay",
+       "0s, 0s"
+      ],
+      [
+       "transition-property",
+       "transform, box-shadow"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {
+     "hover": {
+      "static": [
+       [
+        "transform",
+        "translate(-4px, -4px)"
+       ],
+       [
+        "box-shadow",
+        "rgb(58, 42, 34) 8px 8px 0px"
+       ]
+      ],
+      "holes": []
+     }
+    },
+    "holes": [],
+    "parent": "Confirmation/48",
+    "realParent": "Confirmation/28",
+    "parentChain": [
+     "Confirmation/48",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/48",
+       "value": "{{ noNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 49
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/50": {
+   "template": {
+    "key": "Confirmation/50",
+    "component": "Confirmation",
+    "n": "50",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "Caveat, cursive"
+      ],
+      [
+       "font-size",
+       "26px"
+      ],
+      [
+       "color",
+       "rgb(122, 90, 18)"
+      ],
+      [
+       "line-height",
+       "1"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/49",
+    "realParent": "Confirmation/49",
+    "parentChain": [
+     "Confirmation/49",
+     "Confirmation/48",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/48",
+       "value": "{{ noNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "know another new mum?",
+    "srcLine": 50
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/51": {
+   "template": {
+    "key": "Confirmation/51",
+    "component": "Confirmation",
+    "n": "51",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "\"Young Serif\", serif"
+      ],
+      [
+       "font-size",
+       "24px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/49",
+    "realParent": "Confirmation/49",
+    "parentChain": [
+     "Confirmation/49",
+     "Confirmation/48",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/48",
+       "value": "{{ noNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Send her a Taster Trio",
+    "srcLine": 51
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/52": {
+   "template": {
+    "key": "Confirmation/52",
+    "component": "Confirmation",
+    "n": "52",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-size",
+       "15px"
+      ],
+      [
+       "line-height",
+       "1.5"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/49",
+    "realParent": "Confirmation/49",
+    "parentChain": [
+     "Confirmation/49",
+     "Confirmation/48",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/48",
+       "value": "{{ noNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "3 Zookies through her letterbox for £5, postage included.",
+    "srcLine": 52
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/53": {
+   "template": {
+    "key": "Confirmation/53",
+    "component": "Confirmation",
+    "n": "53",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-weight",
+       "700"
+      ],
+      [
+       "margin-top",
+       "4px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/49",
+    "realParent": "Confirmation/49",
+    "parentChain": [
+     "Confirmation/49",
+     "Confirmation/48",
+     "Confirmation/28",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/48",
+       "value": "{{ noNote }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Send one →",
+    "srcLine": 53
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/54": {
+   "template": {
+    "key": "Confirmation/54",
+    "component": "Confirmation",
+    "n": "54",
+    "tag": "sc-if",
+    "realTag": "sc-if",
+    "attrs": {
+     "value": "{{ hasAcct }}",
+     "hint-placeholder-val": "{{ false }}"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:value#0",
+      "where": "attr:value",
+      "expr": "hasAcct",
+      "path": "hasAcct",
+      "whole": true
+     },
+     {
+      "id": "attr:hint-placeholder-val#1",
+      "where": "attr:hint-placeholder-val",
+      "expr": "false",
+      "path": "false",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/21",
+    "realParent": "Confirmation/21",
+    "parentChain": [
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "value": "{{ hasAcct }}"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 58
+   },
+   "logic": {
+    "holes": {
+     "attr:value#0": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "attr:hint-placeholder-val#1": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": false
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    },
+    "width": null,
+    "via": "!!o.account"
+   }
+  },
+  "Confirmation/55": {
+   "template": {
+    "key": "Confirmation/55",
+    "component": "Confirmation",
+    "n": "55",
+    "tag": "a",
+    "realTag": "a",
+    "attrs": {
+     "href": "{{ orderHref }}"
+    },
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(252, 235, 190)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "26px"
+      ],
+      [
+       "border-top-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "26px"
+      ],
+      [
+       "padding-top",
+       "22px"
+      ],
+      [
+       "padding-right",
+       "22px"
+      ],
+      [
+       "padding-bottom",
+       "22px"
+      ],
+      [
+       "padding-left",
+       "22px"
+      ],
+      [
+       "text-decoration-line",
+       "none"
+      ],
+      [
+       "text-decoration-thickness",
+       "initial"
+      ],
+      [
+       "text-decoration-style",
+       "initial"
+      ],
+      [
+       "text-decoration-color",
+       "initial"
+      ],
+      [
+       "color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "justify-content",
+       "space-between"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "row-gap",
+       "16px"
+      ],
+      [
+       "column-gap",
+       "16px"
+      ],
+      [
+       "flex-wrap",
+       "wrap"
+      ],
+      [
+       "transition-behavior",
+       "normal, normal"
+      ],
+      [
+       "transition-duration",
+       "0.3s, 0.3s"
+      ],
+      [
+       "transition-timing-function",
+       "cubic-bezier(0.3, 1.4, 0.5, 1), ease"
+      ],
+      [
+       "transition-delay",
+       "0s, 0s"
+      ],
+      [
+       "transition-property",
+       "transform, box-shadow"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {
+     "hover": {
+      "static": [
+       [
+        "transform",
+        "translate(-4px, -4px)"
+       ],
+       [
+        "box-shadow",
+        "rgb(58, 42, 34) 8px 8px 0px"
+       ]
+      ],
+      "holes": []
+     }
+    },
+    "holes": [
+     {
+      "id": "attr:href#0",
+      "where": "attr:href",
+      "expr": "orderHref",
+      "path": "orderHref",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/54",
+    "realParent": "Confirmation/21",
+    "parentChain": [
+     "Confirmation/54",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/54",
+       "value": "{{ hasAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 59
+   },
+   "logic": {
+    "holes": {
+     "attr:href#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Account.dc.html?order=MM-1042"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Account.dc.html?order=MM-1042"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "Account.dc.html?order=MM-1042"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/56": {
+   "template": {
+    "key": "Confirmation/56",
+    "component": "Confirmation",
+    "n": "56",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/55",
+    "realParent": "Confirmation/55",
+    "parentChain": [
+     "Confirmation/55",
+     "Confirmation/54",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/54",
+       "value": "{{ hasAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 60
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/57": {
+   "template": {
+    "key": "Confirmation/57",
+    "component": "Confirmation",
+    "n": "57",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "Caveat, cursive"
+      ],
+      [
+       "font-size",
+       "26px"
+      ],
+      [
+       "color",
+       "rgb(122, 90, 18)"
+      ],
+      [
+       "display",
+       "block"
+      ],
+      [
+       "line-height",
+       "1"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "text#0",
+      "where": "text",
+      "expr": "acctEyebrow",
+      "path": "acctEyebrow",
+      "whole": false
+     }
+    ],
+    "parent": "Confirmation/56",
+    "realParent": "Confirmation/56",
+    "parentChain": [
+     "Confirmation/56",
+     "Confirmation/55",
+     "Confirmation/54",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/54",
+       "value": "{{ hasAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "{{ acctEyebrow }}",
+    "srcLine": 60
+   },
+   "logic": {
+    "holes": {
+     "text#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "all in one place"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "all in one place"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "all in one place"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/58": {
+   "template": {
+    "key": "Confirmation/58",
+    "component": "Confirmation",
+    "n": "58",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "\"Young Serif\", serif"
+      ],
+      [
+       "font-size",
+       "22px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/56",
+    "realParent": "Confirmation/56",
+    "parentChain": [
+     "Confirmation/56",
+     "Confirmation/55",
+     "Confirmation/54",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/54",
+       "value": "{{ hasAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Follow this order in your account",
+    "srcLine": 60
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/59": {
+   "template": {
+    "key": "Confirmation/59",
+    "component": "Confirmation",
+    "n": "59",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-weight",
+       "700"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/55",
+    "realParent": "Confirmation/55",
+    "parentChain": [
+     "Confirmation/55",
+     "Confirmation/54",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/54",
+       "value": "{{ hasAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "View order →",
+    "srcLine": 61
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/60": {
+   "template": {
+    "key": "Confirmation/60",
+    "component": "Confirmation",
+    "n": "60",
+    "tag": "sc-if",
+    "realTag": "sc-if",
+    "attrs": {
+     "value": "{{ noAcct }}",
+     "hint-placeholder-val": "{{ true }}"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "attr:value#0",
+      "where": "attr:value",
+      "expr": "noAcct",
+      "path": "noAcct",
+      "whole": true
+     },
+     {
+      "id": "attr:hint-placeholder-val#1",
+      "where": "attr:hint-placeholder-val",
+      "expr": "true",
+      "path": "true",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/21",
+    "realParent": "Confirmation/21",
+    "parentChain": [
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "value": "{{ noAcct }}"
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 64
+   },
+   "logic": {
+    "holes": {
+     "attr:value#0": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     },
+     "attr:hint-placeholder-val#1": {
+      "375": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "boolean",
+         "v": true
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    },
+    "width": null,
+    "via": "!o.account"
+   }
+  },
+  "Confirmation/61": {
+   "template": {
+    "key": "Confirmation/61",
+    "component": "Confirmation",
+    "n": "61",
+    "tag": "a",
+    "realTag": "a",
+    "attrs": {
+     "href": "SignIn.dc.html?mode=register"
+    },
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(255, 250, 240)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "dashed"
+      ],
+      [
+       "border-right-style",
+       "dashed"
+      ],
+      [
+       "border-bottom-style",
+       "dashed"
+      ],
+      [
+       "border-left-style",
+       "dashed"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "26px"
+      ],
+      [
+       "border-top-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "26px"
+      ],
+      [
+       "padding-top",
+       "22px"
+      ],
+      [
+       "padding-right",
+       "22px"
+      ],
+      [
+       "padding-bottom",
+       "22px"
+      ],
+      [
+       "padding-left",
+       "22px"
+      ],
+      [
+       "text-decoration-line",
+       "none"
+      ],
+      [
+       "text-decoration-thickness",
+       "initial"
+      ],
+      [
+       "text-decoration-style",
+       "initial"
+      ],
+      [
+       "text-decoration-color",
+       "initial"
+      ],
+      [
+       "color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "justify-content",
+       "space-between"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "row-gap",
+       "16px"
+      ],
+      [
+       "column-gap",
+       "16px"
+      ],
+      [
+       "flex-wrap",
+       "wrap"
+      ],
+      [
+       "transition-behavior",
+       "normal, normal"
+      ],
+      [
+       "transition-duration",
+       "0.3s, 0.3s"
+      ],
+      [
+       "transition-timing-function",
+       "cubic-bezier(0.3, 1.4, 0.5, 1), ease"
+      ],
+      [
+       "transition-delay",
+       "0s, 0s"
+      ],
+      [
+       "transition-property",
+       "transform, box-shadow"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {
+     "hover": {
+      "static": [
+       [
+        "transform",
+        "translate(-4px, -4px)"
+       ],
+       [
+        "box-shadow",
+        "rgb(58, 42, 34) 8px 8px 0px"
+       ]
+      ],
+      "holes": []
+     }
+    },
+    "holes": [],
+    "parent": "Confirmation/60",
+    "realParent": "Confirmation/21",
+    "parentChain": [
+     "Confirmation/60",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/60",
+       "value": "{{ noAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 65
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/62": {
+   "template": {
+    "key": "Confirmation/62",
+    "component": "Confirmation",
+    "n": "62",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/61",
+    "realParent": "Confirmation/61",
+    "parentChain": [
+     "Confirmation/61",
+     "Confirmation/60",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/60",
+       "value": "{{ noAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 66
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/63": {
+   "template": {
+    "key": "Confirmation/63",
+    "component": "Confirmation",
+    "n": "63",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "Caveat, cursive"
+      ],
+      [
+       "font-size",
+       "26px"
+      ],
+      [
+       "color",
+       "rgb(142, 52, 68)"
+      ],
+      [
+       "display",
+       "block"
+      ],
+      [
+       "line-height",
+       "1"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/62",
+    "realParent": "Confirmation/62",
+    "parentChain": [
+     "Confirmation/62",
+     "Confirmation/61",
+     "Confirmation/60",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/60",
+       "value": "{{ noAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "next time",
+    "srcLine": 66
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/64": {
+   "template": {
+    "key": "Confirmation/64",
+    "component": "Confirmation",
+    "n": "64",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "\"Young Serif\", serif"
+      ],
+      [
+       "font-size",
+       "22px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/62",
+    "realParent": "Confirmation/62",
+    "parentChain": [
+     "Confirmation/62",
+     "Confirmation/61",
+     "Confirmation/60",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/60",
+       "value": "{{ noAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Create an account to see bake dates and past orders",
+    "srcLine": 66
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/65": {
+   "template": {
+    "key": "Confirmation/65",
+    "component": "Confirmation",
+    "n": "65",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-weight",
+       "700"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/61",
+    "realParent": "Confirmation/61",
+    "parentChain": [
+     "Confirmation/61",
+     "Confirmation/60",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [
+      {
+       "key": "Confirmation/60",
+       "value": "{{ noAcct }}"
+      }
+     ],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Create an account →",
+    "srcLine": 67
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/66": {
+   "template": {
+    "key": "Confirmation/66",
+    "component": "Confirmation",
+    "n": "66",
+    "tag": "div",
+    "realTag": "div",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "display",
+       "grid"
+      ],
+      [
+       "row-gap",
+       "20px"
+      ],
+      [
+       "column-gap",
+       "20px"
+      ]
+     ],
+     "holes": [
+      "style:grid-template-columns#0"
+     ]
+    },
+    "pseudo": {},
+    "holes": [
+     {
+      "id": "style:grid-template-columns#0",
+      "where": "style:grid-template-columns",
+      "expr": "L.two",
+      "path": "L.two",
+      "whole": true
+     }
+    ],
+    "parent": "Confirmation/21",
+    "realParent": "Confirmation/21",
+    "parentChain": [
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 70
+   },
+   "logic": {
+    "holes": {
+     "style:grid-template-columns#0": {
+      "375": {
+       "v": [
+        {
+         "t": "string",
+         "v": "1fr"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "768": {
+       "v": [
+        {
+         "t": "string",
+         "v": "1fr 1fr"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      },
+      "1440": {
+       "v": [
+        {
+         "t": "string",
+         "v": "1fr 1fr"
+        }
+       ],
+       "n": 1,
+       "loop": false
+      }
+     }
+    }
+   }
+  },
+  "Confirmation/67": {
+   "template": {
+    "key": "Confirmation/67",
+    "component": "Confirmation",
+    "n": "67",
+    "tag": "a",
+    "realTag": "a",
+    "attrs": {
+     "href": "https://www.instagram.com/mamasmunches/"
+    },
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(249, 213, 211)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "26px"
+      ],
+      [
+       "border-top-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "26px"
+      ],
+      [
+       "padding-top",
+       "22px"
+      ],
+      [
+       "padding-right",
+       "22px"
+      ],
+      [
+       "padding-bottom",
+       "22px"
+      ],
+      [
+       "padding-left",
+       "22px"
+      ],
+      [
+       "text-decoration-line",
+       "none"
+      ],
+      [
+       "text-decoration-thickness",
+       "initial"
+      ],
+      [
+       "text-decoration-style",
+       "initial"
+      ],
+      [
+       "text-decoration-color",
+       "initial"
+      ],
+      [
+       "color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "row-gap",
+       "16px"
+      ],
+      [
+       "column-gap",
+       "16px"
+      ],
+      [
+       "transition-behavior",
+       "normal, normal"
+      ],
+      [
+       "transition-duration",
+       "0.3s, 0.3s"
+      ],
+      [
+       "transition-timing-function",
+       "cubic-bezier(0.3, 1.4, 0.5, 1), ease"
+      ],
+      [
+       "transition-delay",
+       "0s, 0s"
+      ],
+      [
+       "transition-property",
+       "transform, box-shadow"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {
+     "hover": {
+      "static": [
+       [
+        "transform",
+        "translate(-4px, -4px)"
+       ],
+       [
+        "box-shadow",
+        "rgb(58, 42, 34) 8px 8px 0px"
+       ]
+      ],
+      "holes": []
+     }
+    },
+    "holes": [],
+    "parent": "Confirmation/66",
+    "realParent": "Confirmation/66",
+    "parentChain": [
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 71
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/68": {
+   "template": {
+    "key": "Confirmation/68",
+    "component": "Confirmation",
+    "n": "68",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "flex-grow",
+       "0"
+      ],
+      [
+       "flex-shrink",
+       "0"
+      ],
+      [
+       "flex-basis",
+       "auto"
+      ],
+      [
+       "width",
+       "56px"
+      ],
+      [
+       "height",
+       "56px"
+      ],
+      [
+       "border-top-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "background-image",
+       "radial-gradient(circle at 30% 107%, rgb(253, 244, 151) 0%, rgb(253, 89, 73) 45%, rgb(214, 36, 159) 60%, rgb(40, 90, 235) 90%)"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "initial"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "justify-content",
+       "center"
+      ],
+      [
+       "color",
+       "rgb(255, 255, 255)"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/67",
+    "realParent": "Confirmation/67",
+    "parentChain": [
+     "Confirmation/67",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 72
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/69": {
+   "template": {
+    "key": "Confirmation/69",
+    "component": "Confirmation",
+    "n": "69",
+    "tag": "svg",
+    "realTag": "svg",
+    "svg": "svg",
+    "attrs": {
+     "width": "24",
+     "height": "24",
+     "viewBox": "0 0 24 24"
+    },
+    "style": {
+     "static": [
+      [
+       "fill",
+       "none"
+      ],
+      [
+       "stroke",
+       "currentcolor"
+      ],
+      [
+       "stroke-width",
+       "2"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/68",
+    "realParent": "Confirmation/68",
+    "parentChain": [
+     "Confirmation/68",
+     "Confirmation/67",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 72
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/70": {
+   "template": {
+    "key": "Confirmation/70",
+    "component": "Confirmation",
+    "n": "70",
+    "tag": "rect",
+    "realTag": "rect",
+    "svg": "rect",
+    "attrs": {
+     "x": "3",
+     "y": "3",
+     "width": "18",
+     "height": "18",
+     "rx": "5"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/69",
+    "realParent": "Confirmation/69",
+    "parentChain": [
+     "Confirmation/69",
+     "Confirmation/68",
+     "Confirmation/67",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 72
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/71": {
+   "template": {
+    "key": "Confirmation/71",
+    "component": "Confirmation",
+    "n": "71",
+    "tag": "circle",
+    "realTag": "circle",
+    "svg": "circle",
+    "attrs": {
+     "cx": "12",
+     "cy": "12",
+     "r": "4"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/69",
+    "realParent": "Confirmation/69",
+    "parentChain": [
+     "Confirmation/69",
+     "Confirmation/68",
+     "Confirmation/67",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 72
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/72": {
+   "template": {
+    "key": "Confirmation/72",
+    "component": "Confirmation",
+    "n": "72",
+    "tag": "circle",
+    "realTag": "circle",
+    "svg": "circle",
+    "attrs": {
+     "cx": "17.5",
+     "cy": "6.5",
+     "r": "1.2"
+    },
+    "style": {
+     "static": [
+      [
+       "fill",
+       "currentcolor"
+      ],
+      [
+       "stroke",
+       "none"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/69",
+    "realParent": "Confirmation/69",
+    "parentChain": [
+     "Confirmation/69",
+     "Confirmation/68",
+     "Confirmation/67",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 72
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/73": {
+   "template": {
+    "key": "Confirmation/73",
+    "component": "Confirmation",
+    "n": "73",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/67",
+    "realParent": "Confirmation/67",
+    "parentChain": [
+     "Confirmation/67",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 73
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/74": {
+   "template": {
+    "key": "Confirmation/74",
+    "component": "Confirmation",
+    "n": "74",
+    "tag": "b",
+    "realTag": "b",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "\"Young Serif\", serif"
+      ],
+      [
+       "font-weight",
+       "400"
+      ],
+      [
+       "font-size",
+       "21px"
+      ],
+      [
+       "display",
+       "block"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/73",
+    "realParent": "Confirmation/73",
+    "parentChain": [
+     "Confirmation/73",
+     "Confirmation/67",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Watch it being baked",
+    "srcLine": 73
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/75": {
+   "template": {
+    "key": "Confirmation/75",
+    "component": "Confirmation",
+    "n": "75",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-size",
+       "15px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/73",
+    "realParent": "Confirmation/73",
+    "parentChain": [
+     "Confirmation/73",
+     "Confirmation/67",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Follow @mamasmunches",
+    "srcLine": 73
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/76": {
+   "template": {
+    "key": "Confirmation/76",
+    "component": "Confirmation",
+    "n": "76",
+    "tag": "a",
+    "realTag": "a",
+    "attrs": {
+     "href": "Home.dc.html"
+    },
+    "style": {
+     "static": [
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(255, 250, 240)"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "border-top-left-radius",
+       "26px"
+      ],
+      [
+       "border-top-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "26px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "26px"
+      ],
+      [
+       "padding-top",
+       "22px"
+      ],
+      [
+       "padding-right",
+       "22px"
+      ],
+      [
+       "padding-bottom",
+       "22px"
+      ],
+      [
+       "padding-left",
+       "22px"
+      ],
+      [
+       "text-decoration-line",
+       "none"
+      ],
+      [
+       "text-decoration-thickness",
+       "initial"
+      ],
+      [
+       "text-decoration-style",
+       "initial"
+      ],
+      [
+       "text-decoration-color",
+       "initial"
+      ],
+      [
+       "color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "row-gap",
+       "16px"
+      ],
+      [
+       "column-gap",
+       "16px"
+      ],
+      [
+       "transition-behavior",
+       "normal, normal"
+      ],
+      [
+       "transition-duration",
+       "0.3s, 0.3s"
+      ],
+      [
+       "transition-timing-function",
+       "cubic-bezier(0.3, 1.4, 0.5, 1), ease"
+      ],
+      [
+       "transition-delay",
+       "0s, 0s"
+      ],
+      [
+       "transition-property",
+       "transform, box-shadow"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {
+     "hover": {
+      "static": [
+       [
+        "transform",
+        "translate(-4px, -4px)"
+       ],
+       [
+        "box-shadow",
+        "rgb(58, 42, 34) 8px 8px 0px"
+       ]
+      ],
+      "holes": []
+     }
+    },
+    "holes": [],
+    "parent": "Confirmation/66",
+    "realParent": "Confirmation/66",
+    "parentChain": [
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 75
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/77": {
+   "template": {
+    "key": "Confirmation/77",
+    "component": "Confirmation",
+    "n": "77",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "flex-grow",
+       "0"
+      ],
+      [
+       "flex-shrink",
+       "0"
+      ],
+      [
+       "flex-basis",
+       "auto"
+      ],
+      [
+       "width",
+       "56px"
+      ],
+      [
+       "height",
+       "56px"
+      ],
+      [
+       "border-top-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-right-radius",
+       "999px"
+      ],
+      [
+       "border-bottom-left-radius",
+       "999px"
+      ],
+      [
+       "border-top-width",
+       "2px"
+      ],
+      [
+       "border-right-width",
+       "2px"
+      ],
+      [
+       "border-bottom-width",
+       "2px"
+      ],
+      [
+       "border-left-width",
+       "2px"
+      ],
+      [
+       "border-top-style",
+       "solid"
+      ],
+      [
+       "border-right-style",
+       "solid"
+      ],
+      [
+       "border-bottom-style",
+       "solid"
+      ],
+      [
+       "border-left-style",
+       "solid"
+      ],
+      [
+       "border-top-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-right-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-bottom-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-left-color",
+       "rgb(58, 42, 34)"
+      ],
+      [
+       "border-image-source",
+       "initial"
+      ],
+      [
+       "border-image-slice",
+       "initial"
+      ],
+      [
+       "border-image-width",
+       "initial"
+      ],
+      [
+       "border-image-outset",
+       "initial"
+      ],
+      [
+       "border-image-repeat",
+       "initial"
+      ],
+      [
+       "background-image",
+       "initial"
+      ],
+      [
+       "background-position-x",
+       "initial"
+      ],
+      [
+       "background-position-y",
+       "initial"
+      ],
+      [
+       "background-size",
+       "initial"
+      ],
+      [
+       "background-repeat",
+       "initial"
+      ],
+      [
+       "background-attachment",
+       "initial"
+      ],
+      [
+       "background-origin",
+       "initial"
+      ],
+      [
+       "background-clip",
+       "initial"
+      ],
+      [
+       "background-color",
+       "rgb(249, 207, 110)"
+      ],
+      [
+       "display",
+       "flex"
+      ],
+      [
+       "align-items",
+       "center"
+      ],
+      [
+       "justify-content",
+       "center"
+      ],
+      [
+       "font-size",
+       "22px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/76",
+    "realParent": "Confirmation/76",
+    "parentChain": [
+     "Confirmation/76",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "←",
+    "srcLine": 76
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/78": {
+   "template": {
+    "key": "Confirmation/78",
+    "component": "Confirmation",
+    "n": "78",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/76",
+    "realParent": "Confirmation/76",
+    "parentChain": [
+     "Confirmation/76",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 77
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/79": {
+   "template": {
+    "key": "Confirmation/79",
+    "component": "Confirmation",
+    "n": "79",
+    "tag": "b",
+    "realTag": "b",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-family",
+       "\"Young Serif\", serif"
+      ],
+      [
+       "font-weight",
+       "400"
+      ],
+      [
+       "font-size",
+       "21px"
+      ],
+      [
+       "display",
+       "block"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/78",
+    "realParent": "Confirmation/78",
+    "parentChain": [
+     "Confirmation/78",
+     "Confirmation/76",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Back to the kitchen",
+    "srcLine": 77
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/80": {
+   "template": {
+    "key": "Confirmation/80",
+    "component": "Confirmation",
+    "n": "80",
+    "tag": "span",
+    "realTag": "span",
+    "attrs": {},
+    "style": {
+     "static": [
+      [
+       "font-size",
+       "15px"
+      ]
+     ],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/78",
+    "realParent": "Confirmation/78",
+    "parentChain": [
+     "Confirmation/78",
+     "Confirmation/76",
+     "Confirmation/66",
+     "Confirmation/21",
+     "Confirmation/20",
+     "Confirmation/8",
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {},
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "Keep browsing",
+    "srcLine": 77
+   },
+   "logic": {
+    "holes": {}
+   }
+  },
+  "Confirmation/81": {
+   "template": {
+    "key": "Confirmation/81",
+    "component": "Confirmation",
+    "n": "81",
+    "tag": "dc-import",
+    "realTag": "dc-import",
+    "attrs": {
+     "hint-size": "100%,1100px",
+     "name": "SiteFooter"
+    },
+    "style": {
+     "static": [],
+     "holes": []
+    },
+    "pseudo": {},
+    "holes": [],
+    "parent": "Confirmation/6",
+    "realParent": "Confirmation/6",
+    "parentChain": [
+     "Confirmation/6"
+    ],
+    "membership": {
+     "scIf": [],
+     "scFor": [],
+     "dcImport": []
+    },
+    "own": {
+     "name": "SiteFooter",
+     "props": []
+    },
+    "inHelmet": false,
+    "inFor": false,
+    "ref": null,
+    "hooks": {},
+    "events": [],
+    "words": "",
+    "srcLine": 83
+   },
+   "logic": {
+    "holes": {}
+   }
+  }
+ }
+}

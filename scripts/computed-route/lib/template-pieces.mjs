@@ -9,6 +9,10 @@
 // `place( ctx, piece )` returns `{ tree, placed, problems, notes }` (each optional): the tree with the piece in it, one
 // `placed` row per piece put in (`{ id, block, at }`), and what it could not do. A builder never changes a tree it was
 // not handed: `applyTemplatePieces` gives each one a copy.
+//
+// A piece names its block, a binding (`binds: { source, key }`: a block whose `metadata.bindings` binds an attribute to
+// that source and key, since a bound text has no block name of its own), or both; a node is the piece when it matches
+// every one it names.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -37,8 +41,11 @@ export function pieceMapProblems( data ) {
 					out.push( `${ where }: an id is missing or repeated` );
 				}
 				seen.add( p?.id );
-				if ( ! BLOCK.test( String( p?.block || '' ) ) ) {
+				if ( ( p?.block || ! p?.binds ) && ! BLOCK.test( String( p?.block || '' ) ) ) {
 					out.push( `${ where }: block "${ p?.block ?? '' }" is not a block name` );
+				}
+				if ( p?.binds && ( ! BLOCK.test( String( p.binds.source || '' ) ) || ! p.binds.key || 'string' !== typeof p.binds.key ) ) {
+					out.push( `${ where }: binds needs a source (a block binding source name) and a key` );
 				}
 				if ( ! KIND.test( String( p?.kind || '' ) ) ) {
 					out.push( `${ where }: kind "${ p?.kind ?? '' }" is not a kind` );
@@ -70,16 +77,28 @@ export function countBlocks( tree, name ) {
 	return ( tree || [] ).reduce( ( n, node ) => n + ( node?.name === name ? 1 : 0 ) + countBlocks( node?.innerBlocks, name ), 0 );
 }
 
+// Whether a node binds an attribute to `binds.source` with the key `binds.key`.
+export const bindsTo = ( node, binds ) => Object.values( node?.attributes?.metadata?.bindings || {} ).some( ( b ) => b?.source === binds.source && b?.args?.key === binds.key );
+
+// How many nodes of a tree, at any depth, are the piece: its block, bound as it names, or both.
+export function countPiece( tree, piece ) {
+	const is = ( node ) => ( ! piece.block || node?.name === piece.block ) && ( ! piece.binds || bindsTo( node, piece.binds ) );
+	return ( tree || [] ).reduce( ( n, node ) => n + ( is( node ) ? 1 : 0 ) + countPiece( node?.innerBlocks, piece ), 0 );
+}
+
+// The words naming what a piece is: its block, its binding, or a block with that binding.
+const pieceText = ( p ) => [ p.block, p.binds && `${ p.block ? 'bound' : 'block bound' } to ${ p.binds.source } ${ p.binds.key }` ].filter( Boolean ).join( ' ' );
+
 // What the built tree lacks: a required piece that is absent, and a piece that may stand once and stands more often.
 export function checkPieces( { key, tree, data } ) {
 	const out = [];
 	for ( const p of piecesFor( key, data ) ) {
-		const n = countBlocks( tree, p.block );
+		const n = countPiece( tree, p );
 		if ( p.required && 0 === n ) {
-			out.push( `${ key }: the working piece "${ p.id }" is missing: no ${ p.block } in the tree (${ CHECKED_ONLY.includes( p.kind ) ? `placed by ${ p.by || `the ${ p.kind }` }` : `builder template-piece-${ p.kind }.mjs` })` );
+			out.push( `${ key }: the working piece "${ p.id }" is missing: no ${ pieceText( p ) } in the tree (${ CHECKED_ONLY.includes( p.kind ) ? `placed by ${ p.by || `the ${ p.kind }` }` : `builder template-piece-${ p.kind }.mjs` })` );
 		}
 		if ( false !== p.once && n > 1 ) {
-			out.push( `${ key }: the working piece "${ p.id }" stands ${ n } times: ${ p.block } may stand once` );
+			out.push( `${ key }: the working piece "${ p.id }" stands ${ n } times: ${ pieceText( p ) } may stand once` );
 		}
 	}
 	return out;

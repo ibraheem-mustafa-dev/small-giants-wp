@@ -1,0 +1,50 @@
+[
+	{
+		"file": "site-run.mjs",
+		"find": "...( na ? { notApplicable: true } : {} ), ",
+		"replace": "",
+		"why": "a not-applicable stage is not marked"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "r.skipped && ! r.notApplicable && out.skipped.push(",
+		"replace": "r.skipped && out.skipped.push(",
+		"why": "a not-applicable stage counts as a gap under --strict"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "export const unknownStages = ( stages ) => stages.filter( ( s ) => ! ALL_STAGES.includes( s ) );",
+		"replace": "export const unknownStages = ( stages ) => [];",
+		"why": "a misspelt stage is accepted"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "(its layout is the template-<slug> surface)`, true );",
+		"replace": "(its layout is the template-<slug> surface)` );",
+		"why": "WooCommerce's own page is a strict gap"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "`${ site } is not a local mirror`, !! slug || ! entry.target?.postId );",
+		"replace": "`${ site } is not a local mirror`, true );",
+		"why": "a hosted target's skipped apply is hidden"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "shows only at a WooCommerce endpoint`, true );",
+		"replace": "shows only at a WooCommerce endpoint` );",
+		"why": "a template that shows only at an endpoint is a strict gap"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "note( key, 'run', true, 0, null, skip, !! entry.noDraft );",
+		"replace": "note( key, 'run', true, 0, null, skip, true );",
+		"why": "a content-only post skipped without --with-content is hidden"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "throw new Error( `--stages names ${",
+		"replace": "console.log( `--stages names ${",
+		"why": "the misspelt stage is reported and ignored"
+	}
+]

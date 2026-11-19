@@ -1,0 +1,74 @@
+[
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "return ( 'any' === scope || scopeOf( el ) === scope ) && test( el, loc.match );",
+		"replace": "return test( el, loc.match );",
+		"why": "the page scope is ignored, so the header and the fixed basket panel count"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "return descendants( el ).filter( ( d ) => scopeOf( d ) === scope );",
+		"replace": "return descendants( el );",
+		"why": "an element counts what sits in the header or a fixed panel inside it"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( CURRENCY.test( t ) ) {",
+		"replace": "if ( /[£$€]/.test( t ) ) {",
+		"why": "a sentence that mentions an amount is read as currency"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "const wrapped = el.closest( 'label' );",
+		"replace": "const wrapped = null;",
+		"why": "a label that wraps its field is not found"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "out = out.filter( ( a ) => ! out.some( ( b ) => b !== a && a.contains( b ) ) );",
+		"replace": "out = out;",
+		"why": "the smallest holder is not picked, so the page's whole main counts as the summary"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "hits = grouped.flatMap( ( g ) => pickFrom( g, loc ) );",
+		"replace": "hits = pickFrom( [ ...new Set( grouped.flat() ) ], loc );",
+		"why": "one result per order line becomes one result in all"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "out = out.slice( loc.pick.index, loc.pick.index + 1 );",
+		"replace": "out = out.slice( 0, 1 );",
+		"why": "the second text of a line is read as the first"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "want.includes( fileOf( a.getAttribute( 'href' ) ) )",
+		"replace": "true",
+		"why": "any link counts as a link to the page"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "! m.hasAll.every( ( h ) => held( el ).some( ( d ) => test( d, h ) ) )",
+		"replace": "! m.hasAll.some( ( h ) => held( el ).some( ( d ) => test( d, h ) ) )",
+		"why": "a radio card needs one of its two marks, not both"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "out = out.slice( 0, -1 );",
+		"replace": "out = out;",
+		"why": "the total row counts as a subtotal row"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "].length <= 1;",
+		"replace": "].length <= 99;",
+		"why": "a field's wrapper climbs past the row holding other fields"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "return r.width > 0 && r.height > 0 && 'none' !== styleOf( el ).display;",
+		"replace": "return true;",
+		"why": "an element the draft does not show is located"
+	}
+]

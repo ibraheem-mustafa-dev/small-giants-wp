@@ -1,0 +1,8 @@
+{
+	"_comment": "How the part-look command (scripts/computed-route/part-look.mjs) opens each shop surface of this draft: it is one file whose pages are the logic's own state, so each surface names the page to go to and, where the draft fills its basket through its own logic, the script that puts two frames in the bag. `L` is the draft's live logic and `dcLogic` finds another component's.",
+	"surfaces": {
+		"checkout": { "route": "checkout", "init": "const P = L.constructor.PRODUCTS; L.addToBag( P[ 0 ], null ); L.addToBag( P[ 1 ], null );" },
+		"my-account": { "route": "signin" },
+		"header": { "init": "const P = L.constructor.PRODUCTS; L.addToBag( P[ 0 ], null ); L.addToBag( P[ 1 ], null ); L.setState( { bagOpen: true } );" }
+	}
+}

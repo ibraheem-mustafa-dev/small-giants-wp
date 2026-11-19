@@ -1,0 +1,98 @@
+[
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "matchAll( /no default paint for \\S+ \\(([^)]*)\\)/g )",
+		"replace": "matchAll( /zzz( )/g )",
+		"why": "no block is read from the gate's message"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": ".filter( ( b ) => /^[a-z0-9-]+\\/[a-z0-9-]+$/.test( b ) )",
+		"replace": ".filter( ( b ) => true )",
+		"why": "a word that is not a block is calibrated"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\tfound.sort( ( a, b ) => AREA_ORDER.indexOf( a.area ) - AREA_ORDER.indexOf( b.area ) );",
+		"replace": "",
+		"why": "the layout surfaces run in page-map order"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\t\tif ( ! area ) {\n\t\t\tcontinue;",
+		"replace": "\t\tif ( false ) {\n\t\t\tcontinue;",
+		"why": "a page counts as a layout row"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\treturn a.length === b.length && a.every(",
+		"replace": "\treturn a.every(",
+		"why": "a file the intake never saw is taken as current"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "k === b[ i ] && taken[ k ] === now[ k ] );",
+		"replace": "k === b[ i ] );",
+		"why": "a changed file is taken as current"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\tif ( ! taken || ! Object.keys( now ).length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "an intake with no record is not refused"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\treturn Boolean( rows?.length ) && rows.every( ( r ) => Number.isInteger( r.id ) ) &&",
+		"replace": "\treturn rows.every( ( r ) => Number.isInteger( r.id ) ) &&",
+		"why": "an empty page map is built"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "rows.every( ( r ) => Number.isInteger( r.id ) ) &&",
+		"replace": "true &&",
+		"why": "a row with no id is built"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": " ( recorded === site || sharesIds( recorded, site, targets ) );",
+		"replace": " ( recorded === site );",
+		"why": "a copy sharing the post ids is not recognised"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\tif ( replace && mainCheckout ) {",
+		"replace": "\tif ( false ) {",
+		"why": "the main checkout's snapshot can be replaced"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\tif ( ! committedExists ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a new client's extraction is not its snapshot"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\treturn replace\n\t\t? { to: 'committed'",
+		"replace": "\treturn false\n\t\t? { to: 'committed'",
+		"why": "--replace-snapshot is ignored"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "\tconst own = ( p ) => p.startsWith( '_sgsExtractor' );",
+		"replace": "\tconst own = ( p ) => false;",
+		"why": "the extractor's provenance counts as a difference"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "node.every( ( x ) => x && 'object' === typeof x && 'slug' in x )",
+		"replace": "false",
+		"why": "a palette is compared by position"
+	},
+	{
+		"file": "lib/foundation-parts.mjs",
+		"find": "/mnt/${ m[ 1 ].toLowerCase() }/",
+		"replace": "/mnt/${ m[ 1 ] }/",
+		"why": "the drive letter keeps its case"
+	}
+]

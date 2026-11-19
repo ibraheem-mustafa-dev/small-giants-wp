@@ -13,5 +13,12 @@
 	{"file": "lib/template-pieces.mjs", "find": "if ( 'boolean' !== typeof p?.required ) {", "replace": "if ( false ) {", "why": "required may be any value"},
 	{"file": "lib/template-pieces.mjs", "find": "\tif ( problems.length ) {\n\t\tthrow new Error( `${ path.basename( file ) }: ${ problems.join( '; ' ) }` );\n\t}\n", "replace": "", "why": "a map with a wrong shape loads"},
 	{"file": "lib/template-pieces.mjs", "find": "notes.push( ...( got.notes || [] ) );", "replace": "", "why": "a builder's notes are lost"},
-	{"file": "lib/template-pieces.mjs", "find": "placed.push( ...( got.placed || [] ) );", "replace": "", "why": "the placed rows are lost"}
+	{"file": "lib/template-pieces.mjs", "find": "placed.push( ...( got.placed || [] ) );", "replace": "", "why": "the placed rows are lost"},
+	{"file": "lib/template-pieces.mjs", "find": "b?.source === binds.source && b?.args?.key === binds.key", "replace": "b?.source === binds.source", "why": "a block bound to another key of the source counts as the piece"},
+	{"file": "lib/template-pieces.mjs", "find": "b?.source === binds.source && b?.args?.key === binds.key", "replace": "b?.args?.key === binds.key", "why": "a block bound to another source counts as the piece"},
+	{"file": "lib/template-pieces.mjs", "find": "+ countPiece( node?.innerBlocks, piece ), 0 );", "replace": ", 0 );", "why": "a piece below the top level is not counted"},
+	{"file": "lib/template-pieces.mjs", "find": "( ! piece.block || node?.name === piece.block ) && ", "replace": "", "why": "a piece naming a block and a binding is satisfied by the binding alone"},
+	{"file": "lib/template-pieces.mjs", "find": "if ( p?.binds && ( ! BLOCK.test( String( p.binds.source || '' ) ) || ! p.binds.key || 'string' !== typeof p.binds.key ) ) {", "replace": "if ( false ) {", "why": "a binding with no source or key is accepted"},
+	{"file": "lib/template-pieces.mjs", "find": "if ( ( p?.block || ! p?.binds ) && ! BLOCK.test( String( p?.block || '' ) ) ) {", "replace": "if ( ! BLOCK.test( String( p?.block || '' ) ) ) {", "why": "a piece named by its binding alone is refused"},
+	{"file": "lib/template-pieces.mjs", "find": "if ( ( p?.block || ! p?.binds ) && ! BLOCK.test( String( p?.block || '' ) ) ) {", "replace": "if ( p?.block && ! BLOCK.test( String( p?.block || '' ) ) ) {", "why": "a piece with neither a block nor a binding is accepted"}
 ]

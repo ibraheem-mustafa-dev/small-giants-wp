@@ -9,7 +9,8 @@
 #   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh list
 #
 # The name must start local-mediatest; the source must be one of the four mirrors; the port must be free and 8090-8199.
-# The copy records its source in <docroot>/.scratch-source, which sync-build.sh reads to pick the theme.json.
+# The copy records its source in <docroot>/.scratch-source, which sync-build.sh reads to pick the theme.json. create also makes the
+# copy its own application password (in its login file) and registers it as a route site target; drop removes the registration.
 set -euo pipefail
 
 MIRRORS="local-eye-care local-sandybrown local-indus local-mamas"
@@ -40,6 +41,52 @@ write_secrets() {
       if (base != "") { print base "_" a "=" v; if (b != a) print base "_" b "=" v; next }
     }
     { print }' > "$secrets/$name.env"
+}
+
+# A copy carries its source's application-password hashes, and the source's login file may hold a password that matches none
+# of them (every REST upload to the copy then answers 401 incorrect_password). So each copy gets
+# a fresh application password for the user its login file names, written into the copy's own login file under both key
+# spellings (quoted, since WordPress groups the password with spaces) and never printed. A password this script made before
+# is revoked first, so a rerun leaves one.
+fresh_app_password() {
+  local name="$1" secrets file key_a key_b user label uuid app tmp
+  secrets="$(secrets_dir)" || return 1
+  file="$secrets/$name.env"
+  [ -f "$file" ] || { echo "scratch-mirror: $file is missing; no application password made" >&2; return 1; }
+  key_a="$(echo "$name" | tr -d '-' | tr 'a-z' 'A-Z')"
+  key_b="$(echo "$name" | tr 'a-z-' 'A-Z_')"
+  user="$(grep -E "^WP_USER_${key_a}=" "$file" | head -1 | cut -d= -f2- | tr -d "\"'\r")" || true
+  [ -n "$user" ] || { echo "scratch-mirror: $file has no WP_USER_${key_a}; no application password made" >&2; return 1; }
+  label="route-$name"
+  for uuid in $(wp --path="/var/www/$name" --allow-root user application-password list "$user" --fields=uuid,name --format=csv 2>/dev/null | awk -F, -v n="$label" 'NR > 1 && $2 == n { print $1 }'); do
+    wp --path="/var/www/$name" --allow-root user application-password delete "$user" "$uuid" >/dev/null
+  done
+  app="$(wp --path="/var/www/$name" --allow-root user application-password create "$user" "$label" --porcelain)" || return 1
+  [ -n "$app" ] || { echo "scratch-mirror: WordPress made no application password for $user on $name" >&2; return 1; }
+  tmp="$(mktemp)"
+  grep -vE "^WP_APP_PWD_(${key_a}|${key_b})=" "$file" > "$tmp" || true
+  { printf 'WP_APP_PWD_%s="%s"\n' "$key_a" "$app"; [ "$key_b" = "$key_a" ] || printf 'WP_APP_PWD_%s="%s"\n' "$key_b" "$app"; } >> "$tmp"
+  cat "$tmp" > "$file"
+  rm -f "$tmp"
+}
+
+# The route's tools reach a scratch copy by name through scripts/computed-route/calibration-targets.local.json, which
+# tools/scratch-target.mjs writes (add on create, remove on drop). Node runs from WSL itself, else Windows' node.exe through
+# interop. A copy that cannot be registered is reported with the command that does it, and the script exits 1.
+scratch_target() {
+  local action="$1" name="$2" source="${3:-}" url="${4:-}" repo tool
+  repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  tool="$repo/scripts/computed-route/tools/scratch-target.mjs"
+  local args=("$action" "$name")
+  [ "$action" = add ] && args+=(--source "$source" --url "$url")
+  if command -v node >/dev/null 2>&1; then
+    node "$tool" "${args[@]}"
+  elif command -v node.exe >/dev/null 2>&1; then
+    node.exe "$(wslpath -w "$tool")" "${args[@]}"
+  else
+    echo "scratch-mirror: no node found, so $name is not registered as a site target; run: node scripts/computed-route/tools/scratch-target.mjs ${args[*]}" >&2
+    return 1
+  fi
 }
 
 secrets_dir() {
@@ -107,6 +154,9 @@ EOF
   sudo -u www-data wp --path="$dir" cache flush >/dev/null
   write_secrets "$name" "$src" "$src_url" "http://localhost:$port"
   echo "created $name from $src: http://localhost:$port (database $db)"
+  fresh_app_password "$name" || die "$name exists but has no working application password: run '$0 secrets $name' once its login file names a user"
+  echo "application password made for $name (WP_APP_PWD in its login file)"
+  scratch_target add "$name" "$(cat "$dir/.scratch-source")" "http://localhost:$port" || die "$name exists but is not registered as a site target"
 }
 
 drop() {
@@ -127,6 +177,7 @@ drop() {
   rm -rf "$dir" "$dir-backups"
   local secrets
   if secrets="$(secrets_dir)"; then rm -f "$secrets/$name.env"; fi
+  scratch_target remove "$name" || echo "scratch-mirror: $name was not registered (or the registration could not be removed)" >&2
   echo "dropped $name"
 }
 
@@ -138,6 +189,9 @@ list() {
   done
 }
 
+# Sourced (by the tests), the script defines its functions and runs nothing.
+[[ "${BASH_SOURCE[0]}" == "$0" ]] || return 0
+
 case "${1:-}" in
   create) [ $# -eq 4 ] || die "usage: create <source mirror> <local-mediatest-name> <port>"; create "$2" "$3" "$4" ;;
   drop) [ $# -eq 2 ] || die "usage: drop <local-mediatest-name>"; drop "$2" ;;
@@ -145,7 +199,8 @@ case "${1:-}" in
     [ $# -eq 2 ] && [[ "$2" =~ $NAME_RE ]] || die "usage: secrets <local-mediatest-name>"
     s_src="$(cat "/var/www/$2/.scratch-source")"
     write_secrets "$2" "$s_src" "$(wp --path="/var/www/$s_src" --allow-root option get siteurl)" "$(wp --path="/var/www/$2" --allow-root option get siteurl)"
-    echo "wrote the login file for $2 from $s_src" ;;
+    fresh_app_password "$2" || die "$2 has no working application password"
+    echo "wrote the login file for $2 from $s_src, with a fresh application password" ;;
   target)
     # The deploy target whose own database this copy holds (refreshed with refresh-from-remote.sh): sync-build.sh then
     # gives it that target's theme.json instead of its source mirror's.

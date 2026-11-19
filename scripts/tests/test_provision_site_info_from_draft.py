@@ -478,3 +478,55 @@ def test_intake_duplicate_marks_are_refused(tmp_path):
                                          {"rowId": "siteinfo:phone", "rowType": "site-info", "mark": "drop"}]}), encoding="utf-8")
     with _pytest.raises(ValueError):
         read_intake(f)
+
+
+class LocalCopy(unittest.TestCase):
+    """A local mirror or scratch copy is written through WSL's wp-cli, never over SSH; a protected one is refused."""
+
+    TARGETS = {
+        "local-acme": {"pluginDir": "//wsl.localhost/Ubuntu/var/www/local-acme/wp-content/plugins/sgs-blocks"},
+        "local-mediatest-acme": {"pluginDir": "//wsl.localhost/Ubuntu/var/www/local-mediatest-acme/wp-content/plugins/sgs-blocks/"},
+        "local-shop": {"pluginDir": "//wsl.localhost/Ubuntu/var/www/local-shop/wp-content/plugins/sgs-blocks", "protected": "the live shop's copy"},
+        "acme-test": {"envFile": ".claude/secrets/acme-test.env"},
+    }
+
+    def test_a_local_copy_runs_wp_cli_in_its_own_docroot_through_wsl(self):
+        self.assertEqual(
+            mod.local_wp_command("local-mediatest-acme", self.TARGETS),
+            ["wsl", "-d", "Ubuntu", "-u", "root", "--", "wp", "--path=/var/www/local-mediatest-acme", "--allow-root"],
+        )
+
+    def test_a_hosted_or_unknown_site_is_not_local(self):
+        self.assertIsNone(mod.local_wp_command("acme-test", self.TARGETS))
+        self.assertIsNone(mod.local_wp_command("nowhere", self.TARGETS))
+
+    def test_a_protected_local_site_is_refused(self):
+        with self.assertRaises(SystemExit) as cm:
+            mod.local_wp_command("local-shop", self.TARGETS)
+        self.assertIn("protected", str(cm.exception))
+
+    def test_the_command_puts_the_user_before_eval_file_and_keeps_the_arguments_last(self):
+        site = mod.Site.__new__(mod.Site)
+        site.local = mod.local_wp_command("local-acme", self.TARGETS)
+        cmd = site.command(("QUJD",), user="Claude")
+        self.assertEqual(cmd[-4:], ["--user=Claude", "eval-file", "-", "QUJD"])
+        self.assertNotIn("ssh", cmd)
+        self.assertEqual(site.command((), user="")[-2:], ["eval-file", "-"], "negative control: no user, no flag")
+
+    def test_a_hosted_site_still_goes_over_ssh(self):
+        site = mod.Site.__new__(mod.Site)
+        site.local = None
+        site.ssh = ["ssh", "-p", "65002", "u@host"]
+        site.cd = "cd /srv/public_html && "
+        cmd = site.command(("QUJD",), user="Claude")
+        self.assertEqual(cmd[:4], ["ssh", "-p", "65002", "u@host"])
+        self.assertIn("wp --user=Claude eval-file - QUJD", cmd[-1])
+
+    def test_a_local_entry_never_replaces_a_committed_one(self):
+        with tempfile.TemporaryDirectory() as d:
+            committed = Path(d) / "calibration-targets.json"
+            committed.write_text(json.dumps({"local-acme": {"pluginDir": "committed"}}), encoding="utf-8")
+            (Path(d) / "calibration-targets.local.json").write_text(json.dumps({"local-acme": {"pluginDir": "local"}, "local-mediatest-x": {"pluginDir": "copy"}}), encoding="utf-8")
+            merged = mod.read_calibration_targets(committed)
+        self.assertEqual(merged["local-acme"]["pluginDir"], "committed")
+        self.assertEqual(merged["local-mediatest-x"]["pluginDir"], "copy")

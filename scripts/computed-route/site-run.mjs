@@ -63,6 +63,9 @@ import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, s
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'apply', 'walk' ];
 
+// The names in a --stages list that are not stages: a misspelt one would otherwise leave its stage out without a word.
+export const unknownStages = ( stages ) => stages.filter( ( s ) => ! ALL_STAGES.includes( s ) );
+
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
 const stamp = () => new Date().toISOString().replace( /\.\d+Z$/, '' ).replace( /:/g, '-' );
 
@@ -210,10 +213,11 @@ export function fillOutDir( { fillRoot, fills, fresh, exists = fs.existsSync, li
 }
 
 // One stage's record in status.json: { ok, seconds, detail? }; a stage that did not run is { ok: true, skipped: <reason>, seconds: 0 }
-// (it did not fail, and it did not run).
-export function stageRecord( { ok, ms = 0, detail = null, skipped = null } ) {
+// (it did not fail, and it did not run). A stage that has nothing to do by design (`na`: a template copy has no post of its own to
+// apply, WooCommerce keeps its own page's content) also carries `notApplicable: true`, which --strict does not count as a gap.
+export function stageRecord( { ok, ms = 0, detail = null, skipped = null, na = false } ) {
 	return skipped
-		? { ok: true, skipped, seconds: 0, ...( detail ? { detail } : {} ) }
+		? { ok: true, skipped, seconds: 0, ...( na ? { notApplicable: true } : {} ), ...( detail ? { detail } : {} ) }
 		: { ok, seconds: Math.round( ms / 1000 ), ...( detail ? { detail } : {} ) };
 }
 
@@ -224,12 +228,13 @@ export function stageLine( key, stage, record ) {
 	return `${ label } ${ key } ${ stage } ${ record.seconds }s${ why ? ` - ${ why }` : '' }`;
 }
 
-// The stages of a status object that failed or did not run, as "<surface> <stage>: <why>" lines: { failed, skipped }.
+// The stages of a status object that failed or did not run, as "<surface> <stage>: <why>" lines: { failed, skipped }. A stage
+// recorded not applicable is neither.
 export function stageProblems( status ) {
 	const out = { failed: [], skipped: [] };
 	for ( const [ key, stages ] of Object.entries( status ) ) {
 		for ( const [ stage, r ] of Object.entries( stages ) ) {
-			r.skipped && out.skipped.push( `${ key } ${ stage }: ${ r.skipped }` );
+			r.skipped && ! r.notApplicable && out.skipped.push( `${ key } ${ stage }: ${ r.skipped }` );
 			! r.ok && out.failed.push( `${ key } ${ stage }: ${ r.detail ?? 'failed' }` );
 		}
 	}
@@ -298,6 +303,9 @@ export async function main( argv ) {
 		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content] [--no-copies] [--strict] [--allow-missing-paint sgs/a,sgs/b]' );
 	}
 	const stages = ( flag( '--stages' ) || ALL_STAGES.join( ',' ) ).split( ',' );
+	if ( unknownStages( stages ).length ) {
+		throw new Error( `--stages names ${ unknownStages( stages ).join( ', ' ) }, which ${ 1 === unknownStages( stages ).length ? 'is' : 'are' } not a stage (${ ALL_STAGES.join( ', ' ) })` );
+	}
 	const only = flag( '--only' ) ? flag( '--only' ).split( ',' ) : null;
 	const jobs = Number( flag( '--jobs', '3' ) );
 	const widths = flag( '--widths', '1440,768,375' );
@@ -322,9 +330,9 @@ export async function main( argv ) {
 	fs.mkdirSync( dir, { recursive: true } );
 	const status = {};
 	const save = () => fs.writeFileSync( path.join( dir, 'status.json' ), `${ JSON.stringify( status, null, 2 ) }\n` );
-	// `skipped`: why the stage did not run (it is recorded ok, with the reason, and printed `skip`).
-	const note = ( key, stage, ok, ms, detail, skipped = null ) => {
-		const record = stageRecord( { ok, ms, detail, skipped } );
+	// `skipped`: why the stage did not run (it is recorded ok, with the reason, and printed `skip`); `na`: it has nothing to do by design.
+	const note = ( key, stage, ok, ms, detail, skipped = null, na = false ) => {
+		const record = stageRecord( { ok, ms, detail, skipped, na } );
 		( status[ key ] ||= {} )[ stage ] = record;
 		save();
 		console.log( stageLine( key, stage, record ) );
@@ -349,7 +357,7 @@ export async function main( argv ) {
 		// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
 		// pages itself, so neither applies to the page's content; its layout is its template copy's surface.
 		if ( wooPage && [ 'fill', 'build', 'apply', 'walk' ].includes( stage ) ) {
-			note( key, stage, true, 0, null, `WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)` );
+			note( key, stage, true, 0, null, `WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)`, true );
 			return 'walk' !== stage;
 		}
 		const t = Date.now();
@@ -381,7 +389,7 @@ export async function main( argv ) {
 		const kind = skel?.kind;
 		const { row, hash, skip } = surfaceReach( { key, entry, skel, rows, withContent, routing: intake.routing ?? null } );
 		if ( skip ) {
-			note( key, 'run', true, 0, null, skip );
+			note( key, 'run', true, 0, null, skip, !! entry.noDraft );
 			return null;
 		}
 		const draftUrl = `${ ( await serverFor( entry ) ).url }${ hash }`;
@@ -512,7 +520,7 @@ export async function main( argv ) {
 			return;
 		}
 		if ( [ 'pages', 'page' ].includes( entry.copy?.from ) || ( slug && entry.copy && null === ctx.address ) ) {
-			return note( key, 'walk', true, 0, null, 'pages' === entry.copy?.from ? `walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'no draft surface plays it' : `the ${ slug } template shows only at a WooCommerce endpoint` );
+			return note( key, 'walk', true, 0, null, 'pages' === entry.copy?.from ? `walked with its pages (${ entry.copy.surfaces.join( ', ' ) })` : 'page' === entry.copy?.from ? 'no draft surface plays it' : `the ${ slug } template shows only at a WooCommerce endpoint`, true );
 		}
 		const parity = path.join( build, 'qa', 'parity' );
 		await step( 'walk', () => exec( 'walk', 'node', [ 'scripts/parity/draft-live-walk.mjs', path.join( parity, path.basename( entry.walkerFull ) ),
@@ -533,7 +541,7 @@ export async function main( argv ) {
 			return true;
 		}
 		if ( slug || ! entry.target?.postId || ! /^local-/.test( site ) ) {
-			note( key, 'apply', true, 0, null, slug ? 'a template copy has no post of its own' : ! entry.target?.postId ? 'no post behind this surface' : `${ site } is not a local mirror` );
+			note( key, 'apply', true, 0, null, slug ? 'a template copy has no post of its own' : ! entry.target?.postId ? 'no post behind this surface' : `${ site } is not a local mirror`, !! slug || ! entry.target?.postId );
 			return true;
 		}
 		return step( 'apply', () => exclusive( async () => {

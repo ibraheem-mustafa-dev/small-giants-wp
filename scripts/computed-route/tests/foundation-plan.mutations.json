@@ -1,0 +1,200 @@
+[
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "'--stages', 'inventory,propose', '--jobs', '1',",
+		"replace": "'--stages', 'inventory,propose,fill', '--jobs', '1',",
+		"why": "the paint pass runs more than it needs"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "holds: () => ( intakeCurrent( { intake: readJson( p.intake ), manifest: readJson( p.manifest ) } ) && gitignoredPresent() ?",
+		"replace": "holds: () => ( gitignoredPresent() ?",
+		"why": "a changed handoff leaves the intake as it was"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "commands.intake( { client, record: ! hasReplay() } )",
+		"replace": "commands.intake( { client, record: true } )",
+		"why": "the draft is recorded again though its replay file is there"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "commands.intake( { client, record: ! hasReplay() } )",
+		"replace": "commands.intake( { client, record: false } )",
+		"why": "the first run never records the draft"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\tholds: () => ( ran.intake ? null : heldBy(",
+		"replace": "\t\t\tholds: () => ( false ? null : heldBy(",
+		"why": "a review the draft's rerun invalidated is held"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\t\tran.intake = true;\n",
+		"replace": "",
+		"why": "a run that read the draft does not propose the skeletons again"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\tapplicable: () => ( ran.intake || ran.calibrated ? null :",
+		"replace": "\t\t\tapplicable: () => ( ran.intake ? null :",
+		"why": "a calibration alone does not propose the skeletons again"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\tapplicable: () => ( ran.intake || ran.calibrated ? null :",
+		"replace": "\t\t\tapplicable: () => ( true ? null :",
+		"why": "the skeletons are proposed again on every run"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\t\t\tran.calibrated = true;\n",
+		"replace": "",
+		"why": "the calibration is not noted"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "filter( ( b ) => ! options.allowMissingPaint.includes( b ) );",
+		"replace": "filter( ( b ) => true );",
+		"why": "a named allowance is calibrated"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\t\t\tif ( other.length ) {",
+		"replace": "\t\t\t\t\tif ( false ) {",
+		"why": "a failure that names no block is read as a clean pass"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "for ( let round = 1; round <= PAINT_ROUNDS; round++ ) {",
+		"replace": "for ( let round = 1; round <= 1; round++ ) {",
+		"why": "the paint loop gives up after one round"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "commands.calibrate( { client, site, blocks: gaps } )",
+		"replace": "commands.calibrate( { client, site, blocks: [ 'sgs/hero' ] } )",
+		"why": "a fixed list is calibrated instead of the blocks named"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "return ! d.differs && heldByState(",
+		"replace": "return heldByState(",
+		"why": "a copy that differs from the build is not synced again"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "return s.present && ! s.stale ?",
+		"replace": "return s.present ?",
+		"why": "a stale plugin build is not built again"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\tapplicable: () => localOnly( 'its build comes from build-deploy.py --target' ),",
+		"replace": "\t\t\tapplicable: () => null,",
+		"why": "a hosted site is built by npm run build"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\tapplicable: () => ( local ? `${ site } is a local copy:",
+		"replace": "\t\t\tapplicable: () => ( false ? `${ site } is a local copy:",
+		"why": "a local copy is pushed its snapshot over SSH"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\t\t\treturn 'no checkout holds them for this intake.json; the intake step reads the draft and writes them';",
+		"replace": "\t\t\t\t\treturn 'x';",
+		"why": "a mismatch is not noticed"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "|| fileSha( from( 'intake.json' ) ) !== fileSha( p.intake ) ) {",
+		"replace": "|| false ) {",
+		"why": "another intake's files are copied"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "const { to, why } = out();\n\t\t\t\twrote = to;",
+		"replace": "const { to, why } = out();",
+		"why": "a client's own snapshot is not remembered"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\tholds: () => ( pageMapBuilt(",
+		"replace": "\t\t\tholds: () => ( true || pageMapBuilt(",
+		"why": "an unbuilt page map is held"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\tholds: () => ( fs.existsSync( p.surfaces ) && layout().found.length > 0 && 0 === layout().missing.length ?",
+		"replace": "\t\t\tholds: () => ( true ?",
+		"why": "the manifest is never rebuilt"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\t\tif ( missing.length || ! found.length ) {",
+		"replace": "\t\t\t\tif ( false ) {",
+		"why": "a layout row with no surface is painted around"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "allowMissingPaint: options.allowMissingPaint, allowUnpicked: options.allowUnpicked, log } );",
+		"replace": "allowMissingPaint: options.allowMissingPaint, allowUnpicked: false, log } );",
+		"why": "--allow-unpicked is ignored"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\t\tif ( ! v.ok ) {",
+		"replace": "\t\t\t\tif ( false ) {",
+		"why": "a failed surface passes"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\t\tif ( bad.length ) {",
+		"replace": "\t\t\t\tif ( false ) {",
+		"why": "a failed preflight check stops nothing"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\tif ( 0 !== r.code ) {\n\t\t\tthrow failed( id, r, next );",
+		"replace": "\t\tif ( false ) {\n\t\t\tthrow failed( id, r, next );",
+		"why": "a command that exited non-zero passes"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\treturn paintGapsOf( text );\n}",
+		"replace": "\treturn paintGapsOf( text ).slice( 0, 1 );\n}",
+		"why": "only the first block a stage names is calibrated"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "filter( ( [ , r ] ) => ! r.ok && ! paintGapsOf( r.detail ).length )",
+		"replace": "filter( ( [ , r ] ) => ! r.ok )",
+		"why": "a paint gap is reported as another failure"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\tmedia: ( { client, site } ) => [ 'node', [ `${ ROUTE }/media-upload.mjs`, client, '--site', site, '--apply' ] ],",
+		"replace": "\tmedia: ( { client, site } ) => [ 'node', [ `${ ROUTE }/media-upload.mjs`, client, '--site', site ] ],",
+		"why": "the pictures are listed, not uploaded"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "'--handoff', `sites/${ client }/handoff`, '--apply' ] ],",
+		"replace": "'--handoff', `sites/${ client }/handoff` ] ],",
+		"why": "the Site Info is a dry run"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\tapplyReview: ( { client } ) => [ 'node', [ `${ ROUTE }/intake.mjs`, '--apply-review', client, '--go-through' ] ],",
+		"replace": "\tapplyReview: ( { client } ) => [ 'node', [ `${ ROUTE }/intake.mjs`, '--apply-review', client ] ],",
+		"why": "an unmarked row stops the review"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "const picks = v.failed.some( ( l ) => / finalise: /.test( l ) );",
+		"replace": "const picks = false;",
+		"why": "a surface awaiting a pick is told to fix a failure, not to run the finaliser"
+	}
+]

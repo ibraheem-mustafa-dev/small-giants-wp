@@ -1,0 +1,320 @@
+// The foundation command's steps (build-foundation.mjs): what it takes to give one client a foundation on one site, in the order it must happen.
+// Each step is for lib/foundation-run.mjs (applicable, holds, run, fingerprint); everything that touches a machine, a command or a site goes
+// through `ctx.ports`, so the whole chain runs under test with fakes:
+//   exec( id, cmd, args ) resolves { code, tail }; launch( args ) is lib/site-run-launch.mjs::launchSiteRun for site-run.mjs;
+//   sourceCheckout() is the folder holding the gitignored intake files; buildState() { present, stale }, buildsDiffer() { differs, detail },
+//   buildDigest() are the plugin build and the site's copy of it; hostedPush( site ) { ssh, host } is the hosted site's push target;
+//   plus the preflight probes (freeBytes, wslAnswers, credentials, restCheck).
+// The order, and what each step holds when it is already done:
+//   preflight        the checks of lib/foundation-preflight.mjs; never skipped.
+//   handoff-check    handoff-check.mjs on the folder; held when MANIFEST.json is what it checked last.
+//   intake-files     the gitignored facts.json, inventories/ and replay/ copied from the checkout that holds them, when its intake.json is this one's.
+//   intake           intake.mjs (the draft read, with the first run's skeletons); held when intake.json carries the handoff's file hashes and the three
+//                    gitignored files are there.
+//   apply-review     intake.mjs --apply-review --go-through (Bean's marks optional); held when the state says intake.json is as it left it.
+//   tokens           extract.py to sites/<client>/theme-snapshot.json when the client has none, else to a scratch file beside the state, compared with
+//                    the committed one (lib/foundation-parts.mjs::tokenOutput); re-extracted when the handoff or intake.json is newer than the output.
+//   plugin-build     npm run build (PowerShell) when the checkout's plugin build is missing or older than its sources; a local copy only.
+//   sync             sync-build.sh: the plugin, the theme and the snapshot's theme.json onto a local copy; held when the copy's blocks equal the build.
+//   snapshot-push    push-theme-snapshot.py to a hosted site (a local copy takes the snapshot with the sync).
+//   site-info        provision-site-info-from-draft.py --intake --apply on the site (a copy through WSL, never its test site).
+//   media            media-upload.mjs --apply: the handoff's pictures into the site's library and the record the readers look up.
+//   site-build       site-build.mjs --apply: every page-map row's post, menus and layout; held when every row has its id on this site.
+//   manifest         manifest.mjs --apply: surfaces.json; held when every layout row has a surface.
+//   paint            site-run.mjs --stages inventory,propose on the layout surfaces, then calibrate.mjs on exactly the blocks the paint gate names on
+//                    --site, until the propose stage passes (at most three rounds).
+//   skeletons        intake.mjs --rerun-skeletons then --apply-review --go-through, only when this run read the draft or calibrated (a first run's
+//                    skeleton records carry no calibration keys).
+//   surfaces         lib/clone-surface.mjs::cloneSurfaces on the header, footer and nav drawer (the basket drawer is the header's cart block).
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { cloneSurfaces } from './clone-surface.mjs';
+import { distroOf, runPreflight } from './foundation-preflight.mjs';
+import { heldByState } from './foundation-run.mjs';
+import { intakeCurrent, layoutSurfaces, pageMapBuilt, paintGapsOf, snapshotDiff, tokenOutput, wslPath } from './foundation-parts.mjs';
+import { mediaAssets } from './media-upload.mjs';
+
+export const PAINT_ROUNDS = 3;
+export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'site-build', 'manifest', 'paint', 'skeletons', 'surfaces' ];
+const ROUTE = 'scripts/computed-route';
+
+export const sha = ( data ) => crypto.createHash( 'sha256' ).update( data ).digest( 'hex' );
+const fileSha = ( file ) => ( fs.existsSync( file ) && fs.statSync( file ).isFile() ? sha( fs.readFileSync( file ) ) : null );
+const readJson = ( file ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : null );
+const mtime = ( file ) => ( fs.existsSync( file ) ? fs.statSync( file ).mtimeMs : 0 );
+const joinFp = ( ...parts ) => sha( parts.map( ( p ) => String( p ?? '' ) ).join( '|' ) );
+
+// The command line of each step that runs one: [ command, args ], run from the repo root.
+export const commands = {
+	handoffCheck: ( { client } ) => [ 'node', [ `${ ROUTE }/handoff-check.mjs`, `sites/${ client }/handoff` ] ],
+	intake: ( { client, record } ) => [ 'node', [ `${ ROUTE }/intake.mjs`, client, ...( record ? [ '--record' ] : [] ) ] ],
+	applyReview: ( { client } ) => [ 'node', [ `${ ROUTE }/intake.mjs`, '--apply-review', client, '--go-through' ] ],
+	rerunSkeletons: ( { client } ) => [ 'node', [ `${ ROUTE }/intake.mjs`, '--rerun-skeletons', client ] ],
+	extract: ( { client, draft, out, trace } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/theme-extractor/extract.py', '--client', client, '--draft', draft, '--intake', `sites/${ client }/build/intake/intake.json`, '--out', out, '--trace', trace ] ],
+	pluginBuild: () => [ 'powershell', [ '-NoProfile', '-Command', 'Set-Location plugins/sgs-blocks; npm run build' ] ],
+	sync: ( { site, repo, distro } ) => [ 'wsl', [ '-d', distro, '-u', 'root', '--', 'bash', `${ wslPath( repo ) }/scripts/local-wp/sync-build.sh`, site ] ],
+	pushSnapshot: ( { client, ssh, host } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/push-theme-snapshot.py', '--client', client, '--target', ssh, '--target-domain', host, '--yes' ] ],
+	siteInfo: ( { client, site } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/provision-site-info-from-draft.py', '--site', site, '--intake', `sites/${ client }/build/intake/intake.json`, '--handoff', `sites/${ client }/handoff`, '--apply' ] ],
+	media: ( { client, site } ) => [ 'node', [ `${ ROUTE }/media-upload.mjs`, client, '--site', site, '--apply' ] ],
+	siteBuild: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--apply' ] ],
+	manifest: ( { client, site } ) => [ 'node', [ `${ ROUTE }/manifest.mjs`, client, '--site', site, '--apply' ] ],
+	calibrate: ( { client, site, blocks } ) => [ 'node', [ `${ ROUTE }/calibrate.mjs`, '--site', site, '--client', client, '--blocks', blocks.join( ',' ) ] ],
+};
+
+// The one-line failure of a command that exited non-zero, with what to do next.
+const failed = ( id, r, next ) => Object.assign( new Error( `${ id } exited ${ r.code }: ${ r.tail }` ), { next } );
+
+// The block names in the status of a site run whose propose or fill stage stopped on the paint gate, each once.
+export function gapsInStatus( status ) {
+	const text = Object.values( status ?? {} ).flatMap( ( s ) => Object.values( s ) ).filter( ( r ) => ! r.ok ).map( ( r ) => r.detail ).join( '\n' );
+	return paintGapsOf( text );
+}
+
+// The failed stages of a status object that are not a paint gap, as "<surface> <stage>: <detail>" lines.
+export function otherFailures( status ) {
+	return Object.entries( status ?? {} ).flatMap( ( [ key, stages ] ) => Object.entries( stages ).filter( ( [ , r ] ) => ! r.ok && ! paintGapsOf( r.detail ).length ).map( ( [ stage, r ] ) => `${ key } ${ stage }: ${ r.detail }` ) );
+}
+
+// The steps for `ctx` ({ client, site, repo, targets, options, ports, log }).
+export function buildSteps( ctx ) {
+	const { client, site, repo, targets, ports } = ctx;
+	const options = { replaceSnapshot: false, allowMissingPaint: [], allowUnpicked: false, plan: false, ...ctx.options };
+	const log = ctx.log ?? console.log;
+	const target = targets[ site ];
+	const distro = distroOf( target );
+	const state = ctx.state ?? { steps: {} };
+	const ran = ctx.ran ?? {};
+	const at = ( ...p ) => path.join( repo, ...p );
+	const build = at( 'sites', client, 'build' );
+	const p = {
+		manifest: at( 'sites', client, 'handoff', 'MANIFEST.json' ),
+		intake: path.join( build, 'intake', 'intake.json' ),
+		facts: path.join( build, 'intake', 'facts.json' ),
+		inventories: path.join( build, 'intake', 'inventories' ),
+		replay: path.join( build, 'intake', 'replay' ),
+		confirmed: path.join( build, 'intake', 'page-map.confirmed.json' ),
+		pageMap: path.join( build, 'page-map.json' ),
+		pageMapSite: path.join( build, 'page-map.site' ),
+		surfaces: path.join( build, 'surfaces.json' ),
+		snapshot: at( 'sites', client, 'theme-snapshot.json' ),
+		scratchSnapshot: path.join( build, 'foundation', 'theme-snapshot.extracted.json' ),
+		scratchTrace: path.join( build, 'foundation', 'theme-snapshot.extracted.trace.json' ),
+	};
+	const hasDir = ( d ) => fs.existsSync( d ) && fs.readdirSync( d ).length > 0;
+	const hasReplay = () => fs.existsSync( p.replay ) && fs.readdirSync( p.replay ).some( ( f ) => f.endsWith( '.har' ) );
+	const gitignoredPresent = () => fs.existsSync( p.facts ) && hasDir( p.inventories ) && hasReplay();
+	const heldBy = ( id, fp, reason ) => ( heldByState( state, id, fp ) ? reason : null );
+	const cmd = async ( id, [ command, args ], next ) => {
+		const r = await ports.exec( id, command, args );
+		if ( 0 !== r.code ) {
+			throw failed( id, r, next );
+		}
+		return r.tail;
+	};
+	const layout = () => layoutSurfaces( { rows: readJson( p.pageMap ) ?? [], surfaces: readJson( p.surfaces ) ?? {} } );
+	const local = Boolean( distro );
+	// A snapshot this command wrote as the client's own (the client had none) stays the extraction's target on later runs; `wrote` is this run's choice.
+	let wrote = null;
+	const out = () => ( 'committed' === ( wrote ?? state.steps.tokens?.to ) && ! options.replaceSnapshot
+		? { to: 'committed', why: 'the extraction wrote this snapshot on an earlier run' }
+		: tokenOutput( { committedExists: fs.existsSync( p.snapshot ), replace: options.replaceSnapshot, mainCheckout: fs.existsSync( at( '.git' ) ) && fs.statSync( at( '.git' ) ).isDirectory() } ) );
+	const entryDraft = () => readJson( p.manifest )?.entry_drafts?.[ 0 ];
+	const snapshotSha = () => fileSha( p.snapshot );
+	const localOnly = ( what ) => ( local ? null : `${ site } is a hosted site: ${ what }` );
+
+	const steps = [
+		{
+			id: 'preflight', always: true, title: 'the checks that would waste an hour of the run',
+			run: async () => {
+				const checks = await runPreflight( { client, site, repo, targets, probes: ports, deep: ! options.plan } );
+				checks.forEach( ( c ) => log( `${ c.skipped ? 'skip' : c.ok ? 'ok  ' : 'FAIL' } pre-${ c.id } - ${ c.detail }${ c.ok ? '' : `; next: ${ c.next }` }` ) );
+				const bad = checks.filter( ( c ) => ! c.ok );
+				if ( bad.length ) {
+					throw Object.assign( new Error( `${ bad.length } check${ 1 === bad.length ? '' : 's' } failed: ${ bad.map( ( c ) => c.id ).join( ', ' ) }` ), { next: bad[ 0 ].next } );
+				}
+				return `${ checks.length } checks passed`;
+			},
+		},
+		{
+			id: 'handoff-check', deps: [ 'preflight' ], title: 'handoff-check.mjs on the handoff folder',
+			fingerprint: () => fileSha( p.manifest ),
+			holds: () => heldBy( 'handoff-check', fileSha( p.manifest ), 'MANIFEST.json is what the check last passed' ),
+			run: () => cmd( 'handoff-check', commands.handoffCheck( { client } ), `fix what the check names in sites/${ client }/handoff (or re-export the draft)` ),
+		},
+		{
+			id: 'intake-files', deps: [ 'handoff-check' ], title: 'the gitignored intake files from the checkout that holds them',
+			holds: () => ( gitignoredPresent() ? 'facts.json, inventories/ and replay/ are here' : null ),
+			run: () => {
+				const src = ports.sourceCheckout();
+				const from = ( ...q ) => ( src ? path.join( src, 'sites', client, 'build', 'intake', ...q ) : null );
+				if ( ! src || path.resolve( src ) === path.resolve( repo ) || ! fileSha( p.intake ) || ! fs.existsSync( from( 'facts.json' ) ) || fileSha( from( 'intake.json' ) ) !== fileSha( p.intake ) ) {
+					return 'no checkout holds them for this intake.json; the intake step reads the draft and writes them';
+				}
+				fs.mkdirSync( path.dirname( p.facts ), { recursive: true } );
+				const copied = [];
+				for ( const name of [ 'facts.json', 'inventories', 'replay' ] ) {
+					fs.existsSync( from( name ) ) && ( fs.cpSync( from( name ), path.join( path.dirname( p.facts ), name ), { recursive: true } ), copied.push( name ) );
+				}
+				return `copied ${ copied.join( ', ' ) } from ${ src }`;
+			},
+		},
+		{
+			id: 'intake', deps: [ 'intake-files' ], title: 'intake.mjs: the draft read, the page map, the palette, the skeletons',
+			fingerprint: () => joinFp( fileSha( p.manifest ), fileSha( p.intake ) ),
+			holds: () => ( intakeCurrent( { intake: readJson( p.intake ), manifest: readJson( p.manifest ) } ) && gitignoredPresent() ? 'intake.json carries this handoff\'s file hashes and its gitignored files are here' : null ),
+			run: async () => {
+				ran.intake = true;
+				return cmd( 'intake', commands.intake( { client, record: ! hasReplay() } ), `read the stage log; intake takes one to two hours on a loaded machine, so rerun it alone: node ${ ROUTE }/intake.mjs ${ client } --record` );
+			},
+		},
+		{
+			id: 'apply-review', deps: [ 'intake' ], title: 'intake.mjs --apply-review --go-through',
+			fingerprint: () => joinFp( fileSha( p.intake ), fileSha( p.confirmed ) ),
+			holds: () => ( ran.intake ? null : heldBy( 'apply-review', joinFp( fileSha( p.intake ), fileSha( p.confirmed ) ), 'intake.json and the confirmed page map are as the review left them' )
+				?? ( ! state.steps[ 'apply-review' ] && fs.existsSync( p.confirmed ) && readJson( p.intake )?.review?.length ? 'intake.json already carries review marks and a confirmed page map' : null ) ),
+			run: () => cmd( 'apply-review', commands.applyReview( { client } ), 'a row the review cannot take is listed in build/intake/go-through-open.json; fix what the command names' ),
+		},
+		{
+			id: 'tokens', deps: [ 'apply-review' ], title: 'extract.py: the draft\'s tokens as a theme snapshot',
+			fingerprint: () => joinFp( fileSha( p.manifest ), fileSha( p.intake ), fileSha( out().to === 'committed' ? p.snapshot : p.scratchSnapshot ) ),
+			record: () => ( { to: wrote } ),
+			holds: () => {
+				const to = out().to;
+				const file = 'committed' === to ? p.snapshot : p.scratchSnapshot;
+				if ( heldByState( state, 'tokens', joinFp( fileSha( p.manifest ), fileSha( p.intake ), fileSha( file ) ) ) ) {
+					return `${ path.relative( repo, file ) } is current for this handoff and intake`;
+				}
+				const newest = Math.max( mtime( p.manifest ), mtime( p.intake ) );
+				return ! state.steps.tokens && fs.existsSync( file ) && mtime( file ) >= newest && 'committed' !== to ? `${ path.relative( repo, file ) } is newer than the handoff and intake.json` : null;
+			},
+			run: async () => {
+				const { to, why } = out();
+				wrote = to;
+				const draft = entryDraft();
+				if ( ! draft ) {
+					throw new Error( `${ path.relative( repo, p.manifest ) } names no entry draft` );
+				}
+				const dest = 'committed' === to ? p.snapshot : p.scratchSnapshot;
+				fs.mkdirSync( path.dirname( dest ), { recursive: true } );
+				await cmd( 'tokens', commands.extract( { client, draft: `sites/${ client }/handoff/${ draft }`, out: path.relative( repo, dest ), trace: path.relative( repo, 'committed' === to ? path.join( build, 'foundation', 'theme-extract-trace.json' ) : p.scratchTrace ) } ), 'the extractor HALTed: read its message (a draft that differs from the snapshot\'s source needs --replace-snapshot)' );
+				if ( 'scratch' === to ) {
+					const d = snapshotDiff( readJson( dest ), readJson( p.snapshot ) );
+					return `${ why }: ${ d.equal } values equal, ${ d.differ } differ, ${ d.onlyA } only in the extraction, ${ d.onlyB } only in the committed one (${ path.relative( repo, dest ) })`;
+				}
+				return `${ why }: written to ${ path.relative( repo, dest ) }`;
+			},
+		},
+		{
+			id: 'plugin-build', deps: [ 'tokens' ], title: 'npm run build in plugins/sgs-blocks',
+			applicable: () => localOnly( 'its build comes from build-deploy.py --target' ),
+			holds: () => {
+				const s = ports.buildState();
+				return s.present && ! s.stale ? 'the checkout\'s plugin build is newer than its sources' : null;
+			},
+			run: () => cmd( 'plugin-build', commands.pluginBuild(), 'a worktree has no installed packages: copy them from a checkout that has them (.claude/dev-setup.md, clean worktree), then rerun; a half-written build stops the sync, so rerun the build whole' ),
+		},
+		{
+			id: 'sync', deps: [ 'plugin-build', 'tokens' ], title: 'sync-build.sh: the plugin, the theme and the snapshot onto the copy',
+			applicable: () => localOnly( 'its plugin and theme come from build-deploy.py --target, and its snapshot from push-theme-snapshot.py' ),
+			fingerprint: async () => joinFp( snapshotSha(), await ports.buildDigest() ),
+			holds: async () => {
+				const d = await ports.buildsDiffer();
+				return ! d.differs && heldByState( state, 'sync', joinFp( snapshotSha(), await ports.buildDigest() ) ) ? 'the copy\'s blocks equal the build and its snapshot is the committed one' : null;
+			},
+			run: () => cmd( 'sync', commands.sync( { site, repo, distro } ), 'check WSL answers and the copy exists (scratch-mirror.sh list); a refused sync names the build it found' ),
+		},
+		{
+			id: 'snapshot-push', deps: [ 'tokens' ], title: 'push-theme-snapshot.py to the hosted site',
+			applicable: () => ( local ? `${ site } is a local copy: sync-build.sh installs the client's theme-snapshot.json as its theme.json` : null ),
+			fingerprint: () => joinFp( snapshotSha(), site ),
+			holds: () => heldBy( 'snapshot-push', joinFp( snapshotSha(), site ), 'the snapshot was pushed and has not changed' ),
+			run: () => {
+				const h = ports.hostedPush( site );
+				return cmd( 'snapshot-push', commands.pushSnapshot( { client, ssh: h.ssh, host: h.host } ), 'the push script names the diff it refused' );
+			},
+		},
+		{
+			id: 'site-info', deps: [ 'apply-review', 'sync', 'snapshot-push' ], title: 'provision-site-info-from-draft.py: the business details',
+			fingerprint: () => joinFp( fileSha( p.intake ), site ),
+			holds: () => heldBy( 'site-info', joinFp( fileSha( p.intake ), site ), 'the confirmed Site Info rows were applied for this intake.json' ),
+			run: () => cmd( 'site-info', commands.siteInfo( { client, site } ), 'the script lists each key it refused and why' ),
+		},
+		{
+			id: 'media', deps: [ 'apply-review', 'sync', 'snapshot-push' ], title: 'media-upload.mjs: the handoff\'s pictures into the library',
+			fingerprint: () => joinFp( sha( JSON.stringify( mediaAssets( repo, client ).map( ( f ) => [ f, fileSha( at( f ) ) ] ) ) ), site, fileSha( path.join( build, 'media-map.json' ) ) ),
+			holds: () => heldBy( 'media', joinFp( sha( JSON.stringify( mediaAssets( repo, client ).map( ( f ) => [ f, fileSha( at( f ) ) ] ) ) ), site, fileSha( path.join( build, 'media-map.json' ) ) ), 'every picture was uploaded for this site and none has changed' ),
+			run: () => cmd( 'media', commands.media( { client, site } ), `a 401 means the application password was refused: node ${ ROUTE }/tools/scratch-target.mjs list, then scratch-mirror.sh secrets ${ site }` ),
+		},
+		{
+			id: 'site-build', deps: [ 'media', 'site-info' ], title: 'site-build.mjs --apply: every page-map row\'s post, the menus and the layout',
+			fingerprint: () => joinFp( fileSha( p.pageMap ), site ),
+			holds: () => ( pageMapBuilt( { rows: readJson( p.pageMap ), siteFile: fs.existsSync( p.pageMapSite ) ? fs.readFileSync( p.pageMapSite, 'utf8' ) : '', site, targets } ) ? `every page-map row has its id on ${ site }'s post ids` : null ),
+			run: () => cmd( 'site-build', commands.siteBuild( { client, site } ), 'the build writes each row\'s id as it goes, so rerun it: it adopts the posts already made' ),
+		},
+		{
+			id: 'manifest', deps: [ 'site-build' ], title: 'manifest.mjs --apply: surfaces.json',
+			fingerprint: () => joinFp( fileSha( p.pageMap ), fileSha( p.surfaces ) ),
+			holds: () => ( fs.existsSync( p.surfaces ) && layout().found.length > 0 && 0 === layout().missing.length ? 'every layout row has a surface in surfaces.json' : null ),
+			run: () => cmd( 'manifest', commands.manifest( { client, site } ), 'it lists each row it could not settle' ),
+		},
+		{
+			id: 'paint', deps: [ 'manifest', 'sync', 'tokens', 'apply-review' ], title: 'calibrate exactly the blocks the paint gate names on the site',
+			fingerprint: async () => joinFp( site, snapshotSha(), fileSha( p.intake ), await ports.buildDigest(), layout().found.map( ( s ) => s.key ).join( ',' ) ),
+			holds: async () => heldBy( 'paint', joinFp( site, snapshotSha(), fileSha( p.intake ), await ports.buildDigest(), layout().found.map( ( s ) => s.key ).join( ',' ) ), 'the layout surfaces propose with no paint gap for this build and snapshot' ),
+			run: async () => {
+				const { found, missing } = layout();
+				if ( missing.length || ! found.length ) {
+					throw Object.assign( new Error( missing.length ? `no surface for the layout row${ 1 === missing.length ? '' : 's' } ${ missing.map( ( m ) => m.slug ).join( ', ' ) }` : 'the page map has no header, footer or drawer row' ), { next: `node ${ ROUTE }/manifest.mjs ${ client } --site ${ site } --apply` } );
+				}
+				const keys = found.map( ( s ) => s.key );
+				const done = [];
+				for ( let round = 1; round <= PAINT_ROUNDS; round++ ) {
+					const r = await ports.launch( [ client, '--site', site, '--only', keys.join( ',' ), '--stages', 'inventory,propose', '--jobs', '1', ...( options.allowMissingPaint.length ? [ '--allow-missing-paint', options.allowMissingPaint.join( ',' ) ] : [] ) ] );
+					if ( ! r.status ) {
+						throw new Error( `the propose pass wrote no status: ${ r.error }` );
+					}
+					const gaps = gapsInStatus( r.status ).filter( ( b ) => ! options.allowMissingPaint.includes( b ) );
+					const other = otherFailures( r.status );
+					if ( other.length ) {
+						throw Object.assign( new Error( `the propose pass failed: ${ other.join( '; ' ).slice( 0, 500 ) }` ), { next: `read ${ r.runDir }` } );
+					}
+					if ( ! gaps.length ) {
+						return done.length ? `calibrated ${ done.join( ', ' ) }; the layout surfaces propose with no paint gap` : 'no block lacked its default paint';
+					}
+					await cmd( 'paint', commands.calibrate( { client, site, blocks: gaps } ), 'calibrate.mjs prints each block it could not measure; one that cannot be calibrated is named in --allow-missing-paint' );
+					ran.calibrated = true;
+					done.push( ...gaps );
+				}
+				throw Object.assign( new Error( `blocks still lack paint after ${ PAINT_ROUNDS } rounds: ${ done.join( ', ' ) }` ), { next: 'the blocks calibrated each round are named above; a block whose fill adds another each round needs --allow-missing-paint for it' } );
+			},
+		},
+		{
+			id: 'skeletons', deps: [ 'paint' ], title: 'intake.mjs --rerun-skeletons, then --apply-review --go-through',
+			applicable: () => ( ran.intake || ran.calibrated ? null : 'this run neither read the draft nor calibrated, so the skeleton records already carry their calibration keys' ),
+			run: async () => {
+				await cmd( 'skeletons', commands.rerunSkeletons( { client } ), 'it proposes offline from the saved inventories: rerun it' );
+				return cmd( 'skeletons', commands.applyReview( { client } ), 'a row the review cannot take is listed in build/intake/go-through-open.json' );
+			},
+		},
+		{
+			id: 'surfaces', deps: [ 'skeletons', 'paint', 'manifest' ], title: 'clone-surface: the header, footer and nav drawer',
+			fingerprint: () => joinFp( site, fileSha( p.intake ), fileSha( p.surfaces ), snapshotSha() ),
+			holds: () => heldBy( 'surfaces', joinFp( site, fileSha( p.intake ), fileSha( p.surfaces ), snapshotSha() ), 'the layout surfaces passed every stage for this intake.json and snapshot' ),
+			run: async () => {
+				const keys = layout().found.map( ( s ) => s.key );
+				const v = await cloneSurfaces( { client, site, keys, intake: readJson( p.intake ), surfaces: readJson( p.surfaces ), run: ports.launch, allowMissingPaint: options.allowMissingPaint, allowUnpicked: options.allowUnpicked, log } );
+				if ( ! v.ok ) {
+					const picks = v.failed.some( ( l ) => / finalise: /.test( l ) );
+					throw Object.assign( new Error( [ ...v.failed.map( ( l ) => `failed: ${ l }` ), ...v.skipped.map( ( l ) => `not run: ${ l }` ), ...v.missing ].join( '; ' ).slice( 0, 600 ) ), {
+						next: picks
+							? `run node ${ ROUTE }/intake.mjs --finalise ${ client }, dispatch an agent with ${ ROUTE }/prompts/skeleton-finaliser.md, run node ${ ROUTE }/intake.mjs --apply-picks ${ client }, then rerun this command; or rerun it with --allow-unpicked to go through on the writer's proposals`
+							: `fix the first failure, then rerun this command (the steps before it are held), or run the surfaces alone: node ${ ROUTE }/clone-surface.mjs ${ client } --surface ${ keys.join( ',' ) } --site ${ site }`,
+					} );
+				}
+				return `${ keys.join( ', ' ) }: every stage ran and passed`;
+			},
+		},
+	];
+	return steps;
+}

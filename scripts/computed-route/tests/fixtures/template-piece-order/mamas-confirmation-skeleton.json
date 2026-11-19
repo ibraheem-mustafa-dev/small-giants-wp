@@ -1,0 +1,1717 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/8#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "",
+			"styleHash": "1505",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 11
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/hero",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root/9#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "d326a715",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 12
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "✓"
+						},
+						"draftRef": {
+							"tpl": "Root/11#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "4451e548",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "292b6",
+							"line": 14
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "thank you, lovely"
+						},
+						"draftRef": {
+							"tpl": "Root/12#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "cdebac2",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "b81fd6b7",
+							"line": 15
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Your order’s in. Zainab’s warming the oven."
+						},
+						"draftRef": {
+							"tpl": "Root/13#0"
+						},
+						"draftFingerprint": {
+							"tag": "h1",
+							"cls": "",
+							"styleHash": "f75bc1cb",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "d274a320",
+							"line": 16
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Order <strong>MM-1042</strong>. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted."
+						},
+						"draftRef": {
+							"tpl": "Root/14#0"
+						},
+						"draftFingerprint": {
+							"tag": "p",
+							"cls": "",
+							"styleHash": "501f510",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "9613bf25",
+							"line": 17
+						},
+						"innerBlocks": [],
+						"handover": [
+							{
+								"owner": "content-page",
+								"kind": "text",
+								"detail": "the text \"Order MM-1042. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.\" holds \"MM-1042\" as a piece of its own (color rgb(58, 42, 34)), which the text's rich text cannot carry: split it into its own block or restyle it"
+							},
+							{
+								"owner": "content-page",
+								"kind": "text",
+								"detail": "the text \"Order MM-1042. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.\" holds words the draft's code fills ({{ no }}): its rendered words are written"
+							}
+						]
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "flex"
+						},
+						"draftRef": {
+							"tpl": "Root/16#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f7b4f925",
+							"parentTags": [
+								"main",
+								"section",
+								"div"
+							],
+							"textHash": "1505",
+							"line": 18
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "✦"
+								},
+								"draftRef": {
+									"tpl": "Root/17#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "57831e6",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "29283",
+									"line": 18
+								},
+								"innerBlocks": []
+							},
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "Baking on Mon 23 Nov · with you from Wed 25 Nov"
+								},
+								"draftRef": {
+									"tpl": "Root/18#0"
+								},
+								"draftFingerprint": {
+									"tag": "span",
+									"cls": "",
+									"styleHash": "1505",
+									"parentTags": [
+										"main",
+										"section",
+										"div",
+										"div"
+									],
+									"textHash": "541bed8a",
+									"line": 18
+								},
+								"innerBlocks": [],
+								"handover": [
+									{
+										"owner": "content-page",
+										"kind": "text",
+										"detail": "the text \"Baking on Mon 23 Nov · with you from Wed 25 Nov\" holds words the draft's code fills ({{ arrive }}, {{ bakeDate }}): its rendered words are written"
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "section"
+				},
+				"draftRef": {
+					"tpl": "Root/20#0"
+				},
+				"draftFingerprint": {
+					"tag": "section",
+					"cls": "",
+					"styleHash": "d3ea2e29",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 22
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"layout": "stack"
+						},
+						"draftRef": {
+							"tpl": "Root/21#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "f0feb3ab",
+							"parentTags": [
+								"main",
+								"section"
+							],
+							"textHash": "1505",
+							"line": 23
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/22#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "dac3f01b",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 24
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/24#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "db547709",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 26
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "✓"
+												},
+												"draftRef": {
+													"tpl": "Root/25#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "845ff087",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "292b6",
+													"line": 27
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Order placed"
+												},
+												"draftRef": {
+													"tpl": "Root/26#0"
+												},
+												"draftFingerprint": {
+													"tag": "b",
+													"cls": "",
+													"styleHash": "3e165031",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "90484994",
+													"line": 28
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Just now"
+												},
+												"draftRef": {
+													"tpl": "Root/27#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "8e24c991",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "7236886b",
+													"line": 29
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/24#1"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eed8be8",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 26
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "✦"
+												},
+												"draftRef": {
+													"tpl": "Root/25#1"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "845ff087",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "29283",
+													"line": 27
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Baking"
+												},
+												"draftRef": {
+													"tpl": "Root/26#1"
+												},
+												"draftFingerprint": {
+													"tag": "b",
+													"cls": "",
+													"styleHash": "3e165031",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "9f4de60d",
+													"line": 28
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Zainab bakes it fresh on Mon 23 Nov"
+												},
+												"draftRef": {
+													"tpl": "Root/27#1"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "8e24c991",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "489cf0c8",
+													"line": 29
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/24#2"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eed8be8",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 26
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "→"
+												},
+												"draftRef": {
+													"tpl": "Root/25#2"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "845ff087",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "29437",
+													"line": 27
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Posted"
+												},
+												"draftRef": {
+													"tpl": "Root/26#2"
+												},
+												"draftFingerprint": {
+													"tag": "b",
+													"cls": "",
+													"styleHash": "3e165031",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "c9a65bbc",
+													"line": 28
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Royal Mail Tracked, link by email"
+												},
+												"draftRef": {
+													"tpl": "Root/27#2"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "8e24c991",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "449a6f50",
+													"line": 29
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/24#3"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "eed8be8",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 26
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {
+													"brandName": "♥"
+												},
+												"draftRef": {
+													"tpl": "Root/25#3"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "845ff087",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "293c0",
+													"line": 27
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "With you"
+												},
+												"draftRef": {
+													"tpl": "Root/26#3"
+												},
+												"draftFingerprint": {
+													"tag": "b",
+													"cls": "",
+													"styleHash": "3e165031",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "fdabca4",
+													"line": 28
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Usually in 3–5 days"
+												},
+												"draftRef": {
+													"tpl": "Root/27#3"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "8e24c991",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "ee96bc73",
+													"line": 29
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/28#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "d6ae7a30",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 34
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/29#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "ed57f42b",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 35
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "What’s coming"
+												},
+												"draftRef": {
+													"tpl": "Root/30#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "fe6d8d78",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "b5647a24",
+													"line": 36
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "grid"
+												},
+												"draftRef": {
+													"tpl": "Root/32#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "611ead9b",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 37
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/container",
+														"attributes": {
+															"tagName": "div"
+														},
+														"draftRef": {
+															"tpl": "Root/34#0"
+														},
+														"draftFingerprint": {
+															"tag": "div",
+															"cls": "",
+															"styleHash": "73effcfd",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "1505",
+															"line": 37
+														},
+														"innerBlocks": [
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "1 × Zookies · 20 pack"
+																},
+																"draftRef": {
+																	"tpl": "Root/35#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "14f3461b",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "ab17a441",
+																	"line": 37
+																},
+																"innerBlocks": []
+															},
+															{
+																"name": "sgs/text",
+																"attributes": {
+																	"text": "Classic oat · milk choc chips · strawberry"
+																},
+																"draftRef": {
+																	"tpl": "Root/36#0"
+																},
+																"draftFingerprint": {
+																	"tag": "div",
+																	"cls": "",
+																	"styleHash": "feea9976",
+																	"parentTags": [
+																		"main",
+																		"section",
+																		"div",
+																		"div",
+																		"div",
+																		"div",
+																		"div"
+																	],
+																	"textHash": "ee2e02c3",
+																	"line": 37
+																},
+																"innerBlocks": []
+															}
+														]
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "£21.50"
+														},
+														"draftRef": {
+															"tpl": "Root/37#0"
+														},
+														"draftFingerprint": {
+															"tag": "b",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "9820f9ee",
+															"line": 37
+														},
+														"innerBlocks": []
+													}
+												]
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div",
+													"layout": "flex"
+												},
+												"draftRef": {
+													"tpl": "Root/38#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "bf400274",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 38
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Paid"
+														},
+														"draftRef": {
+															"tpl": "Root/39#0"
+														},
+														"draftFingerprint": {
+															"tag": "b",
+															"cls": "",
+															"styleHash": "1505",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "7c8a76d9",
+															"line": 38
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "£21.50"
+														},
+														"draftRef": {
+															"tpl": "Root/40#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "fe6fbefc",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"div",
+																"div"
+															],
+															"textHash": "9820f9ee",
+															"line": 38
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/42#0"
+										},
+										"draftFingerprint": {
+											"tag": "div",
+											"cls": "",
+											"styleHash": "9b9ffe94",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 41
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/decorative-image",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/43#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "12591248",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "1505",
+													"line": 42
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Your note, going in the box"
+												},
+												"draftRef": {
+													"tpl": "Root/44#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "b1979358",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "90645e6b",
+													"line": 43
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Dear Sample to ,"
+												},
+												"draftRef": {
+													"tpl": "Root/46#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "9602c96a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "416f23a6",
+													"line": 44
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Sample message"
+												},
+												"draftRef": {
+													"tpl": "Root/47#0"
+												},
+												"draftFingerprint": {
+													"tag": "div",
+													"cls": "",
+													"styleHash": "d2b4f9a1",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"div"
+													],
+													"textHash": "72a7a848",
+													"line": 45
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "stack"
+										},
+										"draftRef": {
+											"tpl": "Root/49#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp0",
+											"styleHash": "3e8c914",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 49
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "know another new mum?"
+												},
+												"draftRef": {
+													"tpl": "Root/50#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "eedff088",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "cfccf85",
+													"line": 50
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Send her a Taster Trio"
+												},
+												"draftRef": {
+													"tpl": "Root/51#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe70c6be",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "9c1f6ca2",
+													"line": 51
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "3 Zookies through her letterbox for £5, postage included."
+												},
+												"draftRef": {
+													"tpl": "Root/52#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "da77c464",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "5bd8a4bb",
+													"line": 52
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/button",
+												"attributes": {
+													"label": "Send one →",
+													"url": "/product/taster-trio/"
+												},
+												"draftRef": {
+													"tpl": "Root/53#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "7b943e08",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "17c7902f",
+													"line": 53
+												},
+												"innerBlocks": []
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/61#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp0",
+									"styleHash": "5954d714",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 65
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/62#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "1505",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"a"
+											],
+											"textHash": "1505",
+											"line": 66
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "next time"
+												},
+												"draftRef": {
+													"tpl": "Root/63#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "151c6835",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"a",
+														"span"
+													],
+													"textHash": "ed550dd7",
+													"line": 66
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Create an account to see bake dates and past orders"
+												},
+												"draftRef": {
+													"tpl": "Root/64#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe6d8d78",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"a",
+														"span"
+													],
+													"textHash": "cb77784d",
+													"line": 66
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "Create an account →",
+											"url": "/my-account/"
+										},
+										"draftRef": {
+											"tpl": "Root/65#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "718c7d8d",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"a"
+											],
+											"textHash": "8ada4d7d",
+											"line": 67
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "behaviour",
+												"kind": "link",
+												"detail": "draft link \"SignIn.dc.html?mode=register\" opens /my-account/; its draft query ?mode=register has no site address and is dropped"
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "grid"
+								},
+								"draftRef": {
+									"tpl": "Root/66#0"
+								},
+								"draftFingerprint": {
+									"tag": "div",
+									"cls": "",
+									"styleHash": "89160197",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 70
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex",
+											"sgsBlockLink": "https://www.instagram.com/mamasmunches/"
+										},
+										"draftRef": {
+											"tpl": "Root/67#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp0",
+											"styleHash": "c3cec8eb",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 71
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/icon",
+												"attributes": {},
+												"draftRef": {
+													"tpl": "Root/68#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe24b5aa",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 72
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/73#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "1505",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 73
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/heading",
+														"attributes": {
+															"content": "Watch it being baked"
+														},
+														"draftRef": {
+															"tpl": "Root/74#0"
+														},
+														"draftFingerprint": {
+															"tag": "b",
+															"cls": "",
+															"styleHash": "d4cb9882",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"span"
+															],
+															"textHash": "df9c311f",
+															"line": 73
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Follow @mamasmunches"
+														},
+														"draftRef": {
+															"tpl": "Root/75#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "c9376813",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"span"
+															],
+															"textHash": "d8918aac",
+															"line": 73
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									},
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div",
+											"layout": "flex"
+										},
+										"draftRef": {
+											"tpl": "Root/76#0"
+										},
+										"draftFingerprint": {
+											"tag": "a",
+											"cls": "scp0",
+											"styleHash": "185c8205",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"div"
+											],
+											"textHash": "1505",
+											"line": 75
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "←"
+												},
+												"draftRef": {
+													"tpl": "Root/77#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "8849b04d",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "29435",
+													"line": 76
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/container",
+												"attributes": {
+													"tagName": "div"
+												},
+												"draftRef": {
+													"tpl": "Root/78#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "1505",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"div",
+														"a"
+													],
+													"textHash": "1505",
+													"line": 77
+												},
+												"innerBlocks": [
+													{
+														"name": "sgs/text",
+														"attributes": {
+															"text": "Back to the kitchen"
+														},
+														"draftRef": {
+															"tpl": "Root/79#0"
+														},
+														"draftFingerprint": {
+															"tag": "b",
+															"cls": "",
+															"styleHash": "d4cb9882",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"span"
+															],
+															"textHash": "9ba49b9a",
+															"line": 77
+														},
+														"innerBlocks": []
+													},
+													{
+														"name": "sgs/button",
+														"attributes": {
+															"label": "Keep browsing",
+															"url": "/"
+														},
+														"draftRef": {
+															"tpl": "Root/80#0"
+														},
+														"draftFingerprint": {
+															"tag": "span",
+															"cls": "",
+															"styleHash": "c9376813",
+															"parentTags": [
+																"main",
+																"section",
+																"div",
+																"div",
+																"a",
+																"span"
+															],
+															"textHash": "de26ee45",
+															"line": 77
+														},
+														"innerBlocks": []
+													}
+												]
+											}
+										]
+									}
+								]
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div",
+									"layout": "flex"
+								},
+								"draftRef": {
+									"tpl": "Root/55#0"
+								},
+								"draftFingerprint": {
+									"tag": "a",
+									"cls": "scp0",
+									"styleHash": "35eccd9c",
+									"parentTags": [
+										"main",
+										"section",
+										"div"
+									],
+									"textHash": "1505",
+									"line": 59
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/container",
+										"attributes": {
+											"tagName": "div"
+										},
+										"draftRef": {
+											"tpl": "Root/56#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "1505",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"a"
+											],
+											"textHash": "1505",
+											"line": 60
+										},
+										"innerBlocks": [
+											{
+												"name": "sgs/heading",
+												"attributes": {
+													"content": "all in one place"
+												},
+												"draftRef": {
+													"tpl": "Root/57#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "7fc711a",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"a",
+														"span"
+													],
+													"textHash": "acc0593c",
+													"line": 60
+												},
+												"innerBlocks": []
+											},
+											{
+												"name": "sgs/text",
+												"attributes": {
+													"text": "Follow this order in your account"
+												},
+												"draftRef": {
+													"tpl": "Root/58#0"
+												},
+												"draftFingerprint": {
+													"tag": "span",
+													"cls": "",
+													"styleHash": "fe6d8d78",
+													"parentTags": [
+														"main",
+														"section",
+														"div",
+														"a",
+														"span"
+													],
+													"textHash": "9a4b8fab",
+													"line": 60
+												},
+												"innerBlocks": []
+											}
+										]
+									},
+									{
+										"name": "sgs/button",
+										"attributes": {
+											"label": "View order →",
+											"url": "/my-account/"
+										},
+										"draftRef": {
+											"tpl": "Root/59#0"
+										},
+										"draftFingerprint": {
+											"tag": "span",
+											"cls": "",
+											"styleHash": "718c7d8d",
+											"parentTags": [
+												"main",
+												"section",
+												"div",
+												"a"
+											],
+											"textHash": "e5f7a394",
+											"line": 61
+										},
+										"innerBlocks": [],
+										"handover": [
+											{
+												"owner": "behaviour",
+												"kind": "link",
+												"detail": "draft link \"Account.dc.html?order=MM-1042\" opens /my-account/; its draft query ?order=MM-1042 has no site address and is dropped"
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

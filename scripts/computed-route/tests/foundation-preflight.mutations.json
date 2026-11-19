@@ -1,0 +1,74 @@
+[
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "\t\tassertUnprotected( site, targets );",
+		"replace": "",
+		"why": "a protected site passes the guard"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "\t\tassertScratchRunPlace( site, repo );",
+		"replace": "",
+		"why": "a scratch copy is allowed in the main checkout"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "\t\treturn out;\n\t}\n\tconst manifest =",
+		"replace": "\t}\n\tconst manifest =",
+		"why": "the checks go on after the guard fails"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "fs.existsSync( manifest ) ? pass(",
+		"replace": "true ? pass(",
+		"why": "a missing handoff passes"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "\t\t\tvalidate( JSON.parse( fs.readFileSync( ledger, 'utf8' ) ) );\n",
+		"replace": "",
+		"why": "a divergence list with an unknown rule passes"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "\tif ( ! deep ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a plan probes the machine and the site"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "f.bytes < minFreeGb * GB",
+		"replace": "f.bytes <= minFreeGb * GB",
+		"why": "the exact minimum fails"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": ".split( path.delimiter ).filter( Boolean ) ];",
+		"replace": "[ 0 ].split( path.delimiter ).filter( Boolean ).slice( 0, 0 ) ];",
+		"why": "SGS_FREE_SPACE_PATHS is not read"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "\tif ( distro ) {",
+		"replace": "\tif ( false ) {",
+		"why": "WSL is never probed"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "\t\tadd( r.ok ? pass( 'password'",
+		"replace": "\t\tadd( true ? pass( 'password'",
+		"why": "a refused password passes"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": "/^local-mediatest/.test( site ) ?",
+		"replace": "false ?",
+		"why": "a scratch copy is told to make the password by hand"
+	},
+	{
+		"file": "lib/foundation-preflight.mjs",
+		"find": ")?.[ 1 ] ?? null;",
+		"replace": ")?.[ 0 ] ?? null;",
+		"why": "the distribution name is the whole match"
+	}
+]
