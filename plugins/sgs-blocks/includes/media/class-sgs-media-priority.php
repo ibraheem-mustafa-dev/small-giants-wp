@@ -16,9 +16,9 @@
  * `wp_min_priority_img_pixels` (50,000) square pixels. One lead per page, taken through a per-request claim.
  * A slot with different images per device is one image: the caller resolves it once.
  *
- * A loop is a frame opened by `begin_loop()` and closed by `end_loop()`: `Sgs_Motion_Loop_Delays` opens one when the
- * outermost `core/post-template` or `woocommerce/product-template` starts rendering, and `sgs/card-grid`'s product and
- * collection modes open their own. An item is a distinct post ID (`get_the_ID()`, or the key a block names with
+ * A loop is a frame opened by `begin_loop()` and closed by `end_loop()`: `Sgs_Motion_Loop_Delays` opens one when each
+ * `core/post-template` or `woocommerce/product-template` starts rendering (a nested template is its own loop and never
+ * spends the outer loop's places), and `sgs/card-grid`'s product and collection modes and `sgs/post-grid` open their own. An item is a distinct post ID (`get_the_ID()`, or the key a block names with
  * `loop_item()`), counted in the order its first slot resolves; a second loop on the page starts again at item 0. The
  * page-wide eager cap and the single lead still count across loops, and Load priority "first" still wins over rule 4. A
  * slot whose item has no ID is not in a loop for this rule.

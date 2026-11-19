@@ -10,7 +10,9 @@ Spec: Spec 32 FR-32-11 (page-specific CSS) and FR-32-32 (delivery). Parent plan:
 
 ## Goal and why
 
-Mama's Home carries 415 KB of raw page-specific CSS (about 3,200 rules, only 993 distinct rule bodies: one nav hover colour 217 times, the container content width about 240 times). Every page prints its CSS inline (Mama's moved to `inline` on 2026-11-19), so that weight is paid on every visit. Done looks like: Mama's Home and Shop render exactly as before with far less CSS in the page, and PageSpeed (phones, median of 5) is at or above the inline medians recorded before Stage C.
+Mama's Home carries 415 KB of raw page-specific CSS (about 3,200 rules, only 993 distinct rule bodies: one nav hover colour 217 times, the container content width about 240 times). Every page prints its CSS inline (Mama's moved to `inline` on 2026-11-19), so that weight is paid on every visit. Done looks like: Mama's Home and Shop render exactly as before with far less CSS in the page, and PageSpeed (phones, median of 5) is at or above the baseline below, with Shop's 95 as the target.
+
+**Baseline (Mama's on `inline` with the page cache, release `cd9718b2a`, 2026-11-19, PageSpeed API phones, median of 5):** Home 94 (range 86 to 98), total blocking time 168 ms; Shop 87 (79 to 90), LCP 3.30 s, total blocking time 209 ms. Shop's LCP image (the first product card, 14 KB AVIF) finishes downloading about 0.2 s in and then waits about 2.1 s to paint; the largest main-thread cost is Style & Layout, about 0.7 s, the browser matching this per-instance CSS (Shop's HTML is about 1 MB raw with its CSS inline). That Style & Layout cost is the lever Stage C measures; the other long tasks (Google's `gtag/js` 176 ms, `header-behaviours/view.js` 116 ms, `gtm.js` 83 ms) are outside it. Source: `plans/2026-11-19-css-delivery.md` Results.
 
 ## Approach
 
@@ -68,6 +70,6 @@ Status: not started
 ## Wave 3: Ship and prove
 
 ### Task 4: Release and measure
-Why: proves the Goal on the live shop. Read first: `CLAUDE.md` Build and deploy; the Mama's rules under Sites. Changes: none (deploy and record). Touches: all four sites (one release), Mama's live shop. Done when: journey check 6 of 6 before and after (`node E:\sgs-tmp\cc-plan\probe\journey.mjs`); `build-deploy.py --target sandybrown,mamas-test,indus-test,eye-care-test --page-weight` passes the page-weight gate (`scripts/check-page-weight.mjs`, baseline only shrinks); Mama's Home and Shop PageSpeed medians of 5 in `inline` mode at or above the pre-Stage-C inline medians, with page CSS bytes recorded in `plans/2026-11-19-css-delivery.md` Results. Depends on: 2, 3
+Why: proves the Goal on the live shop. Read first: `CLAUDE.md` Build and deploy; the Mama's rules under Sites. Changes: none (deploy and record). Touches: all four sites (one release), Mama's live shop. Done when: journey check 6 of 6 before and after (`node E:\sgs-tmp\cc-plan\probe\journey.mjs`); `build-deploy.py --target sandybrown,mamas-test,indus-test,eye-care-test --page-weight` passes the page-weight gate (`scripts/check-page-weight.mjs`, baseline only shrinks); Mama's Home and Shop PageSpeed medians of 5 in `inline` mode at or above the baseline in Goal and why (Home 94, Shop 87; Shop's target is 95), with Style & Layout time on Shop and page CSS bytes recorded in `plans/2026-11-19-css-delivery.md` Results. Depends on: 2, 3
 
 Status: not started
