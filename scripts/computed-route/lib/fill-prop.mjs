@@ -334,6 +334,12 @@ export function resolveProperty( ctx ) {
 		const baselineContext = ( w ) => ( undefined !== baseline( slot, w ) && baseline( slot, w ) === defaultPaint( calibration, slot, w, prop ) ? calibratedContext( calibration, slot, w ) : null );
 		const included = tiersDiffering( prop, draft, ( w ) => baseline( slot, w ), ( w ) => defaultPaint( calibration, slot, w, prop ), contextOf, baselineContext );
 		if ( ! Object.keys( included ).length ) {
+			// An inherited property that equals the draft on this element still reaches the elements below it, and a part of the block
+			// that paints its own value of it (an icon shape's colour) breaks that inheritance: the draft's value is then asked of
+			// the next slot, and only where no slot differs is the property equal.
+			if ( INHERITED.includes( prop ) && slots.slice( slots.indexOf( slot ) + 1 ).some( ( next ) => Object.keys( tiersDiffering( prop, draft, ( w ) => baseline( next, w ), ( w ) => defaultPaint( calibration, next, w, prop ), contextOf, () => null ) ).length ) ) {
+				continue;
+			}
 			return { status: 'equal', slot };
 		}
 		if ( calibration && ! known.includes( LOOSE( slot ) ) ) {

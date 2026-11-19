@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "if ( INHERITED.includes( prop ) && slots.slice(",
+		"replace": "if ( false && slots.slice(",
+		"why": "an inherited colour equal on the root is judged equal without asking the part that paints its own"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "if ( INHERITED.includes( prop ) && slots.slice(",
+		"replace": "if ( slots.slice(",
+		"why": "a non-inherited property equal on the root is asked of the other slots too"
+	}
+]
