@@ -22,6 +22,7 @@ import { readAnimations } from './read-animations.mjs';
 import { readAssets } from './read-assets.mjs';
 import { readReadme } from './read-readme.mjs';
 import { openSandbox } from './intake-sandbox.mjs';
+import { draftTokenLookup } from './draft-tokens.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -143,7 +144,7 @@ export async function buildFactRecord( { folder, client, entry, harPath = null, 
 		const css = await sb.newPage();
 		let template;
 		try {
-			template = await readTemplate( { sources, page: css } );
+			template = await readTemplate( { sources, page: css, tokens: draftTokenLookup( folder ) } );
 		} finally {
 			await css.close();
 		}

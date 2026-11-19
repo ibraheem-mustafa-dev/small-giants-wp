@@ -3,6 +3,8 @@
 // end state by forcing :hover (no pointer, no hand-picked pairs), and the values the matched CSS rules declare beside
 // the computed ones (a declared 168px or 50% width where computed style gives only the used pixels).
 
+import { resolveVars, resolvedOrRaw, hasVar } from './css-vars.mjs';
+
 // The sizes whose computed value is a used size: their declared values are read from the matched rules.
 export const DECLARED_PROPS = [ 'width', 'max-width', 'min-width', 'height', 'min-height', 'max-height', 'left', 'top' ];
 
@@ -234,11 +236,59 @@ export function declaredNames( matched ) {
 // The declared values of `props` on a finder's element: { prop: value } for each prop some rule declares; `props`
 // null reads every property an author declaration names (declaredNames). keepDocument: read without renumbering the
 // document's nodes (inside forcedPseudo's read, whose forced nodes must stay addressable).
-export async function declaredValues( cdp, finder, resolveSrc, props = DECLARED_PROPS, { keepDocument = false } = {} ) {
+// tokens: read a declaration written with the page's tokens (`color: var(--ink)`, `border: var(--line)`) as its value
+// (withTokens); a draft read passes it, a read of a built page keeps the declarations as written.
+export async function declaredValues( cdp, finder, resolveSrc, props = DECLARED_PROPS, { keepDocument = false, tokens = false } = {} ) {
 	const ids = await nodeChain( cdp, finder, resolveSrc, false, keepDocument );
 	if ( ! ids ) {
 		return null;
 	}
-	const matched = await cdp.send( 'CSS.getMatchedStylesForNode', { nodeId: ids[ 0 ] } );
+	const raw = await cdp.send( 'CSS.getMatchedStylesForNode', { nodeId: ids[ 0 ] } );
+	const matched = tokens ? await withTokens( cdp, ids[ 0 ], raw ) : raw;
 	return Object.fromEntries( ( props ?? declaredNames( matched ) ).map( ( p ) => [ p, cascadeWinner( matched, p ) ] ).filter( ( [ , v ] ) => null !== v ) );
+}
+
+// In-page: each [ shorthand, value ] expanded to its longhands by the browser's own parser: [ { longhand: value } ].
+function expandShorthands( pairs ) {
+	const probe = document.createElement( 'div' ).style;
+	return pairs.map( ( [ name, value ] ) => {
+		probe.cssText = '';
+		probe.setProperty( name, value );
+		return Object.fromEntries( [ ...probe ].map( ( n ) => [ n, probe.getPropertyValue( n ) ] ) );
+	} );
+}
+
+// A CSS.getMatchedStylesForNode answer with every declaration written with a token (`var()`) read as its value, from
+// the custom properties the browser computed for the node (the draft's own token files and :root rules, as they reach
+// it) through the shared reader (css-vars.mjs::resolveVars). A shorthand written with a var() reaches CDP as longhands
+// with empty values; those take the longhands of the resolved shorthand. A var() with no value and no fallback stays
+// as written. An answer with no var() is returned as it is.
+export async function withTokens( cdp, nodeId, matched ) {
+	const styles = ( m ) => [ m.attributesStyle, ...( m.matchedCSSRules || [] ).map( ( r ) => r.rule?.style ), m.inlineStyle ].filter( Boolean );
+	if ( ! styles( matched ).some( ( s ) => ( s.cssProperties || [] ).some( ( p ) => hasVar( p.value ) ) ) ) {
+		return matched;
+	}
+	const computed = await cdp.send( 'CSS.getComputedStyleForNode', { nodeId } );
+	const vars = new Map( ( computed.computedStyle || [] ).filter( ( c ) => c.name.startsWith( '--' ) ).map( ( c ) => [ c.name, c.value ] ) );
+	const lookup = ( name ) => vars.get( name );
+	const copy = structuredClone( matched );
+	const shorthands = [];
+	for ( const s of styles( copy ) ) {
+		for ( const e of ( s.shorthandEntries || [] ).filter( ( x ) => hasVar( x.value ) ) ) {
+			const value = resolveVars( e.value, lookup );
+			null !== value && shorthands.push( { s, name: e.name, value } );
+		}
+	}
+	const expanded = shorthands.length ? ( await cdp.send( 'Runtime.evaluate', { expression: `(${ expandShorthands.toString() })(${ JSON.stringify( shorthands.map( ( x ) => [ x.name, x.value ] ) ) })`, returnByValue: true } ) ).result?.value || [] : [];
+	shorthands.forEach( ( x, i ) => {
+		for ( const [ name, value ] of Object.entries( expanded[ i ] || {} ) ) {
+			x.s.cssProperties.filter( ( p ) => p.name === name && '' === String( p.value ).trim() ).forEach( ( p ) => ( p.value = value ) );
+		}
+	} );
+	for ( const s of styles( copy ) ) {
+		for ( const p of ( s.cssProperties || [] ).filter( ( q ) => hasVar( q.value ) ) ) {
+			p.value = resolvedOrRaw( p.value, lookup );
+		}
+	}
+	return copy;
 }

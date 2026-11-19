@@ -23,6 +23,7 @@ import { handlerOpens, opensOn } from './skeleton-handler-opens.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { widgetModel } from './skeleton-widgets.mjs';
 import { keptSvg } from './fill-icon.mjs';
+import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
 // them reads Site Info too.
@@ -32,13 +33,15 @@ export function isSiteInfoValue( text, kind ) {
 }
 
 // The element's declared inline style as { property: value } (lower-case property names; values as written, which may
-// hold a draft binding such as {{ R.px }}).
-export function declared( e ) {
+// hold a draft binding such as {{ R.px }}). With a token lookup (lib/draft-tokens.mjs::draftTokenLookup) a value written
+// with the draft's tokens (`var(--radius-pill)`) is that token's value; one the lookup cannot resolve stays as written.
+export function declared( e, lookup = null ) {
 	const out = {};
 	for ( const part of String( e.attrs?.style || '' ).split( ';' ) ) {
 		const at = part.indexOf( ':' );
 		if ( at > 0 ) {
-			out[ part.slice( 0, at ).trim().toLowerCase() ] = part.slice( at + 1 ).trim();
+			const value = part.slice( at + 1 ).trim();
+			out[ part.slice( 0, at ).trim().toLowerCase() ] = lookup ? resolvedOrRaw( value, lookup ) : value;
 		}
 	}
 	return out;
@@ -114,8 +117,10 @@ const HEADING = /^h[1-6]$/;
 // opener, or null) }. `surface.role` is the page map's role for the surface (lib/skeleton-surface-role.mjs::surfaceRole);
 // `surface.pageMap` the page-map rows (which drawer another row's block draws, for the control that opens it).
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
+	// The draft's own tokens, so a value the draft writes as a token (`var(--radius-pill)`) is read as its value.
+	const tokens = draftTokenLookup( handoffOf( facts ) );
 	const R = facts.decisions.rules || {};
-	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared } );
+	const panel = makePanelRules( { m, view, scope, R, facts, surface, declared: ( e ) => declared( e, tokens ) } );
 	// A block holds its items in an attribute when one array attribute has a field that is content; an array whose fields are
 	// all behaviour or technical (a motion-parts list such as sgs/hero's backgroundSvgParts) holds no items, so the block still holds inner blocks.
 	const arrayBlocks = new Set( facts.q( "SELECT block_slug FROM array_item_schema GROUP BY block_slug, array_attr HAVING SUM( role IS NULL OR role NOT IN ( 'behaviour', 'technical' ) ) > 0" ).map( ( r ) => r.block_slug ) );
@@ -396,7 +401,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( texts[ 0 ] !== e || ! next ) {
 			return false;
 		}
-		const ns = declared( next );
+		const ns = declared( next, tokens );
 		const nextSize = lengthPx( ns[ 'font-size' ] );
 		return null != nextSize ? nextSize < size : ( weightOf( ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
 	};
@@ -716,7 +721,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The surface's accordions, sliders and tabs, recognised by what the draft's code does (lib/skeleton-widgets.mjs), read
 	// once on first use.
 	let widgetsRead = null;
-	const widgets = () => ( widgetsRead ||= widgetModel( { m, view, facts, R, surface, declared, topBlock: hooks.topBlock, narrows: ( c ) => !! R.optionSetFilter && narrowsList( c ) } ) );
+	const widgets = () => ( widgetsRead ||= widgetModel( { m, view, facts, R, surface, declared: ( e ) => declared( e, tokens ), topBlock: hooks.topBlock, narrows: ( c ) => !! R.optionSetFilter && narrowsList( c ) } ) );
 	// The verdict an accordion, slider or tabs part takes, or null. A handoff record that agrees is named in the reason.
 	const widgetVerdict = ( e ) => {
 		const hit = R.accordion || R.slider || R.tabs ? widgets().of( e ) : null;
@@ -924,7 +929,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 
 	// The verdict for one element, or null.
 	const ruleFor = ( e, parentBlock = null ) => {
-		const x = { e, st: declared( e ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
+		const x = { e, st: declared( e, tokens ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
 		for ( const rule of [ ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
 			if ( out ) {

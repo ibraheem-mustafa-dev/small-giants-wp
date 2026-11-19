@@ -10,6 +10,7 @@
 import { templateKey } from './fact-key.mjs';
 import { fingerprintOf, tplLineIndex } from './identity.mjs';
 import { decode, realTag, holes } from './intake-census-template.mjs';
+import { resolvedOrRaw } from './draft-tokens.mjs';
 
 const WRAPPERS = new Set( [ 'sc-if', 'sc-for' ] );
 const PATH = /^[A-Za-z_$][\w$]*(?:\.[\w$]+|\[[^\]]+\])*$/;
@@ -100,13 +101,15 @@ function holesOf( e, attrs ) {
 	return out;
 }
 
-// The static declarations of every element, to be expanded in one page call: { lists, at: [ { rec, slot } ] }.
-const staticLists = ( recs ) => {
+// The static declarations of every element, to be expanded in one page call: { lists, at: [ { rec, slot } ] }. A value
+// written with the draft's tokens is read as its value first (`tokens`, lib/draft-tokens.mjs::draftTokenLookup), so a
+// shorthand such as `border: var(--line)` expands to longhands; one the lookup cannot resolve stays as written.
+export const staticLists = ( recs, tokens = null ) => {
 	const lists = [];
 	const at = [];
 	for ( const rec of recs ) {
 		for ( const [ slot, text ] of Object.entries( rec.styleText ) ) {
-			lists.push( splitDecls( text ).filter( ( [ , v ] ) => ! v.includes( '{{' ) ) );
+			lists.push( splitDecls( text ).filter( ( [ , v ] ) => ! v.includes( '{{' ) ).map( ( [ n, v ] ) => [ n, tokens ? resolvedOrRaw( v, tokens ) : v ] ) );
 			at.push( { rec, slot } );
 		}
 	}
@@ -115,8 +118,8 @@ const staticLists = ( recs ) => {
 
 // The template records of the census sources (draftSources' result): { elements: { <template key>: record }, order: [ key ],
 // gaps }. `page`: a Playwright page of the sandbox (any document: only its CSS parser is used) that expands declarations to
-// longhands; without it every declaration stays as written, flagged `unexpanded`.
-export async function readTemplate( { sources, page = null } ) {
+// longhands; without it every declaration stays as written, flagged `unexpanded`. `tokens`: the draft's token lookup.
+export async function readTemplate( { sources, page = null, tokens = null } ) {
 	const elements = {};
 	const order = [];
 	const gaps = [];
@@ -178,7 +181,7 @@ export async function readTemplate( { sources, page = null } ) {
 			rec.fingerprint = fingerprintOf( asRecord, ancestry );
 		}
 	}
-	const { lists, at } = staticLists( recs );
+	const { lists, at } = staticLists( recs, tokens );
 	if ( page && lists.length ) {
 		const expanded = await page.evaluate( expandInPage, lists );
 		at.forEach( ( { rec, slot }, i ) => {

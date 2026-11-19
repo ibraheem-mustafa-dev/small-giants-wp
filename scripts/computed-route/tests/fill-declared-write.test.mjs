@@ -11,7 +11,7 @@ import { splitCalibration, writeSlotMap, writePaint } from '../lib/cache.mjs';
 
 // sgs/heading and sgs/text pair each typography setting with a unit setting (font size px, letter spacing and line height
 // em). h1: a rem font size, an em letter spacing and a unitless line height; p.plain: an em letter spacing; p.runtime: a
-// var() letter spacing; p.px: a px letter spacing; p.render: a declared colour a held animation overrides.
+// var() letter spacing naming the draft's :root token --ls (read as its 2px); p.px: a px letter spacing; p.render: a declared colour a held animation overrides.
 const DRAFT = `<!doctype html><html><head><meta charset="utf-8"><style>
 :root { --ls: 2px }
 body { margin: 0 }
@@ -83,7 +83,7 @@ test( 'MUST FAIL: a run-time value and a disagreement keep the rendered value an
 	const plain = writesOf( 'sgs/text', TEXT.plain );
 	assert.deepEqual( [ plain.letterSpacing, 'letterSpacingUnit' in plain ], [ { desktop: 0.1 }, false ] );
 	const runtime = writesOf( 'sgs/text', TEXT.runtime );
-	assert.deepEqual( [ runtime.letterSpacing, 'letterSpacingUnit' in runtime ], [ { desktop: 0.125 }, false ], `var() is computed at run time: the rendered 2px in the setting's em (${ textOf( runtime ) })` );
+	assert.deepEqual( [ runtime.letterSpacing, runtime.letterSpacingUnit ], [ { desktop: 2 }, 'px' ], `a var() naming the draft's token reads as the token's 2px (parity/lib/devtools.mjs::withTokens), written as p.px is (${ textOf( runtime ) })` );
 	assert.match( textOf( writesOf( 'sgs/text', TEXT.render ).textColour ), /0000ff/i, 'render-wins keeps the rendered blue' );
 } );
 

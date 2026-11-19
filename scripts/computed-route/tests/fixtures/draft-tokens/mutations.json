@@ -1,0 +1,68 @@
+[
+	{
+		"file": "../parity/lib/css-vars.mjs",
+		"find": "\t\tif ( null === sub && undefined !== fallback ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a fallback is never used"
+	},
+	{
+		"file": "../parity/lib/css-vars.mjs",
+		"find": "const raw = stack.includes( name ) ? undefined : lookup( name );",
+		"replace": "const raw = lookup( name );",
+		"why": "a cycle is followed (it overflows instead of failing closed)"
+	},
+	{
+		"file": "../parity/lib/css-vars.mjs",
+		"find": "sub = undefined === raw || null === raw || '' === String( raw ).trim() ? null : resolveVars( raw, lookup, [ ...stack, name ] );",
+		"replace": "sub = undefined === raw || null === raw || '' === String( raw ).trim() ? null : raw;",
+		"why": "a nested token is not followed"
+	},
+	{
+		"file": "lib/draft-tokens.mjs",
+		"find": "\t\tif ( root || ! ( t.name in out ) ) {",
+		"replace": "\t\tif ( true ) {",
+		"why": "the last declaration wins even inside a media query"
+	},
+	{
+		"file": "lib/draft-tokens.mjs",
+		"find": "matchAll( /<style[^>]*>([\\s\\S]*?)<\\/style>/gi )",
+		"replace": "matchAll( /<NOSTYLE[^>]*>([\\s\\S]*?)<\\/style>/gi )",
+		"why": "the drafts' :root rules are not read"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "= lookup ? resolvedOrRaw( value, lookup ) : value;",
+		"replace": "= value;",
+		"why": "the standing rules read tokens as written"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const tokens = draftTokenLookup( handoffOf( facts ) );",
+		"replace": "const tokens = null;",
+		"why": "the rules get no lookup"
+	},
+	{
+		"file": "lib/read-template.mjs",
+		"find": ".map( ( [ n, v ] ) => [ n, tokens ? resolvedOrRaw( v, tokens ) : v ] )",
+		"replace": ".map( ( [ n, v ] ) => [ n, v ] )",
+		"why": "the template reader keeps token shorthands unexpanded"
+	},
+	{
+		"file": "../parity/lib/devtools.mjs",
+		"find": "x.s.cssProperties.filter( ( p ) => p.name === name && '' === String( p.value ).trim() ).forEach( ( p ) => ( p.value = value ) );",
+		"replace": "void name;",
+		"why": "a token shorthand's longhands stay empty"
+	},
+	{
+		"file": "../parity/lib/devtools.mjs",
+		"find": "\t\t\tp.value = resolvedOrRaw( p.value, lookup );",
+		"replace": "\t\t\tvoid lookup;",
+		"why": "a token longhand stays as written"
+	},
+	{
+		"file": "../parity/lib/devtools.mjs",
+		"find": "const matched = tokens ? await withTokens( cdp, ids[ 0 ], raw ) : raw;",
+		"replace": "const matched = await withTokens( cdp, ids[ 0 ], raw );",
+		"why": "a built-page read resolves tokens too"
+	}
+]

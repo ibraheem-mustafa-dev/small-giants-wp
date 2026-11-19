@@ -1,0 +1,11 @@
+/* Fixture tokens: a radius alias chain, a whole-shorthand border token, a pad token and a token redefined in a media query. */
+:root {
+  --radius-big: 999px;
+  --radius-pill: var(--radius-big);
+  --line: 2px solid #3A2A22;
+  --pad-y: 6px;
+  --gap: 12px;
+}
+@media (min-width: 900px) {
+  :root { --gap: 24px; }
+}

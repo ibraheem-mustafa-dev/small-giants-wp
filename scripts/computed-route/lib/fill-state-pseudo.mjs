@@ -2,7 +2,7 @@
 // carries them as for any look, and the values read are the pseudo-element's own. Declared values come from the matched
 // rules DevTools lists under the element's `pseudoElements`; the render is the pseudo-element's computed style.
 
-import { cascadeWinner, declaredNames } from '../../parity/lib/devtools.mjs';
+import { cascadeWinner, declaredNames, withTokens } from '../../parity/lib/devtools.mjs';
 
 const GROUP = 'sgs-pseudo';
 
@@ -11,7 +11,8 @@ const PSEUDO_TYPES = { '::before': 'before', '::after': 'after', '::marker': 'ma
 
 // The declared values of a finder's pseudo-element: { prop: value } for each property an author rule declares on it, or
 // null when the element is missing. keepDocument: read without renumbering the document's nodes (inside a forced state).
-export async function pseudoDeclared( cdp, finder, resolveSrc, pseudo, keepDocument = false ) {
+// tokens: read a declaration written with a token as its value (devtools.mjs::withTokens; a draft read).
+export async function pseudoDeclared( cdp, finder, resolveSrc, pseudo, keepDocument = false, tokens = false ) {
 	try {
 		const { result } = await cdp.send( 'Runtime.evaluate', { expression: `(${ resolveSrc })(${ JSON.stringify( finder ) })`, objectGroup: GROUP } );
 		if ( ! result?.objectId ) {
@@ -23,7 +24,7 @@ export async function pseudoDeclared( cdp, finder, resolveSrc, pseudo, keepDocum
 		const { nodeId } = await cdp.send( 'DOM.requestNode', { objectId: result.objectId } );
 		const matched = await cdp.send( 'CSS.getMatchedStylesForNode', { nodeId } );
 		const own = ( matched.pseudoElements || [] ).filter( ( p ) => p.pseudoType === PSEUDO_TYPES[ pseudo ] );
-		const layer = { matchedCSSRules: own.flatMap( ( p ) => p.matches || [] ) };
+		const layer = await ( tokens ? ( l ) => withTokens( cdp, nodeId, l ) : ( l ) => l )( { matchedCSSRules: own.flatMap( ( p ) => p.matches || [] ) } );
 		return Object.fromEntries( declaredNames( layer ).map( ( p ) => [ p, cascadeWinner( layer, p ) ] ).filter( ( [ , v ] ) => null !== v ) );
 	} finally {
 		await cdp.send( 'Runtime.releaseObjectGroup', { objectGroup: GROUP } ).catch( () => {} );

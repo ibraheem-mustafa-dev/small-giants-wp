@@ -104,7 +104,7 @@ export function fireScript( [ finder, resolveSrc, types, handlerProps ] ) {
 // One copy in one state: its declared values before and while the state's event holds, what the event showed elsewhere,
 // and the render of what changed; the leave event is fired and the logic state put back afterwards.
 async function readCopy( page, cdp, copy, trigger, resolveSrc ) {
-	const before = await declaredValues( cdp, copy.finder, resolveSrc, null ).catch( () => null );
+	const before = await declaredValues( cdp, copy.finder, resolveSrc, null, { tokens: true } ).catch( () => null );
 	if ( ! before ) {
 		return null;
 	}
@@ -114,7 +114,7 @@ async function readCopy( page, cdp, copy, trigger, resolveSrc ) {
 		await page.evaluate( fireScript, [ copy.finder, resolveSrc, trigger.enter, trigger.props ] );
 		await settleAnimations( page, { floor: 120, cap: 3000 } );
 		const shownAfter = await page.evaluate( fireScript, [ copy.finder, resolveSrc, [], trigger.props ] );
-		const during = await declaredValues( cdp, copy.finder, resolveSrc, null ).catch( () => null );
+		const during = await declaredValues( cdp, copy.finder, resolveSrc, null, { tokens: true } ).catch( () => null );
 		const changed = Object.fromEntries( Object.entries( during || {} ).filter( ( [ p, v ] ) => before[ p ] !== v ) );
 		const rendered = Object.keys( changed ).length ? await page.evaluate( renderedOf, [ copy.finder, resolveSrc, Object.keys( changed ) ] ) : null;
 		return { changed, rendered, opened: null !== base && null !== shownAfter && shownAfter > base };

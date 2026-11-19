@@ -228,7 +228,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 					// A read that throws, or finds no element where the computed read found one, is a recorded outcome (`failures`,
 					// lib/fill-report.mjs::readFailureRows), never only a log line.
 					let reason = null;
-					const own = await declaredValues( cdp, j.finder, RESOLVE, null ).catch( ( e ) => {
+					const own = await declaredValues( cdp, j.finder, RESOLVE, null, { tokens: true } ).catch( ( e ) => {
 						reason = e.message;
 						return null;
 					} );
@@ -256,7 +256,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				}
 				// Each target's state looks (FR-48-81), every target included: a state often reveals one hidden at rest.
 				if ( states.length ) {
-					result.states[ width ] = await readStates( { page, cdp, jobs, rows: states, rest: result.declared[ width ], resolveSrc: RESOLVE, log } );
+					result.states[ width ] = await readStates( { page, cdp, jobs, rows: states, rest: result.declared[ width ], resolveSrc: RESOLVE, log, draftTokens: true } );
 					if ( logicRows.length ) {
 						const logic = await readLogicStates( { page, cdp, jobs, rest: result.declared[ width ], logicRows, vocab: states, resolveSrc: RESOLVE, log } );
 						for ( const [ id, looks ] of Object.entries( logic.looks ) ) {

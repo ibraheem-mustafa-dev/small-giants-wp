@@ -70,8 +70,8 @@ export async function readCurrentItems( { page, cdp, jobs, groups, resolveSrc } 
 			continue;
 		}
 		const sel = currentSelectors( g );
-		const cur = await declaredValues( cdp, sel.current, resolveSrc, null ).catch( () => null );
-		const oth = await declaredValues( cdp, sel.other, resolveSrc, null ).catch( () => null );
+		const cur = await declaredValues( cdp, sel.current, resolveSrc, null, { tokens: true } ).catch( () => null );
+		const oth = await declaredValues( cdp, sel.other, resolveSrc, null, { tokens: true } ).catch( () => null );
 		if ( ! cur || ! oth ) {
 			out.gaps.push( { ids: [ job.id ], reason: `current-item: the draft renders no ${ cur ? 'non-current' : 'current' } copy of the item at this width, so its current look is not read` } );
 			continue;

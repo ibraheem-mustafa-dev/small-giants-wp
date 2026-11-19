@@ -28,8 +28,9 @@ export function declaredDiff( rest, state ) {
 // or whose host was not found is read from its stylesheet rules (lib/fill-state-code.mjs, `read: 'code'`, rendered
 // null: the render cannot confirm it); an entered state has `read: 'entered'`. page/cdp: the open
 // draft page and its DevTools session (lib/fill-read.mjs::readDraft); jobs: lib/fill-read.mjs::jobsFor; rows: the
-// state vocabulary; rest: the resting declared read at this width ({ [targetId]: { prop: value } }).
-export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log = () => {} } ) {
+// state vocabulary; rest: the resting declared read at this width ({ [targetId]: { prop: value } }). draftTokens: read a
+// declaration written with a token as its value (parity/lib/devtools.mjs::withTokens; true for a draft read only).
+export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log = () => {}, draftTokens = false } ) {
 	const vocab = readableRows( rows );
 	const combos = await page.evaluate( stateCombos, [ jobs, vocab, resolveSrc, HOST_ATTR ] );
 	const byI = new Map( vocab.map( ( r ) => [ r.i, r ] ) );
@@ -52,7 +53,7 @@ export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log
 					blocked.push( { combo, tokens } );
 					continue;
 				}
-				const look = await readOne( page, cdp, job, tokens, resolveSrc, combo.pseudo ).catch( ( e ) => {
+				const look = await readOne( page, cdp, job, tokens, resolveSrc, combo.pseudo, draftTokens ).catch( ( e ) => {
 					log( `state read failed for ${ job.id } (${ combo.selector }): ${ e.message }` );
 					return null;
 				} );
@@ -88,7 +89,7 @@ export async function readStates( { page, cdp, jobs, rows, rest, resolveSrc, log
 }
 
 // One combination: enter every token's state on its host, read the target, leave in reverse order.
-async function readOne( page, cdp, job, tokens, resolveSrc, pseudoName = null ) {
+async function readOne( page, cdp, job, tokens, resolveSrc, pseudoName = null, draftTokens = false ) {
 	const hostSel = ( t ) => `[${ HOST_ATTR }="${ t.host }"]`;
 	const pseudo = tokens.filter( ( t ) => 'force-pseudo' === t.row.reach );
 	const others = tokens.filter( ( t ) => 'force-pseudo' !== t.row.reach );
@@ -98,7 +99,7 @@ async function readOne( page, cdp, job, tokens, resolveSrc, pseudoName = null ) 
 			saved.push( [ t, await page.evaluate( applyToken, [ hostSel( t ), t.row.reach, t.text, t.row.call, true, null ] ) ] );
 		}
 		const read = async () => {
-			const declared = pseudoName ? await pseudoDeclared( cdp, job.finder, resolveSrc, pseudoName, pseudo.length > 0 ) : await declaredValues( cdp, job.finder, resolveSrc, null, { keepDocument: pseudo.length > 0 } );
+			const declared = pseudoName ? await pseudoDeclared( cdp, job.finder, resolveSrc, pseudoName, pseudo.length > 0, draftTokens ) : await declaredValues( cdp, job.finder, resolveSrc, null, { keepDocument: pseudo.length > 0, tokens: draftTokens } );
 			const rendered = declared ? await page.evaluate( pseudoName ? pseudoRenderedOf : renderedOf, [ job.finder, resolveSrc, Object.keys( declared ), pseudoName ] ) : null;
 			return { declared, rendered };
 		};

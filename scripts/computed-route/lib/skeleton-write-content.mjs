@@ -10,7 +10,8 @@ import { elementHandler, handlerOf, linkWrite } from './draft-link.mjs';
 import fs from 'fs';
 import path from 'path';
 import { decodeEntities, loadDraft } from './intake-ast.mjs';
-import { declared } from './skeleton-rules.mjs';
+import { declared as declaredRaw } from './skeleton-rules.mjs';
+import { draftTokenLookup, handoffOf } from './draft-tokens.mjs';
 import { ALL_TEXT_CAP } from './skeleton-model.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
@@ -75,6 +76,8 @@ export function skeletonSettings( facts, block ) {
 export function makeContent( ctx ) {
 	const { m, facts, view, carried, surfaceKind, siteLink } = ctx;
 	const { composition, enumOf } = facts;
+	const tokens = draftTokenLookup( handoffOf( facts ) );
+	const declared = ( e ) => declaredRaw( e, tokens );
 	const attrExists = ( slug, name ) => !! facts.attr( slug, name );
 	const layoutOf = ( slug, e ) => {
 		const opts = attrExists( slug, 'layout' ) ? enumOf( slug, 'layout' ) || [] : [];

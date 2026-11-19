@@ -58,7 +58,7 @@ export async function readLogicStates( { page, cdp, jobs, rest, logicRows, vocab
 			}
 			await settleAnimations( page, { floor: 120, cap: 3000 } );
 			for ( const job of jobs ) {
-				const declared = await declaredValues( cdp, job.finder, resolveSrc, null ).catch( () => null );
+				const declared = await declaredValues( cdp, job.finder, resolveSrc, null, { tokens: true } ).catch( () => null );
 				const changed = declared ? declaredDiff( rest?.[ job.id ], declared ) : {};
 				if ( ! Object.keys( changed ).length ) {
 					continue;
