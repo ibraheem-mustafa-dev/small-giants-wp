@@ -1,0 +1,40 @@
+{
+	"_about": "Spec 48 FR-48-96: how the order confirmation's holes, branches and order lines become the order's own blocks, read by lib/template-piece-order-read.mjs and lib/template-piece-order.mjs. Structure decides first: a value reads the order when the logic derives it from the object the order lines loop takes its list from, a currency amount is one a currency formatter makes, a link to the order carries the order's reference, a branch is a gift or account branch when its test reads that part of the order. These words only choose between keys the structure leaves open (which field of the order a value reads), the way data/shop-part-vocab.json's hints are used: a value no key's words and structure fit is a problem row, never a guess. `keys`: each binding key of the plugin's sgs/order source (plugins/sgs-blocks/includes/class-order-binding.php::Order_Binding::KEYS; a key named here that the plugin does not hold is refused) with the evidence it needs: `money` (the value is a currency amount), `reference` (the value is the order's reference: a link to the order carries it, or its sample has an order reference's shape), `link` (a link whose address carries the reference), `group` (the field sits under that group's part of the order), `words` (whole words of the field's path, camelCase split). `viewable`: the Show-to rule a bound block outside every order branch takes, so its words (the draft's sample order) never show when the visitor may not view the order and the binding resolves to nothing. `groups`: parts of the order a branch can test, each with the Show-to rule for a branch shown when the part is there (`shown`) and when it is not (`hidden`), values of the block extension the framework database lists (a rule the database does not list is refused). `items`: the sgs/order-items settings the draft's order lines answer, each checked against the framework database before it is written; `rows` are the totals rows the draft may draw after the lines, each with the words of its field.",
+	"keys": {
+		"number": { "reference": true, "words": [ "no", "number", "num", "ref", "reference", "id", "order" ] },
+		"total": { "money": true, "words": [ "total", "paid", "amount", "grand", "sum" ] },
+		"view_url": { "link": true, "words": [] },
+		"gift_to": { "group": "gift", "words": [ "to", "recipient", "name", "for", "who" ] },
+		"gift_message": { "group": "gift", "words": [ "message", "note", "text", "msg" ] },
+		"email": { "words": [ "email", "mail" ] },
+		"phone": { "words": [ "phone", "tel", "telephone", "mobile" ] },
+		"date": { "words": [ "date", "placed", "created", "when" ] },
+		"delivery_method": { "words": [ "method", "shipping", "delivery", "courier" ] },
+		"payment_method": { "words": [ "payment", "card", "paid", "pay" ] },
+		"item_count": { "count": true, "words": [ "count", "quantity", "qty" ] },
+		"shipping_name": { "group": "shipping", "words": [ "name", "to", "recipient" ] },
+		"shipping_address": { "group": "shipping", "words": [ "address", "line", "street", "addr" ] },
+		"billing_name": { "group": "billing", "words": [ "name" ] },
+		"billing_address": { "group": "billing", "words": [ "address", "line", "street", "addr" ] }
+	},
+	"viewable": "order-viewable",
+	"groups": {
+		"gift": { "words": [ "gift", "present", "giftnote" ], "shown": "order-has-gift", "hidden": "order-no-gift" },
+		"account": { "words": [ "account", "user", "customer", "member", "acct", "registered" ], "shown": "order-owner", "hidden": "order-guest" },
+		"shipping": { "words": [ "shipping", "delivery", "ship", "deliver" ] },
+		"billing": { "words": [ "billing", "bill" ] }
+	},
+	"items": {
+		"block": "sgs/order-items",
+		"thumbnail": "showThumbnail",
+		"options": "showMeta",
+		"totalLabel": "totalLabel",
+		"rows": {
+			"subtotal": { "setting": "showSubtotal", "words": [ "subtotal", "sub" ] },
+			"delivery": { "setting": "showDelivery", "words": [ "delivery", "shipping", "postage", "ship" ] },
+			"discount": { "setting": "showDiscount", "words": [ "discount", "coupon", "saving", "savings", "off" ] },
+			"giftCard": { "setting": "showGiftCard", "words": [ "giftcard", "voucher" ] },
+			"total": { "setting": "showTotal", "words": [ "total", "paid", "amount", "grand" ] }
+		}
+	}
+}
