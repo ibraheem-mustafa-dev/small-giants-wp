@@ -12,7 +12,7 @@ import { candidates, siblings, isPseudoProperty, listedProperties } from './db.m
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
-import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, isSizeProperty } from './resolve-declared.mjs';
+import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizeShape, isSizeProperty } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
 import { valueBlind } from './css-equivalence/effect.mjs';
 export { valueBlind };
@@ -260,6 +260,10 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 			return { error: `${ raw } is not one non-negative time` };
 		}
 		return { value: [].concat( def?.type || [] ).includes( 'string' ) && ! [].concat( def?.type || [] ).includes( 'number' ) ? String( ms ) : ms };
+	}
+	const shaped = sizeShape( { prop, raw, def } );
+	if ( shaped ) {
+		return shaped;
 	}
 	const keyword = sizeKeyword( { prop, raw, def } );
 	if ( keyword ) {

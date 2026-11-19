@@ -11,8 +11,8 @@ const run = ( block, attr, prop, value ) => resolve( { block, slot: '', prop, pe
 	{ db, snapshot, calibration: { settings: { [ attr ]: { slot: '', property: prop } } } } );
 
 test( 'MUST FAIL: a number-typed length setting takes the px count', () => {
-	const r = run( 'sgs/brand-strip', 'maxHeight', 'min-height', '0px' );
-	assert.equal( r.writes?.[ 0 ]?.value, 0 );
+	const r = run( 'sgs/brand-strip', 'maxHeight', 'min-height', '48px' );
+	assert.equal( r.writes?.[ 0 ]?.value, 48 );
 	const r2 = run( 'sgs/brand-strip', 'maxHeight', 'min-height', '96px' );
 	assert.strictEqual( r2.writes?.[ 0 ]?.value, 96 );
 } );

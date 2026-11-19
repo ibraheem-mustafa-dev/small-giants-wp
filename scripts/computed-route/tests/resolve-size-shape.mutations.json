@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "\tif ( countsPerDevice( def ) ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a count per device takes a keyword or a length"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": ".some( ( v ) => 'number' === typeof v )",
+		"replace": ".some( ( v ) => 'string' === typeof v )",
+		"why": "a count is told from a length by the wrong tier type"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "'min' === kind && types.includes( 'number' )",
+		"replace": "types.includes( 'number' )",
+		"why": "a ceiling of 0 is refused too"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "'min' === kind && types.includes( 'number' ) && ! types.includes( 'string' )",
+		"replace": "'min' === kind && types.includes( 'number' )",
+		"why": "a setting that also takes a string is refused a floor of 0"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "! types.includes( 'string' ) && ! types.includes( 'object' ) && zeroPx",
+		"replace": "! types.includes( 'string' ) && zeroPx",
+		"why": "a setting that also takes an object is refused a floor of 0"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "&& 0 === parseFloat( raw );",
+		"replace": "&& true;",
+		"why": "every floor is taken for nothing"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "const kind = m[ 1 ] ? m[ 1 ].slice( 0, 3 ) : 'exact';",
+		"replace": "const kind = 'min';",
+		"why": "every size property is taken for a floor"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( shaped ) {",
+		"replace": "if ( false ) {",
+		"why": "the formatter ignores the shape verdict"
+	}
+]

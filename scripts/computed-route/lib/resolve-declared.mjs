@@ -102,6 +102,35 @@ const SIZE_KEYWORDS = { exact: [ 'auto', ...INTRINSIC ], min: [ 'auto', ...INTRI
 const SIZE_PROP = /^(min-|max-)?(width|height|block-size|inline-size)$/;
 export const isSizeProperty = ( prop ) => SIZE_PROP.test( String( prop ?? '' ) );
 
+// Whether a tier-object setting holds a count per device (columns, items) and not a length. A length setting stores one string per
+// device ("340px", includes/helpers-responsive.php::sgs_responsive_format_atom_value); a count setting's default tiers are numbers.
+const countsPerDevice = ( def ) => [].concat( def?.type || [] ).includes( 'object' ) && Object.values( def?.default && 'object' === typeof def.default ? def.default : {} ).some( ( v ) => 'number' === typeof v );
+
+// A size a setting cannot hold in its own shape, whatever the draft's value: { error }, or null where the setting can hold it.
+//  - A count per device paints a size property as a formula of the count (a strip's `max-width` is its columns times a tile), so
+//    a measured length or keyword is no count: written, it prints as the count and collapses the box.
+//  - A floor of nothing (`min-*` of 0) is the property's initial value, the draft declaring no floor, not a size: a setting that
+//    stores a bare number (px, no keyword) cannot say "no floor", and 0 there is a size of its own that pushes the block to
+//    nothing. The row stays for the dimension pass (lib/fill-dimensions.mjs), which settles a floor the block paints against
+//    the draft's rendered size.
+const zeroPx = ( raw ) => /^-?(\d+\.?\d*|\.\d+)(px)?$/.test( String( raw ?? '' ).trim() ) && 0 === parseFloat( raw );
+
+export function sizeShape( { prop, raw, def } ) {
+	const m = SIZE_PROP.exec( String( prop ?? '' ) );
+	if ( ! m ) {
+		return null;
+	}
+	if ( countsPerDevice( def ) ) {
+		return { error: `${ raw } cannot be held (${ prop } is painted from a count per device, not a length)` };
+	}
+	const types = [].concat( def?.type || [] );
+	const kind = m[ 1 ] ? m[ 1 ].slice( 0, 3 ) : 'exact';
+	if ( 'min' === kind && types.includes( 'number' ) && ! types.includes( 'string' ) && ! types.includes( 'object' ) && zeroPx( raw ) ) {
+		return { error: `${ raw } cannot be held (${ prop } of 0 is no floor, and the setting stores a number, so "no floor" is not a value it holds)` };
+	}
+	return null;
+}
+
 // A size keyword as a setting's value: { value } where the setting's emitter prints a bare keyword, { error } where the
 // property does not take the keyword (`none` on a min-height) or this setting cannot print it, and null where `prop` is not a
 // size property or `raw` is not a size keyword. A setting prints a keyword when it is a tier object (includes/helpers-responsive.php::
