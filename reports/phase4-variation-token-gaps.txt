@@ -1,4 +1,4 @@
-# Stage 3 Style Variation Sync — 2026-11-12 04:48:26 UTC
+# Stage 3 Style Variation Sync — 2026-11-19 14:16:05 UTC
 
 Phase 5a shipped. DB writes active.
 
@@ -128,7 +128,7 @@ Inserted: 0 | Skipped: 33 | Conflicts: 32
 
 Inserted: 0 | Skipped: 37 | Conflicts: 18
 
-- CONFLICT: font-size-small (framework='14px', client='11px') → inserted as mamas-munches-redesign-font-size-small
+- CONFLICT: font-size-small (framework='14px', client='13px') → inserted as mamas-munches-redesign-font-size-small
 - CONFLICT: font-size-large (framework='20px', client='17px') → inserted as mamas-munches-redesign-font-size-large
 - CONFLICT: font-size-x-large (framework='24px', client='22px') → inserted as mamas-munches-redesign-font-size-x-large
 - CONFLICT: font-size-xx-large (framework='36px', client='24px') → inserted as mamas-munches-redesign-font-size-xx-large
