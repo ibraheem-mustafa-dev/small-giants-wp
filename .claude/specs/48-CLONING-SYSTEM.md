@@ -1792,7 +1792,7 @@ The framework has every capability (DB `fx_effects`: `parallax`, `marquee`, `amb
 - Skeleton: an effect refusal re-chooses the block (Eye Care's brand marquee on `sgs/multi-button` becomes `sgs/brand-strip` or `sgs/trust-bar`; Mama's review carousel is `sgs/testimonial-slider`, not a sideways `sgs/container`).
 - Reduced motion is the visitor's browser setting and is never a reason to drop anything (Bean, 2026-10-28); its census rows are bookkeeping (FR-48-103).
 
-Status: not built, except where FR-48-77 to FR-48-80 say built. The three sites got their motion by hand, not from the route.
+Status: not built, except where FR-48-77 to FR-48-80 say built, and except that each surface's motion records are read against its own draft as `Root`, so a page never carries another page's record (built: `scripts/computed-route/lib/apply-records.mjs::recordIndexFor`, `scripts/computed-route/fill.mjs::draftIndexOf`, `scripts/computed-route/lib/key-space.mjs::rootDraftOf`). The three sites got their motion by hand, not from the route.
 
 ### FR-48-103 -- The census counts only real gaps
 

@@ -27,7 +27,7 @@ import { loadDraftSource } from './lib/apply-intent.mjs';
 import { extrasOf, motionClose, motionNear, motionOf } from './lib/apply-hover.mjs';
 import { numeric } from './lib/apply-motion-default.mjs';
 import { CLOSED_CLOCK, readSurface } from './lib/apply-read.mjs';
-import { recordIndex } from './lib/apply-records.mjs';
+import { recordIndexFor } from './lib/apply-records.mjs';
 import { loadSkeleton, panelIds } from './lib/apply-skeleton.mjs';
 import { motionTools } from './lib/apply-drawer-core.mjs';
 import { loadSurfaces, withSkeleton } from './lib/apply-targets.mjs';
@@ -312,7 +312,12 @@ async function main() {
 	const recordsFile = path.join( REPO, 'sites', client, 'handoff', 'animations.json' );
 	const records = fs.existsSync( recordsFile ) ? JSON.parse( fs.readFileSync( recordsFile, 'utf8' ) ).records : [];
 	const handoff = fs.existsSync( recordsFile ) ? JSON.parse( fs.readFileSync( recordsFile, 'utf8' ) ) : {};
-	const recordsIndex = recordIndex( records, handoff.drafts?.[ 0 ]?.dc );
+	// Each surface runs its own draft as Root, so each has its own index (a one-file-per-page handoff).
+	const indexes = new Map();
+	const indexOf = ( surface ) => {
+		indexes.has( surface.name ) || indexes.set( surface.name, recordIndexFor( handoff, records, surface.draftIndex ) );
+		return indexes.get( surface.name );
+	};
 	const calCache = path.join( HERE, 'cache' );
 	const calibrations = new Map();
 	const calFor = ( block ) => {
@@ -333,6 +338,7 @@ async function main() {
 	const skeleton = loadSkeleton( REPO, client );
 	const tools = motionTools( db, rawSnapshot );
 	for ( const surface of surfaces ) {
+		const recordsIndex = indexOf( surface );
 		const saved = blocks[ surface.postId ]?.blocks ?? {};
 		const joined = withSkeleton( surface, saved, skeleton );
 		surface.pairs = joined.pairs.map( ( t ) => {
@@ -367,6 +373,7 @@ async function main() {
 	let gate = { judged: [], unresolved: 0, unjudged: 0, confirmed: 0 };
 	try {
 		await pool( surfaces, Number( flag( '--jobs', 4 ) ), async ( surface ) => {
+			const recordsIndex = indexOf( surface );
 			const extras = extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } );
 			const drafts = await draftReads( { browser, surface, widths, props, extras, cache: tmp, fresh: has( '--fresh' ) } );
 			const lives = await liveReads( { browser, surface, widths, props, extras } );
@@ -422,7 +429,7 @@ async function main() {
 			// A failed re-read leaves writes nobody judged: every op goes back, then the error stands.
 			try {
 				await pool( touched, Number( flag( '--jobs', 4 ) ), async ( surface ) => {
-					reads[ surface.name ] = await liveReads( { browser, surface, widths, props, extras: { ...extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex, db } ), parts: partsOf( allOps.filter( ( o ) => o.surface === surface.name ) ) } } );
+					reads[ surface.name ] = await liveReads( { browser, surface, widths, props, extras: { ...extrasOf( { surface, saved: blocks[ surface.postId ]?.blocks, recordsIndex: indexOf( surface ), db } ), parts: partsOf( allOps.filter( ( o ) => o.surface === surface.name ) ) } } );
 				} );
 			} catch ( e ) {
 				for ( const op of allOps ) {

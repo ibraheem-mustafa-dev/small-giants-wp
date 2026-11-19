@@ -2,9 +2,18 @@
 // component (`<component>/<n>#<copy>`); the served draft's runtime names it `Root` (`Root/<n>#<copy>`), the same element.
 // Decision keys and motion keys are written in intake's space, so a proposal from a served inventory looks them up here.
 // `lib/fill-motion.mjs::elementKey` is the opposite direction (served root host to the component).
+import path from 'path';
 import { renameHost, renameRootHost, parseInstanceKey, templateKey } from './fact-key.mjs';
 
 export const SERVED_ROOT = 'Root';
+
+// The draft a surface runs as `Root`: its entry in the handoff's draft list (`animations.json` `drafts`, `{ file, dc }`)
+// whose file is the surface's `draftIndex` (surfaces.json), else the first draft, the entry draft of a single-file handoff.
+// A one-file-per-page handoff runs each page as its own `Root`, so the first draft is never every surface's root.
+export function rootDraftOf( drafts, draftIndex = null ) {
+	const list = drafts || [];
+	return list.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || list[ 0 ] || null;
+}
 
 // True when a draft inventory's keys are in the served space.
 export const isServedInventory = ( inventory ) => ( inventory?.elements || [] ).some( ( e ) => String( e.key ).startsWith( `${ SERVED_ROOT }/` ) );

@@ -2,6 +2,7 @@
 // state record asks for. A pair's draft id is `Root/231#0` for the main draft and `Root>EnquiryForm@468#0/6#0` for a mounted
 // one; a record names the file (`element.dc`) and one or several template ids.
 import { templateKey } from './fact-key.mjs';
+import { rootDraftOf } from './key-space.mjs';
 
 export function draftId( tpl ) {
 	const m = /^(?:Root>)?(\w+)(?:@[^/]*)?\/(\d+)#(\d+)$/.exec( String( tpl ?? '' ) );
@@ -10,7 +11,7 @@ export function draftId( tpl ) {
 
 const idsOf = ( record ) => [].concat( record.element?.template_tpl_id ?? [] ).map( String );
 
-// { 'Root/231': [ record ], 'EnquiryForm/6': [ record ] }. `mainDc` is the handoff's first draft: the draft the page runs as Root.
+// { 'Root/231': [ record ], 'EnquiryForm/6': [ record ] }. `mainDc` is the component the surface runs as Root: its own draft's.
 export function recordIndex( records, mainDc ) {
 	const index = new Map();
 	for ( const record of records || [] ) {
@@ -22,6 +23,10 @@ export function recordIndex( records, mainDc ) {
 	}
 	return index;
 }
+
+// One surface's index: `handoff` is animations.json, `draftIndex` the surface's draft file (surfaces.json), whose component
+// is `Root` (lib/key-space.mjs::rootDraftOf). Records of any other component, an imported one included, keep their names.
+export const recordIndexFor = ( handoff, records, draftIndex = null ) => recordIndex( records, rootDraftOf( handoff?.drafts, draftIndex )?.dc );
 
 export function recordsFor( index, tpl ) {
 	const id = draftId( tpl );

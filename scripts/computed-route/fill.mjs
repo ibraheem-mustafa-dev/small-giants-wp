@@ -62,6 +62,7 @@ import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fil
 import { stateMap } from './lib/state-map.mjs';
 import { readMediaMap } from './lib/fill-media.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
+import { rootDraftOf } from './lib/key-space.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -89,9 +90,9 @@ export function parseMirrors( argv ) {
 const stamp = () => new Date().toISOString().replace( /[:.]/g, '-' ).slice( 0, 19 );
 
 // The re-derived animation inventory (Spec 48 FR-48-25) from the client's intake: { records, rootComponent }, where
-// rootComponent is the served index draft's component (else the inventory's first, entry, draft); no records when
+// rootComponent is the served index draft's component, which a run on a served URL takes from the surface's `draftIndex` (else the inventory's first, entry, draft); no records when
 // intake has not run.
-function animationInventory( buildDir, draftIndex, log ) {
+export function animationInventory( buildDir, draftIndex, log ) {
 	const file = path.join( buildDir, 'intake', 'intake.json' );
 	if ( ! fs.existsSync( file ) ) {
 		log( `no ${ path.relative( REPO, file ) }: motion is not written` );
@@ -101,9 +102,12 @@ function animationInventory( buildDir, draftIndex, log ) {
 	assertCurrent( intake, path.join( buildDir, '..', 'handoff' ), { label: path.relative( REPO, file ) } );
 	const inv = intake.inventory?.animations || {};
 	const drafts = inv.drafts || [];
-	const entry = drafts.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || drafts[ 0 ];
-	return { records: inv.records || [], rootComponent: entry?.dc ?? null, draftDefects: intake.draftDefects || [], flags: intake.flags || [] };
+	return { records: inv.records || [], rootComponent: rootDraftOf( drafts, draftIndex )?.dc ?? null, draftDefects: intake.draftDefects || [], flags: intake.flags || [] };
 }
+
+// The draft file whose component is the surface's served `Root`: --draft-index, else (a run on a served URL, which names no
+// file) the surface's own `draftIndex` in surfaces.json, else null (the inventory's first draft).
+export const draftIndexOf = ( o, entry ) => o.draftIndex || ( o.draftUrl ? entry?.draftIndex : null ) || null;
 
 // Runs Fill and writes its outputs. o: { client, surface, skeleton (a file), draftUrl | draftDir (+ draftIndex), liveUrl,
 // out, open, cache, sweep (default true), headless (default true), external, mirror ({ url: local file } answered
@@ -174,7 +178,7 @@ export async function fillSurface( o ) {
 		const logicRows = fs.existsSync( intakeFile ) && vocab.rows.length ? stateMap( { surfaces, surface: o.surface, intake: JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ), vocab: vocab.rows } ).scIf : [];
 		const facts = fs.existsSync( factsFile( repo, o.client ) ) ? loadFacts( o.client, { repo } ) : null;
 		// The entry draft's component and the draft defects intake lists (the served root host is named `Root`, the fact record names it after the component).
-		const intakeParts = animationInventory( buildDir, o.draftIndex, log );
+		const intakeParts = animationInventory( buildDir, draftIndexOf( o, entry ), log );
 		const currentGroups = facts ? currentItemGroups( facts, intakeParts.rootComponent ) : [];
 		// A drawer or mega-menu panel exists only while its draft state holds: the opener (lib/fill-open.mjs) names the state
 		// from the surface's handoff record, and a route-mounted component is read on its own route. Null for any other surface.

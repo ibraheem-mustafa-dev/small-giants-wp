@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/key-space.mjs", "find": "list.find( ( d ) => draftIndex && d.file === path.basename( draftIndex ) ) || list[ 0 ] || null", "replace": "list[ 0 ] || null", "why": "every surface runs the first draft as Root" },
+	{ "file": "lib/key-space.mjs", "find": "d.file === path.basename( draftIndex )", "replace": "d.file === draftIndex", "why": "a path to the file never matches the list's file name" },
+	{ "file": "lib/apply-records.mjs", "find": "recordIndex( records, rootDraftOf( handoff?.drafts, draftIndex )?.dc )", "replace": "recordIndex( records, handoff?.drafts?.[ 0 ]?.dc )", "why": "the applier indexes every surface by the first draft" },
+	{ "file": "lib/apply-records.mjs", "find": "const dc = record.element?.dc === mainDc ? 'Root' : record.element?.dc;", "replace": "const dc = 'Root';", "why": "an imported component's records are filed under Root too" },
+	{ "file": "fill.mjs", "find": "o.draftUrl ? entry?.draftIndex : null", "replace": "null", "why": "a Fill run on a served URL ignores the surface's own draft" },
+	{ "file": "fill.mjs", "find": "export const draftIndexOf = ( o, entry ) => o.draftIndex ||", "replace": "export const draftIndexOf = ( o, entry ) => entry?.draftIndex || o.draftIndex ||", "why": "the surface's file overrides an explicit --draft-index" },
+	{ "file": "fill.mjs", "find": "rootComponent: rootDraftOf( drafts, draftIndex )?.dc ?? null", "replace": "rootComponent: drafts[ 0 ]?.dc ?? null", "why": "Fill roots every surface at the first draft" }
+]
