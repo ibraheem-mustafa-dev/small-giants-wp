@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "Object.keys( declared( up, tokens ) ).some( ( p ) => framing.has( p ) ) && ( frame = up );",
+		"replace": "Object.keys( declared( up, tokens ) ).length && ( frame = up );",
+		"why": "any declared style makes a wrapper the frame"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "up && up !== e && 1 === m.blockKids( up ).length;",
+		"replace": "up && up !== e;",
+		"why": "a wrapper holding more than the picture is the frame"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( frame ? { mediaFrame: frame.key } : {} ),",
+		"replace": "",
+		"why": "the verdict does not name the frame"
+	},
+	{
+		"file": "lib/skeleton-classify.mjs",
+		"find": "...( r.mediaFrame ? { mediaFrame: r.mediaFrame } : {} ) };",
+		"replace": " };",
+		"why": "the classifier drops the frame from the verdict"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "r.mediaFrame && R.heroInner?.part && framePending.push(",
+		"replace": "false && framePending.push(",
+		"why": "the frame is never queued"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const made = db && f.frame ? partSlots( { db, block: f.block, cal: { settings: calSettings( f.block ) }, part: f.part, opener: f.frame, m, finder } ) : null;",
+		"replace": "const made = null;",
+		"why": "the frame never reaches the node"
+	}
+]

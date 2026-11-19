@@ -953,7 +953,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// Its picture's own alignment in its column: the draft's declared justify-self or auto side margins.
 			const align = media ? heroMediaAlignment( { style: declared( pictures.find( ( p ) => Object.values( p.visible || {} ).some( Boolean ) ) || pictures[ 0 ], tokens ), rule: R.hero?.splitAlignment } ) : null;
 			const attributes = media ? { variant: 'split', ...( order.value ? { [ R.hero.splitOrder.setting ]: order.value } : {} ), ...( align ? { [ R.hero.splitAlignment.setting ]: align } : {} ) } : {};
-			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
+			// The wrapper framing the picture: the outermost element above it that holds the picture alone (each a lone block child on
+			// the way up to the hero's own columns) and declares a paint of its own (rules.heroInner.frame.properties).
+			let frame = null;
+			const framing = new Set( R.heroInner?.frame?.properties || [] );
+			const picture = pictures.find( ( p ) => Object.values( p.visible || {} ).some( Boolean ) ) || pictures[ 0 ];
+			for ( let up = picture ? m.byKey[ picture.parentKey ] : null; up && up !== e && 1 === m.blockKids( up ).length; up = m.byKey[ up.parentKey ] ) {
+				Object.keys( declared( up, tokens ) ).some( ( p ) => framing.has( p ) ) && ( frame = up );
+			}
+			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( frame ? { mediaFrame: frame.key } : {} ), ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : {} ) } );
 			verdict && order.problems.length && ( verdict.reason = `${ verdict.reason }; ${ order.problems.join( '; ' ) }` );
 			return verdict;
 		},

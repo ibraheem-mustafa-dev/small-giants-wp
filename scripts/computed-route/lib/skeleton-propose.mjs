@@ -146,9 +146,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const w = {};
 	const ctx = {
 		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, db, rows, rowOf, w, siteLink,
-		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], wordProblems: [], nodeOfKey: {}, partPending: [], hosts: [], stripRoots: [],
+		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], wordProblems: [], nodeOfKey: {}, partPending: [], framePending: [], hosts: [], stripRoots: [],
 	};
-	const { widthAlternatives, carryProblems, slotProblems, wordProblems, nodeOfKey, partPending, hosts } = ctx;
+	const { widthAlternatives, carryProblems, slotProblems, wordProblems, nodeOfKey, partPending, framePending, hosts } = ctx;
 	Object.assign( w, makeRecorder( ctx ) );
 	Object.assign( w, makeUnits( ctx ) );
 	Object.assign( w, makeContent( ctx ) );
@@ -275,6 +275,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// the cart a header's basket button is, whose trigger the button is) reads the control at that part's slot.
 		const self = R[ r.rule ]?.selfPart && db && ! r.action ? partSlots( { db, block, cal: { settings: calSettings( block ) }, part: R[ r.rule ].selfPart, opener: e, m, finder } ) : null;
 		self && Object.assign( slots, self.slots );
+		// The wrapper framing a hero's picture is read at the split-media part's slot once the part's own element has been placed (below).
+		r.mediaFrame && R.heroInner?.part && framePending.push( { node, row, block, frame: m.byKey[ r.mediaFrame ], part: R.heroInner.part } );
 		const codeNotes = [ ...( codeSlots?.notes || [] ), ...( self?.notes || [] ), ...( r.glyphNote ? [ r.glyphNote ] : [] ) ];
 		codeNotes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...codeNotes ] );
 		if ( Object.keys( slots ).length ) {
@@ -437,6 +439,16 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			rowOf[ p.into ].slots = { ...rowOf[ p.into ].slots, ...made.slots };
 		}
 		made.notes.length && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), ...made.notes ] );
+	} );
+	// The frame of a hero's picture (rules.heroInner.frame) is the draft element of the split-media part's slot, in place of the
+	// picture the part's own pass gave it: the frame carries the look (border, corners, shadow, ratio), the picture inside it is the media.
+	framePending.forEach( ( f ) => {
+		const made = db && f.frame ? partSlots( { db, block: f.block, cal: { settings: calSettings( f.block ) }, part: f.part, opener: f.frame, m, finder } ) : null;
+		if ( ! made ) {
+			return;
+		}
+		Object.keys( made.slots ).length && ( f.node.draftSlots = { ...f.node.draftSlots, ...made.slots }, f.row.slots = { ...f.row.slots, ...made.slots } );
+		made.notes.length && ( f.row.slotNotes = [ ...( f.row.slotNotes || [] ), ...made.notes ] );
 	} );
 	// The surface's widgets (lib/skeleton-widgets.mjs): each tabs block holds one tab per control in the controls' order (the
 	// draft renders only the chosen panel, so the others are empty tabs with a handover); a slider no listed block takes keeps
