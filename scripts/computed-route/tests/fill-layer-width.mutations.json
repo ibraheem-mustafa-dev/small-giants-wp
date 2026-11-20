@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-layer-box.mjs",
+		"find": "const sizes = widths.length && Object.values( stretched ).every( Boolean ) ? stretched : declaredSizes(",
+		"replace": "const sizes = widths.length && Object.values( stretched ).every( Boolean ) ? stretched : null && declaredSizes(",
+		"why": "the declared percentage is never read, so the resolver refuses 46% as it did"
+	},
+	{
+		"file": "lib/layer-box.mjs",
+		"find": "all.some( ( v ) => v.endsWith( '%' ) )",
+		"replace": "true",
+		"why": "a px-only width would be written from the declared text, bypassing the resolver"
+	},
+	{
+		"file": "lib/layer-box.mjs",
+		"find": "all.length && all.every( Boolean )",
+		"replace": "all.length && all.some( Boolean )",
+		"why": "a width declared at one width only would be written for every width"
+	},
+	{
+		"file": "lib/layer-box.mjs",
+		"find": "(px|rem|em|%)$/.test( String( v ?? '' ).trim() ) ? String( v ).trim() : null );",
+		"replace": "(px|rem|em|%)?$/.test( String( v ?? '' ).trim() ) ? String( v ).trim() : null );",
+		"why": "a bare number or a keyword would pass as a plain length"
+	},
+	{
+		"file": "lib/fill-layer-box.mjs",
+		"find": "if ( sizes ) {\n\t\t\twrite( prop,",
+		"replace": "if ( sizes || true ) {\n\t\t\twrite( prop,",
+		"why": "a layer declaring no size would be written a null size"
+	}
+]

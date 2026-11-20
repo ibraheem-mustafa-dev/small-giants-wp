@@ -32,6 +32,19 @@ export function stretchedSize( placed, [ a, b ], offsetA, offsetB ) {
 	return 0 === sum ? '100%' : `calc(100% - ${ round( sum ) }px)`;
 }
 
+// A draft width or height declared as a plain length, any width of which is a percentage: a percentage is a share of the layer's
+// containing box, which the measured px (the resolver's reading) cannot say. Returns the declared text when it is a plain length
+// ("46%", "132px") and null for a keyword, var() or calc() (stretchedSize owns calc()).
+export const plainDeclaredLength = ( v ) => ( /^-?(\d+\.?\d*|\.\d+)(px|rem|em|%)$/.test( String( v ?? '' ).trim() ) ? String( v ).trim() : null );
+
+// The per-width sizes a layer's declared `prop` gives when at least one width declares a percentage and every width declares a
+// plain length: { width: text }, else null (the resolver judges the measured px, as before).
+export function declaredSizes( declaredAt, prop ) {
+	const sizes = Object.fromEntries( Object.entries( declaredAt ).map( ( [ w, d ] ) => [ w, plainDeclaredLength( d?.[ prop ] ) ] ) );
+	const all = Object.values( sizes );
+	return all.length && all.every( Boolean ) && all.some( ( v ) => v.endsWith( '%' ) ) ? sizes : null;
+}
+
 // The sides a declared-style object (`{ inset: '0', top: … }`) places a layer by.
 export const sidesOfDeclared = ( declared ) => declaredSides( Object.entries( declared || {} ).map( ( [ k, v ] ) => `${ k }:${ v }` ).join( ';' ) );
 
