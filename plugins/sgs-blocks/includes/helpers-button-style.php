@@ -449,3 +449,171 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 		return $css;
 	}
 }
+
+if ( ! function_exists( 'sgs_button_kit_length_transform' ) ) {
+
+	/**
+	 * Responsive-emitter transform for one built-in-button length (the kit's min height).
+	 *
+	 * SgsLengthControl stores a spacing preset as its bare slug ("30") and a typed length with its unit, so a digits-only
+	 * string goes through sgs_css_single_length_value() (a preset variable for a theme slug, pixels otherwise); a stored
+	 * number is pixels. Anything unsafe returns '' and prints nothing.
+	 *
+	 * @param mixed $raw Stored tier value.
+	 * @return string Safe CSS length, or ''.
+	 */
+	function sgs_button_kit_length_transform( $raw ): string {
+		if ( is_string( $raw ) && 1 === preg_match( '/^\d+$/', $raw ) ) {
+			return sgs_css_single_length_value( $raw );
+		}
+		return is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw );
+	}
+}
+
+if ( ! function_exists( 'sgs_button_kit_look_bases' ) ) {
+
+	/**
+	 * The attribute names (after the prefix) the look step of the built-in button kit reads: colour and hover colour, the
+	 * six gradient colours, the border and the padding and width. The typography, min height and shadow families have their
+	 * own steps and are never handed to the look emitter (its legacy scalar font size would read a tier object as `1px`).
+	 *
+	 * @return string[]
+	 */
+	function sgs_button_kit_look_bases(): array {
+		return array(
+			'ColourBackground',
+			'ColourText',
+			'ColourBorder',
+			'ColourBackgroundHover',
+			'ColourTextHover',
+			'ColourBorderHover',
+			'ColourBackgroundGradient',
+			'ColourBackgroundHoverGradient',
+			'ColourTextGradient',
+			'ColourTextHoverGradient',
+			'ColourBorderGradient',
+			'ColourBorderHoverGradient',
+			'BorderStyle',
+			'BorderWidth',
+			'BorderRadius',
+			'Padding',
+			'WidthType',
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_button_kit_css' ) ) {
+
+	/**
+	 * Scoped CSS for one built-in button (a button a block renders itself in PHP) from its prefixed look set: the preset
+	 * choice, colours and hover colours, border, padding, width, type, min height and shadow.
+	 *
+	 * It composes the shared emitters and writes none of its own CSS, in this order, all on `$selector`:
+	 *   1. Preset: `{p}Style` names a preset (`sgs_button_preset_resolve()`: the starters primary, secondary and outline, and the
+	 *      names an opted-in site carries). `sgs_button_preset_css()` prints the whole preset (outline included), then
+	 *      `sgs_button_press_rule_for()` its pressed look and `sgs_button_focus_host_border()` the border width the
+	 *      focus ring anchors to (`--sgs-focus-host-border`). An empty or unknown name prints nothing: the block's own CSS stays.
+	 *   2. Look: `sgs_button_element_style_css()` on the colour, gradient, border, padding and width keys only.
+	 *   3. Typography: `sgs_typography_css_rule()`, the font size, line height and letter spacing as `{desktop, tablet, mobile}` objects.
+	 *   4. Min height: `sgs_emit_responsive_css()` on `{p}MinHeight`.
+	 *   5. Shadow: `sgs_shadow_decls()` resting, handed to the focus ring as `--sgs-focus-under` (the focus ring replaces
+	 *      `box-shadow`), and the hover shadow behind the touch guard (`sgs_hover_guarded_rule()`).
+	 * Every attribute is unset by default and prints nothing, so a block that calls this with the kit unset renders as before.
+	 *
+	 * The hover lift comes from the preset's `hover-transform` token (the path sgs_button_preset_css already prints); a part
+	 * cannot carry its own motion record. The pressed rule uses `$selector` as given, so a caller that needs it to out-rank
+	 * the element's hover and focus rules passes the doubled instance class (`.uid.uid .element`).
+	 *
+	 * @param array  $attrs    Block attributes (the whole set; the kit reads only the `$prefix` keys).
+	 * @param string $prefix   Attribute prefix of the button (e.g. 'flowOpener').
+	 * @param string $selector Fully-formed, already-safe selector, uid-scoped by the caller; a comma-separated list is allowed.
+	 * @param array  $opts     { bg_layer?: bool, bg_layer_positioned?: bool, container?: bool }. The first two pass to the look step
+	 *                         (see sgs_button_element_style_css()); `container` also emits the tiers as container queries.
+	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
+	 */
+	function sgs_button_kit_css( array $attrs, string $prefix, string $selector, array $opts = array() ): string {
+		if ( '' === trim( $selector ) ) {
+			return '';
+		}
+		// Loaded on first use, not at the top: render-helpers.php loads this file before the button blocks load their own helpers.
+		require_once __DIR__ . '/helpers-border-style.php';
+		require_once __DIR__ . '/helpers-colour-variants.php';
+		require_once __DIR__ . '/helpers-button-preset.php';
+		require_once __DIR__ . '/helpers-button-press.php';
+		require_once __DIR__ . '/helpers-button-focus.php';
+		$parts      = array_values( array_filter( array_map( 'trim', explode( ',', $selector ) ), 'strlen' ) );
+		$responsive = array( 'container' => ! empty( $opts['container'] ) );
+
+		// 1. Preset: the whole preset, its pressed look and the focus host border.
+		$css    = '';
+		$name   = isset( $attrs[ $prefix . 'Style' ] ) && is_string( $attrs[ $prefix . 'Style' ] ) ? $attrs[ $prefix . 'Style' ] : '';
+		$slug   = sgs_button_preset_resolve( $name );
+		$widths = array();
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+			$box      = $attrs[ $prefix . 'BorderWidth' ] ?? null;
+			$widths[] = is_array( $box ) && is_scalar( $box[ $side ] ?? null ) ? sgs_css_length_value( $box[ $side ] ) : '';
+		}
+		if ( '' !== $slug ) {
+			$css .= sgs_button_preset_css( $selector, $slug, true, true, true );
+			// A comma list needs each selector to carry its own state: `a, b:active` would press only the last.
+			foreach ( $parts as $part ) {
+				$css .= sgs_button_press_rule_for( $part, $slug, '', true );
+			}
+		}
+		$host_border = sgs_button_focus_host_border( $widths, sgs_border_style_keyword( $attrs[ $prefix . 'BorderStyle' ] ?? '' ), $slug );
+		if ( '' !== $host_border ) {
+			$css .= $selector . '{--sgs-focus-host-border:' . $host_border . ';}';
+		}
+
+		// 2. Look: colour, gradient, border, padding and width only.
+		$look = array();
+		foreach ( sgs_button_kit_look_bases() as $base ) {
+			if ( isset( $attrs[ $prefix . $base ] ) ) {
+				$look[ $prefix . $base ] = $attrs[ $prefix . $base ];
+			}
+		}
+		$css .= sgs_button_element_style_css( $look, $prefix, $selector, ! empty( $opts['bg_layer'] ), ! empty( $opts['bg_layer_positioned'] ) );
+
+		// 3. Typography: the tier objects print per device through the shared type rule.
+		$css .= sgs_typography_css_rule(
+			$attrs,
+			$prefix,
+			$selector,
+			'',
+			false,
+			false,
+			array( $prefix . 'FontSize', $prefix . 'LineHeight', $prefix . 'LetterSpacing' ),
+			$responsive
+		);
+
+		// 4. Min height per device.
+		$height = $attrs[ $prefix . 'MinHeight' ] ?? array();
+		if ( is_array( $height ) && array() !== $height ) {
+			$css .= sgs_emit_responsive_css(
+				$selector,
+				array(
+					array(
+						'value'     => $height,
+						'css'       => 'min-height',
+						'transform' => 'sgs_button_kit_length_transform',
+					),
+				),
+				$responsive
+			);
+		}
+
+		// 5. Shadow: resting (also handed to the focus ring) and hover (behind the touch guard).
+		$shadow = sgs_shadow_decls( $attrs, sgs_shadow_attr_map( $prefix . 'Shadow', true, true ) );
+		$rest   = sgs_focus_under_decls( $shadow['normal'] );
+		if ( array() !== $rest ) {
+			$css .= $selector . '{' . implode( ';', $rest ) . ';}';
+		}
+		$hover = sgs_focus_under_decls( $shadow['hover'] );
+		if ( array() !== $hover ) {
+			$hover_selector = implode( ',', array_map( static fn( string $part ): string => $part . ':hover', $parts ) );
+			$css           .= sgs_hover_guarded_rule( $hover_selector, implode( ';', $hover ) . ';' );
+		}
+
+		return $css;
+	}
+}

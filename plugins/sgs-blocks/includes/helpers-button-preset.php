@@ -22,15 +22,16 @@ if ( ! function_exists( 'sgs_button_preset_css' ) ) {
 	 * @param string $preset    'primary' or 'secondary'; on a site that opted in to named presets (`sgs_button_presets_open`), any name its snapshot carries too; anything else prints nothing.
 	 * @param bool   $resting   True to print the resting look too; false when the theme already paints it.
 	 * @param bool   $colours   True to print the hover colours too; false for the lift and timing alone.
+	 * @param bool   $outline   True to print `outline` too (the built-in button kit, `sgs_button_kit_css`, asks for it). False keeps the WooCommerce callers' output as it always was: `outline` prints nothing.
 	 * @return string CSS text; '' for an unknown preset.
 	 */
-	function sgs_button_preset_css( string $selector, string $preset, bool $resting = true, bool $colours = true ): string {
-		// `outline` is a starter this helper never printed, so it still prints nothing: a site that opts in with only the
-		// starters renders exactly as before.
+	function sgs_button_preset_css( string $selector, string $preset, bool $resting = true, bool $colours = true, bool $outline = false ): string {
+		// `outline` prints only when the caller asks ($outline): the WooCommerce callers never printed it, so a site that
+		// opts in with only the starters renders exactly as before.
 		$named = sgs_button_presets_open() ? sgs_button_preset_resolve( $preset ) : '';
-		if ( '' !== $named && 'outline' !== $named ) {
+		if ( '' !== $named && ( 'outline' !== $named || $outline ) ) {
 			$preset = $named;
-		} elseif ( ! in_array( $preset, array( 'primary', 'secondary' ), true ) ) {
+		} elseif ( ! in_array( $preset, $outline ? array( 'primary', 'secondary', 'outline' ) : array( 'primary', 'secondary' ), true ) ) {
 			return '';
 		}
 		if ( '' === $selector ) {
