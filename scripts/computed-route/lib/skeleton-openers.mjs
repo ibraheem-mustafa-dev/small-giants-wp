@@ -5,7 +5,8 @@
 // with no trigger of its own, opened only by those links, inside a header or footer tree's last row (frameHome). A flow's
 // frame holds the linked flow (`sgs/choice-flow` flowIsLinked, flowId); a modal's frame shows the saved `sgs_modal` post,
 // which it names by post id (`modalRef`, the page map's id for the row, else a handover naming the post). A form target is a
-// link to the form's own anchor and has no frame.
+// link to the form's own anchor and has no frame, and so has a product row's flow that the product link wires through the buy
+// box (the buy box draws that flow's frame).
 // The frame's look is the draft's own: the target surface's backdrop, panel and close control (frameParts) are read for the
 // frame's backdrop, dialog and close settings (frameLook: each setting found by framework-DB query on `css_element`,
 // `css_property` and the resting state, its value the draft's declared value). The skeleton carries no style value, so the
@@ -21,6 +22,7 @@ import { fnsNamed } from './intake-census-map.mjs';
 import { openingWrites, fnWrites } from './intake-pagemap-flow-openers.mjs';
 import { OPENABLE } from './intake-pagemap-openers.mjs';
 import { colourHex } from './tokens.mjs';
+import { rowRefusal } from './site-build-flow-scope.mjs';
 
 const { slottedContainers } = createRequire( import.meta.url )( '../../lib/surface-tree-shape.js' );
 
@@ -213,6 +215,13 @@ export function surfaceFrames( { tree, targets, row, pageMap = [], R, factRecord
 	}
 	for ( const t of targets.filter( ( x ) => 'form' !== x.kind ) ) {
 		if ( ! row || ! frameHosts( pageMap, t, S )( row ) ) {
+			continue;
+		}
+		// A product row's flow that its product link wires (the row's flow link, opened by the draft's buy box,
+		// lib/site-build-flow-scope.mjs::rowRefusal): the buy box draws that flow's own frame and its opener
+		// (plugins/sgs-blocks/includes/buybox-linked-flow.php), so a frame here would render the flow a second time.
+		if ( 'flow' === t.kind && row.opensFlow === t.slug && ! rowRefusal( row ) ) {
+			out.notes.push( `no frame for the flow ${ t.slug }: the product link wires it through the buy box, which draws its frame` );
 			continue;
 		}
 		const parts = frameParts( { factRecord, surfaceId: t.recordId, folder, opening: t.writes } );

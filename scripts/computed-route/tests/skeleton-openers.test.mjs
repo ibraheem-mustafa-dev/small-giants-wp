@@ -108,6 +108,24 @@ test( 'MUST FAIL: the footer hosts a frame every page opens; a page hosts only w
 	assert.deepEqual( surfaceFrames( { tree: [], targets: targets(), row: rows[ 2 ], pageMap: rows, R: {}, factRecord: FACTS, folder: FOLDER } ), { placed: [], notes: [] }, 'no rule, no frame' );
 } );
 
+// MUST FAIL: on the 2026-11-19 lab run Eye Care's lens flow rendered twice on a linked product (`.sgs-choice-flow` count 2):
+// the route's own frame, which nothing opened, and the frame the buy box wires for the product's linked flow.
+test( 'MUST FAIL: a product row gets no frame for the flow its product link wires through the buy box', () => {
+	const place = ( product ) => {
+		const rows = PAGE_MAP().map( ( r ) => ( 'product' === r.slug ? { ...r, ...product } : r ) );
+		const tree = [ { name: 'sgs/container', attributes: {}, innerBlocks: [] } ];
+		const r = surfaceFrames( { tree, targets: openerTargets( { pageMap: rows, folder: FOLDER } ), row: rows[ 0 ], pageMap: rows, R, factRecord: FACTS, folder: FOLDER, settings, has } );
+		return { anchors: tree.slice( 1 ).map( ( n ) => n.attributes.anchor ), notes: r.notes };
+	};
+	const linked = place( { opensFlow: FLOW } );
+	assert.deepEqual( linked.anchors, [], 'the buy box draws the linked flow\'s frame' );
+	assert.ok( linked.notes.some( ( n ) => /choice-flow-lens: the product link wires it through the buy box/.test( n ) ) );
+	// Negative controls: a row with no flow link, or whose flow entry is not the buy box's, keeps the route's frame.
+	assert.deepEqual( place( {} ).anchors, [ FLOW ] );
+	assert.deepEqual( place( { opensFlow: FLOW, opens: [ { kind: 'modal', slug: MODAL }, { kind: 'flow', slug: FLOW } ] } ).anchors, [ FLOW ] );
+	assert.deepEqual( place( { opensFlow: 'choice-flow-other' } ).anchors, [ FLOW ] );
+} );
+
 // MUST FAIL: the lab run of 2026-11-19 (Eye Care) pushed the size-guide frame beside sgs/site-footer, and the build refuses a
 // footer tree that is not exactly one sgs/site-footer; the frame also had no modalRef, so the help page's link opened nothing.
 test( 'MUST FAIL: a footer or header tree takes the frame in its root block\'s last row, and a modal frame names its post by the row\'s id', () => {
