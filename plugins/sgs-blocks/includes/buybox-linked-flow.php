@@ -17,6 +17,12 @@
  * buybox layout (FR-43-23) never runs a saved flow, so it's excluded here
  * too.
  *
+ * Keep-both setting (Spec 43 FR-43-25, `keepAddToCartWithFlow`, off by default):
+ * for a flow some buyers skip, the buybox keeps its own Add to Cart (and the
+ * express Buy now buttons) exactly as without a flow, and the flow's opener is
+ * rendered as a second, secondary-looking button beside them
+ * ({@see sgs_buybox_flow_opener_html()}). The modal still renders once.
+ *
  * @package SGS\Blocks
  */
 
@@ -75,15 +81,17 @@ if ( ! function_exists( 'sgs_buybox_apply_linked_flow' ) ) {
 	 * @param string $add_to_cart_action      The buybox's own resolved action ('cart'|'modal').
 	 * @param string $add_to_cart_modal_id    The buybox's own resolved modal anchor (may be '').
 	 * @param bool   $add_to_cart_opens_modal Whether the buybox's own settings already open a modal.
-	 * @return array{action:string,modal_id:string,opens_modal:bool,flow:?\WP_Post} Same three CTA values, overridden when a linked flow applies, plus the resolved flow post.
+	 * @param bool   $keep_cart_button        The `keepAddToCartWithFlow` setting: keep Add to Cart and show the flow's opener beside it.
+	 * @return array{action:string,modal_id:string,opens_modal:bool,flow:?\WP_Post,label:string,keep:bool} Same three CTA values, overridden when a linked flow applies (left alone when `keep` is true), plus the resolved flow post, its opener label and whether the opener goes beside the kept Add to Cart.
 	 */
-	function sgs_buybox_apply_linked_flow( int $product_id, bool $is_guided, string $add_to_cart_action, string $add_to_cart_modal_id, bool $add_to_cart_opens_modal ): array {
+	function sgs_buybox_apply_linked_flow( int $product_id, bool $is_guided, string $add_to_cart_action, string $add_to_cart_modal_id, bool $add_to_cart_opens_modal, bool $keep_cart_button = false ): array {
 		$result = array(
 			'action'      => $add_to_cart_action,
 			'modal_id'    => $add_to_cart_modal_id,
 			'opens_modal' => $add_to_cart_opens_modal,
 			'flow'        => null,
 			'label'       => '',
+			'keep'        => false,
 		);
 
 		if ( $is_guided || $add_to_cart_opens_modal ) {
@@ -93,6 +101,13 @@ if ( ! function_exists( 'sgs_buybox_apply_linked_flow' ) ) {
 
 		$flow = sgs_buybox_resolve_linked_flow( $product_id );
 		if ( ! $flow instanceof \WP_Post ) {
+			return $result;
+		}
+
+		if ( $keep_cart_button ) {
+			// The buybox's own buttons stay; only the flow (for its opener and modal) is handed back.
+			$result['flow'] = $flow;
+			$result['keep'] = true;
 			return $result;
 		}
 
@@ -160,6 +175,56 @@ if ( ! function_exists( 'sgs_buybox_render_linked_flow_modal' ) ) {
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render_block() renders through the registered sgs/modal + sgs/choice-flow render.php callbacks, which escape their own output.
 		echo render_block( $modal_block );
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_flow_opener_html' ) ) {
+	/**
+	 * The flow's opener as a second button beside a kept Add to Cart
+	 * (`keepAddToCartWithFlow`). It reuses the Add to Cart button's own look
+	 * classes in the secondary preset (the plain base look when the Add to Cart
+	 * is already secondary, so the two stay distinguishable), carries no cart
+	 * icon, and
+	 * opens the same modal the buybox renders through `sgs/modal`'s
+	 * open-anywhere listener.
+	 *
+	 * @param \WP_Post $flow             The linked `sgs_choice_flow` post.
+	 * @param string   $add_to_cart_look The Add to Cart button's preset slug ('' for the default look).
+	 * @return string Fully escaped HTML.
+	 */
+	function sgs_buybox_flow_opener_html( \WP_Post $flow, string $add_to_cart_look = '' ): string {
+		$label = sgs_buybox_linked_flow_label( $flow );
+		if ( '' === $label ) {
+			$label = __( 'Choose your options', 'sgs-blocks' );
+		}
+		$look = 'secondary' === $add_to_cart_look ? '' : ' buybox__add-to-cart--secondary';
+		return sgs_buybox_modal_cta_html( $label, 'wp-element-button buybox__add-to-cart' . $look . ' buybox__add-to-cart--flow-opener', false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), false );
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_simple_keep_flow_html' ) ) {
+	/**
+	 * A simple (non-variable) product with a linked flow and `keepAddToCartWithFlow`
+	 * on: the core fallback exactly as without a flow, with the flow's opener
+	 * beside core's Add to Cart and the flow's modal after it. Returns '' when
+	 * the product has no resolvable flow, so the caller keeps its core fallback.
+	 *
+	 * @param int    $product_id Product ID.
+	 * @return string Markup (pre-escaped).
+	 */
+	function sgs_buybox_simple_keep_flow_html( int $product_id ): string {
+		$flow = sgs_buybox_resolve_linked_flow( $product_id );
+		if ( null === $flow ) {
+			return '';
+		}
+		ob_start();
+		echo do_blocks( '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
+		echo '<div class="sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow">';
+		echo do_blocks( '<!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
+		echo sgs_buybox_flow_opener_html( $flow ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+		echo '</div>';
+		sgs_buybox_render_linked_flow_modal( $flow );
+		return (string) ob_get_clean();
 	}
 }
 

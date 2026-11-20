@@ -164,6 +164,19 @@
 	margin: 0;
 }
 
+/* keepAddToCartWithFlow: Add to Cart and the flow's opener side by side, stacking when the column is narrow. The secondary
+   preset's resting look below also covers a simple product's opener, whose core Add to Cart sits outside .sgs-buybox. */
+.sgs-buybox__cart-actions--with-flow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+.sgs-buybox__cart-actions--with-flow > * {
+	flex: 1 1 12rem;
+	min-width: 0;
+}
+
 /* Express payment buttons (Apple Pay, Google Pay) under the form. The wrapper keeps its size while inert, so the buttons
    returning when the choices are complete moves nothing; the payment plugin lays out its own buttons inside. */
 .sgs-buybox .sgs-buybox__express {
@@ -244,7 +257,8 @@
 	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--preset--color--text-inverse, #fff));
 }
 
-.sgs-buybox .buybox__add-to-cart--secondary {
+.sgs-buybox .buybox__add-to-cart--secondary,
+.sgs-buybox__cart-actions--with-flow .buybox__add-to-cart--secondary {
 	--sgs-btn-transition-duration: var(--wp--custom--button-presets--secondary--hover-transition, var(--wp--custom--button-presets--default--hover-transition, 200ms));
 	--sgs-btn-transition-easing: var(--wp--custom--button-presets--secondary--hover-easing, var(--wp--custom--button-presets--default--hover-easing, var(--wp--custom--easing--ease, ease)));
 	--sgs-btn-transition-easing-colour: var(--wp--custom--button-presets--secondary--hover-easing-colour, var(--wp--custom--button-presets--default--hover-easing-colour, var(--sgs-btn-transition-easing)));

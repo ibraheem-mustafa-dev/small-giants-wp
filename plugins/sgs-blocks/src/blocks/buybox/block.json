@@ -1278,6 +1278,11 @@
 			"default": "",
 			"description": "The HTML anchor set on the sgs/modal block this button opens, when addToCartAction is 'modal'. Empty falls back to cart mode even when 'modal' is selected."
 		},
+		"keepAddToCartWithFlow": {
+			"type": "boolean",
+			"default": false,
+			"description": "Off (default): a product with a linked choice flow gets the flow's opener in place of Add to Cart. On: Add to Cart (and the express Buy now buttons) stay as they are and the flow's opener shows beside them as a second button, for a flow some buyers skip. Has no effect without a linked flow, in the guided layout, or when the button action is set to open a popup (Spec 43 FR-43-25)."
+		},
 		"buyboxProductId": {
 			"type": "integer",
 			"default": 0,

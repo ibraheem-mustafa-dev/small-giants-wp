@@ -30,10 +30,11 @@ if ( ! function_exists( 'sgs_buybox_modal_cta_html' ) ) {
 	 * @param bool   $show_price        Whether to show the live price alongside the label.
 	 * @param string $price_display     The SSR price seed string (escaped here).
 	 * @param string $modal_open_id     The sgs/modal HTML anchor this button opens (escaped here).
+	 * @param bool   $show_icon         Whether the cart icon leads the label (default true; the opener beside a kept Add to Cart passes false).
 	 * @return string Fully escaped HTML — safe to echo directly.
 	 */
-	function sgs_buybox_modal_cta_html( string $add_to_cart_label, string $button_classes, bool $show_price, string $price_display, string $modal_open_id ): string {
-		$cart_icon = '<svg class="buybox__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>';
+	function sgs_buybox_modal_cta_html( string $add_to_cart_label, string $button_classes, bool $show_price, string $price_display, string $modal_open_id, bool $show_icon = true ): string {
+		$cart_icon = ! $show_icon ? '' : '<svg class="buybox__cart-icon" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>';
 
 		if ( $show_price ) {
 			// Same layout as the cart-mode button's price variant (8d in

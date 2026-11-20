@@ -113,7 +113,10 @@ if ( ! $product instanceof \WC_Product ) {
 
 if ( ! $product->is_type( 'variable' ) ) {
 	// A linked customisation flow (FR-43-25) replaces core's Add to Cart.
-	$buybox_simple_flow = sgs_buybox_simple_linked_flow_html( $buybox_post_id, (string) ( $attributes['addToCartLabel'] ?? '' ) );
+	// keepAddToCartWithFlow (off by default) keeps core's Add to Cart and puts the flow's opener beside it instead.
+	$buybox_simple_flow = ! empty( $attributes['keepAddToCartWithFlow'] )
+		? sgs_buybox_simple_keep_flow_html( $buybox_post_id )
+		: sgs_buybox_simple_linked_flow_html( $buybox_post_id, (string) ( $attributes['addToCartLabel'] ?? '' ) );
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo '' !== $buybox_simple_flow ? $buybox_simple_flow : do_blocks( $buybox_core_fallback );
 	return;
@@ -558,12 +561,13 @@ $add_to_cart_opens_modal = ( 'modal' === $add_to_cart_action && '' !== $add_to_c
 // Spec 43 FR-43-25 — a product-linked Choice Flow auto-wires this same modal
 // mode when no explicit addToCartAction:modal already wins (includes/buybox-
 // linked-flow.php owns the decision + the resolved flow post).
-$buybox_linked_flow_wire = sgs_buybox_apply_linked_flow( $buybox_post_id, $buybox_is_guided, $add_to_cart_action, $add_to_cart_modal_id, $add_to_cart_opens_modal );
+$buybox_linked_flow_wire = sgs_buybox_apply_linked_flow( $buybox_post_id, $buybox_is_guided, $add_to_cart_action, $add_to_cart_modal_id, $add_to_cart_opens_modal, ! empty( $attributes['keepAddToCartWithFlow'] ) );
 $add_to_cart_action      = $buybox_linked_flow_wire['action'];
 $add_to_cart_modal_id    = $buybox_linked_flow_wire['modal_id'];
 $add_to_cart_opens_modal = $buybox_linked_flow_wire['opens_modal'];
 $buybox_linked_flow_post = $buybox_linked_flow_wire['flow'];
 $add_to_cart_label       = '' !== $buybox_linked_flow_wire['label'] ? $buybox_linked_flow_wire['label'] : $add_to_cart_label;
+$buybox_keep_flow        = $buybox_linked_flow_wire['keep'];
 
 // Add-to-cart button style preset + optional price display.
 // sgs_buybox_add_to_cart_class() allowlists to '' (today's look) or
@@ -1629,6 +1633,10 @@ if ( $buybox_side_cart ) {
 		// form/render.php:356,369,377, mirrors the notify-me wrapper 15 lines above,
 		// and leaves the notify-me form as the offered action instead of a dead
 		// control.
+		// keepAddToCartWithFlow: the form and the flow's opener sit in one wrapper, the opener after the form.
+		if ( $buybox_keep_flow ) {
+			echo '<div class="sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow">';
+		}
 		?>
 	<form
 		class="buybox__cart-form"<?php echo $buybox_is_configurator ? ' id="' . esc_attr( $buybox_cfg_form_id ) . '"' : ''; ?>
@@ -1675,6 +1683,9 @@ if ( $buybox_side_cart ) {
 		</button>
 	</form>
 <?php // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect -- flush left: indentation before a tag prints.
+		if ( $buybox_keep_flow ) {
+			echo sgs_buybox_flow_opener_html( $buybox_linked_flow_post, $add_to_cart_style_class ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+		}
 		$buybox_express_on_interaction = 'interaction' === ( $attributes['expressLoad'] ?? 'page' );
 		sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal, $buybox_express_on_interaction );
 		?>

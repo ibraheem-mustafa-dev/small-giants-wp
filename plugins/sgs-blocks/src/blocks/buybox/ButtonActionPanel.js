@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
 
 /**
@@ -13,7 +13,7 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/p
  * it in with one import + one JSX line (see the buybox report).
  */
 export default function ButtonActionPanel( { attributes, setAttributes } ) {
-	const { addToCartAction, addToCartModalId } = attributes;
+	const { addToCartAction, addToCartModalId, keepAddToCartWithFlow } = attributes;
 
 	return (
 		<InspectorControls>
@@ -46,6 +46,16 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 						__next40pxDefaultSize
 					/>
 				) }
+				<ToggleControl
+					label={ __( 'Keep Add to Cart beside the flow button', 'sgs-blocks' ) }
+					checked={ !! keepAddToCartWithFlow }
+					onChange={ ( val ) => setAttributes( { keepAddToCartWithFlow: val } ) }
+					help={ __(
+						'For a product linked to a choice flow that some buyers skip. Off: the flow button replaces Add to Cart. On: Add to Cart (and the express Buy now buttons) stay, and the flow button shows beside them. Does nothing on a product with no flow, or when the button above opens a popup.',
+						'sgs-blocks'
+					) }
+					__nextHasNoMarginBottom
+				/>
 			</PanelBody>
 		</InspectorControls>
 	);
