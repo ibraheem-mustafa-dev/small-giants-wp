@@ -1,0 +1,122 @@
+{
+	"_note": "A slice of sgs/testimonial's calibration (presence entries and the settings measured on the rating part), kept so tests/fill-omitted-absence.test.mjs runs without the gitignored cache.",
+	"presence": {
+		"verified": {
+			"shows": [
+				".sgs-testimonial__rating-meta",
+				".sgs-testimonial__rating-meta > .sgs-testimonial__verified",
+				".sgs-testimonial__rating-meta > .sgs-testimonial__verified > svg",
+				".sgs-testimonial__rating-meta > .sgs-testimonial__verified > svg > circle",
+				".sgs-testimonial__rating-meta > .sgs-testimonial__verified > svg > path"
+			],
+			"hides": []
+		},
+		"variant=avatar-spotlight": {
+			"shows": [
+				".sgs-testimonial__meta",
+				".sgs-testimonial__meta > .sgs-testimonial__name",
+				".sgs-testimonial__meta > .sgs-testimonial__org",
+				".sgs-testimonial__meta > .sgs-testimonial__role"
+			],
+			"hides": [
+				".sgs-testimonial__footer",
+				".sgs-testimonial__footer > .sgs-testimonial__meta",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role"
+			]
+		},
+		"variant=case-study-media": {
+			"shows": [],
+			"hides": [
+				".sgs-testimonial__rating",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(1)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(2)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(3)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(4)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(5)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(1) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(2) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(3) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(4) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(5) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(1) > svg > polygon",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(2) > svg > polygon",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(3) > svg > polygon",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(4) > svg > polygon",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(5) > svg > polygon"
+			]
+		},
+		"variant=corporate-logo": {
+			"shows": [
+				".sgs-testimonial__meta",
+				".sgs-testimonial__meta > .sgs-testimonial__name",
+				".sgs-testimonial__meta > .sgs-testimonial__org",
+				".sgs-testimonial__meta > .sgs-testimonial__role"
+			],
+			"hides": [
+				".sgs-testimonial__footer",
+				".sgs-testimonial__footer > .sgs-testimonial__meta",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role"
+			]
+		},
+		"variant=review-card": {
+			"shows": [
+				".sgs-testimonial__footer > .sgs-testimonial__name"
+			],
+			"hides": [
+				".sgs-testimonial__footer > .sgs-testimonial__meta",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role"
+			]
+		},
+		"variant=minimal-quote": {
+			"shows": [
+				".sgs-testimonial__meta",
+				".sgs-testimonial__meta > .sgs-testimonial__name",
+				".sgs-testimonial__meta > .sgs-testimonial__org",
+				".sgs-testimonial__meta > .sgs-testimonial__role"
+			],
+			"hides": [
+				".sgs-testimonial__footer",
+				".sgs-testimonial__rating",
+				".sgs-testimonial__footer > .sgs-testimonial__meta",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(1)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(2)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(3)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(4)",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(5)",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__name",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__org",
+				".sgs-testimonial__footer > .sgs-testimonial__meta > .sgs-testimonial__role",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(1) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(2) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(3) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(4) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(5) > svg",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(1) > svg > polygon",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(2) > svg > polygon",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(3) > svg > polygon",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(4) > svg > polygon",
+				".sgs-testimonial__rating > .sgs-testimonial__star:nth-of-type(5) > svg > polygon"
+			]
+		}
+	},
+	"settings": {
+		"ratingSize": {
+			"slot": ".sgs-testimonial__rating"
+		},
+		"ratingColour": {
+			"slot": ".sgs-testimonial__rating"
+		},
+		"ratingColourGradient": {
+			"slot": ".sgs-testimonial__rating"
+		},
+		"ratingColourHover": {
+			"slot": ".sgs-testimonial__rating"
+		}
+	}
+}

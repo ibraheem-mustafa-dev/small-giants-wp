@@ -15,6 +15,7 @@ import { listMarkerDecisions } from './fill-list-marker.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { fillBand } from './fill-band.mjs';
+import { absentByDefault, withoutOmittedAbsences } from './fill-fixture.mjs';
 import { hasRow } from './fill-skeleton.mjs';
 import { liftRow } from './fill-row-lift.mjs';
 import { json, makeState, snapsOf, planSpacing } from './fill-resolve-state.mjs';
@@ -71,11 +72,14 @@ function fillContent( st, rec, ref, cal ) {
 	const atDesktop = Object.fromEntries( rec.targets.map( ( t ) => [ t.slot, st.reads.widths[ at ]?.[ t.id ] ] ) );
 	// A part is present when the draft draws it at any read width: which widths show it is the width gate's and the block's
 	// own (a burger drawn only below the nav's collapse point is present).
-	const evidence = Object.fromEntries( rec.targets.filter( ( t ) => '' !== t.slot ).map( ( t ) => [ t.slot, CONTENT_WIDTHS.some( ( w ) => {
+	const drawn = Object.fromEntries( rec.targets.filter( ( t ) => '' !== t.slot ).map( ( t ) => [ t.slot, CONTENT_WIDTHS.some( ( w ) => {
 		const s = st.reads.widths[ w ]?.[ t.id ];
 		return !! s && ! s.missing;
 	} ) ] ) );
-	Object.assign( evidence, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ] } ) );
+	Object.assign( drawn, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ] } ) );
+	// The draft lacking a part the block already omits (the rating its showRating switch leaves off) says nothing for a setting that
+	// would hide it: no variant is chosen for hiding what is not drawn.
+	const evidence = st.db ? withoutOmittedAbsences( drawn, absentByDefault( st, rec.name, cal, blockSchema( rec.name ) || {}, node.attributes || {} ) ) : drawn;
 	const words = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.words ] ) );
 	const hrefs = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing ).map( ( [ slot, s ] ) => [ slot, s.href ] ) );
 	const linkFacts = Object.fromEntries( Object.entries( atDesktop ).filter( ( [ , s ] ) => s && ! s.missing && ( s.target || s.rel || s.id || s.ariaLabel ) ).map( ( [ slot, s ] ) => [ slot, { target: s.target, rel: s.rel, id: s.id, ariaLabel: s.ariaLabel, imageName: s.imageName ?? null } ] ) );

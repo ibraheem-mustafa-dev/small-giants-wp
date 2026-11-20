@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/fill-resolve.mjs",
-		"find": "\tObject.assign( evidence, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ] } ) );\n",
+		"find": "\tObject.assign( drawn, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ] } ) );\n",
 		"replace": "",
 		"why": "Fill never uses the glyph evidence"
 	},

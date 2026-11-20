@@ -29,5 +29,5 @@ test( 'MUST FAIL: the page read counts glyphs and Fill adds their evidence to th
 	const fs = await import( 'fs' );
 	const src = ( f ) => fs.readFileSync( new URL( `../${ f }`, import.meta.url ), 'utf8' );
 	assert.match( src( 'lib/fill-read-collect.mjs' ), /snap\.glyphs = svgs\.length;/ );
-	assert.match( src( 'lib/fill-resolve.mjs' ), /Object\.assign\( evidence, glyphEvidence\( \{ cal, targets: rec\.targets,/ );
+	assert.match( src( 'lib/fill-resolve.mjs' ), /Object\.assign\( drawn, glyphEvidence\( \{ cal, targets: rec\.targets,/ );
 } );

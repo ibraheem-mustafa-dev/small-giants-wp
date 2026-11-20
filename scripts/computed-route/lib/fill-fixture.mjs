@@ -114,6 +114,35 @@ export function unstyledBaseline( st, block, cal, schema, slot, prop ) {
 	return set && [ ...set ].some( ( p ) => covers( p, prop ) ) ? unstyled( prop ) : undefined;
 }
 
+// The calibrated slots the node does not draw at its own defaults: a fixture-precondition switch (showRating, which the fixture
+// turns on so the rating's size and colour can be measured) the node leaves unset is off in the node, so the part it gates
+// (the settings that start with its stem, at the slots calibration measured them on) is absent from the node's render though
+// calibration's default render shows it. An element the draft lacks that the block already omits is no evidence for a setting that
+// would hide it. Returns the slot paths ([] without fixtures).
+export function absentByDefault( st, block, cal, schema, attributes = {} ) {
+	if ( ! st.fixtures ) {
+		return [];
+	}
+	const out = [];
+	for ( const t of viewOf( st, block, cal, schema ).toggles ) {
+		if ( undefined !== attributes[ t ] ) {
+			continue;
+		}
+		const stem = toggleStem( t, schema[ t ] );
+		for ( const [ a, m ] of Object.entries( cal?.settings || {} ) ) {
+			a !== t && a.startsWith( stem ) && 'string' === typeof m?.slot && '' !== m.slot && out.push( m.slot );
+		}
+	}
+	return [ ...new Set( out ) ];
+}
+
+// The presence evidence without the draft's absences of parts the block omits already: `evidence` ({ path: true | false }) minus
+// each false entry at or under one of `slots` (absentByDefault's). Returns a new object.
+export function withoutOmittedAbsences( evidence, slots ) {
+	const under = ( p, slot ) => LOOSE( p ) === LOOSE( slot ) || LOOSE( p ).startsWith( `${ LOOSE( slot ) } > ` );
+	return Object.fromEntries( Object.entries( evidence ).filter( ( [ p, shown ] ) => false !== shown || ! slots.some( ( slot ) => under( p, slot ) ) ) );
+}
+
 // The switch a written setting needs, or null: a fixture-precondition switch gating `attr`, else the switch calibration
 // turned on to measure `attr` (lib/calibrate-instances.mjs::gatingToggle: showBackground for backgroundColour), the node
 // holding neither. Only a resting setting calibration measured carries the second: its measured paint is the switch's, while

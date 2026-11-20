@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/fill-fixture.mjs",
+		"find": "if ( undefined !== attributes[ t ] ) {\n\t\t\tcontinue;",
+		"replace": "if ( false ) {\n\t\t\tcontinue;",
+		"why": "a node that sets the switch is read as leaving it off"
+	},
+	{
+		"file": "lib/fill-fixture.mjs",
+		"find": "a !== t && a.startsWith( stem ) &&",
+		"replace": "a !== t &&",
+		"why": "every setting's slot is read as under the switch"
+	},
+	{
+		"file": "lib/fill-fixture.mjs",
+		"find": "false !== shown || ! slots.some(",
+		"replace": "! slots.some(",
+		"why": "a drawn part under an omitted one loses its evidence"
+	},
+	{
+		"file": "lib/fill-fixture.mjs",
+		"find": "LOOSE( p ) === LOOSE( slot ) || LOOSE( p ).startsWith(",
+		"replace": "LOOSE( p ).startsWith(",
+		"why": "the omitted part's own absence still counts"
+	},
+	{
+		"file": "lib/fill-fixture.mjs",
+		"find": "LOOSE( p ).startsWith( `${ LOOSE( slot ) } > ` )",
+		"replace": "LOOSE( p ).startsWith( `${ LOOSE( slot ) }` )",
+		"why": "a sibling whose name starts the same is read as under it"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "const evidence = st.db ? withoutOmittedAbsences( drawn, absentByDefault(",
+		"replace": "const evidence = st.db ? withoutOmittedAbsences( drawn, ( () => [] )( ",
+		"why": "Fill never drops the absences"
+	}
+]
