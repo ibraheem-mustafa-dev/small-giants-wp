@@ -372,7 +372,7 @@ export function makeContent( ctx ) {
 
 	// The ids the build holds for this element's block: a logo block's Source (the attachment of the file the element
 	// draws) and a menu block's `ref` (the menu site-build made for this surface). { attrs, said: { attr: where from } }.
-	function carriedAttrs( block, e ) {
+	function carriedAttrs( block, e, top = null ) {
 		const out = { attrs: {}, said: {}, missing: [] };
 		// The menu's link-less labels (a nav item drawn as plain words) are the block's disabled items: the site build made
 		// each a custom item, which the menu blocks key `label:<title>` (lib/site-build-menus.mjs::disabledItemIds).
@@ -392,6 +392,12 @@ export function makeContent( ctx ) {
 		if ( 'nav' === e.tag && attrExists( block, 'ref' ) && surfaceKind ) {
 			const id = carried.menu( surfaceKind );
 			id && Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` );
+		}
+		// A header control that opens a mega panel is a menu bar bound to the second header menu its page-map item sits in
+		// (rules.megaOpenerMenu). A menu the map lacks would draw an unbound, empty bar, so it is reported.
+		if ( top?.menu && attrExists( block, 'ref' ) ) {
+			const id = carried.menu( top.menu );
+			id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ top.menu } menu` ) : out.missing.push( `${ e.key }: no menu ref is carried: menu-map.json holds no ${ top.menu } menu for this site (run site-build.mjs --menus --apply)` );
 		}
 		return out;
 	}

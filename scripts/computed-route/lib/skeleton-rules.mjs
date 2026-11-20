@@ -30,6 +30,7 @@ import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
 import { behindContent, contentAnchor } from './skeleton-hero-background.mjs';
 import { heroCollage } from './skeleton-hero-collage.mjs';
 import { tileCount, stripGap, squareTile, boxWidths } from './skeleton-tile-count.mjs';
+import { menuOfOpener } from './skeleton-mega-opener.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -709,6 +710,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e, text, kidsB } ) => {
 			const lk = 'a' === e.tag && ! kidsB.length && m.words( e ) ? linkKindOf( e ) : null;
 			return lk ? v( 'siteInfoLink', { block: R.siteInfoLink?.block, attributes: { label: text, linkSource: lk.source, ...( wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...wordBound( lk ) } ) : null;
+		},
+		// A header control outside the nav that opens a mega panel is an item of a second header menu: a menu bar bound to that
+		// menu (no burger of its own; the main menu owns the drawer's), so the item and its panel are one thing
+		// (lib/skeleton-mega-opener.mjs).
+		( { e } ) => {
+			const menu = R.megaOpenerMenu ? menuOfOpener( { e, byKey: m.byKey, openers: surface.megaOpeners, surfaceKind: surface.kind } ) : null;
+			return menu ? v( 'megaOpenerMenu', { block: R.megaOpenerMenu.block, absorb: true, menu, attributes: { ...R.megaOpenerMenu.attributes } } ) : null;
 		},
 		( { e } ) => ( 'nav' === e.tag && R.navigation?.bySurface?.[ surface.kind ] ? v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true } ) : null ),
 		( { e } ) => ( ! m.isIconLink( e ) && ( iconOnly( e ) || emojiOnly( e ) || bindingGlyph( e ) ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null ),

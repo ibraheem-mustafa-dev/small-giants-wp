@@ -1,0 +1,23 @@
+[
+	{"file": "lib/intake-pagemap-surfaces.mjs", "find": "children: [], parentItem: null, megaOpener: true }, o ),", "replace": "children: [], parentItem: null }, o ),", "why": "the opener item carries no flag"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "if ( 'header' !== menu.region || 'header' === menu.menu ) {", "replace": "if ( 'header' !== menu.region ) {", "why": "the main menu's opener items count too"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "if ( it.megaOpener && label && ! it.parentItem ) {", "replace": "if ( label && ! it.parentItem ) {", "why": "an item without the flag is an opener"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "! [ 'a', 'button' ].includes( e.tag ) ) {", "replace": "false ) {", "why": "any element can be an opener"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "if ( 'nav' === up.tag ) {", "replace": "if ( false ) {", "why": "a control inside the nav is an opener too"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "if ( 'header' !== surfaceKind || ! openers?.size", "replace": "if ( ! openers?.size", "why": "a drawer or footer control is an opener"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "return openers.get( squash( e.attrs?.[ 'aria-label' ] || e.words ) ) ?? null;", "replace": "return openers.values().next().value ?? null;", "why": "any control opens the first menu"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const menu = R.megaOpenerMenu ? menuOfOpener(", "replace": "const menu = false ? menuOfOpener(", "why": "the rule never fires"},
+	{"file": "lib/skeleton-rules.mjs", "find": "block: R.megaOpenerMenu.block, absorb: true, menu, attributes: { ...R.megaOpenerMenu.attributes } }", "replace": "block: R.megaOpenerMenu.block, absorb: true, attributes: { ...R.megaOpenerMenu.attributes } }", "why": "the verdict names no menu"},
+	{"file": "lib/skeleton-rules.mjs", "find": "attributes: { ...R.megaOpenerMenu.attributes } } ) : null;", "replace": "attributes: {} } ) : null;", "why": "the burger is not switched off"},
+	{"file": "lib/skeleton-classify.mjs", "find": "...( r.menu ? { menu: r.menu } : {} ) } );", "replace": "} );", "why": "the candidate loses the menu"},
+	{"file": "lib/skeleton-propose.mjs", "find": "carriedAttrs( block, e, top );", "replace": "carriedAttrs( block, e );", "why": "the carry never sees the menu"},
+	{"file": "lib/skeleton-propose.mjs", "find": "megaOpeners: megaOpenerMenus( draftLinks?.menuItems ) }", "replace": "megaOpeners: new Map() }", "why": "the surface knows no openers"},
+	{"file": "lib/skeleton-write-content.mjs", "find": "if ( top?.menu && attrExists( block, 'ref' ) ) {", "replace": "if ( false ) {", "why": "no ref is written"},
+	{"file": "lib/skeleton-write-content.mjs", "find": "id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ top.menu } menu` ) : out.missing.push(", "replace": "id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ top.menu } menu` ) : ( () => {} )(", "why": "a missing menu is not reported"},
+	{"file": "lib/skeleton-write-content.mjs", "find": "const id = carried.menu( top.menu );", "replace": "const id = carried.menu( surfaceKind );", "why": "the opener binds the main menu"},
+	{"file": "data/skeleton-decisions.json", "find": "\"attributes\": { \"showBurger\": false },", "replace": "\"attributes\": {},", "why": "the decision keeps the burger"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "found.set( label, found.has( label ) && found.get( label ) !== menu.menu ? null : menu.menu );", "replace": "found.set( label, menu.menu );", "why": "a label two menus claim names the last one"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "if ( 'header' !== menu.region || ", "replace": "if ( ", "why": "a drawer menu's opener items count"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "e.attrs?.[ 'aria-label' ] || e.words", "replace": "e.words", "why": "the aria-label is ignored"},
+	{"file": "lib/skeleton-mega-opener.mjs", "find": "const squash = ( s ) => String( s || '' ).replace( /\\s+/g, ' ' ).trim().toLowerCase();", "replace": "const squash = ( s ) => String( s || '' );", "why": "case and spacing matter"}
+]

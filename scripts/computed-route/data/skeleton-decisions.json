@@ -417,6 +417,13 @@
 			},
 			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
 		},
+		"megaOpenerMenu": {
+			"id": "megaOpenerMenu",
+			"scope": "a link or button of a header, outside every nav element, whose words are the label of an item the page map flagged `megaOpener` in a second header menu (lib/skeleton-mega-opener.mjs, from lib/intake-pagemap-mega-slots.mjs::megaSlots)",
+			"block": "sgs/nav-bar-menu",
+			"attributes": { "showBurger": false },
+			"reason": "a header control outside the nav that opens a mega panel is an item of the second header menu, so it is a menu bar bound to that menu (the main menu owns the drawer's burger) and the item and its panel are one thing (Spec 48 FR-48-30)"
+		},
 		"solitaryIcon": {
 			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
 			"block": "sgs/icon"

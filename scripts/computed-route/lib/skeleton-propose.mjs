@@ -20,6 +20,7 @@ import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, item
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { scIfFields } from './form-scif-fields.mjs';
+import { megaOpenerMenus } from './skeleton-mega-opener.mjs';
 import { surfaceFrames, openerTargets, frameSettings, surfaceRow, surfaceOpenerControls, openerListItems } from './skeleton-openers.mjs';
 import { handoffOf } from './draft-tokens.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
@@ -137,7 +138,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
 	// (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r ) => w.unwrapReads( e, r ) } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r ) => w.unwrapReads( e, r ) } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -213,7 +214,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const collapse = collapseAttr ? collapsePoint( { e, states, thresholds } ) : null;
 		// An id the build holds (lib/skeleton-carried.mjs) wins over a decision's own value for the setting; a differing
 		// decision value is never applied and the row's stale note reports it. A carry the build could not make is reported.
-		const { attrs: carry, said, missing } = carriedAttrs( block, e );
+		const { attrs: carry, said, missing } = carriedAttrs( block, e, top );
 		carryProblems.push( ...missing );
 		// How the draft lays out the units the block draws (a timeline's entries in one row): the block's own setting, under the decision's.
 		const arranged = listArrangement( { rule: R.listArrangement, block, items: m.blockKids( e ), box: m.box } );

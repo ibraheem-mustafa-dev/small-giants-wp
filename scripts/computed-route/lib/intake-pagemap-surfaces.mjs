@@ -522,7 +522,7 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 					openers: found.map( ( m ) => m.opener ),
 					anchorOf: ( it ) => ANCHOR.get( it ),
 					inside: ( o ) => !! headerMenu && [ o, ...ancestors( o ) ].includes( SCOPE.get( headerMenu ) ),
-					itemOf: ( o ) => anchored( { label: attrOf( o, 'aria-label' ) || innerText( d.text, o ), targets: [ ...new Set( targetsOf( d, o, new Map(), roots ) ) ], children: [], parentItem: null }, o ),
+					itemOf: ( o ) => anchored( { label: attrOf( o, 'aria-label' ) || innerText( d.text, o ), targets: [ ...new Set( targetsOf( d, o, new Map(), roots ) ) ], children: [], parentItem: null, megaOpener: true }, o ),
 					newMenu: () => {
 						const m = { menu: menus.some( ( x ) => 'header' === x.menu ) ? `header-${ menus.filter( ( x ) => 'header' === x.region ).length + 1 }` : 'header', region: 'header', draftId: tagId( d, h.node ), items: [] };
 						menus.push( m );
