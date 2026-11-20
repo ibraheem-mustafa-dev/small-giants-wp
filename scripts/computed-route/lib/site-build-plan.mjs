@@ -18,6 +18,8 @@ import { readSurfaces } from './site-build-labels.mjs';
 import { comingSoonAction, COMING_SOON_OPTION } from './site-build-store-visible.mjs';
 import { withFlowProduct } from './site-build-flow-product.mjs';
 import { ownParts } from './template-frame.mjs';
+import { COMMERCE_ROLES } from './skeleton-commerce-region.mjs';
+import { commerceRefusal, commerceRoles, rowCommerceRole } from './skeleton-commerce-refusal.mjs';
 import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
@@ -173,6 +175,12 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		}
 		// A choice flow's tree holds the catalogue product it adds (lib/site-build-flow-product.mjs).
 		const { tree: built, source } = pageTreeFor( repo, client, row, menuIds );
+		// The account page's tree holds WooCommerce's account piece, never a static imitation of its forms (FR-48-87).
+		const noRegion = 'placeholder' !== source && commerceRefusal( { role: rowCommerceRole( row ), tree: built, roles: commerceRoles(), what: key } );
+		if ( noRegion ) {
+			problems.push( `${ key }: ${ noRegion }` );
+			continue;
+		}
 		const tree = withFlowProduct( built, row, flowProducts );
 		const hash = treeHash( tree );
 		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
@@ -250,6 +258,12 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	}
 	let hashes = { ...( state.templateHashes || {} ) };
 	for ( const [ slug, pick ] of builders ) {
+		// A shop, cart or checkout copy holds WooCommerce's piece, never a static imitation of it (FR-48-87).
+		const noRegion = commerceRefusal( { role: COMMERCE_ROLES[ slug ], tree: pick.tree, roles: commerceRoles(), what: `the ${ slug } template (${ pick.source })` } );
+		if ( noRegion ) {
+			problems.push( `${ pick.row ? rowKey( pick.row ) : `template:${ slug }` }: ${ noRegion }` );
+			continue;
+		}
 		// The site's own parts the copy prints (lib/template-frame.mjs::ownParts) are built with it, and a changed part rebuilds it.
 		const parts = ownParts( buildDir, pick.tree );
 		const hash = treeHash( parts.length ? [ pick.tree, parts ] : pick.tree );

@@ -72,6 +72,7 @@ import { assertCurrent } from './lib/freshness.mjs';
 import { rootDraftOf } from './lib/key-space.mjs';
 import { resolveDraftLink, draftLinksFor } from './lib/draft-link.mjs';
 import { branchesShown } from './lib/fill-data-branches.mjs';
+import { surfaceRefusal } from './lib/skeleton-commerce-refusal.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -150,6 +151,11 @@ export async function fillSurface( o ) {
 	const problems = [ ...skeletonProblems( authored ), ...lintSkeleton( authored, db, path.basename( o.skeleton ) ) ];
 	if ( problems.length ) {
 		throw new Error( `the skeleton is not valid (R-47-10):\n- ${ problems.join( '\n- ' ) }` );
+	}
+	// A commerce-role surface whose skeleton holds no WooCommerce piece would Fill a static imitation of its form (FR-48-87).
+	const noRegion = surfaceRefusal( { repo, client: o.client, entry, tree: authored, surface: o.surface } );
+	if ( noRegion ) {
+		throw new Error( noRegion );
 	}
 	const skeleton = expandSiteInfoRows( authored );
 	// Every block of the skeleton has this site's default paint, or the run stops here, before any output (lib/paint-gate.mjs).

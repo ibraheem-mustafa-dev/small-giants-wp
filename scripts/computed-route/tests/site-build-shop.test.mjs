@@ -27,7 +27,9 @@ const state = ( o = {} ) => ( {
 	pointers: { header: 0, footer: 0, drawer: 0 }, templateHashes: {}, customTemplates: [], ...o,
 } );
 const TREE = [ { name: 'sgs/heading', attributes: { content: 'Real' } } ];
-const TREES = { 'sites/c/build/trees/shop/shop.json': TREE, 'sites/c/build/trees/product/product.json': TREE };
+// The shop tree holds WooCommerce's product collection, the shop's commerce region (FR-48-87).
+const SHOP_TREE = [ { name: 'sgs/container', innerBlocks: [ { name: 'woocommerce/product-collection' } ] } ];
+const TREES = { 'sites/c/build/trees/shop/shop.json': SHOP_TREE, 'sites/c/build/trees/product/product.json': TREE };
 const withTrees = ( files = TREES ) => ( { repo: repoWith( files ), client: 'c' } );
 const plan = ( rows, st = state(), extra = {} ) => planBuild( { rows, state: st, repo: os.tmpdir(), client: 'none', ...extra } );
 const repoWith = ( files ) => {
