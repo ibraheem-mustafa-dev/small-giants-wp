@@ -349,6 +349,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// element holding two or more fields (a row of fields, the form itself) is no field's wrapper, so its text is no field's text.
 	const groups = makeFieldGroups( { m, view, controlBlock, visibleControl, tilesField, inForm: inAnyForm, F: R.formControl || {} } );
 	const holdsControl = groups.holdsField;
+	// Whether an element is or holds something a visitor fills in (FR-48-57): a visible control, a field group, or a pressed-state
+	// option or radio, checkbox or option role. A button, a link or a hidden input is nothing to fill in.
+	const answered = ( k ) => visibleControl( k ) || !! groups.groupAt( k ) || null != view.attr( k, 'aria-pressed' ) || [ 'radio', 'checkbox', 'option' ].includes( String( view.attr( k, 'role' ) ?? '' ).toLowerCase() );
+	const holdsEntry = ( e ) => answered( e ) || desc( e ).some( answered );
 	// A piece of text that belongs to a form field (its label, required marker, hint or character count): it sits in the
 	// field's wrapper beside the control, or in a <label> there (two levels up at most).
 	const fieldText = ( e ) => {
@@ -513,7 +517,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e, kidsB } ) => ( ! kidsB.length && specHit( R.typedDivider, m.words( e ) ) ? v( 'typedDivider', { action: 'remove' } ) : null ),
 		// A draft <form> element is the form block; its fields sit inside it. The root of a form surface is the saved form's root
 		// block whatever its tag (a wizard drawn in a <div>): the saved form's root must be the form block, which the linked embed renders.
-		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
+		// A form block stands only where there is something to fill in (holdsEntry): a <form> or a form surface's root holding only
+		// a button or a link is that control, never a form with nothing to fill in.
+		( { e } ) => ( R.formHost && ( view.realTag( e ) === R.formHost.tag || ( 'form' === surface.kind && 0 === e.depth ) ) && holdsEntry( e ) ? v( 'formHost', { block: R.formHost.block } ) : null ),
 		// A form control is the field block for its type; the field's label, required marker and hint are that block's own
 		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
 		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.

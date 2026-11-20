@@ -1,0 +1,10 @@
+[
+	{"file": "lib/skeleton-rules.mjs", "find": "&& holdsEntry( e ) ? v( 'formHost'", "replace": "? v( 'formHost'", "why": "a <form> or form root holding only a button is still a form block"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const holdsEntry = ( e ) => answered( e ) || desc( e ).some( answered );", "replace": "const holdsEntry = ( e ) => answered( e );", "why": "only the element itself is read, so a <form> holding a field is no form"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const holdsEntry = ( e ) => answered( e ) || desc( e ).some( answered );", "replace": "const holdsEntry = ( e ) => desc( e ).some( answered );", "why": "a lone field as the form's root is no form"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const answered = ( k ) => visibleControl( k ) ||", "replace": "const answered = ( k ) => !! controlBlock( k ) ||", "why": "a hidden input counts as something to fill in"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const answered = ( k ) => visibleControl( k ) ||", "replace": "const answered = ( k ) => false ||", "why": "no control is a field"},
+	{"file": "lib/skeleton-rules.mjs", "find": "|| !! groups.groupAt( k ) || null != view.attr( k, 'aria-pressed' )", "replace": "|| null != view.attr( k, 'aria-pressed' )", "why": "a chip group read by aria-checked holds no field"},
+	{"file": "lib/skeleton-rules.mjs", "find": "|| null != view.attr( k, 'aria-pressed' ) ||", "replace": "||", "why": "a lone pressed-state button holds no field"},
+	{"file": "lib/skeleton-rules.mjs", "find": "[ 'radio', 'checkbox', 'option' ].includes( String( view.attr( k, 'role' ) ?? '' ).toLowerCase() );", "replace": "false;", "why": "a checkbox role holds no field"}
+]
