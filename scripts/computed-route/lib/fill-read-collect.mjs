@@ -334,6 +334,15 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		snap.childSize = kid && null !== kw && null !== kh && Math.abs( kr.width - r.width ) <= 1 && Math.abs( kr.height - r.height ) <= 1 ? { width: `${ kw }px`, height: `${ kh }px`, tag: kid.localName } : null;
 		snap.role = el.getAttribute( 'role' );
 		snap.className = String( el.getAttribute( 'class' ) || '' );
+		// A list item's CSS-drawn marker (lib/fill-list-marker.mjs): its list-style type and image and its ::marker content,
+		// with the ::marker's colour and size. Null for an element that is not a list item.
+		const ics = getComputedStyle( el );
+		if ( /list-item/.test( ics.display ) ) {
+			const mk = getComputedStyle( el, '::marker' );
+			snap.marker = { type: ics.listStyleType, image: ics.listStyleImage, content: mk.content, color: srgb( mk.color ), fontSize: mk.fontSize };
+		} else {
+			snap.marker = null;
+		}
 		// An element with words of its own (a text node directly inside it) paints its own text, whatever its first text is:
 		// `<p><b>Lead:</b> the rest</p>` is the paragraph's look, never the bold lead-in's.
 		if ( j.own || [ ...el.childNodes ].some( ( c ) => 3 === c.nodeType && '' !== c.textContent.trim() ) ) {

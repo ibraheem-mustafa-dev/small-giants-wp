@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const markerElOf = ( row ) => ( drawnSvgParts( m.kids( row ), m.isPart )[ 0 ] ?? leadingMarker( row )?.el ?? null );",
+		"replace": "const markerElOf = ( row ) => ( drawnSvgParts( m.kids( row ), m.isPart )[ 0 ] ?? null );",
+		"why": "a glyph, ordinal or dot is no marker element"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const first = m.kids( row ).filter( shownEl )[ 0 ];",
+		"replace": "const first = m.kids( row )[ 0 ];",
+		"why": "a hidden first child is the marker"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( isMarker( first, m, R.dotMarker, view ) ) {",
+		"replace": "if ( false ) {",
+		"why": "an empty dot is no marker"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( ! w || m.blockKids( first ).length || isControlEl( first ) ) {",
+		"replace": "if ( ! w || m.blockKids( first ).length ) {",
+		"why": "a control is a marker"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const o = ordinal( w );\n\t\tif ( o ) {",
+		"replace": "const o = null;\n\t\tif ( o ) {",
+		"why": "a typed ordinal is no marker"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "return 1 === g.length && ! /[\\p{L}\\p{N}]/u.test( w ) ?",
+		"replace": "return 1 === g.length ?",
+		"why": "a letter or digit is a glyph marker"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "return 1 === g.length && ! /[\\p{L}\\p{N}]/u.test( w ) ?",
+		"replace": "return ! /[\\p{L}\\p{N}]/u.test( w ) ?",
+		"why": "a phrase of symbols is a glyph marker"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "[ 'a', 'button', 'input', 'select', 'textarea', 'label', 'form' ].includes( k.tag ) ||",
+		"replace": "false ||",
+		"why": "a link is no control"
+	}
+]

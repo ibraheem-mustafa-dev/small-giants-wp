@@ -13,14 +13,14 @@
 	},
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "const at = [ ...String( part ).matchAll( NTH ) ].at( -1 );",
-		"replace": "const at = [ ...String( part ).matchAll( NTH ) ][ 0 ];",
+		"find": "const at = [ ...String( part ).matchAll( NTH ) ].at( -1 );\n\treturn at ? `${ part.slice( 0, at.index ) }:nth-of-type(${ k })${ part.slice(",
+		"replace": "const at = [ ...String( part ).matchAll( NTH ) ][ 0 ];\n\treturn at ? `${ part.slice( 0, at.index ) }:nth-of-type(${ k })${ part.slice(",
 		"why": "the first repeated step is set to the copy, not the last"
 	},
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "Number.isFinite( k ) && markerSlotAt( part, k ) === s && ( out[ k ] = s );",
-		"replace": "Number.isFinite( k ) && ( out[ k ] = s );",
+		"find": "Number.isFinite( copy( s ) ) && markerSlotAt( part, copy( s ) ) === s && ( out[ copy( s ) ] = s );",
+		"replace": "Number.isFinite( copy( s ) ) && ( out[ copy( s ) ] = s );",
 		"why": "any repeated slot is taken as a copy's marker slot"
 	},
 	{
@@ -31,20 +31,20 @@
 	},
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "r.svg?.markup ? 'icon' : /^\\d+\\.?$/",
-		"replace": "r.svg?.markup ? 'emoji' : /^\\d+\\.?$/",
-		"why": "an svg marker is called an emoji"
+		"find": "return { kind: 'icon' };",
+		"replace": "return { kind: 'emoji' };",
+		"why": "an svg marker part is called an emoji"
 	},
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "/^\\d+\\.?$/.test( r.words || '' )",
-		"replace": "/^\\d+$/.test( r.words || '' )",
+		"find": "[.):]?$/i.exec( String( words",
+		"replace": "$/i.exec( String( words",
 		"why": "a digit with its full stop is not numbered"
 	},
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "parseInt( s.read.words, 10 ) === i + 1 );",
-		"replace": "true );",
+		"find": "return at === i + 1;",
+		"replace": "return true;",
 		"why": "numbers that do not count up from 1 are numbered"
 	},
 	{
@@ -55,21 +55,21 @@
 	},
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "kinds.every( ( k ) => k && k === kinds[ 0 ] ) && counts ? kinds[ 0 ] : null;",
-		"replace": "kinds.every( ( k ) => k || ! k ) && counts ? kinds[ 0 ] : null;",
+		"find": "const same = kinds.every( ( k ) => k && k === kinds[ 0 ] ) &&",
+		"replace": "const same = kinds.every( ( k ) => k || ! k ) &&",
 		"why": "items whose markers differ choose the first item's type"
 	},
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "attributes[ setting.attr_name ] !== kind && out.writes.push",
+		"find": "attributes[ marker.attr_name ] !== kind && out.writes.push",
 		"replace": "out.writes.push",
 		"why": "a marker type the node already holds is written again"
 	},
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "if ( ! seen[ i ]?.read.svg?.markup ) {\n\t\t\treturn item;",
-		"replace": "if ( false ) {\n\t\t\treturn item;",
-		"why": "an item with no svg read is rewritten"
+		"find": "if ( s?.read.svg?.markup && ! s.slot.endsWith( '::marker' ) ) {",
+		"replace": "if ( ! s?.slot.endsWith( '::marker' ) ) {",
+		"why": "an item with no marker read is sent to the icon reader"
 	},
 	{
 		"file": "lib/fill-icon.mjs",

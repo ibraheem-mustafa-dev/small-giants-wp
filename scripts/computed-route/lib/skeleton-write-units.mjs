@@ -8,7 +8,7 @@ import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
 import { finish, W } from './skeleton-classify.mjs';
 import { itemSlots, drawnSvgParts } from './skeleton-part-slots.mjs';
-import { markerPart, markerSlotAt } from './fill-list-marker.mjs';
+import { markerPart, markerSlotAt, ordinal, glyph } from './fill-list-marker.mjs';
 import { unitSlots } from './skeleton-child-slots.mjs';
 
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
@@ -139,9 +139,37 @@ export function makeUnits( ctx ) {
 		const kinds = [ ...cls.siteInfoKinds( l ) ].filter( ( [ k ] ) => facts.listItem.kinds.includes( k ) ).sort( ( a, b ) => b[ 1 ].w - a[ 1 ].w );
 		return kinds[ 0 ]?.[ 0 ] || null;
 	};
-	// The marker element a list row draws before its text: its first drawn svg, or none.
-	const markerElOf = ( row ) => ( drawnSvgParts( m.kids( row ), m.isPart )[ 0 ] ?? null );
-	// { <marker part slot of item copy k>: finder } for the rows that draw a marker, when the block's calibration holds a marker part.
+	const shownEl = ( k ) => Object.values( k.visible || {} ).some( Boolean );
+	const isControlEl = ( k ) => [ 'a', 'button', 'input', 'select', 'textarea', 'label', 'form' ].includes( k.tag ) || /sc-camel-on-click="\{\{/.test( k.snippet || '' );
+	const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
+	// The row's leading marker, or null: an svg or icon, an empty dot or bar (rules.dotMarker), or a typed glyph, emoji or
+	// ordinal (`1`, `01`, `1.`, `(1)`, `i.`, `a)`) standing before the row's text. `kind` is the list marker type it draws.
+	const leadingMarker = ( row ) => {
+		const first = m.kids( row ).filter( shownEl )[ 0 ];
+		if ( ! first ) {
+			return null;
+		}
+		if ( 'svg' === first.tag || ( 'img' === first.tag && m.isPart( first ) ) ) {
+			return { el: first, kind: 'icon', words: '' };
+		}
+		if ( isMarker( first, m, R.dotMarker, view ) ) {
+			return { el: first, kind: 'bullet', words: '' };
+		}
+		const w = squash( m.words( first ) );
+		if ( ! w || m.blockKids( first ).length || isControlEl( first ) ) {
+			return null;
+		}
+		const o = ordinal( w );
+		if ( o ) {
+			return { el: first, kind: 'numbered', words: w, ordinal: o };
+		}
+		const g = [ ...new Intl.Segmenter( undefined, { granularity: 'grapheme' } ).segment( w ) ];
+		return 1 === g.length && ! /[\p{L}\p{N}]/u.test( w ) ? { el: first, kind: glyph( w ).kind, words: w } : null;
+	};
+	// The marker element a list row draws before its text: its first drawn svg, else its leading dot, bar, ordinal or glyph.
+	const markerElOf = ( row ) => ( drawnSvgParts( m.kids( row ), m.isPart )[ 0 ] ?? leadingMarker( row )?.el ?? null );
+	// { <marker part slot of item copy k>: finder } for the rows that draw a marker element, when the block's calibration holds a
+	// marker part.
 	const markerSlotsOf = ( slug, rows ) => {
 		const part = markerPart( ctx.calSettings?.( slug ) );
 		const out = {};
