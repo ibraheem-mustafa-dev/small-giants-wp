@@ -89,6 +89,9 @@ const MAX_WIDTH_UNITS = [
 	{ value: 'ch', label: 'ch', default: 20 },
 ];
 
+/** Where a placed box sits: the left and right margin each position prints (render.php: the same map). */
+const BOX_ALIGN_MARGIN = { left: '0 auto', centre: 'auto', right: 'auto 0' };
+
 const CUSTOM_WIDTH_UNITS = [
 	{ value: 'px', label: 'px', default: undefined },
 	{ value: '%', label: '%', default: undefined },
@@ -213,6 +216,7 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 		inheritStyle,
 		customWidth,
 		maxWidth,
+		boxAlign,
 	} = attributes;
 	const wrapperStyle = {};
 	// Contract §A (render.php): inheritStyle suppresses block-level wrapper
@@ -248,6 +252,15 @@ function buildWrapperStyle( attributes, previewTier = 'desktop' ) {
 		);
 		if ( maxWidthPreview ) {
 			wrapperStyle.maxWidth = maxWidthPreview;
+		}
+		// A placed box is as wide as its text unless a custom width is set (render.php prints the same).
+		const boxAlignPreview =
+			BOX_ALIGN_MARGIN[ resolveTier( boxAlign, previewTier, '' ).value ];
+		if ( boxAlignPreview ) {
+			wrapperStyle.marginInline = boxAlignPreview;
+			if ( ! customWidthPreview ) {
+				wrapperStyle.width = 'fit-content';
+			}
 		}
 		Object.assign(
 			wrapperStyle,
@@ -318,6 +331,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		borderColourGradient,
 		customWidth,
 		maxWidth,
+		boxAlign,
 	} = attributes;
 	// ⚠ textAlign / fontStyle / textDecoration / letterSpacing /
 	// letterSpacingUnit / textTransform / textWrap are deliberately NOT
@@ -721,6 +735,37 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								units={ MAX_WIDTH_UNITS }
 								onChange={ ( v ) => setOwnValue( v || '' ) }
 								presets={ false }
+							/>
+						) }
+					</ResponsiveOverride>
+					<ResponsiveOverride
+						label={ __( 'Box position', 'sgs-blocks' ) }
+						value={ boxAlign }
+						onChange={ ( obj ) =>
+							setAttributes( { boxAlign: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SelectControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+								label={ __( 'Box position', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								options={ [
+									{
+										value: '',
+										label: __( 'Default (full width)', 'sgs-blocks' ),
+									},
+									{ value: 'left', label: __( 'Left', 'sgs-blocks' ) },
+									{ value: 'centre', label: __( 'Centre', 'sgs-blocks' ) },
+									{ value: 'right', label: __( 'Right', 'sgs-blocks' ) },
+								] }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								help={ __(
+									'Shrinks the heading to its text and places that box, so a border or background hugs the words. A custom width overrides the shrink.',
+									'sgs-blocks'
+								) }
 							/>
 						) }
 					</ResponsiveOverride>

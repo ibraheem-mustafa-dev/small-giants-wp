@@ -345,6 +345,29 @@ if ( $wrapper_decls ) {
 	$scoped_css[] = "{$root_sel}{" . implode( ';', $wrapper_decls ) . ';}';
 }
 
+// --- Box position's shrink: a box that is placed (left, centre or right) is only as wide as its text, so the placement
+// has a box to move. Printed before the width rules below, which override it wherever a custom width is set. ---
+$sgs_hdg_box_align_map   = array(
+	'left'   => '0 auto',
+	'centre' => 'auto',
+	'right'  => 'auto 0',
+);
+$sgs_hdg_box_align_tiers = sgs_responsive_normalise_object( $attributes['boxAlign'] ?? null );
+if ( ! $inherit_style ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel,
+		array(
+			array(
+				'value'     => $sgs_hdg_box_align_tiers,
+				'css'       => 'width',
+				'transform' => static function ( $raw ) use ( $sgs_hdg_box_align_map ) {
+					return ( is_string( $raw ) && isset( $sgs_hdg_box_align_map[ $raw ] ) ) ? 'fit-content' : '';
+				},
+			),
+		)
+	);
+}
+
 // --- Width and max width: one length string per device, printed by the shared
 // responsive emitter (desktop in the base rule, other devices in media queries). ---
 if ( ! $inherit_style ) {
@@ -457,6 +480,24 @@ if ( ! $inherit_style ) {
 	if ( $mobile_box_decls ) {
 		$scoped_css[] = sgs_emit_tier_decls( $root_sel, array( 'mobile' => $mobile_box_decls ) );
 	}
+}
+
+// Box position (boxAlign): printed after the margin rules, so while it is set it owns the left and right margin at
+// every width. The shrink to the text's width it needs is printed before the width rules (see "Width and max width"),
+// so a custom width still wins where one is set. Unset prints nothing.
+if ( ! $inherit_style ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel,
+		array(
+			array(
+				'value'     => $sgs_hdg_box_align_tiers,
+				'css'       => 'margin-inline',
+				'transform' => static function ( $raw ) use ( $sgs_hdg_box_align_map ) {
+					return ( is_string( $raw ) && isset( $sgs_hdg_box_align_map[ $raw ] ) ) ? $sgs_hdg_box_align_map[ $raw ] : '';
+				},
+			),
+		)
+	);
 }
 
 // Shrunk-header size (shrunkFontSize): while the header row holding this

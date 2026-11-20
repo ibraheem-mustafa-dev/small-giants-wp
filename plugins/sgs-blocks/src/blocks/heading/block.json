@@ -90,6 +90,7 @@
 						"css:box-shadow-color": "boxShadowColour",
 						"css:width": "customWidth",
 						"css:max-width": "maxWidth",
+						"css:margin-inline": "boxAlign",
 						"css:color-gradient": "textColourGradient",
 						"css:border-color-gradient": "borderColourGradient"
 					},
@@ -398,6 +399,10 @@
 			"type": "object",
 			"default": {},
 			"description": "Maximum width of the heading, one length per device (e.g. 15ch or 40rem). Empty = no cap. Lets a long heading wrap at a set measure without fixing its width."
+		},
+		"boxAlign": {
+			"type": "object",
+			"description": "Where the heading's own box sits in its parent, per device: left, centre or right. Unset = no change (the box keeps the margin it has). Takes effect only when the box is narrower than its parent (a custom width such as fit-content, or a max width); it owns the left and right margin on every device while set."
 		},
 		"textAlign": {
 			"type": "object",
