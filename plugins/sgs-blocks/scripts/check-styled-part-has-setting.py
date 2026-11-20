@@ -1662,16 +1662,19 @@ def crosscheck_parts(corpus, cfg, sites, wide):
 
 def crosscheck_unmapped(corpus, cfg, sites, attrs):
     fails = crosscheck_generic('unmapped', cfg, sites, 'unmapped_exemptions')
+    # A database behind or ahead of the tree is a warning, never a failure: between an attribute landing and the next
+    # reseed every session's build would otherwise fail here. check-wiring-fingerprint owns that drift as a gate.
     slugs = set(corpus.block_slugs())
     db_slugs = {k for k in attrs.by_block}
     for s in sorted(db_slugs - slugs):
-        fails.append('DB STALE: block sgs/%s has attribute rows but no block.json in the corpus; run /sgs-update' % s)
+        print('WARNING DB STALE: block sgs/%s has attribute rows but no block.json in the corpus; run /sgs-update' % s,
+              file=sys.stderr)
     for slug in sorted(slugs):
         bj = corpus.block_json(slug) or {}
         missing = sorted(k for k in set((bj.get('attributes') or {}).keys()) - {r['attr_name'] for r in attrs.block(slug)} if not k.startswith('_'))
         if missing:
-            fails.append('DB BEHIND: sgs/%s block.json declares %d attribute(s) the database does not hold (%s); run /sgs-update'
-                         % (slug, len(missing), ', '.join(missing[:3])))
+            print('WARNING DB BEHIND: sgs/%s block.json declares %d attribute(s) the database does not hold (%s); run /sgs-update'
+                  % (slug, len(missing), ', '.join(missing[:3])), file=sys.stderr)
     return fails
 
 
@@ -2141,9 +2144,9 @@ $nav .= helper( 'prev', __( 'Previous', 'sgs-blocks' ) );
     bj2 = json.loads(json.dumps(UM_BJ))
     bj2['attributes']['newGhost'] = {'type': 'string'}
     uf2, _ = check_pass('unmapped', Corpus(dict(u_files, **{'plugins/sgs-blocks/src/blocks/um/block.json': json.dumps(bj2)})), u_cfg, u_attrs, ub)
-    check('unmapped corpus control: a block.json attribute the database does not hold fails (DB behind the code)', any('DB BEHIND' in f for f in uf2))
+    check('unmapped corpus control: a block.json attribute the database does not hold only warns (DB behind the code)', not any('DB BEHIND' in f for f in uf2))
     uf3, _ = check_pass('unmapped', Corpus({}), u_cfg, u_attrs, ub)
-    check('unmapped corpus control: database rows for a block with no block.json fail (DB ahead of the code)', any('DB STALE' in f for f in uf3))
+    check('unmapped corpus control: database rows for a block with no block.json only warn (DB ahead of the code)', not any('DB STALE' in f for f in uf3))
     check('baseline sections: each pass reads its own section; a missing section is "no baseline", never a pass',
           any('no baseline for the unmapped pass' in f for f in ratchet(usites, {'ceiling': None, 'entries': {}}, 'unmapped')[0]))
     check('unmapped (b) stripper: a comment naming a word is blanked', 'Commented' not in {w for _, _, w, _ in scan_strings('x.php', UM_PHP)})
