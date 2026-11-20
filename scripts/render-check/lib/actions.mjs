@@ -62,7 +62,11 @@ export async function runActions( page, actions ) {
 				await page.waitForSelector( a.waitFor, { state: 'visible', timeout: 10000 } );
 			}
 			if ( a.waitGone ) {
-				await page.waitForSelector( a.waitGone, { state: 'hidden', timeout: 10000 } );
+				// Every match, not the first: a page can hold several (a closed cart's skeleton beside the open one).
+				await page.waitForFunction( ( sel ) => ! [ ...document.querySelectorAll( sel ) ].some( ( e ) => {
+					const r = e.getBoundingClientRect();
+					return r.width > 0 && r.height > 0 && 'hidden' !== getComputedStyle( e ).visibility;
+				} ), a.waitGone, { timeout: 10000 } );
 			}
 			if ( a.scroll !== undefined ) {
 				await page.evaluate( ( y ) => {
