@@ -173,9 +173,9 @@ export function decisionsProblems( facts ) {
 	tileSetting && ! facts.attr( r.marquee.logoBlock, tileSetting ) && problems.push( `rules.marquee.labelledLogos.tile.setting ${ tileSetting } must be a setting of ${ r.marquee.logoBlock }` );
 	const tileLayout = r.marquee?.labelledLogos?.tile?.layout;
 	tileLayout && ! facts.enumOf?.( r.marquee.logoBlock, tileLayout.setting )?.includes( tileLayout.value ) && problems.push( `rules.marquee.labelledLogos.tile.layout ${ tileLayout.setting } ${ tileLayout.value } must be a setting of ${ r.marquee.logoBlock } and one of its values` );
-	// The tile size's count and cap are settings of the logo block.
+	// The tile size's count is a setting of the logo block, and so is its cap at each device.
 	const tileSize = r.marquee?.labelledLogos?.tileSize;
-	tileSize && [ tileSize.count, tileSize.cap ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) ) && problems.push( `rules.marquee.labelledLogos.tileSize must name a count setting and a cap setting ${ r.marquee.logoBlock } has` );
+	tileSize && [ tileSize.count, ...[ 'desktop', 'tablet', 'mobile' ].map( ( d ) => tileSize.cap?.[ d ] ) ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) ) && problems.push( `rules.marquee.labelledLogos.tileSize must name a count setting and a cap setting for desktop, tablet and mobile ${ r.marquee.logoBlock } has` );
 	Object.keys( r.footerSlots?.stackedRow || {} ).filter( ( a ) => ! facts.attr( r.footerSlots.rowBlock, a ) || facts.attr( r.footerSlots.rowBlock, a ).css_property ).forEach( ( a ) => problems.push( `rules.footerSlots.stackedRow.${ a } must name a structural setting ${ r.footerSlots.rowBlock } has (no CSS property: a skeleton carries no style value)` ) );
 	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
 	// database), or a known SGS block; its money pattern compiles.

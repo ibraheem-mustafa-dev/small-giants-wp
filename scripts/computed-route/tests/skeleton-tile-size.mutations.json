@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "const sizeDecided = size ? { [ sizeRule.count ]: size.columns, [ sizeRule.cap ]: size.cap } : {};",
+		"find": "const sizeDecided = size ? { [ sizeRule.count ]: size.columns, ...Object.fromEntries( Object.entries( size.caps ).map( ( [ device, cap ] ) => [ sizeRule.cap[ device ], cap ] ) ) } : {};",
 		"replace": "const sizeDecided = {};",
 		"why": "the count and cap never reach the node"
 	},
@@ -19,21 +19,21 @@
 	},
 	{
 		"file": "lib/skeleton-tile-count.mjs",
-		"find": "const cap = Math.max( ...sizes );",
-		"replace": "const cap = Math.min( ...sizes );",
-		"why": "the cap is the smallest tile, so the larger tiles are capped"
+		"find": "const cap = Math.round( sizes[ i ] );",
+		"replace": "const cap = Math.round( Math.max( ...sizes ) );",
+		"why": "every device takes the largest tile as its cap, so the smaller devices draw larger tiles than the draft's"
 	},
 	{
 		"file": "lib/skeleton-tile-count.mjs",
-		"find": "const first = Math.max( 1, Math.ceil( ( spans[ i ] + g ) / ( cap + g ) ) );",
-		"replace": "const first = 1;",
-		"why": "a count whose tile is above the cap is allowed, so the strip no longer spans its viewport"
+		"find": "Math.max( 1, Math.floor( ( spans[ i ] + g ) / ( sizes[ i ] + g ) ) )",
+		"replace": "Math.max( 1, Math.ceil( ( spans[ i ] + g ) / ( sizes[ i ] + g ) ) )",
+		"why": "one more tile than fits, so the tile falls under the cap and is no longer the draft's size"
 	},
 	{
 		"file": "lib/skeleton-tile-count.mjs",
-		"find": "for ( let n = first; n <= first + 3; n++ ) {",
-		"replace": "for ( let n = first; n <= first; n++ ) {",
-		"why": "the first count that fits is taken, not the nearest to the draft's tile"
+		"find": "cap !== inherited && ( caps[ DEVICE[ w ] ] = cap );",
+		"replace": "caps[ DEVICE[ w ] ] = cap;",
+		"why": "a cap equal to the inherited one is written anyway"
 	},
 	{
 		"file": "lib/skeleton-tile-count.mjs",
@@ -55,14 +55,26 @@
 	},
 	{
 		"file": "lib/skeleton-facts.mjs",
-		"find": "[ tileSize.count, tileSize.cap ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) )",
+		"find": "tileSize && [ tileSize.count, ...[ 'desktop', 'tablet', 'mobile' ].map( ( d ) => tileSize.cap?.[ d ] ) ].some(",
+		"replace": "tileSize && [ tileSize.count, tileSize.cap?.desktop ].some(",
+		"why": "the tablet and mobile cap settings are not checked"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "tileSize && [ tileSize.count, ...[ 'desktop', 'tablet', 'mobile' ].map( ( d ) => tileSize.cap?.[ d ] ) ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) )",
 		"replace": "false",
 		"why": "a count or cap setting the block lacks passes the check"
 	},
 	{
 		"file": "data/skeleton-decisions.json",
-		"find": "\"tileSize\": { \"count\": \"columns\", \"cap\": \"maxHeight\",",
-		"replace": "\"tileSize\": { \"count\": \"columns\", \"cap\": \"columns\",",
-		"why": "the cap is written to the count's setting"
+		"find": "\"tileSize\": { \"count\": \"columns\", \"cap\": {",
+		"replace": "\"tileSize\": { \"count\": \"columns\", \"cap\": \"maxHeight\", \"was\": {",
+		"why": "the cap is one setting, so a device's cap goes to the count's neighbour"
+	},
+	{
+		"file": "lib/skeleton-tile-count.mjs",
+		"find": "const widths = [ '1440', '768', '375' ];",
+		"replace": "const widths = Object.keys( DEVICE );",
+		"why": "the devices are read narrowest first (an object's integer keys sort ascending), so the desktop cap is judged inherited from mobile"
 	}
 ]

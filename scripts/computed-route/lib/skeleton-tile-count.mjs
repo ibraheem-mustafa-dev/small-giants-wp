@@ -1,35 +1,33 @@
-// The tile count and tile cap a strip of fixed-size square tiles is drawn with (data/skeleton-decisions.json
+// The tile count and the tile cap per device a strip of fixed-size square tiles is drawn with (data/skeleton-decisions.json
 // `rules.marquee.labelledLogos.tileSize`). The logo block sizes each tile as the strip's width shared by a count per device
-// (`columns`), never larger than a cap (`maxHeight`): a length per device is no setting it holds, so the draft's tile of 150,
-// 136 and 112px is written as the count that comes nearest to it and the cap that the largest tile is. A count cannot always
-// hit the draft's size exactly; the nearest count that does not need a tile larger than the cap is chosen, so the strip still
-// spans the draft's viewport.
+// (`columns`), never larger than that device's cap (`maxHeight`, `maxHeightTablet`, `maxHeightMobile`): the cap is the draft's tile
+// size at that device, and the count is the most tiles that still leave each one at least that size, so the cap, not the count,
+// draws the tile and it is the draft's size to the pixel. A device whose cap is what the cascade already gives (tablet inherits
+// the desktop cap, mobile the tablet's) needs no cap of its own.
 const DEVICE = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
 
-const tileOf = ( n, width, gap ) => ( width - ( n - 1 ) * gap ) / n;
-
 // tiles: { <width>: draft tile's box width }, viewport: { <width>: the strip viewport's box width }, gap: the draft's gap in px.
-// Returns { columns: { desktop, tablet, mobile }, cap } or null when a device lacks a tile or a viewport, or a tile is not a
-// positive size.
+// Returns { columns: { desktop, tablet, mobile }, caps: { desktop, tablet?, mobile? } } or null when a device lacks a tile or a
+// viewport, or a tile is not a positive size.
 export function tileCount( { tiles, viewport, gap } ) {
-	const widths = Object.keys( DEVICE );
+	// Widest first: an object's integer keys sort ascending, and a device's cap is read against the wider device's.
+	const widths = [ '1440', '768', '375' ];
 	const sizes = widths.map( ( w ) => Number( tiles?.[ w ] ) );
 	const spans = widths.map( ( w ) => Number( viewport?.[ w ] ) );
 	const g = Number.isFinite( Number( gap ) ) && Number( gap ) >= 0 ? Number( gap ) : 0;
 	if ( sizes.some( ( s ) => ! ( s > 0 ) ) || spans.some( ( s ) => ! ( s > 0 ) ) ) {
 		return null;
 	}
-	const cap = Math.max( ...sizes );
 	const columns = {};
+	const caps = {};
+	let inherited = null;
 	widths.forEach( ( w, i ) => {
-		const first = Math.max( 1, Math.ceil( ( spans[ i ] + g ) / ( cap + g ) ) );
-		let best = first;
-		for ( let n = first; n <= first + 3; n++ ) {
-			Math.abs( tileOf( n, spans[ i ], g ) - sizes[ i ] ) < Math.abs( tileOf( best, spans[ i ], g ) - sizes[ i ] ) && ( best = n );
-		}
-		columns[ DEVICE[ w ] ] = best;
+		columns[ DEVICE[ w ] ] = Math.max( 1, Math.floor( ( spans[ i ] + g ) / ( sizes[ i ] + g ) ) );
+		const cap = Math.round( sizes[ i ] );
+		cap !== inherited && ( caps[ DEVICE[ w ] ] = cap );
+		inherited = cap;
 	} );
-	return { columns, cap: Math.round( cap ) };
+	return { columns, caps };
 }
 
 // A draft element's box width at each read width, { <width>: w } (empty for no element).
