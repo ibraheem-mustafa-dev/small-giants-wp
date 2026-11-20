@@ -45,6 +45,15 @@ export function declaredSizes( declaredAt, prop ) {
 	return all.length && all.every( Boolean ) && all.some( ( v ) => v.endsWith( '%' ) ) ? sizes : null;
 }
 
+// The per-width width a layer takes when the draft declares none: an out-of-flow element (absolute or fixed) with no width of its own
+// (nothing declared, or `auto`) shrinks to fit its content, which is the layer width setting's `auto` (max-content). Every width must
+// say so, or null: a width declared at any one width, or an element in the flow, is the resolver's to judge.
+export function shrinkSizes( declaredAt, stylesAt ) {
+	const widths = Object.keys( declaredAt );
+	const shrinks = ( w ) => /^(?:absolute|fixed)$/.test( String( stylesAt?.[ w ]?.position ?? '' ) ) && [ undefined, '', 'auto' ].includes( declaredAt[ w ]?.width );
+	return widths.length && widths.every( shrinks ) ? Object.fromEntries( widths.map( ( w ) => [ w, 'auto' ] ) ) : null;
+}
+
 // The rotation in degrees a computed `transform` is, or null where it is anything else. A rotation is a 2D matrix whose axes are
 // the unit vectors turned by one angle with no translation (the layer's centring or pixel offset is its own transform); `none` is no rotation.
 export function rotationOf( raw ) {

@@ -4,17 +4,17 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { fillLayerBox } from '../lib/fill-layer-box.mjs';
-import { declaredSizes, plainDeclaredLength } from '../lib/layer-box.mjs';
+import { declaredSizes, plainDeclaredLength, shrinkSizes } from '../lib/layer-box.mjs';
 import { openDb } from '../lib/db.mjs';
 
 const db = openDb();
-const run = ( { declared, name = 'sgs/decorative-image', slot = '', measured = { 'z-index': 'auto', width: '662px', height: '827px' } } ) => {
+const run = ( { declared, name = 'sgs/decorative-image', slot = '', children = [], measured = { 'z-index': 'auto', width: '662px', height: '827px' } } ) => {
 	const writes = [];
 	const at = ( w ) => ( 'function' === typeof declared ? declared( w ) : declared );
 	const st = { db, nodes: [ { name: 'sgs/container' } ], reads: { declared: Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, { t: at( w ) } ] ) ) } };
 	const apply = ( s, rec, ref, target, prop, res ) => writes.push( ...res.writes.map( ( x ) => ( { prop, ...x } ) ) );
 	const snaps = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, { styles: measured } ] ) );
-	const handled = fillLayerBox( { st, rec: { name, parent: 0, index: 1 }, ref: 'r', target: { id: 't', slot }, snaps, apply } );
+	const handled = fillLayerBox( { st, rec: { name, parent: 0, index: 1, children }, ref: 'r', target: { id: 't', slot }, snaps, apply } );
 	return { writes, handled };
 };
 
@@ -49,4 +49,41 @@ test( 'fill: a layer declaring height 50% gets layerHeight 50%; the width is unt
 	const { writes, handled } = run( { declared: { left: '0', height: '50%' } } );
 	assert.deepEqual( writes.find( ( w ) => 'layerHeight' === w.attr )?.value, { desktop: '50%' } );
 	assert.equal( handled.has( 'width' ), false );
+} );
+
+// A layer holding blocks whose width the draft never declares shrinks to fit them (lib/layer-box.mjs::shrinkSizes). Real case, Mama's
+// Home 2026-11-20: the hero's tag (absolute, left 0, no width) kept the block's 200px default, so its words wrapped inside doubled padding.
+const tag = { 'z-index': 'auto', position: 'absolute', width: '163.031px', height: '40px' };
+const inside = [ 3 ];
+
+test( 'fill: an absolute layer holding blocks with no declared width gets layerWidth auto at every width; MUST FAIL without the shrink rule', () => {
+	const { writes, handled } = run( { children: inside, measured: tag, declared: { left: '0', bottom: '22%' } } );
+	assert.deepEqual( writes.find( ( w ) => 'layerWidth' === w.attr )?.value, { desktop: 'auto' } );
+	assert.equal( handled.has( 'width' ), true );
+	assert.equal( run( { children: inside, measured: tag, declared: { left: '0', width: 'auto' } } ).writes.find( ( w ) => 'layerWidth' === w.attr )?.value.desktop, 'auto', 'a declared auto is no width' );
+} );
+
+test( 'negative controls: no blocks inside, an in-flow layer, a declared width, a width declared at one width only, another block, a slot', () => {
+	const none = ( o ) => assert.equal( run( o ).writes.some( ( w ) => 'layerWidth' === w.attr ), false, JSON.stringify( o ) );
+	none( { measured: tag, declared: { left: '0' } } );
+	none( { children: inside, measured: { ...tag, position: 'relative' }, declared: { left: '0' } } );
+	none( { children: inside, measured: { ...tag, position: 'static' }, declared: { left: '0' } } );
+	none( { children: inside, measured: tag, declared: { left: '0', width: '132px' } } );
+	none( { children: inside, measured: tag, declared: ( w ) => ( 1440 === w ? { left: '0' } : { left: '0', width: '132px' } ) } );
+	none( { children: inside, name: 'sgs/container', measured: tag, declared: { left: '0' } } );
+	none( { children: inside, slot: '.x', measured: tag, declared: { left: '0' } } );
+	const stretched = run( { children: inside, measured: tag, declared: { left: '0', right: '0' } } );
+	assert.notEqual( stretched.writes.find( ( w ) => 'layerWidth' === w.attr )?.value.desktop, 'auto', 'a layer placed by both sides is sized by them' );
+} );
+
+test( 'fill: the height is never shrunk, and a percentage width still wins', () => {
+	const { writes } = run( { children: inside, measured: tag, declared: { left: '0', width: '46%' } } );
+	assert.deepEqual( writes.find( ( w ) => 'layerWidth' === w.attr )?.value, { desktop: '46%' } );
+	assert.equal( run( { children: inside, measured: tag, declared: { left: '0' } } ).writes.some( ( w ) => 'layerHeight' === w.attr ), false );
+} );
+
+test( 'shrinkSizes: every width must say so', () => {
+	assert.deepEqual( shrinkSizes( { 1440: {}, 375: { width: 'auto' } }, { 1440: { position: 'absolute' }, 375: { position: 'fixed' } } ), { 1440: 'auto', 375: 'auto' } );
+	assert.equal( shrinkSizes( { 1440: {}, 375: {} }, { 1440: { position: 'absolute' }, 375: { position: 'static' } } ), null );
+	assert.equal( shrinkSizes( {}, {} ), null );
 } );

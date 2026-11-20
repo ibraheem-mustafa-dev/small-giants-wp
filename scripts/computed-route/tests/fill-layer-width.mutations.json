@@ -28,5 +28,41 @@
 		"find": "if ( sizes ) {\n\t\t\twrite( prop,",
 		"replace": "if ( sizes || true ) {\n\t\t\twrite( prop,",
 		"why": "a layer declaring no size would be written a null size"
+	},
+	{
+		"file": "lib/fill-layer-box.mjs",
+		"find": "declaredSizes( declaredAt, prop ) ?? shrunk;",
+		"replace": "declaredSizes( declaredAt, prop ) ?? null;",
+		"why": "the tag keeps the block's 200px default and wraps"
+	},
+	{
+		"file": "lib/fill-layer-box.mjs",
+		"find": "'width' === prop && rec.children?.length ?",
+		"replace": "rec.children?.length ?",
+		"why": "the height would shrink too"
+	},
+	{
+		"file": "lib/fill-layer-box.mjs",
+		"find": "'width' === prop && rec.children?.length ?",
+		"replace": "'width' === prop ?",
+		"why": "a layer holding no blocks (a picture layer) would take auto"
+	},
+	{
+		"file": "lib/layer-box.mjs",
+		"find": "/^(?:absolute|fixed)$/.test( String( stylesAt?.[ w ]?.position ?? '' ) ) && ",
+		"replace": "",
+		"why": "an in-flow layer would take auto"
+	},
+	{
+		"file": "lib/layer-box.mjs",
+		"find": "[ undefined, '', 'auto' ].includes( declaredAt[ w ]?.width )",
+		"replace": "true",
+		"why": "a declared px width would be overwritten by auto"
+	},
+	{
+		"file": "lib/layer-box.mjs",
+		"find": "return widths.length && widths.every( shrinks )",
+		"replace": "return widths.length && widths.some( shrinks )",
+		"why": "a width declared at one width only would shrink at every width"
 	}
 ]
