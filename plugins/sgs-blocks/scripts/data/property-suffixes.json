@@ -698,6 +698,15 @@
       null
     ],
     [
+      "Glyph",
+      "text-content",
+      null,
+      0,
+      null,
+      "Glyph sub-attribute: a decorative character the block prints as text (quoteMarkGlyph)",
+      null
+    ],
+    [
       "Position",
       "select-from-enum",
       null,
