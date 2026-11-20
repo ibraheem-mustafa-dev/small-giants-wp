@@ -36,6 +36,7 @@ import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../utils/breakpoints';
 import { composeShadow } from '../../utils/shadow-layers';
 import { presetNames } from '../button/preset-names';
 import { galleryStickerPreviewCss, stickerCorner } from './gallery-sticker-preview';
+import { cartFormMock } from './canvas-cart-form';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [
 	'top-right',
@@ -1242,21 +1243,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 		: '';
 	// Pick a set can move the add-to-basket button into the side column (pickSideButton), as render.php does.
 	const sideCart = 'configurator' === attributes.buyboxLayout && true === attributes.pickSideButton;
-	const cartForm = (
-		<div className="buybox__cart-form">
-			<span
-				className={ `wp-element-button buybox__add-to-cart${ cartVariant }` }
-				style={ cartStyle }
-			>
-				<AuthoredText
-					value={
-						attributes.addToCartLabel ||
-						__( 'Add to Cart', 'sgs-blocks' )
-					}
-				/>
-			</span>
-		</div>
-	);
+	const cartForm = cartFormMock( { attributes, cartVariant, cartStyle } );
 	const stockAbove = 'above' === attributes.stockLinePosition;
 	const stockLine = (
 		<p className="buybox__stock buybox__stock--status buybox__stock--in-stock">
