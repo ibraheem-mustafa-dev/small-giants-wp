@@ -12,6 +12,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { openerTargets, controlWrites, openedBy, openerAttributes, frameParts, frameNode, frameLook, frameHosts, surfaceFrames, modalPostTree, surfaceRow, surfaceOpenerControls, openerListItems, frameSettings } from '../lib/skeleton-openers.mjs';
 import { openDb } from '../lib/db.mjs';
+import { skeletonNodes } from '../lib/fill-skeleton.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FOLDER = path.join( HERE, 'fixtures', 'surface-frames' );
@@ -106,6 +107,19 @@ test( 'MUST FAIL: the footer hosts a frame every page opens; a page hosts only w
 	assert.deepEqual( place( rows[ 1 ] ).tree.length, 1, 'a page opening nothing gets no frame' );
 	assert.deepEqual( place( null ).tree.length, 1 );
 	assert.deepEqual( surfaceFrames( { tree: [], targets: targets(), row: rows[ 2 ], pageMap: rows, R: {}, factRecord: FACTS, folder: FOLDER } ), { placed: [], notes: [] }, 'no rule, no frame' );
+} );
+
+// c00f466ea (lost in the 2026-11-02 rewind) kept a modal frame root's overlay placement read open (fixed, inset 0, z-index)
+// off the closed sgs/modal wrapper, where it was an invisible full-screen sheet taking every click. Today the frame node is
+// built from the page map and carries no draft element, so Fill measures nothing for it and no writer can put that placement
+// there; this pins that, so a later change that measures the frame (to write its look) meets c00f466ea's rule first.
+test( 'the frame node is never measured: it carries no draft element, so Fill writes no resting style on the closed wrapper', () => {
+	const tree = [ { name: 'sgs/container', attributes: {}, innerBlocks: [] } ];
+	const rows = PAGE_MAP();
+	surfaceFrames( { tree, targets: openerTargets( { pageMap: rows, folder: FOLDER } ), row: rows[ 0 ], pageMap: rows, R, factRecord: FACTS, folder: FOLDER, settings, has } );
+	const frames = skeletonNodes( tree ).filter( ( n ) => S.frame.block === n.name );
+	assert.equal( frames.length, 1 );
+	assert.deepEqual( frames.map( ( n ) => [ n.targets.length, n.node.draftRef, n.node.draftSlots ] ), [ [ 0, undefined, undefined ] ] );
 } );
 
 // MUST FAIL: on the 2026-11-19 lab run Eye Care's lens flow rendered twice on a linked product (`.sgs-choice-flow` count 2):
