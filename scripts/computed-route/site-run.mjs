@@ -54,11 +54,13 @@ import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-invent
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { walkChecked } from './lib/site-check-openers.mjs';
+import { openerRow } from './lib/site-run-opener-row.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { draftProductSlugs, liveFactsPhp, readLiveFacts, templateAddresses, livePrimeFor } from './lib/template-live-address.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
+import { writeFlowTree } from './lib/site-run-flow-tree.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
@@ -253,6 +255,46 @@ export function stageProblems( status ) {
 	return out;
 }
 
+// The stages WooCommerce's own cart or checkout page never runs: WooCommerce renders the page's content itself, so a proposal,
+// Fill, build, apply or walk of it is one nothing uses. Its layout is the template-<slug> surface, which proposes, Fills, builds
+// and walks itself (a proposal of the page ran checks on a proposal nothing used and failed Mama's cart and checkout).
+export const WOO_PAGE_STAGES = [ 'propose', 'fill', 'build', 'apply', 'walk' ];
+
+// The stage runner of each surface (`stages`: the run's --stages; `note`: the run's status writer), as ( key, wooPage ) =>
+// ( stage, fn ) => whether the surface goes on. A stage not asked for counts as passed; a stage of WooCommerce's own page
+// (`wooPage`: its role) in WOO_PAGE_STAGES is recorded not applicable, and its walk then stops; a failed stage stops the surface.
+export function surfaceStepper( { stages, note } ) {
+	return ( key, wooPage ) => async ( stage, fn ) => {
+		if ( ! stages.includes( stage ) ) {
+			note( key, stage, true, 0, null, 'not in --stages' );
+			return true;
+		}
+		if ( wooPage && WOO_PAGE_STAGES.includes( stage ) ) {
+			note( key, stage, true, 0, null, `WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)`, true );
+			return 'walk' !== stage;
+		}
+		const t = Date.now();
+		try {
+			const r = await fn();
+			note( key, stage, true, Date.now() - t, r );
+			return true;
+		} catch ( e ) {
+			note( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );
+			return false;
+		}
+	};
+}
+
+// The end of WooCommerce's own page after its inventory (`step`: its surfaceStepper runner): each later stage is recorded not
+// applicable, and nothing after the inventory runs, so no later code reads a proposal or Fill the page never made.
+export async function endWooPage( step ) {
+	for ( const stage of WOO_PAGE_STAGES ) {
+		await step( stage, async () => {
+			throw new Error( `WooCommerce's own page ran its ${ stage }` );
+		} );
+	}
+}
+
 // The propose stage's result line. A proposal problem (a part no block fits, a handoff record no mechanism matches) is
 // reported and the surface goes on with the proposal as it stands (Spec 48 section 8: a clone goes through by default);
 // with --strict (`strict`) it fails the stage.
@@ -359,29 +401,7 @@ export async function main( argv ) {
 	};
 	const certs = process.env.NODE_EXTRA_CA_CERTS || 'C:\\Users\\Bean\\AppData\\Roaming\\Python\\Python313\\site-packages\\certifi\\cacert.pem';
 
-	// The stage runner of one surface: a stage not asked for counts as passed; a WooCommerce page's own Fill and build are
-	// skipped and its walk then stops (a failed stage stops the surface).
-	const stepper = ( key, wooPage ) => async ( stage, fn ) => {
-		if ( ! stages.includes( stage ) ) {
-			note( key, stage, true, 0, null, 'not in --stages' );
-			return true;
-		}
-		// Fill writes block settings and the walker pairs the draft with the blocks Fill wrote: WooCommerce renders these
-		// pages itself, so neither applies to the page's content; its layout is its template copy's surface.
-		if ( wooPage && [ 'fill', 'build', 'apply', 'walk' ].includes( stage ) ) {
-			note( key, stage, true, 0, null, `WooCommerce's own ${ wooPage } page keeps WooCommerce's content (its layout is the template-<slug> surface)`, true );
-			return 'walk' !== stage;
-		}
-		const t = Date.now();
-		try {
-			const r = await fn();
-			note( key, stage, true, Date.now() - t, r );
-			return true;
-		} catch ( e ) {
-			note( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );
-			return false;
-		}
-	};
+	const stepper = surfaceStepper( { stages, note } );
 	const execFor = ( key ) => async ( stage, cmd, args, env ) => {
 		const r = await run( cmd, args, { logFile: path.join( dir, `${ key }.${ stage }.log` ), env } );
 		if ( 0 !== r.code ) {
@@ -406,9 +426,11 @@ export async function main( argv ) {
 		}
 		const draftUrl = `${ ( await serverFor( entry ) ).url }${ hash }`;
 		// WooCommerce's own cart and checkout pages keep WooCommerce's content (lib/site-build-plan.mjs::keepsWooContent): they
-		// are never Filled or built over; a template copy read at one of them is. The account page is Filled like any page.
+		// end after their inventory (endWooPage), never proposed, Filled or built over; a template copy read at one of them is.
+		// The account page is Filled like any page.
 		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
-		const address = liveAddress( row, rows, shown );
+		// A modal or flow has no page of its own: it is read at a page that opens it (lib/site-run-opener-row.mjs).
+		const address = liveAddress( openerRow( entry, rows ) ?? row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;
 		// A checkout walk starts with a product in the basket: WooCommerce sends an empty basket's checkout to the basket.
 		const livePrime = livePrimeFor( entry.target?.template ?? row?.template, liveFacts );
@@ -443,6 +465,9 @@ export async function main( argv ) {
 			return `${ inv.elements.length } elements`;
 		} ) ) {
 			return;
+		}
+		if ( wooPage ) {
+			return void await endWooPage( step );
 		}
 		if ( ! await step( 'propose', async () => {
 			const r = proposeSurface( { client, surface: key, allowMissingPaint, site } );
@@ -526,6 +551,9 @@ export async function main( argv ) {
 			const said = await exec( 'build', 'node', builder );
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
+			// A choice flow's built tree is kept for the site build (lib/site-run-flow-tree.mjs::writeFlowTree).
+			const flowTree = writeFlowTree( { buildDir: build, entry, tree: readJson( path.join( REPO, tree ) ) } );
+			flowTree && console.log( `${ key } flow tree: ${ path.relative( REPO, flowTree ) }` );
 			// A built header, footer or drawer becomes the site's active one (lib/site-run-layout.mjs).
 			const pointed = slug ? null : pointAfterBuild( { entry, rows, wp } );
 			pointed && console.log( `${ key } ${ pointed }` );

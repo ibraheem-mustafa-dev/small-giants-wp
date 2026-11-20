@@ -16,6 +16,7 @@ require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/selectors.php';
 require_once __DIR__ . '/cards.php';
 require_once dirname( __DIR__, 2 ) . '/helpers-button-preset.php';
+require_once dirname( __DIR__, 2 ) . '/helpers-global-settings.php';
 
 /**
  * The button rules for one block.
@@ -30,7 +31,16 @@ function sgs_commerce_look_button_css( array $attrs, string $block, string $root
 	if ( '' === $button ) {
 		return '';
 	}
-	return sgs_button_preset_css( $button, 'primary', false, false ) . sgs_commerce_look_button_edge_css( $attrs, $button ) . sgs_emit_responsive_css(
+	// A site that opted in to named button presets (settings.custom.namedButtonPresets) and names the preset its shop buttons
+	// wear (settings.custom.shopButtonPreset) gets that whole preset on this button: resting look, hover colours, shadow, lift
+	// and timing. Any other site keeps the theme's primary look, exactly as before.
+	$named = sgs_button_presets_open() ? sgs_button_preset_resolve( (string) sgs_global_custom_setting( 'shopButtonPreset' ) ) : '';
+	if ( '' !== $named && 'primary' !== $named ) {
+		$preset_css = sgs_button_preset_css( $button, $named );
+	} else {
+		$preset_css = sgs_button_preset_css( $button, 'primary', false, false );
+	}
+	return $preset_css . sgs_commerce_look_button_edge_css( $attrs, $button ) . sgs_emit_responsive_css(
 		$button,
 		array(
 			array(

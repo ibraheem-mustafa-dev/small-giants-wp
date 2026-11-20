@@ -16,6 +16,10 @@ import { ALL_TEXT_CAP } from './skeleton-model.mjs';
 export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // The attributes kept per element: what a block needs to know (link, name, label, image source) and the style attribute
 // (the fingerprint Fill's origin map keeps).
+// The computed values recorded per width (`resolved`, read by lib/element-facts.mjs): the inherited text properties, and the
+// sizes, corner radii and padding a rule compares with a number, whatever expression the draft wrote them with (a clamp(),
+// a var(), a calc()) and whatever the element inherits.
+export const RESOLVED = [ 'font-size', 'font-weight', 'letter-spacing', 'text-transform', 'line-height', 'width', 'height', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];
 const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style' ];
 
 // In-page (self-contained: its source is sent to the page). Whether a sibling is, or holds at any depth, the root of another
@@ -89,7 +93,7 @@ export function codeItemsOf( e ) {
 	return once.length >= 2 ? once : null;
 }
 
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc ] ) {
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc, resolvedNames ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	// eslint-disable-next-line no-new-func
@@ -210,11 +214,13 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 			membership.unshift( { kind: 'inside-import', template: tname } );
 		}
 		const items = codeItems( e );
+		const cs = getComputedStyle( e );
+		const resolved = Object.fromEntries( resolvedNames.map( ( n ) => [ n, cs.getPropertyValue( n ) ] ) );
 		const r = e.getBoundingClientRect();
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
 			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, allTextCap ),
-			...( items ? { codeItems: items } : {} ), srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
+			...( items ? { codeItems: items } : {} ), srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, resolved, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
 	scrollTo( scrollWas[ 0 ], scrollWas[ 1 ] );
@@ -354,7 +360,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString() ];
+		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED ];
 		const res = await page.evaluate( collect, args );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
@@ -394,7 +400,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString() ];
+			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED ];
 			const res = await page.evaluate( collect, args );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
@@ -426,7 +432,7 @@ export function withWidthOnly( runs ) {
 			}
 			const prev = recs.slice( 0, i ).reverse().find( ( x ) => have.has( recId( x ) ) );
 			const at = prev ? out.findIndex( ( x ) => recId( x ) === recId( prev ) ) + 1 : 0;
-			out.splice( at, 0, { ...r, box: null, visible: false, position: null } );
+			out.splice( at, 0, { ...r, box: null, visible: false, position: null, resolved: null } );
 			have.add( recId( r ) );
 		} );
 	}
@@ -434,13 +440,13 @@ export function withWidthOnly( runs ) {
 }
 
 // The inventory from the per-width reads ({ width: collect result }).
-function summarise( { runs, shots, skipped, url, root } ) {
+export function summarise( { runs, shots, skipped, url, root } ) {
 	const base = runs[ 1440 ];
 	const at = ( w, id ) => runs[ w ].records.find( ( x ) => recId( x ) === id );
 	const records = withWidthOnly( runs ).map( ( r ) => {
 		const { i, ...rest } = r;
 		const id = recId( r );
-		return { ...rest, box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
+		return { ...rest, box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, resolved: { 375: at( 375, id )?.resolved ?? null, 768: at( 768, id )?.resolved ?? null, 1440: r.resolved ?? null }, layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
 	} );
 	// The opening state's elements stay a list of their own; what only a state shows is kept beside it (lib/reveal-merge.mjs).
 	const elements = records.filter( ( r ) => ! r.reveal );

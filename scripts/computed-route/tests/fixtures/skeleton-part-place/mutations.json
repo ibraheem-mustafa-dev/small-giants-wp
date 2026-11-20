@@ -1,12 +1,8 @@
 [
-	{"file": "lib/skeleton-propose.mjs", "find": "const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );", "replace": "const place = null;", "why": "the navigation would stay beside the wrapper and the wrapper would hold the button alone"},
-	{"file": "lib/skeleton-propose.mjs", "find": "place?.placed && ( rowOf[ p.into ].placedIn = place.placed );", "replace": "", "why": "the review would not say where the navigation stands"},
+	{"file": "lib/skeleton-propose.mjs", "find": "const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );", "replace": "const place = null;", "why": "a wrapper of the part alone would stay an empty node and the review would not say why the navigation stays"},
 	{"file": "lib/skeleton-propose.mjs", "find": "place?.dropped && Object.assign( rowOf[ place.dropped ], { action: 'remove', reason: place.note } );", "replace": "", "why": "a dropped wrapper's row would still read as a block"},
-	{"file": "lib/skeleton-part-slots.mjs", "find": "! mine.slice( 0, mine.indexOf( common ) ).every( hiddenThere ) ?", "replace": "false ?", "why": "a wrapper (or a part) shown at the navigation's widths would take the navigation"},
-	{"file": "lib/skeleton-part-slots.mjs", "find": "sibs.slice( lo + 1, hi ).some( ( s ) => ! hiddenThere( s ) ) ?", "replace": "false ?", "why": "the navigation would jump a sibling shown at its widths"},
-	{"file": "lib/skeleton-part-slots.mjs", "find": "! inside ?", "replace": "false ?", "why": "the navigation would leave its own box"},
+	{"file": "lib/skeleton-part-slots.mjs", "find": "const hiddenAt = m.shownAt( own ).filter( ( w ) => ! host.visible?.[ w ] );", "replace": "const hiddenAt = [];", "why": "the review would not name the widths the wrapper hides"},
 	{"file": "lib/skeleton-part-slots.mjs", "find": "if ( wrap.innerBlocks?.length || m.kids( host ).some( ( k ) => ! m.isPart( k ) && k !== e && ! mine.includes( k ) ) ) {", "replace": "if ( false ) {", "why": "a wrapper holding other content would be dropped"},
-	{"file": "lib/skeleton-part-slots.mjs", "find": "|| wrap === from )", "replace": ")", "why": "a wrapper node that already holds the block would be treated as a different wrapper"},
-	{"file": "lib/skeleton-part-slots.mjs", "find": "list.splice( list.indexOf( wrap ), 1 );", "replace": "", "why": "a wrapper left empty would stay an empty node"},
-	{"file": "lib/skeleton-part-slots.mjs", "find": "list.splice( next < 0 ? list.length : next, 0, node );", "replace": "list.splice( 0, 0, node );", "why": "the navigation would stand before the button instead of in the burger's place"}
+	{"file": "lib/skeleton-part-slots.mjs", "find": "|| wrap === parents.get( node ) )", "replace": ")", "why": "a wrapper node that already holds the block would be dropped with it"},
+	{"file": "lib/skeleton-part-slots.mjs", "find": "list.splice( list.indexOf( wrap ), 1 );", "replace": "", "why": "a wrapper left empty would stay an empty node"}
 ]

@@ -1,0 +1,38 @@
+[
+	{
+		"file": "site-run.mjs",
+		"find": "export const WOO_PAGE_STAGES = [ 'propose', 'fill', 'build', 'apply', 'walk' ];",
+		"replace": "export const WOO_PAGE_STAGES = [ 'fill', 'build', 'apply', 'walk' ];",
+		"why": "WooCommerce's own page is proposed again (e6fd03159's loss)"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\tif ( wooPage && WOO_PAGE_STAGES.includes( stage ) ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "WooCommerce's own page runs every stage"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "(its layout is the template-<slug> surface)`, true );",
+		"replace": "(its layout is the template-<slug> surface)` );",
+		"why": "WooCommerce's skipped stages count as strict gaps"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\tfor ( const stage of WOO_PAGE_STAGES ) {",
+		"replace": "\tfor ( const stage of WOO_PAGE_STAGES.slice( 0, 2 ) ) {",
+		"why": "the page's later stages go unrecorded"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\t\tnote( key, stage, true, 0, null, 'not in --stages' );\n\t\t\treturn true;",
+		"replace": "\t\t\treturn true;",
+		"why": "a left-out stage goes unrecorded"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\t\tnote( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );\n\t\t\treturn false;",
+		"replace": "\t\t\tnote( key, stage, false, Date.now() - t, String( e.message || e ).slice( 0, 600 ) );\n\t\t\treturn true;",
+		"why": "a failed stage no longer stops the surface"
+	}
+]

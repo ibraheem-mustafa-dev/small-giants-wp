@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/site-check-parts.mjs",
+		"find": "\tif ( ! f.popup || f.broken ) {",
+		"replace": "\tif ( true ) {",
+		"why": "a flow in a closed modal is checked without opening the modal"
+	},
+	{
+		"file": "lib/site-check-parts.mjs",
+		"find": "\tif ( ! f.popup.visibleTrigger ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a flow whose popup nothing on the page opens is tried anyway and fails for another reason"
+	},
+	{
+		"file": "lib/site-check-parts.mjs",
+		"find": "\tawait closeDisclosure( page, `mtrig-${ f.popup.modal }`, `modal-${ f.popup.modal }`, '.sgs-modal__close' );",
+		"replace": "\t// popup left open",
+		"why": "the popup stays open after its flow is checked, hiding the next flow"
+	},
+	{
+		"file": "lib/site-check-parts.mjs",
+		"find": "\tconst open = await openDisclosure( page, `mtrig-${ f.popup.modal }`, `modal-${ f.popup.modal }` );",
+		"replace": "\tconst open = { opened: true };",
+		"why": "a popup that never opens is read as open"
+	},
+	{
+		"file": "lib/site-check-parts.mjs",
+		"find": "const popup = holder && ! dialog.open ? {",
+		"replace": "const popup = holder ? {",
+		"why": "a flow in an already open popup is still opened (never matters when closed)"
+	},
+	{
+		"file": "lib/site-check-parts.mjs",
+		"find": "visibleTrigger: holder.visibleTrigger } : null;",
+		"replace": "visibleTrigger: true } : null;",
+		"why": "a popup with no visible trigger reads as having one"
+	}
+]

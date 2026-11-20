@@ -472,10 +472,10 @@
 		},
 		"itemFieldSlots": {
 			"blocks": [
-				{ "block": "sgs/timeline", "parts": [ { "key": "date", "elements": [ "date", "dateRing" ] } ] }
+				{ "block": "sgs/timeline", "parts": [ { "key": "date", "elements": [ "date", "dateRing" ] }, { "key": "title", "elements": [ "title" ] }, { "key": "description", "elements": [ "description-text" ] } ] }
 			],
 			"scope": "a listed block that draws its entries from a loop of the draft: the draft element of the loop's first copy that prints the entry's field (the field the list pass puts into the part's item key, a draft `year` into the timeline's `date`) is where the settings of the part's css_elements are read, at the slot calibration measured them at (lib/skeleton-item-field-slots.mjs). An element printing two fields, or no calibrated slot for the part's settings, gives no slot and a note on the row",
-			"reason": "a timeline's year ring is the element that prints the entry's date: its size, border, fill, radius, shadow and padding are the block's year-ring settings, and its type the date settings, read at the draft's own ring and not at the timeline's root, where they paint nothing"
+			"reason": "a timeline's year ring is the element that prints the entry's date: its size, border, fill, radius, shadow and padding are the block's year-ring settings, and its type the date settings, read at the draft's own ring and not at the timeline's root, where they paint nothing; the entry's title and its description are parts of the same kind (their colour, size and weight settings are read at the draft's own title and description, not at the root, which none of them paint)"
 		},
 		"marquee": {
 			"logoBlock": "sgs/brand-strip",
@@ -491,6 +491,7 @@
 			"labelledLogos": {
 			"attributes": { "brandDisplay": "logo-else-text" },
 			"tile": { "setting": "brandTextTile", "layout": { "setting": "logoLayout", "value": "tiles" }, "reason": "a labelled tile the draft paints itself (an inline background, border or box shadow) is a name tile: the strip draws each name as a tile (brandTextTile) in the tile layout (logoLayout tiles; the row layout draws no tile, and the rule owns the setting so Fill never answers it from a lone max-width read), and the first tile's look is read at the block's tile settings (itemSlots) where the block's default shows the names bare" },
+			"tileSize": { "count": "columns", "cap": "maxHeight", "reason": "a strip of square tiles the draft sizes in pixels per device (150, 136 and 112) is the logo block's count of tiles per device (columns) and its tile cap (maxHeight): the block shares the strip's width among the count and never draws a tile larger than the cap, and a length per device is no setting it holds. The cap is the largest tile; each device's count is the one whose tile comes nearest the draft's without needing a tile above the cap, so the strip still spans the draft's viewport (the strip's parent box). The tile the count gives can differ from the draft's by a few pixels: a per-device tile size would remove that" },
 			"reason": "a looping strip of logo tiles that each name themselves (an aria-label) shows each name where its picture is not set yet and the picture once it is, so a strip of empty picture placeholders presents its brands by name and never as an empty band; Fill writes each tile's label as the item's name (lib/fill-list-items.mjs::holeField)"
 		},
 		"reason": "a strip whose own animation loops a translate for ever (the motion inventory's record, never a name) is a marquee: logos make sgs/brand-strip, labels make sgs/trust-bar, and the repeated items are its items; the route writes no marquee motion until M7"

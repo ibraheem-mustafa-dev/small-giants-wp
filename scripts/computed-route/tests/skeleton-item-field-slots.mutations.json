@@ -19,13 +19,13 @@
 	},
 	{
 		"file": "lib/skeleton-item-field-slots.mjs",
-		"find": "'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) && ( out.slots[ slot ] = finder( at ) );",
-		"replace": "( out.slots[ slot ?? '' ] = finder( at ) );",
+		"find": "'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) && ( out.slots[ slot ] = finder( at ), read++ );",
+		"replace": "( out.slots[ slot ?? '' ] = finder( at ), read++ );",
 		"why": "a setting with no calibrated slot is read at the root"
 	},
 	{
 		"file": "lib/skeleton-item-field-slots.mjs",
-		"find": "! Object.keys( out.slots ).length && out.notes.push(",
+		"find": "! read && out.notes.push(",
 		"replace": "false && out.notes.push(",
 		"why": "a part with no calibrated slot says nothing"
 	},
@@ -37,14 +37,38 @@
 	},
 	{
 		"file": "data/skeleton-decisions.json",
-		"find": "{ \"block\": \"sgs/timeline\", \"parts\": [ { \"key\": \"date\", \"elements\": [ \"date\", \"dateRing\" ] } ] }",
-		"replace": "{ \"block\": \"sgs/timeline\", \"parts\": [ { \"key\": \"title\", \"elements\": [ \"title\" ] } ] }",
-		"why": "the rule reads the title part, not the date"
+		"find": "{ \"key\": \"date\", \"elements\": [ \"date\", \"dateRing\" ] }, ",
+		"replace": "",
+		"why": "the rule reads no date part"
 	},
 	{
 		"file": "lib/skeleton-facts.mjs",
 		"find": "( ! p.key || ! ( p.elements || [] ).length || missing.length ) &&",
 		"replace": "( ! p.key || missing.length ) &&",
 		"why": "a part with no css_elements passes the check"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": ", { \"key\": \"title\", \"elements\": [ \"title\" ] }",
+		"replace": "",
+		"why": "the rule reads no title part"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": ", { \"key\": \"description\", \"elements\": [ \"description-text\" ] }",
+		"replace": "",
+		"why": "the rule reads no description part"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "{ \"key\": \"description\", \"elements\": [ \"description-text\" ] }",
+		"replace": "{ \"key\": \"description\", \"elements\": [ \"title\" ] }",
+		"why": "the description part reads the title's settings"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "! read && out.notes.push(",
+		"replace": "! Object.keys( out.slots ).length && out.notes.push(",
+		"why": "a part with no calibrated slot is noted only while no other part has one"
 	}
 ]

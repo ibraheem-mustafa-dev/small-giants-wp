@@ -1,0 +1,6 @@
+[
+	{"file": "lib/auto-walk.mjs", "find": "\t\treturn;\n\t} finally {", "replace": "\t\tthrow e;\n\t} finally {", "why": "an undecodable shot ends the walk again"},
+	{"file": "lib/auto-walk.mjs", "find": "${ String( e.message || e ).split(", "replace": "${ String( '' ).split(", "why": "the unread clip check is no longer named with the browser's reason"},
+	{"file": "lib/auto-walk.mjs", "find": "\t} finally {\n\t\tawait page.close();\n\t}", "replace": "\t} finally {\n\t}", "why": "the page is left open after the shot"},
+	{"file": "lib/auto-walk.mjs", "find": "\t\tif ( cut[ k ] ) {\n\t\t\tauto.controls[ c.i ].cut = c.side;", "replace": "\t\tif ( ! cut[ k ] ) {\n\t\t\tauto.controls[ c.i ].cut = c.side;", "why": "a decodable shot marks the wrong controls cut"}
+]

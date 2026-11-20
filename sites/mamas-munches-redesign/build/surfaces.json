@@ -335,27 +335,6 @@
       "sgs/form:form-send"
     ]
   },
-  "flow-choice-flow-gifts-she-ll-actually-eat": {
-    "tree": "trees/sgs_choice_flow/choice-flow-gifts-she-ll-actually-eat.json",
-    "intakeSurface": "gift-finder",
-    "envFile": ".claude/secrets/local-mamas.env",
-    "envKey": "LOCALMAMAS",
-    "site": "local-mamas",
-    "target": {
-      "postId": 159
-    },
-    "canvas": true,
-    "walker": "qa/parity/flow-choice-flow-gifts-she-ll-actually-eat.fill-base.mjs",
-    "walkerFull": "qa/parity/flow-choice-flow-gifts-she-ll-actually-eat.fill.mjs",
-    "draftDir": "sites/mamas-munches-redesign/handoff",
-    "draftIndex": "Gifts.dc.html",
-    "states": {
-      "moment-budget": null
-    },
-    "provides": [
-      "sgs/choice-flow:choice-flow-gifts-she-ll-actually-eat"
-    ]
-  },
   "flow-choice-flow-build-your-zookie": {
     "tree": "trees/sgs_choice_flow/choice-flow-build-your-zookie.json",
     "intakeSurface": "build-your-zookie",

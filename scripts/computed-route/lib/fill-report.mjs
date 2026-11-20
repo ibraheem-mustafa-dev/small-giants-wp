@@ -8,12 +8,12 @@ import { HELD_REASONS, heldCounts } from './fill-held.mjs';
 // layout result the code does not declare as a length (an auto margin, an undeclared width or height); `not-painted`, the
 // value paints nothing there; `row-held`, a generated icon's value the icon row's shared setting holds
 // (lib/fill-row-lift.mjs::liftChildren); `child-held`, a parent's read of an element a block inside it reads as its own
-// root, the property that block met (lib/fill-child-held.mjs::childHeld); `logo-size`, `width-ladder`, `dimension`, `motion` and `residual-css`, an UNMAPPED row that pass
+// root, the property that block met (lib/fill-child-held.mjs::childHeld); `logo-size`, `width-ladder`, `dimension`, `layer-rotation`, `motion` and `residual-css`, an UNMAPPED row that pass
 // wrote or settled (passSettled).
-export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'motion', 'residual-css' ];
+export const SETTLED = [ 'equal', 'already-set', 'used-size', 'not-painted', 'row-held', 'child-held', 'logo-size', 'width-ladder', 'dimension', 'layer-rotation', 'motion', 'residual-css' ];
 
 // The file of each pass a settled row names.
-const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', motion: 'fill-motion-settle.mjs', 'residual-css': 'fill-residual-css.mjs' };
+const PASS_FILE = { 'logo-size': 'fill-logo-size.mjs', 'width-ladder': 'fill-width-ladder.mjs', dimension: 'fill-dimensions.mjs', 'layer-rotation': 'fill-layer-rotation.mjs', motion: 'fill-motion-settle.mjs', 'residual-css': 'fill-residual-css.mjs' };
 const sameRead = ( u, a ) => ( u.node === a.node || ( u.nodes || [] ).includes( a.node ) ) && ( u.slot ?? '' ) === a.slot && u.property === a.property && String( u.value ) === String( a.value ) && ( u.state ?? null ) === ( a.state ?? null );
 
 // The UNMAPPED rows a later Fill pass (lib/fill-logo-size.mjs, lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs) wrote

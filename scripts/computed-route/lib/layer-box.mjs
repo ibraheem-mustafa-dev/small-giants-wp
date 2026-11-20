@@ -32,6 +32,35 @@ export function stretchedSize( placed, [ a, b ], offsetA, offsetB ) {
 	return 0 === sum ? '100%' : `calc(100% - ${ round( sum ) }px)`;
 }
 
+// A draft width or height declared as a plain length, any width of which is a percentage: a percentage is a share of the layer's
+// containing box, which the measured px (the resolver's reading) cannot say. Returns the declared text when it is a plain length
+// ("46%", "132px") and null for a keyword, var() or calc() (stretchedSize owns calc()).
+export const plainDeclaredLength = ( v ) => ( /^-?(\d+\.?\d*|\.\d+)(px|rem|em|%)$/.test( String( v ?? '' ).trim() ) ? String( v ).trim() : null );
+
+// The per-width sizes a layer's declared `prop` gives when at least one width declares a percentage and every width declares a
+// plain length: { width: text }, else null (the resolver judges the measured px, as before).
+export function declaredSizes( declaredAt, prop ) {
+	const sizes = Object.fromEntries( Object.entries( declaredAt ).map( ( [ w, d ] ) => [ w, plainDeclaredLength( d?.[ prop ] ) ] ) );
+	const all = Object.values( sizes );
+	return all.length && all.every( Boolean ) && all.some( ( v ) => v.endsWith( '%' ) ) ? sizes : null;
+}
+
+// The rotation in degrees a computed `transform` is, or null where it is anything else. A rotation is a 2D matrix whose axes are
+// the unit vectors turned by one angle with no translation (the layer's centring or pixel offset is its own transform); `none` is no rotation.
+export function rotationOf( raw ) {
+	const v = String( raw ?? '' ).trim();
+	if ( 'none' === v ) {
+		return 0;
+	}
+	const m = /^matrix\(([^)]+)\)$/.exec( v );
+	const [ a, b, c, d, e, f ] = m ? m[ 1 ].split( ',' ).map( Number ) : [];
+	if ( ! m || [ a, b, c, d, e, f ].some( ( x ) => ! Number.isFinite( x ) ) || 6 !== m[ 1 ].split( ',' ).length ) {
+		return null;
+	}
+	const turned = Math.abs( a - d ) < 1e-3 && Math.abs( b + c ) < 1e-3 && Math.abs( ( a * a ) + ( b * b ) - 1 ) < 1e-2;
+	return turned && Math.abs( e ) <= 0.5 && Math.abs( f ) <= 0.5 ? round( ( Math.atan2( b, a ) * 180 ) / Math.PI ) : null;
+}
+
 // The sides a declared-style object (`{ inset: '0', top: … }`) places a layer by.
 export const sidesOfDeclared = ( declared ) => declaredSides( Object.entries( declared || {} ).map( ( [ k, v ] ) => `${ k }:${ v }` ).join( ';' ) );
 

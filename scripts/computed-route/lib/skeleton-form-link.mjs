@@ -44,7 +44,8 @@ function innermostRoot( roots, elements ) {
 }
 
 // A function over inventory elements: the verdict of the form-link rule for an element, or null.
-//   { block, attributes }  the element is the form, so it becomes the linked reference block;
+//   { block, attributes }  the element is the form (the <form> element a record is rooted on, else the first element under the
+//                          root), so it becomes the linked reference block;
 //   { remove: true }       another element under the same root: the form is one embed, so it goes.
 // view: lib/skeleton-record.mjs::recordView; scope: the surface's record context (surfaceContext); els: the inventory's
 // elements in document order; rule: decisions `rules.formLink`; links: formLinksOf's result.
@@ -74,7 +75,12 @@ export function linkedFormOf( { view, scope, links, refs, els, rule } ) {
 	for ( const [ root, list ] of under ) {
 		const { ref, slug, block } = byRoot.get( root );
 		const attributes = { [ ref.flag ]: true, [ ref.key ]: slug };
-		list.forEach( ( e, i ) => verdicts.set( e.key, i ? { remove: true } : { block, attributes } ) );
+		// A record whose root is the <form> element itself starts at that element (its inventory copy), never at its first child;
+		// every other element under the root goes.
+		const own = els.find( ( e ) => 'form' === e.tag && view.entry( e ) === view.elements[ root ] ) ?? null;
+		const form = own ?? list[ 0 ];
+		verdicts.set( form.key, { block, attributes } );
+		list.filter( ( e ) => e !== form ).forEach( ( e ) => verdicts.set( e.key, { remove: true } ) );
 	}
 	return ( e ) => verdicts.get( e.key ) ?? null;
 }

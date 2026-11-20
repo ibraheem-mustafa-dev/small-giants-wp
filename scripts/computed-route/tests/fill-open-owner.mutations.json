@@ -1,0 +1,8 @@
+[
+ { "file": "lib/fill-open.mjs", "find": "document.querySelectorAll( '[aria-controls], [data-sgs-modal-open], a[href^=\"#\"]' )", "replace": "document.querySelectorAll( '[aria-controls]' )", "why": "the walk never clicks a modal's opener (the 2026-11-01 fault)" },
+ { "file": "lib/fill-open.mjs", "find": " || a.id === b.getAttribute( 'data-sgs-modal-open' )", "replace": "", "why": "the buy box's data-sgs-modal-open button opens nothing" },
+ { "file": "lib/fill-open.mjs", "find": " || '#' + a.id === b.getAttribute( 'href' )", "replace": "", "why": "a #anchor link opens nothing" },
+ { "file": "lib/fill-open.mjs", "find": "( b.getAttribute( 'aria-controls' ) || '' ).split( /\\s+/ ).includes( a.id )", "replace": "( b.getAttribute( 'aria-controls' ) || '' ).includes( a.id )", "why": "an aria-controls list naming a longer id opens the frame" },
+ { "file": "lib/fill-open.mjs", "find": "if ( a.open || a.querySelector( 'dialog[open]' ) || controls.some(", "replace": "if ( a.open || controls.some(", "why": "a frame whose dialog is open is clicked again, closing or toggling it" },
+ { "file": "lib/fill-open.mjs", "find": "].filter( ( b ) => ! a.contains( b ) && ( ( b.getAttribute( 'aria-controls' )", "replace": "].filter( ( b ) => true && ( ( b.getAttribute( 'aria-controls' )", "why": "a control inside the surface (its own close) is taken for its opener" }
+]

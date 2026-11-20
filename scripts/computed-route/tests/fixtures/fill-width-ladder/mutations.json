@@ -13,8 +13,8 @@
  },
  {
   "file": "lib/fill-width-ladder.mjs",
-  "find": "paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) );",
-  "replace": "false );",
+  "find": "paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) ) );",
+  "replace": "false ) );",
   "why": "a tier-shaped setting painting the element would never be used"
  },
  {

@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/site-run-flow-tree.mjs",
+		"find": "\tif ( entry?.target?.template || ! FLOW_TREE.test( rel ) ) {",
+		"replace": "\tif ( entry?.target?.template ) {",
+		"why": "a page, form or modal surface records a flow tree"
+	},
+	{
+		"file": "lib/site-run-flow-tree.mjs",
+		"find": "\tif ( entry?.target?.template || ! FLOW_TREE.test( rel ) ) {",
+		"replace": "\tif ( ! FLOW_TREE.test( rel ) ) {",
+		"why": "a template copy named like a flow tree records one"
+	},
+	{
+		"file": "lib/site-run-flow-tree.mjs",
+		"find": "const FLOW_TREE = /^trees\\/sgs_choice_flow\\/[^/\\\\]+\\.json$/;",
+		"replace": "const FLOW_TREE = /^trees\\/sgs_choice_flow\\/.+\\.json$/;",
+		"why": "a path leaving the flow folder is accepted"
+	},
+	{
+		"file": "lib/site-run-flow-tree.mjs",
+		"find": "\tif ( ! Array.isArray( tree ) || ! tree.length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "an empty tree overwrites the good copy"
+	},
+	{
+		"file": "lib/site-run-flow-tree.mjs",
+		"find": "\treturn path.join( buildDir, ...rel.split( '/' ) );",
+		"replace": "\treturn path.join( buildDir, 'trees', path.basename( rel ) );",
+		"why": "the tree is written beside the folder the site build reads"
+	},
+	{
+		"file": "lib/site-run-flow-tree.mjs",
+		"find": "\tfs.writeFileSync( file, `${ JSON.stringify( tree, null, 2 ) }\\n` );",
+		"replace": "\tfs.writeFileSync( file, `${ JSON.stringify( [ tree[ 0 ] ], null, 2 ) }\\n` );",
+		"why": "only the first block of the tree is kept"
+	},
+	{
+		"file": "site-run.mjs",
+		"find": "\t\t\tconst flowTree = writeFlowTree( { buildDir: build, entry, tree: readJson( path.join( REPO, tree ) ) } );",
+		"replace": "\t\t\tconst flowTree = null;",
+		"why": "the site run never records the flow tree"
+	}
+]

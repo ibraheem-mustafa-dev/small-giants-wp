@@ -1,7 +1,7 @@
-// Fill's reading of a decorative layer's own box (sgs/decorative-image): its stacking, its anchor and a size drawn by both sides.
+// Fill's reading of a decorative layer's own box (sgs/decorative-image): its stacking, its anchor, a size drawn by both sides and a size declared as a percentage.
 // The values come from lib/layer-box.mjs, the code the applier's layers family shares. Returns the properties it wrote, which
 // the resolver loop then skips. `apply` is lib/fill-resolve-element.mjs::apply.
-import { LAYER_BLOCK, anchorFor, directWrite, sidesOfDeclared, stretchedSize } from './layer-box.mjs';
+import { LAYER_BLOCK, anchorFor, declaredSizes, directWrite, sidesOfDeclared, stretchedSize } from './layer-box.mjs';
 
 
 export function fillLayerBox( { st, rec, ref, target, snaps, apply } ) {
@@ -22,8 +22,10 @@ export function fillLayerBox( { st, rec, ref, target, snaps, apply } ) {
 	anchor && apply( st, rec, ref, target, 'position', { status: 'written', slot: '', writes: [ { attr: 'anchorTo', value: anchor } ], how: 'single', answers: [] }, '' );
 	write( 'z-index', directWrite( st.db, 'z-index', Object.fromEntries( widths.map( ( w ) => [ w, snaps[ w ].styles?.[ 'z-index' ] ?? declared( w )[ 'z-index' ] ?? 'auto' ] ) ) ) );
 	for ( const [ prop, axis ] of [ [ 'width', [ 'left', 'right' ] ], [ 'height', [ 'top', 'bottom' ] ] ] ) {
-		const sizes = Object.fromEntries( widths.map( ( w ) => [ w, stretchedSize( sidesOfDeclared( declared( w ) ), axis, snaps[ w ].styles?.[ axis[ 0 ] ], snaps[ w ].styles?.[ axis[ 1 ] ] ) ] ) );
-		if ( widths.length && Object.values( sizes ).every( Boolean ) ) {
+		const stretched = Object.fromEntries( widths.map( ( w ) => [ w, stretchedSize( sidesOfDeclared( declared( w ) ), axis, snaps[ w ].styles?.[ axis[ 0 ] ], snaps[ w ].styles?.[ axis[ 1 ] ] ) ] ) );
+		// An axis placed by one side takes the size the draft declares when that is a percentage of the containing box.
+		const sizes = widths.length && Object.values( stretched ).every( Boolean ) ? stretched : declaredSizes( Object.fromEntries( widths.map( ( w ) => [ w, declared( w ) ] ) ), prop );
+		if ( sizes ) {
 			write( prop, directWrite( st.db, prop, sizes ) );
 		}
 	}

@@ -13,6 +13,7 @@ import { specHit } from './skeleton-facts.mjs';
 import { deliveredKind } from './decoration-layers.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
+import { pxOf, everyWidth, someWidth } from './element-facts.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion } from './skeleton-commerce-region.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
@@ -27,6 +28,7 @@ import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
 import { behindContent, contentAnchor } from './skeleton-hero-background.mjs';
 import { heroCollage } from './skeleton-hero-collage.mjs';
+import { tileCount, stripGap, squareTile, boxWidths } from './skeleton-tile-count.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -84,9 +86,10 @@ export function isMarker( e, m, D, view = recordView( null ) ) {
 	if ( [ 'a', 'button' ].includes( e.tag ) || null != e.attrs?.[ 'aria-label' ] || null != e.attrs?.role || null != view.attr( e, 'tabindex' ) || /\s(?:sc-camel-on-click|onClick)=/.test( e.snippet || '' ) ) {
 		return false;
 	}
-	const w = px( st.width );
-	const h = px( st.height );
-	if ( null == w || null == h || ! ( ( w <= D.maxDotPx && h <= D.maxDotPx ) || ( h <= D.maxBarHeightPx && w <= D.maxBarWidthPx ) ) ) {
+	// Its size is what the browser resolved at every width it renders (a token or clamp() included); an element read before
+	// the values were recorded is judged by the size it declares. A computed `auto` (an inline box) is its declared size.
+	const shape = ( w, h ) => null != w && null != h && ( ( w <= D.maxDotPx && h <= D.maxDotPx ) || ( h <= D.maxBarHeightPx && w <= D.maxBarWidthPx ) );
+	if ( ! everyWidth( e, ( r ) => shape( pxOf( r.width ) ?? px( st.width ), pxOf( r.height ) ?? px( st.height ) ), () => shape( px( st.width ), px( st.height ) ) ) ) {
 		return false;
 	}
 	// It marks text: its parent holds words of its own or in another child.
@@ -110,6 +113,9 @@ function weightOf( v ) {
 // One or more emoji (each optionally followed by a variation selector or a zero-width joiner), spaces removed first.
 const EMOJI = /^(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+$/u;
 const HEADING = /^h[1-6]$/;
+// The computed corner radii and padding sides the inventory records per width (lib/skeleton-inventory.mjs::RESOLVED).
+const CORNERS = [ 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius' ];
+const SIDES = [ 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];
 // A declared inline style that paints a box: a background, a box shadow or a border (a radius alone paints nothing).
 const PAINT_DECL = /(?:^|;)\s*(?:background(?:-color)?|box-shadow|border(?:-width|-color)?)\s*:\s*(?!none\b|transparent\b|0(?:px)?\s*(?:;|$))/;
 
@@ -400,6 +406,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		return out;
 	};
+	// A bar at most R.readingProgress.maxHeightPx tall at every width it renders (the browser's resolved height, a token
+	// included; the declared height for an element read before the values were recorded).
+	const thin = ( e, st ) => everyWidth( e, ( r ) => ( pxOf( r.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ), () => ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) );
 	const markerShape = ( e ) => isMarker( e, m, R.dotMarker, view );
 	// The first piece of text in a card that is not a bare number, set bold and larger than the next piece of text: the
 	// card's title. The card is the nearest ancestor (two levels up at most) holding two or more pieces of text.
@@ -408,8 +417,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( ! C || ! /\p{L}/u.test( m.words( e ) ) || m.blockKids( e ).length || HEADING.test( e.tag ) || 'a' === e.tag || 'label' === e.tag || interactive( e ) || numberOnly( e ) || hooks.siteInfoKinds( e ).size ) {
 			return false;
 		}
-		const size = lengthPx( st[ 'font-size' ] );
-		if ( ( weightOf( st[ 'font-weight' ] ) || 0 ) < C.minWeight || null == size || size < C.minSizePx || m.words( e ).split( ' ' ).length > C.maxWords ) {
+		// Bold and large enough at every width it renders (the browser's resolved size and weight, a clamp() or an inherited
+		// value included); an element read before the values were recorded is judged by what it declares.
+		const big = ( weight, size ) => ( weight || 0 ) >= C.minWeight && null != size && size >= C.minSizePx;
+		if ( ! everyWidth( e, ( r ) => big( weightOf( r[ 'font-weight' ] ), pxOf( r[ 'font-size' ] ) ), () => big( weightOf( st[ 'font-weight' ] ), lengthPx( st[ 'font-size' ] ) ) ) || m.words( e ).split( ' ' ).length > C.maxWords ) {
 			return false;
 		}
 		let card = m.byKey[ e.parentKey ];
@@ -422,8 +433,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return false;
 		}
 		const ns = declared( next, tokens );
-		const nextSize = lengthPx( ns[ 'font-size' ] );
-		return null != nextSize ? nextSize < size : ( weightOf( ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
+		// The next text is smaller (or, with no size to compare, lighter) at every width the title renders.
+		return everyWidth( e, ( r, w ) => {
+			const nr = next.resolved?.[ w ];
+			const nextSize = nr ? pxOf( nr[ 'font-size' ] ) : lengthPx( ns[ 'font-size' ] );
+			return null != nextSize ? nextSize < pxOf( r[ 'font-size' ] ) : ( weightOf( nr ? nr[ 'font-weight' ] : ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
+		}, () => {
+			const size = lengthPx( st[ 'font-size' ] );
+			const nextSize = lengthPx( ns[ 'font-size' ] );
+			return null != nextSize ? nextSize < size : ( weightOf( ns[ 'font-weight' ] ) || 400 ) < C.minWeight;
+		} );
 	};
 
 	// The link source a Site Info kind becomes on a link (tel: is phone, a maps host is directions), or null.
@@ -473,7 +492,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// A full-width bar a few pixels tall, fixed to the viewport, drawing only a fill: the Floating UI reading progress
 		// setting.
-		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' } } ) : null ),
+		( { e, st } ) => ( bare( e ) && ! hasSvg( e ) && 'fixed' === st.position && thin( e, st ) && /^100(?:%|vw)$/.test( st.width || '' ) ? v( 'readingProgress', { action: 'remove', handover: { owner: 'behaviour', kind: 'behaviour', detail: R.readingProgress?.handover || 'reading progress bar' } } ) : null ),
 		// A picture drawn as a background: an empty role="img" element painting a url() is a media block (its alt is the element's label).
 		( { e } ) => ( R.backgroundPicture && bare( e ) && ! hasSvg( e ) && 'img' === e.attrs?.role && paintsPicture( e ) ? v( 'backgroundPicture', { block: R.backgroundPicture.block } ) : null ),
 		// A layer that holds nothing: a ring, glow, bar or blob is a decorative image at its own position, size, radius and fill
@@ -634,8 +653,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( heading ) {
 				return heading;
 			}
-			const caps = 'uppercase' === st[ 'text-transform' ] || ( em( st[ 'letter-spacing' ] ) ?? 0 ) >= ( R.label?.minTrackingEm ?? 0.06 );
-			const pill = ( px( st[ 'border-radius' ] ) ?? 0 ) >= 99 && !! st.padding;
+			// Capitals or wide tracking, or a padded pill, at every width it renders: the browser's resolved text-transform,
+			// letter-spacing (over the resolved size) and corners, so a token, a clamp() or an inherited value counts. An element
+			// read before the values were recorded is judged by what it declares.
+			const minTrack = R.label?.minTrackingEm ?? 0.06;
+			const caps = everyWidth( e, ( r ) => 'uppercase' === r[ 'text-transform' ] || ( pxOf( r[ 'font-size' ] ) ? ( pxOf( r[ 'letter-spacing' ] ) ?? 0 ) / pxOf( r[ 'font-size' ] ) : 0 ) >= minTrack, () => 'uppercase' === st[ 'text-transform' ] || ( em( st[ 'letter-spacing' ] ) ?? 0 ) >= minTrack );
+			const pill = everyWidth( e, ( r ) => CORNERS.every( ( c ) => ( pxOf( r[ c ] ) ?? 0 ) >= 99 ) && SIDES.some( ( c ) => ( pxOf( r[ c ] ) ?? 0 ) > 0 ), () => ( px( st[ 'border-radius' ] ) ?? 0 ) >= 99 && !! st.padding );
 			const label = ( caps || pill ) && ! hooks.isColumnLabel( e ) && v( 'label', { block: R.label?.block } );
 			if ( label ) {
 				return label;
@@ -816,6 +839,19 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const lines = S.categoryShown && S.categoryAlways && md.units.some( ( u ) => S.category in widgets().itemWords( u ).attributes );
 		return { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ), ...( lines ? { [ S.categoryAlways ]: true } : {} ), ...widgets().toggleIcon( md ).attributes };
 	};
+	// A form, or an element below one: the linked reference block (rules.formLink, a rule that runs after the structures) or the
+	// draft's own <form>. Walked from the element up to the hero, because the hero's own media and layout wrappers are never a
+	// form, nor anything under one. The hero's inner rule leaves such an element to the form rules, so the page keeps its form
+	// (rules.heroInner). A commerce region and the other structures are decided before the hero's inner rule and need no check.
+	const ownedBelowHero = ( e, heroKey ) => {
+		for ( let x = e; x && x.key !== heroKey; x = m.byKey[ x.parentKey ] ) {
+			if ( hooks.formLinkOf( x ) || 'form' === view.realTag( x ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
@@ -934,7 +970,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// draws none, so Fill may not choose it: `decided`), and the first tile is where Fill reads the tile's look (`firstItem`, `marquee.itemSlots`).
 			const T2 = L?.tile;
 			const painted = labelled && !! T2 && PAINT_DECL.test( String( kidsB[ 0 ].attrs?.style ?? '' ) );
-			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes, ...( painted ? { [ T2.setting ]: true, [ T2.layout.setting ]: T2.layout.value } : {} ) } : {}, absorb: true, ...( painted ? { firstItem: kidsB[ 0 ].key, decided: { [ T2.layout.setting ]: T2.layout.value } } : {} ), handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
+			// Tiles of a fixed square size are the strip's count per device and its cap (`marquee.labelledLogos.tileSize`): a length per
+			// device is no setting the block holds, and both settings paint a size, so they are decided, never attributes.
+			const sizeRule = L?.tileSize;
+			const size = logos && sizeRule ? tileCount( { tiles: squareTile( kidsB[ 0 ] ), viewport: boxWidths( m.byKey[ e.parentKey ] ), gap: stripGap( e.attrs?.style ) } ) : null;
+			const sizeDecided = size ? { [ sizeRule.count ]: size.columns, [ sizeRule.cap ]: size.cap } : {};
+			const decided = { ...( painted ? { [ T2.layout.setting ]: T2.layout.value } : {} ), ...sizeDecided };
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes, ...( painted ? { [ T2.setting ]: true, [ T2.layout.setting ]: T2.layout.value } : {} ) } : {}, absorb: true, ...( painted ? { firstItem: kidsB[ 0 ].key } : {} ), ...( Object.keys( decided ).length ? { decided } : {} ), handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {
@@ -1022,13 +1064,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const apart = !! R.alignWrapper?.siblingGap && props.some( ( p ) => p.startsWith( 'margin' ) ) && m.blockKids( m.byKey[ e.parentKey ] || { key: null } ).indexOf( e ) > 0;
 			// Padding above or below its content is space no block around or inside it holds: unwrapping it would lose that
 			// space, so the wrapper stays and carries its own padding. Side padding and alignment still go.
-			const holdsSpace = !! R.alignWrapper?.blockPadding && blockPadding( st ) > 0;
+			const holdsSpace = !! R.alignWrapper?.blockPadding && ( blockPadding( st ) > 0 || someWidth( e, ( r ) => ( pxOf( r[ 'padding-top' ] ) ?? 0 ) > 0 || ( pxOf( r[ 'padding-bottom' ] ) ?? 0 ) > 0, () => false ) );
 			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) && ! apart && ! holdsSpace ? v( 'alignWrapper', { action: 'unwrap' } ) : null;
 		},
 		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
 		( { e, kidsB } ) => {
 			const hero = ancestorBlocks( e ).find( ( a ) => a.block === R.hero?.block );
-			if ( ! hero ) {
+			if ( ! hero || ownedBelowHero( e, hero.key ) ) {
 				return null;
 			}
 			// A collage keeps its stage as a container and each absolutely placed child as a decorative image layer; what sits

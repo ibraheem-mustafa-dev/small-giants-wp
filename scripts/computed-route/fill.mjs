@@ -39,6 +39,7 @@ import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
 import { residualCssWrites, PASS as PASS_RESIDUAL } from './lib/fill-residual-css.mjs';
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
+import { layerRotationWrites } from './lib/fill-layer-rotation.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
 import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
@@ -71,6 +72,7 @@ import { assertCurrent } from './lib/freshness.mjs';
 import { rootDraftOf } from './lib/key-space.mjs';
 import { resolveDraftLink, draftLinksFor } from './lib/draft-link.mjs';
 import { branchesShown } from './lib/fill-data-branches.mjs';
+import { surfaceRefusal } from './lib/skeleton-commerce-refusal.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../..' );
@@ -149,6 +151,11 @@ export async function fillSurface( o ) {
 	const problems = [ ...skeletonProblems( authored ), ...lintSkeleton( authored, db, path.basename( o.skeleton ) ) ];
 	if ( problems.length ) {
 		throw new Error( `the skeleton is not valid (R-47-10):\n- ${ problems.join( '\n- ' ) }` );
+	}
+	// A commerce-role surface whose skeleton holds no WooCommerce piece would Fill a static imitation of its form (FR-48-87).
+	const noRegion = surfaceRefusal( { repo, client: o.client, entry, tree: authored, surface: o.surface } );
+	if ( noRegion ) {
+		throw new Error( noRegion );
 	}
 	const skeleton = expandSiteInfoRows( authored );
 	// Every block of the skeleton has this site's default paint, or the run stops here, before any output (lib/paint-gate.mjs).
@@ -336,6 +343,11 @@ export async function fillSurface( o ) {
 		// The resting timing and rest-length rows a motion part's written hover state holds (lib/fill-motion-settle.mjs).
 		const moved = motionSettled( { unmapped: result.unmapped, writes: motion.writes, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, reads, rawSnapshot } );
 		result.settled.push( ...passSettled( result.unmapped, moved.unmapped, 'motion', moved.answered ) );
+		// A layer's turn the hover state's resting pose does not hold is written as the layer's rotation (lib/fill-layer-rotation.mjs).
+		const turned = layerRotationWrites( { nodes, flat, refOf, reads, db, unmapped: moved.unmapped, motionWrites: motion.writes } );
+		result.writes.push( ...turned.writes );
+		result.settled.push( ...passSettled( moved.unmapped, turned.unmapped, 'layer-rotation', turned.answered ) );
+		moved.unmapped = turned.unmapped;
 		result.unmapped = moved.unmapped;
 		// A resting timing the stylesheet shows (settled equal) on an element the written layer times is judged by the layer.
 		const rejudged = motionRejudged( { settled: result.settled, writes: motion.writes, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, rawSnapshot } );
@@ -376,7 +388,7 @@ export async function fillSurface( o ) {
 		result.emptyPictures = emptyPictureRows( { reads, nodes, flat, refOf } );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'layer-rotation', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );

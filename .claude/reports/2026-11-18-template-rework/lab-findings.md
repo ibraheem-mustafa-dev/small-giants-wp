@@ -11,7 +11,7 @@ On `local-mediatest-trlab` (http://localhost:8121, a scratch copy of `local-mama
 3. `node scripts/computed-route/part-look.mjs --client mamas-munches-redesign --surface <cart|checkout|my-account> --site local-mediatest-trlab --write` (93, 156 and 58 values).
 4. Pictures with `E:\sgs-tmp\template-rework\lab\shots.mjs` (basket filled by the render check's seed, `scripts/render-check/seed.php`): `E:\sgs-tmp\template-rework\lab\shots\pair-*.png`, draft on the left and clone on the right; for 404 and search the hand-finished copy (`local-mediatest-partlook`, port 8120) is on the left. Logs: `E:\sgs-tmp\template-rework\lab\logs\`.
 
-The header, footer and site tokens on the copy are the hand-finished ones: they belong to the general cloning plan and are no part of this test. The shop listing, the product page and the order confirmation were run later the same day, once their builders were on main (their sections are below). Not run yet: the signed-in account views, and the checkout again with its template fixes.
+The header, footer and site tokens on the copy are the hand-finished ones: they belong to the general cloning plan and are no part of this test. The shop listing, the product page and the order confirmation were run later the same day, once their builders were on main (their sections are below). Run later that day: the signed-in account views and the checkout again with its template fixes (the sections below).
 
 Times on a loaded machine: basket template 6 minutes to Fill and 5 to build and walk; checkout 6 minutes in all; the account page with six template copies 12 minutes.
 
@@ -54,7 +54,7 @@ Right from blank: the page band and heading; the working account block is placed
 |---|---|---|
 | WooCommerce's sign-in and register forms show where the draft has a "Sign in to see your orders" card with two buttons | The account block's signed-out card and its words are settings of the block; the route places the block (`lib/skeleton-commerce-region.mjs`) and writes none of them. Part-look writes looks, not modes or words | Route: not started. The same shape as the basket drawer's parts in `shop-parts.json` (a part's literal words written to the block's settings) |
 
-The signed-in views (orders, an order's detail, addresses, details, saved items) are not cloned or photographed, and they are where most of the account hand work sat: the hand-finished block held 139 hand-set settings and about 19,000 characters of Custom CSS, and part-look, reading only the signed-out draft, matches 28 of about 105. Counting the account among the surfaces built from blank means the signed-out page only.
+The signed-in views (orders, an order's detail, addresses, details, saved items) are not cloned or photographed, and they are where most of the account hand work sat: the hand-finished block held 139 hand-set settings and about 19,000 characters of Custom CSS, and part-look, reading only the signed-out draft, matches 28 of about 105. Counting the account among the surfaces built from blank means the signed-out page only. The signed-in views were read later that evening by part-look's `my-account-in` surface (the "Reruns after the walk fix" section).
 
 ## 404 and search (`pair-404-1440-hand-vs-blank.png`, `pair-search-1440-hand-vs-blank.png`)
 

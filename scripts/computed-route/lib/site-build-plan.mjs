@@ -18,6 +18,8 @@ import { readSurfaces } from './site-build-labels.mjs';
 import { comingSoonAction, COMING_SOON_OPTION } from './site-build-store-visible.mjs';
 import { withFlowProduct } from './site-build-flow-product.mjs';
 import { ownParts } from './template-frame.mjs';
+import { COMMERCE_ROLES } from './skeleton-commerce-region.mjs';
+import { commerceRefusal, commerceRoles, rowCommerceRole } from './skeleton-commerce-refusal.mjs';
 import { CONTENT_META, MENU_META, ROW_META, TEMPLATE_OPTION, WOO_ROLE, isWooDefaultContent } from './site-build-state.mjs';
 
 export const PERMALINKS = '/%postname%/';
@@ -173,6 +175,12 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		}
 		// A choice flow's tree holds the catalogue product it adds (lib/site-build-flow-product.mjs).
 		const { tree: built, source } = pageTreeFor( repo, client, row, menuIds );
+		// The account page's tree holds WooCommerce's account piece, never a static imitation of its forms (FR-48-87).
+		const noRegion = 'placeholder' !== source && commerceRefusal( { role: rowCommerceRole( row ), tree: built, roles: commerceRoles(), what: key } );
+		if ( noRegion ) {
+			problems.push( `${ key }: ${ noRegion }` );
+			continue;
+		}
 		const tree = withFlowProduct( built, row, flowProducts );
 		const hash = treeHash( tree );
 		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
@@ -219,6 +227,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	const rel = ( f ) => path.relative( repo, f ).split( path.sep ).join( '/' );
 	const builders = new Map();
 	const uncopied = [];
+	// The templates a manifest surface builds (the site run's copies). A copy file under trees/template/ with no surface
+	// here is a stale tree and is never read, so a template the manifest stopped building is not recreated.
+	const surfaced = new Set( Object.values( readSurfaces( repo, client ) ).map( ( e ) => e?.target?.template ).filter( Boolean ) );
 	for ( const slug of servedTemplates( rows ) ) {
 		const how = copySource( rows, slug );
 		const mine = rowsOf( rows, slug );
@@ -226,7 +237,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const trees = sources.map( ( row ) => ( { row, ...treeFor( repo, client, row, {} ) } ) ).filter( ( t ) => 'placeholder' !== t.source );
 		const owner = mine[ 0 ] || null;
 		let pick = null;
-		if ( fs.existsSync( copyFile( buildDir, slug ) ) ) {
+		if ( surfaced.has( slug ) && fs.existsSync( copyFile( buildDir, slug ) ) ) {
 			pick = { row: owner, tree: JSON.parse( fs.readFileSync( copyFile( buildDir, slug ), 'utf8' ) ), source: rel( copyFile( buildDir, slug ) ) };
 		} else if ( 'whole' === how && trees.length ) {
 			pick = { row: trees[ 0 ].row, tree: copyTree( { slug, whole: trees[ 0 ].tree } ), source: trees[ 0 ].source };
@@ -247,6 +258,12 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	}
 	let hashes = { ...( state.templateHashes || {} ) };
 	for ( const [ slug, pick ] of builders ) {
+		// A shop, cart or checkout copy holds WooCommerce's piece, never a static imitation of it (FR-48-87).
+		const noRegion = commerceRefusal( { role: COMMERCE_ROLES[ slug ], tree: pick.tree, roles: commerceRoles(), what: `the ${ slug } template (${ pick.source })` } );
+		if ( noRegion ) {
+			problems.push( `${ pick.row ? rowKey( pick.row ) : `template:${ slug }` }: ${ noRegion }` );
+			continue;
+		}
 		// The site's own parts the copy prints (lib/template-frame.mjs::ownParts) are built with it, and a changed part rebuilds it.
 		const parts = ownParts( buildDir, pick.tree );
 		const hash = treeHash( parts.length ? [ pick.tree, parts ] : pick.tree );
@@ -268,6 +285,22 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const previous = hashes;
 		hashes = { ...hashes, [ slug ]: hash };
 		actions.push( { phase: 'posts', type: 'template', key: pick.row ? rowKey( pick.row ) : `template:${ slug }`, template: slug, tree: pick.tree, parts, hash, hashes, previous, say: `${ pick.row ? `${ rowKey( pick.row ) }: ` : '' }${ verb } the site's own ${ slug } template from ${ pick.source }` } );
+	}
+
+	// A saved template the clone wrote (its slug is recorded in `sgs_site_build_templates`, which the site build and the site
+	// run both write after each template they save) that no manifest surface and no site-build copy builds now goes back to the
+	// theme or plugin file (FR-48-55 step 8): the saved wp_template post is deleted and its recorded hash dropped. A saved
+	// template the clone did not write (WooCommerce's or a person's) is noted and kept. Template parts and posts are never touched.
+	for ( const slug of ( state.customTemplates || [] ).filter( ( t ) => ! builders.has( t ) && ! surfaced.has( t ) ) ) {
+		if ( ! Object.hasOwn( hashes, slug ) ) {
+			notes.push( `template:${ slug }: kept: not written by the clone` );
+			continue;
+		}
+		const { [ slug ]: dropped, ...kept } = hashes;
+		const id = ( state.templateIds || {} )[ slug ];
+		actions.push( { phase: 'posts', type: 'template-remove', key: `template:${ slug }`, template: slug, id, hashes: kept, previous: hashes, say: `template:${ slug }: remove the saved copy${ id ? ` (wp_template ${ id })` : '' }; the clone wrote it and no manifest surface builds it now, so the theme or plugin file stands` } );
+		hashes = kept;
+		options.push( { name: `${ TEMPLATE_OPTION }[${ slug }]`, before: dropped.slice( 0, 12 ), after: '(removed)' } );
 	}
 
 	// Section pages (Spec 36 FR-36-5): each mega panel links its menu items to the page on its menu slot.
@@ -305,7 +338,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			}
 			const e = existing.splice( at, 1 )[ 0 ];
 			matched[ it.key ] = e.id;
-			const titleOff = it.title ? e.title !== it.title : '' !== e.title;
+			// WordPress stores an item title equal to its object's own title as empty and shows the object's title
+			// (wp_update_nav_menu_item; `shown` is the title wp_setup_nav_menu_item resolves), so that is no difference.
+			const titleOff = it.title ? e.title !== it.title && ( e.title || ( e.shown ?? '' ) !== it.title ) : '' !== e.title;
 			if ( titleOff && ! it.title ) {
 				notes.push( `${ where }: item ${ e.id } carries the custom title "${ e.title }"; clear it in Appearance > Menus to show the post's own title` );
 			}
@@ -404,7 +439,8 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	return problems.length ? { actions: [], problems, notes, options: [], uncopied } : { actions, problems, notes, options, uncopied };
 }
 
-// The plan's counts: posts, menus and items it creates; everything else it changes (an adoption only fills the map).
+// The plan's counts: posts, menus and items it creates; everything else it changes (a saved template it removes is a
+// change; an adoption only fills the map).
 export const tally = ( actions ) => ( {
 	creates: actions.filter( ( a ) => CREATES.includes( a.type ) ).length,
 	changes: actions.filter( ( a ) => ! CREATES.includes( a.type ) && 'adopt' !== a.type ).length,

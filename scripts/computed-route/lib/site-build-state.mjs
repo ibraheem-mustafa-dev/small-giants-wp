@@ -106,7 +106,7 @@ foreach ( wp_get_nav_menus() as $m ) {
 	$items = array();
 	foreach ( (array) wp_get_nav_menu_items( $m->term_id, array( 'post_status' => 'any' ) ) as $it ) {
 		$items[] = array(
-			'id' => (int) $it->ID, 'title' => (string) get_post_field( 'post_title', $it->ID ), 'object' => (string) $it->object,
+			'id' => (int) $it->ID, 'title' => (string) get_post_field( 'post_title', $it->ID ), 'shown' => (string) $it->title, 'object' => (string) $it->object,
 			'objectId' => (int) $it->object_id, 'type' => (string) $it->type, 'parent' => (int) $it->menu_item_parent,
 			'order' => (int) $it->menu_order, 'url' => (string) get_post_meta( $it->ID, '_menu_item_url', true ), 'invalid' => ! empty( $it->_invalid ),
 		);
@@ -155,13 +155,16 @@ $out['templateHashes'] = (object) (array) get_option( '${ TEMPLATE_OPTION }', ar
 $out['templateSaved'] = (object) (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
 $out['customTemplates'] = array();
 $out['templateContent'] = array();
+$out['templateIds'] = array();
 foreach ( get_block_templates( array(), 'wp_template' ) as $t ) {
 	if ( 'custom' === $t->source ) {
 		$out['customTemplates'][] = $t->slug;
+		$out['templateIds'][ $t->slug ] = (int) $t->wp_id;
 		$out['templateContent'][ $t->slug ] = hash( 'sha256', (string) $t->content );
 	}
 }
 $out['templateContent'] = (object) $out['templateContent'];
+$out['templateIds'] = (object) $out['templateIds'];
 $out['pointers'] = array();
 $out['pointerKeys'] = array();
 foreach ( array( 'header', 'footer', 'drawer' ) as $a ) {

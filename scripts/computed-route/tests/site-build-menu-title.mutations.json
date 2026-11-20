@@ -1,0 +1,4 @@
+[
+	{ "file": "lib/site-build-plan.mjs", "find": "e.title !== it.title && ( e.title || ( e.shown ?? '' ) !== it.title )", "replace": "e.title !== it.title", "why": "an empty stored title that shows the wanted title is planned again after every apply" },
+	{ "file": "lib/site-build-plan.mjs", "find": "( e.shown ?? '' ) !== it.title )", "replace": "( e.shown ?? '' ) === it.title )", "why": "the shown title is compared the wrong way round" }
+]
