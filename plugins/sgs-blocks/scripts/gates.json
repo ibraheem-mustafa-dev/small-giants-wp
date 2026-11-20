@@ -2384,5 +2384,23 @@
     "added_commit": null,
     "budget_ms": 100,
     "order": 272
+  },
+  {
+    "id": "check-styled-part-has-setting",
+    "cmd": "python scripts/check-styled-part-has-setting.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 273
+  },
+  {
+    "id": "check-styled-part-has-setting-selftest",
+    "cmd": "python scripts/check-styled-part-has-setting.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 4000,
+    "order": 274
   }
 ]

@@ -24,6 +24,7 @@
     "check:motion-pause-control": "python scripts/check-motion-pause-control.py --check",
     "check:motion-item-parts": "python scripts/check-motion-item-parts.py --check",
     "check:motion-stagger-columns": "python scripts/generate-motion-stagger-columns.py --check",
+    "check:styled-part-has-setting": "python scripts/check-styled-part-has-setting.py --check",
     "check:retired-blocks": "python scripts/check-retired-blocks.py --check --with-db",
     "check:personal-data": "python ../../scripts/lint-patterns-for-personal-data.py",
     "check:font-sources": "node ../../scripts/font-source-audit.js",

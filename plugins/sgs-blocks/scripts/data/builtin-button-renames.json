@@ -1,0 +1,71 @@
+{
+  "_comment": "The rename map for the built-in button migration (design note section 7), read by check-styled-part-has-setting.py --fix. Corrected against the framework database and the disk on 2026-11-20 (see `corrections`). `old` -> `new` renames the attribute everywhere in the block's directory (block.json, render.php and partials, view and editor JS) and in the shared includes it is read from; `old` == `new` with a `value` only reshapes the attribute in block.json and lists every code read for review. `value.kind`: string-to-desktop-object, number-to-desktop-object, true-to-full. `also_declared_by` names another block that declares the same name, so a shared include or a name scan must never touch that block (a whole-repo replace of ctaFontSize or ctaLineHeight would corrupt sgs/pricing-table). Saved post content still carries the old names: the same map is the input for the WP-CLI sweep of existing posts (no deprecated.js, FP-14).",
+  "corrections": [
+    "ctaFontSize and ctaLineHeight are also declared by sgs/pricing-table (object); the note did not say so. Both entries carry also_declared_by so the pricing-table files and the shared includes that pricing-table reads are never rewritten by name.",
+    "The real readers of ctaFontSize and ctaLineHeight are prefixed reads inside includes/helpers-button-style.php::sgs_button_element_style_css ($read('FontSize') through absint(), $read('LineHeight') through sgs_button_element_line_height() which returns '' for an array), called with prefix 'cta' from product-card/render.php and includes/product-card-builtin-render.php. A name scan cannot see them. Once the attributes are objects, absint( array ) returns 1 (a 1px font) and the line height is dropped: the kit's design (section 3, step 2) must strip the typography keys from the look attributes and print them through sgs_typography_css_rule, or the migration breaks the card's CTA.",
+    "addToCartMinHeight, ctaFontSize and ctaLineHeight keep their names (the kit's bases are MinHeight, FontSize and LineHeight): they are shape changes, not renames. The note's wording was right; the map records them as reshape-only so --fix never renames them.",
+    "loginButtonFullWidth becomes loginButtonWidthType (kit base WidthType, enum fit/full), a boolean-to-string reshape; the note listed it correctly, with true -> full and false -> unset.",
+    "registerButton* has no look attributes today beyond registerButtonPreset and the registerButtonIcon* set, so the register button gains the whole kit through the generator; only the preset is renamed.",
+    "No new name collides: none of the new names exists in block_attributes today."
+  ],
+  "renames": [
+    {
+      "block": "sgs/buybox", "old": "addToCartBackgroundColour", "new": "addToCartColourBackground",
+      "evidence": "block_attributes: sgs/buybox string, css_element add-to-cart, css_property background-color; read by render.php (sgs_fill_states_css base), inspector-extra.js, canvas-mock.js"
+    },
+    {
+      "block": "sgs/buybox", "old": "addToCartBorderColour", "new": "addToCartColourBorder",
+      "evidence": "block_attributes: sgs/buybox string, css_element add-to-cart, css_property border-color; read by render.php (sgs_border_states_css base), inspector-extra.js, canvas-mock.js"
+    },
+    {
+      "block": "sgs/buybox", "old": "addToCartMinHeight", "new": "addToCartMinHeight",
+      "value": { "kind": "string-to-desktop-object" },
+      "evidence": "block_attributes: sgs/buybox string default empty; read by render.php (sgs_css_length_value), inspector-extra-3.js, canvas-mock.js"
+    },
+    {
+      "block": "sgs/account", "old": "loginButtonBackground", "new": "loginButtonColourBackground",
+      "evidence": "block_attributes: sgs/account string, css_element loginButton; read by includes/account/helpers-account-look-css.php, OrdersPanel.js"
+    },
+    {
+      "block": "sgs/account", "old": "loginButtonText", "new": "loginButtonColourText",
+      "evidence": "block_attributes: sgs/account string, css_element loginButton; read by helpers-account-look-css.php, OrdersPanel.js"
+    },
+    {
+      "block": "sgs/account", "old": "loginButtonBackgroundHover", "new": "loginButtonColourBackgroundHover",
+      "evidence": "block_attributes: sgs/account string, css_state hover; read by helpers-account-look-css.php, OrdersPanel.js"
+    },
+    {
+      "block": "sgs/account", "old": "loginButtonTextHover", "new": "loginButtonColourTextHover",
+      "evidence": "block_attributes: sgs/account string, css_state hover; read by helpers-account-look-css.php, OrdersPanel.js"
+    },
+    {
+      "block": "sgs/account", "old": "loginButtonBorderColour", "new": "loginButtonColourBorder",
+      "evidence": "block_attributes: sgs/account string, css_element loginButton; read by helpers-account-look-css.php, ExtraPanels.js"
+    },
+    {
+      "block": "sgs/account", "old": "loginButtonFullWidth", "new": "loginButtonWidthType",
+      "value": { "kind": "true-to-full" },
+      "evidence": "block_attributes: sgs/account boolean, css_property width; read by helpers-account-look-css.php, ExtraPanels.js"
+    },
+    {
+      "block": "sgs/account", "old": "loginButtonPreset", "new": "loginButtonStyle",
+      "evidence": "block_attributes: sgs/account string; read by helpers-account-look-css.php, ExtraPanels.js"
+    },
+    {
+      "block": "sgs/account", "old": "registerButtonPreset", "new": "registerButtonStyle",
+      "evidence": "block_attributes: sgs/account string; read by helpers-account-look-css.php, ExtraPanels.js"
+    },
+    {
+      "block": "sgs/product-card", "old": "ctaFontSize", "new": "ctaFontSize",
+      "value": { "kind": "number-to-desktop-object" },
+      "also_declared_by": ["sgs/pricing-table"],
+      "evidence": "block_attributes: sgs/product-card number (pricing-table: object); read by edit.js and, by prefix, helpers-button-style.php"
+    },
+    {
+      "block": "sgs/product-card", "old": "ctaLineHeight", "new": "ctaLineHeight",
+      "value": { "kind": "string-to-desktop-object" },
+      "also_declared_by": ["sgs/pricing-table"],
+      "evidence": "block_attributes: sgs/product-card string default 1.4 (pricing-table: object); read by edit.js and, by prefix, helpers-button-style.php"
+    }
+  ]
+}

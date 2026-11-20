@@ -1,0 +1,236 @@
+{
+  "_comment": "Sites check-styled-part-has-setting.py (buttons pass) does not count, each with the reason. A rule whose site is gone fails --check as stale. `has-setting` rules rest on the framework database's block_attributes.css_element (query: SELECT DISTINCT css_element FROM block_attributes WHERE block_slug='sgs/<block>'), read 2026-11-20. Audit-known fixed looks that are NOT button-kit parts (carousel arrows and dots, lightbox controls, shop filter buttons) are deliberately NOT exempt: they stay `unrecognised` so the ceiling holds them until their own pass.",
+  "exemptions": [
+    {
+      "id": "nested-sgs-button",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/button/*"
+      ],
+      "reason": "sgs/button is the nested content button and the preset system's own consumer; its look is its own settings."
+    },
+    {
+      "id": "preset-system-own-code",
+      "files": [
+        "plugins/sgs-blocks/includes/helpers-button-preset.php",
+        "plugins/sgs-blocks/includes/helpers-button-preset-names.php",
+        "plugins/sgs-blocks/includes/woocommerce/commerce-look/buttons.php"
+      ],
+      "reason": "The preset system and the WooCommerce cart and checkout button look (commerce-look/buttons.php): they name the starter presets because they define and apply them."
+    },
+    {
+      "id": "theme-skins-wc-and-core-markup",
+      "files": [
+        "theme/sgs-theme/assets/css/woocommerce.css",
+        "theme/sgs-theme/assets/css/core-blocks.css",
+        "theme/sgs-theme/assets/css/core-blocks-critical.css"
+      ],
+      "kind": "css-preset-read",
+      "class": "wc-block|wp-block-button__link|wp-block-woocommerce",
+      "reason": "WooCommerce and core button markup, skinned by the theme from the starter presets: not a part an SGS block renders itself (the cart and checkout look is commerce-look/buttons.php; header CTA is a core button)."
+    },
+    {
+      "id": "wp-admin-screen",
+      "files": [
+        "plugins/sgs-blocks/includes/addon-price-list/class-addon-price-list-admin.php",
+        "plugins/sgs-blocks/includes/class-block-defaults.php",
+        "plugins/sgs-blocks/includes/class-sgs-site-info-admin-fields.php",
+        "plugins/sgs-blocks/includes/class-sgs-site-info-admin-logo.php",
+        "plugins/sgs-blocks/includes/class-sgs-template-part-resetter.php",
+        "plugins/sgs-blocks/includes/configurator-term-fields.php",
+        "plugins/sgs-blocks/includes/configurator-variation-fields.php",
+        "plugins/sgs-blocks/includes/gift-card/class-gift-card-admin-views.php",
+        "plugins/sgs-blocks/includes/google-reviews-settings.php",
+        "plugins/sgs-blocks/includes/pack-pricing-product-fields.php",
+        "plugins/sgs-blocks/includes/product-template-fields.php",
+        "plugins/sgs-blocks/includes/trustpilot/class-trustpilot-settings.php"
+      ],
+      "reason": "A wp-admin screen button, drawn with WordPress's own admin button styles and never printed on the front end."
+    },
+    {
+      "id": "rewrites-existing-wc-button",
+      "files": [
+        "plugins/sgs-blocks/includes/account/helpers-account-button-icon.php",
+        "plugins/sgs-blocks/includes/account/helpers-account-edit-account.php",
+        "plugins/sgs-blocks/src/blocks/mega-group/render.php"
+      ],
+      "kind": "button",
+      "class": "\\(no-class\\)",
+      "reason": "A pattern that finds or rewrites a <button> already in WooCommerce's markup (adds an icon, swaps the label) or tests for a nested <button>; it prints no button of its own and adds no look."
+    },
+    {
+      "id": "has-setting-modal",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/modal/render.php"
+      ],
+      "reason": "Trigger and close have look settings (framework DB: sgs/modal css_element trigger, close; close also through sgs_button_element_style_css with prefix close)."
+    },
+    {
+      "id": "has-setting-nav-drawer-close",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/nav-drawer/render.php"
+      ],
+      "reason": "The close control has look settings (framework DB: sgs/nav-drawer css_element close, closeIcon)."
+    },
+    {
+      "id": "has-setting-google-reviews",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/google-reviews/render-interior.php"
+      ],
+      "reason": "The write-a-review and see-all buttons have look settings (framework DB: sgs/google-reviews css_element write-review, see-all; painted through sgs_button_element_style_css)."
+    },
+    {
+      "id": "has-setting-pricing-table-cta",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/pricing-table/render.php"
+      ],
+      "reason": "The plan CTA has look settings (framework DB: sgs/pricing-table css_element cta)."
+    },
+    {
+      "id": "has-setting-product-card-parts",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/product-card/render.php",
+        "plugins/sgs-blocks/src/blocks/buybox/gallery-col.php",
+        "plugins/sgs-blocks/includes/product-card-live-fill.php",
+        "plugins/sgs-blocks/includes/product-card-swatches.php"
+      ],
+      "class": "(__thumb|__wishlist|__swatch)",
+      "reason": "Thumbnail, wishlist heart and swatch have look settings (framework DB: sgs/product-card css_element thumbs, wishlist, swatch, swatches)."
+    },
+    {
+      "id": "has-setting-buybox-parts",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/buybox/notify-form.php",
+        "plugins/sgs-blocks/includes/buybox-guided.php"
+      ],
+      "reason": "The back-in-stock Notify me button and the guided meter and navigation buttons have look settings (framework DB: sgs/buybox css_element notifySubmit, guidedMeter, nav)."
+    },
+    {
+      "id": "has-setting-cart",
+      "files": [
+        "plugins/sgs-blocks/includes/helpers-cart-panel.php",
+        "plugins/sgs-blocks/includes/helpers-cart-panel-extras.php",
+        "plugins/sgs-blocks/src/blocks/cart/item-row-template.js",
+        "plugins/sgs-blocks/src/blocks/cart/render.php"
+      ],
+      "reason": "Cart trigger, panel close, empty-state button, view-cart link and the item stepper, remove and save-for-later controls have look settings (framework DB: sgs/cart css_element trigger, panelClose, panel-empty-cta, panelView, item-stepper, itemRemove, itemAction); the 2026-11-20 audit lists the cart's checkout, view-cart, close, remove and stepper as fine."
+    },
+    {
+      "id": "has-setting-form",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/form/render.php",
+        "plugins/sgs-blocks/src/blocks/form/style.css"
+      ],
+      "reason": "Submit, next, previous and step-progress buttons have look settings (framework DB: sgs/form css_element submit-button, next-button, prev-button, nav-button, step-number; submitStyle is an attribute)."
+    },
+    {
+      "id": "has-setting-tabs",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/tabs/render.php"
+      ],
+      "reason": "The tab buttons have look settings (framework DB: sgs/tabs css_element tab)."
+    },
+    {
+      "id": "has-setting-account-auth-tab",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/account/style.css"
+      ],
+      "reason": "The sign-in and register tab switch has look settings (framework DB: sgs/account css_element auth-tab, auth-tabs)."
+    },
+    {
+      "id": "has-setting-nav-menu",
+      "files": [
+        "plugins/sgs-blocks/includes/nav-menu-markup.php"
+      ],
+      "reason": "Menu links, sub-menu toggles, mega triggers and the burger have look settings (framework DB: sgs/nav-bar-menu css_element link, burger, burger-bar, item)."
+    },
+    {
+      "id": "has-setting-disclosure-triggers",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/language-switch/render.php",
+        "plugins/sgs-blocks/src/blocks/store-selector/render.php"
+      ],
+      "reason": "A dropdown trigger with look settings (framework DB: sgs/language-switch css_element current; sgs/store-selector css_element trigger)."
+    },
+    {
+      "id": "has-setting-filter-chips-and-paging",
+      "files": [
+        "plugins/sgs-blocks/includes/accordion-filter.php",
+        "plugins/sgs-blocks/includes/class-grid-pagination.php"
+      ],
+      "reason": "Filter chips, page buttons and Load more have look settings (framework DB: sgs/accordion css_element chip; sgs/post-grid css_element page-btn, page-button, load-more)."
+    },
+    {
+      "id": "has-setting-post-grid-filter",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/post-grid/render-interior.php"
+      ],
+      "class": "__filter",
+      "reason": "The category filter chips have look settings (framework DB: sgs/post-grid css_element filter)."
+    },
+    {
+      "id": "has-setting-notice-banner-arrows",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/notice-banner/render.php"
+      ],
+      "class": "__arrows",
+      "reason": "The announcement arrows have look settings (framework DB: sgs/notice-banner css_element arrows)."
+    },
+    {
+      "id": "has-setting-info-toggle",
+      "files": [
+        "plugins/sgs-blocks/includes/helpers-info-toggle.php"
+      ],
+      "reason": "The choice flow info toggle has look settings (framework DB: sgs/choice-flow css_element info-toggle)."
+    },
+    {
+      "id": "has-setting-wishlist-panel",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/wishlist-panel/*.js"
+      ],
+      "reason": "The wishlist panel's buttons, links, row actions and share controls have look settings (framework DB: sgs/wishlist-panel css_element button, link, row-actions, share-controls)."
+    },
+    {
+      "id": "gallery-item-tile",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/gallery/render.php"
+      ],
+      "class": "__item-btn",
+      "reason": "The image tile is itself the button that opens the lightbox: it has no look of its own beyond the item settings (framework DB: sgs/gallery css_element item)."
+    },
+    {
+      "id": "choice-option-tile",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/choice-flow-question/render.php"
+      ],
+      "class": "__option-button",
+      "reason": "A selectable option tile, not an action button; its look is the question's option settings (framework DB: sgs/choice-flow-question css_element option-photo, option-badge, option-description)."
+    },
+    {
+      "id": "theme-toggle-switch",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/theme-toggle/render.php"
+      ],
+      "reason": "A light/dark switch control with its own toggleStyle and icon and label settings (framework DB: sgs/theme-toggle css_element icon, label); it is not a call-to-action button."
+    },
+    {
+      "id": "motion-pause-control",
+      "files": [
+        "plugins/sgs-blocks/includes/helpers-motion-pause.php",
+        "plugins/sgs-blocks/includes/media/render-picture.php",
+        "plugins/sgs-blocks/src/shared/effects/loop-button.js",
+        "plugins/sgs-blocks/src/shared/effects/loop-control.js"
+      ],
+      "reason": "The motion pause and play control, whose controls are gated by check-motion-pause-control.py and check-motion-item-parts.py."
+    }
+  ],
+  "width_ok": {
+    "plugins/sgs-blocks/src/components/*": "Block-editor UI components: printed only inside the editor, never on the front end.",
+    "plugins/sgs-blocks/src/blocks/*/edit.js": "Block-editor preview (edit.js): the editor's rendering of the block, not front-end markup.",
+    "plugins/sgs-blocks/src/blocks/*/canvas-*.js": "Block-editor canvas mock of the front-end markup: editor only.",
+    "plugins/sgs-blocks/src/blocks/*/preview-style.js": "Block-editor preview styling: editor only.",
+    "plugins/sgs-blocks/src/blocks/*/components/*": "Block-editor panels and canvases inside a block's folder: editor only.",
+    "plugins/sgs-blocks/src/blocks/extensions/*": "Block-editor extensions (motion, inline formats, device toggle): editor only.",
+    "plugins/sgs-blocks/assets/admin/*": "wp-admin screen script: never runs on the front end.",
+    "plugins/sgs-blocks/assets/js/gift-card-*.js": "Selects or enhances the gift card's existing button by class; prints no button of its own."
+  }
+}

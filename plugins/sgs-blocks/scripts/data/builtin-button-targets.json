@@ -1,0 +1,65 @@
+{
+  "_comment": "The built-in buttons the template-rework plan will move onto the button kit (design note section 7, E:/sgs-tmp/template-rework/buttons/design.md, 2026-11-20). check-styled-part-has-setting.py classifies a site that matches a rule here as `target`: counted by --check against the ratcheted baseline until its block declares the part in supports.sgs.builtinButtons (then it becomes `on-kit` and drops out of the count). Each rule: id, block, prefix (the kit attribute prefix), phase, files (fnmatch globs from the repo root), and optional class / symbol / kind regexes.",
+  "targets": [
+    {
+      "id": "buybox-flow-opener",
+      "block": "sgs/buybox", "prefix": "flowOpener", "phase": "first mover",
+      "files": ["plugins/sgs-blocks/includes/buybox-linked-flow.php"],
+      "symbol": "^(sgs_buybox_flow_opener_html|sgs_buybox_simple_linked_flow_html)$"
+    },
+    {
+      "id": "buybox-add-to-cart",
+      "block": "sgs/buybox", "prefix": "addToCart", "phase": "migration",
+      "files": [
+        "plugins/sgs-blocks/src/blocks/buybox/render.php",
+        "plugins/sgs-blocks/src/blocks/buybox/extras.php",
+        "plugins/sgs-blocks/src/blocks/buybox/style.css",
+        "plugins/sgs-blocks/includes/buybox-modal-cta.php"
+      ]
+    },
+    {
+      "id": "choice-flow-footer-and-chrome",
+      "block": "sgs/choice-flow", "prefix": "continue, addToBasket, buyNow, skip, close, back", "phase": "first mover",
+      "files": [
+        "plugins/sgs-blocks/includes/choice-flow-footer.php",
+        "plugins/sgs-blocks/includes/choice-flow-chrome.php",
+        "plugins/sgs-blocks/src/blocks/choice-flow/style.css"
+      ]
+    },
+    {
+      "id": "account-signed-out-and-empty-state",
+      "block": "sgs/account", "prefix": "signedOutSignIn, signedOutRegister, emptyState", "phase": "first mover",
+      "files": ["plugins/sgs-blocks/includes/account/helpers-account-signed-out.php"]
+    },
+    {
+      "id": "account-login-register-submit",
+      "block": "sgs/account", "prefix": "loginButton, registerButton", "phase": "migration",
+      "files": ["plugins/sgs-blocks/includes/account/helpers-account-button-icon.php"],
+      "kind": "class-string",
+      "class": "woocommerce-form-(login|register)__submit"
+    },
+    {
+      "id": "product-search-submit",
+      "block": "sgs/product-search", "prefix": "submit", "phase": "first mover",
+      "files": ["plugins/sgs-blocks/src/blocks/product-search/render.php"],
+      "class": "__submit"
+    },
+    {
+      "id": "theme-load-more",
+      "block": "theme (not a block)", "prefix": "settings.custom.shopButtonPreset", "phase": "first mover",
+      "files": [
+        "theme/sgs-theme/assets/js/sgs-shop-load-more.js",
+        "theme/sgs-theme/assets/css/shop-load-more.css"
+      ]
+    },
+    {
+      "id": "product-card-cta-and-cta2",
+      "block": "sgs/product-card", "prefix": "cta, cta2", "phase": "migration",
+      "files": [
+        "plugins/sgs-blocks/includes/product-card-builtin-render.php",
+        "plugins/sgs-blocks/src/blocks/product-card/render.php"
+      ],
+      "class": "(__view|__add-to-cart|__cta|preset:)"
+    }
+  ]
+}
