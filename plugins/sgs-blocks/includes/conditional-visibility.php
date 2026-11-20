@@ -107,21 +107,20 @@ function resolve_current_product( $instance = null ) {
 }
 
 /**
- * Whether the signed-in viewer owns the order on the current order-confirmation page. A guest order (customer 0),
- * another customer's order, an unknown order and a page with no order all return false.
+ * Whether the signed-in viewer owns the order on the current order-confirmation page and may view it there. A guest
+ * order (customer 0), another customer's order, an unknown order, a page with no order and an order the page's key
+ * does not open (Order_Binding::viewable_order() null) all return false.
  *
  * @return bool
  */
 function viewer_owns_current_order(): bool {
-	if ( ! is_user_logged_in() || ! function_exists( 'wc_get_order' ) ) {
+	if ( ! is_user_logged_in() || ! class_exists( __NAMESPACE__ . '\Order_Binding' ) ) {
 		return false;
 	}
-	$order_id = absint( get_query_var( 'order-received' ) );
-	if ( $order_id <= 0 ) {
-		return false;
-	}
-	$order = wc_get_order( $order_id );
-	if ( ! is_object( $order ) || ! method_exists( $order, 'get_customer_id' ) ) {
+	// The order only when this visitor may view it (the same check as the sgs/order binding and the order-viewable rule), so
+	// the owner signed in with a wrong order key sees what any visitor with that key sees.
+	$order = Order_Binding::viewable_order();
+	if ( null === $order ) {
 		return false;
 	}
 	$owner = (int) $order->get_customer_id();
