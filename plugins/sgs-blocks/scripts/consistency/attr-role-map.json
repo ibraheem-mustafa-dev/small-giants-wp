@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13414,
+    "row_count": 13415,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -2377,6 +2377,7 @@
     "sgs/buybox::guidedMeterTextWrap": "typography",
     "sgs/buybox::guidedMeterWritingMode": "select-from-enum",
     "sgs/buybox::guidedNextLabel": "text-content",
+    "sgs/buybox::keepAddToCartWithFlow": "boolean-visibility",
     "sgs/buybox::loopCarousel": "behaviour",
     "sgs/buybox::mainBackground": "color",
     "sgs/buybox::mainBorderColour": "layout",
