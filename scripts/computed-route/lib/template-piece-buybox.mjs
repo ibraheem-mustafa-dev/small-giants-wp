@@ -14,6 +14,9 @@
 // located element, a run holding the page's h1 or an element a part homed elsewhere is located on (two regions in one),
 // and a run whose skeleton nodes do not sit side by side in one list.
 //
+// A flow some buyers skip (Spec 43 FR-43-25): when the run holds a control that adds to the basket and a separate control
+// that opens the flow the product page opens, the node carries `keepAddToCartWithFlow: true` and the block keeps its Add to
+// Cart beside the flow's opener (lib/template-piece-buybox-flow.mjs::keepsAddToCart decides, from the draft's code).
 // What Fill needs from the node: its block name (lib/fill-shop-parts.mjs::shopPartWrites writes each part's draft value
 // onto every `sgs/buybox` node; lib/fill-shop-targets.mjs::shopPartTargets adds the located elements as measuring
 // targets of its calibrated part slots) and, for those targets to be read at all, a `draftRef` that resolves to a shown
@@ -21,6 +24,7 @@
 // its draftRef when the run is one element; a run of several elements has no one element that is the buy box's
 // wrapper, so the node has no draftRef and Fill reads no look for it, which the notes say.
 import { countBlocks } from './template-pieces.mjs';
+import { keepsAddToCart } from './template-piece-buybox-flow.mjs';
 import { dcOf, inventoryIndex, locatedKeys, locateParts, nodesWithin, recordSurface, refKey } from './template-piece-draft.mjs';
 
 const FIXED = ( e ) => Object.values( e?.position || {} ).some( ( p ) => 'fixed' === p );
@@ -119,6 +123,13 @@ export function place( ctx, piece ) {
 		box.draftRef = { tpl: run[ 0 ] };
 	} else {
 		notes.push( `${ key }: the buy box is drawn as ${ run.length } elements side by side (${ run.join( ', ' ) }), so ${ piece.block } has no draftRef and Fill reads no look for it or its located parts` );
+	}
+	// A flow some buyers skip: the draft's buy box draws its own add-to-basket control beside a separate control that opens the
+	// product page's flow, so the block keeps its Add to Cart and shows the flow's opener beside it (Spec 43 FR-43-25).
+	const keep = keepsAddToCart( ctx, found );
+	if ( keep.keep ) {
+		box.attributes.keepAddToCartWithFlow = true;
+		notes.push( `${ key }: the buy box keeps its own add-to-basket control (${ keep.adds.join( ', ' ) }) beside the control that opens the flow "${ keep.flow }" (${ keep.openers.join( ', ' ) }), so ${ piece.block } is set to keep Add to Cart with the flow's opener (keepAddToCartWithFlow)` );
 	}
 	const missing = surface.parts.filter( ( p ) => 'missing' === p.home?.type && locatedKeys( index, p.locators, dcOf( surface.file ) ).some( inRun ) ).map( ( p ) => p.id );
 	missing.length && notes.push( `${ key }: inside the buy box the draft draws what ${ piece.block } has no setting for (${ missing.join( ', ' ) }); each is a missing-features row of shop-parts.json` );
