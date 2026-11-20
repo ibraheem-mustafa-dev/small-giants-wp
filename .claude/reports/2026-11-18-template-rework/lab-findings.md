@@ -148,3 +148,21 @@ On `local-mediatest-trlab`, with two lab orders made by `E:\sgs-tmp\template-rew
 Two faults, both this stream's (`lib/template-piece-order.mjs`): the card that wraps `sgs/order-items` takes no Show-to rule, so with nothing to print it is an empty box (it should take the `viewable` rule, `order-viewable`, like a bound block outside every branch); and the account branch's rule `order-owner` does not also require the order to be viewable, so the owner sees the view-order card under a wrong key (no leak: the link opens the owner's own order, but the page is inconsistent). The static bake and arrival dates show in every state (Bean's open choice on order facts with no live source).
 
 Status of the two faults: the items card now takes the viewable rule when it holds only the order lines and their title (`e5b0c8057`, not yet rebuilt on the lab copy). The owner's view-order card needs a plugin change: the Show-to extension holds one rule per block, so `order-owner` cannot be combined with `order-viewable`; the fix is for `plugins/sgs-blocks/includes/conditional-visibility.php::viewer_owns_current_order` to return false when `Order_Binding::viewable_order()` is null. `render-scope.py` names that file shared (every page can change), so it waits for a render check on the mirrors, Mama's live shop's first.
+
+## Forms, modals and flows on scratch copies (2026-11-19 night)
+
+Task 10's lab run on `local-mediatest-forms-mamas` and `local-mediatest-forms-eyecare` (both dropped after), from `E:\sgs-tmp\wt-tr-forms-lab` at main. Pictures, probes and logs: `E:\sgs-tmp\template-rework\forms-lab\` (`mamas\`, `eyecare\`).
+
+Mama's passes what Task 10 asks: the contact form's order-number field shows only for "My order", "Baby shower or event" shows the cookie count and date, a submission shows "message received" and "Thank you! Zainab will be in touch soon." (row stored, mail blocked on the copy), Build your Zookie renders `data-flow-product-id="257"` (Zookies), no product carries `_sgs_choice_flow`, and `site-check --only modals` passes.
+
+| Fault | Proof | Owner |
+|---|---|---|
+| Eye Care's footer fails to build: the shared size-guide frame is pushed beside `sgs/site-footer` at the top level ("the tree must be exactly one sgs/site-footer block, but it has 2"), and the frame has no `modalRef`; so the help page's size-guide link is dead | Build log; with the frame nested in the footer and `modalRef` 118 set by hand, the footer and help links open the dialog and close on Escape | This stream: `lib/skeleton-openers.mjs::surfaceFrames` |
+| The lens flow renders twice on a linked product: the route's own frame (no opener) and the buy box's own auto-wired frame | `.sgs-choice-flow` count 2 | This stream: the route must not place a frame for a flow the product link already wires |
+| A linked product's buy box has one button, "Add to Cart", which opens the flow; the ordinary add to basket is gone | `eyecare\linked-buybox-1440.png`, `-375.png` | Bean's ruling (2026-11-19): keep both. Spec 43 FR-43-25's off-by-default buybox setting, then the route sets it when the draft draws both |
+| The product page's "Which size am I?" link and "Add my prescription from +£59" are lost inside the buy box | Proposal; `sgs/buybox` has no setting for either | This stream: `lib/template-piece-buybox.mjs`; the buybox block |
+| `site-check`'s flow check never opens the modal around a flow, so every product-linked flow fails it | "step 1 shows no option button" | `lib/site-check-parts.mjs::flowItem` (general session) |
+| A link to an anchor no page-map row names (`#modal-missing`) is not flagged | Planted on Eye Care | `lib/site-check-openers.mjs::deadOpeners` (this stream) |
+| A choice flow's tree is never written to `trees/sgs_choice_flow/<slug>.json` by the site run, so `site-build` adopts the post without its `flowProductId` | Worked only after copying Fill's tree by hand | `site-run.mjs`, `lib/site-build-map.mjs::treeFor` (general session) |
+| Mama's gifts flow's post 159 does not exist on the mirror and has no page-map row | Build log | Route data (general session) |
+| The nav drawer's and mega menu's size-guide items open nothing | Expected: the menu build does not read `opens` | Not built (Task 10) |
