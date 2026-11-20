@@ -23,6 +23,7 @@ export const CARD_DEVICE_ATTRS = {
 	cardGap: {},
 	cardRowGap: {},
 	cardAlign: {},
+	cardsShareRow: false,
 	cardShadowTablet: '',
 	cardShadowTabletColour: '',
 	cardShadowMobile: '',
@@ -109,6 +110,7 @@ export function CardLayoutItems( { attributes, setAttributes } ) {
 					label={ __( 'Entries share the row equally', 'sgs-blocks' ) }
 					hasValue={ () => !! attributes.cardsShareRow }
 					onDeselect={ () => setAttributes( { cardsShareRow: false } ) }
+					isShownByDefault
 				>
 					<ToggleControl
 						label={ __( 'Entries share the row equally', 'sgs-blocks' ) }

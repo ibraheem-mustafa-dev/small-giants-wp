@@ -13,7 +13,7 @@
  * copies the image's `src`, `srcset` and `sizes` (as `href`, `imagesrcset`, `imagesizes`) so the browser picks the
  * same file it will draw, and sits right after `<meta name="viewport">` so `sizes` resolves at the device's width.
  *
- * No preload is added when the lead image is lazy, has no `src`, sits in `<noscript>` or `<template>`, sits in a
+ * No preload is added when the lead image is lazy, has no `src` or one that is not an http(s) or site-relative address, sits in `<noscript>` or `<template>`, sits in a
  * `<picture>` with `<source>` children (the preload cannot know which source the browser will choose, so it could cost a
  * second download), or is already preloaded. A page with no such image is returned unchanged, byte for byte.
  *
@@ -46,7 +46,11 @@ function sgs_lead_image_preload( string $html ): string {
 		return $html;
 	}
 
-	$link = '<link rel="preload" as="image" href="' . \esc_url( $img['src'] ) . '"';
+	$href = \esc_url( $img['src'] );
+	if ( '' === $href ) {
+		return $html;
+	}
+	$link = '<link rel="preload" as="image" href="' . $href . '"';
 	if ( '' !== $img['srcset'] ) {
 		$link .= ' imagesrcset="' . \esc_attr( $img['srcset'] ) . '"';
 		if ( '' !== $img['sizes'] ) {
@@ -89,6 +93,10 @@ function sgs_lead_image_find( string $html, int $head_end ): ?array {
 		}
 		$src = \trim( $attrs['src'] ?? '' );
 		if ( '' === $src || 'lazy' === \strtolower( $attrs['loading'] ?? '' ) ) {
+			return null;
+		}
+		// Only a fetchable address: a data: placeholder (a lazy-load plugin's) would print an empty or useless href.
+		if ( 1 !== \preg_match( '#^(?:https?:)?//|^/(?!/)#i', $src ) ) {
 			return null;
 		}
 		$before = \substr( $html, $head_end, $start - $head_end );

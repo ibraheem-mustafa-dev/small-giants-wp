@@ -51,6 +51,7 @@ const SGS_MINTED_SCOPE_PREFIXES = array(
 	'sgs-band-layout',
 	'sgs-state-colour',
 	'sgs-text-hover',
+	'sgs-btn-press',
 );
 
 /**

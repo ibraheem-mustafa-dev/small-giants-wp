@@ -1,20 +1,33 @@
 /**
  * Cart-only inspector panel: the basket Stripe hold switch (a site option, `sgs_basket_stripe_hold`, read by
- * `includes/woocommerce/basket-stripe-hold.php`).
+ * `includes/woocommerce/basket-stripe-hold.php`). Site options need the right to change site settings, so the panel
+ * shows only to a user who has it; for anyone else saving the switch would fail.
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl } from '@wordpress/components';
-import { useEntityProp } from '@wordpress/core-data';
+import { useEntityProp, store as coreStore } from '@wordpress/core-data';
+import { useSelect } from '@wordpress/data';
 
 /**
- * @return {JSX.Element} The panel.
+ * @return {JSX.Element|null} The panel, or nothing for a user who cannot change site settings.
  */
 export function BasketSpeedPanel() {
+	const canManage = useSelect(
+		( select ) =>
+			!! select( coreStore ).canUser( 'update', {
+				kind: 'root',
+				name: 'site',
+			} ),
+		[]
+	);
 	const [ hold, setHold ] = useEntityProp(
 		'root',
 		'site',
 		'sgs_basket_stripe_hold'
 	);
+	if ( ! canManage ) {
+		return null;
+	}
 	return (
 		<PanelBody
 			title={ __( 'Loading speed', 'sgs-blocks' ) }

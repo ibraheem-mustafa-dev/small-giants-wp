@@ -23,7 +23,8 @@ names the code that writes that CSS and how much of it repeats.
                                   be the same before and after; exit 1 on any difference
   --mirror <client>=<mirror>[,..] with --survey/--fix/--check: render that client's pages on another mirror for this run
                                   (a scratch copy made by scripts/local-wp/scratch-mirror.sh, found through the gitignored
-                                  scripts/computed-route/calibration-targets.local.json); its stage-c.json is not changed
+                                  scripts/computed-route/calibration-targets.local.json); its stage-c.json is not changed, and
+                                  --record is refused with it
   --self-test                     plants a repeated body and an override pair and asserts both are caught; with
                                   --unplant the plants are removed and the self-test must fail (proves it can fail)
 
@@ -716,6 +717,9 @@ def main() -> int:
     ap.add_argument("--mirror", help="<client folder>=<mirror>[,...]: render that client's pages on another mirror (a scratch copy) this run")
     args = ap.parse_args()
     if args.mirror:
+        if args.record:
+            # A baseline is a client's committed figure; a scratch copy's render must never replace it.
+            raise SystemExit("--record cannot be used with --mirror: a baseline is recorded from the client's own mirror only")
         MIRROR_OVERRIDE.update(parse_mirror_override(args.mirror))
 
     if args.self_test:

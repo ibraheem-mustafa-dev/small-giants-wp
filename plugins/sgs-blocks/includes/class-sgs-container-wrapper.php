@@ -3137,7 +3137,11 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
 				// Band (Layer 2) tier rules — own selector, see the $band_obj_sel note above.
 				// Band padding: the same text for every block with the same padding, printed once under a shared class.
-				if ( $obj_band_props && '' !== $band_obj_sel ) {
+				// Only on the content band, as with the layout group: on the outer, the block's own rules printed before
+				// this one could set the same property and would then sit after a copy printed earlier.
+				if ( $obj_band_props && '.' . $uid === $band_obj_sel ) {
+					$responsive_css .= sgs_emit_responsive_css( $band_obj_sel, $obj_band_props, array( 'container' => $container_queries ) );
+				} elseif ( $obj_band_props && '' !== $band_obj_sel ) {
 					$sgs_band_pad_shared = sgs_shared_rules(
 						'sgs-band-pad',
 						static function ( string $sel_class ) use ( $band_obj_sel, $uid, $obj_band_props, $container_queries ): string {
@@ -3232,7 +3236,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					return $css;
 				};
 				if ( '' !== $band_obj_sel ) {
-					if ( $sgs_flat_band_emitted && '' === $sgs_flat_band_seed ) {
+					// Shared only on the content band (see the band padding note above).
+					if ( ( $sgs_flat_band_emitted && '' === $sgs_flat_band_seed ) || '.' . $uid === $band_obj_sel ) {
 						$responsive_css .= $sgs_cw_css_for( $uid );
 					} else {
 						$sgs_cw_shared = sgs_shared_rules( 'sgs-band-cap', $sgs_cw_css_for, $sgs_flat_band_seed );

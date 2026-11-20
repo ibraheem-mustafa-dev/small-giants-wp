@@ -98,6 +98,7 @@ final class LeadImagePreloadTest extends TestCase {
 		return array(
 			'lazy'           => array( self::lead( '', 'lazy' ) ),
 			'no src'         => array( '<img fetchpriority="high" srcset="' . self::SRCSET . '" alt="" />' ),
+			'data: src'      => array( '<img src="data:image/svg+xml,%3Csvg%3E" fetchpriority="high" alt="" />' ),
 			'in noscript'    => array( '<noscript>' . self::lead() . '</noscript>' ),
 			'in template'    => array( '<template>' . self::lead() . '</template>' ),
 			'picture source' => array( '<picture><source type="image/webp" srcset="https://x.test/a.webp" />' . self::lead() . '</picture>' ),
