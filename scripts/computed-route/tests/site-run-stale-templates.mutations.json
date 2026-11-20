@@ -1,0 +1,9 @@
+[
+	{ "file": "lib/site-run-stale-templates.mjs", "find": "Object.hasOwn( state.hashes || {}, slug ) && ", "replace": "", "why": "a copy the clone did not write is removed" },
+	{ "file": "lib/site-run-stale-templates.mjs", "find": " && ! built.has( slug )", "replace": "", "why": "a copy a manifest surface builds is removed" },
+	{ "file": "lib/site-run-stale-templates.mjs", "find": " && null === copySource( rows, slug ) )", "replace": " )", "why": "a copy a page-map row sources is removed" },
+	{ "file": "lib/site-run-stale-templates.mjs", "find": "\t\twp( [ 'post', 'delete', String( id ), '--force' ] );", "replace": "\t\twp( [ 'post', 'trash', String( id ) ] );", "why": "the copy is trashed, not deleted" },
+	{ "file": "lib/site-run-stale-templates.mjs", "find": "\t\trunPhp( templateForgetPhp( slug ) );", "replace": "", "why": "the content marker stays after the copy is deleted" },
+	{ "file": "lib/site-run-stale-templates.mjs", "find": "\t\tconst { [ slug ]: dropped, ...kept } = hashes;\n\t\thashes = kept;", "replace": "", "why": "the removed slug stays in the recorded hashes" },
+	{ "file": "lib/site-run-stale-templates.mjs", "find": "\t\tif ( ! Number.isInteger( id ) || id < 1 ) {", "replace": "\t\tif ( false ) {", "why": "a copy with no post id is not refused" }
+]
