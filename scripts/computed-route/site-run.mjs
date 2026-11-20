@@ -59,6 +59,7 @@ import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site
 import { draftProductSlugs, liveFactsPhp, readLiveFacts, templateAddresses, livePrimeFor } from './lib/template-live-address.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
+import { writeFlowTree } from './lib/site-run-flow-tree.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
@@ -526,6 +527,9 @@ export async function main( argv ) {
 			const said = await exec( 'build', 'node', builder );
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
+			// A choice flow's built tree is kept for the site build (lib/site-run-flow-tree.mjs::writeFlowTree).
+			const flowTree = writeFlowTree( { buildDir: build, entry, tree: readJson( path.join( REPO, tree ) ) } );
+			flowTree && console.log( `${ key } flow tree: ${ path.relative( REPO, flowTree ) }` );
 			// A built header, footer or drawer becomes the site's active one (lib/site-run-layout.mjs).
 			const pointed = slug ? null : pointAfterBuild( { entry, rows, wp } );
 			pointed && console.log( `${ key } ${ pointed }` );
