@@ -28,6 +28,7 @@ import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
 import { behindContent, contentAnchor } from './skeleton-hero-background.mjs';
 import { heroCollage } from './skeleton-hero-collage.mjs';
+import { tileCount, stripGap, squareTile, boxWidths } from './skeleton-tile-count.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -969,7 +970,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// draws none, so Fill may not choose it: `decided`), and the first tile is where Fill reads the tile's look (`firstItem`, `marquee.itemSlots`).
 			const T2 = L?.tile;
 			const painted = labelled && !! T2 && PAINT_DECL.test( String( kidsB[ 0 ].attrs?.style ?? '' ) );
-			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes, ...( painted ? { [ T2.setting ]: true, [ T2.layout.setting ]: T2.layout.value } : {} ) } : {}, absorb: true, ...( painted ? { firstItem: kidsB[ 0 ].key, decided: { [ T2.layout.setting ]: T2.layout.value } } : {} ), handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
+			// Tiles of a fixed square size are the strip's count per device and its cap (`marquee.labelledLogos.tileSize`): a length per
+			// device is no setting the block holds, and both settings paint a size, so they are decided, never attributes.
+			const sizeRule = L?.tileSize;
+			const size = logos && sizeRule ? tileCount( { tiles: squareTile( kidsB[ 0 ] ), viewport: boxWidths( m.byKey[ e.parentKey ] ), gap: stripGap( e.attrs?.style ) } ) : null;
+			const sizeDecided = size ? { [ sizeRule.count ]: size.columns, [ sizeRule.cap ]: size.cap } : {};
+			const decided = { ...( painted ? { [ T2.layout.setting ]: T2.layout.value } : {} ), ...sizeDecided };
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes, ...( painted ? { [ T2.setting ]: true, [ T2.layout.setting ]: T2.layout.value } : {} ) } : {}, absorb: true, ...( painted ? { firstItem: kidsB[ 0 ].key } : {} ), ...( Object.keys( decided ).length ? { decided } : {} ), handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {

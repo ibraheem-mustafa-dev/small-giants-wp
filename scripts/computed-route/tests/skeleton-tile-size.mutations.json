@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const sizeDecided = size ? { [ sizeRule.count ]: size.columns, [ sizeRule.cap ]: size.cap } : {};",
+		"replace": "const sizeDecided = {};",
+		"why": "the count and cap never reach the node"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const size = logos && sizeRule ? tileCount(",
+		"replace": "const size = logos && false ? tileCount(",
+		"why": "the strip's tile size is never read"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "viewport: boxWidths( m.byKey[ e.parentKey ] )",
+		"replace": "viewport: boxWidths( e )",
+		"why": "the viewport is the strip's own track (3266px), not its parent's box"
+	},
+	{
+		"file": "lib/skeleton-tile-count.mjs",
+		"find": "const cap = Math.max( ...sizes );",
+		"replace": "const cap = Math.min( ...sizes );",
+		"why": "the cap is the smallest tile, so the larger tiles are capped"
+	},
+	{
+		"file": "lib/skeleton-tile-count.mjs",
+		"find": "const first = Math.max( 1, Math.ceil( ( spans[ i ] + g ) / ( cap + g ) ) );",
+		"replace": "const first = 1;",
+		"why": "a count whose tile is above the cap is allowed, so the strip no longer spans its viewport"
+	},
+	{
+		"file": "lib/skeleton-tile-count.mjs",
+		"find": "for ( let n = first; n <= first + 3; n++ ) {",
+		"replace": "for ( let n = first; n <= first; n++ ) {",
+		"why": "the first count that fits is taken, not the nearest to the draft's tile"
+	},
+	{
+		"file": "lib/skeleton-tile-count.mjs",
+		"find": "b?.w > 0 && Math.abs( b.w - b.h ) <= 1 )",
+		"replace": "b?.w > 0 )",
+		"why": "a tile that is not square is read as a square one"
+	},
+	{
+		"file": "lib/skeleton-tile-count.mjs",
+		"find": "if ( sizes.some( ( s ) => ! ( s > 0 ) ) || spans.some( ( s ) => ! ( s > 0 ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a device with no tile or no viewport is counted from nothing"
+	},
+	{
+		"file": "lib/skeleton-tile-count.mjs",
+		"find": "(?:^|;)\\s*(?:column-)?gap",
+		"replace": "(?:^|;)\\s*gap",
+		"why": "a column-gap declaration is not read"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "[ tileSize.count, tileSize.cap ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) )",
+		"replace": "false",
+		"why": "a count or cap setting the block lacks passes the check"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"tileSize\": { \"count\": \"columns\", \"cap\": \"maxHeight\",",
+		"replace": "\"tileSize\": { \"count\": \"columns\", \"cap\": \"columns\",",
+		"why": "the cap is written to the count's setting"
+	}
+]

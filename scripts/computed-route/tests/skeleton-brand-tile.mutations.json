@@ -13,7 +13,7 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "...( painted ? { firstItem: kidsB[ 0 ].key, decided: { [ T2.layout.setting ]: T2.layout.value } } : {} ), handover",
+		"find": "...( painted ? { firstItem: kidsB[ 0 ].key } : {} ), ...( Object.keys( decided ).length ? { decided } : {} ), handover",
 		"replace": "handover",
 		"why": "no tile is read for the tile's look"
 	},
@@ -55,8 +55,8 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "firstItem: kidsB[ 0 ].key, decided: { [ T2.layout.setting ]: T2.layout.value } }",
-		"replace": "firstItem: kidsB[ 0 ].key }",
+		"find": "const decided = { ...( painted ? { [ T2.layout.setting ]: T2.layout.value } : {} ), ...sizeDecided };",
+		"replace": "const decided = { ...sizeDecided };",
 		"why": "Fill may turn the strip to the row layout, which draws no tile"
 	},
 	{
