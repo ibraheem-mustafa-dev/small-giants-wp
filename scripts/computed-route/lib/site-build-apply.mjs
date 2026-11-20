@@ -69,6 +69,18 @@ if ( $t ) {
 `;
 }
 
+// The PHP dropping a template's saved-content marker once its saved copy is deleted.
+export function templateForgetPhp( slug ) {
+	if ( ! /^[a-z0-9_-]+$/.test( slug ) ) {
+		throw new Error( `template slug "${ slug }" is not plain` );
+	}
+	return `<?php
+$o = (array) get_option( '${ TEMPLATE_CONTENT_OPTION }', array() );
+unset( $o['${ slug }'] );
+update_option( '${ TEMPLATE_CONTENT_OPTION }', $o );
+`;
+}
+
 // The meta key that marks an order the site run made only to show the order confirmation (FR-48-56).
 export const TEST_ORDER_META = '_sgs_site_run_test_order';
 
@@ -224,6 +236,14 @@ update_post_meta( ${ Number( id ) }, '${ CONTENT_META }', hash( 'sha256', get_po
 				throw e;
 			}
 			markTemplateContent( a.template );
+		} else if ( 'template-remove' === a.type ) {
+			// Only the saved wp_template post goes (the theme or plugin file stands); its recorded hash and content marker go with it.
+			if ( ! Number.isInteger( a.id ) || a.id < 1 ) {
+				throw new Error( `the saved ${ a.template } template has no post id in the site's state` );
+			}
+			again( () => wp( [ 'post', 'delete', String( a.id ), '--force' ] ) );
+			again( () => wp( [ 'option', 'update', TEMPLATE_OPTION, JSON.stringify( a.hashes ), '--format=json' ] ) );
+			again( () => wp( [ 'eval-file', '-' ], templateForgetPhp( a.template ) ) );
 		} else if ( 'section' === a.type ) {
 			wp( [ 'post', 'meta', 'update', String( val( a.id ) ), SECTION_META, String( val( a.page ) ) ] );
 		} else if ( 'update' === a.type ) {

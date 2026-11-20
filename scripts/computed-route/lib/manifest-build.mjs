@@ -4,6 +4,7 @@
 // copy, lib/template-copies.mjs). Pure functions over parsed files; manifest.mjs reads and writes them.
 import { builtTemplate, rowKey } from './site-build-map.mjs';
 import { WHOLE_TREE, copySource, rowsOf, servedTemplates } from './template-copies.mjs';
+import { COMMERCE_ROLES } from './skeleton-commerce-region.mjs';
 import { isUnwalkedWooPage, keepsWooContent, wooContentRole } from './site-build-plan.mjs';
 import { megaPanelLabel } from './page-map-names.mjs';
 // Post type -> key prefix. `page`, `sgs_header` and `sgs_footer` keep their slug.
@@ -251,7 +252,7 @@ export function templateSurfaces( rows ) {
 
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFiles` the export's entry drafts
 // (`entryFile` for an export with one); each surface takes the draft draftFor names.
-// `only` limits the run to those keys. `facts` is the client's fact record (`state[<dc>]` gives statesOf its context). Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake, noFacts, noDraft }; throws when two rows give one key.
+// `only` limits the run to those keys. `facts` is the client's fact record (`state[<dc>]` gives statesOf its context). Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake, noFacts, noDraft, unplayed }; throws when two rows give one key.
 // A row that is one of WooCommerce's own pages (cart, checkout, my account: lib/site-build-plan.mjs::wooContentRole) and
 // that the draft has no page for (no route, no record) is `noDraft`: WooCommerce's working block stays (FR-48-87), so
 // nothing is cloned there and nothing failed. Its entry carries the reason as `noDraft` (site-run skips it); a drafted
@@ -264,14 +265,21 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 	const drafts = entryFiles || [ entryFile ];
 	const entries = {};
 	const owner = new Map();
-	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], noDraft: [], matched: {} };
+	const out = { entries, unresolved: [], unmatched: [], pointer: [], dropped: [], disagree: [], skipped: [], added: {}, stale: [], noIntake: [], noFacts: [], noDraft: [], unplayed: [], matched: {} };
 	const copies = templateSurfaces( rows );
-	// A copy Filled at its row needs that row's draft surface: one the handoff has no record for (a draft whose basket is
-	// a drawer has no cart page surface) is built as the derived copies are, from the page copy's shell around the theme
-	// template's own content.
-	copies.filter( ( c ) => 'fill' === c.copy.from && ! matchRecord( c.row, records ).record ).forEach( ( c ) => {
-		c.copy = { from: 'page', unplayed: rowKey( c.row ) };
-	} );
+	// A copy Filled at its row needs that row's draft surface. A WooCommerce template (a slug with a commerce role,
+	// lib/skeleton-commerce-region.mjs::COMMERCE_ROLES) that no draft surface plays (a draft whose basket is a drawer has no
+	// cart page surface) is never built as a copy (FR-48-87): WooCommerce's own template stands, and the surface is listed in
+	// `unplayed` (manifest.mjs removes its earlier entry). Any other copy Filled at an unplayed row is built as the derived
+	// copies are, from the page copy's shell around the theme template's own content.
+	for ( const c of copies.filter( ( x ) => 'fill' === x.copy.from && ! matchRecord( x.row, records ).record ) ) {
+		if ( COMMERCE_ROLES[ c.slug ] ) {
+			copies.splice( copies.indexOf( c ), 1 );
+			out.unplayed.push( { key: c.key, slug: c.slug, why: `no draft surface plays the ${ c.slug } template: WooCommerce's own template stands` } );
+		} else {
+			c.copy = { from: 'page', unplayed: rowKey( c.row ) };
+		}
+	}
 	const shellOf = new Map( copies.filter( ( c ) => 'pages' === c.copy.from ).flatMap( ( c ) => c.copy.surfaces.map( ( k ) => [ k, c.slug ] ) ) );
 	const mapKeys = new Set( [ ...rows.flatMap( ( r ) => { try { return [ surfaceKey( r ) ]; } catch { return []; } } ), ...copies.map( ( c ) => c.key ) ] );
 	out.stale = Object.keys( existing ).filter( ( k ) => ! mapKeys.has( k ) );

@@ -30,7 +30,7 @@ const repoWith = ( files ) => {
 const BAR = [ { name: 'sgs/container', attributes: { tagName: 'header' }, innerBlocks: [ { name: 'sgs/text', attributes: { text: 'Back' } } ] } ];
 const CHECKOUT = [ { name: 'core/template-part', attributes: { slug: 'checkout-header', tagName: 'div' } }, { name: 'sgs/container', attributes: { tagName: 'main' }, innerBlocks: [ { name: 'core/post-content' } ] } ];
 const CART = [ { name: 'core/template-part', attributes: { slug: 'header', tagName: 'header' } }, { name: 'sgs/container', attributes: { tagName: 'main' }, innerBlocks: [ { name: 'core/post-content' } ] }, { name: 'core/template-part', attributes: { slug: 'footer', tagName: 'footer' } } ];
-const FILES = ( bar = BAR ) => ( { 'sites/c/build/trees/template/checkout.json': CHECKOUT, 'sites/c/build/trees/template/cart.json': CART, 'sites/c/build/trees/template-part/checkout-header.json': bar } );
+const FILES = ( bar = BAR ) => ( { 'sites/c/build/trees/template/checkout.json': CHECKOUT, 'sites/c/build/trees/template/cart.json': CART, 'sites/c/build/trees/template-part/checkout-header.json': bar, 'sites/c/build/surfaces.json': { 'template-checkout': { target: { template: 'checkout' } }, 'template-cart': { target: { template: 'cart' } } } } );
 
 test( 'a copy\'s own parts are the template parts it prints whose tree the run wrote; the shared header and footer are none', () => {
 	const repo = repoWith( FILES() );
