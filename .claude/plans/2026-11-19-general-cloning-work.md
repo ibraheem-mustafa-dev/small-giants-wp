@@ -26,7 +26,11 @@ Mama's Munches took two rounds of hand-tuning. Before 2026-11-28 Bean designs, b
 - A draft carries the tokens and presets it uses, as many as it has and under its own names, set on the blocks they apply to.
 - What no setting holds is written as Custom CSS by the route, never by hand.
 - The handoff gets no Components page, no block map and no section-level block choice. It gets a list of what we have, in design words.
-- A change for one client never alters what another client's site renders unless that site opts in.
+- A change for one client never alters what another client's site renders unless that site opts in. (Narrowed 2026-11-20: this covers optional settings that extend a feature; a fix applies everywhere.)
+
+2026-11-20:
+- The opt-in rule covers only optional settings that can be seen as extensions to features; fixes apply everywhere (plugin round 4's form fixes land for every site).
+- The fault rounds cured symptoms one at a time. Go to the root cause: treat each fault as an instance of a mechanism, fix the mechanism, and guard against every instance of it, so the same kind of fault stops reappearing in other places.
 
 2026-11-19:
 - The Claude Design instructions trust the tool's judgement and list no cases: tidy the drafts, say what changed, ask only where a change would alter the design or the meaning is unclear.

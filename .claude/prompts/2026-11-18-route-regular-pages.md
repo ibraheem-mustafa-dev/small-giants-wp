@@ -12,7 +12,7 @@ Make the cloning system clone a site from a Claude Design handoff folder so that
 - A draft carries the tokens and presets it uses, as many as it has and under its own names, and they are set on the blocks they apply to. A draft may hold tokens our general stylesheet has no place for; the theme must carry and use them.
 - What no setting holds is written as Custom CSS by the route, never by hand.
 - The handoff gets no Components page, no block map and no section-level block choice. It gets a list of the blocks we have, in design words.
-- A change for one client never alters what another client's site renders unless that site opts in. Indus and Eye Care are signed off.
+- A change that extends a feature for one client never alters what another client's site renders unless that site opts in; a fix applies everywhere (Bean, 2026-11-20). Indus and Eye Care are signed off.
 
 **The work, in order.**
 
