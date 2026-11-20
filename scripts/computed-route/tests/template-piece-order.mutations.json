@@ -64,5 +64,7 @@
 	{"file": "lib/template-piece-order.mjs", "find": "`{${ o.key }}`", "replace": "`${ o.key }`", "why": "a fact token loses its braces"},
 	{"file": "lib/template-piece-order.mjs", "find": "readOrder( { record: ctx.factRecord, tops: topKeys( ctx.tree, ctx.rootComponent ), draft, facts, plugin } )", "replace": "readOrder( { record: ctx.factRecord, tops: topKeys( ctx.tree, ctx.rootComponent ), draft, facts } )", "why": "the order builder never tells the reader what the plugin holds"},
 	{"file": "lib/template-piece-order-plugin.mjs", "find": "const factPrefix = /const\\s+FACT_PREFIX\\s*=\\s*'([^']+)'/.exec( php )?.[ 1 ] ?? null;", "replace": "const factPrefix = 'fact:';", "why": "the fact prefix is assumed, not read from the plugin"},
-	{"file": "lib/template-piece-order-plugin.mjs", "find": "const factFilter = /const\\s+FACT_FILTER\\s*=\\s*'([^']+)'/.exec( php )?.[ 1 ] ?? null;", "replace": "const factFilter = 'sgs_order_fact';", "why": "the fact filter is assumed, not read from the plugin"}
+	{"file": "lib/template-piece-order-plugin.mjs", "find": "const factFilter = /const\\s+FACT_FILTER\\s*=\\s*'([^']+)'/.exec( php )?.[ 1 ] ?? null;", "replace": "const factFilter = 'sgs_order_fact';", "why": "the fact filter is assumed, not read from the plugin"},
+	{"file": "lib/template-piece-order.mjs", "find": "&& ruleAttr( db, node.name, attrs[ a ] ) === a );", "replace": "&& ruleAttr( db, node.name, attrs[ a ] ) );", "why": "an order- word in a class name or anchor is taken for the Show-to rule already on the block"},
+	{"file": "lib/template-piece-order.mjs", "find": "&& /^order-/.test( attrs[ a ] ) && ruleAttr(", "replace": "&& ruleAttr(", "why": "a Show-to setting left at none is taken for a rule already on the block"}
 ]

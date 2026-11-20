@@ -49,10 +49,13 @@ function readsFor( ctx ) {
 	return { facts, plugin, db, draft, order, factProblems: orderFactsProblems( { facts, plugin, db } ) };
 }
 
-// The order Show-to rule a node already holds (`order-*`), or null.
+// The order Show-to rule a node already holds (`order-*` in the block's own Show-to setting), or null. The cheap checks come first;
+// the database is asked only for a string that starts `order-`, and the attribute must be the very setting the database names for
+// that value, so a class name or anchor that happens to read `order-owner` is no rule.
 function orderRuleOn( db, node ) {
-	const attr = Object.keys( node.attributes || {} ).find( ( a ) => ruleAttr( db, node.name, node.attributes[ a ] ) && 'none' !== node.attributes[ a ] && 'string' === typeof node.attributes[ a ] && /^order-/.test( node.attributes[ a ] ) );
-	return attr ? node.attributes[ attr ] : null;
+	const attrs = node.attributes || {};
+	const attr = Object.keys( attrs ).find( ( a ) => 'string' === typeof attrs[ a ] && /^order-/.test( attrs[ a ] ) && ruleAttr( db, node.name, attrs[ a ] ) === a );
+	return attr ? attrs[ attr ] : null;
 }
 
 // Containers that would stand as empty boxes while the visitor may not view the order, each taking the `viewable` rule (the

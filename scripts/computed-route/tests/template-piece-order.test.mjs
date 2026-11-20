@@ -620,3 +620,25 @@ test( 'MUST FAIL: the plugin facts name the fact form the plugin holds, and none
 	assert.equal( real.factFilter, 'sgs_order_fact' );
 	assert.ok( ! real.keys.some( ( k ) => k.startsWith( real.factPrefix ) ), 'a fact is no built-in key' );
 } );
+
+// A block already ruled is told by its Show-to setting alone: another attribute holding an `order-` word that is a value of that setting
+// (a class name, an anchor) is no rule, so the card around the lines still takes the viewable rule.
+test( 'MUST FAIL: an order- word in an attribute that is not the block\'s Show-to setting is no rule already on it', () => {
+	const planted = plant();
+	const { record } = planted;
+	const tagged = plantedTree( record );
+	const card = nodesOf( tagged ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) );
+	card.attributes.className = 'order-owner';
+	const got = runBoth( planted, tagged );
+	const cardAfter = cardOf( got.tree );
+	assert.equal( cardAfter.attributes.className, 'order-owner' );
+	assert.equal( cardAfter.attributes.sgsConditionLoggedIn, 'order-viewable', 'the class name is no Show-to rule, so the card takes the viewable rule' );
+	// Negative control: the Show-to setting itself holding an order rule is a rule already on the block and is left alone.
+	const ruled = plantedTree( record );
+	nodesOf( ruled ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) ).attributes.sgsConditionLoggedIn = 'order-owner';
+	assert.equal( cardOf( runBoth( planted, ruled ).tree ).attributes.sgsConditionLoggedIn, 'order-owner' );
+	// A Show-to setting left at `none` is no rule either: the card takes the viewable rule.
+	const none = plantedTree( record );
+	nodesOf( none ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) ).attributes.sgsConditionLoggedIn = 'none';
+	assert.equal( cardOf( runBoth( planted, none ).tree ).attributes.sgsConditionLoggedIn, 'order-viewable' );
+} );
