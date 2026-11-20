@@ -112,6 +112,7 @@ from block_source import BlockSource, is_tier_object  # noqa: E402
 from object_attr_shape import (  # noqa: E402
     classify_object_attr_shape,
     context_tier_keys_from_php as _context_tier_keys_from_php,
+    flat_scalar_sibling_shape,
     has_declared_tier_sibling,
     tier_object_attrs_from_php as _tier_object_attrs_from_php,
 )
@@ -2943,16 +2944,25 @@ def _seed_extension_attr_rows(
     }
     inserted = updated = 0
     touched: set[str] = set()
+    names_by_slug: dict[str, set[str]] = {}
+    for slug, attr in wanted:
+        names_by_slug.setdefault(slug, set()).add(attr)
     for (slug, attr), spec in sorted(wanted.items()):
         source = existing.get((slug, attr))
         if source is not None and source != "sgs-ext":
             continue
+        ext_type = _canonical_attr_type(spec.get("type", "string"))
+        # A roster that names no tier_shape still declares a flat Tablet/Mobile family by its attribute names, and the
+        # route writes a family's per-device values only into rows marked flat_sibling (the same test as block.json's).
+        ext_shape = spec.get("tier_shape") or flat_scalar_sibling_shape(
+            attr, ext_type, names_by_slug[slug]
+        )
         values = (
-            _canonical_attr_type(spec.get("type", "string")),
+            ext_type,
             json.dumps(spec["default"]) if "default" in spec else None,
             json.dumps(spec["enum"]) if spec.get("enum") else None,
             int(spec.get("is_responsive", 0)),
-            spec.get("tier_shape"),
+            ext_shape,
         )
         touched.add(slug)
         if source is None:
@@ -3255,6 +3265,46 @@ def _reconcile_object_family_tiers(conn: sqlite3.Connection, dry_run: bool = Fal
     if cleared and not dry_run:
         conn.commit()
     return {"object_tier_fossils_cleared": len(cleared), "detail": cleared}
+
+
+def _complete_flat_family_tiers(conn: sqlite3.Connection, dry_run: bool = False) -> dict:
+    """Stage 1 sub-step C3: every row of a flat Tablet/Mobile family names its device.
+
+    The cloning route writes a family's per-device value by asking which row of the family carries css_tier 'desktop',
+    'tablet' or 'mobile' (scripts/computed-route/lib/db.mjs::siblings). C2's rule already says a base with sibling rows
+    carries 'desktop' while its siblings carry 'tablet' and 'mobile', but the css_tier writers leave a numeric family
+    short of it: extract-signatures derives the base's tier from an emitted custom property that has a tier-suffixed
+    twin, and a family whose tablet and mobile settings print the SAME custom property in a media query (brand-strip's
+    --sgs-logo-max-height) has no twin, so its base stays NULL. A hand-authored extension roster names no tier at all.
+
+    Fills only a NULL, and only on a row classified `flat_sibling` (so a boolean toggle family and an object family are
+    out of scope here): the base gets 'desktop', a Tablet row 'tablet', a Mobile row 'mobile'. Never overwrites a value a
+    writer set. Runs after C (the last writer of css_tier) and C2, and is idempotent.
+    """
+    rows = conn.execute(
+        """
+        SELECT block_slug, attr_name FROM block_attributes
+        WHERE tier_shape = 'flat_sibling' AND css_tier IS NULL
+        ORDER BY block_slug, attr_name
+        """
+    ).fetchall()
+    filled = []
+    for slug, attr in rows:
+        if attr.endswith("Tablet") and len(attr) > len("Tablet"):
+            tier = "tablet"
+        elif attr.endswith("Mobile") and len(attr) > len("Mobile"):
+            tier = "mobile"
+        else:
+            tier = "desktop"
+        filled.append(f"{slug}.{attr} -> {tier}")
+        if not dry_run:
+            conn.execute(
+                "UPDATE block_attributes SET css_tier = ? WHERE block_slug = ? AND attr_name = ? AND css_tier IS NULL",
+                (tier, slug, attr),
+            )
+    if filled and not dry_run:
+        conn.commit()
+    return {"flat_family_tiers_filled": len(filled), "detail": filled}
 
 
 def _populate_emit_shape(
@@ -3698,6 +3748,11 @@ def stage_1_sgs_codebase_scan(conn: sqlite3.Connection, dry_run: bool = False) -
             f"Stage 1 (object-tier fossils): cleared={ot_counts['object_tier_fossils_cleared']}"
             + (f" -> {', '.join(ot_counts['detail'])}" if ot_counts["detail"] else "")
         )
+
+        # --- Stage 1 sub-step C3: name the device of every flat Tablet/Mobile family row ---
+        # MUST run AFTER sub-step C (the last css_tier writer) and C2. See the function docstring.
+        ff_counts = _timed(timings, "flat-family tiers", _complete_flat_family_tiers, conn, dry_run=False)
+        print(f"Stage 1 (flat-family tiers): filled={ff_counts['flat_family_tiers_filled']}")
 
         # --- Stage 1 sub-step D: seed block_attributes.emit_shape (FR-31-2.6) ---
         # (AFTER canonical assignment + overrides so `role` is final — emit_shape is

@@ -8,8 +8,11 @@ shapes (`.claude/plans/cloning-pipeline-tier-migration-requirements.md` G5):
 
   1. flat_sibling — the attribute has a declared `{attr}Tablet`/`{attr}Mobile`
      sibling (e.g. `sgs/hero.backgroundImage` + `backgroundImageTablet`/
-     `backgroundImageMobile`, a per-device asset picker). Already correct —
-     never a migration target.
+     `backgroundImageMobile`, a per-device asset picker, or the numeric
+     `sgs/brand-strip.maxHeight` + `maxHeightTablet`/`maxHeightMobile`). Already
+     correct — never a migration target. A string, number or integer family is
+     classified too (see `flat_scalar_sibling_shape`): the cloning route writes a
+     per-device value into the family's siblings only for a `flat_sibling` row.
   2. tier_object  — ONE attribute whose value is `{desktop,tablet,mobile}`,
      consumed via `sgs_responsive_normalise_object()` /
      `sgs_emit_responsive_css()` / `sgs_typography_css_rule()` /
@@ -61,12 +64,11 @@ For an object-typed attribute, in order:
   f. None of the above (elimination fallback, the dynamic-key typography
      family etc.) -> 'tier_object' (shape 2 by elimination).
 
-A non-object-typed attribute always returns None from
-`classify_object_attr_shape()` — the caller in `sgs-update-v2.py` checks
-`has_declared_tier_sibling()` BEFORE branching on attr_type (mechanism 1a/1b
-applies to scalars too, for `is_responsive`), but the closed tier_shape
-COLUMN is scoped to object-typed attributes only per its own spec — scalars
-get NULL there regardless of sibling status.
+A non-object attribute is classified only by the sibling test: a string,
+number or integer with a declared Tablet/Mobile sibling is `flat_sibling`,
+anything else (a boolean, an array, a lone scalar) gets NULL. The box and
+tier-object tests below read an object's value shape, so they never apply to
+a scalar.
 
 UK English in all output.
 """
@@ -683,6 +685,25 @@ def is_asset_like_attr(attr_name: str) -> bool:
 # The full 5-shape classifier
 # ---------------------------------------------------------------------------
 
+# The scalar types a flat Tablet/Mobile family can hold and the cloning route can write per device. A boolean is left
+# out on purpose: the route reads "no tier_shape" on a yes/no setting as "a plain toggle" when it decides which
+# settings can give a draft's value (lib/resolve.mjs::canGive), so a per-device toggle family stays unclassified.
+FLAT_SCALAR_TYPES = ("number", "integer", "string")
+
+
+def flat_scalar_sibling_shape(attr_name: str, attr_type: str, attrs: dict) -> str | None:
+    """'flat_sibling' for a string, number or integer attribute that has a declared Tablet/Mobile sibling or is one
+    (`maxHeight`, `maxHeightTablet`, `maxHeightMobile`); None for everything else.
+
+    The one test both the block.json seeder (`classify_object_attr_shape`) and the extension-row seeder use, so a
+    family is classified the same whichever file declares it. `attrs` is every attribute of the block (name -> spec or
+    anything), as `has_declared_tier_sibling` reads it.
+    """
+    if attr_type in FLAT_SCALAR_TYPES and has_declared_tier_sibling(attr_name, attrs):
+        return "flat_sibling"
+    return None
+
+
 def classify_object_attr_shape(
     attr_name: str,
     attr_type: str,
@@ -692,18 +713,17 @@ def classify_object_attr_shape(
     wrapper_tier_attrs: set,
 ) -> str | None:
     """Return 'flat_sibling' | 'tier_object' | 'box_only' | None for an
-    OBJECT-TYPED attribute. Returns None immediately for a non-object
-    `attr_type` — the caller decides separately whether a scalar
-    flat-sibling base/sibling counts for its own purposes (e.g.
-    `is_responsive`); the tier_shape COLUMN this feeds is scoped to
-    object-typed attributes only, per its own spec.
+    attribute. An object-typed attribute runs the full doctrine below; a
+    string, number or integer is `flat_sibling` when it has a declared
+    Tablet/Mobile sibling (`flat_scalar_sibling_shape`) and None otherwise;
+    any other type is None.
 
     See the module docstring's "THE FULL 5-SHAPE DOCTRINE" section for the
     decision order and rationale — ported verbatim from `sgs-update-v2.py`'s
     `_compute_is_responsive()` (D968), only the return values differ.
     """
     if attr_type != "object":
-        return None
+        return flat_scalar_sibling_shape(attr_name, attr_type, attrs)
 
     if has_declared_tier_sibling(attr_name, attrs):
         return "flat_sibling"
