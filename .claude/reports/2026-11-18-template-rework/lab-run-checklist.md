@@ -19,7 +19,7 @@ Ran on the lab copy, signed-out and signed-in views included (`lab-findings.md`:
 
 ## Order confirmation (Task 7)
 
-Ran: steps 1 and 2 on the lab copy; steps 3 and 4 as the states check with a gift order, a guest order and a wrong key (`lab-findings.md`: "Order confirmation states"): all as expected except the owner's view-order card under a wrong key, which waits for a plugin fix and a render check (plan Task 7 Status).
+Ran: steps 1 and 2 on the lab copy; steps 3 and 4 as the states check with a gift order, a guest order and a wrong key (`lab-findings.md`: "Order confirmation states"): all as expected except the owner's view-order card under a wrong key, fixed on 2026-11-20 (`lab-findings.md`, "Order confirmation states").
 
 1. Rerun intake for the client so the confirmation's record gets its skeleton, then `node scripts/computed-route/manifest.mjs mamas-munches-redesign --site local-mediatest-trlab --only template-order-confirmation --apply`. The entry must show `copy.from: "fill"` and an `intakeSurface`.
 2. `node scripts/computed-route/site-run.mjs mamas-munches-redesign --site local-mediatest-trlab --only template-order-confirmation --jobs 1`. The proposal's `templatePieces` must list the placed pieces.
@@ -29,7 +29,7 @@ Ran: steps 1 and 2 on the lab copy; steps 3 and 4 as the states check with a gif
 
 ## Product page and shop listing (Task 7)
 
-Ran on Mama's lab copy for the product page and the shop listing (`lab-findings.md`: "Reruns after the walk fix"). Not run: step 5 (Eye Care).
+Ran on Mama's lab copy for the product page and the shop listing (`lab-findings.md`: "Reruns after the walk fix"). Step 5 (Eye Care) ran on 2026-11-20 on `local-mediatest-trec` (`lab-findings.md`, "Eye Care from blank"): both pieces placed, and both pages differ from the draft.
 
 1. `node scripts/computed-route/skeleton.mjs propose --client mamas-munches-redesign --surface product`, then `--surface shop`. Confirm `proposal.templatePieces` and that the paint gate accepts `sgs/buybox` on the copy.
 2. Run Fill, build and the template copy for both surfaces.
