@@ -10,7 +10,7 @@ import test, { after, before } from 'node:test';
 import { findPartsInPage, READ_PROPS } from '../lib/fill-part-look.mjs';
 import { loadChromium } from '../lib/fill-read.mjs';
 import { evaluateModes } from '../lib/part-look-modes.mjs';
-import { liveViewPaths, menuInPage, mergeViewReads, openItemInPage, partsOfView, signInInPage, signedInSeedOf } from '../lib/part-look-signed-in.mjs';
+import { liveViewPaths, menuInPage, mergeViewReads, openItemInPage, partsOfView, readTabViews, shotName, signInInPage, signedInSeedOf } from '../lib/part-look-signed-in.mjs';
 import { liveSelectorsFor } from '../lib/part-look-verify.mjs';
 import { loginOf } from '../part-look.mjs';
 
@@ -178,3 +178,35 @@ test( 'the account\'s view switches follow what the draft draws: order cards, th
 	const none = evaluateModes( { block: 'sgs/account', rules, rows, reads: { 'order-row-thumbs': at( 2 ) } } );
 	assert.deepEqual( none.writes, [], 'negative control: a draft that draws none of them switches nothing on' );
 } );
+
+test( 'MUST FAIL: a tab whose control did not open is noted and not read, so the previous view is never recorded under its name', async () => {
+	const opened = [];
+	const read = [];
+	const notes = [];
+	const done = await readTabViews( { tabs: 3, width: 768, notes, open: async ( i ) => ( opened.push( i ), 1 !== i ), read: async ( i ) => read.push( i ) } );
+	assert.deepEqual( opened, [ 0, 1, 2 ], 'every tab is tried' );
+	assert.deepEqual( read, [ 0, 2 ], 'the tab that did not open is not read' );
+	assert.equal( done, 2 );
+	assert.deepEqual( notes, [ 'tab 2 of the account menu could not be opened at 768px, so it is not read' ] );
+	// Negative control: every tab opening reads every tab and notes nothing.
+	const all = [];
+	const quiet = [];
+	assert.equal( await readTabViews( { tabs: 2, width: 1440, notes: quiet, open: async () => true, read: async ( i ) => all.push( i ) } ), 2 );
+	assert.deepEqual( [ all, quiet ], [ [ 0, 1 ], [] ] );
+	// The menu's own answer is what open() reports: a tab index past the controls is not opened.
+	await tabPage.setContent( ORDERS );
+	assert.equal( await tabPage.evaluate( menuInPage, { action: 'open', index: 9 } ), false );
+	assert.equal( await tabPage.evaluate( menuInPage, { action: 'open', index: 1 } ), true );
+} );
+
+test( 'MUST FAIL: a picture\'s file name holds no character a Windows file name refuses, under plain permalinks too, and two views never share one', () => {
+	const name = ( p, width = 1440 ) => shotName( { prefix: 'my-account-in-before', path: p, width } );
+	assert.equal( name( '/?page_id=12&view-order=7' ), 'my-account-in-before-page_id-12-view-order-7-1440.png' );
+	assert.equal( name( '/my-account/orders/', 375 ), 'my-account-in-before-my-account-orders-375.png', 'pretty permalinks keep their name' );
+	assert.equal( name( '/' ), 'my-account-in-before-account-1440.png', 'the home path is the account' );
+	assert.notEqual( name( '/?page_id=12&view-order=7' ), name( '/?page_id=12&view-order=8' ) );
+	for ( const p of [ '/?page_id=12&view-order=7', '/shop/?a=<b>:"c"|*', '/a\\b/' ] ) {
+		assert.doesNotMatch( name( p ), /[<>:"/\\|?*]/, p );
+	}
+} );
+

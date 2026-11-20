@@ -88,5 +88,35 @@
 		"find": "if ( at < 1 || at === String( text ).length - 1 ) {",
 		"replace": "if ( at < 0 ) {",
 		"why": "a login with no password is accepted"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "if ( ! await open( i ) ) {",
+		"replace": "if ( false && ! await open( i ) ) {",
+		"why": "a tab whose control did not open is read, so the previous view is recorded under its name"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "await read( i );\n\t\tdone++;",
+		"replace": "done++;",
+		"why": "no tab is read"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "String( viewPath ).split( /[^A-Za-z0-9._-]+/ ).filter( Boolean ).join( '-' )",
+		"replace": "String( viewPath ).split( '/' ).filter( Boolean ).join( '-' )",
+		"why": "a query string with ? and = goes into a picture's file name"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "String( viewPath ).split( /[^A-Za-z0-9._-]+/ )",
+		"replace": "String( viewPath ).split( /[?=&]+/ )",
+		"why": "only some characters a Windows file name refuses are cleaned"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": ".join( '-' ) || 'account';\n\treturn `${ prefix }",
+		"replace": ".join( '-' );\n\treturn `${ prefix }",
+		"why": "the account page's picture has no name"
 	}
 ]

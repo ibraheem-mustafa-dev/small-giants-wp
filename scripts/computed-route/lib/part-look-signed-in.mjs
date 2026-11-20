@@ -117,6 +117,22 @@ export function openItemInPage() {
 	return true;
 }
 
+// Opens each account-menu tab in turn and reads it. `open( i )` answers whether tab i opened (menuInPage's answer); a tab that did not
+// open is noted and skipped, never read, because the page still shows the previous view and its parts would be recorded under this
+// tab's name. Returns how many tabs were read.
+export async function readTabViews( { tabs, open, read, notes, width } ) {
+	let done = 0;
+	for ( let i = 0; i < tabs; i++ ) {
+		if ( ! await open( i ) ) {
+			notes.push( `tab ${ i + 1 } of the account menu could not be opened at ${ width }px, so it is not read` );
+			continue;
+		}
+		await read( i );
+		done++;
+	}
+	return done;
+}
+
 const settle = async ( page ) => {
 	await page.waitForFunction( () => document.querySelector( '#dc-root' )?.children.length > 0, null, { timeout: 45000 } ).catch( () => {} );
 	await page.evaluate( () => document.fonts?.ready ).catch( () => {} );
@@ -157,11 +173,17 @@ export async function readSignedInParts( { draftDir, mainFile, signinFile, spec,
 				if ( ! tabs ) {
 					throw new Error( `${ mainFile } shows no account menu after signing in on ${ signinFile }: the draft did not sign in` );
 				}
-				for ( let i = 0; i < tabs; i++ ) {
-					await page.evaluate( menuInPage, { action: 'open', index: i } );
-					await page.waitForTimeout( 700 );
-					await read( page, width, `tab ${ i + 1 }`, partsOfView( parts, 'tab' ) );
-				}
+				await readTabViews( {
+					tabs,
+					width,
+					notes,
+					open: async ( i ) => {
+						const opened = await page.evaluate( menuInPage, { action: 'open', index: i } );
+						await page.waitForTimeout( 700 );
+						return opened;
+					},
+					read: ( i ) => read( page, width, `tab ${ i + 1 }`, partsOfView( parts, 'tab' ) ),
+				} );
 				// The item page opens from the first tab's list.
 				await page.evaluate( menuInPage, { action: 'open', index: 0 } );
 				await page.waitForTimeout( 700 );
@@ -266,6 +288,13 @@ export async function signInLive( page, base, { user, pass } ) {
 	}
 }
 
+// The file name of a live view's picture: the site path with every run of characters a Windows file name cannot hold (`?`, `=`, `&`, `:`, `/`)
+// as one hyphen, so plain permalinks (`/?page_id=12&view-order=7`) name a file and two such views never share one.
+export function shotName( { prefix, path: viewPath, width } ) {
+	const slug = String( viewPath ).split( /[^A-Za-z0-9._-]+/ ).filter( Boolean ).join( '-' ) || 'account';
+	return `${ prefix }-${ slug }-${ width }.png`;
+}
+
 // Full-page pictures of the scratch copy's signed-in views at one width: { path: file }.
 export async function shootLiveSignedIn( { base, pagePath, login, orderView = null, width = 1440, dir, prefix } ) {
 	const { chromium } = await loadChromium();
@@ -280,7 +309,7 @@ export async function shootLiveSignedIn( { base, pagePath, login, orderView = nu
 		for ( const p of paths ) {
 			await page.goto( `${ base }${ p }`, { waitUntil: 'load', timeout: 60000 } );
 			await page.waitForTimeout( 1200 );
-			const file = path.join( dir, `${ prefix }-${ p.split( '/' ).filter( Boolean ).join( '-' ) || 'account' }-${ width }.png` );
+			const file = path.join( dir, shotName( { prefix, path: p, width } ) );
 			await page.screenshot( { path: file, fullPage: true } );
 			files[ p ] = file;
 		}
