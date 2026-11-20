@@ -13,7 +13,7 @@
 //            must be at least the element's padding box.
 //   - capped the stretching children take a narrower extent centred in the content box: the band is that extent plus the
 //            element's horizontal padding (the band is border-box and carries the padding).
-// A child that is not drawn, or is out of flow, says nothing. The band setting's value is chosen from what holds every
+// A child that is not drawn, or is out of flow, says nothing (a dissolved wrapper is read out of flow too). The band setting's value is chosen from what holds every
 // width's need: the value the node already holds (its default included) when that holds them all, so nothing is written;
 // otherwise `full` where the band spans and the cap where it is capped, a cap equal to the theme's content or wide size
 // written as that preset (`normal`, `wide`), any other as its px length; a narrower tier is written only where the wider
@@ -94,7 +94,9 @@ export function bandNeed( own, kids, declaredOf = () => ( {} ) ) {
 	const pad = sum( s, [ 'padding-left', 'padding-right' ] );
 	const inner = box - pad;
 	const left = own.rect.x + sum( s, [ 'border-left-width', 'padding-left' ] );
-	const drawn = kids.filter( ( k ) => k?.rect?.w > 0 && false !== k.inFlow );
+	// A dissolved wrapper counts out of flow too: a hero's content block laid out absolutely from edge to edge is still the
+	// column the block's children sit in, and without it the children alone (inside that block's own padding) read as a cap.
+	const drawn = kids.filter( ( k ) => k?.rect?.w > 0 && ( k.dissolved || false !== k.inFlow ) );
 	if ( ! drawn.length ) {
 		return null;
 	}

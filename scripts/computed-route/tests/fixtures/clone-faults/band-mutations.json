@@ -10,7 +10,7 @@
 	{ "file": "lib/fill-band.mjs", "find": "const box = own.rect.w - sum( s, [ 'border-left-width', 'border-right-width' ] );", "replace": "const box = own.rect.w;", "why": "the band includes the element's border" },
 	{ "file": "lib/fill-band.mjs", "find": "const inner = box - pad;", "replace": "const inner = box;", "why": "the content box ignores the padding" },
 	{ "file": "lib/fill-band.mjs", "find": "return { exact: round( r - l + pad ), why:", "replace": "return { exact: round( r - l ), why:", "why": "a cap leaves out the band's own padding" },
-	{ "file": "lib/fill-band.mjs", "find": "&& false !== k.inFlow );", "replace": " );", "why": "an out-of-flow child counts" },
+	{ "file": "lib/fill-band.mjs", "find": "( k.dissolved || false !== k.inFlow ) );", "replace": " true );", "why": "an out-of-flow child counts" },
 	{ "file": "lib/fill-band.mjs", "find": "k?.rect?.w > 0 &&", "replace": "k?.rect &&", "why": "a zero-width child counts" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( ! drawn.length ) {\n\t\treturn null;", "replace": "if ( ! drawn.length ) {\n\t\treturn { min: box, why: 'none' };", "why": "no drawn child is taken as evidence" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( /flex/.test( display ) && /^row/.test( s[ 'flex-direction' ] ?? 'row' ) ) {", "replace": "if ( false ) {", "why": "a flex row's layout is read as a cap" },

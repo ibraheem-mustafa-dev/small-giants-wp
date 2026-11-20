@@ -40,5 +40,17 @@
 		"find": "const wrappers = wrapperTargets.map(",
 		"replace": "const wrappers = [].map(",
 		"why": "Fill never reads the wrappers"
+	},
+	{
+		"file": "lib/fill-band.mjs",
+		"find": "( k.dissolved || false !== k.inFlow )",
+		"replace": "false !== k.inFlow",
+		"why": "an absolutely laid out wrapper would say nothing and its children's extent read as a cap"
+	},
+	{
+		"file": "lib/fill-band.mjs",
+		"find": "( k.dissolved || false !== k.inFlow )",
+		"replace": "true",
+		"why": "every out-of-flow child would count"
 	}
 ]

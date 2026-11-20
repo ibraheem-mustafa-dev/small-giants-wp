@@ -82,6 +82,18 @@ test( 'MUST FAIL: bandNeed takes a dissolved wrapper as the cap even when it dec
 	assert.match( bandNeed( own( 1440, 40 ), [ drawn ] ).why, /sized by itself/, 'negative control: a wrapper the block draws carries its own cap' );
 } );
 
+test( 'MUST FAIL: bandNeed reads a dissolved wrapper that is laid out absolutely from edge to edge as the column the children sit in, so their extent inside its padding is no cap', () => {
+	const pad = { 'padding-left': '52px', 'padding-right': '52px', position: 'absolute' };
+	const wrapper = { ...box( 0, 1440, { display: 'block', ...pad } ), inFlow: false, dissolved: true };
+	const kid = box( 52, 1336, { display: 'block' } );
+	assert.equal( bandNeed( own( 1440 ), [ wrapper, kid ] ).min, 1440 );
+	assert.match( bandNeed( own( 1440 ), [ wrapper, kid ] ).why, /span/ );
+	// Negative controls: the children alone, and an out-of-flow child the block draws, still read as the cap; a dissolved wrapper in flow reads as before.
+	assert.equal( bandNeed( own( 1440 ), [ kid ] ).exact, 1336 );
+	assert.equal( bandNeed( own( 1440 ), [ { ...wrapper, dissolved: false }, kid ] ).exact, 1336 );
+	assert.equal( bandNeed( own( 1440 ), [ { ...wrapper, inFlow: true }, kid ] ).min, 1440 );
+} );
+
 const THREE = [ 375, 768, 1440 ];
 const FOUR = [ 375, 768, 1440, 1920 ];
 const DEFAULT = { display: 'block', color: 'rgb(20, 20, 20)', 'font-size': '16px', 'font-weight': '400', 'line-height': '24px', 'margin-top': '0px', 'margin-right': '0px', 'margin-bottom': '0px', 'margin-left': '0px', 'padding-top': '0px', 'padding-right': '0px', 'padding-bottom': '0px', 'padding-left': '0px', 'row-gap': '0px', 'column-gap': '0px', 'max-width': 'none' };
