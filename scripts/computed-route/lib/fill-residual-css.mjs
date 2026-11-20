@@ -212,6 +212,21 @@ const paintedOn = ( cal, db, block, slot ) => Object.entries( cal?.settings || {
 
 const rangeText = ( [ lo, hi ] ) => ( Infinity === hi ? ( 0 === lo ? 'every width' : `${ lo }px and up` ) : `${ lo }-${ hi - 1 }px` );
 
+// The padding sides of an element's border box, by the axis they take size from.
+const SIDE_AXIS = { 'padding-left': 'w', 'padding-right': 'w', 'padding-top': 'h', 'padding-bottom': 'h' };
+// The setting this node holds for the size on `axis` that paints a part calibration measured as the root's box on that axis
+// at every width: { attr, slot }, or null.
+function sizedPart( { db, cal, rec, node, axis } ) {
+	for ( const c of candidates( db, rec.name, 'w' === axis ? 'width' : 'height' ) ) {
+		const base = c.attr_name.replace( /(Tablet|Mobile)$/, '' );
+		const slot = cal?.settings?.[ base ]?.slot;
+		if ( undefined !== node.attributes?.[ base ] && undefined !== slot && '' !== slot && calSameBox( cal, '', slot, [ axis ] ) ) {
+			return { attr: base, slot };
+		}
+	}
+	return null;
+}
+
 // The pass. Returns { writes, unmapped (the rows left), answered, notes, ledger, rules (one per written rule: node, block,
 // part, state, range, declarations, css, bytes, reason), refused ([ { node, block, slot, property, state, value, reason } ]),
 // gaps (one per written rule, the customCssGaps shape), backlog (one per distinct block, part, property and state: the
@@ -277,6 +292,14 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			} ) : null;
 			if ( heldBy ) {
 				refuse( r, `${ heldBy.attr_name } already holds ${ node.attributes[ heldBy.attr_name ] } on this instance, which does what the draft's ${ row.value } does` );
+				continue;
+			}
+			// The draft's side padding sits inside its element's border box. A size this instance holds on a part that is the root's
+			// box at rest (a disc the block draws as a shape inside its root) is that whole border box, so the root's padding added
+			// on top would grow the root past the draft's size.
+			const sized = SIDE_AXIS[ prop ] && '' === target.slot && ! state ? sizedPart( { db, cal, rec, node, axis: SIDE_AXIS[ prop ] } ) : null;
+			if ( sized ) {
+				refuse( r, `${ prop }: ${ sized.attr } holds the draft's whole ${ 'w' === SIDE_AXIS[ prop ] ? 'width' : 'height' } on ${ sized.slot }, the root's box, so the root's own padding is already inside it` );
 				continue;
 			}
 			if ( 'display' === prop ) {

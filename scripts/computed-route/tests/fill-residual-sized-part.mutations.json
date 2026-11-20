@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "const sized = SIDE_AXIS[ prop ] && '' === target.slot && ! state ? sizedPart(",
+		"replace": "const sized = false ? sizedPart(",
+		"why": "the root's padding is written beside a size held on its box part again"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "const sized = SIDE_AXIS[ prop ] && '' === target.slot && ! state ?",
+		"replace": "const sized = SIDE_AXIS[ prop ] && ! state ?",
+		"why": "a padding on a part other than the root is refused too"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "const sized = SIDE_AXIS[ prop ] && '' === target.slot && ! state ?",
+		"replace": "const sized = SIDE_AXIS[ prop ] && '' === target.slot ?",
+		"why": "a state's padding is refused too"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "if ( undefined !== node.attributes?.[ base ] && undefined !== slot && '' !== slot && calSameBox( cal, '', slot, [ axis ] ) ) {",
+		"replace": "if ( undefined !== slot && '' !== slot && calSameBox( cal, '', slot, [ axis ] ) ) {",
+		"why": "a size the instance does not hold refuses the padding"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "if ( undefined !== node.attributes?.[ base ] && undefined !== slot && '' !== slot && calSameBox( cal, '', slot, [ axis ] ) ) {",
+		"replace": "if ( undefined !== node.attributes?.[ base ] && undefined !== slot && '' !== slot ) {",
+		"why": "a part that is a different box refuses the padding"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "'padding-top': 'h', 'padding-bottom': 'h' };",
+		"replace": "'padding-top': 'w', 'padding-bottom': 'w' };",
+		"why": "a width covers the vertical padding"
+	}
+]
