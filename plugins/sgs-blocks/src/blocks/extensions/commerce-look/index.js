@@ -14,6 +14,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { COMMERCE_LOOK_ATTRIBUTES } from './attributes';
 import { CANVAS_SCOPE, setLookAttributes, useCommerceLookCss } from './canvas-css';
 import { CheckoutWordingPanel } from './panels-checkout-wording';
+import { BasketSpeedPanel } from './panels-basket-speed';
 import { TablePanel } from './table-panels';
 import { ButtonPanel, CheckoutPanels, ColumnsPanel, CouponPanel, FieldsPanel, LineItemsPanel, NoticePanel, SummaryPanel } from './panels';
 
@@ -53,6 +54,7 @@ if ( ! window.__sgsCommerceLookRegistered ) {
 					<TablePanel { ...shared } isCart={ isCart } />
 					{ ! isCart && <CheckoutPanels { ...shared } /> }
 					{ ! isCart && <CheckoutWordingPanel { ...shared } /> }
+					{ isCart && <BasketSpeedPanel /> }
 				</InspectorControls>
 			</>
 		);
