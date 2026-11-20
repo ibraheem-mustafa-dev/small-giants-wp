@@ -6,10 +6,10 @@
  },
  "baseline": {
   "home": {
-   "bytes": 502210,
-   "rules": 3465,
-   "distinct_bodies": 982,
-   "has_rules": 174
+   "bytes": 422348,
+   "rules": 2790,
+   "distinct_bodies": 981,
+   "has_rules": 150
   }
  }
 }

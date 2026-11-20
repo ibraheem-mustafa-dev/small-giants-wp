@@ -9,28 +9,28 @@
  },
  "baseline": {
   "home": {
-   "bytes": 414388,
-   "rules": 3178,
-   "distinct_bodies": 1083,
-   "has_rules": 74
+   "bytes": 320079,
+   "rules": 2374,
+   "distinct_bodies": 1080,
+   "has_rules": 62
   },
   "shop": {
-   "bytes": 218264,
-   "rules": 1652,
+   "bytes": 185882,
+   "rules": 1373,
    "distinct_bodies": 669,
-   "has_rules": 53
-  },
-  "product": {
-   "bytes": 241917,
-   "rules": 1741,
-   "distinct_bodies": 775,
    "has_rules": 50
   },
+  "product": {
+   "bytes": 217163,
+   "rules": 1521,
+   "distinct_bodies": 775,
+   "has_rules": 47
+  },
   "basket": {
-   "bytes": 188845,
-   "rules": 1319,
+   "bytes": 166761,
+   "rules": 1127,
    "distinct_bodies": 647,
-   "has_rules": 46
+   "has_rules": 44
   }
  }
 }
