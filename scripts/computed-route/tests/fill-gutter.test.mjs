@@ -1,7 +1,7 @@
 // A section whose draft has no side padding is written as 0 side padding, where the gutter would otherwise narrow it
 // (lib/fill-gutter.mjs): a calibrated instance is nested in the calibration wrapper's gutter, so its default paint of side
 // padding is 0 and a draft 0 read as "equal"; a section straight in the page's main pays the gutter.
-import test from 'node:test';
+import nodeTest from 'node:test';
 import assert from 'node:assert/strict';
 import { fillTree } from '../lib/fill-resolve.mjs';
 import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
@@ -15,7 +15,11 @@ const W3 = [ 375, 768, 1440 ];
 const GUTTER = { mobile: '20px', tablet: '32px', desktop: '40px' };
 const BOX = { display: 'block', color: 'rgb(20, 20, 20)', 'font-size': '16px', 'line-height': '24px', 'padding-top': '0px', 'padding-right': '0px', 'padding-bottom': '0px', 'padding-left': '0px' };
 // The block's real calibration: its instance's default paint of side padding is 0px (nested in the wrapper's gutter).
-const CAL = { 'sgs/container': loadCalibration( new URL( '../cache', import.meta.url ).pathname.replace( /^\/([A-Za-z]:)/, '$1' ), 'sgs/container', 'local-mediatest-indus' ) };
+// It is read for indus-test (the mirror a registered scratch copy of it maps to), from the gitignored cache: a worktree whose
+// cache holds no indus-test paint of sgs/container skips these tests and says why, rather than failing on a missing file.
+const CAL = { 'sgs/container': loadCalibration( new URL( '../cache', import.meta.url ).pathname.replace( /^\/([A-Za-z]:)/, '$1' ), 'sgs/container', 'indus-test' ) };
+const NO_CAL = ! CAL[ 'sgs/container' ] ? 'no sgs/container slot map in cache/' : CAL[ 'sgs/container' ].paintMissing ?? null;
+const test = NO_CAL ? ( name, fn ) => nodeTest( name, { skip: `needs the indus-test calibration of sgs/container in cache/ (gitignored; run calibrate.mjs): ${ NO_CAL }` }, fn ) : nodeTest;
 
 // main (contentWidth full) > section; the section's draft pads `pad` (top, right, bottom, left) at every width.
 function run( { pad = [ 38, 0, 38, 0 ], inner = null, sectionAttrs = {}, mainAttrs = { contentWidth: { desktop: 'full' } }, kid = { x: 0, w: 1000 }, gutter = GUTTER } = {} ) {
