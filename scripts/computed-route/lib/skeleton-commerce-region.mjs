@@ -29,6 +29,11 @@ import { isAccountRow } from './site-build-map.mjs';
 // view sends its visitor. The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
 // FR-48-92) says its filter rail can filter: { facets, brands, categories } (lib/skeleton-filter-rail.mjs).
 export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout' };
+// The commerce role of a page-map row: its template's, or `account` for the account page.
+export const roleOfRow = ( row ) => ( row ? COMMERCE_ROLES[ row.template ] ?? ( isAccountRow( row ) ? 'account' : null ) : null );
+// The block that draws a part the page map gives a WooCommerce row (FR-48-87): the row's role's piece
+// (rules.commerceRegion.roles.<role>.owner, else its block), or null for a row with no commerce role.
+export const ownerBlockOf = ( row, rule ) => ( ( spec ) => ( spec ? spec.owner ?? spec.block : null ) )( rule?.roles?.[ roleOfRow( row ) ] );
 const draftFile = ( s ) => /^([^:?#]+\.dc\.html)(?=[:?#]|$)/i.exec( String( s ?? '' ) )?.[ 1 ] ?? null;
 const filtersOf = ( catalogue ) => {
 	const kept = ( catalogue?.products || [] ).filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );

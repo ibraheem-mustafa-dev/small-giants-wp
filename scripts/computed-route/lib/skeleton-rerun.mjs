@@ -59,7 +59,7 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 	// A surface the run failed to read (a gap, no inventory) is never refilled from an older run's saved inventory: it keeps
 	// its failed entry and is listed as missing.
 	const read = ( x ) => ! x.gap && null != x.inventory;
-	const surfaces = Object.entries( skeletons ).filter( ( [ , x ] ) => read( x ) ).map( ( [ slug, x ] ) => ( { slug, id: x.id, kind: x.kind, name: x.name } ) );
+	const surfaces = Object.entries( skeletons ).filter( ( [ , x ] ) => read( x ) ).map( ( [ slug, x ] ) => ( { slug, id: x.id, kind: x.kind, name: x.name, route: x.route ?? null } ) );
 	const out = {};
 	const missing = [];
 	const handoffRoot = path.join( repo, 'sites', client, 'handoff' );
@@ -85,7 +85,7 @@ export function rerunSkeletons( { client, db, repo = REPO, skeletons, motion = n
 		const b = built[ s.id ] || built[ s.slug ] || null;
 		const site = siteOf( { repo, client, slug: s.slug } );
 		const ctx = proposalContext( { repo, client, slug: s.slug, id: s.id, breakpoints, site, cache } );
-		const r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id } );
+		const r = propose( { inventory, facts, surface: s.slug, surfaceKind: s.kind, surfaceName: s.name, built: b, motion, clientDecisions, picks: picks[ s.slug ] || {}, ...ctx, db, pageMap, surfaceId: s.id, surfaceRoute: s.route } );
 		assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton ${ s.slug }`, cache, allow: allowMissingPaint } );
 		r.proposal.stripRoots?.forEach( ( k ) => absorbedKeys.set( k, s.slug ) );
 		out[ s.slug ] = { kind: s.kind, name: s.name, built: b, rows: r.proposal.rows, counts: r.proposal.counts, problems: r.problems, skeleton: r.skeleton, entry: entryOf( s.slug, skeletons[ s.slug ], r, inventory ), fingerprints: fingerprintsOf( inventory ) };

@@ -15,7 +15,7 @@ import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { pxOf, everyWidth, someWidth } from './element-facts.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
-import { commerceRegion } from './skeleton-commerce-region.mjs';
+import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
@@ -875,6 +875,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e } ) => {
 			const own = e === m.root && 'blockPart' === role?.role ? R.blockOwnedPart?.byTemplate?.[ role.row.template ] : null;
 			return own ? v( 'blockOwnedPart', { block: own.block, absorb: true, attributes: { ...( own.attributes || {} ) }, reason: `${ own.reason }; the page map holds this surface as the ${ role.part.kind } part "${ role.part.label }" of the ${ role.row.slug } row` } ) : null;
+		},
+		// A surface the page map holds as a part of another row, with no row of its own (lib/skeleton-surface-role.mjs, FR-48-87),
+		// is never built as its own form or blocks: on a WooCommerce row it is that row's piece, which draws it (the checkout's
+		// form, the account's address form), so the piece is the root and everything in it is absorbed; any other part (a part of
+		// its page, a record the draft code shows nothing for) is built on its row's own surface, so this surface places nothing.
+		( { e } ) => {
+			if ( e !== m.root || 'ownedPart' !== role?.role || ! R.ownedPart ) {
+				return null;
+			}
+			const held = `the page map holds this surface as the ${ role.part.kind } part "${ role.part.label }" of the ${ role.row.slug } row (owner ${ role.part.owner })`;
+			const block = 'woocommerce' === role.part.owner ? ownerBlockOf( role.row, R.commerceRegion ) : null;
+			return block ? v( 'ownedPart', { block, absorb: true, reason: `${ R.ownedPart.pieceReason }; ${ held }` } ) : v( 'ownedPart', { action: 'remove', reason: `${ R.ownedPart.rowReason }; ${ held }` } );
 		},
 		// The control that opens such a drawer is that block too (the bag pill is the cart block's trigger): the block draws the
 		// drawer and its own trigger, so the control's label, count and icon are absorbed into the trigger settings. Before the

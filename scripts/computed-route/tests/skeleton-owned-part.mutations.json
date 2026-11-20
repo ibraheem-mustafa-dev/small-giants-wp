@@ -1,0 +1,14 @@
+[
+	{"file": "lib/skeleton-surface-role.mjs", "find": "rows.some( ( r ) => r.draftId === `surfaces.json ${ id }` ) ) {", "replace": "false ) {", "why": "a saved form with a row of its own is read as a part"},
+	{"file": "lib/skeleton-surface-role.mjs", "find": "! id || NOT_PARTS.has( kind ) ||", "replace": "! id ||", "why": "a page, header or footer is another row's part"},
+	{"file": "lib/skeleton-surface-role.mjs", "find": "return isWooRow( woo ) ? {", "replace": "return woo ? {", "why": "a form on an ordinary page is a WooCommerce row's part"},
+	{"file": "lib/skeleton-surface-role.mjs", "find": "|| ( r.folds || [] ).some( ( f ) => routePath( f ) === at ) ) || null", "replace": "|| false ) || null", "why": "a route a row folds in is not that row's page"},
+	{"file": "lib/skeleton-surface-role.mjs", "find": "hash.startsWith( '/' ) ?", "replace": "false ?", "why": "a hash route loses its fragment"},
+	{"file": "lib/skeleton-surface-role.mjs", "find": "new Set( [ 'woocommerce', 'page', 'draft-notes' ] )", "replace": "new Set( [ 'woocommerce', 'page' ] )", "why": "a notes-only part is not a part"},
+	{"file": "lib/skeleton-surface-role.mjs", "find": "OWNERS.has( p.owner ) && p.draftId === `surfaces.json ${ id }` )", "replace": "OWNERS.has( p.owner ) )", "why": "a part naming another record holds this surface"},
+	{"file": "lib/skeleton-rules.mjs", "find": "return block ? v( 'ownedPart', { block, absorb: true,", "replace": "return block ? v( 'ownedPart', { block, absorb: false,", "why": "the piece does not absorb the elements in it"},
+	{"file": "lib/skeleton-rules.mjs", "find": "v( 'ownedPart', { action: 'remove', reason: `${ R.ownedPart.rowReason }", "replace": "v( 'ownedPart', { action: 'keep', reason: `${ R.ownedPart.rowReason }", "why": "a part of its page still places its elements"},
+	{"file": "lib/skeleton-commerce-region.mjs", "find": "?? ( isAccountRow( row ) ? 'account' : null ) : null );", "replace": "?? null : null );", "why": "the account row has no commerce role"},
+	{"file": "lib/skeleton-propose.mjs", "find": "name: surfaceName, route: surfaceRoute, m, view,", "replace": "name: surfaceName, route: null, m, view,", "why": "the surface's route is not passed to the role"},
+	{"file": "lib/skeleton-propose.mjs", "find": "name: surfaceName, route: surfaceRoute, m, view,", "replace": "route: surfaceRoute, m, view,", "why": "the surface's name is not passed to the role"}
+]

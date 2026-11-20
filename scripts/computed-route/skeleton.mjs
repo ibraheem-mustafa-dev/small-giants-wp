@@ -100,7 +100,7 @@ export function intakeContext( { client, surface, repo = REPO } ) {
 	// The handoff record of the same id carries the states (with the sc-if templates each shows); the draft's width thresholds are intake's.
 	const states = statesOfRecord( { repo, client, id: entry.id } );
 	const thresholds = thresholdsOf( intake.breakpoints );
-	return { slug, id: entry.id ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), states, thresholds };
+	return { slug, id: entry.id ?? null, route: entry.route ?? null, pageMap: intake.pageMap || [], kind: entry.kind, name: entry.name, built: built[ entry.id ] || built[ slug ] || null, rootComponent: entry.inventory?.checks?.rootName || null, motion: loopingKeys( intake.inventory?.animations ), states, thresholds };
 }
 
 // The intake context and the saved client decisions of a surface as propose and review read them: decisions under the intake
@@ -144,7 +144,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	// and the shop's its filter rail from the draft catalogue's facets (lib/skeleton-filter-rail.mjs).
 	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ), loadCatalogue( repo, client ) );
 	const site = readSurface( repo, client, surface ).site;
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, db } );
+	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, surfaceRoute: ctx.route, db } );
 	// A template's working pieces (the buy box, the bound title, the shop's sorting) replace the draft's imitation of them (data/template-pieces.json).
 	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory } );
 	Object.assign( r, { skeleton: pieces.tree, problems: [ ...r.problems, ...pieces.problems ] } );

@@ -783,6 +783,13 @@
 			},
 			"reason": "a drawer the page map holds as a block-owned part of another row is drawn by that block, never the navigation drawer: the block is the surface's root and every element in it is absorbed (Bean, 2026-10-23, plan 2026-10-23-cloning-tool-completion S5: the bag drawer is part of the cart block)"
 		},
+		"ownedPart": {
+			"id": "ownedPart",
+			"scope": "a surface's root, when the page map holds the surface as a part of another row and gives it no row of its own (lib/skeleton-surface-role.mjs::surfaceRole role ownedPart: a part naming the surface's record with owner woocommerce, page or draft-notes, or a surface other than a page, header or footer on a WooCommerce row's page, its route the row's own or one the row folds in)",
+			"pieceReason": "the page map holds this surface as a part of a WooCommerce row, so the row's WooCommerce piece (rules.commerceRegion.roles, the role's owner block, else its block) draws it: the piece is the root and every element in it is absorbed, never cloned as its own form or blocks (Bean, 2026-10-30, FR-48-87)",
+			"rowReason": "the page map holds this surface as a part of another row with no row of its own, so that row's own surface builds it and this surface places nothing (Bean, 2026-10-30, FR-48-87)",
+			"reason": "a part the page map gives another row is drawn by that row: by its WooCommerce piece on a WooCommerce row, else by the row's own surface; it is never built as its own form or blocks (Bean, 2026-10-30)"
+		},
 		"blockPartOpener": {
 			"id": "blockPartOpener",
 			"selfPart": "pill",

@@ -113,8 +113,9 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // formLinks (lib/skeleton-form-link.mjs::formLinksOf: the saved forms a page may link), refs (lib/references.mjs::detectReferences),
 // draftLinks (lib/draft-link.mjs::draftLinksFor: the client's page map and routing that turn a draft link into a site address;
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
-// part, lib/skeleton-surface-role.mjs) and surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calTags = () => ( {} ), calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null } ) {
+// part, lib/skeleton-surface-role.mjs), surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) and
+// surfaceRoute (its surfaces.json route: the page whose page-map row may hold it as a part) }.
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calTags = () => ( {} ), calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, surfaceRoute = null } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -128,8 +129,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const formLinkOf = linkedFormOf( { view, scope, links: formLinks, refs, els: m.els, rule: facts.decisions.rules?.formLink } );
 	// A draft link's destination as a site address (lib/draft-link.mjs), for every writer of a link setting.
 	const siteLink = siteLinkResolver( draftLinks );
-	// The page map's role for the surface: a choice flow, or a part another row's block draws (lib/skeleton-surface-role.mjs).
-	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
+	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
+	// (lib/skeleton-surface-role.mjs).
+	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
 	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
