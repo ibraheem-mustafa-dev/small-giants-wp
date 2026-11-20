@@ -47,29 +47,62 @@ export function logoSizeWrites( { nodes, flat, refOf, reads, db, unmapped } ) {
 			out.unmapped.push( row );
 			continue;
 		}
-		// Each device's px, kept only where it differs from the next wider device's.
-		const tiers = {};
-		let carried = null;
-		for ( const [ tier, w ] of widths ) {
-			const px = Math.round( w );
-			if ( px !== carried ) {
-				tiers[ tier ] = px;
-				carried = px;
-			}
-		}
 		const node = flat[ rec.index ];
+		const written = [];
 		const put = ( attr, value, merge ) => {
 			const { before, after } = setAttr( node, { attr, value, merge } );
+			written.push( attr );
 			out.writes.push( { node: row.node, index: rec.index, block: rec.name, slot: '', prop: 'width', attr, before, after, widths: TIERS.map( ( [ w ] ) => w ), how: 'logo-size' } );
 		};
+		const px = Object.fromEntries( widths.map( ( [ tier, w ] ) => [ tier, Math.round( w ) ] ) );
 		if ( settings.max ) {
-			put( settings.max, Object.fromEntries( Object.entries( tiers ).map( ( [ t, px ] ) => [ t, `${ px }px` ] ) ), 'deep' );
+			// Each device's px in the ceiling, kept only where it differs from the next wider device's.
+			const tiers = {};
+			let carried = null;
+			for ( const [ tier ] of widths ) {
+				if ( px[ tier ] !== carried ) {
+					tiers[ tier ] = `${ px[ tier ] }px`;
+					carried = px[ tier ];
+				}
+			}
+			put( settings.max, tiers, 'deep' );
 		} else {
+			// The desktop px in the width setting; a smaller device's px in its sibling where it differs from the value it would
+			// inherit (the last one written), and a sibling the node holds that equals it removed, so it cannot override the
+			// inheritance. A desktop width the read lacks, or a differing device with no sibling, leaves the row unanswered.
 			const named = { desktop: settings.width, tablet: settings.tablet, mobile: settings.mobile };
-			Object.entries( tiers ).filter( ( [ t ] ) => named[ t ] ).forEach( ( [ t, px ] ) => put( named[ t ], px, 'replace' ) );
+			const plan = [];
+			let inherited = px.desktop;
+			let unwritable = undefined === inherited;
+			for ( const tier of [ 'tablet', 'mobile' ] ) {
+				if ( unwritable || undefined === px[ tier ] ) {
+					continue;
+				}
+				if ( px[ tier ] !== inherited ) {
+					named[ tier ] ? plan.push( [ named[ tier ], px[ tier ] ] ) : ( unwritable = true );
+					inherited = px[ tier ];
+				} else if ( named[ tier ] && undefined !== node.attributes?.[ named[ tier ] ] ) {
+					plan.push( [ named[ tier ], undefined ] );
+				}
+			}
+			if ( unwritable ) {
+				out.unmapped.push( row );
+				continue;
+			}
+			put( named.desktop, px.desktop, 'replace' );
+			for ( const [ attr, value ] of plan ) {
+				if ( undefined === value ) {
+					const before = node.attributes[ attr ];
+					delete node.attributes[ attr ];
+					written.push( `${ attr } (removed)` );
+					out.writes.push( { node: row.node, index: rec.index, block: rec.name, slot: '', prop: 'width', attr, before, after: undefined, widths: TIERS.map( ( [ w ] ) => w ), how: 'logo-size' } );
+				} else {
+					put( attr, value, 'replace' );
+				}
+			}
 		}
 		out.answered.push( answer( row, read.map( ( [ w ] ) => w ) ) );
-		const where = settings.max ? `${ settings.max } (the per-device size) because ${ settings.width } holds one value for every width` : `${ [ settings.width, settings.tablet, settings.mobile ].filter( Boolean ).join( ', ' ) } (the per-device widths)`;
+		const where = settings.max ? `${ settings.max } (the per-device size) because ${ settings.width } holds one value for every width` : `${ written.join( ', ' ) } (the per-device widths)`;
 		out.notes.push( `${ row.node } ${ rec.name }: the draft logo is ${ widths.map( ( [ tier, w ] ) => `${ Math.round( w ) }px at ${ tier }` ).join( ', ' ) }; written as ${ where }` );
 	}
 	out.unmapped = regroup( out.unmapped );

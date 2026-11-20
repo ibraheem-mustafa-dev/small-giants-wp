@@ -99,6 +99,29 @@ test( 'MUST FAIL: a footer logo 200px on mobile is written as the per-device wid
 	assert.match( r.notes[ 0 ], /260px at desktop, 260px at tablet, 200px at mobile/ );
 } );
 
+test( 'MUST FAIL: a sibling the node already holds that equals the width it would inherit is removed, so it cannot override it', () => {
+	const p = planted( { 1440: 160, 768: 200, 375: 200 } );
+	p.flat[ 0 ].attributes.widthMobile = 120;
+	const r = logoSizeWrites( p );
+	assert.equal( p.flat[ 0 ].attributes.width, 160 );
+	assert.equal( p.flat[ 0 ].attributes.widthTablet, 200 );
+	assert.equal( p.flat[ 0 ].attributes.widthMobile, undefined, 'the stale 120 is gone, so the phone inherits 200' );
+	assert.match( r.notes[ 0 ], /widthMobile \(removed\)/ );
+} );
+
+test( 'MUST FAIL: a differing device with no sibling setting, or no desktop read, leaves the row unanswered', () => {
+	const rows = [ { attr_name: 'width', css_property: 'width', is_responsive: 1, tier_shape: null }, { attr_name: 'widthMobile', css_property: 'width', is_responsive: 1, tier_shape: null } ];
+	const onlyMobile = planted( { 1440: 200, 768: 150, 375: 150 } );
+	onlyMobile.db = { prepare: () => ( { all: () => rows, get: () => undefined } ) };
+	const r = logoSizeWrites( onlyMobile );
+	assert.deepEqual( r.writes, [], 'nothing written when the tablet width cannot be held' );
+	assert.equal( r.unmapped.length, 1 );
+	const noDesktop = planted( { 768: 180, 375: 180 } );
+	const r2 = logoSizeWrites( noDesktop );
+	assert.deepEqual( r2.writes, [] );
+	assert.equal( r2.unmapped.length, 1 );
+} );
+
 test( 'a block with one width and a per-device ceiling takes the ceiling in lengths (the older shape)', () => {
 	const p = planted( { 1440: 260, 768: 260, 375: 200 } );
 	const rows = [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'maxWidth', css_property: 'max-width', is_responsive: 1, tier_shape: 'tier_object' } ];
@@ -106,6 +129,9 @@ test( 'a block with one width and a per-device ceiling takes the ceiling in leng
 	logoSizeWrites( p );
 	assert.deepEqual( p.flat[ 0 ].attributes.maxWidth, { desktop: '260px', mobile: '200px' } );
 	assert.equal( p.flat[ 0 ].attributes.widthMobile, undefined );
+	const unread = planted( {} );
+	unread.db = p.db;
+	assert.deepEqual( logoSizeWrites( unread ).writes, [], 'a logo with no measured width writes no empty ceiling' );
 } );
 
 test( 'a gap on another property, another slot or a block without the pair is left as it was', () => {

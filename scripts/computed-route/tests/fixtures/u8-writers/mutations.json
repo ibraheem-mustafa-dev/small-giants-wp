@@ -49,7 +49,7 @@
 	},
 	{
 		"file": "lib/fill-logo-size.mjs",
-		"find": "if ( px !== carried ) {",
+		"find": "if ( px[ tier ] !== carried ) {",
 		"replace": "if ( true ) {",
 		"why": "every tier is written, including ones equal to the wider tier"
 	},
@@ -91,8 +91,26 @@
 	},
 	{
 		"file": "lib/fill-logo-size.mjs",
-		"find": "put( named[ t ], px, 'replace' )",
-		"replace": "put( settings.width, px, 'replace' )",
-		"why": "every device's width goes into the desktop setting"
+		"find": "} else if ( named[ tier ] && undefined !== node.attributes?.[ named[ tier ] ] ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a stale sibling equal to the inherited width is kept and overrides it"
+	},
+	{
+		"file": "lib/fill-logo-size.mjs",
+		"find": "named[ tier ] ? plan.push( [ named[ tier ], px[ tier ] ] ) : ( unwritable = true );",
+		"replace": "named[ tier ] && plan.push( [ named[ tier ], px[ tier ] ] );",
+		"why": "a differing device with no sibling is dropped and the row still reported answered"
+	},
+	{
+		"file": "lib/fill-logo-size.mjs",
+		"find": "let unwritable = undefined === inherited;",
+		"replace": "let unwritable = false;",
+		"why": "a desktop width the read lacks is not a gap"
+	},
+	{
+		"file": "lib/fill-logo-size.mjs",
+		"find": "inherited = px[ tier ];\n\t\t\t\t} else",
+		"replace": "} else",
+		"why": "the next device is compared with the desktop width, not the last one written"
 	}
 ]
