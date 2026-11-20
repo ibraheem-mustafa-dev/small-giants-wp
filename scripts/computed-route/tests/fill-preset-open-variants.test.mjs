@@ -62,3 +62,22 @@ test( 'presetWrites matches a look to a fifth named preset when the setting is o
 	assert.equal( run( dbWith( [ BUTTON_OPEN ] ), OPEN_SCHEMA ), 'gold' );
 	assert.equal( run( dbWith( [ BUTTON_ENUM ] ), ENUM_SCHEMA ), undefined, 'an enum that does not list the name keeps it unwritten (negative control)' );
 } );
+
+test( 'MUST FAIL: block.json\'s own enum is the list, whatever the DB list says', () => {
+	const schema = () => ( { inheritStyle: { type: 'string', enum: [ 'primary', 'gold' ] } } );
+	const v = presetVariants( dbWith( [ BUTTON_SOURCE_LIST ] ), NAMES, schema );
+	assert.deepEqual( v[ 'sgs/button' ].variants, [ 'primary', 'gold' ] );
+} );
+
+test( 'MUST FAIL: a setting block.json declares as boolean is never a preset block, whatever list the DB holds', () => {
+	const boolDb = dbWith( [ [ 'sgs/heading', 'inheritStyle', 'string', 'false', '["secondary"]' ] ] );
+	const v = presetVariants( boolDb, NAMES, () => ( { inheritStyle: { type: 'boolean' } } ) );
+	assert.equal( v[ 'sgs/heading' ], undefined );
+} );
+
+test( 'a block with no block.json here is judged by the DB: its list, else open for a string (negative control)', () => {
+	const none = () => null;
+	assert.deepEqual( presetVariants( dbWith( [ BUTTON_ENUM ] ), NAMES, none )[ 'sgs/button' ].variants, [ 'primary', 'link', 'custom' ] );
+	assert.deepEqual( presetVariants( dbWith( [ BUTTON_OPEN ] ), NAMES, none )[ 'sgs/button' ].variants, [ 'primary', 'gold', 'ghost' ] );
+	assert.equal( presetVariants( dbWith( [ HEADING ] ), NAMES, none )[ 'sgs/heading' ], undefined );
+} );

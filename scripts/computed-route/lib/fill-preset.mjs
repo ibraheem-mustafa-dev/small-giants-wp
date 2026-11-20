@@ -47,13 +47,27 @@ export const RESERVED_STYLES = [ 'default', 'link', 'custom' ];
 // snapshot preset name except RESERVED_STYLES. Whether a setting is open is block.json's to say: one whose block.json declares
 // no `enum` is open whatever list the framework DB holds, because the reseed fills a string setting's list from what its source
 // compares it with (sgs/button's render.php tests `link` and `custom`), which names the reserved styles and never a site's
-// presets. A block whose values hold none of the names is still listed: it paints its default variant's hover lift.
+// presets; a block.json enum is the list itself, and the DB list stands only for a block with no block.json here. A setting
+// that is not a string (a heading's boolean `inheritStyle`) is never a preset block. A string block whose values hold none of
+// the names is still listed: it paints its default variant's hover lift.
 // schemaOf: a block's block.json attributes (lib/resolve.mjs::blockSchema; a test passes its own).
 export function presetVariants( db, presets, schemaOf = blockSchema ) {
 	const rows = db.prepare( "SELECT block_slug, attr_name, attr_type, enum_values FROM block_attributes WHERE attr_name = 'inheritStyle' AND ( enum_values IS NOT NULL OR attr_type = 'string' )" ).all();
 	const names = Object.keys( presets || {} );
-	const listed = ( r ) => null !== r.enum_values && Array.isArray( schemaOf( r.block_slug )?.[ r.attr_name ]?.enum );
-	return Object.fromEntries( rows.map( ( r ) => [ r.block_slug, { attr: r.attr_name, variants: names.filter( ( v ) => ( listed( r ) ? JSON.parse( r.enum_values ).includes( v ) : ! RESERVED_STYLES.includes( v ) ) ) } ] ) );
+	// The names a row's setting allows: block.json's own enum where block.json declares the setting (no enum is open: null), the
+	// DB list only for a block with no block.json here. Only a string setting (by block.json, else the DB) is a preset block.
+	const defOf = ( r ) => schemaOf( r.block_slug )?.[ r.attr_name ];
+	const allowedOf = ( r ) => {
+		const def = defOf( r );
+		if ( def ) {
+			return Array.isArray( def.enum ) ? new Set( def.enum ) : null;
+		}
+		return null === r.enum_values ? null : new Set( JSON.parse( r.enum_values ) );
+	};
+	return Object.fromEntries( rows.filter( ( r ) => 'string' === ( defOf( r )?.type ?? r.attr_type ) ).map( ( r ) => {
+		const allowed = allowedOf( r );
+		return [ r.block_slug, { attr: r.attr_name, variants: names.filter( ( v ) => ( allowed ? allowed.has( v ) : ! RESERVED_STYLES.includes( v ) ) ) } ];
+	} ) );
 }
 
 // The block settings that hold every one of the named preset variants: { block: attr }.
