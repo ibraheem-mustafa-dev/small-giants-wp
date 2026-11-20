@@ -1,0 +1,146 @@
+[
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "depth += '(' === c ? 1 : ')' === c ? -1 : 0;",
+		"replace": "depth += 0;",
+		"why": "a semicolon inside brackets splits the declaration"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "BORDER_STYLE.test( low( st[ n ] ) ) && ! /^0(?:px)?\\s/.test( low( st[ n ] ) ) );",
+		"replace": "BORDER_STYLE.test( low( st[ n ] ) ) );",
+		"why": "a zero-width border shorthand counts as a border"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "has( 'width' ) && ! FILLS.has( low( st.width ) ) && looks.add( 'width' );",
+		"replace": "has( 'width' ) && looks.add( 'width' );",
+		"why": "a width that only fills its parent counts as a look"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "has( 'max-width' ) && ! FILLS.has( low( st[ 'max-width' ] ) ) && looks.add( 'max-width' );",
+		"replace": "has( 'max-width' ) && looks.add( 'max-width' );",
+		"why": "max-width none counts as a cap"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "if ( 'auto' === margin[ 1 ] || 'auto' === margin[ 3 ] ||",
+		"replace": "if ( 'auto' === margin[ 0 ] || 'auto' === margin[ 2 ] ||",
+		"why": "the vertical margins are read as the side margins"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'center' === low( v( 'text-align' ) ) && 'center' !== low( parentValues?.[ 'text-align' ] ) && looks.add( 'text-centre' );",
+		"replace": "'center' === low( v( 'text-align' ) ) && looks.add( 'text-centre' );",
+		"why": "an inherited centre counts on every descendant"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "SIDES.some( ( s ) => ( pxOf( v( `padding-${ s }` ) ) ?? 0 ) > 0 ) && looks.add( 'padding' );",
+		"replace": "SIDES.some( ( s ) => undefined !== v( `padding-${ s }` ) ) && looks.add( 'padding' );",
+		"why": "a computed padding of 0px counts as padding"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\tconst widths = renderedWidths( element );\n\tconst out = {};",
+		"replace": "\tconst widths = [ 375, 768, 1440 ];\n\tconst out = {};",
+		"why": "an element that renders at no width still paints"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\tfor ( const w of resolvedWidths( element ) ) {\n\t\tcomputedLooks(",
+		"replace": "\tfor ( const w of [] ) {\n\t\tcomputedLooks(",
+		"why": "the computed values are never read"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const stated = new Set( [ ...declaredLooks( declared ), ...declaredLooks( styleOf( element.attrs?.style ) ) ] );",
+		"replace": "const stated = new Set( [ ...declaredLooks( styleOf( element.attrs?.style ) ) ] );",
+		"why": "the fact record's declared styles are dropped"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "export const loopOf = ( key ) => String( key ).replace( /#\\d+$/, '' );",
+		"replace": "export const loopOf = ( key ) => String( key );",
+		"why": "a loop copy is no longer its representative's loop"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "[ 'innerBlocks', 'attributes', 'draftFingerprint', 'name' ].includes( k ) || find( v );",
+		"replace": "[ 'innerBlocks', 'name' ].includes( k ) || find( v );",
+		"why": "a finder-shaped value in the attributes or fingerprint names an element"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "if ( inside && depth < 8 && rows.get( inside[ 1 ] ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a row inside a removed element no longer takes its remover's answer"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "if ( 'client decision' === row.source || SITE_DECISION.test( row.reason ?? '' ) || /^decisions /.test( row.source ?? '' ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a per-site decision is read as no one's"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tif ( loops.has( loopOf( e.key ) ) ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a loop copy is not read through its representative"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tif ( templates.has( templateOf( e.key ) ) ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a copy under another host instance is listed as unread"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const elsewhere = otherSurfaces.find( ( s ) => s.identities.has( identityOf( e, component ) ) );",
+		"replace": "const elsewhere = null;",
+		"why": "another surface naming the element no longer reads it"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tif ( ownedElsewhere.has( identityOf( e, component ) ) ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "an element a narrower surface holds is listed twice"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'unwrap' === row.action ? 'unwrapped' :",
+		"replace": "'unwrap' === row.action ? 'removed' :",
+		"why": "an unwrapped wrapper is classed as removed"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\t\tr = rows.get( r.into );",
+		"replace": "\t\t\tr = null;",
+		"why": "the host a row was absorbed into is not followed"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "export const identityOf = ( element, component ) => `${ 'Root' === element.template ? component ?? 'Root' : element.template }/${ element.tpl }`;",
+		"replace": "export const identityOf = ( element, component ) => `${ element.template }/${ element.tpl }`;",
+		"why": "a root element of one draft file is the same element on every file"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "n.surface !== s.surface && ( n.size < size || ( n.size === size && n.surface < s.surface ) )",
+		"replace": "n.surface !== s.surface",
+		"why": "every other surface owns the element, so no surface lists it"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "if ( ! surface || skip.has( `${ client }/${ surface }` ) || ! files.every(",
+		"replace": "if ( ! surface || ! files.every(",
+		"why": "a skipped surface is listed"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "if ( ! surface || skip.has( `${ client }/${ surface }` ) || ! files.every( ( x ) => fs.existsSync( x ) ) ) {",
+		"replace": "if ( ! surface || skip.has( `${ client }/${ surface }` ) ) {",
+		"why": "a surface missing a file is read"
+	}
+]
