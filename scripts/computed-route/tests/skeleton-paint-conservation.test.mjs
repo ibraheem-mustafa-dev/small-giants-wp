@@ -4,7 +4,7 @@
 // a loop whose first copy a slot names, a form's field listed once under the form's own surface, a per-site removal.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
+import { styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, namedReads, BAND_LOOKS, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
 import { listAll, loadClient, markdown, main } from '../tools/paint-conservation.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -120,7 +120,7 @@ test( 'droppedBy tells a per-site decision from a standing rule, and a row insid
 
 // One surface: a hero with a painted wrapper the hero rule unwraps, a picker whose chips are absorbed with no slot, a strip
 // whose first tile a slot names, a removed dot, a plain text, and an element the proposal has no row for.
-const surface = ( { chipSlot = false, wrapperNamed = false } = {} ) => {
+const surface = ( { chipSlot = false, wrapperNamed = false, wrapperBand = false } = {} ) => {
 	const inventory = { elements: [
 		el( 'Root/1#0', 'background: pink; padding: 40px' ),
 		el( 'Root/2#0', 'background: white; border: 2px solid black; border-radius: 16px; max-width: 640px', { parentKey: 'Root/1#0' } ),
@@ -147,7 +147,8 @@ const surface = ( { chipSlot = false, wrapperNamed = false } = {} ) => {
 		row( 'Root/8#0', { action: 'remove', rule: 'dotMarker' } ),
 	] };
 	const skeleton = [ node( 'sgs/hero', 'Root/1#0', {
-		...( wrapperNamed ? { draftBandWrappers: [ { tpl: 'Root/2#0' } ] } : {} ),
+		...( wrapperNamed ? { draftSlots: { '.card': { tpl: 'Root/2#0' } } } : {} ),
+		...( wrapperBand ? { draftBandWrappers: [ { tpl: 'Root/2#0' } ] } : {} ),
 		innerBlocks: [
 			node( 'sgs/text', 'Root/3#0' ),
 			node( 'sgs/option-picker', 'Root/4#0', chipSlot ? { draftSlots: { '.chip:nth-of-type(1)': { tpl: 'Root/5#0' } } } : {} ),
@@ -179,6 +180,31 @@ test( 'a slot that names the first loop copy reads the loop, and a named wrapper
 	const { rows, counts } = conservationRows( surface( { chipSlot: true, wrapperNamed: true } ) );
 	assert.deepEqual( rows.map( ( r ) => r.key ), [ 'Root/8#0', 'Root/9#0' ] );
 	assert.deepEqual( [ counts.exact, counts.loopCopy, counts.unread ], [ 4, 2, 2 ] );
+} );
+
+test( 'a band wrapper finder reads the width cap only: the wrapper\'s paint is still a row (MUST FAIL where any finder counts as read)', () => {
+	const { rows, counts } = conservationRows( surface( { wrapperBand: true } ) );
+	const wrapper = rows.find( ( r ) => 'Root/2#0' === r.key );
+	assert.equal( wrapper.class, 'band-only' );
+	assert.deepEqual( Object.keys( wrapper.looks ).sort(), [ 'background', 'border', 'radius' ], 'the cap the band reads is not listed' );
+	assert.deepEqual( [ wrapper.by, wrapper.rule ], [ 'rule', 'heroInner' ] );
+	assert.equal( counts.unread, 5 );
+	assert.ok( BAND_LOOKS.includes( 'max-width' ) && ! BAND_LOOKS.includes( 'background' ) );
+} );
+
+test( 'a band wrapper that paints nothing beyond its cap is read, a slot naming the same element reads all of it, and a loop is not read through a band finder', () => {
+	// Negative control: a wrapper with a cap and centring only.
+	const capOnly = surface( { wrapperBand: true } );
+	capOnly.inventory.elements.find( ( e ) => 'Root/2#0' === e.key ).attrs.style = 'max-width: 640px; margin: 0px auto';
+	assert.ok( ! conservationRows( capOnly ).rows.some( ( r ) => 'Root/2#0' === r.key ) );
+	// Both a slot and a band finder name it: read in full.
+	assert.ok( ! conservationRows( surface( { wrapperBand: true, wrapperNamed: true } ) ).rows.some( ( r ) => 'Root/2#0' === r.key ) );
+	assert.deepEqual( [ ...namedReads( [ node( 'sgs/hero', 'Root/1#0', { draftBandWrappers: [ { tpl: 'Root/2#0' }, { tpl: 'Root/1#0' } ] } ) ] ) ], [ [ 'Root/1#0', 'full' ], [ 'Root/2#0', 'band' ] ] );
+	assert.deepEqual( [ ...namedReads( [ node( 'sgs/hero', 'Root/1#0', { draftBandWrappers: [ { tpl: 'Root/2#0' } ], draftSlots: { '.a': { tpl: 'Root/2#0' } } } ) ] ) ], [ [ 'Root/1#0', 'full' ], [ 'Root/2#0', 'full' ] ] );
+	// A band finder on the first copy of a loop does not read the other copies' paint.
+	const inventory = { elements: [ el( 'Root/5#0', 'background: red' ), el( 'Root/5#1', 'background: red' ) ] };
+	const r = conservationRows( { inventory, proposal: { rows: [] }, skeleton: [ node( 'sgs/hero', 'Root/1#0', { draftBandWrappers: [ { tpl: 'Root/5#0' } ] } ) ] } );
+	assert.deepEqual( r.rows.map( ( x ) => [ x.key, x.class ] ), [ [ 'Root/5#0', 'band-only' ], [ 'Root/5#1', 'no-row' ] ] );
 } );
 
 test( 'a copy under another host instance is read through its template, and counted apart', () => {

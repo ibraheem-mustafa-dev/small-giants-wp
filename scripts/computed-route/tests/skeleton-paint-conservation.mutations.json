@@ -67,8 +67,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "[ 'innerBlocks', 'attributes', 'draftFingerprint', 'name' ].includes( k ) || find( v );",
-		"replace": "[ 'innerBlocks', 'name' ].includes( k ) || find( v );",
+		"find": "[ 'innerBlocks', 'attributes', 'draftFingerprint', 'name' ].includes( k ) || find( v, BAND_KEY === k ? 'band' : 'full' );",
+		"replace": "[ 'innerBlocks', 'name' ].includes( k ) || find( v, BAND_KEY === k ? 'band' : 'full' );",
 		"why": "a finder-shaped value in the attributes or fingerprint names an element"
 	},
 	{
@@ -142,5 +142,35 @@
 		"find": "if ( ! surface || skip.has( `${ client }/${ surface }` ) || ! files.every( ( x ) => fs.existsSync( x ) ) ) {",
 		"replace": "if ( ! surface || skip.has( `${ client }/${ surface }` ) ) {",
 		"why": "a surface missing a file is read"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "find( v, BAND_KEY === k ? 'band' : 'full' );",
+		"replace": "find( v, 'full' );",
+		"why": "a band wrapper finder counts as reading the wrapper's paint"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'string' === typeof v.tpl && ( 'full' === kind || ! out.has( v.tpl ) ) && out.set( v.tpl, kind );",
+		"replace": "'string' === typeof v.tpl && out.set( v.tpl, kind );",
+		"why": "a band finder met after a slot downgrades the element to a band read"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "export const BAND_LOOKS = [ 'width', 'max-width', 'margin-auto' ];",
+		"replace": "export const BAND_LOOKS = [ 'width', 'max-width', 'margin-auto', 'background' ];",
+		"why": "the band is taken to read the wrapper's background"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const full = [ ...named ].filter( ( k ) => 'full' === reads.get( k ) );",
+		"replace": "const full = [ ...named ];",
+		"why": "a loop is read through a band finder on its first copy"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "if ( named.has( e.key ) && ! Object.keys( looks ).length ) {",
+		"replace": "if ( false ) {",
+		"why": "a band wrapper that paints only its cap is listed with no looks"
 	}
 ]

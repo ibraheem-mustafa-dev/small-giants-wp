@@ -117,22 +117,29 @@ export const templateOf = ( key ) => String( key ).replace( /#\d+/g, '' );
 // A key with its own copy index removed: the loop it is a copy in, under the same host instances.
 export const loopOf = ( key ) => String( key ).replace( /#\d+$/, '' );
 
-// The draft element keys a skeleton tree names: every `{ tpl }` finder on a node, whatever property carries it (the node's
-// own element, its slots, its band wrappers, its item template, its width alternatives), never its attributes or fingerprint.
-export function namedKeys( tree ) {
-	const out = new Set();
-	const find = ( v ) => {
+// The looks a band wrapper finder reads: Fill reads a dissolved wrapper's box only, as evidence of the content band's width
+// (lib/fill-band.mjs), so its cap and centring are conserved and its paint is not.
+export const BAND_LOOKS = [ 'width', 'max-width', 'margin-auto' ];
+const BAND_KEY = 'draftBandWrappers';
+
+// The draft elements a skeleton tree names, by what the finder reads: Map( key -> 'full' | 'band' ). Every `{ tpl }` finder
+// on a node counts, whatever property carries it (the node's own element, its slots, its item template, its width
+// alternatives), never a value in its attributes or fingerprint. A finder under `draftBandWrappers` reads the box's width cap
+// only (`band`); an element another finder also names is read in full.
+export function namedReads( tree ) {
+	const out = new Map();
+	const find = ( v, kind ) => {
 		if ( Array.isArray( v ) ) {
-			v.forEach( find );
+			v.forEach( ( x ) => find( x, kind ) );
 		} else if ( v && 'object' === typeof v ) {
-			'string' === typeof v.tpl && out.add( v.tpl );
-			Object.values( v ).forEach( find );
+			'string' === typeof v.tpl && ( 'full' === kind || ! out.has( v.tpl ) ) && out.set( v.tpl, kind );
+			Object.values( v ).forEach( ( x ) => find( x, kind ) );
 		}
 	};
 	const walk = ( nodes ) => {
 		for ( const n of nodes || [] ) {
 			for ( const [ k, v ] of Object.entries( n ) ) {
-				[ 'innerBlocks', 'attributes', 'draftFingerprint', 'name' ].includes( k ) || find( v );
+				[ 'innerBlocks', 'attributes', 'draftFingerprint', 'name' ].includes( k ) || find( v, BAND_KEY === k ? 'band' : 'full' );
 			}
 			walk( n.innerBlocks );
 		}
@@ -140,6 +147,9 @@ export function namedKeys( tree ) {
 	walk( Array.isArray( tree ) ? tree : [ tree ] );
 	return out;
 }
+
+// The draft element keys a skeleton tree names with any finder.
+export const namedKeys = ( tree ) => new Set( namedReads( tree ).keys() );
 
 // An element's identity across the surfaces of one client: its template's component and number. An element of the surface's
 // own root template takes the surface's draft file as its component (`component`), since `Root` names a different file on
@@ -186,16 +196,19 @@ export function droppedBy( row, rows, depth = 0 ) {
 // { rows, counts } where counts holds the elements painted, read exactly, read through a loop copy, read through a copy under
 // another host instance, read by another surface, and left to the narrower surface that holds them.
 // Row: { key, tag, words, looks, class, action, rule, by, into, host, hostBlock, hostSlots }.
-//   class: `unwrapped` (the wrapper went and nothing records where its look goes), `host-unread` (absorbed into a block that
-//   draws it, whose slots do not name it), `removed`, `kept-unnamed` (the row kept a block but no node names the element)
-//   or `no-row` (the proposal holds no row for it).
+//   class: `unwrapped` (the wrapper went and nothing records where its look goes), `band-only` (the wrapper went and a band
+//   finder reads its width cap, so `looks` holds only the paint that finder does not read), `host-unread` (absorbed into a
+//   block that draws it, whose slots do not name it), `removed`, `kept-unnamed` (the row kept a block but no node names the
+//   element) or `no-row` (the proposal holds no row for it).
 export function conservationRows( { inventory, proposal, skeleton, view = null, otherSurfaces = [], ownedElsewhere = new Set(), component = null } ) {
 	const elements = inventory?.elements || [];
 	const byKey = new Map( elements.map( ( e ) => [ e.key, e ] ) );
 	const rows = new Map( ( proposal?.rows || [] ).map( ( r ) => [ r.key, r ] ) );
-	const named = namedKeys( skeleton );
-	const loops = new Set( [ ...named ].map( loopOf ) );
-	const templates = new Set( [ ...named ].map( templateOf ) );
+	const reads = namedReads( skeleton );
+	const named = new Set( reads.keys() );
+	const full = [ ...named ].filter( ( k ) => 'full' === reads.get( k ) );
+	const loops = new Set( full.map( loopOf ) );
+	const templates = new Set( full.map( templateOf ) );
 	const counts = { painted: 0, exact: 0, loopCopy: 0, instanceCopy: 0, otherSurface: 0, ownedElsewhere: 0, unread: 0 };
 	const out = [];
 	const hostOf = ( row ) => {
@@ -206,11 +219,25 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 		return r && r !== row ? r : null;
 	};
 	for ( const e of elements ) {
-		const looks = paintsBox( e, { declared: view?.declared?.( e ) ?? {}, parent: byKey.get( e.parentKey ) ?? null } );
-		if ( ! Object.keys( looks ).length ) {
+		const painted = paintsBox( e, { declared: view?.declared?.( e ) ?? {}, parent: byKey.get( e.parentKey ) ?? null } );
+		if ( ! Object.keys( painted ).length ) {
 			continue;
 		}
 		counts.painted++;
+		// A band finder reads the width cap alone: the paint it leaves is still unread.
+		const band = 'band' === reads.get( e.key );
+		const looks = band ? Object.fromEntries( Object.entries( painted ).filter( ( [ look ] ) => ! BAND_LOOKS.includes( look ) ) ) : painted;
+		if ( named.has( e.key ) && ! Object.keys( looks ).length ) {
+			counts.exact++;
+			continue;
+		}
+		if ( band ) {
+			counts.unread++;
+			const row = rows.get( e.key ) ?? null;
+			const dropped = droppedBy( row, rows );
+			out.push( { key: e.key, tag: e.tag, words: String( e.words ?? '' ).slice( 0, 60 ), looks, class: 'band-only', action: row?.action ?? null, rule: dropped.rule, by: dropped.by, handover: row?.handover?.kind ?? null, into: row?.into ?? null, host: null, hostBlock: null, hostSlots: 0 } );
+			continue;
+		}
 		if ( named.has( e.key ) ) {
 			counts.exact++;
 			continue;
