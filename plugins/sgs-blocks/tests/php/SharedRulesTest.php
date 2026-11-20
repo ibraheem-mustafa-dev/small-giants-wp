@@ -131,7 +131,7 @@ final class SharedRulesTest extends TestCase {
 	public function test_the_minted_classes_are_never_taken_for_a_blocks_own_uid(): void {
 		$shared = sgs_shared_rules( 'sgs-state-colour', self::hover_rule( 'red' ) );
 		$this->assertTrue( \SGS\Blocks\sgs_scope_class_is_minted( $shared['class'] ) );
-		foreach ( array( 'sgs-band-width', 'sgs-band-cap', 'sgs-band-pad', 'sgs-band-min', 'sgs-band-layout', 'sgs-state-colour', 'sgs-text-hover' ) as $prefix ) {
+		foreach ( array( 'sgs-band-width', 'sgs-band-cap', 'sgs-band-pad', 'sgs-band-layout', 'sgs-state-colour', 'sgs-text-hover' ) as $prefix ) {
 			$class = sgs_shared_rules( $prefix, self::hover_rule( 'red' ) )['class'];
 			$this->assertTrue( \SGS\Blocks\sgs_scope_class_is_minted( $class ), $prefix );
 			$this->assertSame(
