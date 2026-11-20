@@ -1,11 +1,11 @@
 ---
 doc_type: spec
 spec_id: 4
-spec_version: 1.4
+spec_version: 1.5
 project: small-giants-wp
 title: SGS Forms
 status: active
-last_verified: 2026-10-22
+last_verified: 2026-11-20
 ---
 
 # SGS Forms — Custom Form System
@@ -183,6 +183,7 @@ The visual tile selector inspired by the Indus Foods V2 trade application mockup
 - `zoneStyle` — dashed (default) | panel: a 1px dashed panel holding the prompt, the help line and a Choose file cue, the size limit kept for screen readers | native: the browser's own file input, styled by the form's field settings, with `fileLabelBorderColour` / `fileLabelBackgroundColour` painting it
 - `sgs/form-field-textarea` `counterPlacement` — below (default) | inside: the character counter sits at the box's bottom right, with room reserved under the text; `counterFontSize` (per device) and `counterColour` style it
 - `sgs/form-field-textarea` `inputMinHeight` (per device, a length or bare px), `inputPadding` (per-device box) and `inputLineHeight` (a number, length or `normal`) style the text box itself as a scoped rule on the field's uid class; all empty by default, so the form-level field settings decide. With the counter inside the box the stylesheet keeps its own bottom padding for the counter, so a custom bottom padding does not apply there.
+- Every `sgs/form-field-*` block declares `"style": "sgs-form-style"` (the handle `sgs/form` registers for `blocks/form/style-index.css`), so a field placed outside an `sgs/form` loads the same stylesheet and looks as it does inside one; `textarea.sgs-form-field__input` is `display: block`, so a textarea's field wrapper is the input's height plus the label space (Spec 02 FR-2-31)
 - `sgs/form-field-checkbox` `optionPresentation` — `plain` (default, the bare row) | `card`: each option row becomes a box with `rowBackground`, `rowBorderWidth` / `rowBorderStyle` / `rowBorderColour` / `rowBorderRadius`, `rowPadding` (per-device box) and `rowGap`, and the native checkbox is drawn as a custom box (`appearance: none`, visible focus ring) sized by `boxSize`, rounded by `boxRadius` and filled by `boxColourChecked` when ticked. The input stays the real, accessible control. Scoped rule from `src/blocks/form-field-checkbox/render.php`; box styles in `src/blocks/form/style.css::.sgs-form-field--option-card`. `optionRowMinHeight` (checkbox and consent) sets the option row's minimum height; empty keeps the 44px touch-target floor.
 - `buttonLabel` — the panel look's button text (empty reads "Choose file")
 
