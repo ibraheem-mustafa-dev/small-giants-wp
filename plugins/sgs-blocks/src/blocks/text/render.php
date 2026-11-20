@@ -51,6 +51,7 @@ $sgs_tor_margin_desktop  = is_array( $sgs_tor_margin_tiers['desktop'] ) ? $sgs_t
 
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-shared-rules.php';
 
 // ---------------------------------------------------------------------------
 // 1. Extract attributes with safe defaults.
@@ -549,26 +550,36 @@ if ( $has_hover ) {
 	$hover_decls = array_merge( $hover_decls, $border['hover'] );
 
 	if ( $hover_decls || '' !== $first_letter_colour_hover ) {
-		// Operator-supplied duration + easing replace the hardcoded 200ms/ease.
-		$css_hover = $scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
-		if ( $hover_decls ) {
-			$css_hover .= sgs_hover_state_rules( $scope, implode( ';', $hover_decls ), ':focus-visible' );
-			$css_hover .= sgs_hover_media_wrap(
-				sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $scope . ':hover', $hover_colour_effective )
-			) . sgs_text_colour_gradient_fallback_rule( $scope . ':focus-visible', $hover_colour_effective );
-		}
+		// The hover look (transition, hover and focus colour, drop cap hover, reduced motion) is the same text for every text
+		// block with the same hover settings, so it prints once under a class they share (helpers-shared-rules.php) and the
+		// block's own class keeps only what is its own.
+		$text_hover_shared = sgs_shared_rules(
+			'sgs-text-hover',
+			static function ( string $shared_class ) use ( $hover_decls, $hover_colour_effective, $first_letter_colour_hover, $transition_duration, $transition_easing ): string {
+				$hover_scope = '.wp-block-sgs-text.' . $shared_class;
+				// Operator-supplied duration + easing replace the hardcoded 200ms/ease.
+				$css = $hover_scope . '{transition:color ' . $transition_duration . 'ms ' . $transition_easing . ',background-color ' . $transition_duration . 'ms ' . $transition_easing . ',box-shadow ' . $transition_duration . 'ms ' . $transition_easing . ';}';
+				if ( $hover_decls ) {
+					$css .= sgs_hover_state_rules( $hover_scope, implode( ';', $hover_decls ), ':focus-visible' );
+					$css .= sgs_hover_media_wrap(
+						sgs_text_colour_gradient_fallback_rule( SGS_HOVER_NOT_TOUCH . ' ' . $hover_scope . ':hover', $hover_colour_effective )
+					) . sgs_text_colour_gradient_fallback_rule( $hover_scope . ':focus-visible', $hover_colour_effective );
+				}
 
-		// The drop cap's hover colour paints ::first-letter, matching where the RESTING
-		// drop cap is emitted ($scope . '::first-letter' above). Appending it to the root
-		// hover rule instead recolours the whole paragraph.
-		// Both selectors are written out in full: a pseudo-element appended to an imploded
-		// selector list attaches to the LAST selector only.
-		if ( '' !== $first_letter_colour_hover ) {
-			$css_hover .= sgs_hover_state_rules( $scope, 'color:' . sgs_colour_value( $first_letter_colour_hover ), ':focus-visible', '::first-letter' );
-		}
+				// The drop cap's hover colour paints ::first-letter, matching where the RESTING
+				// drop cap is emitted ($scope . '::first-letter' above). Appending it to the root
+				// hover rule instead recolours the whole paragraph.
+				// Both selectors are written out in full: a pseudo-element appended to an imploded
+				// selector list attaches to the LAST selector only.
+				if ( '' !== $first_letter_colour_hover ) {
+					$css .= sgs_hover_state_rules( $hover_scope, 'color:' . sgs_colour_value( $first_letter_colour_hover ), ':focus-visible', '::first-letter' );
+				}
 
-		// Respect reduced-motion preference.
-		$css_hover .= '@media (prefers-reduced-motion:reduce){' . $scope . '{transition:none !important;transform:none !important;}}';
+				// Respect reduced-motion preference.
+				return $css . '@media (prefers-reduced-motion:reduce){' . $hover_scope . '{transition:none !important;transform:none !important;}}';
+			}
+		);
+		$css_hover = $text_hover_shared['css'];
 	}
 }
 
@@ -616,7 +627,7 @@ $responsive_css = trim( $css_base_decls . $css_widths . $css_base_spacing_radius
 // D303: the anchor token is added as a CLASS so the class-scoped per-instance CSS
 // selector (`.wp-block-sgs-text.{anchor}`, $scope above) matches; the id="…" is still
 // written below for operator anchors / linking.
-$wrapper_args = array( 'class' => 'wp-block-sgs-text ' . esc_attr( $anchor ) );
+$wrapper_args = array( 'class' => 'wp-block-sgs-text ' . esc_attr( $anchor ) . ( '' !== ( $text_hover_shared['class'] ?? '' ) ? ' ' . $text_hover_shared['class'] : '' ) );
 // The anchor token doubles as the scoping token: it is added as a CLASS above so
 // $scope (`.wp-block-sgs-text.{anchor}`, D303) matches, and written as id="…" here
 // for operator anchors and in-page linking. The generated hash uid therefore
@@ -646,7 +657,7 @@ $wrapper_attrs = get_block_wrapper_attributes( $wrapper_args );
 // ---------------------------------------------------------------------------
 
 if ( $responsive_css ) {
-	printf( '<style>%s</style>', wp_strip_all_tags( $responsive_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo sgs_style_tags( wp_strip_all_tags( $responsive_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 
 printf(
