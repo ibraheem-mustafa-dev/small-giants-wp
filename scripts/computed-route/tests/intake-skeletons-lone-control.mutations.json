@@ -1,0 +1,10 @@
+[
+	{"file": "lib/intake-skeletons.mjs", "find": "'form' !== r.kind || ! LONE_CONTROLS", "replace": "! LONE_CONTROLS", "why": "any record kind, not only a form record, roots at a lone control's holder"},
+	{"file": "lib/intake-skeletons.mjs", "find": "[ 'button', 'a', 'input', 'select', 'textarea' ]", "replace": "[ 'button', 'input', 'select', 'textarea' ]", "why": "a lone link is no longer a lone control"},
+	{"file": "lib/intake-skeletons.mjs", "find": "[ 'button', 'a', 'input', 'select', 'textarea' ]", "replace": "[ 'button', 'a', 'select', 'textarea' ]", "why": "a lone field is no longer a lone control"},
+	{"file": "lib/intake-skeletons.mjs", "find": "?.detail?.tag?.startsWith( 'sc-' ) ) {", "replace": "?.detail?.tag?.startsWith( 'xx-' ) ) {", "why": "the runtime's non-rendering sc-if holds the control, so the holder is not the rendering element above it"},
+	{"file": "lib/intake-skeletons.mjs", "find": "! [ 'helmet', 'body', 'html', 'main' ].includes( holder.detail?.tag )", "replace": "! [ 'helmet', 'body', 'html' ].includes( holder.detail?.tag )", "why": "a control straight in the page's main roots at main, so the page is read as the form"},
+	{"file": "lib/intake-skeletons.mjs", "find": "return holder && ! [", "replace": "return ! [", "why": "a missing holder (a census with no parent recorded) throws instead of keeping the record's root"},
+	{"file": "lib/intake-skeletons.mjs", "find": "[ ...tpls.slice( 0, -1 ), String( up ) ] : tpls;", "replace": "tpls : tpls;", "why": "the holder is found but the record keeps the control as its root"},
+	{"file": "lib/intake-census-template.mjs", "find": "{ tag, inFor: e.inFor, parent: e.parent ?? null }", "replace": "{ tag, inFor: e.inFor }", "why": "the census row no longer records its parent"}
+]
