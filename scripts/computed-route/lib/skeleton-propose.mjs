@@ -169,7 +169,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source || ( r.rule && r.absorb ) ? [] : unitsOf( e );
 		if ( R.listWrapper && 1 === units.length && 'list' === units[ 0 ].type && units[ 0 ].els.length === m.blockKids( e ).length ) {
 			record( e, { action: 'unwrap', rule: 'listWrapper', source: 'rule listWrapper', reason: R.listWrapper.reason, confidence: 1, candidates: [] } );
-			return [ buildList( units[ 0 ].els, e ) ];
+			return [ buildList( units[ 0 ].els, e, units[ 0 ].rows ) ];
 		}
 		if ( 'remove' === r.action ) {
 			record( e, r );
@@ -393,7 +393,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// sibling it follows in the document, so Fill's width gate can hide each branch on the other's widths.
 	function buildChildren( e, parentBlock, list = undefined, withWide = ! list ) {
 		const units = unitsOf( e, list );
-		const build = ( u ) => ( 'accordion' === u.type ? w.buildAccordion( u.els ) : 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els ) : buildNode( u.els[ 0 ], parentBlock ) );
+		const build = ( u ) => ( 'accordion' === u.type ? w.buildAccordion( u.els ) : 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els, null, u.rows ) : buildNode( u.els[ 0 ], parentBlock ) );
 		const wide = withWide ? m.widthKids( e ) : [];
 		if ( ! wide.length ) {
 			return units.flatMap( build ).filter( Boolean );

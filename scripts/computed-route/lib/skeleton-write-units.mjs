@@ -8,7 +8,7 @@ import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
 import { finish, W } from './skeleton-classify.mjs';
 import { itemSlots, drawnSvgParts } from './skeleton-part-slots.mjs';
-import { markerPart, markerSlotAt, ordinal, glyph } from './fill-list-marker.mjs';
+import { markerPart, markerSlotAt, itemSlotAt, markerSettingsFrom, ordinal, glyph } from './fill-list-marker.mjs';
 import { unitSlots } from './skeleton-child-slots.mjs';
 
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
@@ -57,6 +57,54 @@ export function makeUnits( ctx ) {
 		const gridList = 'grid' === parent?.display && span.length === list.length;
 		return links.length >= minLinks && ( m.stacked( links ) || gridList ) && ! removedBy( span[ 0 ] ) ? span : [];
 	};
+	// ---- rows of text that are one list: each row one piece of text with at most one leading marker ----
+	const under = ( x, top ) => {
+		for ( let p = x; p; p = m.byKey[ p.parentKey ] ) {
+			if ( p === top ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	// One row of a list: no control anywhere in it, and one piece of text (its own words, else its one text child) beside at
+	// most one leading marker; a row with no marker is an item only inside the author's own list (`ul`, `ol`).
+	const textItem = ( row, parent ) => {
+		if ( isControlEl( row ) || m.els.some( ( x ) => x !== row && under( x, row ) && isControlEl( x ) ) ) {
+			return null;
+		}
+		const marker = leadingMarker( row );
+		const rest = m.blockKids( row ).filter( ( k ) => k !== marker?.el );
+		let text = squash( m.words( row ) );
+		if ( text && rest.length ) {
+			return null;
+		}
+		if ( ! text ) {
+			if ( 1 !== rest.length || m.blockKids( rest[ 0 ] ).some( ( k ) => squash( m.words( k ) ) ) ) {
+				return null;
+			}
+			text = squash( m.words( rest[ 0 ] ) );
+		}
+		if ( ! text || ( ! marker && ! [ 'ul', 'ol' ].includes( parent?.tag ) ) ) {
+			return null;
+		}
+		return { row, text, marker };
+	};
+	// A run of two or more such rows, stacked or laid out in a grid, whose markers are all of one kind (typed ordinals
+	// counting up from 1, as a list numbers itself).
+	const itemRun = ( list, i, parent = null ) => {
+		const run = [];
+		for ( let j = i; j < list.length; j++ ) {
+			const it = textItem( list[ j ], parent );
+			if ( ! it ) {
+				break;
+			}
+			run.push( it );
+		}
+		const kinds = new Set( run.map( ( it ) => it.marker?.kind ?? 'none' ) );
+		const counts = run.every( ( it, j ) => 'numbered' !== it.marker?.kind || [].concat( it.marker.ordinal.n ).includes( j + 1 ) );
+		const laid = m.stacked( run.map( ( it ) => it.row ) ) || 'grid' === parent?.display || [ 'ul', 'ol' ].includes( parent?.tag );
+		return run.length >= 2 && 1 === kinds.size && counts && laid ? run : [];
+	};
 	// A run of accordion items (rule accordion) whose parent holds other content too: one accordion with no draft element of
 	// its own holds them, beside the parent's other children.
 	const accordionRun = ( list, i ) => {
@@ -83,6 +131,7 @@ export function makeUnits( ctx ) {
 			const brand = typedBrandRun( list, i );
 			const icons = brand ? [] : cls.iconRun( list, i, e );
 			const run = brand || icons.length ? [] : linkRun( list, i, e );
+			const rows = brand || icons.length ? [] : itemRun( list, i, e );
 			if ( brand ) {
 				out.push( { type: 'brand', els: brand } );
 				i += brand.length;
@@ -92,6 +141,9 @@ export function makeUnits( ctx ) {
 			} else if ( run.length ) {
 				out.push( { type: 'list', els: run } );
 				i += run.length;
+			} else if ( rows.length ) {
+				out.push( { type: 'list', els: rows.map( ( it ) => it.row ), rows } );
+				i += rows.length;
 			} else {
 				out.push( { type: 'single', els: [ list[ i ] ] } );
 				i++;
@@ -168,24 +220,46 @@ export function makeUnits( ctx ) {
 	};
 	// The marker element a list row draws before its text: its first drawn svg, else its leading dot, bar, ordinal or glyph.
 	const markerElOf = ( row ) => ( drawnSvgParts( m.kids( row ), m.isPart )[ 0 ] ?? leadingMarker( row )?.el ?? null );
-	// { <marker part slot of item copy k>: finder } for the rows that draw a marker element, when the block's calibration holds a
-	// marker part.
+	// { <marker part slot of item copy k>: finder } for the rows that draw a marker element, and { <item part slot of copy k>:
+	// finder } for a list-item row with none (its CSS draws the marker: lib/fill-list-marker.mjs::drawnByCss), when the block's
+	// calibration holds a marker part.
 	const markerSlotsOf = ( slug, rows ) => {
 		const part = markerPart( ctx.calSettings?.( slug ) );
 		const out = {};
 		part && rows.forEach( ( row, i ) => {
 			const el = markerElOf( row );
-			el && ( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) );
+			const item = itemSlotAt( part, i + 1 );
+			el ? ( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) ) : item && ( 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );
 		} );
 		return out;
 	};
+	// The list's marker settings from the framework DB's enums (lib/fill-list-marker.mjs::markerSettingsFrom: the enum holding
+	// the marker kinds, the one holding `decimal`): the kind the rows' markers draw, `none` with no marker, and for typed
+	// ordinals the number style that prints them; a value the enum lacks is left to the block's default.
+	function markerAttrs( slug, rows ) {
+		const S = markerSettingsFrom( facts.q( "SELECT attr_name, enum_values, default_value FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND css_property IS NULL AND enum_values IS NOT NULL", slug ) );
+		const marker = rows?.[ 0 ]?.marker ?? null;
+		const kind = marker?.kind ?? 'none';
+		const out = {};
+		S.marker?.values.includes( kind ) && ( out[ S.marker.attr_name ] = kind );
+		const formats = 'numbered' === kind ? marker.ordinal.formats.filter( ( f ) => rows.every( ( it ) => it.marker.ordinal.formats.includes( f ) ) ) : [];
+		const format = formats.find( ( f ) => S.number?.values.includes( f ) );
+		format && ( out[ S.number.attr_name ] = format );
+		return out;
+	}
 	// host: the bare wrapper the list block is (rule listWrapper), whose own box (its grid columns, its gaps) the list's own
 	// settings read; the first link stays the draft element of the link part's settings. Without a host the first link is both.
-	function buildList( els, host = null ) {
+	function buildList( els, host = null, rows = null ) {
 		const slug = facts.listSlug;
 		const li = facts.listItem;
 		const handover = [];
+		const rowOf = new Map( ( rows || [] ).map( ( it ) => [ it.row, it ] ) );
 		const items = els.filter( ( l ) => ! removedBy( l ) ).map( ( l ) => {
+			// A row of text (not a link): its one piece of text, the marker the list draws for it left out.
+			const it = rowOf.get( l );
+			if ( it ) {
+				return { [ li.text ]: it.text };
+			}
 			const kind = kindOfLink( l );
 			const href = l.attrs?.href || '';
 			const real = href && '#' !== href;
@@ -206,12 +280,12 @@ export function makeUnits( ctx ) {
 		const ev = ( b, kind, w, text ) => ( C[ b ] ||= { block: b, evidence: [] } ).evidence.push( { kind, w, text } );
 		ev( slug, 'db', W.tag, `html_tag_to_core_block: ul -> ${ slug }: the database block for a list` );
 		capsOf( slug ).includes( 'list' ) && ev( slug, 'capability', W.capability, `block_capabilities: ${ slug } lists "list"` );
-		ev( slug, 'structure', W.structure, `${ items.length } bare text links, one above the next` );
+		ev( slug, 'structure', W.structure, rows ? `${ items.length } rows of one piece of text each${ rows[ 0 ].marker ? `, each after a ${ rows[ 0 ].marker.kind } marker` : '' }, one list` : `${ items.length } bare text links, one above the next` );
 		const own = facts.tagMap.a?.core_block_slug;
 		own && ev( own, 'db', W.tag, `html_tag_to_core_block: a -> ${ own } (each link on its own)` );
 		const r = finish( C );
 		const first = els.find( ( l ) => ! removedBy( l ) );
-		const node = base( host ?? first, slug, { ...( ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
+		const node = base( host ?? first, slug, { ...( rows ? markerAttrs( slug, rows ) : ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
 		handover.length && ( node.handover = handover );
 		// The node's draft element is its first link, which is also the block's link part: the settings calibrated on that part
 		// are read at the same link (decisions structural.linkList.itemSlots, lib/skeleton-part-slots.mjs::itemSlots).

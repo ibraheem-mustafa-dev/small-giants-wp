@@ -1,0 +1,146 @@
+[
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( isControlEl( row ) || m.els.some( ( x ) => x !== row && under( x, row ) && isControlEl( x ) ) ) {",
+		"replace": "if ( isControlEl( row ) ) {",
+		"why": "a row holding a control deeper down is an item"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( isControlEl( row ) || m.els.some( ( x ) => x !== row && under( x, row ) && isControlEl( x ) ) ) {",
+		"replace": "if ( m.els.some( ( x ) => x !== row && under( x, row ) && isControlEl( x ) ) ) {",
+		"why": "a control row is an item"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( text && rest.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a row with text and another child (a title and a description) is an item"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( 1 !== rest.length || m.blockKids( rest[ 0 ] ).some( ( k ) => squash( m.words( k ) ) ) ) {",
+		"replace": "if ( 1 !== rest.length ) {",
+		"why": "a text child that holds more text blocks is the item's text"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( ! text || ( ! marker && ! [ 'ul', 'ol' ].includes( parent?.tag ) ) ) {",
+		"replace": "if ( ! text ) {",
+		"why": "a markerless row outside a ul or ol is an item"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "if ( ! text || ( ! marker && ! [ 'ul', 'ol' ].includes( parent?.tag ) ) ) {",
+		"replace": "if ( ! marker && ! [ 'ul', 'ol' ].includes( parent?.tag ) ) {",
+		"why": "a row with no text is an item"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "return run.length >= 2 && 1 === kinds.size && counts && laid ? run : [];",
+		"replace": "return run.length >= 1 && 1 === kinds.size && counts && laid ? run : [];",
+		"why": "one row is a list"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "return run.length >= 2 && 1 === kinds.size && counts && laid ? run : [];",
+		"replace": "return run.length >= 2 && counts && laid ? run : [];",
+		"why": "rows of mixed marker kinds are one list"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "return run.length >= 2 && 1 === kinds.size && counts && laid ? run : [];",
+		"replace": "return run.length >= 2 && 1 === kinds.size && laid ? run : [];",
+		"why": "ordinals that do not count up from 1 are a numbered list"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "return run.length >= 2 && 1 === kinds.size && counts && laid ? run : [];",
+		"replace": "return run.length >= 2 && 1 === kinds.size && counts ? run : [];",
+		"why": "rows not stacked, in a grid or in a ul/ol are a list"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const rows = brand || icons.length ? [] : itemRun( list, i, e );",
+		"replace": "const rows = [];",
+		"why": "the item run is never tried"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "} else if ( rows.length ) {\n\t\t\t\tout.push( { type: 'list', els: rows.map( ( it ) => it.row ), rows } );",
+		"replace": "} else if ( rows.length ) {\n\t\t\t\tout.push( { type: 'list', els: rows.map( ( it ) => it.row ) } );",
+		"why": "the rows are not handed to buildList"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "return { [ li.text ]: it.text };",
+		"replace": "return { [ li.text ]: squash( m.words( l ) ) };",
+		"why": "an item's text keeps its marker"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "S.marker?.values.includes( kind ) && ( out[ S.marker.attr_name ] = kind );",
+		"replace": "",
+		"why": "the marker type is not written"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "format && ( out[ S.number.attr_name ] = format );",
+		"replace": "",
+		"why": "the number style is not written"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const format = formats.find( ( f ) => S.number?.values.includes( f ) );",
+		"replace": "const format = formats[ 0 ];",
+		"why": "a style the enum lacks is written"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const formats = 'numbered' === kind ? marker.ordinal.formats.filter( ( f ) => rows.every( ( it ) => it.marker.ordinal.formats.includes( f ) ) ) : [];",
+		"replace": "const formats = 'numbered' === kind ? marker.ordinal.formats : [];",
+		"why": "a style only the first row prints is written"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "rows ? markerAttrs( slug, rows ) : ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {}",
+		"replace": "( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {}",
+		"why": "rows list takes the link list's marker none"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "return [ buildList( units[ 0 ].els, e, units[ 0 ].rows ) ];",
+		"replace": "return [ buildList( units[ 0 ].els, e ) ];",
+		"why": "the unwrapped holder list loses its rows"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "'list' === u.type ? buildList( u.els, null, u.rows ) :",
+		"replace": "'list' === u.type ? buildList( u.els ) :",
+		"why": "a list among siblings loses its rows"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "item && ( 'li' === row.tag || 'list-item' === row.display ) && (",
+		"replace": "item && (",
+		"why": "every row with no marker element is read at the item part"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "item && ( 'li' === row.tag || 'list-item' === row.display ) && (",
+		"replace": "false && (",
+		"why": "no list-item row is read at the item part"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "( 'li' === row.tag || 'list-item' === row.display )",
+		"replace": "( 'list-item' === row.display )",
+		"why": "an li whose display was reset is no list item"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "( 'li' === row.tag || 'list-item' === row.display )",
+		"replace": "( 'li' === row.tag )",
+		"why": "a div displayed as a list item is no list item"
+	}
+]
