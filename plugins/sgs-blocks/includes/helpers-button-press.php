@@ -65,7 +65,7 @@ if ( ! function_exists( 'sgs_button_press_rule_for' ) ) {
 	 * stylesheet's hover rule (double the instance class: `.uid.uid .element`, so the press is 0,4,0 with `:active`),
 	 * whatever the document order. The pressed shadow is also handed to the focus system as `--sgs-focus-under`, so a
 	 * ring drawn while the element is pressed composes over the pressed shadow. Reduced motion suppresses the pressed
-	 * transform and keeps the pressed shadow: sgs/button does it with a per-instance rule (`transform:none !important`),
+	 * transform and keeps the pressed shadow: sgs/button does it with its shared reduced-motion rule (`transform:none !important`),
 	 * every other caller passes `$reduced_motion_twin` so the rule carries its own.
 	 *
 	 * @param string $selector            The element's selector, without the `:active` state.
@@ -93,24 +93,6 @@ if ( ! function_exists( 'sgs_button_press_rule_for' ) ) {
 			$rule .= '@media(prefers-reduced-motion:reduce){' . $selector . ':active' . $guard . '{transform:none;}}';
 		}
 		return $rule;
-	}
-}
-
-if ( ! function_exists( 'sgs_button_press_rule' ) ) {
-	/**
-	 * The `:active` rule for one sgs/button, or `''` when no preset sets a press role for its style.
-	 *
-	 * The selector doubles the instance class (0,4,0 with `:active`), so the press out-ranks the button's own
-	 * per-instance hover and `:focus-visible` rules (0,3,0) and the stylesheet's hover rule (0,2,0) whatever the
-	 * document order. See sgs_button_press_rule_for() for the pressed shadow and reduced-motion behaviour.
-	 *
-	 * @param string $uid     The button's instance class.
-	 * @param string $variant The button's style (`inheritStyle`).
-	 * @return string
-	 */
-	function sgs_button_press_rule( string $uid, string $variant ): string {
-		$uid = sanitize_html_class( $uid );
-		return sgs_button_press_rule_for( ".{$uid}.{$uid}.sgs-button", $variant );
 	}
 }
 

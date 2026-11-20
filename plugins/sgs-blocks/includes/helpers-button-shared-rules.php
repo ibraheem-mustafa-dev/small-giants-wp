@@ -17,29 +17,25 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-button-press.php';
+require_once __DIR__ . '/helpers-shared-rules.php';
 
 if ( ! function_exists( 'sgs_button_press_shared' ) ) {
 	/**
 	 * The pressed look for a button's style as a marker class and the rule that reads it.
 	 *
-	 * The class name is a hash of the rule's declarations, so buttons with the same pressed look share one class and
-	 * a changed token gives a new class, never a stale one.
+	 * The class is minted by `sgs_shared_rules()` from the rule's declarations, so buttons with the same pressed look
+	 * share one class and a changed token gives a new class, never a stale one. The rule comes back fenced for
+	 * `sgs_style_tags()`.
 	 *
 	 * @param string $variant The button's style (`inheritStyle`).
 	 * @return array{class:string,css:string} Both `''` when no preset sets a press role for the style.
 	 */
 	function sgs_button_press_shared( string $variant ): array {
-		$rule = sgs_button_press_rule_for( '.__press__.__press__.sgs-button', $variant );
-		if ( '' === $rule ) {
-			return array(
-				'class' => '',
-				'css'   => '',
-			);
-		}
-		$class = 'sgs-btn-press-' . substr( md5( $rule ), 0, 8 );
-		return array(
-			'class' => $class,
-			'css'   => str_replace( '__press__', $class, $rule ),
+		return sgs_shared_rules(
+			'sgs-btn-press',
+			static function ( string $class ) use ( $variant ): string {
+				return sgs_button_press_rule_for( ".{$class}.{$class}.sgs-button", $variant );
+			}
 		);
 	}
 }

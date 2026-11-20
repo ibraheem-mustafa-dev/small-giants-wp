@@ -7536,7 +7536,7 @@
 				"css_property": null,
 				"css_layer": null
 			},
-			"_reason": "2026-10-20: a style preset that seeds many properties at once (the button's resting look per preset), so it is a discovered enum with no css_property, which calibration records value by value. It reached box-shadow,transform at the 01a804e2d reseed only because includes/helpers-button-press.php::sgs_button_press_rule reads it to pick the :active press, which is one effect among the ~30 the presets paint."
+			"_reason": "2026-10-20: a style preset that seeds many properties at once (the button's resting look per preset), so it is a discovered enum with no css_property, which calibration records value by value. It reached box-shadow,transform at the 01a804e2d reseed only because includes/helpers-button-press.php::sgs_button_press_rule_for reads it to pick the :active press, which is one effect among the ~30 the presets paint."
 		},
 		{
 			"slug": "sgs/buybox",
@@ -7545,7 +7545,7 @@
 				"css_property": null,
 				"css_layer": null
 			},
-			"_reason": "2026-10-20: a style preset that seeds many properties at once (the add-to-cart button's resting look per preset), so it is a discovered enum with no css_property, which calibration records value by value. It reached box-shadow,transform at the 01a804e2d reseed only because includes/helpers-button-press.php::sgs_button_press_rule reads it to pick the :active press, which is one effect among the ~30 the presets paint."
+			"_reason": "2026-10-20: a style preset that seeds many properties at once (the add-to-cart button's resting look per preset), so it is a discovered enum with no css_property, which calibration records value by value. It reached box-shadow,transform at the 01a804e2d reseed only because includes/helpers-button-press.php::sgs_button_press_rule_for reads it to pick the :active press, which is one effect among the ~30 the presets paint."
 		},
 		{
 			"slug": "sgs/nav-drawer-menu",

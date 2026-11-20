@@ -47,6 +47,8 @@ if ( ! function_exists( 'sgs_shared_rules' ) ) {
 	 *                          to the block's CSS. Both are '' when there is nothing to print.
 	 */
 	function sgs_shared_rules( string $prefix, callable $css_for, string $seed = '' ): array {
+		// Built once, with the placeholder: the builder only places the class name in selectors, so the minted class
+		// replaces the placeholder in the text.
 		$probe = trim( (string) $css_for( SGS_SHARED_RULES_PLACEHOLDER ) );
 		if ( '' === $probe ) {
 			return array(
@@ -57,7 +59,7 @@ if ( ! function_exists( 'sgs_shared_rules' ) ) {
 		$class = $prefix . '-' . substr( md5( $prefix . '|' . $probe . ( '' === $seed ? '' : '|' . $seed ) ), 0, 8 );
 		return array(
 			'class' => $class,
-			'css'   => SGS_SHARED_RULES_OPEN . trim( (string) $css_for( $class ) ) . SGS_SHARED_RULES_CLOSE,
+			'css'   => SGS_SHARED_RULES_OPEN . str_replace( SGS_SHARED_RULES_PLACEHOLDER, $class, $probe ) . SGS_SHARED_RULES_CLOSE,
 		);
 	}
 }

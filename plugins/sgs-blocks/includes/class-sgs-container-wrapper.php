@@ -3135,6 +3135,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					$responsive_css .= sgs_emit_responsive_css( $grid_sel, $sgs_gtc_inner_props, array( 'container' => false ) );
 				}
 
+				$sgs_band_classes_added = false;
 				// Band (Layer 2) tier rules — own selector, see the $band_obj_sel note above.
 				// Band padding: the same text for every block with the same padding, printed once under a shared class.
 				// Only on the content band, as with the layout group: on the outer, the block's own rules printed before
@@ -3149,11 +3150,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 						}
 					);
 					if ( '' !== $sgs_band_pad_shared['class'] ) {
-						$classes[]       = $sgs_band_pad_shared['class'];
-						$responsive_css .= $sgs_band_pad_shared['css'];
-						$wrapper_attributes = get_block_wrapper_attributes(
-							array_merge( array( 'class' => implode( ' ', $classes ) ), $opt_extra_attrs )
-						);
+						$classes[]              = $sgs_band_pad_shared['class'];
+						$responsive_css        .= $sgs_band_pad_shared['css'];
+						$sgs_band_classes_added = true;
 					}
 				}
 
@@ -3242,14 +3241,17 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					} else {
 						$sgs_cw_shared = sgs_shared_rules( 'sgs-band-cap', $sgs_cw_css_for, $sgs_flat_band_seed );
 						if ( '' !== $sgs_cw_shared['class'] ) {
-							$classes[]       = $sgs_cw_shared['class'];
-							$responsive_css .= $sgs_cw_shared['css'];
-							// The wrapper's attributes were built before this point: rebuild them with the shared class.
-							$wrapper_attributes = get_block_wrapper_attributes(
-								array_merge( array( 'class' => implode( ' ', $classes ) ), $opt_extra_attrs )
-							);
+							$classes[]              = $sgs_cw_shared['class'];
+							$responsive_css        .= $sgs_cw_shared['css'];
+							$sgs_band_classes_added = true;
 						}
 					}
+				}
+				// The wrapper's attributes were built at the uid point, before the shared band classes: rebuild them once.
+				if ( $sgs_band_classes_added ) {
+					$wrapper_attributes = get_block_wrapper_attributes(
+						array_merge( array( 'class' => implode( ' ', $classes ) ), $opt_extra_attrs )
+					);
 				}
 
 				// OUTER shadow — tier-capable (Spec 35 Phase 1.4b, STAGE 2). VERIFIED

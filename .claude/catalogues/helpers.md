@@ -146,13 +146,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_button_preset_css` | `function sgs_button_preset_css( string $selector, string $preset, bool $resting = true, bool $colours = true…` | The CSS for one preset on one selector. | no markup |
 
-#### `includes/helpers-button-press.php` — 4 function(s)
+#### `includes/helpers-button-press.php` — 3 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_button_press_token` | `function sgs_button_press_token( string $variant, string $role ): string` | The custom property that carries one press role for a button style, or `''` when no preset sets it. | no markup |
 | `sgs_button_press_rule_for` | `function sgs_button_press_rule_for( string $selector, string $variant, string $guard = '', bool…` | The `:active` rule for one button-shaped element, or `''` when no preset sets a press role for its style. | no markup |
-| `sgs_button_press_rule` | `function sgs_button_press_rule( string $uid, string $variant ): string` | The `:active` rule for one sgs/button, or `''` when no preset sets a press role for its style. | no markup |
 | `sgs_button_press_rules_by_variant` | `function sgs_button_press_rules_by_variant( string $scope ): string` | The `:active` rules for every `.sgs-button--{variant}` inside a scope, one per variant whose preset sets a press role. | no markup |
 
 #### `includes/helpers-button-shared-rules.php` — 3 function(s)
@@ -1066,7 +1065,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**108 files, 511 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**108 files, 510 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 

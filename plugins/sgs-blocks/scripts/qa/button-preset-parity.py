@@ -51,7 +51,7 @@ HELPER_SNIPPETS = [
     ("woo preset css outline", 'echo sgs_button_preset_css( ".x", "outline" );'),
     ("woo preset css a fifth name", 'echo sgs_button_preset_css( ".x", "gold" );'),
     ("press by variant", 'echo sgs_button_press_rules_by_variant( "u" );'),
-    ("press rule per variant", 'foreach ( array( "primary", "secondary", "outline", "link", "custom", "gold" ) as $v ) { echo sgs_button_press_rule( "u", $v ); }'),
+    ("press rule per variant", 'foreach ( array( "primary", "secondary", "outline", "link", "custom", "gold" ) as $v ) { echo sgs_button_press_rule_for( ".u.u.sgs-button", $v ); }'),
     ("focus host border", 'foreach ( array( "primary", "secondary", "outline", "link", "custom", "gold" ) as $v ) { echo sgs_button_focus_host_border( array( "", "", "", "" ), "", $v ), "|"; }'),
     ("buybox class", 'require ABSPATH . "src/blocks/buybox/extras.php"; foreach ( array( "", "primary", "secondary", "outline", "zzz", "gold" ) as $v ) { echo sgs_buybox_add_to_cart_class( $v ), "|"; }'),
 ]

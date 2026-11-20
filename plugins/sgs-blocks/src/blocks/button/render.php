@@ -1087,7 +1087,7 @@ $allowed_css_tags = array(
 	'style' => array(),
 );
 foreach ( $sgs_btn_shared_css as $sgs_btn_shared_rule ) {
-	echo '<style>' . wp_strip_all_tags( $sgs_btn_shared_rule ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS built from sanitised tokens; wp_strip_all_tags guards </style>
+	echo sgs_style_tags( wp_strip_all_tags( $sgs_btn_shared_rule ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS built from sanitised tokens; wp_strip_all_tags guards </style>
 }
 if ( $scoped_css_parts ) {
 	// Class-level compound selector (`.{$uid}.sgs-button`), matching the seven other
