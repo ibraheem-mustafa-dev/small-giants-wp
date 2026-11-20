@@ -285,9 +285,8 @@
 					"_note": "The badge box of every variant (`.sgs-trust-bar__badge` as rendered; a draft may write it as `__item`, the element key per-area routing matches on, keyed on the draft's BEM element token). Declared `layer: GRID_AREA` (a per-child area of the band, like sgs/hero's content area) so the css_layer classifier does NOT fall back to its arrangement rule, which labelled itemGap GRID and let the icon-to-label gap capture the band's own items gap (`gap: 6px 32px`) that belongs in `gap`. itemGap is the icon-to-label gap inside one badge; itemPadding is the badge's own padding; both are responsive tier objects emitted as scoped rules on `.{uid}.wp-block-sgs-trust-bar .sgs-trust-bar__badge` by includes/helpers-trust-bar-item.php::sgs_trust_bar_item_css. Per-item fillStyle/fillColour (image-badge and text-only item content) remain repeater-row fields, not block-level style controls."
 				},
 				"text-badge": {
-					"absentIn": ["icon-circle", "icon-bare", "image-badge", "bg-css-layer"],
-					"absentWhy": "The word badge's own fill, border and corner radius exist only in the text-only badge style.",
 					"selector": ".sgs-trust-bar__badge",
+					"motion": false,
 					"label": "Word badge only (text-only variant)",
 					"order": 5,
 					"clusters": [

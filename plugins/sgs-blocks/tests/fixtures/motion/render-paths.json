@@ -3243,9 +3243,10 @@
      }
     },
     "text-only": {
-     "why": "badgeStyle text-only: each badge is a text label (sgs-trust-bar__badge-label)",
+     "why": "badgeStyle text-only: each badge is a text label (sgs-trust-bar__badge-label), with a separator glyph (sgs-trust-bar__separator) after each badge",
      "attrs": {
-      "badgeStyle": "text-only"
+      "badgeStyle": "text-only",
+      "textBadgeSeparator": "✦"
      }
     },
     "image-badge": {
