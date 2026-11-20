@@ -764,10 +764,19 @@ export function resolve( input, ctx ) {
 	};
 	const writes = [];
 	if ( 'flat_sibling' === row.tier_shape ) {
-		for ( const [ t, v ] of Object.entries( out ) ) {
+		// A smaller device's sibling inherits the next larger device's value, so it is written only where its value
+		// differs from that one or the node already holds the sibling (which would otherwise keep its old value).
+		let inherited;
+		for ( const t of [ 'desktop', 'tablet', 'mobile' ].filter( ( x ) => x in out ) ) {
+			const v = out[ t ];
 			const name = siblings( ctx.db, block, attr ).find( ( r ) => r.css_tier === t )?.attr_name;
 			if ( ! name ) {
 				return { gap: 'shape', detail: `${ attr } has no ${ t } sibling` };
+			}
+			const same = undefined !== inherited && JSON.stringify( v ) === JSON.stringify( inherited );
+			inherited = v;
+			if ( same && undefined === current[ name ] ) {
+				continue;
 			}
 			writes.push( { attr: name, value: v, merge: 'replace' } );
 		}

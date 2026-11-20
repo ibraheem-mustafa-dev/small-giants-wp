@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( same && undefined === current[ name ] ) {\n\t\t\t\tcontinue;",
+		"replace": "if ( false ) {\n\t\t\t\tcontinue;",
+		"why": "a smaller device equal to the value it inherits is written anyway"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "if ( same && undefined === current[ name ] ) {",
+		"replace": "if ( same ) {",
+		"why": "a sibling the node already holds keeps its old value"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "\t\t\tinherited = v;\n",
+		"replace": "",
+		"why": "nothing is ever inherited, so every device is written"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "for ( const t of [ 'desktop', 'tablet', 'mobile' ].filter( ( x ) => x in out ) ) {",
+		"replace": "for ( const t of [ 'mobile', 'tablet', 'desktop' ].filter( ( x ) => x in out ) ) {",
+		"why": "devices are compared smallest first, so the inheritance runs the wrong way"
+	}
+]

@@ -119,21 +119,24 @@ test( 'MUST FAIL: the fact record speaks for the target the image is drawn by, n
 
 test( 'MUST FAIL: the one-value-every-width gap keeps its code from the resolver to the UNMAPPED row Fill lists', () => {
 	const db = openDb();
-	const skeleton = [ { name: 'sgs/responsive-logo', draftRef: { tpl: 'Page/5#0' }, attributes: {} } ];
+	// sgs/testimonial maxWidth holds one value for every width (no tiers, no Tablet/Mobile siblings).
+	const skeleton = [ { name: 'sgs/testimonial', draftRef: { tpl: 'Page/5#0' }, attributes: {} } ];
 	const tree = cleanTree( skeleton );
 	addRefs( tree, 'fx' );
 	const wd = { 375: '200px', 768: '260px', 1024: '260px', 1440: '260px', 1920: '260px' };
-	const widths = Object.fromEntries( Object.keys( wd ).map( ( w ) => [ w, { '0:': { styles: { width: wd[ w ] }, pseudo: {}, rect: { x: 0, y: 0, w: parseInt( wd[ w ] ), h: 40 }, inFlow: true, words: '', href: null } } ] ) );
-	const declared = Object.fromEntries( Object.keys( wd ).map( ( w ) => [ w, { '0:': { width: wd[ w ] } } ] ) );
-	const cal = { block: 'sgs/responsive-logo', elements: { '': Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { width: '0px' } ] ) ) }, settings: { width: { slot: '', slots: [ '' ], reaches: [ '' ], property: 'width', state: null, forms: [], transform: null, reachedAt: [ 375, 768, 1440 ], effects: [], variants: [ 0 ] } }, discovered: {} };
+	const widths = Object.fromEntries( Object.keys( wd ).map( ( w ) => [ w, { '0:': { styles: { 'max-width': wd[ w ] }, pseudo: {}, rect: { x: 0, y: 0, w: parseInt( wd[ w ] ), h: 40 }, inFlow: true, words: '', href: null } } ] ) );
+	const declared = Object.fromEntries( Object.keys( wd ).map( ( w ) => [ w, { '0:': { 'max-width': wd[ w ] } } ] ) );
+	const cal = { block: 'sgs/testimonial', elements: { '': Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { 'max-width': 'none' } ] ) ) }, settings: { maxWidth: { slot: '', slots: [ '' ], reaches: [ '' ], property: 'max-width', state: null, forms: [], transform: null, reachedAt: [ 375, 768, 1440 ], effects: [], variants: [ 0 ] } }, discovered: {} };
 	const out = fillTree( { tree, nodes: skeletonNodes( skeleton ), reads: { widths, declared, sweep: {}, origin: 'http://127.0.0.1:1' }, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, calFor: () => cal, ledger: [], ledgerStates: [], rawSnapshot: null, facts: null, rootComponent: 'Page' } );
-	assert.deepEqual( out.unmapped.map( ( u ) => [ u.property, u.code ] ), [ [ 'width', 'one-value-every-width' ] ] );
+	assert.deepEqual( out.unmapped.map( ( u ) => [ u.property, u.code ] ), [ [ 'max-width', 'one-value-every-width' ] ] );
 } );
 
 test( 'MUST FAIL: the logo\'s per-width gap is matched by its structured code, not by the words of its reason', () => {
 	const db = openDb();
-	const cal = { elements: { '': {} }, settings: { width: { slot: '', slots: [ '' ], reaches: [ '' ], property: 'width', state: null, forms: [], transform: null, reachedAt: [ 375, 768, 1440 ], effects: [], variants: [ 0 ] } } };
-	const gap = resolveProperty( { node: { attributes: {} }, block: 'sgs/responsive-logo', prop: 'width', draft: { 1440: '260px', 768: '260px', 375: '200px' }, baseline: () => '0px', slots: [ '' ], calibration: cal, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, log: [] } );
+	// The resolver's gap comes from a setting that holds one value for every width (the logo's own width is now a
+	// Tablet/Mobile sibling family the resolver writes per device); the gap row below is the logo's as Fill lists it.
+	const cal = { elements: { '': {} }, settings: { maxWidth: { slot: '', slots: [ '' ], reaches: [ '' ], property: 'max-width', state: null, forms: [], transform: null, reachedAt: [ 375, 768, 1440 ], effects: [], variants: [ 0 ] } } };
+	const gap = resolveProperty( { node: { attributes: {} }, block: 'sgs/testimonial', prop: 'max-width', draft: { 1440: '260px', 768: '260px', 375: '200px' }, baseline: () => '0px', slots: [ '' ], calibration: cal, db, snapshot: { palette: [], spacing: [], fontSizes: [] }, log: [] } );
 	assert.deepEqual( [ gap.status, gap.gap, gap.code ], [ 'gap', 'shape', 'one-value-every-width' ] );
 	const call = ( row ) => logoSizeWrites( {
 		nodes: [ { index: 0, name: 'sgs/responsive-logo', targets: [ { id: '0:', slot: '' } ] } ], flat: [ { ref: 'r0', attributes: {} } ], refOf: ( n ) => n.ref,

@@ -39,7 +39,14 @@ test( 'NEGATIVE CONTROL: classified flat_sibling but the base names no device, s
 	assert.match( r.detail, /no desktop sibling/ );
 } );
 
-test( 'NEGATIVE CONTROL: a draft that holds one value at every width writes that value into each device row', () => {
+test( 'MUST FAIL: a smaller device whose draft value equals the one it inherits is not written', () => {
 	const r = ask( dbWith( AFTER ), { 375: '96px', 768: '96px', 1440: '96px' } );
-	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value ] ).sort(), [ [ 'maxHeight', 96 ], [ 'maxHeightMobile', 96 ], [ 'maxHeightTablet', 96 ] ] );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'maxHeight', 96 ] ] );
+	const mid = ask( dbWith( AFTER ), { 375: '112px', 768: '150px', 1440: '150px' } );
+	assert.deepEqual( mid.writes.map( ( w ) => [ w.attr, w.value ] ).sort(), [ [ 'maxHeight', 150 ], [ 'maxHeightMobile', 112 ] ], 'tablet inherits desktop; mobile differs from tablet' );
+} );
+
+test( 'NEGATIVE CONTROL: a sibling the node already holds is written even when its value equals the inherited one', () => {
+	const r = resolve( { block: 'sgs/brand-strip', slot: '', prop: 'min-height', perWidth: { 375: '96px', 768: '96px', 1440: '96px' }, current: { maxHeightMobile: 40 } }, { db: dbWith( AFTER ), snapshot, calibration: cal } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value ] ).sort(), [ [ 'maxHeight', 96 ], [ 'maxHeightMobile', 96 ] ] );
 } );
