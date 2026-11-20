@@ -1,0 +1,6 @@
+[
+ { "file": "lib/site-run-opener-row.mjs", "find": "if ( ! own || ! OWN.includes( own.postType ) ) {", "replace": "if ( ! own ) {", "why": "a form, read on its own page, is moved to a page that links it" },
+ { "file": "lib/site-run-opener-row.mjs", "find": "ADDRESSED.includes( r.postType ) && ", "replace": "", "why": "a modal only the footer opens is read at the footer post's address" },
+ { "file": "lib/site-run-opener-row.mjs", "find": "openers.find( ( r ) => 'product' !== r.postType ) ?? ", "replace": "", "why": "a modal a page and a product open is read at the product" },
+ { "file": "lib/site-run-opener-row.mjs", "find": " ?? openers[ 0 ] ?? null;", "replace": " ?? null;", "why": "a flow only a product opens is read at the home page" }
+]
