@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13415,
+    "row_count": 13422,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -4501,6 +4501,7 @@
     "sgs/form-field-text::leadingIconColourGradient": "color",
     "sgs/form-field-text::leadingIconSize": "select-from-enum",
     "sgs/form-field-text::maxLength": null,
+    "sgs/form-field-text::maxWidth": "layout",
     "sgs/form-field-text::msgInvalid": "technical",
     "sgs/form-field-text::msgRequired": "behaviour",
     "sgs/form-field-text::msgTooLong": "technical",
@@ -11733,6 +11734,12 @@
     "sgs/trust-bar::surfaceSaturate": null,
     "sgs/trust-bar::surfaceTone": "enum-mode",
     "sgs/trust-bar::tagName": "enum-mode",
+    "sgs/trust-bar::textBadgeBackground": "color",
+    "sgs/trust-bar::textBadgeBorderColour": "color",
+    "sgs/trust-bar::textBadgeBorderWidth": "visual",
+    "sgs/trust-bar::textBadgeRadius": "visual",
+    "sgs/trust-bar::textBadgeSeparator": "text-content",
+    "sgs/trust-bar::textBadgeSeparatorColour": "color",
     "sgs/trust-bar::textColour": "color",
     "sgs/trust-bar::textColourGradient": "colour-gradient",
     "sgs/trust-bar::textColourHover": "color",

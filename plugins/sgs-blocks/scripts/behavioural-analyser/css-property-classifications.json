@@ -34212,6 +34212,40 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "textBadgeBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "text-badge"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "textBadgeBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "text-badge"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "textBadgeRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "text-badge"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "textBadgeSeparatorColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "separator"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "textColour",
       "fields": {
         "css_property": "color",
@@ -40243,6 +40277,14 @@
       "fields": {
         "css_property": "width",
         "css_element": "leading-icon"
+      }
+    },
+    {
+      "slug": "sgs/form-field-text",
+      "attr": "maxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "field"
       }
     },
     {
@@ -50547,6 +50589,15 @@
         "css_property": "background-image",
         "css_element": "badge-label",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "textBadgeBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "text-badge"
       }
     },
     {
