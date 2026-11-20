@@ -60,6 +60,7 @@ import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site
 import { draftProductSlugs, liveFactsPhp, readLiveFacts, templateAddresses, livePrimeFor } from './lib/template-live-address.mjs';
 import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
+import { removeStaleTemplates } from './lib/site-run-stale-templates.mjs';
 import { writeFlowTree } from './lib/site-run-flow-tree.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
@@ -603,6 +604,10 @@ export async function main( argv ) {
 	const runPhp = wpEvalRunner( target, site, REPO );
 	const wp = wpCommand( target, site, REPO );
 	const recordTemplate = ( slug, hash ) => runPhp( templateRecordPhp( slug, hash ) );
+	// A saved copy the clone wrote that no surface builds now would serve a page ahead of its own content (lib/site-run-stale-templates.mjs).
+	if ( stages.includes( 'build' ) && withCopies ) {
+		removeStaleTemplates( { runPhp, wp, rows, surfaces } );
+	}
 
 	const pool = async ( list, fn ) => {
 		const pending = [ ...list ];
