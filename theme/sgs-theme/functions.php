@@ -485,23 +485,6 @@ function enqueue_styles(): void {
 		)
 	);
 
-	/*
-	 * Viewport width helper — sets --viewport-width on :root excluding the
-	 * Windows scrollbar. Hero full-bleed rule uses var(--viewport-width, 100vw)
-	 * so the JS value wins on Windows desktop; mobile / Mac fall back to 100vw.
-	 * Deferred — no DOM dependency before parse.
-	 */
-	wp_enqueue_script(
-		'sgs-viewport-width',
-		get_theme_file_uri( 'assets/js/viewport-width.js' ),
-		array(),
-		asset_version( 'assets/js/viewport-width.js', $theme_version ),
-		array(
-			'in_footer' => false,
-			'strategy'  => 'defer',
-		)
-	);
-
 	// Mobile navigation (burger + off-canvas drawer) is owned entirely by the
 	// sgs/nav-bar-menu (burger) and sgs/nav-drawer blocks.
 	// CSS and JS load automatically via block.json — no theme-level enqueue.

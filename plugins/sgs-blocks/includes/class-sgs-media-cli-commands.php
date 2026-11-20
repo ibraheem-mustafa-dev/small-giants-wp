@@ -125,8 +125,9 @@ final class Sgs_Media_Cli_Commands {
 	}
 
 	/**
-	 * Regenerate existing JPEG and PNG attachments' resized copies as AVIF or WebP (Spec 49 FR-49-42). Old resized files
-	 * are kept, so saved URLs still resolve. One thread, in batches, resumable by attachment ID.
+	 * Regenerate existing JPEG and PNG attachments' resized copies as AVIF or WebP, and give each main (full-size) file a copy
+	 * in that format (Spec 49 FR-49-42). An attachment whose resized copies are already modern gets only the main file's copy.
+	 * Old resized files are kept, so saved URLs still resolve. One thread, in batches, resumable by attachment ID.
 	 *
 	 * ## OPTIONS
 	 *
@@ -191,7 +192,14 @@ final class Sgs_Media_Cli_Commands {
 				\WP_CLI::log( sprintf( 'Would regenerate attachment %d (%s)%s', $id, \get_attached_file( $id ), $note ) );
 				continue;
 			}
-			$result = $repair ? \Sgs_Media_Modernise::repair( $id ) : \Sgs_Media_Modernise::regenerate( $id );
+			if ( $repair ) {
+				$result = \Sgs_Media_Modernise::repair( $id );
+			} else {
+				$meta   = \wp_get_attachment_metadata( $id );
+				$result = is_array( $meta ) && ! \Sgs_Media_Modernise::needs_subsizes( $meta )
+					? \Sgs_Media_Modernise::full_copy( $id )
+					: \Sgs_Media_Modernise::regenerate( $id );
+			}
 			if ( \is_wp_error( $result ) ) {
 				++$failed;
 				\WP_CLI::warning( sprintf( 'Attachment %d: %s', $id, $result->get_error_message() ) );

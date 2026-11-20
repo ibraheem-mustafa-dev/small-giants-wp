@@ -2,7 +2,9 @@
 /**
  * Regenerates existing attachments' resized copies in the modern formats (Spec 49 FR-49-42).
  *
- * Behind `wp sgs media modernise`. Old resized files stay on disk (the `--skip-delete` behaviour of `wp media regenerate`),
+ * Behind `wp sgs media modernise`. An attachment is selected when a resized copy is still JPEG or PNG (every size is made
+ * again) or when its main file has no copy in the modern format yet and was never checked for one (only that copy is made,
+ * `Sgs_Media_Formats::add_full_copy`). Old resized files stay on disk (the `--skip-delete` behaviour of `wp media regenerate`),
  * so saved URLs that name one still resolve. Work runs on one thread, in batches, ordered by attachment ID and resumable
  * through `--after=<id>`. With `--repair` it selects only attachments that hold a 0-byte or missing resized copy, or lack a
  * registered size, and regenerates just those sizes (`repair_ids`, `repair`).
@@ -20,7 +22,33 @@ defined( 'ABSPATH' ) || exit;
 final class Sgs_Media_Modernise {
 
 	/**
-	 * Attachment IDs that still hold JPEG or PNG resized copies, after `$after`, oldest first.
+	 * Whether an attachment's resized copies still include a JPEG or PNG.
+	 *
+	 * @param array<string, mixed> $meta Attachment metadata.
+	 * @return bool
+	 */
+	public static function needs_subsizes( array $meta ): bool {
+		$mimes = array_unique( array_column( (array) ( $meta['sizes'] ?? array() ), 'mime-type' ) );
+		return (bool) array_diff( $mimes, array( 'image/avif', 'image/webp' ) );
+	}
+
+	/**
+	 * Whether an attachment's main file has no modern-format copy and was never checked for one.
+	 *
+	 * @param array<string, mixed> $meta Attachment metadata.
+	 * @return bool
+	 */
+	public static function needs_full_copy( array $meta ): bool {
+		$base = wp_basename( (string) ( $meta['file'] ?? '' ) );
+		if ( '' === $base ) {
+			return false;
+		}
+		return ( $meta['sizes'][ Sgs_Media_Formats::FULL_COPY ]['source'] ?? '' ) !== $base
+			&& ( $meta['sgs_full_copy_checked'] ?? '' ) !== $base;
+	}
+
+	/**
+	 * Attachment IDs that still hold JPEG or PNG resized copies, or lack the main file's modern-format copy, after `$after`, oldest first.
 	 *
 	 * @param int $after Last ID already handled.
 	 * @param int $limit Batch size.
@@ -31,7 +59,6 @@ final class Sgs_Media_Modernise {
 		$ids     = array();
 		$last    = $after;
 		$chunk   = max( 50, $limit * 5 );
-		$targets = array( 'image/avif', 'image/webp' );
 		$found   = 0;
 		while ( $found < $limit ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -51,8 +78,7 @@ final class Sgs_Media_Modernise {
 				if ( ! is_array( $meta ) || empty( $meta['sizes'] ) ) {
 					continue;
 				}
-				$mimes = array_unique( array_column( $meta['sizes'], 'mime-type' ) );
-				if ( array_diff( $mimes, $targets ) ) {
+				if ( self::needs_subsizes( $meta ) || self::needs_full_copy( $meta ) ) {
 					$ids[] = $last;
 					++$found;
 					if ( $found >= $limit ) {
@@ -75,7 +101,7 @@ final class Sgs_Media_Modernise {
 	}
 
 	/**
-	 * Rebuild one attachment's resized copies; old files are kept.
+	 * Rebuild one attachment's resized copies and the main file's modern-format copy; old files are kept.
 	 *
 	 * @param int $id Attachment ID.
 	 * @return array<string, mixed>|WP_Error The new sizes: name => array( mime, bytes ).
@@ -97,9 +123,36 @@ final class Sgs_Media_Modernise {
 			return new WP_Error( 'sgs_media_regenerate_failed', 'WordPress could not make the resized copies.' );
 		}
 		$new = Sgs_Media_Formats::discard_oversized( $new, $id );
+		$new = Sgs_Media_Formats::add_full_copy( $new, $id );
 		wp_update_attachment_metadata( $id, $new );
+		return self::size_summary( $new );
+	}
+
+	/**
+	 * Make only the main file's modern-format copy, for an attachment whose resized copies are already modern.
+	 *
+	 * @param int $id Attachment ID.
+	 * @return array<string, mixed>|WP_Error The sizes now in the metadata: name => array( mime, bytes ).
+	 */
+	public static function full_copy( int $id ) {
+		$meta = wp_get_attachment_metadata( $id );
+		if ( ! is_array( $meta ) ) {
+			return new WP_Error( 'sgs_media_no_meta', 'The attachment has no image metadata.' );
+		}
+		$new = Sgs_Media_Formats::add_full_copy( $meta, $id );
+		wp_update_attachment_metadata( $id, $new );
+		return self::size_summary( $new );
+	}
+
+	/**
+	 * The sizes in an attachment's metadata: name => array( mime, bytes ).
+	 *
+	 * @param mixed $meta Attachment metadata.
+	 * @return array<string, array{mime: string, bytes: int}>
+	 */
+	private static function size_summary( $meta ): array {
 		$out = array();
-		foreach ( (array) ( $new['sizes'] ?? array() ) as $name => $size ) {
+		foreach ( (array) ( is_array( $meta ) ? ( $meta['sizes'] ?? array() ) : array() ) as $name => $size ) {
 			$out[ $name ] = array(
 				'mime'  => (string) ( $size['mime-type'] ?? '' ),
 				'bytes' => (int) ( $size['filesize'] ?? 0 ),
@@ -232,13 +285,11 @@ final class Sgs_Media_Modernise {
 		if ( ! is_array( $new ) ) {
 			return is_wp_error( $new ) ? $new : new WP_Error( 'sgs_media_regenerate_failed', 'WordPress could not make the resized copies.' );
 		}
-		$out = array();
-		foreach ( (array) ( $new['sizes'] ?? array() ) as $name => $size ) {
-			$out[ $name ] = array(
-				'mime'  => (string) ( $size['mime-type'] ?? '' ),
-				'bytes' => (int) ( $size['filesize'] ?? 0 ),
-			);
+		if ( in_array( Sgs_Media_Formats::FULL_COPY, $problem['missing'], true ) ) {
+			unset( $new['sgs_full_copy_checked'] );
+			$new = Sgs_Media_Formats::add_full_copy( $new, $id );
+			wp_update_attachment_metadata( $id, $new );
 		}
-		return $out;
+		return self::size_summary( $new );
 	}
 }

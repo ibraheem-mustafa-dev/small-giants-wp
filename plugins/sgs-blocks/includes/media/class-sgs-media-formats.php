@@ -5,7 +5,12 @@
  * Every resized copy WordPress makes of an uploaded JPEG or PNG is saved as AVIF (quality 60) where the server's image
  * editor supports AVIF, else WebP (quality 82), through core's `image_editor_output_format` and `wp_editor_set_quality`
  * filters. The original upload, the attachment's main (full-size) file and the big-image `-scaled` copy keep their format, because
- * social previews, email clients and outside tools do not accept AVIF. A converted copy that is larger than
+ * social previews, email clients and outside tools do not accept AVIF, and every address saved outside the site keeps working.
+ *
+ * The main file also gets a copy in the modern format at its own size (`add_full_copy`), held in the metadata as the size
+ * `sgs-full-modern` with the name of the file it was made from, and kept only when it is smaller. Core's srcset ends with the
+ * main file at its own width, so `srcset_full_copy` points that entry at the copy: a phone that wants the widest candidate
+ * downloads the AVIF, not the JPEG. The copy is a size, so deleting the attachment deletes it. A converted copy that is larger than
  * its source is replaced by a copy in the source format: a JPEG source is compared with the original file's bytes; a PNG
  * source is compared with the same size encoded as PNG (growth is common for flat graphics).
  *
@@ -31,6 +36,9 @@ final class Sgs_Media_Formats {
 	private const WEBP_QUALITY = 82;
 	private const SOURCES      = array( 'image/jpeg', 'image/png' );
 
+	/** The metadata size that holds the main file's copy in the modern format. */
+	public const FULL_COPY = 'sgs-full-modern';
+
 	/**
 	 * True while a source-format twin is being written, so the mapping stays out of the way.
 	 *
@@ -52,6 +60,8 @@ final class Sgs_Media_Formats {
 		add_filter( 'image_editor_output_format', array( self::class, 'output_format' ), 10, 3 );
 		add_filter( 'wp_editor_set_quality', array( self::class, 'quality' ), 10, 2 );
 		add_filter( 'wp_generate_attachment_metadata', array( self::class, 'discard_oversized' ), 20, 2 );
+		add_filter( 'wp_generate_attachment_metadata', array( self::class, 'add_full_copy' ), 30, 2 );
+		add_filter( 'wp_calculate_image_srcset', array( self::class, 'srcset_full_copy' ), 10, 5 );
 		add_filter( 'wp_image_editors', array( self::class, 'editors' ), 99 );
 	}
 
@@ -246,6 +256,98 @@ final class Sgs_Media_Formats {
 			}
 		}
 		return $metadata;
+	}
+
+	/**
+	 * `wp_generate_attachment_metadata`: save the main (full-size) file again in the modern format, as the size
+	 * `sgs-full-modern`, when the copy is smaller than the main file.
+	 *
+	 * The copy is saved like a resized copy (no destination name, so it is named `<name>-<width>x<height>.<ext>` and an
+	 * AVIF encoder failure falls back to WebP); a copy that comes back in the source format, fails, or is not smaller is
+	 * deleted. `sgs_full_copy_checked` records the main file the decision was made for, so `wp sgs media modernise` skips an
+	 * attachment whose copy was not kept.
+	 *
+	 * @param mixed $metadata      Attachment metadata.
+	 * @param int   $attachment_id Attachment ID.
+	 * @return mixed
+	 */
+	public static function add_full_copy( $metadata, $attachment_id = 0 ) {
+		if ( ! is_array( $metadata ) || ! self::enabled() || empty( $metadata['file'] ) ) {
+			return $metadata;
+		}
+		$id          = (int) $attachment_id;
+		$source_mime = (string) get_post_mime_type( $id );
+		$main        = (string) get_attached_file( $id );
+		$target      = self::target_mime();
+		if ( ! in_array( $source_mime, self::SOURCES, true ) || '' === $main || '' === $target || ! file_exists( $main ) ) {
+			return $metadata;
+		}
+		$base = wp_basename( $main );
+		if ( ( $metadata['sizes'][ self::FULL_COPY ]['source'] ?? '' ) === $base ) {
+			return $metadata;
+		}
+		unset( $metadata['sizes'][ self::FULL_COPY ] );
+		$metadata['sgs_full_copy_checked'] = $base;
+
+		$editor = wp_get_image_editor( $main );
+		if ( is_wp_error( $editor ) ) {
+			return $metadata;
+		}
+		$saved = $editor->save( null, $target );
+		if ( self::save_failed( $saved ) ) {
+			self::remove_empty( $saved );
+			return $metadata;
+		}
+		$path  = (string) $saved['path'];
+		$mime  = (string) ( $saved['mime-type'] ?? '' );
+		$bytes = (int) wp_filesize( $path );
+		if ( ! in_array( $mime, array( 'image/avif', 'image/webp' ), true ) || $bytes >= (int) wp_filesize( $main ) ) {
+			wp_delete_file( $path );
+			return $metadata;
+		}
+		$metadata['sizes'] = (array) ( $metadata['sizes'] ?? array() );
+
+		$metadata['sizes'][ self::FULL_COPY ] = array(
+			'file'      => wp_basename( $path ),
+			'width'     => (int) ( $saved['width'] ?? 0 ),
+			'height'    => (int) ( $saved['height'] ?? 0 ),
+			'mime-type' => $mime,
+			'filesize'  => $bytes,
+			'source'    => $base,
+		);
+		return $metadata;
+	}
+
+	/**
+	 * `wp_calculate_image_srcset`: the main file's entry points at its modern-format copy.
+	 *
+	 * Core adds the main file last and lets it win its width, so the copy (same width) never shows on its own. Only a copy
+	 * made from the current main file is used (an image edited since has a new main file).
+	 *
+	 * @param mixed $sources       Candidates by width: array( url, descriptor, value ).
+	 * @param mixed $size_array    Requested width and height.
+	 * @param mixed $image_src     The `src`.
+	 * @param mixed $image_meta    Attachment metadata.
+	 * @param int   $attachment_id Attachment ID.
+	 * @return mixed
+	 */
+	public static function srcset_full_copy( $sources, $size_array = array(), $image_src = '', $image_meta = array(), $attachment_id = 0 ) {
+		unset( $size_array, $image_src, $attachment_id );
+		if ( ! is_array( $sources ) || ! is_array( $image_meta ) || empty( $image_meta['file'] ) || ! self::enabled() ) {
+			return $sources;
+		}
+		$copy = $image_meta['sizes'][ self::FULL_COPY ] ?? null;
+		$base = wp_basename( (string) $image_meta['file'] );
+		if ( ! is_array( $copy ) || empty( $copy['file'] ) || ( $copy['source'] ?? '' ) !== $base ) {
+			return $sources;
+		}
+		foreach ( $sources as $width => $source ) {
+			$url = (string) ( $source['url'] ?? '' );
+			if ( str_ends_with( $url, '/' . $base ) ) {
+				$sources[ $width ]['url'] = substr( $url, 0, -strlen( $base ) ) . $copy['file'];
+			}
+		}
+		return $sources;
 	}
 
 	/**

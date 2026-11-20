@@ -23,6 +23,7 @@ final class SGS_Blocks {
 	private function __construct() {
 		add_action( 'init', [ $this, 'register_blocks' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
+		add_action( 'wp_head', [ $this, 'print_js_flag' ], 1 );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_extensions' ] );
 		// STYLES are a separate hook from the editor SCRIPT above, deliberately.
 		// Since WP 6.3 the editor canvas is an iframe; `enqueue_block_editor_assets`
@@ -558,7 +559,7 @@ final class SGS_Blocks {
 	/**
 	 * Enqueue frontend CSS and JS for extensions.
 	 *
-	 * The extension stylesheet and the dependency-free page-flag scripts load on every page.
+	 * The extension stylesheet and the touch-input script load on every page; the `.sgs-js` flag prints in the head (`print_js_flag`).
 	 */
 	public function enqueue_frontend_assets(): void {
 		$css_file = SGS_BLOCKS_PATH . 'assets/css/extensions.css';
@@ -588,21 +589,16 @@ final class SGS_Blocks {
 				]
 			);
 		}
+	}
 
-		// Marks <html> with `.sgs-js` once script runs: the gate the image-sequence and horizontal-panel
-		// stylesheets wait for before they hide their no-JavaScript fallback. Dependency-free, so it costs one tiny file.
-		$js_flag = SGS_BLOCKS_PATH . 'assets/js/js-flag.js';
-		if ( file_exists( $js_flag ) ) {
-			wp_enqueue_script(
-				'sgs-js-flag',
-				SGS_BLOCKS_URL . 'assets/js/js-flag.js',
-				[],
-				SGS_BLOCKS_VERSION,
-				[
-					'in_footer' => true,
-					'strategy'  => 'defer',
-				]
-			);
-		}
+	/**
+	 * Mark <html> with `.sgs-js` from the head, before the body is parsed: the gate the image-sequence and
+	 * horizontal-panel stylesheets wait for before they hide their no-JavaScript fallback.
+	 *
+	 * Printed inline at `wp_head` priority 1 rather than loaded as a deferred file: a class added to <html> after the
+	 * page is built makes the browser restyle every element before the first paint (Mama's Shop, 2026-11-20).
+	 */
+	public function print_js_flag(): void {
+		wp_print_inline_script_tag( "document.documentElement.classList.add('sgs-js');", [ 'id' => 'sgs-js-flag' ] );
 	}
 }

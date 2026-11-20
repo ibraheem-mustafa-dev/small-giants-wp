@@ -16,9 +16,13 @@
  *     returning visitors.
  *   - `links`: WordPress prints its own tags, untouched.
  * A handle is mergeable when it is a `.css` file of this site under ABSPATH or WP_CONTENT_DIR, or has no file and only
- * inline CSS, and it applies to every medium (`media` all). A media query, `conditional`, `alt` or `title` data, an RTL
- * variant on an RTL site, an `@import`, a `</style` sequence or a file that cannot be read ends the run, and that
- * handle prints exactly as WordPress would.
+ * inline CSS. A handle for some media only (WooCommerce's `woocommerce-smallscreen`, `only screen and (max-width: 768px)`)
+ * joins the run with its file's rules inside `@media <its media>{…}`; its inline additions stay outside, because WordPress
+ * prints them for every medium. Such a link sits after the head's inline CSS, so the browser found it late and waited for
+ * it before the first paint (Mama's Shop on a throttled phone: requested 1.0 s in, 0.6 s queued, 2026-11-20). A media
+ * value holding `{`, `}`, `;`, `<` or `>`, `conditional`, `alt` or `title` data, an RTL variant on an RTL site, an
+ * `@import`, a `</style` sequence or a file that cannot be read ends the run, and that handle prints exactly as
+ * WordPress would.
  *
  * The page-specific per-instance CSS is not handled here: the collector (`class-sgs-css-registry.php`) prints it.
  *
@@ -203,8 +207,9 @@ final class Css_Delivery {
 		if ( null === $obj ) {
 			return null;
 		}
-		$media = $obj->args;
-		if ( null !== $media && '' !== $media && 'all' !== $media ) {
+		$media = \is_string( $obj->args ) ? \trim( $obj->args ) : '';
+		$wrap  = '' !== $media && 'all' !== \strtolower( $media );
+		if ( $wrap && 1 === \preg_match( '/[{};<>]/', $media ) ) {
 			return null;
 		}
 		$extra = (array) $obj->extra;
@@ -229,6 +234,9 @@ final class Css_Delivery {
 			$text = (string) \preg_replace( '/^\xEF\xBB\xBF|^\s*@charset\s+[^;]+;/i', '', $text );
 			$css  = \_wp_normalize_relative_css_links( $text, self::absolute_src( $styles, $obj->src ) );
 			$file = true;
+			if ( $wrap && '' !== \trim( $css ) ) {
+				$css = '@media ' . $media . '{' . $css . '}';
+			}
 		}
 
 		$after = isset( $extra['after'] ) && \is_array( $extra['after'] ) ? \implode( "\n", \array_filter( $extra['after'], 'is_string' ) ) : '';

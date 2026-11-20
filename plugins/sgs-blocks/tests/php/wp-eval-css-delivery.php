@@ -6,8 +6,9 @@
  * core's own WP_Styles::do_items(), then checks:
  *   - print order is resolved from dependencies and the real `to_do` list is left untouched;
  *   - a run keeps every handle's file content and inline additions in print order, in one block;
- *   - a media query, an `@import`, another origin, a missing file and a `</style` sequence each end the run and
- *     print as WordPress would;
+ *   - a stylesheet for some media joins the run inside `@media`, its inline additions outside it;
+ *   - a media value with `{`, an `@import`, another origin, a missing file and a `</style` sequence each end the run
+ *     and print as WordPress would;
  *   - relative `url()` references are rewritten from the file's own folder;
  *   - `bundle` writes one content-hashed file per run of two or more files (no `ver`), whose name changes with
  *     its content, and leaves a one-file run alone;
@@ -48,6 +49,7 @@ $files = array(
 	'z.css' => '.z{color:red}',
 	'b.css' => '.b{color:blue}',
 	'm.css' => '.m{color:green}',
+	'n.css' => '.n{color:olive}',
 	'c.css' => '@import url(x.css);.c{color:teal}',
 	'f.css' => '@charset "UTF-8";.f{color:navy}',
 	'h.css' => '.h{content:"</style>"}',
@@ -68,12 +70,14 @@ $build = static function () use ( $url ): WP_Styles {
 	$s->add_data( 'i', 'after', array( '.i-only{}' ) );
 	$s->add( 'b', $url . '/b.css', array(), '1' );
 	$s->add( 'm', $url . '/m.css', array(), '1', '(max-width:600px)' );
+	$s->add_data( 'm', 'after', array( '.m-after{}' ) );
+	$s->add( 'n', $url . '/n.css', array(), '1', 'screen{' );
 	$s->add( 'c', $url . '/c.css', array(), '1' );
 	$s->add( 'f', wp_make_link_relative( $url . '/f.css' ), array(), '1' );
 	$s->add( 'e', 'https://example.com/e.css', array(), '1' );
 	$s->add( 'g', $url . '/missing.css', array(), '1' );
 	$s->add( 'h', $url . '/h.css', array(), '1' );
-	foreach ( array( 'z', 'i', 'b', 'm', 'c', 'f', 'e', 'g', 'h' ) as $h ) {
+	foreach ( array( 'z', 'i', 'b', 'm', 'n', 'c', 'f', 'e', 'g', 'h' ) as $h ) {
 		$s->enqueue( $h );
 	}
 	return $s;
@@ -87,12 +91,12 @@ $print = static function ( WP_Styles $s ): string {
 // Order.
 $s     = $build();
 $order = Css_Delivery::print_order( $s );
-$check( 'print order follows dependencies', array( 'a', 'z', 'i', 'b', 'm', 'c', 'f', 'e', 'g', 'h' ) === $order, implode( ',', $order ) );
+$check( 'print order follows dependencies', array( 'a', 'z', 'i', 'b', 'm', 'n', 'c', 'f', 'e', 'g', 'h' ) === $order, implode( ',', $order ) );
 $check( 'real to_do untouched', array() === $s->to_do );
 
 // Runs.
 $runs = array_map( static fn( $r ) => $r['handles'], Css_Delivery::plan( $s, $order ) );
-$check( 'runs break at media, @import, origin, missing file and </style', array( array( 'a', 'z', 'i', 'b' ), array( 'f' ) ) === $runs, wp_json_encode( $runs ) );
+$check( 'a media sheet joins the run; an unsafe media value, @import, origin, missing file and </style break it', array( array( 'a', 'z', 'i', 'b', 'm' ), array( 'f' ) ) === $runs, wp_json_encode( $runs ) );
 
 // Inline mode.
 Css_Delivery::apply( $s, 'inline' );
@@ -104,8 +108,10 @@ $pi = strpos( $out, '.i-only{' );
 $pb = strpos( $out, '.b{' );
 $check( 'file then inline additions, in print order', false !== $pa && $pa < strpos( $out, '.a-after{' ) && strpos( $out, '.a-after{' ) < $pz && $pz < $pi && $pi < $pb, $out );
 $check( 'merged handles print no tag of their own', false === strpos( $out, 'z-css' ) && false === strpos( $out, 'b-css' ) && false === strpos( $out, 'i-inline-css' ) );
-$check( 'media sheet stays a link with its media', (bool) preg_match( "#id=['\"]m-css['\"][^>]*media=['\"]\\(max-width:600px\\)['\"]#", $out ), $out );
-$check( 'media link prints after the first run and before f', strpos( $out, 'm-css' ) > $pb && strpos( $out, 'm-css' ) < strpos( $out, '.f{' ) );
+$check( 'media sheet folded inside its @media, inline additions outside', false !== strpos( $out, "@media (max-width:600px){.m{color:green}}
+.m-after{}" ) && false === strpos( $out, 'm-css' ), $out );
+$check( 'media sheet after b in the run, before f', strpos( $out, '.m{color:green}' ) > $pb && strpos( $out, '.m{color:green}' ) < strpos( $out, '.f{' ) );
+$check( 'unsafe media value stays a link', false !== strpos( $out, 'n-css' ) && false !== strpos( $out, 'n.css' ) );
 $check( '@import sheet stays a link', false !== strpos( $out, 'c-css' ) );
 $check( 'other origin stays a link', false !== strpos( $out, 'example.com/e.css' ) );
 $check( 'missing file stays a link', false !== strpos( $out, 'missing.css' ) );
@@ -118,7 +124,7 @@ $check( 'relative url() rewritten from the file folder', false !== strpos( $out,
 $s      = $build();
 $merged = Css_Delivery::apply( $s, 'bundle' );
 $out    = $print( $s );
-$check( 'bundle only for the run with two or more files', 1 === count( $merged ) && array( 'a', 'z', 'i', 'b' ) === $merged[0]['handles'], wp_json_encode( $merged ) );
+$check( 'bundle only for the run with two or more files', 1 === count( $merged ) && array( 'a', 'z', 'i', 'b', 'm' ) === $merged[0]['handles'], wp_json_encode( $merged ) );
 $src1 = 1 === count( $merged ) ? (string) $merged[0]['src'] : '';
 $check( 'bundle file in uploads/sgs-css with the run prefix', (bool) preg_match( '#/sgs-css/sgs-\d+-run-[0-9a-f]{32}\.css$#', $src1 ), $src1 );
 $check( 'bundle link carries no ver', false !== strpos( $out, $src1 . "'" ) || false !== strpos( $out, $src1 . '"' ), $out );

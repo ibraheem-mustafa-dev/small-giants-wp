@@ -132,7 +132,7 @@
 		{ "state": "environment", "family": "environment", "kind": "data-attribute", "token": "[data-theme=\"dark\"]", "reach": "set-attribute", "note": "the site's dark theme chosen with sgs/theme-toggle" }
 	],
 	"notStates": [
-		{ "token": "sgs-js", "reason": "script-ready flag on the page (assets/js/js-flag.js), set once" },
+		{ "token": "sgs-js", "reason": "script-ready flag on the page, printed in the head (includes/class-sgs-blocks.php::print_js_flag), set once" },
 		{ "token": "sgs-motion-ready", "reason": "script-ready flag (assets/js/motion-ready-gate.js), set once" },
 		{ "token": "is-enhanced", "reason": "script-ready flag on a block, set once" },
 		{ "token": "is-ready", "reason": "script-ready flag (image sequence), set once" },
