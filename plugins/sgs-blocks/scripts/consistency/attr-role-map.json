@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13408,
+    "row_count": 13414,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1860,6 +1860,8 @@
     "sgs/brand-strip::logos": "content",
     "sgs/brand-strip::margin": "layout",
     "sgs/brand-strip::maxHeight": "layout",
+    "sgs/brand-strip::maxHeightMobile": "layout",
+    "sgs/brand-strip::maxHeightTablet": "layout",
     "sgs/brand-strip::nameColour": "color",
     "sgs/brand-strip::nameColourGradient": "colour-gradient",
     "sgs/brand-strip::nameColourHover": "color",
@@ -10079,6 +10081,8 @@
     "sgs/responsive-logo::svgPartsHoverCooldown": "behaviour",
     "sgs/responsive-logo::svgPartsTrigger": "behaviour",
     "sgs/responsive-logo::width": "layout",
+    "sgs/responsive-logo::widthMobile": "layout",
+    "sgs/responsive-logo::widthTablet": "layout",
     "sgs/separator::alignment": "behaviour",
     "sgs/separator::colour": "color",
     "sgs/separator::contentColour": "color",
@@ -11346,6 +11350,7 @@
     "sgs/timeline::borderRadius": "visual",
     "sgs/timeline::borderStyle": "visual",
     "sgs/timeline::borderWidth": "visual",
+    "sgs/timeline::cardAlign": "enum-mode",
     "sgs/timeline::cardBackgroundColour": "color",
     "sgs/timeline::cardBackgroundColourGradient": "colour-gradient",
     "sgs/timeline::cardBorderColour": "color",
@@ -11358,6 +11363,7 @@
     "sgs/timeline::cardLayout": "enum-mode",
     "sgs/timeline::cardMaxWidth": "layout",
     "sgs/timeline::cardPadding": "layout",
+    "sgs/timeline::cardRowGap": "layout",
     "sgs/timeline::cardShadow": "visual",
     "sgs/timeline::cardShadowColour": "color",
     "sgs/timeline::cardShadowMobile": "visual",

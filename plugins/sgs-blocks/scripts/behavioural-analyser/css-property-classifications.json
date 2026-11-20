@@ -33039,6 +33039,15 @@
     },
     {
       "slug": "sgs/timeline",
+      "attr": "cardAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_layer": "GRID",
+        "css_element": "card"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
       "attr": "cardBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -33061,6 +33070,15 @@
       "fields": {
         "css_property": "max-width",
         "css_element": "entry"
+      }
+    },
+    {
+      "slug": "sgs/timeline",
+      "attr": "cardRowGap",
+      "fields": {
+        "css_property": "row-gap",
+        "css_layer": "GRID",
+        "css_element": "strip"
       }
     },
     {
@@ -50743,6 +50761,44 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "share-controls"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "maxHeightMobile",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "mobile",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/brand-strip",
+      "attr": "maxHeightTablet",
+      "fields": {
+        "css_property": "min-height",
+        "css_tier": "tablet",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "widthMobile",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "mobile",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/responsive-logo",
+      "attr": "widthTablet",
+      "fields": {
+        "css_property": "width",
+        "css_tier": "tablet",
+        "css_element": "wrapper"
       }
     },
     {
