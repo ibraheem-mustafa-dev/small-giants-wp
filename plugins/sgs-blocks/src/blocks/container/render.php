@@ -19,6 +19,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/shape-dividers.php';
 require_once dirname( __DIR__, 3 ) . '/includes/class-sgs-container-wrapper.php';
 require_once dirname( __DIR__, 3 ) . '/includes/container-pin-edge-css.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-shared-rules.php';
 
 // sgs_sanitize_grid_template() and sgs_container_gap_value() live in render-helpers.php.
 // SGS_Container_Wrapper::render() handles the full wrapper + responsive-CSS assembly.
@@ -187,11 +188,25 @@ if ( $sgs_container_resting_decls || $sgs_container_hover_decls || '' !== $sgs_c
 	}
 	$sgs_container_state_sel = '.' . $sgs_container_supports_uid . '.wp-block-sgs-container';
 
+	// The resting colour stays under this block's own class. The hover and focus colour is the same text for every
+	// container with the same hover colour, so it prints once under a class they share (helpers-shared-rules.php).
 	$sgs_container_supports_css = ( $sgs_container_supports_css ?? '' ) . sgs_emit_state_colour_css(
 		$sgs_container_state_sel,
 		$sgs_container_resting_decls,
-		$sgs_container_hover_decls
+		array()
 	);
+	if ( $sgs_container_hover_decls ) {
+		$sgs_container_hover_shared = sgs_shared_rules(
+			'sgs-state-colour',
+			static function ( string $class ) use ( $sgs_container_hover_decls ): string {
+				return sgs_emit_state_colour_css( '.' . $class . '.wp-block-sgs-container', array(), $sgs_container_hover_decls );
+			}
+		);
+		if ( '' !== $sgs_container_hover_shared['class'] ) {
+			$sgs_container_supports_classes[] = $sgs_container_hover_shared['class'];
+			$sgs_container_supports_css      .= $sgs_container_hover_shared['css'];
+		}
+	}
 
 	// "Heading colour": the headings inside this section take the chosen colour. `:where()`
 	// keeps the rule at (0,1,0): it beats the theme's `h1..h6 { color: heading }` (0,0,1),
@@ -231,7 +246,18 @@ if ( $sgs_container_border['base'] || $sgs_container_border['hover'] || $sgs_con
 	}
 	$sgs_container_supports_css .= implode( '', $sgs_container_border['rules'] );
 	if ( $sgs_container_border['hover'] ) {
-		$sgs_container_supports_css .= sgs_hover_state_rules( $sgs_container_border_sel, implode( ';', $sgs_container_border['hover'] ), ':focus-within' );
+		// The hover border is the same text for every container with the same hover border: one rule under a shared class.
+		$sgs_container_border_hover_decls  = implode( ';', $sgs_container_border['hover'] );
+		$sgs_container_border_hover_shared = sgs_shared_rules(
+			'sgs-state-colour',
+			static function ( string $class ) use ( $sgs_container_border_hover_decls ): string {
+				return sgs_hover_state_rules( '.' . $class . '.wp-block-sgs-container', $sgs_container_border_hover_decls, ':focus-within' );
+			}
+		);
+		if ( '' !== $sgs_container_border_hover_shared['class'] ) {
+			$sgs_container_supports_classes[] = $sgs_container_border_hover_shared['class'];
+			$sgs_container_supports_css      .= $sgs_container_border_hover_shared['css'];
+		}
 	}
 	if ( $sgs_container_border['tablet'] ) {
 		$sgs_container_supports_css .= sgs_emit_tier_decls( $sgs_container_border_sel, array( 'tablet' => $sgs_container_border['tablet'] ) );
@@ -308,7 +334,7 @@ if ( '' !== $sgs_container_supports_css ) {
 	// wp_strip_all_tags (NOT esc_html) blocks a </style> breakout while leaving
 	// CSS combinators intact — the CSS is entirely style-engine-generated or
 	// slug-derived (sanitize_html_class), so nothing un-sanitised survives here.
-	$sgs_container_output = '<style>' . wp_strip_all_tags( $sgs_container_supports_css ) . '</style>' . $sgs_container_output;
+	$sgs_container_output = sgs_style_tags( wp_strip_all_tags( $sgs_container_supports_css ) ) . $sgs_container_output;
 }
 
 // phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped -- SGS_Container_Wrapper::render() returns pre-sanitised HTML; all variables sanitised internally via esc_*/wp_kses()/get_block_wrapper_attributes(); the prepended <style> is pre-sanitised above.
