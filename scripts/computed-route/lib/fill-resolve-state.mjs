@@ -4,7 +4,8 @@ import { HOVER_PROPS } from '../../parity/lib/collect.mjs';
 import { blockSchema, splitProperty } from './resolve.mjs';
 import { refOf, walk } from './tree.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
-import { INHERITED, CARRIED, defaultPaint } from './fill-prop.mjs';
+import { INHERITED, CARRIED, FLEX_ONLY, defaultPaint } from './fill-prop.mjs';
+import { candidates } from './db.mjs';
 import { calSameBox } from './fill-same-box.mjs';
 import { pageBaseline } from './fill-page.mjs';
 import { spacingOwnership } from './fill-spacing.mjs';
@@ -162,6 +163,29 @@ export function partOwnPaint( cal, slot, w, prop, fs ) {
 	return undefined;
 }
 
+// The value a flex-only property (flex-wrap, flex-direction) paints once the block's layout is flex, for an element whose
+// calibrated default paint is no flex container: its computed value there is the CSS initial (a block reads `nowrap`, `row`),
+// which says nothing about the flex layout a clone writes. The block's own setting for the property holds that value as its
+// default (sgs/container's flexWrap `wrap`), so a draft flex row that does not wrap differs from it and is written. A tier
+// object default is read at the width's tier. Undefined where the default paint is already a flex container, the block has no
+// such setting, or the setting has no plain default.
+const TIER_OF = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
+function flexLayoutDefault( st, rec, cal, prop, slot, w ) {
+	const display = defaultPaint( cal, slot, w, 'display' );
+	if ( ! st.db || undefined === display || /(^|-)flex$/.test( display ) ) {
+		return undefined;
+	}
+	const schema = blockSchema( rec.name ) || {};
+	for ( const row of candidates( st.db, rec.name, prop ) ) {
+		const given = schema[ row.attr_name ]?.default;
+		const v = given && 'object' === typeof given ? ( given[ TIER_OF[ 1920 === w ? 1440 : w ] ] ?? given.desktop ) : given;
+		if ( 'string' === typeof v && '' !== v ) {
+			return v;
+		}
+	}
+	return undefined;
+}
+
 // What the node shows at a slot with nothing written. A non-inherited property shows its calibrated default paint. An
 // inherited one (R-47-5) shows the block's own paint of it where its stylesheet sets one (ownPaint), else what its parent
 // shows, or at the top of the surface what the theme gives the page; a theme element style (a heading's family and
@@ -180,6 +204,10 @@ export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 			}
 			const here = '' === slot ? undefined : shownAt( st, rec.index, prop, w, fs );
 			return here ?? inheritedFrom( st, rec, prop, w, fs ) ?? page.value( prop, w, fs ) ?? defaultPaint( cal, slot, w, prop );
+		}
+		const flexDefault = FLEX_ONLY.includes( prop ) ? flexLayoutDefault( st, rec, cal, prop, slot, w ) : undefined;
+		if ( undefined !== flexDefault ) {
+			return flexDefault;
 		}
 		// A property the calibration fixture switched on (lib/fill-fixture.mjs) is compared with its unstyled value.
 		return unstyledBaseline( st, rec.name, cal, blockSchema( rec.name ), slot, prop ) ?? defaultPaint( cal, slot, w, prop );

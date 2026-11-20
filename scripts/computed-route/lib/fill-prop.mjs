@@ -196,7 +196,7 @@ export function notPainted( prop, styles, snap = null, declared = null ) {
 const GAP_PROPS = [ 'gap', 'row-gap', 'column-gap' ];
 // The properties only a flex container lays out by: on any other box the computed value is the initial one (a block's
 // flex-direction reads `row`) and no draft value was chosen.
-const FLEX_ONLY = [ 'flex-direction', 'flex-wrap' ];
+export const FLEX_ONLY = [ 'flex-direction', 'flex-wrap' ];
 // Why a flex-only property paints nothing on the element laying out the children, or null where it may paint (the layout
 // element's display is a flex container, or is unknown).
 export function flexOnlyPaintsNothing( prop, snap ) {

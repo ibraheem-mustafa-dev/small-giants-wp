@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "const flexDefault = FLEX_ONLY.includes( prop ) ? flexLayoutDefault( st, rec, cal, prop, slot, w ) : undefined;",
+		"replace": "const flexDefault = undefined;",
+		"why": "a flex-only property is judged against the inert calibrated paint again"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "if ( ! st.db || undefined === display || /(^|-)flex$/.test( display ) ) {",
+		"replace": "if ( ! st.db || undefined === display ) {",
+		"why": "a default paint that already lays out as flex also takes the setting default"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "if ( ! st.db || undefined === display || /(^|-)flex$/.test( display ) ) {",
+		"replace": "if ( ! st.db || /(^|-)flex$/.test( display ) ) {",
+		"why": "an element with no calibrated display takes the setting default"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "const given = schema[ row.attr_name ]?.default;",
+		"replace": "const given = undefined;",
+		"why": "the setting's default is never read"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "given[ TIER_OF[ 1920 === w ? 1440 : w ] ] ?? given.desktop",
+		"replace": "given.desktop",
+		"why": "a tier object default ignores the width's tier"
+	}
+]
