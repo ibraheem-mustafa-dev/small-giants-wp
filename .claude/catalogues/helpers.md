@@ -814,6 +814,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_shadow_forced_colours_decl` | `function sgs_shadow_forced_colours_decl(): string` | The forced-colours (high-contrast) fallback. Browsers remove box-shadow in that mode, so an element that depends on its shadow for an edge… | no markup |
 | `sgs_shadow_box_decls` | `function sgs_shadow_box_decls( ?string $shape, ?string $colour ): array` | The full `box-shadow` declaration set for a stored shadow: the declaration plus its forced-colours fallback. Empty when there is nothing to… | no markup |
 
+#### `includes/helpers-shared-rules.php` — 2 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_shared_rules` | `function sgs_shared_rules( string $prefix, callable $css_for, string $seed = '' ): array` | Mint the shared class for a group of rules and fence the rules for `sgs_style_tags()`. | no markup |
+| `sgs_style_tags` | `function sgs_style_tags( string $css, string $id = '' ): string` | Turn a block's CSS string into `<style>` tags, one for each fenced shared group and one for each stretch of the block's own CSS between… | tags style |
+
 #### `includes/helpers-site-info-binding.php` — 2 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -1059,7 +1066,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**107 files, 509 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**108 files, 511 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
