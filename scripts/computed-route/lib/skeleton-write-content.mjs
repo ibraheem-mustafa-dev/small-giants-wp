@@ -13,6 +13,7 @@ import { decodeEntities, loadDraft } from './intake-ast.mjs';
 import { declared as declaredRaw } from './skeleton-rules.mjs';
 import { draftTokenLookup, handoffOf } from './draft-tokens.mjs';
 import { ALL_TEXT_CAP } from './skeleton-model.mjs';
+import { disabledItemIds } from './site-build-menus.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -70,11 +71,12 @@ export function skeletonSettings( facts, block ) {
 		has( 'linkTarget' ) && out.others.push( 'linkTarget' );
 	}
 	has( 'ref' ) && out.others.push( 'ref' );
+	has( 'disabledItemIds' ) && out.others.push( 'disabledItemIds' );
 	return out;
 }
 
 export function makeContent( ctx ) {
-	const { m, facts, view, carried, surfaceKind, siteLink } = ctx;
+	const { m, facts, view, carried, draftLinks, surfaceKind, siteLink } = ctx;
 	const { composition, enumOf } = facts;
 	const tokens = draftTokenLookup( handoffOf( facts ) );
 	const declared = ( e ) => declaredRaw( e, tokens );
@@ -372,6 +374,12 @@ export function makeContent( ctx ) {
 	// draws) and a menu block's `ref` (the menu site-build made for this surface). { attrs, said: { attr: where from } }.
 	function carriedAttrs( block, e ) {
 		const out = { attrs: {}, said: {}, missing: [] };
+		// The menu's link-less labels (a nav item drawn as plain words) are the block's disabled items: the site build made
+		// each a custom item, which the menu blocks key `label:<title>` (lib/site-build-menus.mjs::disabledItemIds).
+		if ( 'nav' === e.tag && attrExists( block, 'disabledItemIds' ) && surfaceKind && draftLinks?.menuItems ) {
+			const ids = disabledItemIds( draftLinks.menuItems, surfaceKind );
+			ids.length && Object.assign( out.attrs, { disabledItemIds: ids } ) && ( out.said.disabledItemIds = `the draft's ${ surfaceKind } nav draws ${ ids.length } item(s) as plain words` );
+		}
 		if ( ! carried ) {
 			return out;
 		}

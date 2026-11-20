@@ -14,6 +14,7 @@
 import { draftLinksFor, resolveDraftLink } from './draft-link.mjs';
 import { loadCatalogue } from './catalogue-read.mjs';
 import { rowKey } from './site-build-map.mjs';
+import { labelsOf } from './site-build-menus.mjs';
 
 export const LINK_TYPES = [ 'product', 'product_cat' ];
 
@@ -40,12 +41,13 @@ function recordedAt( catalogue, site, path ) {
 }
 
 // For every product and product-category row of `rows`, each of its menu entries resolved:
-//   { links: { <row key>: [ { menu, position, parentItem, text, url } ] }, pending: [ { rowKey, menu, text, why } ] }.
+//   { links: { <row key>: [ { menu, position, parentItem, text, url } ] }, pending: [ { rowKey, menu, text, why } ], labels }.
 // `url` is the product's recorded permalink with the draft's query; `pending` entries have none yet. `ctx` is
 // lib/draft-link.mjs::draftLinksFor's answer (null: no page map, so every entry is pending).
 export function menuLinksFor( { rows, ctx, catalogue, site } ) {
 	const links = {};
 	const pending = [];
+	const labels = labelsOf( ctx?.menuItems );
 	for ( const row of rows.filter( ( r ) => LINK_TYPES.includes( r.postType ) && ( r.menus || [] ).length ) ) {
 		const key = rowKey( row );
 		for ( const entry of row.menus ) {
@@ -75,7 +77,7 @@ export function menuLinksFor( { rows, ctx, catalogue, site } ) {
 			links[ key ] = [ ...( links[ key ] || [] ), { menu: entry.menu, position: entry.position, parentItem: entry.parentItem || null, text, url: `${ product.permalink.replace( /[?#].*$/, '' ) }${ search }${ fragment }` } ];
 		}
 	}
-	return { links, pending };
+	return { links, pending, labels };
 }
 
 // The resolver for one client and site, reading the client's page map, routing and catalogue from disk.

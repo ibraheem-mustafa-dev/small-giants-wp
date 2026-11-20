@@ -1,0 +1,49 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Opticians</title></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "about", "label": "About", "kind": "content page", "wp": { "slug": "about", "parent": null, "type": "page" } },
+  { "id": "contact", "label": "Contact", "kind": "content page", "wp": { "slug": "contact", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header>
+  <div>
+    <nav>
+      <sc-if value="{{ compact }}"><button onClick="{{ toggleMenu }}" aria-label="Menu"><span>Menu</span></button></sc-if>
+      <a href="#" onClick="{{ toAbout }}">About</a>
+      <span>Glasses <span>SOON</span></span>
+      <span aria-hidden="true">Hidden words</span>
+      <span>&middot;</span>
+      <h2>Shop</h2>
+      <span>{{ phone }}</span>
+      <span>Book <a href="#" onClick="{{ toContact }}">now</a></span>
+      <span>Call <a href="tel:01210000000">us</a></span>
+      <div style="display:none">Gone</div>
+      <a href="#" onClick="{{ toContact }}">Contact</a>
+      <span>Coming soon</span>
+    </nav>
+  </div>
+</header>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isAbout }}"><main><h1>About</h1></main></sc-if>
+<sc-if value="{{ isContact }}"><main><h1>Contact</h1></main></sc-if>
+<footer><nav><span>Follow us</span><a href="#" onClick="{{ toAbout }}">About</a></nav></footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', menu: false };
+  go(p) { this.setState({ page: p, menu: false }); }
+  renderVals() {
+    const S = this.state;
+    return {
+      isHome: S.page === 'home', isAbout: S.page === 'about', isContact: S.page === 'contact',
+      compact: false, phone: '0121 000 0000',
+      toggleMenu: () => this.setState({ menu: !S.menu }),
+      toAbout: () => this.go('about'), toContact: () => this.go('contact'),
+    };
+  }
+}
+</script>
+</body></html>

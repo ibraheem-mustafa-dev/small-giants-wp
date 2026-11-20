@@ -6,16 +6,19 @@
 //     own;
 //   - a parent label that names no item of the menu is a custom item linking "#" (a disclosure, never a link:
 //     SGS_Nav_Menu_Source::is_destination_url), placed after the positioned top-level items in first-mention order;
+//   - a link-less label the draft's nav draws (`menuLinks.labels`, lib/site-build-menu-links.mjs::menuLinksFor) is a custom
+//     item linking "#" at its own position in a menu that already holds entries, with the draft's chip words as its
+//     Description (`sgs/nav-bar-menu` draws a Description as the item's badge and a `disabledItemIds` item as plain text);
 //   - a `product` row's entry (a row that makes no post) is a custom link item with the draft's own link text, to the
 //     product's permalink plus the draft href's own query (lib/site-build-menu-links.mjs::menuLinksFor, `menuLinks`); an
 //     entry whose product is not built on the site yet makes no item and is reported with the reason.
 // Items come out in display order (each parent, then its children by position); `order` is the item's menu_order.
 import { megaPanelLabel } from './page-map-names.mjs';
-import { hasPost, menuSurfaceKind, rowKey, wpType } from './site-build-map.mjs';
+import { boundMenu, hasPost, menuSurfaceKind, rowKey, wpType } from './site-build-map.mjs';
 
 const labelOf = ( row ) => ( 'sgs_mega_menu' === row.postType ? megaPanelLabel( row.title ) : row.title );
 
-export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { links: {}, pending: [] } ) {
+export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { links: {}, pending: [], labels: [] } ) {
 	const problems = [];
 	const notes = [];
 	const menus = {};
@@ -89,7 +92,17 @@ export function desiredMenus( rows, linkText = {}, surfaces = {}, menuLinks = { 
 			position: e.position,
 			parentItem: e.parentItem,
 		} );
-		const top = chosen.filter( ( e ) => ! e.parentItem ).sort( ( a, b ) => a.position - b.position ).map( item );
+		const labels = ( menuLinks.labels || [] ).filter( ( l ) => l.menu === name && ! l.parentItem ).map( ( l ) => ( {
+			key: `label:${ l.text }@`,
+			kind: 'label',
+			label: l.text,
+			title: l.text,
+			description: l.badge || '',
+			url: '#',
+			position: l.position,
+			parentItem: null,
+		} ) );
+		const top = [ ...chosen.filter( ( e ) => ! e.parentItem ).map( item ), ...labels ].sort( ( a, b ) => a.position - b.position );
 		for ( const label of [ ...new Set( chosen.filter( ( e ) => e.parentItem ).map( ( e ) => e.parentItem ) ) ] ) {
 			if ( ! top.some( ( t ) => t.label === label ) ) {
 				top.push( { key: `custom:${ label }`, kind: 'custom', label, title: label, position: null, parentItem: null } );
@@ -113,6 +126,22 @@ export function menuLocation( name, registered ) {
 		return name;
 	}
 	return 'header' === name ? [ 'primary', 'main' ].find( ( l ) => registered.includes( l ) ) || null : null;
+}
+
+// The link-less labels of the draft's menus (a nav item drawn as plain words, with an optional chip): [ { menu, position,
+// parentItem, text, badge } ], from `menuItems`' items flagged `disabled` (lib/intake-pagemap-surfaces.mjs::plainLabel).
+// Which menus take them is desiredMenus' business: a menu the page map names no entry for gets no label.
+export function labelsOf( menuItems ) {
+	const walk = ( items ) => items.flatMap( ( it ) => [ it, ...walk( it.children || [] ) ] );
+	return ( menuItems || [] ).flatMap( ( m ) => walk( m.items ).filter( ( it ) => it.disabled && it.label )
+		.map( ( it ) => ( { menu: m.menu, position: it.position, parentItem: it.parentItem || null, text: it.label, badge: it.badge || '' } ) ) );
+}
+
+// The identifiers `disabledItemIds` holds for the labels of the menu a surface of `kind` binds (lib/site-build-map.mjs::boundMenu):
+// a custom menu item has no post, so the menu blocks key it `label:<title>`, the same on every site.
+export function disabledItemIds( menuItems, kind ) {
+	const bound = boundMenu( kind, [ ...new Set( ( menuItems || [] ).map( ( m ) => m.menu ) ) ] );
+	return labelsOf( ( menuItems || [] ).filter( ( m ) => m.menu === bound ) ).filter( ( l ) => ! l.parentItem ).map( ( l ) => `label:${ l.text }` );
 }
 
 // A URL's path and query with the origin dropped, for comparing an item's stored address with the wanted one across hosts.

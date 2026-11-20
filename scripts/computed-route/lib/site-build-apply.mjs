@@ -253,12 +253,12 @@ update_post_meta( ${ Number( id ) }, '${ CONTENT_META }', hash( 'sha256', get_po
 			wp( [ 'term', 'meta', 'update', String( refs[ `menu:${ a.name }` ] ), MENU_META, a.name ] );
 		} else if ( 'item-add' === a.type ) {
 			const parent = val( a.parent );
-			const tail = [ `--position=${ a.position }`, ...( parent ? [ `--parent-id=${ parent }` ] : [] ), '--porcelain' ];
+			const tail = [ `--position=${ a.position }`, ...( parent ? [ `--parent-id=${ parent }` ] : [] ), ...( a.description ? [ `--description=${ a.description }` ] : [] ), '--porcelain' ];
 			refs[ a.key ] = porcelain( 'post' === a.kind
 				? wp( [ 'menu', 'item', 'add-post', String( val( a.menu ) ), String( val( a.object ) ), ...( a.title ? [ `--title=${ a.title }` ] : [] ), ...tail ] )
 				: wp( [ 'menu', 'item', 'add-custom', String( val( a.menu ) ), a.title, a.url || '#', ...tail ] ) );
 		} else if ( 'item-update' === a.type ) {
-			wp( [ 'menu', 'item', 'update', String( a.id ), `--position=${ a.position }`, `--parent-id=${ val( a.parent ) || 0 }`, ...( a.title ? [ `--title=${ a.title }` ] : [] ), ...( a.url ? [ `--link=${ a.url }` ] : [] ) ] );
+			wp( [ 'menu', 'item', 'update', String( a.id ), `--position=${ a.position }`, `--parent-id=${ val( a.parent ) || 0 }`, ...( a.title ? [ `--title=${ a.title }` ] : [] ), ...( a.url ? [ `--link=${ a.url }` ] : [] ), ...( undefined !== a.description ? [ `--description=${ a.description }` ] : [] ) ] );
 		} else if ( 'location' === a.type ) {
 			wp( [ 'menu', 'location', 'assign', String( val( a.menu ) ), a.location ] );
 		} else if ( 'option' === a.type ) {

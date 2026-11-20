@@ -108,7 +108,7 @@ foreach ( wp_get_nav_menus() as $m ) {
 		$items[] = array(
 			'id' => (int) $it->ID, 'title' => (string) get_post_field( 'post_title', $it->ID ), 'shown' => (string) $it->title, 'object' => (string) $it->object,
 			'objectId' => (int) $it->object_id, 'type' => (string) $it->type, 'parent' => (int) $it->menu_item_parent,
-			'order' => (int) $it->menu_order, 'url' => (string) get_post_meta( $it->ID, '_menu_item_url', true ), 'invalid' => ! empty( $it->_invalid ),
+			'order' => (int) $it->menu_order, 'description' => (string) $it->description, 'url' => (string) get_post_meta( $it->ID, '_menu_item_url', true ), 'invalid' => ! empty( $it->_invalid ),
 		);
 	}
 	$out['menus'][] = array( 'id' => (int) $m->term_id, 'slug' => $m->slug, 'name' => $m->name, 'owner' => (string) get_term_meta( $m->term_id, '${ MENU_META }', true ), 'items' => $items );

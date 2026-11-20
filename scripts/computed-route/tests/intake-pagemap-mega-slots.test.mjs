@@ -27,13 +27,13 @@ test( 'MUST FAIL: each mega row takes the header slot of the nav item that opens
 	assert.deepEqual( menusOf( map, 'prescription-lenses' ), header( 3 ), 'the page the item links to shares its slot' );
 } );
 
-test( 'MUST FAIL: an opener outside the header nav joins the header menu at its place in the bar', () => {
-	assert.deepEqual( menusOf( map, 'mega-menu-help' ), header( 4 ) );
-	assert.deepEqual( menusOf( map, 'help' ), [ ...header( 4 ), { menu: 'footer', position: 2, parentItem: null } ] );
+test( 'MUST FAIL: an opener outside the header nav makes a second header menu, never an item of the main one', () => {
+	assert.deepEqual( menusOf( map, 'mega-menu-help' ), [ { menu: 'header-2', position: 1, parentItem: null } ] );
+	assert.deepEqual( menusOf( map, 'help' ), [ { menu: 'footer', position: 2, parentItem: null }, { menu: 'header-2', position: 1, parentItem: null } ] );
 	assert.deepEqual( menusOf( map, 'about' ), [ { menu: 'footer', position: 1, parentItem: null } ], 'a header link that opens no panel stays out of the header menu' );
 } );
 
-test( 'MUST FAIL: the header menu the site build makes is the four mega items, two with their section pages', () => {
+test( 'MUST FAIL: the header menu the site build makes is the three nav mega items, one with its section page, and Help has a menu of its own', () => {
 	const rows = map.rows.map( ( r, i ) => ( { ...r, id: i + 1 } ) );
 	const got = desiredMenus( rows );
 	assert.deepEqual( got.problems, [] );
@@ -41,8 +41,8 @@ test( 'MUST FAIL: the header menu the site build makes is the four mega items, t
 		'1 Frames sgs_mega_menu:mega-menu-frames',
 		'2 Brands sgs_mega_menu:mega-menu-brands',
 		'3 Lenses sgs_mega_menu:mega-menu-lenses',
-		'4 Help sgs_mega_menu:mega-menu-help',
 	] );
+	assert.deepEqual( got.menus[ 'header-2' ].map( ( it ) => `${ it.order } ${ it.label } ${ it.rowKey }` ), [ '1 Help sgs_mega_menu:mega-menu-help' ] );
 	assert.deepEqual( got.sections, { 'sgs_mega_menu:mega-menu-lenses': 'page:prescription-lenses', 'sgs_mega_menu:mega-menu-help': 'page:help' } );
 } );
 

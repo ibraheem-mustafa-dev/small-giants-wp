@@ -150,10 +150,47 @@ const anchored = ( item, anchor ) => {
 	return item;
 };
 
+// Elements that are never a link-less menu label: controls, media, structure and headings.
+const NOT_A_LABEL = new Set( [ 'a', 'button', 'input', 'select', 'textarea', 'img', 'svg', 'picture', 'video', 'audio', 'canvas', 'nav', 'ul', 'ol', 'dl', 'form', 'label', 'script', 'style', 'template', 'iframe', 'br', 'hr' ] );
+const CONTROLS = new Set( [ 'a', 'button', 'input', 'select', 'textarea', 'form', 'iframe' ] );
+const endOf = ( text, el ) => ( null == el.close || el.close === el.end ? el.end : text.indexOf( '>', el.close ) + 1 || el.end );
+
+// A link-less label a nav draws as an item: an element that is no link and no control, holds static words of its own
+// (`label`) and, in elements nested inside it, short static words (`badge`, a "SOON" chip). A heading, a hidden element,
+// a separator with no letter or digit, an element with bound text and anything holding a control are no label.
+// Returns { label, badge } or null.
+export function plainLabel( text, c ) {
+	if ( NOT_A_LABEL.has( c.name ) || c.name.startsWith( 'sc-' ) || /^h[1-6]$/.test( c.name ) || [ 'heading', 'button', 'link', 'presentation', 'separator' ].includes( attrOf( c, 'role' ) ) ) {
+		return null;
+	}
+	if ( 'true' === attrOf( c, 'aria-hidden' ) || /display:none|visibility:hidden/.test( style( c ) ) || [ 'onClick', 'href', 'tabindex' ].some( ( a ) => undefined !== attrOf( c, a ) ) ) {
+		return null;
+	}
+	if ( descendants( c ).some( ( x ) => CONTROLS.has( x.name ) || x.name.startsWith( 'sc-' ) || undefined !== attrOf( x, 'onClick' ) || undefined !== attrOf( x, 'href' ) ) ) {
+		return null;
+	}
+	if ( /\{\{/.test( text.slice( c.end, c.close ?? c.end ) ) ) {
+		return null;
+	}
+	let own = '';
+	let at = c.end;
+	for ( const k of c.children ) {
+		own += text.slice( at, k.index );
+		at = Math.max( at, endOf( text, k ) );
+	}
+	own += text.slice( at, c.close ?? c.end );
+	const label = decodeEntities( own.replace( /<[^>]*>/g, ' ' ) ).replace( /&#?\w+;/g, ' ' ).replace( /\s+/g, ' ' ).trim();
+	if ( ! /[\p{L}\p{N}]/u.test( label ) || label.length > 80 ) {
+		return null;
+	}
+	return { label, badge: c.children.map( ( k ) => innerText( text, k ) ).filter( Boolean ).join( ' ' ) };
+}
+
 // The items of a menu scope in document order: each sc-for's elements, with nested sc-for lists over the item
-// (`item.links`) as children, and, inside a <nav> (`mode` 'nav'), its static anchors. `mode` 'list' reads one
+// (`item.links`) as children, and, inside a <nav> (`mode` 'nav'), its static anchors and, where `labels` holds, its
+// link-less labels (a disabled item: no targets, `disabled: true`, the chip words as `badge`). `mode` 'list' reads one
 // nested list.
-function readItems( d, tree, node, scope, roots, mode ) {
+function readItems( d, tree, node, scope, roots, mode, labels = false ) {
 	const inList = 'list' === mode;
 	const items = [];
 	for ( const c of node.children ) {
@@ -179,7 +216,13 @@ function readItems( d, tree, node, scope, roots, mode ) {
 				items.push( anchored( { label: attrOf( c, 'aria-label' ) || innerText( tree.text, c ), targets, children: [] }, c ) );
 			}
 		} else if ( 'a' !== c.name ) {
-			items.push( ...readItems( d, tree, c, scope, roots, mode ) );
+			const plain = labels && 'nav' === mode ? plainLabel( tree.text, c ) : null;
+			if ( plain ) {
+				items.push( anchored( { label: plain.label, targets: [], children: [], disabled: true, ...( plain.badge ? { badge: plain.badge } : {} ) }, c ) );
+			} else {
+				// A control's own words are its label, never a menu item beside it.
+				items.push( ...readItems( d, tree, c, scope, roots, mode, labels && ! CONTROLS.has( c.name ) ) );
+			}
 		}
 	}
 	return items;
@@ -452,7 +495,7 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 			const navs = descendants( r.node ).filter( ( x ) => 'nav' === x.name && ! ancestors( x ).some( ( u ) => 'nav' === u.name ) );
 			const scopes = navs.length ? navs : [ r.node ];
 			scopes.forEach( ( s, i ) => {
-				const items = numbered( readItems( d, tree, s, new Map(), roots, 'nav' === s.name || ( 'drawer' === r.kind && isNav( s ) && ! showsOrderLines( d.text, L, s ) ) ? 'nav' : 'region' ) );
+				const items = numbered( readItems( d, tree, s, new Map(), roots, 'nav' === s.name || ( 'drawer' === r.kind && isNav( s ) && ! showsOrderLines( d.text, L, s ) ) ? 'nav' : 'region', 'header' === r.kind || 'drawer' === r.kind ) );
 				const many = scopes.length > 1 || named( r.kind ).length > 1;
 				const name = many ? `${ r.kind }-${ kebab( attrOf( s, 'aria-label' ) || '' ) || i + 1 }` : r.kind;
 				if ( items.length ) {
@@ -473,10 +516,12 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 		if ( ! panels.length ) {
 			for ( const h of named( 'header' ) ) {
 				const found = descendants( h.node ).filter( ( x ) => /position:absolute/.test( style( x ) ) && /top:100%/.test( style( x ) ) ).flatMap( ( p ) => megaPanels( d, h.node, p ) );
+				const headerMenu = menus.find( ( m ) => SCOPE.has( m ) && [ SCOPE.get( m ), ...ancestors( SCOPE.get( m ) ) ].includes( h.node ) ) || null;
 				const slots = megaSlots( {
-					menu: menus.find( ( m ) => SCOPE.has( m ) && [ SCOPE.get( m ), ...ancestors( SCOPE.get( m ) ) ].includes( h.node ) ) || null,
+					menu: headerMenu,
 					openers: found.map( ( m ) => m.opener ),
 					anchorOf: ( it ) => ANCHOR.get( it ),
+					inside: ( o ) => !! headerMenu && [ o, ...ancestors( o ) ].includes( SCOPE.get( headerMenu ) ),
 					itemOf: ( o ) => anchored( { label: attrOf( o, 'aria-label' ) || innerText( d.text, o ), targets: [ ...new Set( targetsOf( d, o, new Map(), roots ) ) ], children: [], parentItem: null }, o ),
 					newMenu: () => {
 						const m = { menu: menus.some( ( x ) => 'header' === x.menu ) ? `header-${ menus.filter( ( x ) => 'header' === x.region ).length + 1 }` : 'header', region: 'header', draftId: tagId( d, h.node ), items: [] };

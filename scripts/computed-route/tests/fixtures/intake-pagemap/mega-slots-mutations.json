@@ -1,8 +1,8 @@
 [
 	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": "const wanted = [ ...new Set( openers.filter( Boolean ) ) ];", "replace": "const wanted = openers.filter( Boolean );", "why": "an opener named twice is inserted twice"},
 	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": "if ( ! wanted.length ) {\n\t\treturn slots;\n\t}", "replace": "", "why": "a header with no single opener gets an empty menu made"},
-	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": "const target = menu || newMenu();", "replace": "const target = newMenu();", "why": "the openers never join the header's own menu"},
-	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": ".filter( ( x ) => ! target.items.some( ( it ) => anchorOf( it ) === x ) )", "replace": "", "why": "an opener the menu already holds is added again"},
+	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": "const main = menu || newMenu();", "replace": "const main = newMenu();", "why": "the openers never join the header's own menu"},
+	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": "const lacking = wanted.filter( ( x ) => ! main.items.some( ( it ) => anchorOf( it ) === x ) );", "replace": "const lacking = wanted;", "why": "an opener the menu already holds is added again"},
 	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": "anchorOf( it )?.index > o.index );", "replace": "anchorOf( it )?.index < o.index );", "why": "an opener is inserted before the wrong item"},
 	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": "-1 === at ? target.items.length : at", "replace": "-1 === at ? 0 : at", "why": "an opener after every item is put first"},
 	{"file": "lib/intake-pagemap-mega-slots.mjs", "find": "target.items.forEach( ( it, i ) => { it.position = i + 1; } );", "replace": "", "why": "items keep their old positions after an insertion"},

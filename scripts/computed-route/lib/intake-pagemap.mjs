@@ -235,7 +235,7 @@ function unique( base, used ) {
 // Whether a draft menu is a drawer repeating the header's mega sections: a drawer-region menu whose top-level items
 // are each a header mega item's label. Such a drawer binds the header menu and shows its mega panels (Spec 36
 // FR-36-6), so the page map gives it no menu of its own.
-export const drawerRepeatsHeader = ( menu, megaLabels ) => 'drawer' === menu.region && menu.items.length > 0 && menu.items.every( ( it ) => megaLabels.has( it.label ) );
+export const drawerRepeatsHeader = ( menu, megaLabels ) => 'drawer' === menu.region && menu.items.some( ( it ) => ! it.disabled ) && menu.items.filter( ( it ) => ! it.disabled ).every( ( it ) => megaLabels.has( it.label ) );
 
 // FR-48-30: proposes the page map for one export folder. `routing` defaults to readRouting( { folder } );
 // `surfacesHint` is handoff/surfaces.json's parsed object (read from the folder when undefined, none when null).

@@ -155,7 +155,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// innermost last) and `w`, which holds the writer's functions once each module has made them.
 	const w = {};
 	const ctx = {
-		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, surfaceKind, calSettings, db, rows, rowOf, w, siteLink,
+		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, draftLinks, surfaceKind, calSettings, db, rows, rowOf, w, siteLink,
 		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], wordProblems: [], nodeOfKey: {}, partPending: [], framePending: [], hosts: [], stripRoots: [],
 	};
 	const { widthAlternatives, carryProblems, slotProblems, wordProblems, nodeOfKey, partPending, framePending, hosts } = ctx;
