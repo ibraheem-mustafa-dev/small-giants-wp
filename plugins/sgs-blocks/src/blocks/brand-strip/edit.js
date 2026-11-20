@@ -163,6 +163,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		brandTextColourHover,
 		imageEffect,
 		maxHeight,
+		maxHeightTablet,
+		maxHeightMobile,
 		columns,
 		showNames,
 		nameColour,
@@ -583,21 +585,34 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} }
 					</ResponsiveControl>
-					<RangeControl
-						label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }
-						help={ __(
-							'Tiles size to fit the columns above and grow with the screen; this caps how big a logo gets so it never pixelates on wide screens.',
-							'sgs-blocks'
-						) }
-						value={ maxHeight }
-						onChange={ ( val ) =>
-							setAttributes( { maxHeight: val } )
-						}
-						min={ 12 }
-						max={ 260 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					<ResponsiveControl label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }>
+						{ ( bp ) => {
+							const cap = {
+								desktop: { key: 'maxHeight', value: maxHeight },
+								tablet: { key: 'maxHeightTablet', value: maxHeightTablet ?? maxHeight },
+								mobile: { key: 'maxHeightMobile', value: maxHeightMobile ?? maxHeightTablet ?? maxHeight },
+							}[ bp ];
+							return (
+								<RangeControl
+									label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }
+									help={ __(
+										'Tiles size to fit the columns above and grow with the screen; this caps how big a tile and its logo get on this device so they never pixelate on wide screens. An unset device keeps the one above it.',
+										'sgs-blocks'
+									) }
+									value={ cap.value }
+									onChange={ ( val ) =>
+										setAttributes( { [ cap.key ]: val } )
+									}
+									min={ 12 }
+									max={ 260 }
+									allowReset={ 'desktop' !== bp }
+									resetFallbackValue={ undefined }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							);
+						} }
+					</ResponsiveControl>
 					<ToggleGroupControl
 						label={ __( 'Logo layout', 'sgs-blocks' ) }
 						help={ __(

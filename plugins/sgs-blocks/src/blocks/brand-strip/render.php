@@ -318,6 +318,28 @@ if ( ! empty( $css_vars ) ) {
 	$scoped_css[] = $root_sel . '{' . implode( ';', $css_vars ) . '}';
 }
 
+// Tile size cap per device (`maxHeightTablet`, `maxHeightMobile`, px): the same custom property inside the tablet and
+// mobile media queries, which the tile cap and the logo box both read. An unset device keeps the one above it, so a
+// strip that sets neither prints nothing extra.
+$sgs_bs_cap_tiers = array();
+foreach ( array( 'tablet' => 'maxHeightTablet', 'mobile' => 'maxHeightMobile' ) as $sgs_bs_cap_tier => $sgs_bs_cap_attr ) {
+	if ( isset( $attributes[ $sgs_bs_cap_attr ] ) && is_numeric( $attributes[ $sgs_bs_cap_attr ] ) && (int) $attributes[ $sgs_bs_cap_attr ] > 0 ) {
+		$sgs_bs_cap_tiers[ $sgs_bs_cap_tier ] = absint( $attributes[ $sgs_bs_cap_attr ] );
+	}
+}
+if ( $sgs_bs_cap_tiers ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel,
+		array(
+			array(
+				'value'        => $sgs_bs_cap_tiers,
+				'css'          => '--sgs-logo-max-height',
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+
 // The tile shape on the tablet and mobile devices where it differs from desktop.
 $scoped_css[] = sgs_brand_strip_tile_shape_css( $tile_shapes, $root_sel );
 

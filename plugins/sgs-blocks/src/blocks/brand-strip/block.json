@@ -470,7 +470,15 @@
 		"maxHeight": {
 			"type": "number",
 			"default": 180
+		},		"maxHeightTablet": {
+			"type": "number",
+			"description": "Tile size cap in px at 1023px and below: the logo and tile size cap, as maxHeight is for the desktop. No default: unset keeps maxHeight. Prints --sgs-logo-max-height inside the tablet media query."
 		},
+		"maxHeightMobile": {
+			"type": "number",
+			"description": "Tile size cap in px at 767px and below. No default: unset keeps maxHeightTablet, then maxHeight. Prints --sgs-logo-max-height inside the mobile media query."
+		},
+
 		"columns": {
 			"type": "object",
 			"default": {
