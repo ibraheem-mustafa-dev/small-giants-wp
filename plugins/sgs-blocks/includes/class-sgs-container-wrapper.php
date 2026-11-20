@@ -53,6 +53,31 @@ require_once __DIR__ . '/helpers-surface-ground.php';
 require_once __DIR__ . '/helpers-css-sizing-keyword.php';
 require_once __DIR__ . '/motion/class-sgs-motion-background-lottie.php';
 require_once __DIR__ . '/media/class-sgs-background-media.php';
+require_once __DIR__ . '/helpers-shared-rules.php';
+
+if ( ! function_exists( 'sgs_container_shared_band_rule' ) ) {
+	/**
+	 * The flat content-band rule (`max-width` and centring on the `__inner` band), printed under a class every block with the same
+	 * declarations shares. The class goes on the root through `$classes`; the rule is fenced for `sgs_style_tags()`.
+	 *
+	 * @param string   $decls   The declarations, no braces.
+	 * @param string[] $classes The root's class list; the shared class is added.
+	 * @return string The fenced rule.
+	 */
+	function sgs_container_shared_band_rule( string $decls, array &$classes ): string {
+		$shared = sgs_shared_rules(
+			'sgs-band-width',
+			static function ( string $class ) use ( $decls ): string {
+				return '.' . $class . '>.sgs-container__inner{' . $decls . '}';
+			}
+		);
+		if ( '' === $shared['class'] ) {
+			return '';
+		}
+		$classes[] = $shared['class'];
+		return $shared['css'];
+	}
+}
 
 if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 
@@ -2207,6 +2232,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// fires when there are no @media tiers to defer to. The __inner assembly
 			// further down (the `elseif ( $do_wrap )` branch) now emits a bare <div>
 			// for these properties instead of an inline style.
+			$sgs_flat_band_emitted = false;
+			$sgs_flat_band_seed    = '';
 			if ( $has_base_band && $uid ) {
 				$base_band_decls = array();
 				if ( '' !== $content_width ) {
@@ -2215,7 +2242,9 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 				// (band background-color emission removed 2026-08-12 — capability retired)
 				if ( $base_band_decls ) {
-					$responsive_css .= '.' . $uid . '>.sgs-container__inner{' . implode( ';', $base_band_decls ) . '}';
+					$sgs_flat_band_emitted = true;
+					$sgs_flat_band_seed    = implode( ';', $base_band_decls );
+					$responsive_css       .= sgs_container_shared_band_rule( $sgs_flat_band_seed, $classes );
 				}
 			}
 
@@ -2233,7 +2262,21 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// are unchanged — they were applied when $base_grid_real_decls was
 			// built above.
 			if ( $base_grid_real_decls && $uid ) {
-				$responsive_css .= $grid_sel . '{' . implode( ';', $base_grid_real_decls ) . '}';
+				// The base grid/flex declarations are the same text for every block with the same layout: one rule under a shared
+				// class. Only on the content band: on the outer, the block's own rules printed before this one could set the same
+				// property and would then sit after a copy printed earlier.
+				$sgs_grid_shared = '.' . $uid === $grid_sel ? array( 'class' => '', 'css' => '' ) : sgs_shared_rules(
+					'sgs-band-layout',
+					static function ( string $sel_class ) use ( $grid_sel, $uid, $base_grid_real_decls ): string {
+						return '.' . $sel_class . substr( $grid_sel, strlen( '.' . $uid ) ) . '{' . implode( ';', $base_grid_real_decls ) . '}';
+					}
+				);
+				if ( '' !== $sgs_grid_shared['class'] ) {
+					$classes[]       = $sgs_grid_shared['class'];
+					$responsive_css .= $sgs_grid_shared['css'];
+				} elseif ( '.' . $uid === $grid_sel ) {
+					$responsive_css .= $grid_sel . '{' . implode( ';', $base_grid_real_decls ) . '}';
+				}
 			}
 
 			// Cross-axis alignment at tablet and mobile (the desktop value is already in the declarations above). An empty tier
@@ -2545,7 +2588,8 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					}
 					// (band background-color emission removed 2026-08-12 — capability retired)
 					if ( $band_base_decls ) {
-						$responsive_css .= $band_sel . '{' . implode( ';', $band_base_decls ) . '}';
+						$sgs_flat_band_emitted = true;
+						$responsive_css       .= sgs_container_shared_band_rule( implode( ';', $band_base_decls ), $classes );
 					}
 
 					// Responsive content-width overrides for the band max-width.
@@ -2724,6 +2768,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				 * the outer or it would address a node that does not exist.
 				 */
 				$obj_band_props = array();
+				$obj_cw_props   = array(); // contentWidth's max-width: printed with its centring as one shared group.
 
 				/*
 				 * Which element the band CSS targets must follow whether the band
@@ -2889,7 +2934,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 				if ( isset( $attributes['contentWidth'] ) && is_array( $attributes['contentWidth'] ) ) {
 					// BAND property (Layer 2) — routed to $band_obj_sel, NOT $grid_sel.
-					$obj_band_props[] = array(
+					$obj_cw_props[] = array(
 						'value'     => $attributes['contentWidth'],
 						'css'       => 'max-width',
 						// contentWidth tiers are TOKENS (normal/wide/full/literal); resolve
@@ -3091,8 +3136,21 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				}
 
 				// Band (Layer 2) tier rules — own selector, see the $band_obj_sel note above.
+				// Band padding: the same text for every block with the same padding, printed once under a shared class.
 				if ( $obj_band_props && '' !== $band_obj_sel ) {
-					$responsive_css .= sgs_emit_responsive_css( $band_obj_sel, $obj_band_props, array( 'container' => $container_queries ) );
+					$sgs_band_pad_shared = sgs_shared_rules(
+						'sgs-band-pad',
+						static function ( string $sel_class ) use ( $band_obj_sel, $uid, $obj_band_props, $container_queries ): string {
+							return sgs_emit_responsive_css( '.' . $sel_class . substr( $band_obj_sel, strlen( '.' . $uid ) ), $obj_band_props, array( 'container' => $container_queries ) );
+						}
+					);
+					if ( '' !== $sgs_band_pad_shared['class'] ) {
+						$classes[]       = $sgs_band_pad_shared['class'];
+						$responsive_css .= $sgs_band_pad_shared['css'];
+						$wrapper_attributes = get_block_wrapper_attributes(
+							array_merge( array( 'class' => implode( ' ', $classes ) ), $opt_extra_attrs )
+						);
+					}
 				}
 
 				// CENTRING — the second half of a width band, and the flat path's
@@ -3138,26 +3196,54 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// (/qa-u8-patterns/, 2026-09-25; removing only the margin restored 780px
 				// and its columns). So a `full` tier emits no centring, and a `full` tier
 				// under a capped wider tier resets the inherited auto margin to 0.
-				if ( '' !== $band_obj_sel && $sgs_tier_object_has_value( $attributes['contentWidth'] ?? null ) ) {
-					$sgs_cw_obj    = sgs_responsive_normalise_object( $attributes['contentWidth'] );
-					$sgs_cw_capped = null;
-					foreach ( array(
-						'desktop' => null,
-						'tablet'  => SGS_Breakpoints::TABLET_MAX,
-						'mobile'  => SGS_Breakpoints::MOBILE_MAX,
-					) as $sgs_cw_tier => $sgs_cw_bp ) {
-						$sgs_cw_raw = $sgs_cw_obj[ $sgs_cw_tier ] ?? null;
-						if ( null === $sgs_cw_raw || '' === $sgs_cw_raw ) {
-							continue; // Inherits the tier above.
-						}
-						$sgs_cw_is_cap = 'full' !== $sgs_cw_raw;
-						if ( $sgs_cw_is_cap === $sgs_cw_capped || ( null === $sgs_cw_capped && ! $sgs_cw_is_cap ) ) {
+				// The width cap and its centring print as ONE group under a class shared by every block whose group is the same
+				// (helpers-shared-rules.php): the cap's tiers and the centring margin override each other by order, so they stay in one
+				// group, in this order. A block that also printed the flat base rule above shares this group only with blocks that
+				// printed the same flat rule (the seed), so the flat rule always comes before the group it precedes; a block whose flat
+				// rule has tiers of its own after it keeps this group under its own uid.
+				$sgs_cw_css_for = static function ( string $sel_class ) use ( $band_obj_sel, $uid, $obj_cw_props, $attributes, $container_queries, $sgs_tier_object_has_value ): string {
+					$band_sel = '.' . $sel_class . substr( $band_obj_sel, strlen( '.' . $uid ) );
+					$css      = '';
+					if ( $obj_cw_props && '' !== $band_sel ) {
+						$css .= sgs_emit_responsive_css( $band_sel, $obj_cw_props, array( 'container' => $container_queries ) );
+					}
+					if ( '' !== $band_sel && $sgs_tier_object_has_value( $attributes['contentWidth'] ?? null ) ) {
+						$sgs_cw_obj    = sgs_responsive_normalise_object( $attributes['contentWidth'] );
+						$sgs_cw_capped = null;
+						foreach ( array(
+							'desktop' => null,
+							'tablet'  => SGS_Breakpoints::TABLET_MAX,
+							'mobile'  => SGS_Breakpoints::MOBILE_MAX,
+						) as $sgs_cw_tier => $sgs_cw_bp ) {
+							$sgs_cw_raw = $sgs_cw_obj[ $sgs_cw_tier ] ?? null;
+							if ( null === $sgs_cw_raw || '' === $sgs_cw_raw ) {
+								continue; // Inherits the tier above.
+							}
+							$sgs_cw_is_cap = 'full' !== $sgs_cw_raw;
+							if ( $sgs_cw_is_cap === $sgs_cw_capped || ( null === $sgs_cw_capped && ! $sgs_cw_is_cap ) ) {
+								$sgs_cw_capped = $sgs_cw_is_cap;
+								continue; // No change from the tier above (or an uncapped base).
+							}
+							$sgs_cw_rule = $band_sel . '{margin-inline:' . ( $sgs_cw_is_cap ? 'auto' : '0' ) . '}';
+							$css        .= null === $sgs_cw_bp ? $sgs_cw_rule : SGS_Breakpoints::media_width( 'max', $sgs_cw_bp ) . '{' . $sgs_cw_rule . '}';
 							$sgs_cw_capped = $sgs_cw_is_cap;
-							continue; // No change from the tier above (or an uncapped base).
 						}
-						$sgs_cw_rule    = $band_obj_sel . '{margin-inline:' . ( $sgs_cw_is_cap ? 'auto' : '0' ) . '}';
-						$responsive_css .= null === $sgs_cw_bp ? $sgs_cw_rule : SGS_Breakpoints::media_width( 'max', $sgs_cw_bp ) . '{' . $sgs_cw_rule . '}';
-						$sgs_cw_capped   = $sgs_cw_is_cap;
+					}
+					return $css;
+				};
+				if ( '' !== $band_obj_sel ) {
+					if ( $sgs_flat_band_emitted && '' === $sgs_flat_band_seed ) {
+						$responsive_css .= $sgs_cw_css_for( $uid );
+					} else {
+						$sgs_cw_shared = sgs_shared_rules( 'sgs-band-cap', $sgs_cw_css_for, $sgs_flat_band_seed );
+						if ( '' !== $sgs_cw_shared['class'] ) {
+							$classes[]       = $sgs_cw_shared['class'];
+							$responsive_css .= $sgs_cw_shared['css'];
+							// The wrapper's attributes were built before this point: rebuild them with the shared class.
+							$wrapper_attributes = get_block_wrapper_attributes(
+								array_merge( array( 'class' => implode( ' ', $classes ) ), $opt_extra_attrs )
+							);
+						}
 					}
 				}
 
@@ -3270,7 +3356,7 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				// Every value component is pre-sanitised ($sgs_css_length /
 				// sgs_colour_value / sgs_sanitize_grid_template / esc_url);
 				// wp_strip_all_tags() guards against '</style>' injection.
-				$style_tag .= sprintf( '<style id="%s">%s</style>', esc_attr( $uid ), wp_strip_all_tags( $responsive_css ) );
+				$style_tag .= sgs_style_tags( wp_strip_all_tags( $responsive_css ), $uid );
 			}
 
 			// ----------------------------------------------------------------

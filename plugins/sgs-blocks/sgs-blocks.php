@@ -123,6 +123,9 @@ require_once SGS_BLOCKS_PATH . 'includes/conditional-visibility.php';
 // no-inline contract). Required before block-link.php, which depends on it.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-scoped-instance-vars.php';
 
+// Shared helper — one rule for every block instance whose declarations are identical (Stage C).
+require_once SGS_BLOCKS_PATH . 'includes/helpers-shared-rules.php';
+
 // Cross-block wrapper extensions (block link, child sizing in flex rows).
 require_once SGS_BLOCKS_PATH . 'includes/wrapper-extensions.php';
 

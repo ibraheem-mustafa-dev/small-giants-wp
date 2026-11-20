@@ -45,6 +45,13 @@ const SGS_MINTED_SCOPE_PREFIXES = array(
 	'sgs-filter-look',
 	'sgs-commerce-look',
 	'sgs-chip-gap',
+	'sgs-band-width',
+	'sgs-band-cap',
+	'sgs-band-pad',
+	'sgs-band-min',
+	'sgs-band-layout',
+	'sgs-state-colour',
+	'sgs-text-hover',
 );
 
 /**
