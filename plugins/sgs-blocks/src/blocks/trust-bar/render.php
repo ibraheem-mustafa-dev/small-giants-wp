@@ -425,6 +425,11 @@ if ( $tb_stroke_grad['css'] ) {
 $tb_extra_scoped_css .= sgs_trust_bar_item_css( $attributes, $root_sel );
 $tb_extra_scoped_css .= sgs_trust_bar_icon_stroke_force_css( $attributes, $badge_style, $uid_scope );
 
+// Text-only badge look (fill, border, corner radius) and the separator's colour; the separator glyph itself is printed
+// after each badge below.
+$tb_extra_scoped_css .= sgs_trust_bar_text_badge_css( $attributes, $badge_style, $root_sel, $uid_scope );
+$tb_separator_html    = sgs_trust_bar_separator_html( sgs_trust_bar_separator_glyph( $attributes, $badge_style ) );
+
 // --- Optional title -----------------------------------------------------------
 // Guard against whitespace-only or HTML-only values (e.g. an empty <br> saved
 // by RichText) so an unset title never renders a visible element.
@@ -677,6 +682,8 @@ foreach ( $items as $tb_item_index => $item ) {
 		} else {
 			$items_html .= sprintf( '<div class="sgs-trust-bar__badge"%s>%s</div>', $item_attrs, $inner_html );
 		}
+		// A separator after every badge; the icon variants' per-badge :nth-child rules above never see it.
+		$items_html .= $tb_separator_html;
 	} elseif ( 'image-badge' === $badge_style ) {
 		// The badge's picture: the item's own `source`, `alt`, `decorative` and `fit`, printed by the shared media
 		// renderer (Spec 49 §8.3). An item with no alt of its own is named by its label.

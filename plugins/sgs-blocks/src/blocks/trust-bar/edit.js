@@ -3,7 +3,7 @@ import BackgroundLayers from '../../components/media/BackgroundLayers';
 import { useBlockProps, InspectorControls, RichText, useSettings } from '@wordpress/block-editor';
 import { useSelect } from '@wordpress/data';
 import '../../../assets/css/fx-marquee.css';
-import { useEffect, useMemo } from '@wordpress/element';
+import { Fragment, useEffect, useMemo } from '@wordpress/element';
 import {
 	PanelBody,
 	SelectControl,
@@ -56,6 +56,7 @@ import {
 	MIN_HEIGHT_OPTIONS,
 } from '../container/components/ContainerWrapperControls';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
+import { cssLengthValue } from '../../utils/css-length';
 // GridItemDefaultsPanel deliberately NOT imported — see the withdrawal note
 // beside its former mount point below (D-pending, 2026-08-30). This block
 // never renders a direct-child `.sgs-container` element, so the panel's
@@ -310,6 +311,12 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		iconStrokeWidth,
 		itemGap,
 		itemPadding,
+		textBadgeBackground,
+		textBadgeBorderColour,
+		textBadgeBorderWidth,
+		textBadgeRadius,
+		textBadgeSeparator,
+		textBadgeSeparatorColour,
 		iconCircleBackground,
 		iconCircleBackgroundGradient,
 		iconCircleBackgroundHover,
@@ -598,6 +605,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		gap: gapCssValue( itemGap ),
 	};
 
+	// Text-only badge look and separator on the canvas (mirrors textBadge* on the frontend; unset keeps the stylesheet's pill).
+	const textBadgeStyle = badgeStyle === 'text-only' ? {
+		backgroundColor: colourVar( textBadgeBackground ) || undefined,
+		borderColor: colourVar( textBadgeBorderColour ) || undefined,
+		borderWidth: cssLengthValue( textBadgeBorderWidth ) || undefined,
+		borderRadius: cssLengthValue( textBadgeRadius ) || undefined,
+	} : undefined;
+	// A grid layout gives every direct child a column, so style.css keeps the separators out of it (the stylesheet loads in the canvas).
+	const separatorGlyph = badgeStyle === 'text-only' && 'grid' !== layout ? String( textBadgeSeparator || '' ).trim().slice( 0, 8 ) : '';
+	const separatorStyle = textBadgeSeparatorColour ? { color: colourVar( textBadgeSeparatorColour ) } : undefined;
+
 	const updateItem = ( index, updated ) => {
 		const next = [ ...items ];
 		next[ index ] = updated;
@@ -668,14 +686,21 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 							if ( badgeStyle === 'text-only' ) {
 								return (
-									<div key={ item._key || index } className="sgs-trust-bar__badge">
-										<span
-											className="sgs-trust-bar__badge-label"
-											style={ { ...labelTypography, ...labelStyle } }
-										>
-											{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
-										</span>
-									</div>
+									<Fragment key={ item._key || index }>
+										<div className="sgs-trust-bar__badge" style={ textBadgeStyle }>
+											<span
+												className="sgs-trust-bar__badge-label"
+												style={ { ...labelTypography, ...labelStyle } }
+											>
+												{ item.label || <em>{ __( '(no label)', 'sgs-blocks' ) }</em> }
+											</span>
+										</div>
+										{ separatorGlyph && (
+											<span className="sgs-trust-bar__separator" aria-hidden="true" style={ separatorStyle }>
+												{ separatorGlyph }
+											</span>
+										) }
+									</Fragment>
 								);
 							}
 
@@ -844,6 +869,28 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						],
 					},
+					// Word badge fill, border and separator colours (text-only only; unset keeps the pill).
+					badgeStyle === 'text-only' && fillRow( {
+						key: 'text-badge-background',
+						label: __( 'Badge fill', 'sgs-blocks' ),
+						attrs: { base: 'textBadgeBackground' },
+						attributes,
+						setAttributes,
+					} ),
+					badgeStyle === 'text-only' && fillRow( {
+						key: 'text-badge-border',
+						label: __( 'Badge border colour', 'sgs-blocks' ),
+						attrs: { base: 'textBadgeBorderColour' },
+						attributes,
+						setAttributes,
+					} ),
+					badgeStyle === 'text-only' && fillRow( {
+						key: 'text-badge-separator',
+						label: __( 'Separator colour', 'sgs-blocks' ),
+						attrs: { base: 'textBadgeSeparatorColour' },
+						attributes,
+						setAttributes,
+					} ),
 					// ── Consolidated in 2026-08-30 — was the "Title colour"
 					// picker in the Title panel (text-only/image-badge).
 					// Paints the RichText title's `color` -> textRow.
@@ -1268,6 +1315,37 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								colour: 'badgeImageShadowColour',
 								hoverColour: 'badgeImageShadowColourHover',
 							} }
+						/>
+					</PanelBody>
+				) }
+
+				{ /* ── Word badge (text-only): border width, corner radius, separator glyph. Their colours are rows of the Colour panel above. ── */ }
+				{ badgeStyle === 'text-only' && (
+					<PanelBody title={ __( 'Word badge', 'sgs-blocks' ) } initialOpen={ false }>
+						<SgsLengthControl
+							scale="spacing"
+							presets={ false }
+							label={ __( 'Badge border width', 'sgs-blocks' ) }
+							help={ __( '0 draws no border. Empty keeps the pill border.', 'sgs-blocks' ) }
+							value={ textBadgeBorderWidth ?? '' }
+							onChange={ ( val ) => setAttributes( { textBadgeBorderWidth: val || '' } ) }
+						/>
+						<SgsLengthControl
+							scale="spacing"
+							presets={ false }
+							label={ __( 'Badge corner radius', 'sgs-blocks' ) }
+							help={ __( '0 gives square corners. Empty keeps the full pill rounding.', 'sgs-blocks' ) }
+							value={ textBadgeRadius ?? '' }
+							onChange={ ( val ) => setAttributes( { textBadgeRadius: val || '' } ) }
+						/>
+						<TextControl
+							label={ __( 'Separator glyph', 'sgs-blocks' ) }
+							help={ __( 'A mark drawn between the badges, such as a star. Hidden from screen readers. Empty draws none. Shows when Layout is Flex (a grid gives every badge its own column).', 'sgs-blocks' ) }
+							value={ textBadgeSeparator || '' }
+							maxLength={ 8 }
+							onChange={ ( val ) => setAttributes( { textBadgeSeparator: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
 					</PanelBody>
 				) }

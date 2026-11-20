@@ -76,7 +76,14 @@
 					"iconColour",
 					"iconStrokeWidth"
 				],
-				"text-only": [],
+				"text-only": [
+					"textBadgeBackground",
+					"textBadgeBorderColour",
+					"textBadgeBorderWidth",
+					"textBadgeRadius",
+					"textBadgeSeparator",
+					"textBadgeSeparatorColour"
+				],
 				"image-badge": [
 					"badgeImageShadow",
 					"badgeFit",
@@ -276,6 +283,39 @@
 						"css:padding": "itemPadding"
 					},
 					"_note": "The badge box of every variant (`.sgs-trust-bar__badge` as rendered; a draft may write it as `__item`, the element key per-area routing matches on, keyed on the draft's BEM element token). Declared `layer: GRID_AREA` (a per-child area of the band, like sgs/hero's content area) so the css_layer classifier does NOT fall back to its arrangement rule, which labelled itemGap GRID and let the icon-to-label gap capture the band's own items gap (`gap: 6px 32px`) that belongs in `gap`. itemGap is the icon-to-label gap inside one badge; itemPadding is the badge's own padding; both are responsive tier objects emitted as scoped rules on `.{uid}.wp-block-sgs-trust-bar .sgs-trust-bar__badge` by includes/helpers-trust-bar-item.php::sgs_trust_bar_item_css. Per-item fillStyle/fillColour (image-badge and text-only item content) remain repeater-row fields, not block-level style controls."
+				},
+				"text-badge": {
+					"absentIn": ["icon-circle", "icon-bare", "image-badge", "bg-css-layer"],
+					"absentWhy": "The word badge's own fill, border and corner radius exist only in the text-only badge style.",
+					"selector": ".sgs-trust-bar__badge",
+					"label": "Word badge only (text-only variant)",
+					"order": 5,
+					"clusters": [
+						"fill"
+					],
+					"prefix": "textBadge",
+					"attrMap": {
+						"css:background-color": "textBadgeBackground",
+						"css:border-color": "textBadgeBorderColour",
+						"css:border-width": "textBadgeBorderWidth",
+						"css:border-radius": "textBadgeRadius"
+					},
+					"_note": "The text-only badge (`.sgs-trust-bar__badge`) draws a pill by default (surface-alt fill, 1px border, 999px radius). These four settings are unset by default (the pill stays); a draft whose strip is plain words sets a transparent fill, a 0 width and a 0 radius. Printed as a scoped rule by includes/helpers-trust-bar-item.php::sgs_trust_bar_text_badge_css, with the fill and border colour repeated on :hover so the stylesheet's hover pill does not return."
+				},
+				"separator": {
+					"absentIn": ["icon-circle", "icon-bare", "image-badge", "bg-css-layer"],
+					"absentWhy": "The separator glyph is printed only between text-only badges.",
+					"selector": ".sgs-trust-bar__separator",
+					"label": "Separator glyph only (text-only variant)",
+					"order": 6,
+					"clusters": [
+						"text"
+					],
+					"prefix": "textBadgeSeparator",
+					"attrMap": {
+						"css:color": "textBadgeSeparatorColour"
+					},
+					"_note": "A decorative mark (aria-hidden) printed after every text-only badge: textBadgeSeparator is the glyph itself (free text, e.g. a star, at most 8 characters) and textBadgeSeparatorColour its colour. It sits after the last badge too, so the marquee's copies join with one; style.css hides the last one while the bar is not scrolling. A grid layout hides it (a grid gives every child a cell)."
 				},
 				"icon-bare": {
 					"absentIn": ["icon-circle", "text-only", "image-badge", "bg-css-layer"],
@@ -615,6 +655,31 @@
 				"desktop": {}
 			},
 			"description": "4-side box-object family (box_family 'itemPadding'), a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Padding of each badge item. Empty keeps the variant's own default padding."
+		},
+		"textBadgeBackground": {
+			"type": "string",
+			"description": "Fill of each text-only badge: a palette slug or a colour (transparent for plain words). Unset keeps the pill's surface-alt fill."
+		},
+		"textBadgeBorderColour": {
+			"type": "string",
+			"description": "Border colour of each text-only badge. Unset keeps the pill's border colour."
+		},
+		"textBadgeBorderWidth": {
+			"type": "string",
+			"description": "Border width of each text-only badge as one CSS length (0 draws no border). Unset keeps the pill's 1px."
+		},
+		"textBadgeRadius": {
+			"type": "string",
+			"description": "Corner radius of each text-only badge as one CSS length (0 for square corners). Unset keeps the pill's full rounding."
+		},
+		"textBadgeSeparator": {
+			"type": "string",
+			"role": "content",
+			"description": "A glyph printed between the text-only badges (for example a star), at most 8 characters. Decorative: hidden from screen readers. Unset prints none."
+		},
+		"textBadgeSeparatorColour": {
+			"type": "string",
+			"description": "Colour of the separator glyph. Unset takes the text colour."
 		},
 		"iconCircleBackground": {
 			"type": "string",

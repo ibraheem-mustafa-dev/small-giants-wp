@@ -201,6 +201,28 @@
 	}
 }
 
+/* Separator glyph (textBadgeSeparator): a decorative mark printed after every text-only badge.
+ * Not a pill: it takes the bar's gap on both sides, so it sits midway between two badges. The last one only shows while
+ * the marquee runs, where it is the seam between one copy of the track and the next. A grid bar gives every direct child
+ * a cell, so the separators stay out of it; overflow-drop.js hides the ones beside a dropped badge. */
+.sgs-trust-bar__separator {
+	flex: 0 0 auto;
+	line-height: 1;
+	user-select: none;
+}
+
+.sgs-trust-bar__separator:last-child {
+	display: none;
+}
+
+.sgs-trust-bar[data-sgs-marquee="on"] .sgs-trust-bar__separator:last-child {
+	display: block;
+}
+
+.sgs-container--grid > .sgs-trust-bar__separator {
+	display: none;
+}
+
 /* ─── image-badge variant ────────────────────────────────────────────────────── */
 
 .sgs-trust-bar--image-badge {

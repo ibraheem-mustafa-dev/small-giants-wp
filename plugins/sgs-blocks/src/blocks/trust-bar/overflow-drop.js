@@ -37,7 +37,7 @@ function isMarqueeActive( wrapper ) {
 	return wrapper.getAttribute( 'data-sgs-marquee' ) === 'on';
 }
 
-/** Marks a badge this script hid, so a later re-measure knows to un-hide it first. */
+/** Marks a badge (or a separator beside one) this script hid, so a later re-measure knows to un-hide it first. */
 const DROP_ATTR = 'data-sgs-overflow-dropped';
 
 /**
@@ -54,7 +54,7 @@ function badgesFor( wrapper ) {
 }
 
 /**
- * Bring back every badge this script hid.
+ * Bring back every badge (and separator) this script hid.
  *
  * @param {HTMLElement} wrapper The trust-bar wrapper.
  */
@@ -97,8 +97,13 @@ function layOutDrop( wrapper ) {
 		}
 		const top = Math.round( badge.getBoundingClientRect().top );
 		if ( top > firstTop ) {
-			badge.setAttribute( 'hidden', '' );
-			badge.setAttribute( DROP_ATTR, '' );
+			// A separator glyph beside a dropped badge goes with it, so the last visible badge does not end on one.
+			[ badge, badge.previousElementSibling, badge.nextElementSibling ].forEach( ( el ) => {
+				if ( el === badge || el?.classList.contains( 'sgs-trust-bar__separator' ) ) {
+					el.setAttribute( 'hidden', '' );
+					el.setAttribute( DROP_ATTR, '' );
+				}
+			} );
 		}
 	} );
 }
