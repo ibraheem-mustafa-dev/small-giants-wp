@@ -96,7 +96,7 @@ Fix the two faults the Eye Care pass found in this stream's own surfaces, each p
 - Touches: plugin, theme, batched reseeds, Spec 27, Spec 32
 - Done when: on a scratch copy of `local-mamas` every rule of a converted group is replaced by its setting with no difference in the render check
 - Depends on: 3, 5
-- Status: not started
+- Status: not started. Evidence added 2026-11-20: `.claude/reports/2026-11-18-template-rework/fixed-looks-audit.md` lists 11 blocks whose visible parts (mostly buttons and carousel controls) have a look fixed in code with no setting, six already hit by Mama's or Eye Care's draft, and a three-pass detector for the class; the existing hard-coded defaults gate cannot find them.
 
 ### Task 7: The order confirmation and the shop templates from blank
 - Why: eight of Mama's twelve template overrides were rebuilt by hand, the order confirmation is not a surface the route can name, a product page is built with no buy box (Spec 48 FR-48-96) and a shop listing with no sorting or results count (FR-48-99). Read first: Spec 48 FR-48-56, FR-48-96, FR-48-99, FR-48-87; `scripts/computed-route/lib/template-copies.mjs`; `scripts/computed-route/lib/skeleton-commerce-region.mjs`; `scripts/computed-route/lib/shop-parts-read.mjs::buyboxRegions`; `template-overrides.md`

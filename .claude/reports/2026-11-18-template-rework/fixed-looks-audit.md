@@ -1,0 +1,25 @@
+# Fixed looks with no setting (audit, 2026-11-20)
+
+Which SGS blocks draw a visible part whose look is fixed in code instead of coming from a setting the cloning route can write, so a future draft that draws the part differently cannot be matched without hand-written CSS. Written for the session that builds plan Task 6 (`.claude/plans/2026-11-18-template-rework.md`, "A setting for every reusable look"). Found after the buy box's flow opener, hard-wired to the secondary preset, rendered as plain text on Eye Care. Read-only audit of the code, the part-look reports and Mama's hand-written Custom CSS; rows 1, 3, 5, 7 and 11 were re-checked in the code by the main session.
+
+The existing gate `plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js` cannot find these: it flags a literal that overrides a setting that exists, and these parts have no setting.
+
+| # | Block and part | Fixed today | Hit by a real draft | Fix |
+|---|---|---|---|---|
+| 1 | `sgs/buybox` flow opener (`includes/buybox-linked-flow.php::sgs_buybox_flow_opener_html`) | Secondary preset unless Add to Cart is secondary; no look settings | Eye Care (renders as text) | Preset choice plus per-part look settings, written by the route (plan First action, Spec 43 FR-43-25) |
+| 2 | `sgs/buybox` Add to Cart border | No radius, border width or style setting (only colour) | Mama's (draft pill radius 999 and 2px border) | Radius, width and style settings for the add-to-cart part |
+| 3 | `sgs/choice-flow` footer buttons (`includes/choice-flow-footer.php`, `src/blocks/choice-flow/style.css`) | Add to basket on the secondary preset (primary when Buy now is off), Buy now and Continue on primary, Skip a fixed underlined link, Close a fixed grey circle; only Back has settings | Not recorded; predicted on Eye Care (borderless secondary) | Preset choice plus look settings per button |
+| 4 | `sgs/account` order page (`.sgs-account__od-*`, order buttons) | Fixed status pill, step tracker, boxes and links | Mama's (about 8,600 characters of hand CSS) | Per-part look settings |
+| 5 | `sgs/testimonial-slider` and `sgs/container` carousel arrows and dots | Fixed 44px primary circle arrows; dots with no setting | Mama's (about 6,700 and 5,400 characters of hand CSS) | Per-part look settings for arrow and dot |
+| 6 | `sgs/gallery` carousel arrows, pause button, dots, lightbox controls | Fixed dark circles and grey dots; show/hide only | Not yet | As row 5 |
+| 7 | `sgs/account` signed-out and empty-state buttons (`includes/account/helpers-account-signed-out.php`) | Sign in primary, Create account secondary, empty-state primary; only height and shadow settable | Likely (both drafts draw the card), not measured | Preset choice per button plus look settings, as `loginButtonPreset` already does |
+| 8 | `sgs/cart` drawer | Stepper size and the gift card's look have no setting | Mama's (13 hand rules) | New settings |
+| 9 | `sgs/product-card` CTA and tag | Hard shadow on/off only; no tag border settings; `cta2` has a preset choice but no look settings | Mama's (3px hard shadow, 2px tag border) | Shadow value, tag border settings, `cta2` look settings |
+| 10 | `sgs/product-search` submit button | Fixed primary fill and 8px radius | Not yet | Preset choice plus look settings |
+| 11 | Theme "Load more" (`theme/sgs-theme/assets/css/shop-load-more.css`) | Fixed to the primary preset, with a literal `#E68A95` fallback | Not yet | Preset choice; drop the literal |
+
+Smaller: the form's success and error boxes; the buy box "% off" chip's type; mega-panel card padding and radius, form tile padding and product-faq item gap (in the gate's baseline as accepted debt); fixed words with no setting (choice flow "Back" and "Choose an option to continue", buy box "Sale" and "Out of stock"). Separate gap: settings that exist but the framework database maps to no part, so the route cannot write them (Eye Care's `loginButtonFont*`, Mama's product-card `tagBorderRadius` and `tagPadding`).
+
+Checked and fine: the buy box Add to Cart (except row 2); the cart's checkout, view-cart, close, remove and stepper controls; free-delivery-bar, gift-order, order-items, wishlist-link, modal trigger and close, option-picker swatches; the product card's CTA colour, border, radius and padding, pill and badges; the account form's sign-in button; shop buttons through `commerce-look/buttons.php`.
+
+A detector for this class, in three passes with a baseline that only shrinks: (1) a BEM part (`.sgs-<block>__<part>`) in a block's `style.css`, `render.php` or `includes/` with colour, background, border, radius, padding, font or shadow declarations and no attribute mapped to that element in `block_attributes`; (2) a literal preset slug or "pick X unless Y" in PHP not read from an attribute; (3) an attribute with no `css_element` or `css_property` in the database, and a printed `__( '…' )` string with no attribute sharing its stem. A rough first pass over `style.css` only flagged 45 blocks and found rows 3, 6 and 10 and the form messages; it needs an exemptions file (layout, accessibility, WooCommerce markup) and name normalisation before it can gate.
