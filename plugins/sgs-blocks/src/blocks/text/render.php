@@ -528,6 +528,11 @@ if ( $drop_cap ) {
 // keyboard-navigation parity (change is not colour-only — scale + shadow
 // provide additional non-colour cue).
 $css_hover = '';
+// No hover look: no shared class and no shared rule.
+$text_hover_shared = array(
+	'class' => '',
+	'css'   => '',
+);
 // D636 — sibling gradient attribute wins when set+valid; the OR'd
 // gradient siblings here keep $has_hover true when only a gradient is set.
 $hover_colour_effective    = sgs_resolve_text_colour_or_gradient( $hover_colour, $hover_colour_gradient );
