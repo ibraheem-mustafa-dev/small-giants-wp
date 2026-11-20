@@ -7,7 +7,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { missingModalRows, deadOpeners, walkAbsent, walkChecked } from '../lib/site-check-openers.mjs';
+import { missingModalRows, deadOpeners, openersInPage, walkAbsent, walkChecked } from '../lib/site-check-openers.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROWS = [
@@ -35,6 +35,36 @@ test( 'MUST FAIL: a link to a modal or flow row\'s anchor with no frame on its p
 	assert.match( dead[ 0 ].error, /opens the flow choice-flow-lenses, and the page holds no frame with that anchor/ );
 	assert.deepEqual( deadOpeners( ROWS, { ...page, frames: [ 'modal-size-guide', 'choice-flow-lenses' ] } ), [], 'every opener finds its frame' );
 	assert.deepEqual( deadOpeners( ROWS, { key: 'p', links: [ 'form-contact', 'top' ], frames: [] } ), [], 'a form anchor and a plain anchor are no openers of a frame' );
+} );
+
+// MUST FAIL: on the 2026-11-19 lab run a link planted on Eye Care to #modal-missing, an anchor no page-map row names, passed.
+test( 'MUST FAIL: a link to an anchor nothing on its page holds (no frame, no element with that id or name) is a dead opener', () => {
+	const page = { key: 'help', url: 'https://x/help/', links: [ 'modal-missing', 'modal-size-guide', 'faq', 'top', 'form-contact' ], frames: [ 'modal-size-guide' ], present: [ 'faq', 'modal-size-guide' ] };
+	const dead = deadOpeners( ROWS, page );
+	assert.deepEqual( dead.map( ( d ) => d.subject ), [ 'opener #modal-missing on help', 'opener #form-contact on help' ] );
+	assert.equal( dead[ 0 ].status, 'fail' );
+	assert.match( dead[ 0 ].error, /a link points at #modal-missing, and the page holds no frame with that anchor and no element with that id or name/ );
+	// Negative controls: a link to an element the page holds, the top of the page, a frame, and a page read without the
+	// present anchors (the old reading) are no dead openers.
+	assert.deepEqual( deadOpeners( ROWS, { ...page, present: [ 'faq', 'modal-size-guide', 'modal-missing', 'form-contact' ] } ), [] );
+	assert.deepEqual( deadOpeners( ROWS, { key: 'p', links: [ 'modal-missing', 'top' ], frames: [] } ), [] );
+	// A modal row's anchor with no frame keeps its own message even when an element carries the id.
+	assert.match( deadOpeners( ROWS, { key: 'p', links: [ 'choice-flow-lenses' ], frames: [], present: [ 'choice-flow-lenses' ] } )[ 0 ].error, /opens the flow choice-flow-lenses/ );
+} );
+
+test( 'MUST FAIL: the page reading names the linked anchors an element on the page carries as its id or name', () => {
+	const el = ( attrs, parent = null ) => ( { getAttribute: ( k ) => attrs[ k ] ?? null, parentElement: parent } );
+	const wrapper = { id: 'modal-size-guide' };
+	globalThis.document = {
+		querySelectorAll: ( q ) => ( /dialog/.test( q ) ? [ el( {}, wrapper ) ] : [ el( { href: '#faq' } ), el( { href: '#modal-missing' } ), el( { 'data-sgs-modal-open': 'modal-size-guide' } ), el( { href: '#old' } ), el( { href: '#' } ) ] ),
+		getElementById: ( id ) => ( [ 'faq', 'modal-size-guide' ].includes( id ) ? {} : null ),
+		getElementsByName: ( n ) => ( 'old' === n ? [ {} ] : [] ),
+	};
+	try {
+		assert.deepEqual( openersInPage(), { links: [ 'faq', 'modal-missing', 'modal-size-guide', 'old' ], frames: [ 'modal-size-guide' ], present: [ 'faq', 'modal-size-guide', 'old' ] } );
+	} finally {
+		delete globalThis.document;
+	}
 } );
 
 test( 'MUST FAIL: a walk whose live root, or every live element, is absent fails; one the draft does not show is no absence', () => {
