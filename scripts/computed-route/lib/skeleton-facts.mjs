@@ -80,7 +80,7 @@ export function decisionsProblems( facts ) {
 	known( d.structural?.columnLabel?.block, 'structural.columnLabel' );
 	( d.elements || [] ).forEach( ( e ) => e.block && known( e.block, `elements.${ e.id }` ) );
 	const r = d.rules || {};
-	[ [ 'rules.decorativeShape', r.decorativeShape?.block ], [ 'rules.decorationLayer', r.decorationLayer?.block ], [ 'rules.backgroundPicture', r.backgroundPicture?.block ], [ 'rules.backToTop.wholeBlock', r.backToTop?.wholeBlock ], [ 'rules.backToTop.lone', r.backToTop?.lone ], [ 'rules.pillButton', r.pillButton?.block ], [ 'rules.wholeCardLink', r.wholeCardLink?.block ], [ 'rules.marquee.logoBlock', r.marquee?.logoBlock ], [ 'rules.marquee.itemBlock', r.marquee?.itemBlock ], [ 'rules.trustBar', r.trustBar?.block ], [ 'rules.hero', r.hero?.block ], [ 'rules.formHost', r.formHost?.block ], [ 'rules.formLink', r.formLink?.block ], [ 'rules.formControl.inputPartHost', r.formControl?.inputPartHost ], [ 'rules.marqueeCodeItems', r.marqueeCodeItems?.block ], [ 'rules.megaGroup', r.megaGroup?.block ], [ 'rules.megaAside', r.megaAside?.block ], [ 'rules.megaContainer', r.megaContainer?.block ], [ 'rules.drawerIconRun', r.drawerIconRun?.block ], [ 'rules.headerSlots', r.headerSlots?.block ], [ 'rules.headerSlots.rowBlock', r.headerSlots?.rowBlock ], [ 'rules.footerSlots', r.footerSlots?.block ], [ 'rules.footerSlots.rowBlock', r.footerSlots?.rowBlock ],
+	[ [ 'rules.decorativeShape', r.decorativeShape?.block ], [ 'rules.decorationLayer', r.decorationLayer?.block ], [ 'rules.heroCollage', r.heroCollage?.block ], [ 'rules.heroCollageLayer', r.heroCollageLayer?.block ], [ 'rules.heroCollageRow', r.heroCollageRow?.block ], [ 'rules.backgroundPicture', r.backgroundPicture?.block ], [ 'rules.backToTop.wholeBlock', r.backToTop?.wholeBlock ], [ 'rules.backToTop.lone', r.backToTop?.lone ], [ 'rules.pillButton', r.pillButton?.block ], [ 'rules.wholeCardLink', r.wholeCardLink?.block ], [ 'rules.marquee.logoBlock', r.marquee?.logoBlock ], [ 'rules.marquee.itemBlock', r.marquee?.itemBlock ], [ 'rules.trustBar', r.trustBar?.block ], [ 'rules.hero', r.hero?.block ], [ 'rules.formHost', r.formHost?.block ], [ 'rules.formLink', r.formLink?.block ], [ 'rules.formControl.inputPartHost', r.formControl?.inputPartHost ], [ 'rules.marqueeCodeItems', r.marqueeCodeItems?.block ], [ 'rules.megaGroup', r.megaGroup?.block ], [ 'rules.megaAside', r.megaAside?.block ], [ 'rules.megaContainer', r.megaContainer?.block ], [ 'rules.drawerIconRun', r.drawerIconRun?.block ], [ 'rules.headerSlots', r.headerSlots?.block ], [ 'rules.headerSlots.rowBlock', r.headerSlots?.rowBlock ], [ 'rules.footerSlots', r.footerSlots?.block ], [ 'rules.footerSlots.rowBlock', r.footerSlots?.rowBlock ], [ 'rules.homeLink.groupBlock', r.homeLink?.groupBlock ],
 		...( r.decorationLayer?.sectionAnchorBlocks || [] ).map( ( b ) => [ 'rules.decorationLayer.sectionAnchorBlocks', b ] ),
 		...Object.entries( r.navigation?.bySurface || {} ).map( ( [ k, b ] ) => [ `rules.navigation.${ k }`, b ] ), ...( r.surfaceRoot?.entries || [] ).map( ( x, i ) => [ `rules.surfaceRoot[${ i }]`, x.block ] ),
 		...( r.drawsChildren?.blocks || [] ).map( ( x ) => [ `rules.drawsChildren ${ x.block }`, x.block ] ),
@@ -132,7 +132,7 @@ export function decisionsProblems( facts ) {
 		problems.push( `rules.headerSlots.columnsSetting must name a structural setting ${ r.headerSlots.rowBlock } has` );
 	}
 	// A rule's item look settings (`itemSlots`) are settings of its own block.
-	Object.entries( r ).filter( ( [ , x ] ) => Array.isArray( x?.itemSlots ) ).forEach( ( [ id, x ] ) => x.itemSlots.filter( ( a ) => ! facts.attr( x.block, a ) ).forEach( ( a ) => problems.push( `rules.${ id }.itemSlots names ${ a }, which ${ x.block } does not have` ) ) );
+	Object.entries( r ).filter( ( [ , x ] ) => Array.isArray( x?.itemSlots ) ).forEach( ( [ id, x ] ) => x.itemSlots.filter( ( a ) => ! facts.attr( x.block ?? x.logoBlock, a ) ).forEach( ( a ) => problems.push( `rules.${ id }.itemSlots names ${ a }, which ${ x.block ?? x.logoBlock } does not have` ) ) );
 	const ci = r.marqueeCodeItems?.items;
 	if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) || [ ...( ci.clear || [] ), ...( ci.slots || [] ), ...( ci.plain ? [ ci.plain.setting ] : [] ) ].some( ( a ) => ! facts.attr( r.marqueeCodeItems.block, a ) ) ) ) {
 		problems.push( `rules.marqueeCodeItems.items must name an items setting and cleared settings ${ r.marqueeCodeItems.block } has` );
@@ -142,6 +142,20 @@ export function decisionsProblems( facts ) {
 		known( x.block, `rules.listArrangement.blocks[${ i }]` );
 		const values = facts.enumOf?.( x.block, x.setting ) ?? null;
 		! values?.includes( x.value ) && problems.push( `rules.listArrangement.blocks[${ i }] must name a setting ${ x.block } has and one of its values (${ x.setting } ${ x.value })` );
+		x.equalShare && ( ! facts.attr( x.block, x.equalShare.setting ) || 'boolean' !== typeof x.equalShare.value ) && problems.push( `rules.listArrangement.blocks[${ i }].equalShare must name an on or off setting ${ x.block } has (${ x.equalShare.setting })` );
+	} );
+	// A dissolved link's slot names a block, a setting of it and the calibrated slot path the link is read at.
+	( r.homeLink?.linkSlots || [] ).forEach( ( x, i ) => {
+		known( x.block, `rules.homeLink.linkSlots[${ i }]` );
+		( ! facts.attr( x.block, x.setting ) || ! /^\.\S/.test( x.slot || '' ) ) && problems.push( `rules.homeLink.linkSlots[${ i }] must name a setting ${ x.block } has and a slot path of its element` );
+	} );
+	// An item-field slot names a block with the item key it reads and css_elements the block's settings sit on.
+	( r.itemFieldSlots?.blocks || [] ).forEach( ( x, i ) => {
+		known( x.block, `rules.itemFieldSlots.blocks[${ i }]` );
+		( x.parts || [] ).forEach( ( p ) => {
+			const missing = ( p.elements || [] ).filter( ( c ) => ! facts.q( 'SELECT 1 AS x FROM block_attributes WHERE block_slug = ? AND css_element = ? LIMIT 1', x.block, c ).length );
+			( ! p.key || ! ( p.elements || [] ).length || missing.length ) && problems.push( `rules.itemFieldSlots.blocks[${ i }] part ${ p.key } must name an item key and css_elements ${ x.block } has` );
+		} );
 	} );
 	const ti = r.marquee?.textItems;
 	if ( ti && [ ti.items?.setting, ...Object.keys( ti.attributes || {} ) ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) ) ) {
@@ -150,6 +164,11 @@ export function decisionsProblems( facts ) {
 	// The labelled-logo display names settings of the logo block, each at a value the setting has.
 	Object.entries( r.marquee?.labelledLogos?.attributes || {} ).filter( ( [ a, val ] ) => ! facts.enumOf?.( r.marquee.logoBlock, a )?.includes( val ) )
 		.forEach( ( [ a, val ] ) => problems.push( `rules.marquee.labelledLogos.attributes ${ a } ${ val } must be a setting of ${ r.marquee.logoBlock } and one of its values` ) );
+	// The name tile's setting is a setting of the logo block (the tile look read at the first tile is checked with every `itemSlots`).
+	const tileSetting = r.marquee?.labelledLogos?.tile?.setting;
+	tileSetting && ! facts.attr( r.marquee.logoBlock, tileSetting ) && problems.push( `rules.marquee.labelledLogos.tile.setting ${ tileSetting } must be a setting of ${ r.marquee.logoBlock }` );
+	const tileLayout = r.marquee?.labelledLogos?.tile?.layout;
+	tileLayout && ! facts.enumOf?.( r.marquee.logoBlock, tileLayout.setting )?.includes( tileLayout.value ) && problems.push( `rules.marquee.labelledLogos.tile.layout ${ tileLayout.setting } ${ tileLayout.value } must be a setting of ${ r.marquee.logoBlock } and one of its values` );
 	Object.keys( r.footerSlots?.stackedRow || {} ).filter( ( a ) => ! facts.attr( r.footerSlots.rowBlock, a ) || facts.attr( r.footerSlots.rowBlock, a ).css_property ).forEach( ( a ) => problems.push( `rules.footerSlots.stackedRow.${ a } must name a structural setting ${ r.footerSlots.rowBlock } has (no CSS property: a skeleton carries no style value)` ) );
 	// A commerce region's block: a core block only as a listed exception, WooCommerce's own block (outside the framework
 	// database), or a known SGS block; its money pattern compiles.

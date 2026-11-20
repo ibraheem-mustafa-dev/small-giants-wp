@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( painted ? { [ T2.setting ]: true, [ T2.layout.setting ]: T2.layout.value } : {} ) } : {}, absorb: true",
+		"replace": "} : {}, absorb: true",
+		"why": "the strip is never given the name-tile setting"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const painted = labelled && !! T2 && PAINT_DECL.test( String( kidsB[ 0 ].attrs?.style ?? '' ) );",
+		"replace": "const painted = labelled && !! T2;",
+		"why": "an unpainted tile is a name tile too"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( painted ? { firstItem: kidsB[ 0 ].key, decided: { [ T2.layout.setting ]: T2.layout.value } } : {} ), handover",
+		"replace": "handover",
+		"why": "no tile is read for the tile's look"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "border(?:-width|-color)?)\\s*:",
+		"replace": "border[\\w-]*)\\s*:",
+		"why": "a border radius alone counts as a painted tile"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"itemSlots\": [ \"tileBackgroundColour\", \"tileRadius\", \"tileShadow\", \"tilePadding\", \"tileBorderWidth\", \"tileBorderColour\" ],",
+		"replace": "\"itemSlots\": [],",
+		"why": "the tile settings are read at no draft element"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"tile\": { \"setting\": \"brandTextTile\",",
+		"replace": "\"tileOff\": { \"setting\": \"brandTextTile\",",
+		"why": "the rule's tile entry is removed"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "tileSetting && ! facts.attr( r.marquee.logoBlock, tileSetting ) &&",
+		"replace": "tileSetting && false &&",
+		"why": "a tile setting the block lacks passes the check"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "! facts.attr( x.block ?? x.logoBlock, a ) ).forEach",
+		"replace": "! facts.attr( x.block, a ) ).forEach",
+		"why": "the check of the marquee rule's item slots reads no block"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "[ T2.setting ]: true, [ T2.layout.setting ]: T2.layout.value } : {} ) } : {}, absorb: true",
+		"replace": "[ T2.setting ]: true } : {} ) } : {}, absorb: true",
+		"why": "the strip is not given the tile layout"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "firstItem: kidsB[ 0 ].key, decided: { [ T2.layout.setting ]: T2.layout.value } }",
+		"replace": "firstItem: kidsB[ 0 ].key }",
+		"why": "Fill may turn the strip to the row layout, which draws no tile"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "tileLayout && ! facts.enumOf?.( r.marquee.logoBlock, tileLayout.setting )?.includes( tileLayout.value ) &&",
+		"replace": "tileLayout && false &&",
+		"why": "a layout value the setting lacks passes the check"
+	}
+]

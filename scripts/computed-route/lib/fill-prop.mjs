@@ -173,6 +173,9 @@ export function notPainted( prop, styles, snap = null, declared = null ) {
 	if ( GAP_PROPS.includes( prop ) ) {
 		return null !== gapPaintsNothing( prop, styles, snap );
 	}
+	if ( FLEX_ONLY.includes( prop ) ) {
+		return null !== flexOnlyPaintsNothing( prop, snap );
+	}
 	const zero = ( v ) => undefined !== v && 0 === parseFloat( v );
 	if ( /^outline-(color|offset)$/.test( prop ) ) {
 		return 'none' === styles[ 'outline-style' ] || zero( styles[ 'outline-width' ] );
@@ -191,6 +194,15 @@ export function notPainted( prop, styles, snap = null, declared = null ) {
 }
 
 const GAP_PROPS = [ 'gap', 'row-gap', 'column-gap' ];
+// The properties only a flex container lays out by: on any other box the computed value is the initial one (a block's
+// flex-direction reads `row`) and no draft value was chosen.
+const FLEX_ONLY = [ 'flex-direction', 'flex-wrap' ];
+// Why a flex-only property paints nothing on the element laying out the children, or null where it may paint (the layout
+// element's display is a flex container, or is unknown).
+export function flexOnlyPaintsNothing( prop, snap ) {
+	const laid = snap?.layoutDisplay;
+	return undefined === laid || '' === laid || /(^|-)flex$/.test( laid ) ? null : `${ prop } on a ${ laid } box, which lays out no flex items`;
+}
 const isSet = ( v ) => undefined !== v && 'auto' !== String( v ).trim();
 // The explicit tracks a grid template lists (line names left out); 'none' lists none.
 const trackCount = ( v ) => ( undefined === v || 'none' === String( v ).trim() ? 0 : String( v ).replace( /\[[^\]]*\]/g, ' ' ).trim().split( /\s+(?![^(]*\))/ ).filter( Boolean ).length );

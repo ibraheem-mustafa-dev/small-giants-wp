@@ -52,5 +52,29 @@
 		"find": "! values?.includes( x.value ) && problems.push(",
 		"replace": "false && problems.push(",
 		"why": "a rule with a value the setting lacks passes the check"
+	},
+	{
+		"file": "lib/skeleton-arrangement.mjs",
+		"find": "hit.equalShare && equalWidths( items, box ) ?",
+		"replace": "hit.equalShare ?",
+		"why": "a row of unequal widths shares the row"
+	},
+	{
+		"file": "lib/skeleton-arrangement.mjs",
+		"find": "Math.abs( w - widths[ 0 ] ) <= 1 )",
+		"replace": "Math.abs( w - widths[ 0 ] ) <= 3 )",
+		"why": "widths two pixels apart count as equal"
+	},
+	{
+		"file": "lib/skeleton-arrangement.mjs",
+		"find": "return widths.length >= 2 && widths.every",
+		"replace": "return widths.length >= 1 && widths.every",
+		"why": "one unit is a row of equal columns"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": ", \"equalShare\": { \"setting\": \"cardsShareRow\", \"value\": true } } ],",
+		"replace": " } ],",
+		"why": "the rule never sets the equal-share setting"
 	}
 ]

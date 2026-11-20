@@ -354,6 +354,10 @@
       },
       {
         "brandDisplay": "text"
+      },
+      {
+        "brandDisplay": "text",
+        "brandTextTile": true
       }
     ]
   },
@@ -3446,6 +3450,9 @@
       {},
       {
         "connectorProgressFill": true
+      },
+      {
+        "orientation": "horizontal"
       }
     ]
   },

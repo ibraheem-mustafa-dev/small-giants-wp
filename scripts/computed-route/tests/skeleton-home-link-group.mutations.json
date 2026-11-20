@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "R.homeLink.groupBlock && kidsB.length >= ( R.homeLink.groupMinLogos ?? 2 ) ?",
+		"replace": "false ?",
+		"why": "a link around a mark and a wordmark would go again and the pair would become two cells of the row"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "kidsB.length >= ( R.homeLink.groupMinLogos ?? 2 )",
+		"replace": "kidsB.length >= 1",
+		"why": "a link around one logo would be kept as a container"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "v( 'homeLink', { block: R.homeLink.groupBlock } )",
+		"replace": "v( 'homeLink', { block: 'sgs/button' } )",
+		"why": "the pair would be a pill button"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "R.homeLink.groupBlock && kidsB.length",
+		"replace": "kidsB.length",
+		"why": "a group block the decisions do not name would still be used"
+	}
+]

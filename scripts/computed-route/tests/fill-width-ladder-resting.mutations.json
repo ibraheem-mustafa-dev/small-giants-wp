@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "if ( state || ! hasSetting ) {",
+		"replace": "if ( ! hasSetting ) {",
+		"why": "a state's value (a hover look) would be held in the resting setting"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "if ( state || ! hasSetting ) {",
+		"replace": "if ( state ) {",
+		"why": "a property no setting holds would try to write one"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "paints.every( ( b ) => undefined !== b && sameCanonical( prop, b, initial ) )",
+		"replace": "paints.every( ( b ) => true )",
+		"why": "a block that paints a value of its own by default, or a paint nobody measured, would have its setting overwritten"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "( null === raw || ! sameCanonical( prop, raw, initial ) )",
+		"replace": "true",
+		"why": "a widest value that is the initial value would be written to the setting for nothing"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "const merged = null === skip ? all : all.filter( ( s ) => s.value !== skip );",
+		"replace": "const merged = all;",
+		"why": "the held range would be repeated as a rule"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "const holds = held && 'written' === held.status;",
+		"replace": "const holds = !! held;",
+		"why": "a refused write would still drop the widest range's rule"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "\tif ( holds ) {\n\t\tcommit(",
+		"replace": "\tif ( false ) {\n\t\tcommit(",
+		"why": "the setting would never be written, so the layer would still print nothing"
+	}
+]

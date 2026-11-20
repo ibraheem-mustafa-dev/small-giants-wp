@@ -25,7 +25,8 @@ import { widgetModel } from './skeleton-widgets.mjs';
 import { keptSvg } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
-import { behindContent } from './skeleton-hero-background.mjs';
+import { behindContent, contentAnchor } from './skeleton-hero-background.mjs';
+import { heroCollage } from './skeleton-hero-collage.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -109,6 +110,8 @@ function weightOf( v ) {
 // One or more emoji (each optionally followed by a variation selector or a zero-width joiner), spaces removed first.
 const EMOJI = /^(?:\p{Extended_Pictographic}[\u{FE0F}\u{200D}]?)+$/u;
 const HEADING = /^h[1-6]$/;
+// A declared inline style that paints a box: a background, a box shadow or a border (a radius alone paints nothing).
+const PAINT_DECL = /(?:^|;)\s*(?:background(?:-color)?|box-shadow|border(?:-width|-color)?)\s*:\s*(?!none\b|transparent\b|0(?:px)?\s*(?:;|$))/;
 
 // o: { m (lib/skeleton-model.mjs), facts (lib/skeleton-facts.mjs), surface: { slug, kind, name }, hooks: { siteInfoKinds,
 // isColumnLabel, topBlock, blockOfKey, siteLink } (the classifier's own readings: an element's Site Info kinds, whether it heads a
@@ -524,9 +527,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A run of image links each to a different brand (Instagram, Google, WhatsApp: social profile icons) is no logo wall but
 		// a row of brand icons (decisions structural.brandImageLink); links that all go to one brand (a grid of Instagram posts) stay one.
 		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) && ! brandIconRun( kidsB ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } ) : null ),
-		// The link around a logo goes: the logo block links home itself.
-		// Its children are one or more logos (a mark and a wordmark side by side).
-		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? v( 'homeLink', { action: 'unwrap' } ) : null ),
+		// The link around a logo goes: the logo block links home itself. Its children are one or more logos (a mark and a
+		// wordmark side by side); a link around several stays as the container holding them (R.homeLink.groupBlock), so the
+		// pair is one item of the row it sits in.
+		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? ( R.homeLink.groupBlock && kidsB.length >= ( R.homeLink.groupMinLogos ?? 2 ) ? v( 'homeLink', { block: R.homeLink.groupBlock } ) : v( 'homeLink', { action: 'unwrap' } ) ) : null ),
 		// A centring width wrapper inside a block that sets its own width (a header or footer, their rows, a section).
 		// Directly under a section root it goes only when it lays nothing out itself: a centred grid or flex there is the
 		// row the root accepts.
@@ -683,6 +687,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// wrapper itself). Badges inside a section are labels.
 	const pageSection = ( e, block ) => 'section' !== facts.composition[ block ]?.container_kind || ( 'page' === surface.kind && ! pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) ) );
 	const isMedia = ( k ) => 'img' === k.tag || ( k.tag.includes( '-' ) && !! specHit( R.mediaElement, k.tag ) );
+	// A hero's collage stages and their layers (lib/skeleton-hero-collage.mjs), read once per hero.
+	const collages = new Map();
+	const collageOf = ( hero ) => {
+		if ( ! collages.has( hero.key ) ) {
+			collages.set( hero.key, R.heroCollage ? heroCollage( { hero, m, desc, isMedia, minPictureLayers: R.heroCollage.minPictureLayers } ) : { stages: new Map(), layerOf: new Map(), rows: new Set() } );
+		}
+		return collages.get( hero.key );
+	};
 	// The element's own animation loops a translate for ever (the inventory's motion record): a marquee track.
 	const loops = ( e ) => motion.has( String( e.key ).replace( /#\d+$/, '' ) );
 
@@ -917,7 +929,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// picture placeholders is never an empty band, and a logo added later replaces its name (`marquee.labelledLogos`).
 			const L = R.marquee?.labelledLogos;
 			const labelled = !! L && kidsB.length >= 2 && kidsB.every( ( k ) => '' !== String( k.attrs?.[ 'aria-label' ] ?? '' ).trim() );
-			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes } : {}, absorb: true, handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
+			// A labelled tile the draft paints (a declared background, border or shadow) is the block's name tile
+			// (`marquee.labelledLogos.tile`): the setting that draws each name as a tile and the layout that draws tiles (the row layout
+			// draws none, so Fill may not choose it: `decided`), and the first tile is where Fill reads the tile's look (`firstItem`, `marquee.itemSlots`).
+			const T2 = L?.tile;
+			const painted = labelled && !! T2 && PAINT_DECL.test( String( kidsB[ 0 ].attrs?.style ?? '' ) );
+			return v( 'marquee', logos ? { block: R.marquee?.logoBlock, attributes: labelled ? { ...L.attributes, ...( painted ? { [ T2.setting ]: true, [ T2.layout.setting ]: T2.layout.value } : {} ) } : {}, absorb: true, ...( painted ? { firstItem: kidsB[ 0 ].key, decided: { [ T2.layout.setting ]: T2.layout.value } } : {} ), handover: { owner: 'content-page', kind: 'presence', detail: 'the brand logos: add each logo image to the strip' } } : { block: R.marquee?.itemBlock, attributes: {}, absorb: true } );
 		},
 		// A row of short non-interactive labels, each with at most a glyph, is a trust bar (its badges are its items).
 		( { e, kidsB } ) => {
@@ -951,7 +968,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// A picture laid behind the content (lib/skeleton-hero-background.mjs) is the hero's background: only a picture beside
 			// the content makes it the split hero.
 			const backdrop = desc( e ).filter( isMedia ).filter( ( p ) => behindContent( { hero: e, picture: p, m, desc } ) );
-			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) );
+			// A picture inside a collage layer is that layer's own, and a picture set inline in a heading is part of its words (the
+			// heading draws it): neither is the hero's split media.
+			const collage = collageOf( e );
+			const inHeading = ( p ) => {
+				for ( let up = m.byKey[ p.parentKey ]; up && up !== e; up = m.byKey[ up.parentKey ] ) {
+					if ( HEADING.test( up.tag ) ) {
+						return true;
+					}
+				}
+				return false;
+			};
+			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );
 			const media = pictures.length > 0;
 			// A split hero's order per device is the draft's (lib/skeleton-hero-order.mjs): its picture against every worded
 			// element outside a picture, at each device's width.
@@ -964,6 +992,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			} ) : { value: null, problems: [] };
 			// Its picture's own alignment in its column: the draft's declared justify-self or auto side margins.
 			const align = media ? heroMediaAlignment( { style: declared( pictures.find( ( p ) => Object.values( p.visible || {} ).some( Boolean ) ) || pictures[ 0 ], tokens ), rule: R.hero?.splitAlignment } ) : null;
+			// The side an absolutely placed content block is anchored to is the hero's vertical alignment (rules.hero.verticalAlignment): a
+			// setting that paints CSS, so the verdict carries it as `decided` and Fill writes it (lib/fill-resolve.mjs::fillContent).
+			const V = R.hero?.verticalAlignment;
+			const anchor = ! media && V?.setting ? contentAnchor( { hero: e, m, desc, isMedia } ) : null;
+			const vertical = anchor && V.values?.[ anchor ] && ( facts.enumOf?.( R.hero.block, V.setting ) || [] ).includes( V.values[ anchor ] ) ? { [ V.setting ]: V.values[ anchor ] } : {};
 			const attributes = media ? { variant: 'split', ...( order.value ? { [ R.hero.splitOrder.setting ]: order.value } : {} ), ...( align ? { [ R.hero.splitAlignment.setting ]: align } : {} ) } : {};
 			// The wrapper framing the picture: the outermost element above it that holds the picture alone (each a lone block child on
 			// the way up to the hero's own columns) and declares a paint of its own (rules.heroInner.frame.properties).
@@ -973,7 +1006,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			for ( let up = picture ? m.byKey[ picture.parentKey ] : null; up && up !== e && 1 === m.blockKids( up ).length; up = m.byKey[ up.parentKey ] ) {
 				Object.keys( declared( up, tokens ) ).some( ( p ) => framing.has( p ) ) && ( frame = up );
 			}
-			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( frame ? { mediaFrame: frame.key } : {} ), ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : backdrop.length ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s background setting' } } : {} ) } );
+			const verdict = v( 'hero', { block: R.hero?.block, attributes, ...( Object.keys( vertical ).length ? { decided: vertical } : {} ), ...( frame ? { mediaFrame: frame.key } : {} ), ...( media ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s split media setting' } } : backdrop.length ? { handover: { owner: 'content-page', kind: 'presence', detail: 'the hero image: choose it in the hero\'s background setting' } } : {} ) } );
 			verdict && order.problems.length && ( verdict.reason = `${ verdict.reason }; ${ order.problems.join( '; ' ) }` );
 			return verdict;
 		},
@@ -997,6 +1030,18 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const hero = ancestorBlocks( e ).find( ( a ) => a.block === R.hero?.block );
 			if ( ! hero ) {
 				return null;
+			}
+			// A collage keeps its stage as a container and each absolutely placed child as a decorative image layer; what sits
+			// inside a layer is classified as anywhere else (the pictures are media blocks, not the hero's split media).
+			const collage = collageOf( m.byKey[ hero.key ] );
+			if ( collage.stages.has( e.key ) ) {
+				return v( 'heroCollage', { block: R.heroCollage.block } );
+			}
+			if ( collage.layerOf.has( e.key ) ) {
+				return collage.layerOf.get( e.key ) === e.key ? v( 'heroCollageLayer', { block: R.heroCollageLayer?.block } ) : null;
+			}
+			if ( collage.rows.has( e.key ) ) {
+				return v( 'heroCollageRow', { block: R.heroCollageRow?.block } );
 			}
 			if ( isMedia( e ) ) {
 				// A picture laid behind the hero's content is its background (rules.heroBackdrop), not a part of its split media.

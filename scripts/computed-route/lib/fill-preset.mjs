@@ -15,6 +15,7 @@ import { compareDR } from './fill-confirm.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { transformChannels } from './motion-channels.mjs';
 import { MOTION_STATE_PROPS } from './fill-state-motion.mjs';
+import { blockSchema } from './resolve.mjs';
 
 // The preset keys and the CSS they set: [ key, [ CSS properties read from the element ], state ]. Padding is the four sides.
 // The keys mirror the snapshot schema's `settings.custom.buttonPresets.<variant>` fields (the extractor writes them,
@@ -43,17 +44,21 @@ export const RESERVED_STYLES = [ 'default', 'link', 'custom' ];
 // The preset variants each block can hold, by framework-DB query: { block: { attr, variants } } for every block with an
 // `inheritStyle` setting. A setting with an enum holds the snapshot's preset names (Object.keys of buttonPresets) that enum
 // includes. A string setting with no enum is open (a site names its own presets, `namedButtonPresets`): it holds every
-// snapshot preset name except RESERVED_STYLES. A block whose values hold none of the names is still listed: it paints its
-// default variant's hover lift.
-export function presetVariants( db, presets ) {
+// snapshot preset name except RESERVED_STYLES. Whether a setting is open is block.json's to say: one whose block.json declares
+// no `enum` is open whatever list the framework DB holds, because the reseed fills a string setting's list from what its source
+// compares it with (sgs/button's render.php tests `link` and `custom`), which names the reserved styles and never a site's
+// presets. A block whose values hold none of the names is still listed: it paints its default variant's hover lift.
+// schemaOf: a block's block.json attributes (lib/resolve.mjs::blockSchema; a test passes its own).
+export function presetVariants( db, presets, schemaOf = blockSchema ) {
 	const rows = db.prepare( "SELECT block_slug, attr_name, attr_type, enum_values FROM block_attributes WHERE attr_name = 'inheritStyle' AND ( enum_values IS NOT NULL OR attr_type = 'string' )" ).all();
 	const names = Object.keys( presets || {} );
-	return Object.fromEntries( rows.map( ( r ) => [ r.block_slug, { attr: r.attr_name, variants: names.filter( ( v ) => ( null === r.enum_values ? ! RESERVED_STYLES.includes( v ) : JSON.parse( r.enum_values ).includes( v ) ) ) } ] ) );
+	const listed = ( r ) => null !== r.enum_values && Array.isArray( schemaOf( r.block_slug )?.[ r.attr_name ]?.enum );
+	return Object.fromEntries( rows.map( ( r ) => [ r.block_slug, { attr: r.attr_name, variants: names.filter( ( v ) => ( listed( r ) ? JSON.parse( r.enum_values ).includes( v ) : ! RESERVED_STYLES.includes( v ) ) ) } ] ) );
 }
 
 // The block settings that hold every one of the named preset variants: { block: attr }.
-export function presetBlocks( db, variants ) {
-	const all = presetVariants( db, Object.fromEntries( variants.map( ( v ) => [ v, {} ] ) ) );
+export function presetBlocks( db, variants, schemaOf = blockSchema ) {
+	const all = presetVariants( db, Object.fromEntries( variants.map( ( v ) => [ v, {} ] ) ), schemaOf );
 	return Object.fromEntries( Object.entries( all ).filter( ( [ , x ] ) => x.variants.length === variants.length ).map( ( [ b, x ] ) => [ b, x.attr ] ) );
 }
 
@@ -163,16 +168,16 @@ function liftOf( { presets, variant, reads, id, snapshot } ) {
 // ref; reads: readDraft's result; rawSnapshot/snapshot: the client's theme snapshot (raw, normalised); writes: Fill's writes;
 // mounts: lib/fill-mount-version.mjs::mountVersions (the preset a draft mount names), which wins over matching the look: a node
 // mounted with a version the snapshot carries takes that preset and drops only the per-instance values equal to the preset's;
-// a version the snapshot does not carry is left unwritten and noted.
+// a version the snapshot does not carry is left unwritten and noted. schemaOf: as presetVariants.
 // Returns { writes (the list without the dropped ones, plus the variant writes), notes, lifted (the nodes whose painted
 // variant holds the draft's hover transform: dropPresetMotion's input) }.
-export function presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot, writes, db, mounts = null } ) {
+export function presetWrites( { nodes, flat, refOf, reads, rawSnapshot, snapshot, writes, db, mounts = null, schemaOf = blockSchema } ) {
 	const presets = rawSnapshot?.settings?.custom?.buttonPresets;
 	const out = { writes, notes: [], lifted: [] };
 	if ( ! presets || ! Object.keys( presets ).length ) {
 		return out;
 	}
-	const blocks = presetVariants( db, presets );
+	const blocks = presetVariants( db, presets, schemaOf );
 	for ( const n of nodes ) {
 		const attr = blocks[ n.name ]?.attr;
 		const target = n.targets.find( ( t ) => '' === t.slot );

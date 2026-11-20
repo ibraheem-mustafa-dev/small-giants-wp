@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "\t\tObject.assign( slots, fieldRead.slots );\n",
+		"replace": "",
+		"why": "the part's slots never reach the node"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "const field = Object.keys( map ).find( ( f ) => map[ f ] === part.key );",
+		"replace": "const field = Object.keys( map )[ 0 ] ?? fields[ 0 ].name;",
+		"why": "the first printed field is the part, whatever it is"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "rows.filter( ( x ) => part.elements.includes( x.css_element ) )",
+		"replace": "rows.filter( ( x ) => x.css_element )",
+		"why": "every part's settings are read at the date element"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) && ( out.slots[ slot ] = finder( at ) );",
+		"replace": "( out.slots[ slot ?? '' ] = finder( at ) );",
+		"why": "a setting with no calibrated slot is read at the root"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "! Object.keys( out.slots ).length && out.notes.push(",
+		"replace": "false && out.notes.push(",
+		"why": "a part with no calibrated slot says nothing"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "if ( ! entry || ! db || ! factRecord ) {",
+		"replace": "if ( ! db || ! factRecord ) {",
+		"why": "a block the rule does not list is read as a listed one"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "{ \"block\": \"sgs/timeline\", \"parts\": [ { \"key\": \"date\", \"elements\": [ \"date\", \"dateRing\" ] } ] }",
+		"replace": "{ \"block\": \"sgs/timeline\", \"parts\": [ { \"key\": \"title\", \"elements\": [ \"title\" ] } ] }",
+		"why": "the rule reads the title part, not the date"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "( ! p.key || ! ( p.elements || [] ).length || missing.length ) &&",
+		"replace": "( ! p.key || missing.length ) &&",
+		"why": "a part with no css_elements passes the check"
+	}
+]

@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/skeleton-wrapper-link-slot.mjs",
+		"find": "if ( 1 !== nodes.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a link round several logos is read for the first"
+	},
+	{
+		"file": "lib/skeleton-wrapper-link-slot.mjs",
+		"find": "} else if ( ! [ calibrated?.slot, ...( calibrated?.slots || [] ) ].includes( entry.slot ) ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a slot the calibration never measured is written"
+	},
+	{
+		"file": "lib/skeleton-wrapper-link-slot.mjs",
+		"find": "const nodes = ( built || [] ).filter( ( n ) => n?.name === entry.block );",
+		"replace": "const nodes = ( built || [] );",
+		"why": "every block built under the link takes the slot"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const link = wrapperLinkSlot( { rule: R[ r.rule ], e, built, calSettings, finder } );",
+		"replace": "const link = { notes: [] };",
+		"why": "the writer never reads the dissolved link"
+	},
+	{
+		"file": "data/skeleton-decisions.json",
+		"find": "\"linkSlots\": [ { \"block\": \"sgs/responsive-logo\", \"setting\": \"width\", \"slot\": \".sgs-responsive-logo__link\" } ],",
+		"replace": "",
+		"why": "the rule's link slot is removed"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "( ! facts.attr( x.block, x.setting ) || ! /^\\.\\S/.test( x.slot || '' ) ) &&",
+		"replace": "( false ) &&",
+		"why": "a bad link slot entry passes the check"
+	}
+]

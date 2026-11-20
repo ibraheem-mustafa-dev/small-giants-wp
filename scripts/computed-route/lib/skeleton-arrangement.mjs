@@ -10,10 +10,20 @@ export function inOneRow( items, box ) {
 	return boxes.length >= 2 && boxes.every( Boolean ) && boxes.every( ( b, i ) => ( ! i || b.x >= boxes[ i - 1 ].x + boxes[ i - 1 ].w - 1 ) && b.y < boxes[ 0 ].y + boxes[ 0 ].h && boxes[ 0 ].y < b.y + b.h );
 }
 
-// The setting a listed block takes for its items' arrangement: { [setting]: value } when the draft sets them in one row, else {}.
-// rule: `rules.listArrangement` ({ blocks: [ { block, setting, value } ] }); items: the draft's repeated units under the block's
-// element; box: lib/skeleton-model.mjs::inventoryModel's `box`.
+// Whether the items are all one width (within a pixel): a row of equal columns, not a row of items sized by their words.
+export function equalWidths( items, box ) {
+	const widths = items.map( ( it ) => box( it )?.w );
+	return widths.length >= 2 && widths.every( ( w ) => Number.isFinite( w ) && Math.abs( w - widths[ 0 ] ) <= 1 );
+}
+
+// The settings a listed block takes for its items' arrangement: { [setting]: value } when the draft sets them in one row, else {};
+// with the entry's `equalShare` ({ setting, value }) also when that row is of equal columns.
+// rule: `rules.listArrangement` ({ blocks: [ { block, setting, value, equalShare? } ] }); items: the draft's repeated units under the
+// block's element; box: lib/skeleton-model.mjs::inventoryModel's `box`.
 export function listArrangement( { rule, block, items, box } ) {
 	const hit = ( rule?.blocks || [] ).find( ( b ) => b.block === block );
-	return hit && inOneRow( items, box ) ? { [ hit.setting ]: hit.value } : {};
+	if ( ! hit || ! inOneRow( items, box ) ) {
+		return {};
+	}
+	return { [ hit.setting ]: hit.value, ...( hit.equalShare && equalWidths( items, box ) ? { [ hit.equalShare.setting ]: hit.equalShare.value } : {} ) };
 }

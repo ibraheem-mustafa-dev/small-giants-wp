@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": ".filter( ( p ) => ! backdrop.includes( p ) );",
-		"replace": ";",
+		"find": "( p ) => ! backdrop.includes( p ) && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );",
+		"replace": "( p ) => ! collage.layerOf.has( p.key ) && ! inHeading( p ) );",
 		"why": "a backdrop picture would still make the hero the split hero"
 	},
 	{
