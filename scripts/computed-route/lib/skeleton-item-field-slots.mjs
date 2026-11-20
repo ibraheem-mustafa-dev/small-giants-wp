@@ -31,11 +31,12 @@ export function itemFieldSlots( { rule, db, block, rootKey, inventory, factRecor
 			out.notes.push( `no element of the draft's first entry prints the ${ part.key } field, so its part's look is not read` );
 			continue;
 		}
+		let read = 0;
 		for ( const r of rows.filter( ( x ) => part.elements.includes( x.css_element ) ) ) {
 			const slot = calibrated[ r.attr_name ]?.slot;
-			'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) && ( out.slots[ slot ] = finder( at ) );
+			'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) && ( out.slots[ slot ] = finder( at ), read++ );
 		}
-		! Object.keys( out.slots ).length && out.notes.push( `the calibration has no element slot for the ${ part.key } part's settings, so the part's look is not read` );
+		! read && out.notes.push( `the calibration has no element slot for the ${ part.key } part's settings, so the part's look is not read` );
 	}
 	return out;
 }
