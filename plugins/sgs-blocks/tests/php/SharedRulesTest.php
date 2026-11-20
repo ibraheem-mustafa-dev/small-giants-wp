@@ -47,7 +47,7 @@ final class SharedRulesTest extends TestCase {
 	 * Every `<style>` tag is handed to the collector, as the render_block filter does.
 	 */
 	private static function render_instance( string $uid, string $colour, string $before = '', string $after = '' ): string {
-		$shared = sgs_shared_rules( 'sgs-nav-hover', self::hover_rule( $colour ) );
+		$shared = sgs_shared_rules( 'sgs-state-colour', self::hover_rule( $colour ) );
 		$css    = $before . $shared['css'] . $after;
 		$tags   = sgs_style_tags( $css, $uid );
 		preg_match_all( '#<style\b[^>]*>(.*?)</style>#s', $tags, $m );
@@ -68,7 +68,7 @@ final class SharedRulesTest extends TestCase {
 
 		$this->assertSame( $a, $b );
 		$this->assertSame( $a, $c );
-		$this->assertMatchesRegularExpression( '/^sgs-nav-hover-[0-9a-f]{8}$/', $a );
+		$this->assertMatchesRegularExpression( '/^sgs-state-colour-[0-9a-f]{8}$/', $a );
 		$this->assertSame( 1, substr_count( self::page_css(), ':hover{color:red}' ), 'one hover rule on the page for three instances' );
 		$this->assertSame( 3, substr_count( self::page_css(), '{gap:' ), 'each instance keeps its own rule' );
 	}
@@ -103,7 +103,7 @@ final class SharedRulesTest extends TestCase {
 	}
 
 	public function test_the_id_goes_on_the_first_tag_of_the_blocks_own_css(): void {
-		$shared = sgs_shared_rules( 'sgs-nav-hover', self::hover_rule( 'red' ) );
+		$shared = sgs_shared_rules( 'sgs-state-colour', self::hover_rule( 'red' ) );
 		$tags   = sgs_style_tags( $shared['css'] . '.a{b:c}', 'sgs-x-12345678' );
 		$this->assertSame( 1, substr_count( $tags, 'id="sgs-x-12345678"' ) );
 		$this->assertMatchesRegularExpression( '#<style id="sgs-x-12345678">\.a\{b:c\}</style>#', $tags );
@@ -111,15 +111,27 @@ final class SharedRulesTest extends TestCase {
 		$this->assertSame( '', sgs_style_tags( '', 'sgs-x-12345678' ) );
 	}
 
+	public function test_the_seed_changes_the_class_but_not_the_rules(): void {
+		$plain  = sgs_shared_rules( 'sgs-band-width', self::hover_rule( 'red' ) );
+		$seeded = sgs_shared_rules( 'sgs-band-width', self::hover_rule( 'red' ), 'max-width:1px' );
+		$again  = sgs_shared_rules( 'sgs-band-width', self::hover_rule( 'red' ), 'max-width:1px' );
+		$other  = sgs_shared_rules( 'sgs-band-width', self::hover_rule( 'red' ), 'max-width:2px' );
+
+		$this->assertNotSame( $plain['class'], $seeded['class'] );
+		$this->assertSame( $seeded['class'], $again['class'] );
+		$this->assertNotSame( $seeded['class'], $other['class'] );
+		$this->assertSame( str_replace( $plain['class'], 'X', $plain['css'] ), str_replace( $seeded['class'], 'X', $seeded['css'] ) );
+	}
+
 	public function test_nothing_to_print_gives_no_class(): void {
-		$none = sgs_shared_rules( 'sgs-nav-hover', static fn ( string $class ): string => '' );
+		$none = sgs_shared_rules( 'sgs-state-colour', static fn ( string $class ): string => '' );
 		$this->assertSame( array( 'class' => '', 'css' => '' ), $none );
 	}
 
 	public function test_the_minted_classes_are_never_taken_for_a_blocks_own_uid(): void {
-		$shared = sgs_shared_rules( 'sgs-nav-hover', self::hover_rule( 'red' ) );
+		$shared = sgs_shared_rules( 'sgs-state-colour', self::hover_rule( 'red' ) );
 		$this->assertTrue( \SGS\Blocks\sgs_scope_class_is_minted( $shared['class'] ) );
-		foreach ( array( 'sgs-band-width', 'sgs-state-colour', 'sgs-text-hover' ) as $prefix ) {
+		foreach ( array( 'sgs-band-width', 'sgs-band-cap', 'sgs-band-pad', 'sgs-band-min', 'sgs-band-layout', 'sgs-state-colour', 'sgs-text-hover' ) as $prefix ) {
 			$class = sgs_shared_rules( $prefix, self::hover_rule( 'red' ) )['class'];
 			$this->assertTrue( \SGS\Blocks\sgs_scope_class_is_minted( $class ), $prefix );
 			$this->assertSame(

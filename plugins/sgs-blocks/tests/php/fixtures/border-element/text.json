@@ -58,16 +58,18 @@
         " || .wp-block-sgs-text.sgs-text-UID": [
             "border-color:var(--wp--preset--color--primary,currentColor)",
             "border-style:solid",
-            "border-width:2px 2px 2px 2px",
+            "border-width:2px 2px 2px 2px"
+        ],
+        " || .wp-block-sgs-text.sgs-text-hover-UID": [
             "transition:color 300ms ease,background-color 300ms ease,box-shadow 300ms ease"
         ],
-        " || .wp-block-sgs-text.sgs-text-UID:focus-visible": [
+        " || .wp-block-sgs-text.sgs-text-hover-UID:focus-visible": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        " || :where(:root:not(.sgs-touch-input)) .wp-block-sgs-text.sgs-text-UID:hover": [
+        " || :where(:root:not(.sgs-touch-input)) .wp-block-sgs-text.sgs-text-hover-UID:hover": [
             "border-color:var(--wp--preset--color--secondary,currentColor)"
         ],
-        "@media (prefers-reduced-motion:reduce) || .wp-block-sgs-text.sgs-text-UID": [
+        "@media (prefers-reduced-motion:reduce) || .wp-block-sgs-text.sgs-text-hover-UID": [
             "transform:none !important",
             "transition:none !important"
         ]
