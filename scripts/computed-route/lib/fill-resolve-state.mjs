@@ -191,27 +191,67 @@ function flexLayoutDefault( st, rec, cal, prop, slot, w ) {
 // shows, or at the top of the surface what the theme gives the page; a theme element style (a heading's family and
 // weight) beats the parent. ownFontPx( width ): the element's own font size.
 export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
+	const at = baselineSourceFn( st, rec, cal, prop, ownFontPx );
+	return ( slot, w ) => at( slot, w ).value;
+}
+
+// The names a baseline's source takes: the block's own stylesheet paint, the theme's style for the element, the node's own
+// element (for a part), the parent's shown value, the painting setting's flex default, the calibration fixture's unstyled
+// value, the calibrated default paint, and the page gutter (lib/fill-gutter.mjs::gutterBaseline's substitute).
+export const BASELINE_SOURCES = [ 'block-own', 'theme', 'own-element', 'parent', 'flex-default', 'fixture-unstyled', 'calibrated-default', 'page-gutter' ];
+
+// baselineFn with the source of each answer: ( slot, width ) => { value, source }, `source` one of BASELINE_SOURCES, or null
+// where nothing gave a value.
+export function baselineSourceFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 	const page = st.page( tagOf( st, rec, cal ) );
+	const first = ( steps ) => {
+		let value;
+		for ( const [ source, get ] of steps ) {
+			value = get();
+			if ( null !== value && undefined !== value ) {
+				return { value, source };
+			}
+		}
+		return { value, source: null };
+	};
 	return ( slot, w ) => {
 		if ( INHERITED.includes( prop ) && ! slot.includes( '::' ) ) {
 			const fs = ownFontPx( w );
 			const own = ownPaint( cal, slot, w, prop, fs ) ?? partOwnPaint( cal, slot, w, prop, fs );
 			if ( undefined !== own ) {
-				return own;
+				return { value: own, source: 'block-own' };
 			}
 			if ( page.own( prop ) ) {
-				return page.value( prop, w, fs );
+				return { value: page.value( prop, w, fs ), source: 'theme' };
 			}
-			const here = '' === slot ? undefined : shownAt( st, rec.index, prop, w, fs );
-			return here ?? inheritedFrom( st, rec, prop, w, fs ) ?? page.value( prop, w, fs ) ?? defaultPaint( cal, slot, w, prop );
+			return first( [
+				[ 'own-element', () => ( '' === slot ? undefined : shownAt( st, rec.index, prop, w, fs ) ) ],
+				[ 'parent', () => inheritedFrom( st, rec, prop, w, fs ) ],
+				[ 'theme', () => page.value( prop, w, fs ) ],
+				[ 'calibrated-default', () => defaultPaint( cal, slot, w, prop ) ],
+			] );
 		}
 		const flexDefault = FLEX_ONLY.includes( prop ) ? flexLayoutDefault( st, rec, cal, prop, slot, w ) : undefined;
 		if ( undefined !== flexDefault ) {
-			return flexDefault;
+			return { value: flexDefault, source: 'flex-default' };
 		}
 		// A property the calibration fixture switched on (lib/fill-fixture.mjs) is compared with its unstyled value.
-		return unstyledBaseline( st, rec.name, cal, blockSchema( rec.name ), slot, prop ) ?? defaultPaint( cal, slot, w, prop );
+		return first( [
+			[ 'fixture-unstyled', () => unstyledBaseline( st, rec.name, cal, blockSchema( rec.name ), slot, prop ) ],
+			[ 'calibrated-default', () => defaultPaint( cal, slot, w, prop ) ],
+		] );
 	};
+}
+
+// Which baseline made a draft value equal, for a settled `equal` row: one source name where every width agrees, else
+// { width: name }. `sourceAt` is baselineSourceFn's function and `usedAt` the baseline the resolver was given: where the two
+// differ the gutter baseline substituted the page gutter.
+export function equalBaseline( sourceAt, usedAt, slot, widths ) {
+	const names = widths.map( ( w ) => {
+		const s = sourceAt( slot, w );
+		return usedAt( slot, w ) !== s.value ? 'page-gutter' : s.source ?? 'none';
+	} );
+	return new Set( names ).size <= 1 ? names[ 0 ] ?? null : Object.fromEntries( widths.map( ( w, i ) => [ w, names[ i ] ] ) );
 }
 
 // The divergence ledger over one property's draft values (R-47-8): a value entry replaces the draft at its widths, a rule

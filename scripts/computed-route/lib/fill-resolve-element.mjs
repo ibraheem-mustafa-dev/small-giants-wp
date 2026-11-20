@@ -7,7 +7,7 @@ import { usedValueTarget } from './solve-rows.mjs';
 import { PROPS, READ_WIDTHS, TIE_PROPS } from './fill-read.mjs';
 import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
-import { INHERITED, resolveProperty, notPainted, gapPaintsNothing, flexOnlyPaintsNothing } from './fill-prop.mjs';
+import { INHERITED, resolveProperty, notPainted, gapPaintsNothing, flexOnlyPaintsNothing, calibratedContext } from './fill-prop.mjs';
 import { unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor, carriedFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
@@ -19,7 +19,7 @@ import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
 import { gutterBaseline } from './fill-gutter.mjs';
 import { BOX_LOOK, parentDrawsBox } from './fill-shared-element.mjs';
-import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
+import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, baselineSourceFn, equalBaseline, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
 // Whether a resolver result writes only settings calibration measured painting `slot` itself (not ones that only reach it).
 const writesOwnSlot = ( res, cal, slot ) => 'written' === res?.status && res.writes.length > 0 && res.writes.every( ( w ) => {
@@ -299,7 +299,14 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		const stated = 'gap' === res.status && 'no-setting' === res.gap && ( ! eq || 'gap' === eq.status ) && Object.keys( notPlainDeclared ).length ? { ...draft, ...notPlainDeclared } : null;
 		( stated ? [] : notPlain ).forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		if ( 'equal' === res.status || 'equal' === eq?.status ) {
-			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ), reason: 'equal', detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
+			// Which baseline made it equal (lib/fill-resolve-state.mjs::equalBaseline), and for a calibrated default the context
+			// calibration measured it in (lib/fill-prop.mjs::calibratedContext). An equivalent setting's verdict names itself.
+			const widths = Object.keys( draft ).map( Number );
+			const at = res.slot ?? slot;
+			const baseline = 'equal' === res.status ? equalBaseline( baselineSourceFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), input.baseline, at, widths ) : 'equivalent';
+			const calibrated = 'calibrated-default' === baseline ? widths[ 0 ] : 'object' === typeof baseline && null !== baseline ? widths.find( ( w ) => 'calibrated-default' === baseline[ w ] ) : undefined;
+			const measured = undefined !== calibrated ? calibratedContext( cal, at, calibrated ) : null;
+			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths, reason: 'equal', baseline, ...( measured ? { measured } : {} ), detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
 			const ran = 'no-setting' === res.gap ? checksRan( { layer, alternates, res, eq } ) : {};

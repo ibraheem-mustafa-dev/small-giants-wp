@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\t\t\t\treturn { value: page.value( prop, w, fs ), source: 'theme' };",
+		"replace": "\t\t\t\treturn { value: page.value( prop, w, fs ), source: 'calibrated-default' };",
+		"why": "the theme's own style is named the calibrated default"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\t\t\t\t[ 'parent', () => inheritedFrom( st, rec, prop, w, fs ) ],",
+		"replace": "\t\t\t\t[ 'calibrated-default', () => inheritedFrom( st, rec, prop, w, fs ) ],",
+		"why": "the parent's value is named the calibrated default"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\t\t\t\t[ 'theme', () => page.value( prop, w, fs ) ],",
+		"replace": "\t\t\t\t[ 'parent', () => page.value( prop, w, fs ) ],",
+		"why": "the theme's fallback value is named the parent"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\t\t\treturn { value: flexDefault, source: 'flex-default' };",
+		"replace": "\t\t\treturn { value: flexDefault, source: 'calibrated-default' };",
+		"why": "the flex default is named the calibrated default"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\t\treturn { value, source: null };",
+		"replace": "\t\treturn { value, source: 'calibrated-default' };",
+		"why": "a property nothing holds is named the calibrated default"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\t\treturn usedAt( slot, w ) !== s.value ? 'page-gutter' : s.source ?? 'none';",
+		"replace": "\t\treturn s.source ?? 'none';",
+		"why": "the gutter's substitute is named after the baseline it replaced"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\treturn new Set( names ).size <= 1 ? names[ 0 ] ?? null : Object.fromEntries( widths.map( ( w, i ) => [ w, names[ i ] ] ) );",
+		"replace": "\treturn names[ 0 ] ?? null;",
+		"why": "widths that differ are given the first width's name"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\treturn ( slot, w ) => at( slot, w ).value;",
+		"replace": "\treturn ( slot, w ) => at( slot, w ).source;",
+		"why": "baselineFn returns the source, not the value"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "reason: 'equal', baseline, ...( measured ? { measured } : {} ), detail:",
+		"replace": "reason: 'equal', ...( measured ? { measured } : {} ), detail:",
+		"why": "the equal row carries no baseline"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "reason: 'equal', baseline, ...( measured ? { measured } : {} ), detail:",
+		"replace": "reason: 'equal', baseline, detail:",
+		"why": "the calibrated default's measured context is dropped"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const calibrated = 'calibrated-default' === baseline ? widths[ 0 ] :",
+		"replace": "const calibrated = 'string' === typeof baseline ? widths[ 0 ] :",
+		"why": "a row settled against the parent carries a measured context"
+	}
+]
