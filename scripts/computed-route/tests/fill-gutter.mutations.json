@@ -1,0 +1,98 @@
+[
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "layer || '' !== target.slot ? baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ) : gutterBaseline(",
+		"replace": "true ? baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ) : gutterBaseline(",
+		"why": "Fill never asks for the gutter"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "if ( ! SIDE_PROPS.includes( prop ) || ! noSidePadding( allDrafts ) ) {",
+		"replace": "if ( true ) {",
+		"why": "the gutter baseline never applies"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "0 === px( draft?.[ w ] )",
+		"replace": "true",
+		"why": "a side padding of another value is also judged against the gutter"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "return null !== g && 0 !== g ? `${ g }px` : base( slot, w );",
+		"replace": "return base( slot, w );",
+		"why": "the baseline is the calibrated 0px"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "'' === slot && 0 === px",
+		"replace": "0 === px",
+		"why": "the gutter is the baseline of every slot"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "if ( ! isObj( gutter ) || ! hasBand( st, node, rec.name, verticalPadded( allDrafts ), pendingWidth( st, rec, cal ) ) ) {",
+		"replace": "if ( ! isObj( gutter ) ) {",
+		"why": "a node with no band pays the gutter"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "if ( hasBand( st, st.flat[ i ], st.nodes[ i ].name, ancestorVertical( st, i ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a nested node pays the gutter again"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "ancestorVertical( st, i ) ) ) {",
+		"replace": "false ) ) {",
+		"why": "an ancestor's own vertical padding makes no band"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "return width.some( ( v ) => 'full' !== v ) || padded || draftVertical;",
+		"replace": "return true;",
+		"why": "every block of a container kind has a band"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "return width.some( ( v ) => 'full' !== v ) || padded || draftVertical;",
+		"replace": "return width.some( ( v ) => 'full' !== v ) || padded;",
+		"why": "the draft's vertical padding makes no band"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "const width = own.length ? own : pending?.length ? pending : b.dflt;",
+		"replace": "const width = own.length ? own : pending?.length ? pending : [];",
+		"why": "the block's default content width is ignored"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "names.has( 'contentWidth' ) && names.has( 'padding' ) ? { dflt } : null",
+		"replace": "{ dflt }",
+		"why": "a block with no content width or padding setting is banded"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "|| ! noSidePadding( allDrafts ) ) {",
+		"replace": ") {",
+		"why": "a node with a side padding at another width is judged against the gutter"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "Object.values( allDrafts?.[ p ] ?? {} ).every( ( v ) => 0 === px( v ) ) );",
+		"replace": "true );",
+		"why": "every draft counts as having no side padding"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "return tiers( st.gutterPlans.get( rec.index ) );",
+		"replace": "return null;",
+		"why": "the content width Fill is about to write is ignored, so a wrapper it will write as full pays the gutter"
+	},
+	{
+		"file": "lib/fill-gutter.mjs",
+		"find": "const width = own.length ? own : pending?.length ? pending : b.dflt;",
+		"replace": "const width = own.length ? own : b.dflt;",
+		"why": "the pending width is not used"
+	}
+]

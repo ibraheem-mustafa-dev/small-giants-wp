@@ -17,6 +17,7 @@ import { samePaint } from './css-equivalence/tolerance.mjs';
 import { fillLayerBox } from './fill-layer-box.mjs';
 import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
+import { gutterBaseline } from './fill-gutter.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
 // Whether a resolver result writes only settings calibration measured painting `slot` itself (not ones that only reach it).
@@ -277,7 +278,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		}
 		const fluid = fluidSamples( st, target, layer, prop );
 		const alternates = layer ? [] : alternateSlots( cal, prop, draft, rec.targets.map( ( t ) => t.slot ), target.slot );
-		const input = { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : { ...agreedDeclared( st, target, prop, draft, fontPx ), ...normalDeclared }, contextAt };
+		const input = { node: st.flat[ rec.index ], block: rec.name, prop, draft, baseline: layer || '' !== target.slot ? baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ) : gutterBaseline( st, rec, prop, draft, allDrafts, baselineFn( st, rec, cal, prop, ( w ) => fontPx[ w ] ), cal ), slots: [ slot, ...alternates.filter( ( s ) => s !== slot ) ], calibration: cal, db: st.db, snapshot: st.snapshot, log: st.snaps, fontPx, siblings: allDrafts, fluid, declaredFluid: layer ? null : declaredFluid( st, target, prop, draft ), declared: layer ? {} : { ...agreedDeclared( st, target, prop, draft, fontPx ), ...normalDeclared }, contextAt };
 		// A path the block's fixture renders in a state at rest (target.state: the open unit's, lib/skeleton-child-slots.mjs::
 		// unitSlots) is resolved in that state first, so a setting of the state painting that path itself takes the read (an
 		// accordion's open shadow); otherwise (no setting of the state, or one that only reaches the path, such as the open

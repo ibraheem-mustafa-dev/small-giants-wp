@@ -36,7 +36,7 @@
 	{ "file": "lib/fill-band.mjs", "find": "|| undefined !== node.attributes?.[ band.attr ] ) {", "replace": ") {", "why": "a band value the node already holds is overwritten" },
 	{ "file": "lib/fill-band.mjs", "find": "const current = blockSchema( rec.name )?.[ band.attr ]?.default ?? {};", "replace": "const current = {};", "why": "the block's default band is not what the node renders" },
 	{ "file": "lib/fill-band.mjs", "find": "if ( attr !== band.attr ) {", "replace": "if ( ! attr ) {", "why": "a setting the resolver does not confirm is written" },
-	{ "file": "lib/fill-band.mjs", "find": "if ( ! Object.values( needs ).some( Boolean ) ) {\n\t\treturn null;", "replace": "if ( false ) {\n\t\treturn null;", "why": "a node with no evidence is judged" },
+	{ "file": "lib/fill-band.mjs", "find": "if ( ! Object.values( needs ).some( Boolean ) ) {\n\t\treturn { skip: true };", "replace": "if ( false ) {\n\t\treturn { skip: true };", "why": "a node with no evidence is judged" },
 	{ "file": "lib/fill-band.mjs", "find": "\t\treturn { attr: band.attr };\n\t}\n\tconst { before, after }", "replace": "\t\treturn null;\n\t}\n\tconst { before, after }", "why": "a held band is left unread" },
 	{ "file": "lib/fill-band.mjs", "find": "how: 'band', note: evidence } );", "replace": "how: 'resolve', note: evidence } );", "why": "the band write is not marked as the band pass's" },
 	{ "file": "lib/fill-band.mjs", "find": "const TIERS = [ [ 'desktop', [ 1440 ] ],", "replace": "const TIERS = [ [ 'desktop', [ 1440, 1920 ] ],", "why": "1920, read for lengths only, is judged" },

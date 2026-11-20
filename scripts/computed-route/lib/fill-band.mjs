@@ -176,15 +176,17 @@ export function themeSizes( rawSnapshot ) {
 	return { normal: px( layout.contentSize ), wide: px( layout.wideSize ) };
 }
 
-// Fill's band pass for one node: decides and writes the band setting from the draft's render. Returns { attr } when the
-// setting was judged (written or held), else null. st: Fill's state (lib/fill-resolve-state.mjs::makeState).
-export function fillBand( st, rec, ref, cal ) {
+// The band decision for one node, read-only: { skip: true } when the node has no band this pass judges, else { band, attr, needs,
+// evidence, notes, out } where `out` is bandValue's answer ({ value } to write, { held } when the node's own value already gives the
+// band, { conflict }) and `notes` the lines fillBand records. A node whose own band is still to be written is asked this before
+// its other settings (lib/fill-gutter.mjs: whether it has a band at all).
+export function bandPlan( st, rec, ref, cal ) {
 	const band = bandSetting( st.db, rec.name, cal );
 	const node = st.flat[ rec.index ];
 	const root = rec.targets.find( ( t ) => '' === t.slot );
 	// A band a finder reads is the generic path's; a band setting the node already holds was decided before Fill.
 	if ( ! band || ! root || ! rec.children?.length || rec.targets.some( ( t ) => LOOSE( t.slot ) === LOOSE( band.slot ) ) || undefined !== node.attributes?.[ band.attr ] ) {
-		return null;
+		return { skip: true };
 	}
 	const kidTargets = rec.children.map( ( i ) => st.nodes[ i ]?.targets.find( ( t ) => '' === t.slot ) ).filter( Boolean );
 	// The wrappers the block dissolved are the root's real children: their boxes carry the cap, and the children they hold lie
@@ -200,7 +202,7 @@ export function fillBand( st, rec, ref, cal ) {
 		needs[ w ] = bandNeed( read( root ), [ ...wrappers, ...kidTargets.map( read ).map( ( k, i ) => k && { ...k, id: kidTargets[ i ].id } ) ], ( k ) => st.reads.declared?.[ w ]?.[ k.id ] );
 	}
 	if ( ! Object.values( needs ).some( Boolean ) ) {
-		return null;
+		return { skip: true };
 	}
 	const sizes = themeSizes( st.rawSnapshot );
 	// The node holds no value of its own, so it renders the block's default.
@@ -211,20 +213,35 @@ export function fillBand( st, rec, ref, cal ) {
 	const attr = probe.writes?.[ 0 ]?.attr;
 	const evidence = Object.entries( needs ).filter( ( [ , n ] ) => n ).map( ( [ w, n ] ) => `${ w }: ${ n.why }` ).join( '; ' );
 	if ( attr !== band.attr ) {
-		st.out.notes.push( `${ ref } ${ rec.name }: band ${ band.slot }: the resolver does not hold max-width there with ${ band.attr } (${ probe.gap ?? 'gap' }: ${ probe.detail ?? attr ?? '' }); not written` );
-		return null;
+		return { band, notes: [ `${ ref } ${ rec.name }: band ${ band.slot }: the resolver does not hold max-width there with ${ band.attr } (${ probe.gap ?? 'gap' }: ${ probe.detail ?? attr ?? '' }); not written` ], unresolved: true };
 	}
 	const format = ( n ) => {
 		const v = ask( n ).writes?.[ 0 ]?.value;
 		return ( v && 'object' === typeof v ? v.desktop : v ) ?? `${ round( n ) }px`;
 	};
 	const out = bandValue( needs, current, sizes, format );
+	return { band, needs, evidence, current, out };
+}
+
+// Fill's band pass for one node: decides and writes the band setting from the draft's render. Returns { attr } when the
+// setting was judged (written or held), else null. st: Fill's state (lib/fill-resolve-state.mjs::makeState).
+export function fillBand( st, rec, ref, cal ) {
+	const node = st.flat[ rec.index ];
+	const plan = bandPlan( st, rec, ref, cal );
+	if ( plan.skip ) {
+		return null;
+	}
+	const { band, needs, evidence, out } = plan;
+	if ( plan.unresolved ) {
+		st.out.notes.push( ...plan.notes );
+		return null;
+	}
 	if ( out.conflict ) {
 		st.out.notes.push( `${ ref } ${ rec.name }: band ${ band.slot } ${ band.attr }: ${ out.conflict } (${ evidence }); not written` );
 		return null;
 	}
 	if ( out.held ) {
-		st.out.notes.push( `${ ref } ${ rec.name }: band ${ band.slot } ${ band.attr }: ${ JSON.stringify( current ) } already gives the draft's band (${ evidence })` );
+		st.out.notes.push( `${ ref } ${ rec.name }: band ${ band.slot } ${ band.attr }: ${ JSON.stringify( plan.current ) } already gives the draft's band (${ evidence })` );
 		return { attr: band.attr };
 	}
 	const { before, after } = setAttr( node, { attr: band.attr, value: out.value, merge: 'replace' } );
