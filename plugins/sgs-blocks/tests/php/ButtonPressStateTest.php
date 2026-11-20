@@ -89,8 +89,8 @@ final class ButtonPressStateTest extends TestCase {
 		$this->assertStringContainsString( 'transform:var(--wp--custom--button-presets--primary--active-transform)', $decls, $css );
 		$this->assertStringContainsString( 'box-shadow:var(--wp--custom--button-presets--primary--active-shadow)', $decls, $css );
 		$this->assertStringContainsString( '--sgs-focus-under:var(--wp--custom--button-presets--primary--active-shadow)', $decls, 'the pressed shadow composes under the focus ring' );
-		// The press rule out-ranks the per-instance hover and focus-visible rules (0,3,0).
-		$this->assertMatchesRegularExpression( '/\.(sgs-btn-[0-9a-f]{8})\.\1\.sgs-button:active\{/', $css );
+		// The press rule out-ranks the per-instance hover and focus-visible rules (0,3,0): its marker class is doubled.
+		$this->assertMatchesRegularExpression( '/\.(sgs-btn-press-[0-9a-f]{8})\.\1\.sgs-button:active\{/', $css );
 	}
 
 	public function test_a_variant_without_its_own_token_takes_the_default_variant(): void {
