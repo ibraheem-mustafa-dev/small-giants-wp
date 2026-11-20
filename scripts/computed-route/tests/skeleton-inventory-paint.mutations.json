@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "\t\t\tv !== initial && ( resolved[ n ] = v );",
+		"replace": "\t\t\tresolved[ n ] = v;",
+		"why": "a paint property at its initial value is recorded on every element"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "\t\tfor ( const [ n, initial ] of Object.entries( paintInitial ) ) {",
+		"replace": "\t\tfor ( const [ n, initial ] of [] ) {",
+		"why": "no paint value is recorded"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t}",
+		"replace": "codeItemsOf.toString(), RESOLVED, {}, null ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t}",
+		"why": "the reader on a prepared page is not given the paint list or the data filter"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "'padding-bottom', 'padding-left', 'text-align' ];",
+		"replace": "'padding-bottom', 'padding-left' ];",
+		"why": "text alignment is not recorded"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "export const NOT_DRAFT_DATA = /^data-(?:dc|sc|sgs|inv)-/;",
+		"replace": "export const NOT_DRAFT_DATA = /^data-(?:dc|sc)-/;",
+		"why": "the route's and the reader's marks are kept as the draft's"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "...( Object.keys( data ).length ? { data } : {} ), box,",
+		"replace": "data, box,",
+		"why": "an element with no mark carries an empty data field"
+	}
+]

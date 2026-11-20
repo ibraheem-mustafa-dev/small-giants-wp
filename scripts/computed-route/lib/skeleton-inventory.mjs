@@ -19,7 +19,14 @@ export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // The computed values recorded per width (`resolved`, read by lib/element-facts.mjs): the inherited text properties, and the
 // sizes, corner radii and padding a rule compares with a number, whatever expression the draft wrote them with (a clamp(),
 // a var(), a calc()) and whatever the element inherits.
-export const RESOLVED = [ 'font-size', 'font-weight', 'letter-spacing', 'text-transform', 'line-height', 'width', 'height', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];
+export const RESOLVED = [ 'font-size', 'font-weight', 'letter-spacing', 'text-transform', 'line-height', 'width', 'height', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'text-align' ];
+// The paint a box shows, recorded in `resolved` beside those only where it differs from the value named here (the property's
+// initial value, which paints nothing): a background, a border side, a shadow, a width cap. An absent paint property in a
+// `resolved` read that holds `text-align` therefore means the box does not paint it (lib/skeleton-paint-conservation.mjs).
+export const PAINT_INITIAL = { 'background-color': 'rgba(0, 0, 0, 0)', 'background-image': 'none', 'border-top-width': '0px', 'border-right-width': '0px', 'border-bottom-width': '0px', 'border-left-width': '0px', 'box-shadow': 'none', 'max-width': 'none' };
+// The draft's own `data-*` marks kept per element as `data` (a reveal mark, a tilt mark), without the `data-` prefix; the
+// runtime's stamps, the route's own and this reader's working marks are not the draft's.
+export const NOT_DRAFT_DATA = /^data-(?:dc|sc|sgs|inv)-/;
 const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style' ];
 
 // In-page (self-contained: its source is sent to the page). Whether a sibling is, or holds at any depth, the root of another
@@ -93,7 +100,7 @@ export function codeItemsOf( e ) {
 	return once.length >= 2 ? once : null;
 }
 
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc, resolvedNames ] ) {
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc, resolvedNames, paintInitial = {}, notDraftData = null ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	// eslint-disable-next-line no-new-func
@@ -216,11 +223,16 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 		const items = codeItems( e );
 		const cs = getComputedStyle( e );
 		const resolved = Object.fromEntries( resolvedNames.map( ( n ) => [ n, cs.getPropertyValue( n ) ] ) );
+		for ( const [ n, initial ] of Object.entries( paintInitial ) ) {
+			const v = cs.getPropertyValue( n );
+			v !== initial && ( resolved[ n ] = v );
+		}
+		const data = notDraftData ? Object.fromEntries( [ ...e.attributes ].filter( ( a ) => a.name.startsWith( 'data-' ) && ! new RegExp( notDraftData ).test( a.name ) ).map( ( a ) => [ a.name.slice( 5 ), a.value ] ) ) : {};
 		const r = e.getBoundingClientRect();
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
 			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, allTextCap ),
-			...( items ? { codeItems: items } : {} ), srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, resolved, box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
+			...( items ? { codeItems: items } : {} ), srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, resolved, ...( Object.keys( data ).length ? { data } : {} ), box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
 	scrollTo( scrollWas[ 0 ], scrollWas[ 1 ] );
@@ -360,7 +372,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED ];
+		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source ];
 		const res = await page.evaluate( collect, args );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
@@ -400,7 +412,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED ];
+			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source ];
 			const res = await page.evaluate( collect, args );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );
