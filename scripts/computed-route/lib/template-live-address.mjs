@@ -2,7 +2,8 @@
 // The single-product template shows at a product's own address and the product archive at the shop page; WooCommerce sends an
 // empty basket's checkout to the basket, so a checkout walk's live context first adds a product to the basket (`live.prime`,
 // scripts/parity/lib/prime.mjs). The site run asks the live site once (liveFactsPhp, read-only: the basket it tries a product in
-// is WP-CLI's own, never saved, and emptied), then hands the addresses to site-run.mjs::liveAddress and the prime to Fill.
+// is WP-CLI's own and emptied, and its session is forgotten (WC_Session_Handler::forget_session) so WooCommerce's shutdown save
+// writes no woocommerce_sessions row), then hands the addresses to site-run.mjs::liveAddress and the prime to Fill.
 
 // A PHP single-quoted string literal.
 const phpString = ( s ) => `'${ String( s ).replace( /\\/g, '\\\\' ).replace( /'/g, "\\'" ) }'`;
@@ -97,6 +98,7 @@ if ( function_exists( 'wc_load_cart' ) ) {
 		}
 	}
 	wc_clear_notices();
+	if ( isset( WC()->session ) && method_exists( WC()->session, 'forget_session' ) ) { WC()->session->forget_session(); }
 }
 echo wp_json_encode( $sgs_out );
 `;

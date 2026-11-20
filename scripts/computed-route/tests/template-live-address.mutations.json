@@ -8,5 +8,7 @@
 	{ "file": "lib/template-live-address.mjs", "find": "id && ! out.includes( id ) && out.push( id );", "replace": "id && out.push( id );", "why": "a product named twice is listed twice" },
 	{ "file": "lib/template-live-address.mjs", "find": "const q = String( r ?? '' ).split( '?' )[ 1 ];", "replace": "const q = String( r ?? '' ).split( '?' )[ 0 ];", "why": "the draft route's query is not read" },
 	{ "file": "lib/template-live-address.mjs", "find": "\t\t\tWC()->cart->empty_cart();", "replace": "", "why": "the basket a product is tried in is not emptied" },
-	{ "file": "lib/template-live-address.mjs", "find": "${ productSlugs.map( phpString ).join( ', ' ) }", "replace": "${ productSlugs.map( ( s ) => `'${ s }'` ).join( ', ' ) }", "why": "a product slug is not escaped" }
+	{ "file": "lib/template-live-address.mjs", "find": "${ productSlugs.map( phpString ).join( ', ' ) }", "replace": "${ productSlugs.map( ( s ) => `'${ s }'` ).join( ', ' ) }", "why": "a product slug is not escaped" },
+	{ "file": "lib/template-live-address.mjs", "find": "\n\tif ( isset( WC()->session ) && method_exists( WC()->session, 'forget_session' ) ) { WC()->session->forget_session(); }", "replace": "", "why": "the basket's session is left to be saved at shutdown, a woocommerce_sessions row on the live site" },
+	{ "file": "lib/template-live-address.mjs", "find": "if ( isset( WC()->session ) && method_exists( WC()->session, 'forget_session' ) ) {", "replace": "if ( isset( WC()->session ) ) {", "why": "a session handler without forget_session is called anyway and the run fatals" }
 ]
