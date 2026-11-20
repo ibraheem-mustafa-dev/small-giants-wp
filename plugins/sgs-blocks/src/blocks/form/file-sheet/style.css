@@ -1,0 +1,180 @@
+/**
+ * SGS form file upload zone (sgs/form-field-file; handle sgs-form-file-style, after the field sheet it depends on).
+ */
+
+/* ----------------------------------------------------------------
+   8. File upload
+   ---------------------------------------------------------------- */
+
+.sgs-form-field__file-zone {
+	position: relative;
+}
+
+.sgs-form-field__file-input {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	cursor: pointer;
+	min-height: 44px;
+	z-index: 1;
+}
+
+/* The native look (zoneStyle 'native'): the file input is the visible control and takes the form's
+   field settings through its sgs-form-field__input class. Only the dashed border is this look's own
+   default; a form-level border style, the file-label colours and the field settings all outrank it. */
+.sgs-form-field__file-zone--native .sgs-form-field__file-input {
+	position: static;
+	opacity: 1;
+	width: 100%;
+	box-sizing: border-box;
+	z-index: auto;
+	border-style: dashed;
+}
+
+.sgs-form-field__file-label {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border-style: dashed;
+	border-color: var(--wp--preset--color--border, #ccc);
+	cursor: pointer;
+	transition: border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
+}
+
+:where(.sgs-form-field__file-label) {
+	gap: 0.5rem;
+	padding: 2rem;
+	border-width: 2px;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	text-align: center;
+}
+
+/* An upload field set to the row layout: the icon, then the prompt and hint stacked beside it. */
+.sgs-form-field__file-label--row {
+	flex-direction: row;
+}
+
+:where(.sgs-form-field__file-label--row) {
+	gap: 1rem;
+	text-align: start;
+}
+
+.sgs-form-field__file-text {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+:where(.sgs-form-field__file-text) {
+	gap: 0.125rem;
+}
+
+/* The upload zone's icon holder; its size, fill, colour and radius are form settings. */
+.sgs-form-field__file-icon {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Hover border/background colours are client-controllable
+   (fileLabelBorderColour/Hover, fileLabelBackgroundColour/Hover) via
+   sgs_emit_state_colour_css() in render.php, emitted at real specificity so
+   it wins once a client sets a value. The file input covers the label, so the hover keys on the zone. The rule below is the DEFAULT look, at (0,4,0) so it outranks the panel variant's resting colours (0,2,0) and stays below the scoped emitter (0,5,0),
+   so an unset attribute still shows this look. */
+.sgs-form-field__file-zone:not(.sgs-form-field__file-zone--native):hover .sgs-form-field__file-label {
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
+}
+
+:where(.sgs-form-field__file-hint) {
+	font-size: var(--wp--preset--font-size--x-small, 0.8125rem);
+}
+
+:where(.sgs-form-field__file-hint) {
+	color: var(--wp--preset--color--text-muted, #555);
+}
+
+/* The panel look (zoneStyle 'panel'): a quiet 1px dashed panel on the surface
+   colour holding the prompt, the help line and a Choose file cue; the size
+   limit stays for screen readers. The whole panel is the file input's target. */
+.sgs-form-field__file-zone--panel .sgs-form-field__file-label {
+	border-color: var(--wp--preset--color--border-strong, var(--wp--preset--color--border, #ccc));
+	background-color: var(--wp--preset--color--surface-alt, #fff);
+}
+
+:where(.sgs-form-field__file-zone--panel .sgs-form-field__file-label) {
+	gap: 8px;
+	padding: 40px 20px;
+	border-width: 1px;
+	border-radius: 0;
+}
+
+.sgs-form-field__file-zone--panel .sgs-form-field__file-hint {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.sgs-form-field__file-zone--panel .sgs-form-field__help {
+	margin: 0;
+}
+
+:where(.sgs-form-field__file-zone--panel .sgs-form-field__help) {
+	font-size: 13.5px;
+	line-height: 1.5;
+}
+
+:where(.sgs-form-field__file-button) {
+	display: inline-flex;
+	align-items: center;
+	margin-top: 6px;
+	border: 1px solid currentColor;
+	color: var(--wp--preset--color--text, #1a202c);
+}
+
+:where(.sgs-form-field__file-button) {
+	padding: 10px 20px;
+	font-size: 12.5px;
+	line-height: 1.5;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+:where(.sgs-form-file__progress) {
+	padding: 0.75rem;
+	color: var(--wp--preset--color--text-muted, #555);
+}
+
+:where(.sgs-form-file__progress) {
+	text-align: center;
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+}
+
+.sgs-form-file__preview {
+	padding: 0.75rem;
+	background-color: var(--wp--preset--color--surface-alt, #f5f7f7);
+	border-radius: var(--wp--custom--border-radius--small, 4px);
+}
+
+:where(.sgs-form-file__preview) {
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+}
+
+:where(.sgs-form-file__error) {
+	color: var(--sgs-error-text, #991b1b);
+}
+
+/* A long unbroken file name wraps inside its box instead of stretching the grid track. */
+.sgs-form-file__preview {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.sgs-form-file__name,
+.sgs-form-file__error {
+	overflow-wrap: anywhere;
+}

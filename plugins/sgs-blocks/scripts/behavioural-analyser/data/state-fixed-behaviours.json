@@ -1097,67 +1097,67 @@
    "reason": "the review card Edit button's hover fill: fixed surface tint, no setting"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ".sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ".sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ".sgs-form-field--option-card .sgs-form-field__option input[type=\"checkbox\"]:checked",
    "reason": "the ticked-box default (theme primary); the boxColourChecked setting overrides it through the field's own scoped :checked rule printed by form-field-checkbox/render.php, so the stylesheet rule is the resting default, not a missing setting."
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ".sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ".sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ".sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/tiles-sheet/style.css",
    "selector": ".sgs-form-field--tiles-check-corner .sgs-form-tile:has(input:checked) .sgs-form-tile__check",
    "reason": "fixed paint, no setting: the selected tile's badge shows with the tile's checked input; the badge placement is the tiles check-position setting, the checked state is only the trigger"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/tiles-sheet/style.css",
    "selector": ".sgs-form-field--tiles-check-inline-start .sgs-form-tile:has(input:checked) .sgs-form-tile__check",
    "reason": "fixed paint, no setting: the selected tile's badge shows with the tile's checked input; the badge placement is the tiles check-position setting, the checked state is only the trigger"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/tiles-sheet/style.css",
    "selector": ".sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/tiles-sheet/style.css",
    "selector": ".sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked) .sgs-form-tile__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/tiles-sheet/style.css",
    "selector": ".sgs-form-field--tiles-style-border .sgs-form-tile:has(input:checked)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/tiles-sheet/style.css",
    "selector": ".sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/tiles-sheet/style.css",
    "selector": ".sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked) .sgs-form-tile__check",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -1172,37 +1172,37 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ":where(.sgs-form-field--email:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ":where(.sgs-form-field--number:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ":where(.sgs-form-field--phone:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ":where(.sgs-form-field--text:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/field-sheet/style.css",
    "selector": ":where(.sgs-form-field--textarea:where(:not(.sgs-form-field--static-label)):has(.sgs-form-field__input:focus)) .sgs-form-field__label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/file-sheet/style.css",
    "selector": ".sgs-form-field__file-zone:not(.sgs-form-field__file-zone--native):hover .sgs-form-field__file-label",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "plugins/sgs-blocks/src/blocks/form/style.css",
+   "file": "plugins/sgs-blocks/src/blocks/form/tiles-sheet/style.css",
    "selector": ":where(.sgs-form-tile:hover)",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },

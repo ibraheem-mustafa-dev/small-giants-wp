@@ -22,6 +22,8 @@ final class SGS_Blocks {
 
 	private function __construct() {
 		add_action( 'init', [ $this, 'register_blocks' ] );
+		// The form's field, tile and file upload sheets, after the blocks so the form sheet can depend on the field sheet.
+		add_action( 'init', array( $this, 'register_form_sheets' ), 11 );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_frontend_assets' ] );
 		add_action( 'wp_head', [ $this, 'print_js_flag' ], 1 );
 		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_extensions' ] );
@@ -480,6 +482,48 @@ final class SGS_Blocks {
 				[],
 				$version['version'] ?? SGS_BLOCKS_VERSION
 			);
+		}
+	}
+
+	/**
+	 * Register the form's separate stylesheets (Spec 04): `sgs-form-field-style`, the rules every form field needs,
+	 * and `sgs-form-tiles-style` and `sgs-form-file-style`, the tile selector and the file upload zone, each after
+	 * the field sheet.
+	 *
+	 * Every form-field-* block.json declares the field sheet (the tiles and file fields their own sheet as well), so
+	 * a field outside a form loads only what it draws. `sgs/form` declares the field sheet beside its own
+	 * `sgs-form-style`, and the form sheet depends on the field sheet, so on any page or editor canvas the field
+	 * rules print before the form's own whichever block enqueues first. Registered like a block.json `file:` style:
+	 * the file's `path` for inlining, and the RTL copy as a replacement.
+	 *
+	 * @return void
+	 */
+	public function register_form_sheets(): void {
+		$sheets = array(
+			'sgs-form-field-style' => array( 'field-sheet', array() ),
+			'sgs-form-tiles-style' => array( 'tiles-sheet', array( 'sgs-form-field-style' ) ),
+			'sgs-form-file-style'  => array( 'file-sheet', array( 'sgs-form-field-style' ) ),
+		);
+		foreach ( $sheets as $handle => list( $folder, $deps ) ) {
+			$relative = 'build/blocks/form/' . $folder . '/style-index.css';
+			$path     = SGS_BLOCKS_PATH . $relative;
+			if ( ! file_exists( $path ) ) {
+				continue;
+			}
+			wp_register_style( $handle, SGS_BLOCKS_URL . $relative, $deps, SGS_BLOCKS_VERSION );
+			$rtl_path = SGS_BLOCKS_PATH . 'build/blocks/form/' . $folder . '/style-index-rtl.css';
+			if ( file_exists( $rtl_path ) ) {
+				wp_style_add_data( $handle, 'rtl', 'replace' );
+				if ( is_rtl() ) {
+					$path = $rtl_path;
+				}
+			}
+			wp_style_add_data( $handle, 'path', $path );
+		}
+
+		$form = wp_styles()->query( 'sgs-form-style', 'registered' );
+		if ( $form instanceof \_WP_Dependency && wp_style_is( 'sgs-form-field-style', 'registered' ) && ! \in_array( 'sgs-form-field-style', $form->deps, true ) ) {
+			$form->deps[] = 'sgs-form-field-style';
 		}
 	}
 

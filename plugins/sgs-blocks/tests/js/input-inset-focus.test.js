@@ -22,7 +22,9 @@ describe( 'input focus', () => {
 	} );
 
 	test( 'no form, WooCommerce or commerce-look stylesheet recolours the border on focus', () => {
-		expect( read( 'plugins/sgs-blocks/src/blocks/form/style.css' ) ).not.toMatch( /\.sgs-form-field__input:focus-visible\s*\{/ );
+		for ( const sheet of [ 'style.css', 'field-sheet/style.css', 'tiles-sheet/style.css', 'file-sheet/style.css' ] ) {
+			expect( read( `plugins/sgs-blocks/src/blocks/form/${ sheet }` ) ).not.toMatch( /\.sgs-form-field__input:focus-visible\s*\{/ );
+		}
 		expect( read( 'theme/sgs-theme/assets/css/woocommerce.css' ) ).not.toMatch( /text-input input:focus/ );
 		expect( read( 'plugins/sgs-blocks/includes/woocommerce/commerce-look/fields.php' ) ).not.toMatch( /':focus'/ );
 	} );

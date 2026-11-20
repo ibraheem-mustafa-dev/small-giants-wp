@@ -1,0 +1,233 @@
+/**
+ * SGS form tile selector (sgs/form-field-tiles; handle sgs-form-tiles-style, after the field sheet it depends on).
+ */
+
+/* ----------------------------------------------------------------
+   7. Tile selector
+   ---------------------------------------------------------------- */
+
+.sgs-form-tiles {
+	display: grid;
+	gap: var(--wp--preset--spacing--20, 0.75rem);
+}
+
+/* flex-direction + gap in :where() (specificity 0) — .sgs-form-tile is a
+   descendant COMPONENT, not the form root that the flexDirection / gap attrs
+   control (SGS_Container_Wrapper applies gap to the form root). Keeping these
+   defaults at :where specificity leaves them overridable and passes the F3
+   guard (which exempts :where-scoped declarations). */
+:where(.sgs-form-tile) {
+	flex-direction: column;
+	gap: 0.5rem;
+	/* align-items moved here from the (0,1,0) rule below on 2026-08-12, when
+	   sgs/form gained the wrapper-level `alignItems` attribute and the F3 guard
+	   correctly started governing this property for the block. The literal is a
+	   FALSE POSITIVE in substance — `.sgs-form-tile` is an inner tile, whereas
+	   `alignItems` drives the block ROOT through SGS_Container_Wrapper — but the
+	   fix is free and the guard should stay strict rather than gain an
+	   exemption. Behaviour-identical: this is the ONLY rule setting align-items
+	   on .sgs-form-tile at any specificity, so nothing competes with it and
+	   dropping to specificity 0 changes no computed value. */
+	align-items: center;
+}
+.sgs-form-tile {
+	display: flex;
+	padding: 1rem;
+	border-width: 2px;
+	border-style: solid;
+	border-radius: var(--wp--custom--border-radius--medium, 8px);
+	cursor: pointer;
+	transition: border-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), background-color var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease), box-shadow var(--wp--custom--duration--fast, 0.2s) var(--wp--custom--easing--default, ease);
+	min-height: 44px;
+	position: relative;
+}
+
+/* Default text-align (0 specificity via :where()) — textAlign attribute now drives this; must always lose to the attribute-driven scoped rule. */
+:where(.sgs-form-tile) {
+	text-align: center;
+	border-color: var(--wp--preset--color--border, #ccc);
+}
+
+/* Hover border-colour is client-controllable (tileBorderColour/Hover) via
+   sgs_emit_state_colour_css() in render.php, emitted at real specificity so
+   it wins once a client sets a value. The file input covers the label, so the hover keys on the zone. The rule below is the DEFAULT look, at (0,4,0) so it outranks the panel variant's resting colours (0,2,0) and stays below the scoped emitter (0,5,0),
+   so an unset attribute still shows this look. */
+:where(.sgs-form-tile:hover) {
+	border-color: var(--wp--preset--color--primary, #0f7e80);
+}
+
+/* selectedStyle (sgs/form-field-tiles) gates which of the three selected-state
+   effects paint, via the `sgs-form-field--tiles-style-{value}` class render.php
+   emits on the FIELD wrapper (an ancestor of .sgs-form-tile, not the tile
+   itself — hence the descendant selectors below).
+   'checkmark' is the block's default: it keeps ALL THREE effects combined
+   (border colour+width bump, background tint, checkmark badge) so every
+   existing page — none of which has ever touched this control — renders
+   IDENTICALLY to before this split. 'border' and 'background' show ONLY
+   their own named effect. */
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile--selected,
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked),
+.sgs-form-field--tiles-style-border .sgs-form-tile--selected,
+.sgs-form-field--tiles-style-border .sgs-form-tile:has(input:checked) {
+	/* FIX #4: selected border uses accent-text (#7A6B00) not accent (#F87A1F).
+	   accent gives 1.93:1 contrast on accent-light bg; accent-text gives 6.37:1. */
+	border-color: var(--wp--preset--color--accent-text, #7a6b00);
+	/* Rule 43 (WCAG 1.4.1): selected state must not rely on colour alone — the
+	 * resting border is already 2px solid, so bump to 3px as the non-colour
+	 * signal. */
+	border-width: 3px;
+}
+
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile--selected,
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked),
+.sgs-form-field--tiles-style-background .sgs-form-tile--selected,
+.sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked) {
+	background-color: var(--wp--preset--color--accent-light, #fee8d4);
+	/* Rule 43 (WCAG 1.4.1): this shared selector is what the detector actually
+	 * flags — the border-width bump above lives on a DIFFERENT (border-style)
+	 * selector, so it doesn't count toward THIS rule's own non-colour signal.
+	 * Same 2px -> 3px bump as the border/checkmark rule; a no-op for
+	 * 'checkmark' (already 3px there) and the real fix for 'background'
+	 * (which had only background-color + the label font-weight bump below,
+	 * on a child selector the detector also doesn't credit to this state). */
+	border-width: 3px;
+}
+
+/* Rule 43 (WCAG 1.4.1): the 'background' style's selected state has no
+ * differentiator beyond colour (unlike 'checkmark', which already gets a
+ * border-width bump above). Bump the label to bold as the non-colour
+ * signal. It outranks tileLabelFontWeight in that one state, so a client's
+ * chosen label weight applies to every other state and style. */
+.sgs-form-field--tiles-style-background .sgs-form-tile--selected .sgs-form-tile__label,
+.sgs-form-field--tiles-style-background .sgs-form-tile:has(input:checked) .sgs-form-tile__label {
+	font-weight: 700;
+}
+
+.sgs-form-tile__input {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+:where(.sgs-form-tile__icon) {
+	font-size: 1.5rem;
+	line-height: 1;
+}
+
+:where(.sgs-form-tile__label) {
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	font-weight: 500;
+}
+
+/* The optional line under the label. Muted text colour with no opacity, so contrast is never reduced;
+   a lighter tone is the tileDescriptionColour control. */
+:where(.sgs-form-tile__description) {
+	display: block;
+	color: var(--wp--preset--color--text-muted, #6b7280);
+	font-size: 0.875em;
+	line-height: 1.4;
+	overflow-wrap: anywhere;
+}
+
+:where(.sgs-form-tile__check) {
+	display: none;
+	position: absolute;
+	top: 0.5rem;
+	inset-inline-end: 0.5rem;
+	width: var(--sgs-tile-check-size, 20px);
+	height: var(--sgs-tile-check-size, 20px);
+	flex: none;
+	color: var(--wp--preset--color--text-inverse, #fff);
+	/* FIX #4 extension: checkmark badge uses accent-text to match border. */
+	background-color: var(--wp--preset--color--accent-text, #7a6b00);
+	border-radius: 50%;
+}
+
+/* The tick is drawn from the element's colour and scales with --sgs-tile-check-size (20px gives the 5 x 9 tick at
+   4px / 7px, 2px stroke). */
+.sgs-form-tile__check::after {
+	content: "";
+	position: absolute;
+	top: calc(var(--sgs-tile-check-size, 20px) * 0.2);
+	left: calc(var(--sgs-tile-check-size, 20px) * 0.35);
+	width: calc(var(--sgs-tile-check-size, 20px) * 0.25);
+	height: calc(var(--sgs-tile-check-size, 20px) * 0.45);
+	border: solid currentcolor;
+	border-width: 0 max(2px, calc(var(--sgs-tile-check-size, 20px) * 0.1)) max(2px, calc(var(--sgs-tile-check-size, 20px) * 0.1)) 0;
+	transform: rotate(45deg);
+}
+
+/* Checkmark badge is exclusive to selectedStyle='checkmark' (the default) —
+   'border' and 'background' show ONLY their own named effect, no badge. */
+.sgs-form-field--tiles-style-checkmark .sgs-form-tile:has(input:checked) .sgs-form-tile__check {
+	display: block;
+}
+
+/* selectedCheckPosition (sgs/form-field-tiles) shows the chosen tile's tick whatever selectedStyle is, so the tick
+   is independent of the border and tint. 'corner' keeps the badge in the top-end corner; 'inline-start' puts the
+   tick before the text, which lays the tile out in a row. The inline tick is a bare mark in the tile's text colour
+   (the circle fill, tick colour and size are the tileCheck* settings); its defaults sit in :where() so those
+   settings, which print after this sheet, always win. */
+.sgs-form-field--tiles-check-corner .sgs-form-tile--selected .sgs-form-tile__check,
+.sgs-form-field--tiles-check-corner .sgs-form-tile:has(input:checked) .sgs-form-tile__check,
+.sgs-form-field--tiles-check-inline-start .sgs-form-tile--selected .sgs-form-tile__check,
+.sgs-form-field--tiles-check-inline-start .sgs-form-tile:has(input:checked) .sgs-form-tile__check {
+	display: block;
+}
+
+.sgs-form-field--tiles-check-inline-start .sgs-form-tile__check {
+	position: relative;
+	inset: auto;
+	order: -1;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) {
+	--sgs-tile-check-size: 14px;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile {
+	flex-direction: row;
+	justify-content: center;
+}
+
+/* A tile with an icon or a description: the icon takes the first row, the tick sits beside the label and the description
+   runs under the label. A label-only pill keeps the row above. */
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile:where(:has(.sgs-form-tile__description, .sgs-form-tile__icon)) {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__icon {
+	grid-column: 1 / -1;
+	order: -2;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__check {
+	grid-column: 1;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__label,
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__description {
+	grid-column: 2;
+}
+
+:where(.sgs-form-field--tiles-check-inline-start) .sgs-form-tile__check {
+	color: inherit;
+	background-color: transparent;
+}
+
+/* Tiles on a narrow container fall back to 2 columns (1 below 300px). No !important: a tiles field's own
+   columns setting (its instance rule, specificity 0,2,0) wins at every container width. */
+@container sgs-form (max-width: 480px) {
+	.sgs-form-tiles {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+/* Single column for very small containers (< 300px — embedded/widget contexts) */
+@container sgs-form (max-width: 300px) {
+	.sgs-form-tiles {
+		grid-template-columns: 1fr;
+	}
+}

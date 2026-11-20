@@ -14,7 +14,7 @@
 		"privacy"
 	],
 	"textdomain": "sgs-blocks",
-	"style": "sgs-form-style",
+	"style": "sgs-form-field-style",
 	"icon": "privacy",
 	"parent": [
 		"sgs/form",

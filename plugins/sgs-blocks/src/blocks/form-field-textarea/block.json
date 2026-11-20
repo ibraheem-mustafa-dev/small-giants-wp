@@ -13,7 +13,7 @@
         "comment"
     ],
     "textdomain": "sgs-blocks",
-    "style": "sgs-form-style",
+    "style": "sgs-form-field-style",
     "icon": "text",
     "parent": [
         "sgs/form",

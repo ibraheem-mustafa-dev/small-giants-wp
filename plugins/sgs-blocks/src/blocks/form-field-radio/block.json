@@ -13,7 +13,7 @@
         "select"
     ],
     "textdomain": "sgs-blocks",
-    "style": "sgs-form-style",
+    "style": "sgs-form-field-style",
     "icon": "list-view",
     "parent": [
         "sgs/form",

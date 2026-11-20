@@ -1,11 +1,11 @@
 /*
- * Form field features (Spec 04 FR-4-4 and FR-4-5). Named style.css in its own folder so the build bundles it into the form's frontend stylesheet.
+ * Form field features (Spec 04 FR-4-4 and FR-4-5). Named style.css in its own folder so the build bundles it into the field sheet (field-sheet/index.js, handle sgs-form-field-style), after the field rules.
  *
  * - A field with floating labels switched off keeps its label above the box.
  * - A field with the "inside" floating label keeps the label inside the box and lifts it on focus or once filled.
  * - The textarea's live character counter sits under the box, right-aligned, or inside the box at its bottom right (counterPlacement "inside").
  *
- * Colours come from the theme tokens; the floating-label rules these override live in style.css.
+ * Colours come from the theme tokens; the floating-label rules these override live in field-sheet/style.css.
  */
 
 /* Floating label off: undo the absolute, in-box label. The chained class raises specificity above the

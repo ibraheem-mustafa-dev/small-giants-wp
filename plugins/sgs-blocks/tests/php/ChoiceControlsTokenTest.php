@@ -221,8 +221,8 @@ namespace {
 			return array(
 				'cart gift box'         => array( 'plugins/sgs-blocks/src/blocks/cart/style.css', 'width: 20px' ),
 				'gift-order box'        => array( 'plugins/sgs-blocks/src/blocks/gift-order/style.css', 'width: 24px' ),
-				'form option box'       => array( 'plugins/sgs-blocks/src/blocks/form/style.css', ':where(body:not(.sgs-choice-controls)) .sgs-form-field__option input[type="checkbox"]' ),
-				'form consent box'      => array( 'plugins/sgs-blocks/src/blocks/form/style.css', ':where(body:not(.sgs-choice-controls)) .sgs-form-field__consent input[type="checkbox"]' ),
+				'form option box'       => array( 'plugins/sgs-blocks/src/blocks/form/field-sheet/style.css', ':where(body:not(.sgs-choice-controls)) .sgs-form-field__option input[type="checkbox"]' ),
+				'form consent box'      => array( 'plugins/sgs-blocks/src/blocks/form/field-sheet/style.css', ':where(body:not(.sgs-choice-controls)) .sgs-form-field__consent input[type="checkbox"]' ),
 				'shop filter drawn box' => array( 'theme/sgs-theme/assets/css/woocommerce.css', ':where(body:not(.sgs-choice-controls)) .sgs-shop-filters .wc-block-components-checkbox input[type="checkbox"]:checked::after' ),
 			);
 		}

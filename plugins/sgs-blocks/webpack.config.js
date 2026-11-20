@@ -470,6 +470,14 @@ if ( moduleConfig ) {
 	];
 }
 
+// The form block's separate stylesheets: entry name to source, one per sheet folder under src/blocks/form.
+const FORM_SHEET_ENTRIES = Object.fromEntries(
+	[ 'field-sheet', 'tiles-sheet', 'file-sheet' ].map( ( sheet ) => [
+		`blocks/form/${ sheet }/index`,
+		path.resolve( process.cwd(), 'src', 'blocks', 'form', sheet, 'index.js' ),
+	] )
+);
+
 if ( ! scriptConfig ) {
 	module.exports = defaultConfig;
 } else {
@@ -551,6 +559,11 @@ if ( ! scriptConfig ) {
 					'commerce-blocks',
 					'frontend.js'
 				),
+				// The form's field, tile and file upload sheets (Spec 04): each compiles to its own
+				// build/blocks/form/<sheet>/style-index.css, registered as a handle by
+				// class-sgs-blocks.php::register_form_sheets, so a field outside a form loads only the field sheet.
+				// NOT auto-discovered: they are stylesheets of the form block, not blocks.
+				...FORM_SHEET_ENTRIES,
 			} ) );
 		}
 
@@ -598,6 +611,8 @@ if ( ! scriptConfig ) {
 				'commerce-blocks',
 				'frontend.js'
 			),
+			// The form's field, tile and file upload sheets - see the identical entry above.
+			...FORM_SHEET_ENTRIES,
 		};
 	};
 

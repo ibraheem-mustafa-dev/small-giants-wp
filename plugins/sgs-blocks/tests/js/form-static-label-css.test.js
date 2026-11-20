@@ -1,12 +1,12 @@
 /**
  * A static label (floatingLabel off) takes none of the floating label's resting, focus or filled colour and type
- * rules: every floating selector in form/style.css names `:not(.sgs-form-field--static-label)`, inside `:where()` so
+ * rules: every floating selector in form/field-sheet/style.css names `:not(.sgs-form-field--static-label)`, inside `:where()` so
  * its specificity does not change.
  */
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-const css = readFileSync( join( __dirname, '../../src/blocks/form/style.css' ), 'utf8' );
+const css = readFileSync( join( __dirname, '../../src/blocks/form/field-sheet/style.css' ), 'utf8' );
 const start = css.indexOf( 'Floating Labels (Feature #148)' );
 const end = css.indexOf( '/* Floating-label placeholder management.' );
 const section = css.slice( start, end );

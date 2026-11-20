@@ -4245,7 +4245,7 @@
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
+	"style": [ "file:./style-index.css", "sgs-form-field-style" ],
 	"viewScriptModule": "file:./view.js",
 	"example": {
 		"attributes": {

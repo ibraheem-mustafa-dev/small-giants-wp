@@ -64,7 +64,7 @@ const wrap = ( inner, { store = true } = {} ) => `
 	</div>${ FORM_SCRIPT }`;
 
 // Three steps: a draft "Continue" button that does nothing sits above the steps; step 2 is a required tile group hidden
-// as form/style.css hides `.sgs-form-tile__input` (opacity 0, no pointer events); step 3 a required chip group whose
+// as form/tiles-sheet/style.css hides `.sgs-form-tile__input` (opacity 0, no pointer events); step 3 a required chip group whose
 // radios have no box at all, reachable only through their labels.
 const STEPPED = wrap( `
 	<button type="button" class="sgs-button">Continue</button>

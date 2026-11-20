@@ -7,7 +7,11 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const postcss = require( 'postcss' );
 
-const CSS_FILE = path.resolve( __dirname, '..', '..', 'src', 'blocks', 'form', 'style.css' );
+// The form block's sheets: the form's own (the review list), the field sheet (the field and its error line) and the
+// file upload sheet (the preview, the file name and the file error line).
+const CSS_FILES = [ 'style.css', 'field-sheet/style.css', 'file-sheet/style.css' ].map( ( sheet ) =>
+	path.resolve( __dirname, '..', '..', 'src', 'blocks', 'form', sheet )
+);
 
 /**
  * Declarations of every rule whose selector list is exactly the given selectors (order and spacing ignored).
@@ -31,8 +35,8 @@ function declarationsFor( css, selectors ) {
 	return found;
 }
 
-describe( 'form/style.css long file names', () => {
-	const css = fs.readFileSync( CSS_FILE, 'utf8' );
+describe( 'form sheets: long file names', () => {
+	const css = CSS_FILES.map( ( file ) => fs.readFileSync( file, 'utf8' ) ).join( '\n' );
 
 	it( 'lets the preview shrink and wrap anywhere', () => {
 		const decls = declarationsFor( css, [ '.sgs-form-file__preview' ] );
@@ -41,8 +45,8 @@ describe( 'form/style.css long file names', () => {
 	} );
 
 	it( 'wraps the file name and both error lines anywhere', () => {
-		const decls = declarationsFor( css, [ '.sgs-form-file__name', '.sgs-form-file__error', '.sgs-form-field__error' ] );
-		expect( decls[ 'overflow-wrap' ] ).toBe( 'anywhere' );
+		expect( declarationsFor( css, [ '.sgs-form-file__name', '.sgs-form-file__error' ] )[ 'overflow-wrap' ] ).toBe( 'anywhere' );
+		expect( declarationsFor( css, [ '.sgs-form-field__error' ] )[ 'overflow-wrap' ] ).toBe( 'anywhere' );
 	} );
 
 	it( 'lets a field shrink below its content at zero specificity', () => {

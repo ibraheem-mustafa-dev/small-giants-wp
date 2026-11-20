@@ -13,7 +13,7 @@
 		"icon"
 	],
 	"textdomain": "sgs-blocks",
-	"style": "sgs-form-style",
+	"style": [ "sgs-form-field-style", "sgs-form-tiles-style" ],
 	"icon": "grid-view",
 	"parent": [
 		"sgs/form",
@@ -121,7 +121,7 @@
 						"css:top": "tileCheckInset"
 					},
 					"motion": false,
-					"_note": "The tick of the chosen tile (render.php scoped rule on the check element; form/style.css draws the tick from the element's colour and size). selectedCheckPosition (no CSS member of its own) adds a sgs-form-field--tiles-check-{position} class to the field, which shows the tick on the chosen tile independent of selectedStyle; inline-start lays the tile out in a row with the tick first."
+					"_note": "The tick of the chosen tile (render.php scoped rule on the check element; form/tiles-sheet/style.css draws the tick from the element's colour and size). selectedCheckPosition (no CSS member of its own) adds a sgs-form-field--tiles-check-{position} class to the field, which shows the tick on the chosen tile independent of selectedStyle; inline-start lays the tile out in a row with the tick first."
 				},
 				"tile-label": {
 					"selector": ".sgs-form-tile__label",

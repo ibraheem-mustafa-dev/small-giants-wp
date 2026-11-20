@@ -13,7 +13,7 @@
         "field"
     ],
     "textdomain": "sgs-blocks",
-    "style": "sgs-form-style",
+    "style": "sgs-form-field-style",
     "icon": "calendar-alt",
     "parent": [
         "sgs/form",
