@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "const tiered = ownElementSetting( db, rec.name, candidates( db, rec.name, prop, state )\n\t\t.filter( ( r ) => [ 'tier_object', 'flat_sibling' ].includes( r.tier_shape ) && paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) ) );",
+		"replace": "const tiered = candidates( db, rec.name, prop, state )\n\t\t.filter( ( r ) => [ 'tier_object', 'flat_sibling' ].includes( r.tier_shape ) && paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) );",
+		"why": "rung 2 takes the first tier-shaped candidate, a part's centre setting included"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "return 1 === rest.length && rest[ 0 ].css_element ? rest : tied;",
+		"replace": "return tied;",
+		"why": "the tie between a part setting and the element's own setting never breaks"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "const parts = tied.filter( ( r ) => ! r.css_element && null !== canonicalSlotOf( db, block, r.attr_name ) );",
+		"replace": "const parts = tied.filter( ( r ) => ! r.css_element );",
+		"why": "every setting with no element counts as a part, whether or not the DB names its part"
+	}
+]

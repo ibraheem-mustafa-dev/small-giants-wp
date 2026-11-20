@@ -20,7 +20,7 @@
 // Which blocks and settings take part comes from the framework DB and the block's calibration, never from a list.
 // A row naming several nodes (`nodes`) is judged and written on each. Returns { writes, unmapped (the rows left), answered
 // (lib/fill-regap.mjs::answer: each row written or settled, with the read widths it answers), notes, ledger }.
-import { ONE_VALUE_EVERY_WIDTH, LOOSE } from './resolve.mjs';
+import { ONE_VALUE_EVERY_WIDTH, LOOSE, ownElementSetting } from './resolve.mjs';
 import { siblings, candidates } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
@@ -274,9 +274,11 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 		out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: the block's own default paint (${ widths.map( ( w ) => `${ base[ w ] } at ${ w }` ).join( ', ' ) }) does what the draft's ${ [ ...new Set( widths.map( ( w ) => raw[ w ] ) ) ].join( ' / ' ) } does; nothing to write` );
 		return widths;
 	}
-	// Rung 2: a tier-shaped setting painting the same element.
-	const tiered = candidates( db, rec.name, prop, state )
-		.filter( ( r ) => [ 'tier_object', 'flat_sibling' ].includes( r.tier_shape ) && paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) );
+	// Rung 2: a tier-shaped setting painting the same element. A tie breaks as the resolver breaks it
+	// (lib/resolve.mjs::ownElementSetting): a setting the DB ties to a named part of the block never competes for the
+	// element's own paint with the one setting the DB ties to the element.
+	const tiered = ownElementSetting( db, rec.name, candidates( db, rec.name, prop, state )
+		.filter( ( r ) => [ 'tier_object', 'flat_sibling' ].includes( r.tier_shape ) && paints( cal, r.attr_name.replace( /(Tablet|Mobile)$/, '' ), slot ) ) );
 	if ( ! varies && ! ( tiered.length && widths.some( differs ) ) ) {
 		return false;
 	}
