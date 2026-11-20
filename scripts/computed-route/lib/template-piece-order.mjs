@@ -245,6 +245,9 @@ function placeValues( ctx, piece, r ) {
 			problems.push( `the value {{ ${ h.expr } }} (${ h.el }, ${ h.key }) is not in the skeleton: it is the step ${ h.instance } of its loop, and the proposal holds no such step` );
 			continue;
 		}
+		// The facts folded into a block's words are marked taken once every target is done, so each block that holds the element
+		// takes them as tokens, not only the first.
+		const used = new Set();
 		for ( const { node: held } of targets ) {
 			// A link drawn as a card whose block takes no bound address is followed by the one block inside it that does (the
 			// card's action button): that block carries the link.
@@ -290,13 +293,14 @@ function placeValues( ctx, piece, r ) {
 			node.attributes = { ...( node.attributes || {} ), metadata: { ...( node.attributes?.metadata || {} ), bindings: { ...( node.attributes?.metadata?.bindings || {} ), [ attr ]: { source: plugin.source, args: { key: h.key, ...( format ? { format } : {} ) } } } } };
 			placed.push( { id: piece.id, block: node.name, at: holder, attribute: attr, key: h.key, ...( format ? { format } : {} ) } );
 			boundNodes.push( { node, holder } );
-			others.forEach( ( o ) => taken.add( o ) );
+			others.forEach( ( o ) => used.add( o ) );
 			[ h, ...others ].filter( ( x ) => x.fact ).forEach( ( x ) => notes.push( factNote( x, holder ) ) );
 			if ( holder !== h.el ) {
 				const tags = ancestorsOf( h.el ).slice( 0, ancestorsOf( h.el ).indexOf( holder ) ).map( ( k ) => `<${ record[ k ]?.template?.tag }>` );
 				notes.push( `the order's ${ h.key } in ${ holder } sat inside ${ tags.join( ' inside ' ) } (${ h.el }); a bound value is plain text, so that formatting is lost` );
 			}
 		}
+		used.forEach( ( o ) => taken.add( o ) );
 	}
 
 	// A bound block outside every order branch shows only while the visitor may view the order.

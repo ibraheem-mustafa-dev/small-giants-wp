@@ -58,7 +58,7 @@
 	{"file": "lib/template-piece-order.mjs", "find": "undefined === h.instance || stepOf( w.node ) === h.instance", "replace": "true", "why": "a fact of one step binds every step"},
 	{"file": "lib/template-piece-order.mjs", "find": "if ( ! targets.length ) {", "replace": "if ( false ) {", "why": "a fact whose step the skeleton lacks is silently dropped"},
 	{"file": "lib/template-piece-order.mjs", "find": "sort( ( a, b ) => Number( !! a.fact ) - Number( !! b.fact ) )", "replace": "sort( () => 0 )", "why": "a fact in the document before a key takes the key's place as the binding"},
-	{"file": "lib/template-piece-order.mjs", "find": "others.forEach( ( o ) => taken.add( o ) );", "replace": "", "why": "a fact folded into another block's words is bound again on its own"},
+	{"file": "lib/template-piece-order.mjs", "find": "used.forEach( ( o ) => taken.add( o ) );", "replace": "", "why": "a fact folded into another block's words is bound again on its own"},
 	{"file": "lib/template-piece-order.mjs", "find": "x.fact && ! x.problem && ! taken.has( x ) && x.expr === m[ 1 ]", "replace": "x.fact && ! x.problem && ! taken.has( x ) && true", "why": "any fact fills any token"},
 	{"file": "lib/template-piece-order.mjs", "find": "[ h, ...others ].filter( ( x ) => x.fact ).forEach( ( x ) => notes.push( factNote( x, holder ) ) );", "replace": "", "why": "a fact the owner must supply goes unsaid"},
 	{"file": "lib/template-piece-order.mjs", "find": "`{${ o.key }}`", "replace": "`${ o.key }`", "why": "a fact token loses its braces"},
@@ -68,5 +68,6 @@
 	{"file": "lib/template-piece-order.mjs", "find": "&& ruleAttr( db, node.name, attrs[ a ] ) === a );", "replace": "&& ruleAttr( db, node.name, attrs[ a ] ) );", "why": "an order- word in a class name or anchor is taken for the Show-to rule already on the block"},
 	{"file": "lib/template-piece-order.mjs", "find": "&& /^order-/.test( attrs[ a ] ) && ruleAttr(", "replace": "&& ruleAttr(", "why": "a Show-to setting left at none is taken for a rule already on the block"},
 	{"file": "lib/template-piece-order.mjs", "find": "const other = holdsLines && free ? kids.find( ( c ) => ! lines( c ) && ! onlyOrder( c ) && ! title( c ) ) : null;", "replace": "const other = holdsLines && free ? kids.find( ( c ) => ! lines( c ) && ! onlyOrder( c ) && ! title( c ) ) ?? { name: 'sgs/none' } : null;", "why": "a bound container holding only the lines and titles is noted as also holding a block that is not there"},
-	{"file": "lib/template-piece-order.mjs", "find": "const other = holdsLines && free ? kids.find(", "replace": "const other = holdsLines ? kids.find(", "why": "a card whose own Show-to value is set is noted as staying visible by its rule"}
+	{"file": "lib/template-piece-order.mjs", "find": "const other = holdsLines && free ? kids.find(", "replace": "const other = holdsLines ? kids.find(", "why": "a card whose own Show-to value is set is noted as staying visible by its rule"},
+	{"file": "lib/template-piece-order.mjs", "find": "others.forEach( ( o ) => used.add( o ) );", "replace": "others.forEach( ( o ) => { used.add( o ); taken.add( o ); } );", "why": "a fact folded into the first block's words is a raw {{ }} in the next block holding the same element"}
 ]

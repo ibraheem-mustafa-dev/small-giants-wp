@@ -669,3 +669,21 @@ test( 'MUST FAIL: a bound container holding only the order lines and titles is p
 	c3.innerBlocks.push( { name: 'sgs/button', attributes: { label: 'Keep browsing', url: '/shop/' }, innerBlocks: [] } );
 	assert.doesNotMatch( place( { ...base, tree: ruled }, { id: 'order-items', block: 'sgs/order-items', find: 'order-lines' } ).notes.join( '\n' ), /also holds/ );
 } );
+
+// A block holding two facts that the skeleton holds more than once (one template element, two blocks) takes the second fact as a
+// `{fact:name}` token on every one of them: the fact is marked taken only once all of them are bound.
+test( 'MUST FAIL: a second fact in one sentence is a token on every block holding that element, not only the first', () => {
+	const planted = plant( FACT_TEMPLATE, FACT_LOGIC, FACT_SAMPLES );
+	const { record } = planted;
+	const tree = factTree( record );
+	const section = tree[ 0 ].innerBlocks[ 0 ];
+	section.innerBlocks.splice( 1, 0, structuredClone( section.innerBlocks[ 0 ] ) );
+	const got = place( { ...factCtx( planted ), tree }, { id: 'order-number', find: 'order-values' } );
+	const bakeLine = 'fact:bake_arrive|Baking on {fact:bake_date} · with you from %s';
+	const bound = bindingsOf( got.tree ).map( ( b ) => b.slice( 1 ).join() );
+	assert.equal( bound.filter( ( b ) => bakeLine === b ).length, 2, JSON.stringify( bound ) );
+	assert.ok( ! got.problems.some( ( p ) => /holds another value/.test( p ) ), got.problems.join( '\n' ) );
+	// Negative control: the one-block skeleton still binds the line once.
+	const single = place( { ...factCtx( planted ), tree: factTree( record ) }, { id: 'order-number', find: 'order-values' } );
+	assert.equal( bindingsOf( single.tree ).filter( ( b ) => bakeLine === b.slice( 1 ).join() ).length, 1 );
+} );
