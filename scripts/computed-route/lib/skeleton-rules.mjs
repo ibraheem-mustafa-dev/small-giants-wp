@@ -838,6 +838,19 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const lines = S.categoryShown && S.categoryAlways && md.units.some( ( u ) => S.category in widgets().itemWords( u ).attributes );
 		return { ...( md.multiple && S.several ? { [ S.several ]: true } : {} ), ...( ! md.multiple && 1 === md.open.length && S.openAtRest ? { [ S.openAtRest ]: md.open[ 0 ] } : {} ), ...( lines ? { [ S.categoryAlways ]: true } : {} ), ...widgets().toggleIcon( md ).attributes };
 	};
+	// A form, or an element below one: the linked reference block (rules.formLink, a rule that runs after the structures) or the
+	// draft's own <form>. Walked from the element up to the hero, because the hero's own media and layout wrappers are never a
+	// form, nor anything under one. The hero's inner rule leaves such an element to the form rules, so the page keeps its form
+	// (rules.heroInner). A commerce region and the other structures are decided before the hero's inner rule and need no check.
+	const ownedBelowHero = ( e, heroKey ) => {
+		for ( let x = e; x && x.key !== heroKey; x = m.byKey[ x.parentKey ] ) {
+			if ( hooks.formLinkOf( x ) || 'form' === view.realTag( x ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
@@ -1050,7 +1063,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
 		( { e, kidsB } ) => {
 			const hero = ancestorBlocks( e ).find( ( a ) => a.block === R.hero?.block );
-			if ( ! hero ) {
+			if ( ! hero || ownedBelowHero( e, hero.key ) ) {
 				return null;
 			}
 			// A collage keeps its stage as a container and each absolutely placed child as a decorative image layer; what sits
