@@ -238,6 +238,7 @@
     "render_block",
     "rest_ensure_response",
     "rest_get_url_prefix",
+    "rest_sanitize_boolean",
     "rest_url",
     "safecss_filter_attr",
     "sanitize_email",
