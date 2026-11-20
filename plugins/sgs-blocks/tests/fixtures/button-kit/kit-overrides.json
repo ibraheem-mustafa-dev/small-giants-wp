@@ -1,0 +1,6 @@
+{
+	"_doc": "Fixture for scripts/generate-button-attributes.mjs --self-test: one hand-written entry the generator must keep.",
+	"entries": [
+		{"slug": "sgs/kit-fixture", "attr": "heading", "fields": {"role": "content"}, "_reason": "fixture: a hand-written entry"}
+	]
+}

@@ -19,6 +19,10 @@
     "styling-behaviour",
     "A boolean editor-only toggle (e.g. core/navigation.overlay, sgs/modal.closeOnOverlay, sgs/team-member.overlayHover). NO consumer in the converter -- no code anywhere branches on the literal 'boolean-visibility'; classification alone (styling-behaviour) keeps it out of the content walk. A draft's HTML/CSS carries no signal a boolean toggle could be lifted from, so the absence of a resolver is expected, not a gap."
   ],
+  "button-preset": [
+    "styling-behaviour",
+    "The preset choice of a button a block renders itself (a name from src/blocks/button/preset-names.js, or empty for the block's own look): `sgs/button::inheritStyle`, the built-in button kit's `{prefix}Style` attributes (scripts/generate-button-attributes.mjs) and the preset choices that predate the kit. Styling-behaviour keeps it out of the content walk; a draft carries the preset as a look, never as copy."
+  ],
   "color": [
     "styling-behaviour",
     "Marks an attr whose value is a colour (design-token slug / hex / rgb() / named colour). Consumer: attr_is_colour_role() (converter/db/db_lookup.py:1075-1103) is the sole legitimate gate for routing an OUTER/CONTENT-layer value through colour serialisation (extract_token_or_hex) instead of the generic string/numeric branches -- deliberately implemented as a SQL WHERE clause, not a Python `role == \"color\"` compare, so the no_slug_literal AST gate never sees it. Also feeds the px/string CSS-kind classifier _kind_for() (db_lookup.py:1955-1956)."

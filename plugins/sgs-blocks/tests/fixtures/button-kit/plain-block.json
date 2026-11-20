@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/kit-plain-fixture",
+	"title": "Kit plain fixture",
+	"category": "sgs",
+	"supports": {
+		"html": false,
+		"sgs": {
+			"elements": { "title": { "selector": ".sgs-kit-plain__title" } }
+		}
+	},
+	"attributes": {
+		"heading": { "type": "string", "default": "" },
+		"loginButtonPreset": { "type": "string", "default": "primary" }
+	},
+	"render": "file:./render.php"
+}

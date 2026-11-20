@@ -1,0 +1,10 @@
+{
+	"flowOpenerStyle": { "role": "button-preset", "css_element": "flow-opener" },
+	"flowOpenerColourBackgroundHover": { "role": "color", "css_property": "background-color", "css_layer": null, "css_element": "flow-opener", "css_state": "hover" },
+	"flowOpenerBorderWidth": { "role": "visual", "css_property": "border-width", "css_layer": null, "css_element": "flow-opener", "tier_shape": "box_only" },
+	"flowOpenerFontSize": { "role": "typography", "css_property": "font-size", "css_layer": null, "css_element": "flow-opener", "tier_shape": "tier_object" },
+	"flowOpenerFontSizeUnit": { "role": "typography", "css_element": "flow-opener" },
+	"flowOpenerWidthType": { "role": "select-from-enum", "css_property": "width", "css_layer": null, "css_element": "flow-opener" },
+	"flowOpenerShadowColourHover": { "role": "color", "css_property": "box-shadow-color", "css_layer": null, "css_element": "flow-opener", "css_state": "hover" },
+	"backColourBorder": { "role": "color", "css_property": "border-color", "css_layer": null, "css_element": "back" }
+}

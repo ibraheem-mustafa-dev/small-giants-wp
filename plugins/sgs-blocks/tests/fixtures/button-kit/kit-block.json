@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sgs/kit-fixture",
+	"title": "Kit fixture",
+	"category": "sgs",
+	"supports": {
+		"html": false,
+		"sgs": {
+			"builtinButtons": [
+				{ "prefix": "flowOpener", "part": "flow-opener", "label": "Flow opener button" },
+				{ "prefix": "back", "part": "back", "label": "Back button", "groups": [ "preset", "colour" ] }
+			]
+		}
+	},
+	"attributes": {
+		"heading": { "type": "string", "default": "" },
+		"flowOpenerStyle": { "type": "string", "default": "secondary" }
+	},
+	"render": "file:./render.php"
+}

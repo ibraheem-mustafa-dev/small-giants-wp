@@ -806,6 +806,24 @@
     "order": 86
   },
   {
+    "id": "generate-button-attributes",
+    "cmd": "node scripts/generate-button-attributes.mjs",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 8
+  },
+  {
+    "id": "check-button-attributes-parity",
+    "cmd": "node scripts/generate-button-attributes.mjs --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 49,
+    "order": 87
+  },
+  {
     "id": "check-media-slot-schema",
     "cmd": "node scripts/generate-media-slot-schema.mjs --check",
     "tier": "fast",

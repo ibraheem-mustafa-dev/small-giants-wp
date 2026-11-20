@@ -1,0 +1,67 @@
+{
+	"_doc": "The built-in button kit's one registry: the attribute set a block gets for each button it declares in block.json supports.sgs.builtinButtons (prefix, part, label, optional groups). Read by scripts/generate-button-attributes.mjs (writes the attributes and the framework-database override rows), by includes/helpers-button-style.php::sgs_button_kit_css and by src/components/BuiltinButtonPanel.js. An attribute is the declared prefix plus `base`. `type` is the block.json type; an object is a box (sides or corners) when `tier_shape` is box_only and a {desktop,tablet,mobile} value when it is tier_object. `role`, `css_property`, `css_state` and `tier_shape` go to the database as written; `css_element` is the declared `part`. A row with no css_property is a setting no stylesheet property names (the preset choice, a unit). `values` lists the accepted strings of an attribute with a closed set. Generated attributes carry no default: unset means the block's own look. Group order here is the order the attributes are written.",
+	"defaultGroups": [ "preset", "colour", "border", "padding", "width", "minHeight", "shadow", "typography" ],
+	"groups": {
+		"preset": [
+			{ "base": "Style", "type": "string", "role": "button-preset", "css_property": null, "css_state": null, "tier_shape": null }
+		],
+		"colour": [
+			{ "base": "ColourBackground", "type": "string", "role": "color", "css_property": "background-color", "css_state": null, "tier_shape": null },
+			{ "base": "ColourText", "type": "string", "role": "color", "css_property": "color", "css_state": null, "tier_shape": null },
+			{ "base": "ColourBorder", "type": "string", "role": "color", "css_property": "border-color", "css_state": null, "tier_shape": null },
+			{ "base": "ColourBackgroundHover", "type": "string", "role": "color", "css_property": "background-color", "css_state": "hover", "tier_shape": null },
+			{ "base": "ColourTextHover", "type": "string", "role": "color", "css_property": "color", "css_state": "hover", "tier_shape": null },
+			{ "base": "ColourBorderHover", "type": "string", "role": "color", "css_property": "border-color", "css_state": "hover", "tier_shape": null }
+		],
+		"gradient": [
+			{ "base": "ColourBackgroundGradient", "type": "string", "role": "colour-gradient", "css_property": "background-image", "css_state": null, "tier_shape": null },
+			{ "base": "ColourBackgroundHoverGradient", "type": "string", "role": "colour-gradient", "css_property": "background-image", "css_state": "hover", "tier_shape": null },
+			{ "base": "ColourTextGradient", "type": "string", "role": "colour-gradient", "css_property": "color-gradient", "css_state": null, "tier_shape": null },
+			{ "base": "ColourTextHoverGradient", "type": "string", "role": "colour-gradient", "css_property": "color-gradient", "css_state": "hover", "tier_shape": null },
+			{ "base": "ColourBorderGradient", "type": "string", "role": "colour-gradient", "css_property": "border-color-gradient", "css_state": null, "tier_shape": null },
+			{ "base": "ColourBorderHoverGradient", "type": "string", "role": "colour-gradient", "css_property": "border-color-gradient", "css_state": "hover", "tier_shape": null }
+		],
+		"border": [
+			{ "base": "BorderStyle", "type": "string", "role": "visual", "css_property": "border-style", "css_state": null, "tier_shape": null },
+			{ "base": "BorderWidth", "type": "object", "role": "visual", "css_property": "border-width", "css_state": null, "tier_shape": "box_only" },
+			{ "base": "BorderRadius", "type": "object", "role": "visual", "css_property": "border-radius", "css_state": null, "tier_shape": "box_only" }
+		],
+		"padding": [
+			{ "base": "Padding", "type": "object", "role": "layout", "css_property": "padding", "css_state": null, "tier_shape": "box_only" }
+		],
+		"width": [
+			{ "base": "WidthType", "type": "string", "role": "select-from-enum", "css_property": "width", "css_state": null, "tier_shape": null, "values": [ "fit", "full" ] }
+		],
+		"minHeight": [
+			{ "base": "MinHeight", "type": "object", "role": "layout", "css_property": "min-height", "css_state": null, "tier_shape": "tier_object" }
+		],
+		"shadow": [
+			{ "base": "Shadow", "type": "string", "role": "visual", "css_property": "box-shadow", "css_state": null, "tier_shape": null },
+			{ "base": "ShadowColour", "type": "string", "role": "color", "css_property": "box-shadow-color", "css_state": null, "tier_shape": null },
+			{ "base": "ShadowHover", "type": "string", "role": "visual", "css_property": "box-shadow", "css_state": "hover", "tier_shape": null },
+			{ "base": "ShadowColourHover", "type": "string", "role": "color", "css_property": "box-shadow-color", "css_state": "hover", "tier_shape": null }
+		],
+		"typography": [
+			{ "base": "FontFamily", "type": "string", "role": "typography", "css_property": "font-family", "css_state": null, "tier_shape": null },
+			{ "base": "FontWeight", "type": "string", "role": "typography", "css_property": "font-weight", "css_state": null, "tier_shape": null },
+			{ "base": "FontStyle", "type": "string", "role": "typography", "css_property": "font-style", "css_state": null, "tier_shape": null },
+			{ "base": "TextTransform", "type": "string", "role": "typography", "css_property": "text-transform", "css_state": null, "tier_shape": null },
+			{ "base": "TextDecoration", "type": "string", "role": "typography", "css_property": "text-decoration", "css_state": null, "tier_shape": null },
+			{ "base": "FontSize", "type": "object", "role": "typography", "css_property": "font-size", "css_state": null, "tier_shape": "tier_object" },
+			{ "base": "LineHeight", "type": "object", "role": "typography", "css_property": "line-height", "css_state": null, "tier_shape": "tier_object" },
+			{ "base": "LetterSpacing", "type": "object", "role": "typography", "css_property": "letter-spacing", "css_state": null, "tier_shape": "tier_object" },
+			{ "base": "FontSizeUnit", "type": "string", "role": "typography", "css_property": null, "css_state": null, "tier_shape": null },
+			{ "base": "LineHeightUnit", "type": "string", "role": "typography", "css_property": null, "css_state": null, "tier_shape": null },
+			{ "base": "LetterSpacingUnit", "type": "string", "role": "typography", "css_property": null, "css_state": null, "tier_shape": null }
+		]
+	},
+	"existingPresetAttrs": [
+		{ "block": "sgs/button", "attr": "inheritStyle" },
+		{ "block": "sgs/buybox", "attr": "addToCartStyle" },
+		{ "block": "sgs/product-card", "attr": "ctaStyle" },
+		{ "block": "sgs/product-card", "attr": "cta2Style" },
+		{ "block": "sgs/form", "attr": "submitStyle" },
+		{ "block": "sgs/account", "attr": "loginButtonPreset" },
+		{ "block": "sgs/account", "attr": "registerButtonPreset" }
+	]
+}
