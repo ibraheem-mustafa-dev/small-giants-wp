@@ -211,6 +211,6 @@ It sits beside the steps on wide containers (`summaryPosition` start or end) and
 | FR-43-23 | built | Guided buybox: one option group at a time on the product page, a meter that doubles as the summary, a finish-choosing guard |
 | FR-43-24 | built | Showcase layout (`flowLayout`): full-screen flows use a stage (the finished product, running lines, total) beside large image-led option cards, as in the Eye Care lens draft |
 | FR-43-24a | built | Showcase `fitToScreen` toggle with its fit guard, motion-panel speeds for the progress fill, summary photo and total, and `optionColumnsWide` (2 to 4 from a 2200px container) |
-| FR-43-25 | built | Architecture: the saved flow owns content and look; products link to a flow and the buybox wires the popup; the guided buybox stays product-options-only with term-level image, badge and description |
+| FR-43-25 | partly built | Architecture: the saved flow owns content and look; products link to a flow and the buybox wires the popup; the guided buybox stays product-options-only with term-level image, badge and description; the off-by-default buy box setting that keeps Add to Cart beside the flow's opener is not built |
 | FR-43-26 | built | A question can open the chosen option's next step underneath, on the same screen, with that step's Add to bag in the footer |
 | FR-43-27 | built | A plain question can take 1 to N answers; Continue waits for the least, a pick past the most is refused with a live message, the picks travel as one cart-line row |

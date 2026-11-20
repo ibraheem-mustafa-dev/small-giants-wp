@@ -1,6 +1,6 @@
 # Lab run checklist for the special surfaces (2026-11-19)
 
-What the live lab run must check for template-rework Tasks 4, 7 and 10 (`.claude/plans/2026-11-18-template-rework.md`), written by the helpers that built each piece offline. Nothing here has been run live yet.
+What the live lab run must check for template-rework Tasks 4, 7 and 10 (`.claude/plans/2026-11-18-template-rework.md`), written by the helpers that built each piece offline. Each section below says what has run (2026-11-19 to 2026-11-20) and where its result is in `lab-findings.md`; what a section does not mark as run is still to run.
 
 ## The lab copy
 
@@ -12,18 +12,24 @@ Run one site run at a time with `--jobs 1`. The run needs a worktree at `main` w
 
 ## Shop look settings (Task 4)
 
+Ran on the lab copy, signed-out and signed-in views included (`lab-findings.md`: "Reruns after the walk fix", "Phone width (375)"). Run again after any change to part-look or a block's look settings.
+
 1. `node scripts/computed-route/part-look.mjs --client mamas-munches-redesign --site local-mediatest-trlab --write` after the strip, then the same with `--compare` against `local-mediatest-partlook` (the untouched copy, port 8120).
 2. Open the basket (filled and empty), the checkout and the account page at 375, 768 and 1440 beside the draft. Expect the 10 values that land on a setting known not to paint to show no effect, and every look in the report's "no setting" list to be missing.
 
 ## Order confirmation (Task 7)
 
+Ran: steps 1 and 2 on the lab copy; steps 3 and 4 as the states check with a gift order, a guest order and a wrong key (`lab-findings.md`: "Order confirmation states"): all as expected except the owner's view-order card under a wrong key, which waits for a plugin fix and a render check (plan Task 7 Status).
+
 1. Rerun intake for the client so the confirmation's record gets its skeleton, then `node scripts/computed-route/manifest.mjs mamas-munches-redesign --site local-mediatest-trlab --only template-order-confirmation --apply`. The entry must show `copy.from: "fill"` and an `intakeSurface`.
 2. `node scripts/computed-route/site-run.mjs mamas-munches-redesign --site local-mediatest-trlab --only template-order-confirmation --jobs 1`. The proposal's `templatePieces` must list the placed pieces.
 3. On a test order's received page with a valid `key`: the hero reads "Order <number>. We've emailed…"; `sgs/order-items` shows the items with thumbnail, options line and a "Paid" total equal to the order total; a non-gift order shows the Taster Trio upsell and no note card; a gift order shows "Dear <name>," and the message and no upsell; a guest sees "Create an account"; the signed-in owner sees "View order" linking to the account's view-order address.
 4. The same page with a wrong `key`: the hero's order paragraph is hidden, `sgs/order-items` prints nothing, and no bound block shows the draft's sample words.
-5. Known to be static until a source exists: the bake date, the arrival date, the step line that repeats the bake date, and the eyebrow that changes when an account was created at checkout. Neither Mama's nor Eye Care's draft draws an address, so none is expected.
+5. The bake date, the arrival date and the step line that repeats the bake date are bound to facts the site supplies through the `sgs_order_fact` filter and show nothing until it supplies them. The eyebrow that changes when an account was created at checkout has no source yet, so `clone-surface.mjs --strict` refuses the confirmation for it. Neither Mama's nor Eye Care's draft draws an address, so none is expected.
 
 ## Product page and shop listing (Task 7)
+
+Ran on Mama's lab copy for the product page and the shop listing (`lab-findings.md`: "Reruns after the walk fix"). Not run: step 5 (Eye Care).
 
 1. `node scripts/computed-route/skeleton.mjs propose --client mamas-munches-redesign --surface product`, then `--surface shop`. Confirm `proposal.templatePieces` and that the paint gate accepts `sgs/buybox` on the copy.
 2. Run Fill, build and the template copy for both surfaces.
@@ -33,8 +39,10 @@ Run one site run at a time with `--jobs 1`. The run needs a worktree at `main` w
 
 ## Forms, modals and flows (Task 10)
 
+Ran on 2026-11-19 on scratch copies of Mama's and Eye Care (`lab-findings.md`: "Forms, modals and flows on scratch copies"): Mama's passes; Eye Care's faults are fixed on `main`. Step 4 (Indus's blank submission) has not run.
+
 1. On a fresh scratch copy of `local-mamas` and of `local-eye-care`, with the 13 commits of `feature/tr-forms-flows` applied: rerun intake so `intake.json` and `page-map.json` carry `opens`, then `node scripts/computed-route/site-run.mjs <client> --site <copy> --jobs 1`, then `node scripts/computed-route/site-build.mjs <client> --site <copy> --apply`.
-2. Eye Care: each of the 7 openers opens its target. The nav drawer's and the mega menu's size-guide items are expected to fail (not built). "Add my prescription" opens a full-screen `sgs/modal` holding the lens flow; check whether the buy box still shows its own add to basket or the product's flow link swaps it (this settles the open decision on Spec 43 FR-43-25). The size-guide post holds only the dialog's body. The footer frame's `modalRef` needs its post id set until the site build resolves a slug.
+2. Eye Care: each of the 7 openers opens its target. The nav drawer's and the mega menu's size-guide items are expected to fail (not built). "Add my prescription" opens a full-screen `sgs/modal` holding the lens flow; the product's flow link swaps the buy box's add to basket for the opener, and Bean ruled (2026-11-19) that the buy box keeps its own add to basket beside it through Spec 43 FR-43-25's off-by-default setting, which is not built. The size-guide post holds only the dialog's body. The footer frame's `modalRef` needs its post id set until the site build resolves a slug.
 3. Mama's contact page: the order-number field shows only for "My order"; "Baby shower or event" shows the cookie count and the date; after a submission the page shows "message received" and "Thank you! Zainab will be in touch soon."; the rendered `data-flow-product-id` of Build your Zookie is the Zookies product's id, not 0; no product carries `_sgs_choice_flow`.
 4. Indus: `node scripts/computed-route/form-submit-check.mjs indus-foods --site <copy> --form enquiry`. A blank submission is refused with the draft's copy.
 5. `node scripts/computed-route/site-check.mjs <client> --site <copy> --only modals` passes on both; then a planted link to `#modal-missing` and a removed size-guide post must each fail.
