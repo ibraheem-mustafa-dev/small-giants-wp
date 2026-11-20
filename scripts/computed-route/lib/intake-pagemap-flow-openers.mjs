@@ -156,7 +156,7 @@ export function openingWrites( record ) {
 }
 
 // The functions an onClick binding names (`{{ openLens }}`, `{{ item.pick }}`).
-function handlerFns( idx, value ) {
+export function handlerFns( idx, value ) {
 	let expr = null;
 	try {
 		expr = readBinding( value || '' )?.expr;

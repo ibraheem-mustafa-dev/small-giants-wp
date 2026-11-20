@@ -11,6 +11,8 @@
 //   - `rootComponent` and `handoffDir`: the component the served inventory calls `Root` (the draft file's page key,
 //     lib/manifest-build.mjs::pageKeyOf, null when the entry names no draft file) and the handoff folder. A builder that
 //     reads the framework database opens its own (`db` is left to the builder's default);
+//   - `pageRows`: the rows of sites/<client>/build/page-map.json ([] when absent), for the builder that needs to know which flow a
+//     product page opens (lib/template-piece-buybox-flow.mjs::keepsAddToCart);
 //   - `commerce`: the surface's commerce role (lib/skeleton-commerce-region.mjs::commerceOf over sites/<client>/build/page-map.json),
 //     null for a surface that is no WooCommerce page;
 //   - `draftLinks` and `pageRowId`: the client's draft link resolver (lib/draft-link.mjs::draftLinksFor), read only when the
@@ -83,6 +85,7 @@ export function pieceContext( { repo, client, entry, inventory, pieces = [], fac
 	const folder = entry?.draftDir ? path.resolve( repo, entry.draftDir ) : path.join( repo, 'sites', client, 'handoff' );
 	const draftFile = entry?.draftIndex || null;
 	const draftPath = draftFile ? path.join( folder, draftFile ) : null;
+	const pageRows = readRows( path.join( buildDir, 'page-map.json' ) );
 	return {
 		inventory,
 		shopParts: loadShopParts( buildDir ),
@@ -92,7 +95,8 @@ export function pieceContext( { repo, client, entry, inventory, pieces = [], fac
 		factRecord: pieces.some( ( p ) => FACT_KINDS.includes( p.kind ) ) ? facts || loadFacts( client, { repo } ) : null,
 		rootComponent: draftFile ? pageKeyOf( draftFile ) : null,
 		handoffDir: folder,
-		commerce: commerceOf( entry, readRows( path.join( buildDir, 'page-map.json' ) ) ),
+		commerce: commerceOf( entry, pageRows ),
+		pageRows,
 		draftLinks: pieces.some( ( p ) => LINK_KINDS.includes( p.kind ) ) ? draftLinksFor( { repo, client } ) : null,
 		pageRowId: entry?.target?.postId ?? null,
 	};
