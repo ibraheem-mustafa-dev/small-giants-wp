@@ -14,7 +14,9 @@ const SETTLE_MS = 700;
 export const FLOW_ROOT = '[data-wp-interactive="sgs/choice-flow"]';
 
 // In-page: the modals, choice flows and forms on the page, each marked (MARK="modal-<i>" on the dialog and
-// "mtrig-<i>" on its first visible trigger, "flow-<i>", "form-<i>" on the wrapper).
+// "mtrig-<i>" on its first visible trigger, "flow-<i>", "form-<i>" on the wrapper). A flow inside a closed modal dialog (a
+// buy box's flow popup, FR-43-22) carries `popup: { modal, anchor, visibleTrigger }`, naming that modal's marks, so flowItem
+// opens it by the same trigger modalItem uses; a flow in no closed modal carries `popup: null`.
 export function readPartsInPage( mark ) {
 	document.querySelectorAll( `[${ mark }]` ).forEach( ( e ) => e.removeAttribute( mark ) );
 	const visible = ( el ) => ( el.checkVisibility ? el.checkVisibility( { checkVisibilityCSS: true, checkOpacity: true } ) : !! el.offsetParent ) && el.getBoundingClientRect().width > 0;
@@ -25,6 +27,7 @@ export function readPartsInPage( mark ) {
 			return {};
 		}
 	};
+	const modalOf = new Map();
 	const modals = [ ...document.querySelectorAll( 'dialog.sgs-modal__dialog' ) ].map( ( d, i ) => {
 		d.setAttribute( mark, `modal-${ i }` );
 		const anchor = d.parentElement?.id || '';
@@ -34,11 +37,16 @@ export function readPartsInPage( mark ) {
 		];
 		const trigger = triggers.find( visible );
 		trigger && trigger.setAttribute( mark, `mtrig-${ i }` );
-		return { i, id: d.id, anchor, label: d.getAttribute( 'aria-label' ) || '', triggers: triggers.length, visibleTrigger: !! trigger, openOnHash: 'true' === d.dataset.openOnHashLoad };
+		const modal = { i, id: d.id, anchor, label: d.getAttribute( 'aria-label' ) || '', triggers: triggers.length, visibleTrigger: !! trigger, openOnHash: 'true' === d.dataset.openOnHashLoad };
+		modalOf.set( d, modal );
+		return modal;
 	} );
 	const flows = [ ...document.querySelectorAll( '[data-wp-interactive="sgs/choice-flow"]' ) ].map( ( f, i ) => {
 		f.setAttribute( mark, `flow-${ i }` );
-		return { i, flowId: f.dataset.flowId || '', flowSlug: f.dataset.flowSlug || '', label: f.getAttribute( 'aria-label' ) || '', broken: f.classList.contains( 'sgs-choice-flow--broken-reference' ), steps: f.querySelectorAll( '.sgs-form-step' ).length };
+		const dialog = f.closest( 'dialog.sgs-modal__dialog' );
+		const holder = modalOf.get( dialog );
+		const popup = holder && ! dialog.open ? { modal: holder.i, anchor: holder.anchor, visibleTrigger: holder.visibleTrigger } : null;
+		return { i, popup, flowId: f.dataset.flowId || '', flowSlug: f.dataset.flowSlug || '', label: f.getAttribute( 'aria-label' ) || '', broken: f.classList.contains( 'sgs-choice-flow--broken-reference' ), steps: f.querySelectorAll( '.sgs-form-step' ).length };
 	} );
 	const forms = [ ...document.querySelectorAll( '.sgs-form' ) ].filter( ( w ) => w.querySelector( 'form.sgs-form__inner' ) ).map( ( w, i ) => {
 		w.setAttribute( mark, `form-${ i }` );
@@ -90,6 +98,27 @@ export function flowStateInPage( [ mark, id, shownSrc ] ) {
 // One choice flow on the loaded page: its first step shows; picking the first option (and Continue, when the flow
 // shows it) moves to another step; Back returns to the first. Nothing is added to the basket.
 export async function flowItem( page, f, { url, shoot } ) {
+	if ( ! f.popup || f.broken ) {
+		return flowSteps( page, f, { url, shoot } );
+	}
+	// A flow inside a closed modal (a buy box's flow popup) is opened as a shopper opens it, by the modal's own visible
+	// trigger (the one modalItem uses), checked, then closed so the next popup's flow is not behind it.
+	const subject = `choice flow "${ f.label || f.flowId }"`;
+	const selector = `${ FLOW_ROOT }[data-flow-id="${ f.flowId }"]`;
+	const popup = f.popup.anchor ? `#${ f.popup.anchor }` : 'no anchor';
+	if ( ! f.popup.visibleTrigger ) {
+		return { status: 'fail', subject, url, selector, screenshot: await shoot( `flow-${ f.i }-no-opener` ), error: `it sits in a closed popup (${ popup }) that no visible control on the page opens` };
+	}
+	const open = await openDisclosure( page, `mtrig-${ f.popup.modal }`, `modal-${ f.popup.modal }` );
+	if ( ! open.opened ) {
+		return { status: 'fail', subject, url, selector, screenshot: await shoot( `flow-${ f.i }-popup-not-open` ), error: open.navigated ? `its popup's opener (${ popup }) navigated to ${ open.navigated }` : `clicking its popup's opener (${ popup }) did not open the popup` };
+	}
+	const item = await flowSteps( page, f, { url, shoot } );
+	await closeDisclosure( page, `mtrig-${ f.popup.modal }`, `modal-${ f.popup.modal }`, '.sgs-modal__close' );
+	return item;
+}
+
+async function flowSteps( page, f, { url, shoot } ) {
 	const subject = `choice flow "${ f.label || f.flowId }"`;
 	const selector = `${ FLOW_ROOT }[data-flow-id="${ f.flowId }"]`;
 	const id = `flow-${ f.i }`;

@@ -186,6 +186,67 @@ test( 'MUST FAIL: a choice flow that advances and comes back passes; one that ne
 	}
 } );
 
+// A buy box's flow sits in a closed sgs/modal its button opens (FR-43-22), the shape modal/render.php writes. `hasOpener`
+// false leaves no control on the page that opens it. The flow inside is flowHtml's, its ids made unique per popup `n`.
+const popupFlowHtml = ( n, hasOpener ) => `
+	<div class="wp-block-sgs-modal" id="flow-frame-${ n }">${ hasOpener ? `<button type="button" class="sgs-modal__trigger" data-modal-id="pm${ n }" aria-haspopup="dialog">Choose ${ n }</button>` : '' }
+	<dialog id="pm${ n }" class="sgs-modal__dialog" aria-label="Popup ${ n }" data-open-on-hash-load="false"><button type="button" class="sgs-modal__close" aria-label="Close modal">x</button>
+	<div data-wp-interactive="sgs/choice-flow" data-flow-id="${ n }-a" aria-label="Pick ${ n }">
+		<div class="sgs-form-step"><button type="button" class="sgs-choice-flow-question__option-button">Me</button></div>
+		<div class="sgs-form-step" hidden><button type="button" class="sgs-choice-flow-question__option-button">Box</button></div>
+		<button type="button" class="sgs-choice-flow__nav-back" hidden>Back</button>
+	</div></dialog></div>
+	<script>
+		( () => {
+			const d = document.getElementById( 'pm${ n }' ), t = document.querySelector( '[data-modal-id="pm${ n }"]' );
+			t && ( t.onclick = () => d.showModal() );
+			d.querySelector( '.sgs-modal__close' ).onclick = () => d.close();
+			const steps = [ ...d.querySelectorAll( '.sgs-form-step' ) ], back = d.querySelector( '.sgs-choice-flow__nav-back' );
+			const go = ( i ) => { steps.forEach( ( s, k ) => ( s.hidden = k !== i ) ); back.hidden = 0 === i; };
+			steps[ 0 ].querySelector( 'button' ).onclick = () => go( 1 );
+			back.onclick = () => go( 0 );
+		} )();
+	</script>`;
+
+test( 'MUST FAIL: a flow in a closed modal is opened by a visible trigger of its modal and checked, then the modal is closed; with no trigger it fails naming the popup', async () => {
+	const page = await pageWith( popupFlowHtml( 1, true ) + popupFlowHtml( 2, true ) );
+	const { flows } = await page.evaluate( readPartsInPage, MARK );
+	const items = [];
+	for ( const f of flows ) {
+		items.push( await flowItem( page, f, { url: BASE, shoot } ) );
+	}
+	const openAfter = await page.evaluate( () => [ ...document.querySelectorAll( 'dialog' ) ].filter( ( d ) => d.open ).length );
+	await page.close();
+	assert.deepEqual( items.map( ( i ) => i.status ), [ 'pass', 'pass' ], items.map( ( i ) => i.error ).join( ' | ' ) );
+	assert.deepEqual( flows.map( ( f ) => f.popup?.modal ), [ 0, 1 ] );
+	assert.equal( openAfter, 0, 'each popup is closed after its flow is checked, so the next flow is not behind it' );
+	const bare = await pageWith( popupFlowHtml( 1, false ) );
+	const parts = await bare.evaluate( readPartsInPage, MARK );
+	const none = await flowItem( bare, parts.flows[ 0 ], { url: BASE, shoot } );
+	await bare.close();
+	assert.equal( none.status, 'fail' );
+	assert.match( none.error, /closed popup \(#flow-frame-1\) that no visible control on the page opens/ );
+} );
+
+test( 'negative control: a flow outside any modal carries no popup and is checked in place', async () => {
+	const page = await pageWith( flowHtml( true ) );
+	const { flows } = await page.evaluate( readPartsInPage, MARK );
+	const item = await flowItem( page, flows[ 0 ], { url: BASE, shoot } );
+	await page.close();
+	assert.ok( ! flows[ 0 ].popup );
+	assert.equal( item.status, 'pass', item.error );
+} );
+
+test( 'negative control: a flow in a popup that is already open is checked in place, its trigger never clicked', async () => {
+	const page = await pageWith( popupFlowHtml( 3, true ) );
+	await page.evaluate( () => document.getElementById( 'pm3' ).showModal() );
+	const { flows } = await page.evaluate( readPartsInPage, MARK );
+	const item = await flowItem( page, flows[ 0 ], { url: BASE, shoot } );
+	await page.close();
+	assert.ok( ! flows[ 0 ].popup );
+	assert.equal( item.status, 'pass', item.error );
+} );
+
 const formHtml = ( works ) => `
 	<div class="sgs-form" data-wp-interactive="sgs/form" data-wp-context='{"formId":"contact","successMessage":"Thanks!","successRedirect":""}'>
 		<form class="sgs-form__inner" novalidate>
