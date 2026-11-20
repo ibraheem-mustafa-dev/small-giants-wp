@@ -6,9 +6,9 @@
 // pass does (lib/fill-list-content.mjs::matchFields).
 import { attrsFor } from './db.mjs';
 import { matchFields } from './fill-list-content.mjs';
-import { loopFieldElements } from './fill-list-items.mjs';
+import { loopFieldElements, loopContainer } from './fill-list-items.mjs';
 
-// rule: `rules.itemFieldSlots` ({ blocks: [ { block, parts: [ { key, elements: [ css_element ] } ] } ] }); the node's draft element
+// rule: `rules.itemFieldSlots` ({ blocks: [ { block, parts: [ { key, elements: [ css_element ] } ], list?: { elements: [ css_element ] } } ] }); the node's draft element
 // key `rootKey`; inventory and factRecord as the writer holds them; calibrated: the block's calibrated settings; finder( element ):
 // the walker finder of a model element; byKey: the model's elements by key. Returns { slots: { <path>: finder }, notes }.
 export function itemFieldSlots( { rule, db, block, rootKey, inventory, factRecord, rootComponent = null, calibrated = {}, finder, byKey } ) {
@@ -37,6 +37,19 @@ export function itemFieldSlots( { rule, db, block, rootKey, inventory, factRecor
 			'string' === typeof slot && '' !== slot && ! slot.includes( '::' ) && ( out.slots[ slot ] = finder( at ), read++ );
 		}
 		! read && out.notes.push( `the calibration has no element slot for the ${ part.key } part's settings, so the part's look is not read` );
+	}
+	// The block's list part (a timeline's card row) is the element that lays out the loop's copies in the draft, so its gap, tracks
+	// and wrapping settings are read there, never at the block's root, which holds the list and lays nothing out itself.
+	const listElements = entry.list?.elements;
+	if ( listElements?.length ) {
+		const box = loopContainer( { inventory, facts: factRecord, rootKey, rootComponent } );
+		const at = box ? byKey[ box.key ] : null;
+		let read = 0;
+		for ( const r of at ? rows.filter( ( x ) => listElements.includes( x.css_element ) ) : [] ) {
+			const listSlot = calibrated[ r.attr_name ]?.slot;
+			'string' === typeof listSlot && '' !== listSlot && ! listSlot.includes( '::' ) && ( out.slots[ listSlot ] = finder( at ), read++ );
+		}
+		! read && out.notes.push( 'the draft element that lays out the entries, or a calibrated slot for the list part\'s settings, was not found, so the list part\'s look is not read' );
 	}
 	return out;
 }

@@ -54,3 +54,35 @@ test( 'MUST FAIL: the rule names an item key and css_elements the block has', ()
 	assert.equal( bad( [ { block: 'sgs/timeline', parts: [ { key: 'date', elements: [] } ] } ] ).length, 1 );
 	assert.equal( bad( [ { block: 'sgs/noSuchBlock', parts: [ { key: 'date', elements: [ 'date' ] } ] } ] ).length >= 1, true );
 } );
+
+const LIST = '.sgs-timeline__list';
+const LIST_CAL = { slot: LIST };
+
+test( 'MUST FAIL: the card row settings are read at the draft element that lays out the loop, at the calibrated list slot', () => {
+	const n = timeline( page(), { calSettings: () => ( { ...CAL, cardGap: LIST_CAL } ) } );
+	assert.deepEqual( n.draftSlots[ LIST ], { tpl: 'Root/2#0' }, 'the grid element the loop copies sit in (here the timeline root itself)' );
+	assert.deepEqual( n.draftSlots[ DATE ], { tpl: 'Root/4#0' }, 'the entry parts are read as before' );
+} );
+
+test( 'a list part is read at the loop container, which need not be the root (negative control: no list rule, no calibrated slot, no loop)', () => {
+	const nested = N( 'section', {}, [ N( 'div', {}, [ N( 'ul', { style: 'display:grid' }, [ N( 'div', { loop: { list: 'ms', as: 'm', copies: 4 }, row: true, box: [ 150, 100 ] }, [
+		N( 'span', { words: ( c ) => [ '1962', '1972', '1975', 'Now' ][ c ], text: 'm.year' } ), N( 'span', { words: ( c ) => [ 'A shop', 'Formed', 'Packing', 'Customers' ][ c ], text: 'm.title' } ), N( 'span', { words: ( c ) => [ 'First', 'Second', 'Third', 'Fourth' ][ c ], text: 'm.description' } ),
+	] ) ] ) ] ) ] );
+	const cal = () => ( { ...CAL, cardGap: LIST_CAL } );
+	const at = timeline( nested, { calSettings: cal } )?.draftSlots?.[ LIST ];
+	assert.ok( at && 'Root/3#0' === at.tpl, `the list element is the ul the copies sit in, not the root (got ${ JSON.stringify( at ) })` );
+	assert.equal( timeline( page(), { calSettings: () => CAL } ).draftSlots?.[ LIST ], undefined, 'no calibrated slot for the list part: nothing read' );
+	const r = run( page(), LOGIC, { clientDecisions: decided, calSettings: () => CAL } );
+	assert.ok( r.proposal.rows.find( ( x ) => 'sgs/timeline' === x.block ).slotNotes.some( ( t ) => /list part's look is not read/.test( t ) ), 'the missing slot is noted' );
+	const f = facts( REPO );
+	delete f.decisions.rules.itemFieldSlots.blocks[ 0 ].list;
+	assert.equal( decisionsProblems( f ).filter( ( p ) => /itemFieldSlots/.test( p ) ).length, 0, 'a block without a list is valid' );
+} );
+
+test( 'MUST FAIL: a list rule names css_elements the block has', () => {
+	const f = facts( REPO );
+	f.decisions.rules.itemFieldSlots.blocks[ 0 ].list = { elements: [ 'noSuchPart' ] };
+	assert.equal( decisionsProblems( f ).filter( ( p ) => /itemFieldSlots.*list/.test( p ) ).length, 1 );
+	f.decisions.rules.itemFieldSlots.blocks[ 0 ].list = { elements: [] };
+	assert.equal( decisionsProblems( f ).filter( ( p ) => /itemFieldSlots.*list/.test( p ) ).length, 1 );
+} );

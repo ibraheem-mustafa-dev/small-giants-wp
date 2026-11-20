@@ -107,7 +107,7 @@ function loopOf( { inventory, facts, rootKey, rootComponent = null } ) {
 		const t = factOf( facts, e.key, rootComponent );
 		return ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() ) ).filter( ( f ) => f && f.head === loop.as );
 	};
-	return { loop, copies, within, holes };
+	return { loop, copies, within, holes, byKey };
 }
 
 // The draft element of the loop's first copy that prints each item field by itself: { [field]: inventory element }, a field
@@ -125,6 +125,14 @@ export function loopFieldElements( o ) {
 		own.length === 1 && ( out[ own[ 0 ].name ] = e );
 	}
 	return out;
+}
+
+// The draft element that lays out the loop's copies (the parent of the first copy): the element whose gap, tracks and wrapping
+// arrange the entries. null when the element holds no loop. A block's draftSlots at its list part are read from this element.
+export function loopContainer( o ) {
+	const l = loopOf( o );
+	const first = l?.copies[ 0 ];
+	return first ? l.byKey.get( first.parentKey ) ?? null : null;
 }
 
 // The loop items the rendered inventory shows inside `rootKey`: the outermost loop inside the element whose copies print

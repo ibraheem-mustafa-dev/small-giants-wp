@@ -156,6 +156,10 @@ export function decisionsProblems( facts ) {
 			const missing = ( p.elements || [] ).filter( ( c ) => ! facts.q( 'SELECT 1 AS x FROM block_attributes WHERE block_slug = ? AND css_element = ? LIMIT 1', x.block, c ).length );
 			( ! p.key || ! ( p.elements || [] ).length || missing.length ) && problems.push( `rules.itemFieldSlots.blocks[${ i }] part ${ p.key } must name an item key and css_elements ${ x.block } has` );
 		} );
+		if ( x.list ) {
+			const missing = ( x.list.elements || [] ).filter( ( c ) => ! facts.q( 'SELECT 1 AS x FROM block_attributes WHERE block_slug = ? AND css_element = ? LIMIT 1', x.block, c ).length );
+			( ! ( x.list.elements || [] ).length || missing.length ) && problems.push( `rules.itemFieldSlots.blocks[${ i }] list must name css_elements ${ x.block } has` );
+		}
 	} );
 	const ti = r.marquee?.textItems;
 	if ( ti && [ ti.items?.setting, ...Object.keys( ti.attributes || {} ) ].some( ( a ) => ! a || ! facts.attr( r.marquee.logoBlock, a ) ) ) {

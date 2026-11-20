@@ -472,9 +472,9 @@
 		},
 		"itemFieldSlots": {
 			"blocks": [
-				{ "block": "sgs/timeline", "parts": [ { "key": "date", "elements": [ "date", "dateRing" ] }, { "key": "title", "elements": [ "title" ] }, { "key": "description", "elements": [ "description-text" ] } ] }
+				{ "block": "sgs/timeline", "parts": [ { "key": "date", "elements": [ "date", "dateRing" ] }, { "key": "title", "elements": [ "title" ] }, { "key": "description", "elements": [ "description-text" ] } ], "list": { "elements": [ "strip" ] } }
 			],
-			"scope": "a listed block that draws its entries from a loop of the draft: the draft element of the loop's first copy that prints the entry's field (the field the list pass puts into the part's item key, a draft `year` into the timeline's `date`) is where the settings of the part's css_elements are read, at the slot calibration measured them at (lib/skeleton-item-field-slots.mjs). An element printing two fields, or no calibrated slot for the part's settings, gives no slot and a note on the row",
+			"scope": "a listed block that draws its entries from a loop of the draft: the draft element of the loop's first copy that prints the entry's field (the field the list pass puts into the part's item key, a draft `year` into the timeline's `date`) is where the settings of the part's css_elements are read, at the slot calibration measured them at (lib/skeleton-item-field-slots.mjs). An element printing two fields, or no calibrated slot for the part's settings, gives no slot and a note on the row. A block's `list` names the css_elements of the part that holds the entries (a timeline's card row): the draft element that lays out the loop's copies is where their settings (the gap between cards) are read, at the slot calibration measured them at",
 			"reason": "a timeline's year ring is the element that prints the entry's date: its size, border, fill, radius, shadow and padding are the block's year-ring settings, and its type the date settings, read at the draft's own ring and not at the timeline's root, where they paint nothing; the entry's title and its description are parts of the same kind (their colour, size and weight settings are read at the draft's own title and description, not at the root, which none of them paint)"
 		},
 		"marquee": {

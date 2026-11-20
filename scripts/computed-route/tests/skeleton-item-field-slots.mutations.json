@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/skeleton-item-field-slots.mjs",
-		"find": "! read && out.notes.push(",
-		"replace": "false && out.notes.push(",
+		"find": "! read && out.notes.push( `the calibration has no element slot",
+		"replace": "false && out.notes.push( `the calibration has no element slot",
 		"why": "a part with no calibrated slot says nothing"
 	},
 	{
@@ -67,8 +67,50 @@
 	},
 	{
 		"file": "lib/skeleton-item-field-slots.mjs",
-		"find": "! read && out.notes.push(",
-		"replace": "! Object.keys( out.slots ).length && out.notes.push(",
+		"find": "! read && out.notes.push( `the calibration has no element slot",
+		"replace": "! Object.keys( out.slots ).length && out.notes.push( `the calibration has no element slot",
 		"why": "a part with no calibrated slot is noted only while no other part has one"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "const box = loopContainer( { inventory, facts: factRecord, rootKey, rootComponent } );",
+		"replace": "const box = { key: rootKey };",
+		"why": "the list part is read at the timeline's root, not at the element that lays out the loop"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "rows.filter( ( x ) => listElements.includes( x.css_element ) )",
+		"replace": "rows.filter( ( x ) => x.css_element )",
+		"why": "every setting of the block is read at the list element"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "if ( listElements?.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a list rule reads nothing"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "! read && out.notes.push( 'the draft element that lays out",
+		"replace": "false && out.notes.push( 'the draft element that lays out",
+		"why": "a list part with no slot says nothing"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "return first ? l.byKey.get( first.parentKey ) ?? null : null;",
+		"replace": "return first ?? null;",
+		"why": "the loop container is the first copy itself"
+	},
+	{
+		"file": "lib/skeleton-facts.mjs",
+		"find": "( ! ( x.list.elements || [] ).length || missing.length )",
+		"replace": "false",
+		"why": "a list rule naming no or an unknown css_element is accepted"
+	},
+	{
+		"file": "lib/skeleton-item-field-slots.mjs",
+		"find": "'string' === typeof listSlot && '' !== listSlot && ! listSlot.includes( '::' ) && ( out.slots[ listSlot ] = finder( at ), read++ );",
+		"replace": "( out.slots[ listSlot ?? '' ] = finder( at ), read++ );",
+		"why": "a list setting with no calibrated slot is read at the root"
 	}
 ]
