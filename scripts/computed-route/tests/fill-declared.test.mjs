@@ -94,7 +94,9 @@ p.note { margin: 0; position: relative; height: 2.625rem; cursor: pointer; backg
 main { position: relative }
 p.tag { margin: 0; position: absolute; top: 10%; display: grid; grid-template-rows: 1fr auto }
 @media (min-width: 1000px) { p.tag { overflow-x: hidden } }
-</style></head><body><main><h1>Hello</h1><p class="note">Note</p><p class="tag">Tag</p></main></body></html>`;
+p.band { margin: 0; height: 82vh }
+@media (min-width: 1000px) { p.band { height: min(84vh, 820px) } }
+</style></head><body><main><h1>Hello</h1><p class="note">Note</p><p class="tag">Tag</p><p class="band">Band</p></main></body></html>`;
 const DEFAULT = { display: 'block', color: 'rgb(20, 20, 20)', 'font-size': '16px', 'margin-top': '0px', 'margin-right': '0px', 'margin-bottom': '0px', 'margin-left': '0px' };
 const tiers = ( paint ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { ...paint } ] ) );
 const setting = ( property, extra = {} ) => ( { slot: '', slots: [ '' ], reaches: [ '' ], property, state: null, forms: [], transform: null, reachedAt: [ 375, 768, 1440 ], effects: [], variants: [ 0 ], ...extra } );
@@ -103,7 +105,7 @@ const CAL = {
 	heading: { block: 'sgs/heading', elements: { '': tiers( DEFAULT ) }, settings: { textColour: setting( 'color', { forms: [ 'hex', 'slug' ] } ), fontSize: setting( 'font-size' ), margin: setting( 'margin' ) }, discovered: {}, text: { content: { path: '', reachedAt: [ 375, 768, 1440 ] } } },
 	container: { block: 'sgs/container', elements: { '': tiers( DEFAULT ) }, settings: { margin: setting( 'margin' ) }, discovered: {} },
 };
-const SKELETON = [ { name: 'sgs/container', draftRef: 'main', attributes: { tagName: 'main' }, innerBlocks: [ { name: 'sgs/heading', draftRef: 'h1', attributes: { level: 'h1' } }, { name: 'sgs/text', draftRef: 'p.note', attributes: {} }, { name: 'sgs/text', draftRef: 'p.tag', attributes: {} } ] } ];
+const SKELETON = [ { name: 'sgs/container', draftRef: 'main', attributes: { tagName: 'main' }, innerBlocks: [ { name: 'sgs/heading', draftRef: 'h1', attributes: { level: 'h1' } }, { name: 'sgs/text', draftRef: 'p.note', attributes: {} }, { name: 'sgs/text', draftRef: 'p.tag', attributes: {} }, { name: 'sgs/text', draftRef: 'p.band', attributes: {} } ] } ];
 
 let result;
 before( async () => {
@@ -163,6 +165,22 @@ test( 'MUST FAIL, end to end: an offset is the declared percentage, not laid-out
 	assert.ok( tag[ 'grid-template-rows|np' ], 'a track list is named, not written as pixels or dropped' );
 	const ox = tag[ 'overflow-x|v' ];
 	assert.ok( ox && /375/.test( JSON.stringify( ox.value ) ) && /visible/.test( JSON.stringify( ox.value ) ) && /hidden/.test( JSON.stringify( ox.value ) ), `overflow-x read at every width: ${ JSON.stringify( ox?.value ) }` );
+} );
+
+test( 'MUST FAIL, end to end: a height no setting holds, plain below 1000px and a min() above, is one row stating each width own value, never the phone value at every width', () => {
+	const bandNode = named().find( ( u ) => 'height' === u.property && /82vh/.test( JSON.stringify( u.value ) ) )?.node;
+	assert.ok( bandNode, 'the height is named or written as residual CSS' );
+	const rows = named().filter( ( u ) => u.node === bandNode && 'height' === u.property );
+	assert.equal( rows.length, 1, JSON.stringify( rows.map( ( r ) => [ r.value, r.reason ] ) ) );
+	const css = result.residualCss.rules.filter( ( r ) => r.node === bandNode && r.declarations.some( ( d ) => /^height/.test( d ) ) );
+	assert.ok( css.length, 'written as Custom CSS' );
+	const text = css.map( ( r ) => r.css ).join( ' ' );
+	assert.match( text, /min\(84vh, 820px\)/, text );
+	assert.match( text, /82vh/, text );
+	assert.ok( css.every( ( r ) => ! /every width/.test( r.range ) ), 'not one value for every width' );
+	// Negative control: a property declared the same plain value at every width stays one scalar row.
+	const note = named().find( ( u ) => 'height' === u.property && /2\.625rem/.test( JSON.stringify( u.value ) ) );
+	assert.ok( note && ! /\{/.test( String( note.value ) ), `a uniform height keeps its scalar value: ${ JSON.stringify( note?.value ) }` );
 } );
 
 test( 'MUST FAIL: the council fixes, unit by unit: shorthands, widths a property is missing at, used-value forms, layered !important, and a record for every write', async () => {

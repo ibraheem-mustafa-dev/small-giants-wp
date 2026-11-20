@@ -193,6 +193,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		let draft = allDrafts[ prop ];
 		let rendered = null;
 		let notPlain = [];
+		let notPlainDeclared = {};
 		// A 0s transition duration the draft never declares is the CSS initial value, not a design value (lib/fill-prop.mjs::
 		// notPainted). It stays among the element's other draft properties (`allDrafts`, the context the resolver breaks ties
 		// with) and is left out of what is resolved here, as a settled row.
@@ -252,6 +253,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			const u = usedValueDrafts( draft, ( w ) => st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] );
 			rendered = { ...draft };
 			notPlain = u.notPlain.map( ( n ) => ( { slot, property: prop, value: n.declared, reason: `not-plain: the code declares ${ n.declared } at ${ n.width }px, which no setting holds as a length (the rendered pixels are a layout result)` } ) );
+			notPlainDeclared = Object.fromEntries( u.notPlain.map( ( n ) => [ String( n.width ), String( n.declared ).trim() ] ) );
 			draft = u.draft;
 			// A width the code declares no length at (nothing, auto or a CSS-wide keyword) renders a layout result.
 			const undeclared = Object.keys( rendered ).filter( ( w ) => ! ( w in draft ) && ! u.notPlain.some( ( n ) => String( n.width ) === w ) );
@@ -283,14 +285,18 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		const inState = target.state && ! layer ? resolveProperty( { ...input, state: target.state } ) : null;
 		const res = writesOwnSlot( inState, cal, target.slot ) ? inState : resolveProperty( input );
 		const eq = 'gap' === res.status && 'no-setting' === res.gap && ! layer ? fillEquivalent( st, rec, target, prop, draft, { baselineFn, apply } ) : null;
-		notPlain.forEach( ( row ) => unmapped( st, rec, ref, row ) );
+		// A property no setting of the block holds (no-setting), stated plain at some widths and in another form at the rest
+		// (a hero's `82vh` on a phone, `min(84vh, 820px)` above), is one row stating every width's declared value, so the
+		// residual pass writes each width's own expression; a row carrying the plain width alone would read as every width.
+		const stated = 'gap' === res.status && 'no-setting' === res.gap && ( ! eq || 'gap' === eq.status ) && Object.keys( notPlainDeclared ).length ? { ...draft, ...notPlainDeclared } : null;
+		( stated ? [] : notPlain ).forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		if ( 'equal' === res.status || 'equal' === eq?.status ) {
 			settled( st, rec, ref, { slot, property: prop, value: valueText( draft ), widths: Object.keys( draft ).map( Number ), reason: 'equal', detail: 'the element already shows this value at every width (its parent, the theme or its calibrated default paint)' } );
 		}
 		if ( 'gap' === res.status && ( ! eq || 'gap' === eq.status ) ) {
 			const ran = 'no-setting' === res.gap ? checksRan( { layer, alternates, res, eq } ) : {};
 			const why = Object.entries( ran.skipped || {} ).map( ( [ check, reason ] ) => `${ check }: not asked: ${ reason }` );
-			unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }${ why.map( ( w ) => `; ${ w }` ).join( '' ) }`, ...( res.code ? { code: res.code } : {} ), ...ran } );
+			unmapped( st, rec, ref, { slot, property: prop, value: valueText( stated ?? draft ), reason: `${ res.gap }: ${ res.detail }${ eq ? `; ${ eq.detail }` : '' }${ why.map( ( w ) => `; ${ w }` ).join( '' ) }`, ...( res.code ? { code: res.code } : {} ), ...ran } );
 			// A no-setting row on an element's own box goes to the part-wide pass (lib/fill-ancestor.mjs::partWideWrites), which asks the enclosing blocks.
 			'no-setting' === res.gap && ! layer && ( st.hopRows ??= [] ).push( { row: st.out.unmapped.at( -1 ), rec, target, prop, draft: { ...draft }, siblings: allDrafts } );
 		} else if ( 'written' === res.status ) {
