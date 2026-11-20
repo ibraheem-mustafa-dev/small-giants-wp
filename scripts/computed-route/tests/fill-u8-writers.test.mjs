@@ -75,21 +75,37 @@ const planted = ( tiers ) => ( {
 	unmapped: [ { node: 'cr-ref-f-9', block: 'sgs/responsive-logo', slot: '', property: 'width', code: 'one-value-every-width', reason: 'shape: width holds one value for every width; draft has 260px, 200px' } ],
 } );
 
-test( 'a logo block\'s size settings come from the framework DB: an unresponsive width and a tier-object max-width', () => {
-	assert.deepEqual( logoSizeSettings( db, 'sgs/responsive-logo' ), { width: 'width', max: 'maxWidth' } );
+test( 'a logo block\'s size settings come from the framework DB: per-device numeric width siblings, else an unresponsive width and a tier-object max-width', () => {
+	assert.deepEqual( logoSizeSettings( db, 'sgs/responsive-logo' ), { width: 'width', tablet: 'widthTablet', mobile: 'widthMobile' } );
 	assert.equal( logoSizeSettings( db, 'sgs/container' ), null );
 	const stub = ( rows ) => ( { prepare: ( sql ) => ( { all: () => rows, get: () => undefined } ) } );
+	const pair = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'maxWidth', css_property: 'max-width', is_responsive: 1, tier_shape: 'tier_object' } ] );
+	assert.deepEqual( logoSizeSettings( pair, 'sgs/x' ), { width: 'width', max: 'maxWidth' }, 'a block with no width siblings takes the per-device ceiling' );
+	const fontSibling = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'widthMobile', css_property: 'font-size', is_responsive: 1, tier_shape: null } ] );
+	assert.equal( logoSizeSettings( fontSibling, 'sgs/x' ), null, 'a sibling name that paints another property is no width sibling (negative control)' );
 	const untiered = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'maxWidth', css_property: 'max-width', is_responsive: 0, tier_shape: null } ] );
 	assert.equal( logoSizeSettings( untiered, 'sgs/x' ), null, 'a max width that is not a tier object cannot take per-device sizes' );
 } );
 
-test( 'MUST FAIL: a footer logo 200px on mobile is written as the per-device max width in lengths, the gap row is gone, and only differing tiers are written', () => {
+test( 'MUST FAIL: a footer logo 200px on mobile is written as the per-device widths, the gap row is gone, and only differing tiers are written', () => {
 	const p = planted( { 1440: 260, 768: 260, 375: 200 } );
 	const r = logoSizeWrites( p );
-	assert.deepEqual( p.flat[ 0 ].attributes.maxWidth, { desktop: '260px', mobile: '200px' } );
+	assert.equal( p.flat[ 0 ].attributes.width, 260 );
+	assert.equal( p.flat[ 0 ].attributes.widthMobile, 200 );
+	assert.equal( p.flat[ 0 ].attributes.widthTablet, undefined, 'a tablet width equal to the desktop one is left unset' );
+	assert.equal( p.flat[ 0 ].attributes.maxWidth, undefined, 'the per-device widths, not the ceiling' );
 	assert.deepEqual( r.unmapped, [] );
-	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.prop, w.how ] ), [ [ 'maxWidth', 'width', 'logo-size' ] ] );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.prop, w.how ] ), [ [ 'width', 'width', 'logo-size' ], [ 'widthMobile', 'width', 'logo-size' ] ] );
 	assert.match( r.notes[ 0 ], /260px at desktop, 260px at tablet, 200px at mobile/ );
+} );
+
+test( 'a block with one width and a per-device ceiling takes the ceiling in lengths (the older shape)', () => {
+	const p = planted( { 1440: 260, 768: 260, 375: 200 } );
+	const rows = [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'maxWidth', css_property: 'max-width', is_responsive: 1, tier_shape: 'tier_object' } ];
+	p.db = { prepare: () => ( { all: () => rows, get: () => undefined } ) };
+	logoSizeWrites( p );
+	assert.deepEqual( p.flat[ 0 ].attributes.maxWidth, { desktop: '260px', mobile: '200px' } );
+	assert.equal( p.flat[ 0 ].attributes.widthMobile, undefined );
 } );
 
 test( 'a gap on another property, another slot or a block without the pair is left as it was', () => {
