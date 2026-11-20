@@ -9,7 +9,7 @@ import { resolvedWidths, renderedWidths, pxOf } from './element-facts.mjs';
 import { copylessKey, templateKey } from './fact-key.mjs';
 
 // The looks a box can carry that a block must read to draw it as the draft does.
-export const LOOKS = [ 'background', 'border', 'shadow', 'radius', 'padding', 'width', 'max-width', 'margin-auto', 'text-centre' ];
+export const LOOKS = [ 'background', 'border', 'shadow', 'radius', 'padding', 'width', 'max-width', 'margin-auto', 'text-centre', 'layout', 'glyph', 'height', 'text-decoration' ];
 
 const NONE = new Set( [ '', 'none', 'initial', 'unset', 'inherit', 'revert', 'normal' ] );
 const NO_COLOUR = new Set( [ '', 'initial', 'unset', 'inherit', 'transparent', 'rgba(0, 0, 0, 0)', 'currentcolor' ] );
@@ -17,6 +17,11 @@ const BORDER_STYLE = /\b(?:solid|dashed|dotted|double|groove|ridge|inset|outset)
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 const CORNERS = [ 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius' ];
 const FILLS = new Set( [ '', 'auto', '100%', 'none', 'initial', 'unset', 'inherit' ] );
+const TRANSPARENT = /\btransparent\b|rgba\(\s*0,\s*0,\s*0,\s*0\s*\)/;
+// The elements whose own height is their picture's size (a logo's declared height sizes it).
+const REPLACED = new Set( [ 'img', 'svg', 'video', 'canvas', 'picture' ] );
+// The display values that lay children out as a row, column or grid.
+const LAYS_OUT = new Set( [ 'flex', 'inline-flex', 'grid', 'inline-grid' ] );
 
 const low = ( v ) => String( v ?? '' ).trim().toLowerCase();
 const zero = ( v ) => NONE.has( low( v ) ) || /^(?:0(?:\.0+)?(?:px|rem|em|%)?\s*)+$/.test( low( v ) );
@@ -50,17 +55,19 @@ const boxSides = ( value ) => {
 	return [ p[ 0 ], p[ 1 ] ?? p[ 0 ], p[ 2 ] ?? p[ 0 ], p[ 3 ] ?? p[ 1 ] ?? p[ 0 ] ];
 };
 
-// The looks a set of declarations paints ({ property: value }, as declared or as the style attribute renders them).
-export function declaredLooks( st ) {
+// The looks a set of declarations paints ({ property: value }, as declared or as the style attribute renders them). `tag` is
+// the element's: a replaced element's declared height sizes it, an svg with a stroke or fill is a drawn glyph, and a link's
+// `text-decoration: none` is a look (a link is underlined unless told otherwise).
+export function declaredLooks( st, tag = '' ) {
 	const has = ( name ) => undefined !== st[ name ] && '' !== low( st[ name ] );
 	const looks = new Set();
 	if ( ( has( 'background-color' ) && ! NO_COLOUR.has( low( st[ 'background-color' ] ) ) ) || ( has( 'background-image' ) && ! NONE.has( low( st[ 'background-image' ] ) ) ) || ( has( 'background' ) && ! NONE.has( low( st.background ) ) && ! NO_COLOUR.has( low( st.background ) ) ) ) {
 		looks.add( 'background' );
 	}
-	const shorthand = [ 'border', ...SIDES.map( ( s ) => `border-${ s }` ) ].some( ( n ) => has( n ) && BORDER_STYLE.test( low( st[ n ] ) ) && ! /^0(?:px)?\s/.test( low( st[ n ] ) ) );
+	const shorthand = [ 'border', ...SIDES.map( ( s ) => `border-${ s }` ) ].some( ( n ) => has( n ) && BORDER_STYLE.test( low( st[ n ] ) ) && ! /^0(?:px)?\s/.test( low( st[ n ] ) ) && ! TRANSPARENT.test( low( st[ n ] ) ) );
 	const widths = has( 'border-width' ) ? boxSides( st[ 'border-width' ] ) : SIDES.map( ( s ) => st[ `border-${ s }-width` ] );
 	const styles = has( 'border-style' ) ? boxSides( st[ 'border-style' ] ) : SIDES.map( ( s ) => st[ `border-${ s }-style` ] );
-	if ( shorthand || SIDES.some( ( s, i ) => undefined !== widths[ i ] && ! zero( widths[ i ] ) && BORDER_STYLE.test( low( styles[ i ] ) ) ) ) {
+	if ( shorthand || ( ! TRANSPARENT.test( low( st[ 'border-color' ] ) ) && SIDES.some( ( s, i ) => undefined !== widths[ i ] && ! zero( widths[ i ] ) && BORDER_STYLE.test( low( styles[ i ] ) ) ) ) ) {
 		looks.add( 'border' );
 	}
 	has( 'box-shadow' ) && ! NONE.has( low( st[ 'box-shadow' ] ) ) && looks.add( 'shadow' );
@@ -73,6 +80,10 @@ export function declaredLooks( st ) {
 		looks.add( 'margin-auto' );
 	}
 	'center' === low( st[ 'text-align' ] ) && looks.add( 'text-centre' );
+	REPLACED.has( tag ) && has( 'height' ) && ! FILLS.has( low( st.height ) ) && looks.add( 'height' );
+	'svg' === tag && [ 'stroke', 'fill' ].some( ( n ) => has( n ) && ! NONE.has( low( st[ n ] ) ) ) && looks.add( 'glyph' );
+	const line = low( st[ 'text-decoration-line' ] ?? st[ 'text-decoration' ] );
+	'' !== line && ( 'a' === tag || ! /^none\b/.test( line ) ) && looks.add( 'text-decoration' );
 	return looks;
 }
 
@@ -94,7 +105,9 @@ export function computedLooks( values, parentValues = null ) {
 // What an element paints: { look: [ widths ] } over the widths it renders at, empty when it paints nothing or renders at no
 // width. Computed values are read per width where the inventory holds them; the declared styles (`declared`, the fact
 // record's, lib/skeleton-record.mjs::recordView().declared) and the rendered style attribute hold at every rendered width.
-export function paintsBox( element, { declared = {}, parent = null } = {} ) {
+// `children` is how many elements it directly holds: a flex or grid box holding two or more lays them out, and dissolving it
+// loses their grouping (`layout`).
+export function paintsBox( element, { declared = {}, parent = null, children = 0 } = {} ) {
 	const widths = renderedWidths( element );
 	const out = {};
 	const add = ( look, w ) => {
@@ -103,7 +116,8 @@ export function paintsBox( element, { declared = {}, parent = null } = {} ) {
 	if ( ! widths.length ) {
 		return out;
 	}
-	const stated = new Set( [ ...declaredLooks( declared ), ...declaredLooks( styleOf( element.attrs?.style ) ) ] );
+	const stated = new Set( [ ...declaredLooks( declared, element.tag ), ...declaredLooks( styleOf( element.attrs?.style ), element.tag ) ] );
+	children >= 2 && LAYS_OUT.has( low( element.display ) ) && stated.add( 'layout' );
 	for ( const w of widths ) {
 		stated.forEach( ( look ) => add( look, w ) );
 	}
@@ -124,8 +138,9 @@ export const BAND_LOOKS = [ 'width', 'max-width', 'margin-auto' ];
 const BAND_KEY = 'draftBandWrappers';
 
 // The draft elements a skeleton tree names, by what the finder reads: Map( key -> 'full' | 'band' ). Every `{ tpl }` finder
-// on a node counts, whatever property carries it (the node's own element, its slots, its item template, its width
-// alternatives), never a value in its attributes or fingerprint. A finder under `draftBandWrappers` reads the box's width cap
+// on a node counts, whatever property carries it (the node's own element, its slots, its item template), and so does a
+// width alternative's `{ key, shown }` (the element the node is read at on other widths), never a value in its attributes
+// or fingerprint. A finder under `draftBandWrappers` reads the box's width cap
 // only (`band`); an element another finder also names is read in full.
 export function namedReads( tree ) {
 	const out = new Map();
@@ -133,7 +148,8 @@ export function namedReads( tree ) {
 		if ( Array.isArray( v ) ) {
 			v.forEach( ( x ) => find( x, kind ) );
 		} else if ( v && 'object' === typeof v ) {
-			'string' === typeof v.tpl && ( 'full' === kind || ! out.has( v.tpl ) ) && out.set( v.tpl, kind );
+			const named = 'string' === typeof v.tpl ? v.tpl : 'string' === typeof v.key && Array.isArray( v.shown ) ? v.key : null;
+			null !== named && ( 'full' === kind || ! out.has( named ) ) && out.set( named, kind );
 			Object.values( v ).forEach( ( x ) => find( x, kind ) );
 		}
 	};
@@ -195,7 +211,8 @@ export function droppedBy( row, rows, depth = 0 ) {
 // holds in its own inventory (a form's fields on the page that shows the form: the form's surface lists them, once);
 // `component` is this surface's draft file name without its extension; `view` is a fact record view (optional). Returns
 // { rows, counts } where counts holds the elements painted, read exactly, read through a loop copy, read through a copy under
-// another host instance, read by another surface, and left to the narrower surface that holds them.
+// another host instance, read through a sibling of the same tag and style that a node names (a static list whose first
+// link is the slot), read by another surface, and left to the narrower surface that holds them.
 // Row: { key, tag, words, looks, class, action, rule, by, into, host, hostBlock, hostSlots }.
 //   class: `unwrapped` (the wrapper went and nothing records where its look goes), `band-only` (the wrapper went and a band
 //   finder reads its width cap, so `looks` holds only the paint that finder does not read), `host-unread` (absorbed into a
@@ -210,7 +227,12 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	const full = [ ...named ].filter( ( k ) => 'full' === reads.get( k ) );
 	const loops = new Set( full.map( loopOf ) );
 	const templates = new Set( full.map( templateOf ) );
-	const counts = { painted: 0, exact: 0, loopCopy: 0, instanceCopy: 0, otherSurface: 0, ownedElsewhere: 0, unread: 0 };
+	const counts = { painted: 0, exact: 0, loopCopy: 0, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, unread: 0 };
+	const kids = new Map();
+	elements.forEach( ( e ) => kids.set( e.parentKey, ( kids.get( e.parentKey ) ?? 0 ) + 1 ) );
+	// A sibling's signature: its parent, tag and style attribute. An element with no style attribute has none.
+	const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.parentKey, e.tag, e.attrs.style ] ) : null );
+	const readSiblings = new Set( full.map( ( k ) => byKey.get( k ) ).filter( Boolean ).map( signature ).filter( Boolean ) );
 	const out = [];
 	const hostOf = ( row ) => {
 		let r = row;
@@ -220,7 +242,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 		return r && r !== row ? r : null;
 	};
 	for ( const e of elements ) {
-		const painted = paintsBox( e, { declared: view?.declared?.( e ) ?? {}, parent: byKey.get( e.parentKey ) ?? null } );
+		const painted = paintsBox( e, { declared: view?.declared?.( e ) ?? {}, parent: byKey.get( e.parentKey ) ?? null, children: kids.get( e.key ) ?? 0 } );
 		if ( ! Object.keys( painted ).length ) {
 			continue;
 		}
@@ -249,6 +271,10 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 		}
 		if ( templates.has( templateOf( e.key ) ) ) {
 			counts.instanceCopy++;
+			continue;
+		}
+		if ( readSiblings.has( signature( e ) ) ) {
+			counts.siblingCopy++;
 			continue;
 		}
 		const elsewhere = otherSurfaces.find( ( s ) => s.identities.has( identityOf( e, component ) ) );

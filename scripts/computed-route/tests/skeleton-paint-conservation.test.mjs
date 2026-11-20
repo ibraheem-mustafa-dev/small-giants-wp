@@ -46,6 +46,63 @@ test( 'declaredLooks names each look a declaration paints, and nothing for value
 	}
 } );
 
+test( 'the looks a tag gives: a replaced element\'s height, an svg glyph, a link\'s underline; and a transparent border is no paint', () => {
+	const looks = ( text, tag ) => [ ...declaredLooks( styleOf( text ), tag ) ].sort();
+	assert.deepEqual( looks( 'height: 60px; width: auto; display: block', 'img' ), [ 'height' ] );
+	assert.deepEqual( looks( 'height: 60px', 'div' ), [], 'a box\'s height is not a look of its own' );
+	assert.deepEqual( looks( 'height: auto', 'img' ), [] );
+	assert.deepEqual( looks( 'fill: none; stroke: currentcolor; stroke-width: 1.8', 'svg' ), [ 'glyph' ] );
+	assert.deepEqual( looks( 'fill: none; stroke: none', 'svg' ), [] );
+	assert.deepEqual( looks( 'fill: red', 'span' ), [], 'only an svg is a glyph' );
+	assert.deepEqual( looks( 'text-decoration: none', 'a' ), [ 'text-decoration' ], 'a link told not to underline' );
+	assert.deepEqual( looks( 'text-decoration: none', 'span' ), [] );
+	assert.deepEqual( looks( 'text-decoration-line: underline', 'span' ), [ 'text-decoration' ] );
+	assert.deepEqual( looks( 'text-decoration: underline dotted', 'p' ), [ 'text-decoration' ] );
+	assert.deepEqual( looks( 'border: 1px solid transparent' ), [] );
+	assert.deepEqual( looks( 'border-bottom: 2px solid rgba(0, 0, 0, 0)' ), [] );
+	assert.deepEqual( looks( 'border-width: 1px; border-style: solid; border-color: transparent' ), [] );
+	assert.deepEqual( looks( 'border-width: 1px; border-style: solid; border-color: rgb(1, 2, 3)' ), [ 'border' ] );
+} );
+
+test( 'a flex or grid box holding two or more elements lays them out; one child, or a block box, does not', () => {
+	const box = ( display, children ) => Object.keys( paintsBox( el( 'Root/1#0', 'gap: 18px', { display } ), { children } ) );
+	assert.deepEqual( box( 'flex', 3 ), [ 'layout' ] );
+	assert.deepEqual( box( 'inline-grid', 2 ), [ 'layout' ] );
+	assert.deepEqual( box( 'flex', 1 ), [] );
+	assert.deepEqual( box( 'block', 3 ), [] );
+	assert.deepEqual( box( undefined, 3 ), [] );
+	// conservationRows counts the children itself: an unwrapped flex column of three is a row for its layout alone.
+	const inventory = { elements: [ el( 'Root/1#0', null ), el( 'Root/2#0', 'gap: 18px', { parentKey: 'Root/1#0', display: 'flex' } ), ...[ 3, 4, 5 ].map( ( n ) => el( `Root/${ n }#0`, null, { parentKey: 'Root/2#0' } ) ) ] };
+	const proposal = { rows: [ row( 'Root/2#0', { action: 'unwrap', rule: 'heroInner' } ) ] };
+	const r = conservationRows( { inventory, proposal, skeleton: [ node( 'sgs/hero', 'Root/1#0', { innerBlocks: [ 3, 4, 5 ].map( ( n ) => node( 'sgs/text', `Root/${ n }#0` ) ) } ) ] } );
+	assert.deepEqual( r.rows.map( ( x ) => [ x.key, x.class, Object.keys( x.looks ) ] ), [ [ 'Root/2#0', 'unwrapped', [ 'layout' ] ] ] );
+} );
+
+test( 'a static sibling of the same tag and style as a read sibling is read through it; a different style or parent is not', () => {
+	const link = 'padding: 8px 12px; border-bottom: 1px solid rgb(1, 2, 3)';
+	const inventory = { elements: [
+		el( 'Root/1#0', null ),
+		el( 'Root/2#0', link, { parentKey: 'Root/1#0', tag: 'a' } ),
+		el( 'Root/3#0', link, { parentKey: 'Root/1#0', tag: 'a' } ),
+		el( 'Root/4#0', 'padding: 8px 12px; border-bottom: 3px solid rgb(9, 9, 9)', { parentKey: 'Root/1#0', tag: 'a' } ),
+		el( 'Root/5#0', link, { parentKey: 'Root/9#0', tag: 'a' } ),
+		el( 'Root/6#0', link, { parentKey: 'Root/1#0', tag: 'span' } ),
+	] };
+	const skeleton = [ node( 'sgs/nav', 'Root/1#0', { draftSlots: { '.item:nth-of-type(1)': { tpl: 'Root/2#0' } } } ) ];
+	const r = conservationRows( { inventory, proposal: { rows: [] }, skeleton } );
+	assert.equal( r.counts.siblingCopy, 1 );
+	assert.deepEqual( r.rows.map( ( x ) => x.key ), [ 'Root/4#0', 'Root/5#0', 'Root/6#0' ] );
+	// A band finder is no representative: its siblings' paint is still unread.
+	const band = conservationRows( { inventory, proposal: { rows: [] }, skeleton: [ node( 'sgs/nav', 'Root/1#0', { draftBandWrappers: [ { tpl: 'Root/2#0' } ] } ) ] } );
+	assert.equal( band.counts.siblingCopy, 0 );
+} );
+
+test( 'a width alternative names its element by key', () => {
+	const tree = [ node( 'sgs/site-header-row', 'Root/1#0', { widthAlternatives: [ { key: 'Root/15#0', shown: [ 375, 768 ] } ], attributes: { other: { key: 'Root/99#0', shown: [ 375 ] } } } ) ];
+	assert.deepEqual( [ ...namedReads( tree ) ], [ [ 'Root/1#0', 'full' ], [ 'Root/15#0', 'full' ] ] );
+	assert.deepEqual( [ ...namedReads( [ node( 'sgs/x', 'Root/1#0', { other: { key: 'Root/7#0' } } ) ] ) ], [ [ 'Root/1#0', 'full' ] ], 'a key with no shown list is not a finder' );
+} );
+
 test( 'computedLooks reads only the values the inventory recorded, and an inherited text alignment counts once', () => {
 	const looks = ( v, p ) => [ ...computedLooks( v, p ) ].sort();
 	assert.deepEqual( looks( { 'padding-top': '0px', 'padding-left': '24px', 'border-top-left-radius': '0px' } ), [ 'padding' ] );
@@ -160,7 +217,7 @@ const surface = ( { chipSlot = false, wrapperNamed = false, wrapperBand = false 
 
 test( 'conservationRows lists each painted element no node reads, with its class, its rule and its host', () => {
 	const { rows, counts } = conservationRows( surface() );
-	assert.deepEqual( counts, { painted: 8, exact: 2, loopCopy: 1, instanceCopy: 0, otherSurface: 0, ownedElsewhere: 0, unread: 5 } );
+	assert.deepEqual( counts, { painted: 8, exact: 2, loopCopy: 1, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, unread: 5 } );
 	assert.deepEqual( rows.map( ( r ) => [ r.key, r.class, r.by, r.rule ] ), [
 		[ 'Root/2#0', 'unwrapped', 'rule', 'heroInner' ],
 		[ 'Root/5#0', 'host-unread', 'rule', 'optionSetFilter' ],
@@ -257,7 +314,7 @@ test( 'the tool reads a client folder, lists an element once under its narrowest
 	assert.deepEqual( result.rows.map( ( r ) => `${ r.surface } ${ r.key }` ), [ 'form-x Root/5#0', 'form-x Root/5#1', 'home Root/2#0', 'home Root/8#0', 'home Root/9#0' ] );
 	assert.equal( result.counts.demo.home.ownedElsewhere, 2 );
 	const md = markdown( result, 'T' );
-	assert.match( md, /\| demo \| 2 \| 10 \| 2 \| 1 \| 0 \| 0 \| 2 \| 5 \|/ );
+	assert.match( md, /\| demo \| 2 \| 10 \| 2 \| 1 \| 0 \| 0 \| 0 \| 2 \| 5 \|/ );
 	assert.match( md, /\| 2 \| host-unread \| rule \| optionSetFilter \| 1 \|/ );
 	const out = path.join( repo, 'out' );
 	const lines = [];

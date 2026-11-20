@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "BORDER_STYLE.test( low( st[ n ] ) ) && ! /^0(?:px)?\\s/.test( low( st[ n ] ) ) );",
-		"replace": "BORDER_STYLE.test( low( st[ n ] ) ) );",
+		"find": "BORDER_STYLE.test( low( st[ n ] ) ) && ! /^0(?:px)?\\s/.test( low( st[ n ] ) ) && ! TRANSPARENT.test( low( st[ n ] ) ) );",
+		"replace": "BORDER_STYLE.test( low( st[ n ] ) ) && ! TRANSPARENT.test( low( st[ n ] ) ) );",
 		"why": "a zero-width border shorthand counts as a border"
 	},
 	{
@@ -55,8 +55,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "const stated = new Set( [ ...declaredLooks( declared ), ...declaredLooks( styleOf( element.attrs?.style ) ) ] );",
-		"replace": "const stated = new Set( [ ...declaredLooks( styleOf( element.attrs?.style ) ) ] );",
+		"find": "const stated = new Set( [ ...declaredLooks( declared, element.tag ), ...declaredLooks( styleOf( element.attrs?.style ), element.tag ) ] );",
+		"replace": "const stated = new Set( [ ...declaredLooks( styleOf( element.attrs?.style ), element.tag ) ] );",
 		"why": "the fact record's declared styles are dropped"
 	},
 	{
@@ -151,8 +151,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "'string' === typeof v.tpl && ( 'full' === kind || ! out.has( v.tpl ) ) && out.set( v.tpl, kind );",
-		"replace": "'string' === typeof v.tpl && out.set( v.tpl, kind );",
+		"find": "null !== named && ( 'full' === kind || ! out.has( named ) ) && out.set( named, kind );",
+		"replace": "null !== named && out.set( named, kind );",
 		"why": "a band finder met after a slot downgrades the element to a band read"
 	},
 	{
@@ -178,5 +178,113 @@
 		"find": "export const templateOf = ( key ) => copylessKey( String( key ) ) ?? String( key );",
 		"replace": "export const templateOf = ( key ) => String( key );",
 		"why": "a copy under another host instance is not its template element"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "&& ! /^0(?:px)?\\s/.test( low( st[ n ] ) ) && ! TRANSPARENT.test( low( st[ n ] ) ) );",
+		"replace": "&& ! /^0(?:px)?\\s/.test( low( st[ n ] ) ) );",
+		"why": "a transparent border shorthand counts as a border"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "if ( shorthand || ( ! TRANSPARENT.test( low( st[ 'border-color' ] ) ) && SIDES.some(",
+		"replace": "if ( shorthand || ( SIDES.some(",
+		"why": "a transparent border colour longhand counts as a border"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "REPLACED.has( tag ) && has( 'height' ) && ! FILLS.has( low( st.height ) ) && looks.add( 'height' );",
+		"replace": "has( 'height' ) && ! FILLS.has( low( st.height ) ) && looks.add( 'height' );",
+		"why": "every box with a height is listed"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "REPLACED.has( tag ) && has( 'height' ) && ! FILLS.has( low( st.height ) ) && looks.add( 'height' );",
+		"replace": "REPLACED.has( tag ) && has( 'height' ) && looks.add( 'height' );",
+		"why": "height auto on a picture counts"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'svg' === tag && [ 'stroke', 'fill' ].some( ( n ) => has( n ) && ! NONE.has( low( st[ n ] ) ) ) && looks.add( 'glyph' );",
+		"replace": "[ 'stroke', 'fill' ].some( ( n ) => has( n ) && ! NONE.has( low( st[ n ] ) ) ) && looks.add( 'glyph' );",
+		"why": "any element with a fill is a glyph"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'svg' === tag && [ 'stroke', 'fill' ].some( ( n ) => has( n ) && ! NONE.has( low( st[ n ] ) ) ) && looks.add( 'glyph' );",
+		"replace": "'svg' === tag && [ 'stroke', 'fill' ].some( ( n ) => has( n ) ) && looks.add( 'glyph' );",
+		"why": "an svg with stroke none and fill none is a glyph"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'' !== line && ( 'a' === tag || ! /^none\\b/.test( line ) ) && looks.add( 'text-decoration' );",
+		"replace": "'' !== line && ! /^none\\b/.test( line ) && looks.add( 'text-decoration' );",
+		"why": "a link told not to underline is not listed"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'' !== line && ( 'a' === tag || ! /^none\\b/.test( line ) ) && looks.add( 'text-decoration' );",
+		"replace": "'' !== line && looks.add( 'text-decoration' );",
+		"why": "text-decoration none on any element counts"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "children >= 2 && LAYS_OUT.has( low( element.display ) ) && stated.add( 'layout' );",
+		"replace": "children >= 1 && LAYS_OUT.has( low( element.display ) ) && stated.add( 'layout' );",
+		"why": "a flex box of one child is a layout"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "children >= 2 && LAYS_OUT.has( low( element.display ) ) && stated.add( 'layout' );",
+		"replace": "children >= 2 && stated.add( 'layout' );",
+		"why": "a block box of several children is a layout"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "parent: byKey.get( e.parentKey ) ?? null, children: kids.get( e.key ) ?? 0 } );",
+		"replace": "parent: byKey.get( e.parentKey ) ?? null } );",
+		"why": "the lister never counts an element's children"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const named = 'string' === typeof v.tpl ? v.tpl : 'string' === typeof v.key && Array.isArray( v.shown ) ? v.key : null;",
+		"replace": "const named = 'string' === typeof v.tpl ? v.tpl : null;",
+		"why": "a width alternative's element is not named"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const named = 'string' === typeof v.tpl ? v.tpl : 'string' === typeof v.key && Array.isArray( v.shown ) ? v.key : null;",
+		"replace": "const named = 'string' === typeof v.tpl ? v.tpl : 'string' === typeof v.key ? v.key : null;",
+		"why": "any object with a key is a finder"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tif ( readSiblings.has( signature( e ) ) ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a like sibling of a read element is listed"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.parentKey, e.tag, e.attrs.style ] ) : null );",
+		"replace": "const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.parentKey, e.attrs.style ] ) : null );",
+		"why": "a sibling of another tag is read through it"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.parentKey, e.tag, e.attrs.style ] ) : null );",
+		"replace": "const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.tag, e.attrs.style ] ) : null );",
+		"why": "an element under another parent is read through it"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.parentKey, e.tag, e.attrs.style ] ) : null );",
+		"replace": "const signature = ( e ) => JSON.stringify( [ e.parentKey, e.tag ] );",
+		"why": "a sibling with another style is read through it"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const readSiblings = new Set( full.map(",
+		"replace": "const readSiblings = new Set( [ ...named ].map(",
+		"why": "a band finder's siblings are read through it"
 	}
 ]

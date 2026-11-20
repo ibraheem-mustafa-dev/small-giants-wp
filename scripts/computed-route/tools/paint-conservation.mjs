@@ -60,9 +60,9 @@ const cell = ( v ) => String( v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, 
 // The groups as markdown: a totals line per client, then one table row per (class, dropped by, rule).
 export function markdown( { rows, counts }, title ) {
 	const total = ( client, k ) => Object.values( counts[ client ] ).reduce( ( n, c ) => n + c[ k ], 0 );
-	const lines = [ `# ${ title }`, '', '| Client | Surfaces | Painted | Read exactly | Read as a loop copy | Read under another host copy | Read by another surface | Listed under a narrower surface | Unread |', '|---|---|---|---|---|---|---|---|---|' ];
+	const lines = [ `# ${ title }`, '', '| Client | Surfaces | Painted | Read exactly | Read as a loop copy | Read under another host copy | Read through a like sibling | Read by another surface | Listed under a narrower surface | Unread |', '|---|---|---|---|---|---|---|---|---|---|' ];
 	for ( const client of Object.keys( counts ) ) {
-		lines.push( `| ${ client } | ${ Object.keys( counts[ client ] ).length } | ${ [ 'painted', 'exact', 'loopCopy', 'instanceCopy', 'otherSurface', 'ownedElsewhere', 'unread' ].map( ( k ) => total( client, k ) ).join( ' | ' ) } |` );
+		lines.push( `| ${ client } | ${ Object.keys( counts[ client ] ).length } | ${ [ 'painted', 'exact', 'loopCopy', 'instanceCopy', 'siblingCopy', 'otherSurface', 'ownedElsewhere', 'unread' ].map( ( k ) => total( client, k ) ).join( ' | ' ) } |` );
 	}
 	lines.push( '', '| Unread | Class | Dropped by | Rule | Surfaces | Looks | Examples |', '|---|---|---|---|---|---|---|' );
 	for ( const g of groupRows( rows ) ) {
