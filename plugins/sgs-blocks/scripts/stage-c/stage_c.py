@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Stage C detector: where a page's per-instance CSS comes from, and whether a change kept the cascade.
 
-Plan: .claude/plans/2026-11-19-stage-c-per-instance-css.md (Task 1). Method: .claude/skills/migration-method/SKILL.md.
+Plan: .claude/plans/archive/2026-11-19-stage-c-per-instance-css.md (Task 1). Method: .claude/skills/migration-method/SKILL.md.
 
 Every SGS block prints the CSS for its own settings as a `<style>` tag in its HTML; the collector
 (`includes/class-sgs-css-registry.php`) lifts those tags into one `<style id="sgs-blocks-collected">` per page. This tool

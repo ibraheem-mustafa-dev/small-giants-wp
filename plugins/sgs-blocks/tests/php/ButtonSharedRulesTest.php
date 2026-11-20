@@ -1,7 +1,7 @@
 <?php
 /**
  * The button's pressed look and its reduced-motion reset are shared rules read through marker classes, not rules under
- * every button's uid (Stage C, plan `.claude/plans/2026-11-19-stage-c-per-instance-css.md` Task 2).
+ * every button's uid (Stage C, plan `.claude/plans/archive/2026-11-19-stage-c-per-instance-css.md` Task 2).
  *
  * Each test renders the real `sgs/button` render.php through the CSS harness. MUST FAIL cases are marked: each goes red
  * when the rule it names is removed.

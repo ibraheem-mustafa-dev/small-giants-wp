@@ -12,7 +12,7 @@
  * in the same frame its owner opens or closes.
  *
  * The scrim does not use CSS `:root:has(<open selector>)`: a `:has()` on the document root makes the browser
- * re-check the whole document on every style pass a script causes (plans/2026-11-19-stage-c-per-instance-css.md).
+ * re-check the whole document on every style pass a script causes (plans/archive/2026-11-19-stage-c-per-instance-css.md).
  *
  * @package SGS\Blocks
  */

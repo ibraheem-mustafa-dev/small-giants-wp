@@ -1,7 +1,7 @@
 <?php
 /**
  * The container's shrink-to-fit reset is one shared rule read through a marker class, not a rule under every instance's
- * uid (Stage C, plan `.claude/plans/2026-11-19-stage-c-per-instance-css.md` Task 2).
+ * uid (Stage C, plan `.claude/plans/archive/2026-11-19-stage-c-per-instance-css.md` Task 2).
  *
  * Each test renders the real `sgs/container` render.php through the CSS harness. MUST FAIL cases are marked: each goes
  * red when the rule it names is removed.
