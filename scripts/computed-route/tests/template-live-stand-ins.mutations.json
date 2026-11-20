@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/template-live-address.mjs", "find": "\t\tif ( $sgs_real( $sgs_p ) ) { $sgs_out['product']", "replace": "\t\tif ( $sgs_visible( $sgs_p ) ) { $sgs_out['product']", "why": "the product address may be a gift card or a fixture (4f2c77669's loss)" },
+	{ "file": "lib/template-live-address.mjs", "find": "$sgs_p->is_in_stock() && $sgs_real( $sgs_p ) ) { $sgs_candidates[] = $sgs_p; }", "replace": "$sgs_p->is_in_stock() && $sgs_visible( $sgs_p ) ) { $sgs_candidates[] = $sgs_p; }", "why": "a gift card or fixture simple product primes the basket" },
+	{ "file": "lib/template-live-address.mjs", "find": "\tif ( ! $sgs_real( $sgs_p ) ) { continue; }\n", "replace": "", "why": "a fixture's variation primes the basket" },
+	{ "file": "lib/template-live-address.mjs", "find": "'' !== (string) get_post_meta( $id, '_sgs_cr_fixture', true ) || ", "replace": "", "why": "a calibration reference product is not a fixture" },
+	{ "file": "lib/template-live-address.mjs", "find": " || '' !== (string) get_post_meta( $id, '_sgs_fixture', true )", "replace": "", "why": "a shop fixture is not a fixture" },
+	{ "file": "lib/template-live-address.mjs", "find": " || 0 === strpos( (string) $p->get_sku(), 'sgs-fixture-' );", "replace": ";", "why": "an sgs-fixture- SKU is not a fixture" },
+	{ "file": "lib/template-live-address.mjs", "find": "false !== stripos( (string) $p->get_type(), 'gift' ) || ", "replace": "", "why": "the plugin's gift card type is a real product" },
+	{ "file": "lib/template-live-address.mjs", "find": "'/gift[\\\\s_-]*card/i'", "replace": "'/gift/i'", "why": "any product named like a gift is a stand-in" },
+	{ "file": "lib/template-live-address.mjs", "find": "1 === preg_match( '/gift[\\\\s_-]*card/i', $p->get_name() . ' ' . $p->get_sku() )", "replace": "false", "why": "a simple product named gift card is a real product" }
+]

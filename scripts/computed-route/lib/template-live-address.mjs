@@ -19,10 +19,12 @@ export function draftProductSlugs( routes ) {
 }
 
 // The PHP printing one JSON line { shop, product, basket }: the shop page's path; the path of the first published, visible
-// product whose slug `productSlugs` names, else the first such product; and the product a basket accepts with the form fields
-// that add it ({ path, fields }), found as WooCommerce's own add-to-cart form would add it: a simple product, else a variation
-// with every attribute set, each tried with no picks and then with the fewest picks each SGS pick group asks for. Any part the
-// site cannot answer is null.
+// product whose slug `productSlugs` names, else the first such product that is no stand-in; and the product a basket accepts
+// with the form fields that add it ({ path, fields }), found as WooCommerce's own add-to-cart form would add it: a simple
+// product, else a variation with every attribute set (its parent no stand-in), each tried with no picks and then with the
+// fewest picks each SGS pick group asks for. A stand-in is a calibration fixture (`_sgs_cr_fixture` or `_sgs_fixture` meta,
+// or an `sgs-fixture-` SKU) or a gift card (a product type naming a gift, such as the plugin's `sgs_gift_card`, or a name or
+// SKU saying "gift card"): neither shows the template as a shopper's product does. Any part the site cannot answer is null.
 export function liveFactsPhp( { productSlugs = [] } = {} ) {
 	return `<?php
 if ( ! function_exists( 'wc_get_products' ) ) { echo wp_json_encode( array( 'shop' => null, 'product' => null, 'basket' => null ) ); return; }
@@ -30,6 +32,12 @@ $sgs_rel = static function ( $url ) { return $url ? wp_make_link_relative( $url 
 $sgs_shop_id = wc_get_page_id( 'shop' );
 $sgs_out = array( 'shop' => $sgs_shop_id > 0 ? $sgs_rel( get_permalink( $sgs_shop_id ) ) : null, 'product' => null, 'basket' => null );
 $sgs_visible = static function ( $p ) { return $p && 'publish' === $p->get_status() && 'hidden' !== $p->get_catalog_visibility(); };
+$sgs_stand_in = static function ( $p ) {
+	$id = $p->get_id();
+	$fixture = '' !== (string) get_post_meta( $id, '_sgs_cr_fixture', true ) || '' !== (string) get_post_meta( $id, '_sgs_fixture', true ) || 0 === strpos( (string) $p->get_sku(), 'sgs-fixture-' );
+	return $fixture || false !== stripos( (string) $p->get_type(), 'gift' ) || 1 === preg_match( '/gift[\\s_-]*card/i', $p->get_name() . ' ' . $p->get_sku() );
+};
+$sgs_real = static function ( $p ) use ( $sgs_visible, $sgs_stand_in ) { return $sgs_visible( $p ) && ! $sgs_stand_in( $p ); };
 foreach ( array( ${ productSlugs.map( phpString ).join( ', ' ) } ) as $sgs_slug ) {
 	$sgs_found = get_page_by_path( $sgs_slug, OBJECT, 'product' );
 	$sgs_p = $sgs_found ? wc_get_product( $sgs_found->ID ) : null;
@@ -37,14 +45,15 @@ foreach ( array( ${ productSlugs.map( phpString ).join( ', ' ) } ) as $sgs_slug 
 }
 if ( null === $sgs_out['product'] ) {
 	foreach ( wc_get_products( array( 'status' => 'publish', 'limit' => 20, 'orderby' => 'ID', 'order' => 'ASC' ) ) as $sgs_p ) {
-		if ( $sgs_visible( $sgs_p ) ) { $sgs_out['product'] = $sgs_rel( get_permalink( $sgs_p->get_id() ) ); break; }
+		if ( $sgs_real( $sgs_p ) ) { $sgs_out['product'] = $sgs_rel( get_permalink( $sgs_p->get_id() ) ); break; }
 	}
 }
 $sgs_candidates = array();
 foreach ( wc_get_products( array( 'status' => 'publish', 'type' => 'simple', 'stock_status' => 'instock', 'limit' => 20, 'orderby' => 'ID', 'order' => 'ASC' ) ) as $sgs_p ) {
-	if ( $sgs_p->is_purchasable() && $sgs_p->is_in_stock() && $sgs_visible( $sgs_p ) ) { $sgs_candidates[] = $sgs_p; }
+	if ( $sgs_p->is_purchasable() && $sgs_p->is_in_stock() && $sgs_real( $sgs_p ) ) { $sgs_candidates[] = $sgs_p; }
 }
 foreach ( wc_get_products( array( 'status' => 'publish', 'type' => 'variable', 'limit' => 20, 'orderby' => 'ID', 'order' => 'ASC' ) ) as $sgs_p ) {
+	if ( ! $sgs_real( $sgs_p ) ) { continue; }
 	foreach ( $sgs_p->get_children() as $sgs_vid ) {
 		$sgs_v = wc_get_product( $sgs_vid );
 		if ( $sgs_v && $sgs_v->is_purchasable() && $sgs_v->is_in_stock() && ! in_array( '', $sgs_v->get_variation_attributes(), true ) ) { $sgs_candidates[] = $sgs_v; break; }
