@@ -154,6 +154,115 @@ final class CommerceLookSummaryLayoutTest extends TestCase {
 		}
 	}
 
+	private const MAIN_WIDE = '.sgs-x .wc-block-components-sidebar-layout.is-large > .wc-block-components-main';
+
+	/**
+	 * A css() result with the main column's rule (bare or inside its media query) taken out, so it can be compared with
+	 * what the same settings printed before that rule existed.
+	 *
+	 * @param string $css CSS text from css().
+	 */
+	private function without_main_rule( string $css ): string {
+		$css = (string) preg_replace( '/@media\([^)]*\)\{' . preg_quote( self::MAIN_WIDE, '/' ) . '\{[^}]*\}\}/', '', $css );
+		return str_replace( self::MAIN_WIDE . '{flex:1 1 0%;min-width:0;}', '', $css );
+	}
+
+	public function test_a_column_gap_comes_out_of_the_main_column_at_every_device_it_prints(): void {
+		$bare = self::MAIN_WIDE . '{flex:1 1 0%;min-width:0;}';
+		foreach ( array( 'cart', 'checkout' ) as $block ) {
+			// A desktop gap alone: the main column fills what the 35% sidebar and the gap leave, so the row cannot wrap.
+			$css = $this->css( array( 'sgsColumnGap' => array( 'desktop' => '48px' ) ), $block );
+			$this->assertStringContainsString( '.sgs-x .wc-block-components-sidebar-layout{column-gap:48px;}' . $bare, $css, "{$block}: the gap and the main column's fill print together" );
+			$this->assertSame( 1, substr_count( $css, 'components-main' ), "{$block}: one main rule serves every device the gap cascades to" );
+
+			// With a sidebar width the main column still takes the rest, whatever the width is.
+			$css = $this->css(
+				array(
+					'sgsSidebarWidth' => array( 'desktop' => '400px' ),
+					'sgsColumnGap'    => array(
+						'desktop' => '48px',
+						'mobile'  => '8px',
+					),
+				),
+				$block
+			);
+			$this->assertStringContainsString( '.wc-block-components-sidebar{flex-basis:400px;width:400px;}.sgs-x .wc-block-components-sidebar-layout{column-gap:48px;}', $css, "{$block}: sidebar width and gap" );
+			$this->assertStringContainsString( $bare, $css, "{$block}: main fill" );
+			$this->assertSame( 1, substr_count( $css, 'components-main' ), "{$block}: the gap on mobile needs no second main rule" );
+
+			// A gap set only on tablet prints the main rule only on tablet: the desktop row stays what it was.
+			$css = $this->css( array( 'sgsColumnGap' => array( 'tablet' => '24px' ) ), $block );
+			$this->assertMatchesRegularExpression( '/@media\(max-width:[\d.]+px\)\{' . preg_quote( self::MAIN_WIDE, '/' ) . '\{flex:1 1 0%;min-width:0;\}\}/', $css, "{$block}: tablet gap, tablet main fill" );
+			$this->assertDoesNotMatchRegularExpression( '/(^|\})' . preg_quote( self::MAIN_WIDE, '/' ) . '\{/', $css, "{$block}: no desktop main rule for a tablet-only gap" );
+
+			// A gap on every device prints the main rule once, at the first device, and the later devices inherit it.
+			$css = $this->css(
+				array(
+					'sgsColumnGap' => array(
+						'desktop' => '48px',
+						'tablet'  => '24px',
+						'mobile'  => '12px',
+					),
+				),
+				$block
+			);
+			$this->assertStringContainsString( $bare, $css );
+			$this->assertSame( 1, substr_count( $css, 'components-main' ), "{$block}: not repeated per device" );
+			$this->assertStringContainsString( '{column-gap:24px;}', $css, "{$block}: tablet gap value unchanged" );
+			$this->assertStringContainsString( '{column-gap:12px;}', $css, "{$block}: mobile gap value unchanged" );
+		}
+	}
+
+	public function test_settings_that_are_unset_or_saved_on_a_mirror_print_what_they_printed_before_the_main_column_rule(): void {
+		// md5 of the output on main at b61afd542 for each attribute set (cart, checkout), captured before the main column rule existed.
+		$pins = array(
+			'unset'                => array( array(), 'd51f23bdca5d464ad81a24d600ffdab7', '154733c4168c36e0f9830b1b1d0cc59b' ),
+			'a sidebar width only' => array(
+				array(
+					'sgsSidebarWidth' => array(
+						'desktop' => '480px',
+						'tablet'  => '360px',
+					),
+				),
+				'a27bda2fc4e38da52705f29d5f1aeaaa',
+				'f94e73db0d7a2028dbba0fe008014ce7',
+			),
+		);
+		foreach ( $pins as $label => $pin ) {
+			foreach ( array(
+				'cart'     => $pin[1],
+				'checkout' => $pin[2],
+			) as $block => $md5 ) {
+				$css = $this->css( $pin[0], $block );
+				$this->assertSame( $md5, md5( $css ), "{$label}, {$block}: prints exactly what it did" );
+				$this->assertStringNotContainsString( 'components-main', $css, "{$label}, {$block}: no main column rule without a gap" );
+			}
+		}
+		// What the mirrors save today: Mama's Cart page and Checkout page (Indus and Eye Care save neither setting). Their
+		// main column is already flexible in their own CSS (flex:1 1 0%), so the added rule changes no width there.
+		$saved = array(
+			'cart'     => array(
+				array(
+					'sgsSidebarWidth' => array( 'desktop' => 'calc((100% - 40px) * 0.4)' ),
+					'sgsColumnGap'    => array( 'desktop' => '40px' ),
+				),
+				'3a718d02fc9281cde37fb9c6222b14a3',
+			),
+			'checkout' => array(
+				array(
+					'sgsSidebarWidth' => array( 'desktop' => '477px' ),
+					'sgsColumnGap'    => array( 'desktop' => '40px' ),
+				),
+				'c966cb38861232f097952c2ead739065',
+			),
+		);
+		foreach ( $saved as $block => $pin ) {
+			$css = $this->css( $pin[0], $block );
+			$this->assertStringContainsString( self::MAIN_WIDE . '{flex:1 1 0%;min-width:0;}', $css, "Mama's {$block}: main column rule added" );
+			$this->assertSame( $pin[1], md5( $this->without_main_rule( $css ) ), "Mama's {$block}: every other rule prints exactly what it did" );
+		}
+	}
+
 	public function test_a_saved_string_picture_size_prints_the_rule_it_always_printed(): void {
 		$css = str_replace( $this->motion( 'cart' ), '', $this->css( array( 'sgsItemThumbSize' => '96px' ), 'cart' ) );
 		// md5 of the output of 28ab49ec8 for this attribute.

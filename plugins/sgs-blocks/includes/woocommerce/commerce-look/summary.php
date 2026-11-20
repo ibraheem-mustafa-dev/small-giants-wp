@@ -51,6 +51,11 @@ function sgs_commerce_look_summary_css( array $attrs, string $block, string $roo
  * block is wide, and stacks the two on narrow blocks; the sidebar width therefore applies only to the wide layout,
  * so the stacked layout keeps WooCommerce's full-width sidebar at every device. The gap sits on the layout.
  *
+ * WooCommerce sizes the two columns 65% and 35% of the layout, so a gap added beside them would push the row past
+ * 100% and wrap the sidebar under the form. In every device a gap is set, the form column therefore drops its 65%
+ * and takes what the sidebar (35%, or the sidebar width) and the gap leave: the gap comes out of the form column's
+ * width, with or without a sidebar width. A device with no gap prints nothing for the form column.
+ *
  * @param array<string, mixed> $attrs Set attributes.
  * @param string               $block 'cart' or 'checkout'.
  * @param string               $root  Scope selector.
@@ -69,6 +74,30 @@ function sgs_commerce_look_layout_css( array $attrs, string $block, string $root
 	$layout = sgs_commerce_look_selector( 'layout', $block, $root );
 	if ( '' !== $layout && ! empty( $attrs['sgsColumnGap'] ) ) {
 		$css .= sgs_emit_responsive_css( $layout, array( array( 'value' => $attrs['sgsColumnGap'], 'css' => 'column-gap', 'unit_default' => 'px' ) ) );
+		// The form column's fill follows the gap's own devices (a value the writer would refuse prints no fill either).
+		$main = sgs_commerce_look_selector( 'main_wide', $block, $root );
+		if ( '' !== $main ) {
+			$fill = static function ( string $value ): callable {
+				return static function ( $raw ) use ( $value ) {
+					return ( is_numeric( $raw ) || '' !== sgs_responsive_sanitise_css_value( (string) $raw ) ) ? $value : null;
+				};
+			};
+			$css .= sgs_emit_responsive_css(
+				$main,
+				array(
+					array(
+						'value'     => $attrs['sgsColumnGap'],
+						'css'       => 'flex',
+						'transform' => $fill( '1 1 0%' ),
+					),
+					array(
+						'value'     => $attrs['sgsColumnGap'],
+						'css'       => 'min-width',
+						'transform' => $fill( '0' ),
+					),
+				)
+			);
+		}
 	}
 	return $css;
 }

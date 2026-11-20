@@ -802,6 +802,16 @@
 				"viewport": "wide"
 			}
 		},
+		"main_wide": {
+			"cart": ".wc-block-components-sidebar-layout.is-large > .wc-block-components-main",
+			"checkout": ".wc-block-components-sidebar-layout.is-large > .wc-block-components-main",
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; wide block (the form column beside the sidebar: WooCommerce sizes it 65% of the layout and stacks it over the sidebar when the block is not wide)",
+			"needs": {
+				"basket": "filled",
+				"viewport": "wide"
+			}
+		},
 		"item_thumb_box": {
 			"checkout": ".wc-block-components-order-summary .wc-block-components-order-summary-item__image",
 			"wc_version": "11.2.1",
