@@ -108,6 +108,35 @@ test( 'MUST FAIL: the footer hosts a frame every page opens; a page hosts only w
 	assert.deepEqual( surfaceFrames( { tree: [], targets: targets(), row: rows[ 2 ], pageMap: rows, R: {}, factRecord: FACTS, folder: FOLDER } ), { placed: [], notes: [] }, 'no rule, no frame' );
 } );
 
+// MUST FAIL: the lab run of 2026-11-19 (Eye Care) pushed the size-guide frame beside sgs/site-footer, and the build refuses a
+// footer tree that is not exactly one sgs/site-footer; the frame also had no modalRef, so the help page's link opened nothing.
+test( 'MUST FAIL: a footer or header tree takes the frame in its root block\'s last row, and a modal frame names its post by the row\'s id', () => {
+	const rowsOf = ( root, slots ) => [ { name: root, attributes: {}, innerBlocks: slots.map( ( s ) => ( { name: `${ root }-row`, attributes: { rowSlot: s }, innerBlocks: [ { name: 'sgs/text', attributes: {} } ] } ) ) } ];
+	const map = PAGE_MAP().map( ( r ) => ( MODAL === r.slug ? { ...r, id: 118 } : r ) );
+	const footer = rowsOf( 'sgs/site-footer', [ 'top', 'columns', 'bottom' ] );
+	const placed = surfaceFrames( { tree: footer, targets: openerTargets( { pageMap: map, folder: FOLDER } ), row: map[ 2 ], pageMap: map, R, factRecord: FACTS, folder: FOLDER, settings, has } );
+	assert.deepEqual( placed.placed, [ MODAL ] );
+	assert.equal( footer.length, 1, 'the footer tree stays one sgs/site-footer' );
+	assert.deepEqual( footer[ 0 ].innerBlocks.map( ( r ) => r.innerBlocks.map( ( n ) => n.name ) ), [ [ 'sgs/text' ], [ 'sgs/text' ], [ 'sgs/text', 'sgs/modal' ] ], 'the frame sits in the bottom row' );
+	const frame = footer[ 0 ].innerBlocks[ 2 ].innerBlocks[ 1 ];
+	assert.equal( frame.attributes.anchor, MODAL );
+	assert.equal( frame.attributes.modalRef, 118 );
+	assert.equal( frame.handover, undefined, 'a resolved post needs no handover' );
+	// The header's rows in a shuffled order: the template's last row (bottom) holds it.
+	const header = rowsOf( 'sgs/site-header', [ 'top', 'bottom', 'middle' ] );
+	const hmap = map.map( ( r ) => ( 'footer' === r.slug ? { ...r, postType: 'sgs_header' } : r ) );
+	surfaceFrames( { tree: header, targets: openerTargets( { pageMap: hmap, folder: FOLDER } ), row: hmap[ 2 ], pageMap: hmap, R, factRecord: FACTS, folder: FOLDER, settings, has } );
+	assert.deepEqual( header[ 0 ].innerBlocks.map( ( r ) => [ r.attributes.rowSlot, r.innerBlocks.length ] ), [ [ 'top', 1 ], [ 'bottom', 2 ], [ 'middle', 1 ] ] );
+	// Negative controls: one root that is no slotted container keeps the frame beside it; a modal row with no id keeps the handover.
+	const page = rowsOf( 'sgs/container', [ 'top', 'bottom' ] );
+	const plain = PAGE_MAP();
+	surfaceFrames( { tree: page, targets: targets(), row: plain[ 2 ], pageMap: plain, R, factRecord: FACTS, folder: FOLDER, settings, has } );
+	assert.deepEqual( page.map( ( n ) => n.name ), [ 'sgs/container', 'sgs/modal' ] );
+	assert.equal( page[ 1 ].attributes.modalRef, undefined );
+	assert.match( page[ 1 ].handover[ 0 ].detail, /modalRef: the id of the modal-size-guide post/ );
+	assert.equal( openerTargets( { pageMap: map.map( ( r ) => ( MODAL === r.slug ? { ...r, id: '118' } : r ) ), folder: FOLDER } )[ 0 ].postId, undefined, 'an id that is not a number names no post' );
+} );
+
 test( 'MUST FAIL: the modal post keeps only its dialog\'s inner content', () => {
 	const node = ( key, name, kids = [] ) => ( { name, attributes: {}, key, innerBlocks: kids } );
 	const tree = [ node( 'Shop/10', 'sgs/container', [ node( 'Shop/12', 'sgs/container', [ node( 'Shop/13', 'sgs/container', [ node( 'Shop/14', 'sgs/text' ), node( 'Shop/15', 'sgs/button' ) ] ), node( 'Shop/16', 'sgs/text' ) ] ) ] ) ];

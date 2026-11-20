@@ -2,10 +2,10 @@
 // whose click handler makes the opening writes of a modal, choice flow or form row of the page map (the same reading as the
 // page map's `opens`, lib/intake-pagemap-openers.mjs) is an `sgs/button` linking `#<the target row's slug>`, its words the
 // button's label. The surface holding such a control gets the target's frame once: an `sgs/modal` whose anchor is that slug,
-// with no trigger of its own, opened only by those links. A flow's frame holds the linked flow (`sgs/choice-flow`
-// flowIsLinked, flowId); a modal's frame shows the saved `sgs_modal` post, which it names by post id (`modalRef`), so the
-// site build resolves the slug and the frame carries a handover naming it. A form target is a link to the form's own anchor
-// and has no frame.
+// with no trigger of its own, opened only by those links, inside a header or footer tree's last row (frameHome). A flow's
+// frame holds the linked flow (`sgs/choice-flow` flowIsLinked, flowId); a modal's frame shows the saved `sgs_modal` post,
+// which it names by post id (`modalRef`, the page map's id for the row, else a handover naming the post). A form target is a
+// link to the form's own anchor and has no frame.
 // The frame's look is the draft's own: the target surface's backdrop, panel and close control (frameParts) are read for the
 // frame's backdrop, dialog and close settings (frameLook: each setting found by framework-DB query on `css_element`,
 // `css_property` and the resting state, its value the draft's declared value). The skeleton carries no style value, so the
@@ -15,11 +15,14 @@
 // control from the modal surface's own tree.
 import fs from 'fs';
 import path from 'path';
+import { createRequire } from 'module';
 import { loadDraft, readBinding, propName } from './intake-ast.mjs';
 import { fnsNamed } from './intake-census-map.mjs';
 import { openingWrites, fnWrites } from './intake-pagemap-flow-openers.mjs';
 import { OPENABLE } from './intake-pagemap-openers.mjs';
 import { colourHex } from './tokens.mjs';
+
+const { slottedContainers } = createRequire( import.meta.url )( '../../lib/surface-tree-shape.js' );
 
 const FALSY = new Set( [ 'false', 'null', '0', '""' ] );
 // Words with their runs of white space made one space.
@@ -56,14 +59,15 @@ export function controlWrites( { folder, component, handler } ) {
 	return new Set( [ 'member', 'local', 'key' ].flatMap( ( how ) => fnsNamed( { nodes: idx.all }, name, how ) ).flatMap( ( fn ) => [ ...fnWrites( idx, fn ) ] ) );
 }
 
-// The page map's openable targets with their opening writes: [{ kind, slug, recordId, writes }]. pageMap: the page-map rows;
-// folder: the handoff folder (its surfaces.json).
+// The page map's openable targets with their opening writes: [{ kind, slug, recordId, writes, postId? }], `postId` the
+// row's post id where the page map holds one (the ids of the site page-map.site names). pageMap: the page-map rows; folder:
+// the handoff folder (its surfaces.json).
 export function openerTargets( { pageMap = [], folder } ) {
 	const file = folder ? path.join( folder, 'surfaces.json' ) : null;
 	const records = new Map( ( file && fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ).records : [] ).map( ( r ) => [ r.id, r ] ) );
 	return pageMap.filter( ( r ) => OPENABLE[ r.postType ] && /^surfaces\.json /.test( r.draftId || '' ) ).map( ( r ) => {
 		const recordId = r.draftId.replace( /^surfaces\.json /, '' );
-		return { kind: OPENABLE[ r.postType ], slug: r.slug, recordId, writes: openingWrites( records.get( recordId ) ) };
+		return { kind: OPENABLE[ r.postType ], slug: r.slug, recordId, writes: openingWrites( records.get( recordId ) ), ...( Number.isInteger( r.id ) && r.id > 0 ? { postId: r.id } : {} ) };
 	} ).filter( ( t ) => t.writes.length );
 }
 
@@ -140,8 +144,8 @@ const opaque = ( value ) => /^#[0-9A-F]{6}$/.test( colourHex( value ) ?? '' );
 // The frame node for a target: { node, look, notes }. The skeleton carries no style value, so the node holds the frame's
 // structure only: its anchor, no trigger, closing on a backdrop click when the draft's backdrop closes the surface, full screen
 // when the draft's backdrop is opaque, and a flow's linked flow; `look` is the draft's look for Fill (frameLook). A modal's
-// frame names its post by id (`modalRef`), which only the site build knows: a handover row names the post. S:
-// rules.surfaceOpener; flowBlock: rules.choiceFlow.block; parts: frameParts' answer; has( block, attr ).
+// frame names its post by id (`modalRef`): the target row's post id where the page map holds one, else a handover row names
+// the post. S: rules.surfaceOpener; flowBlock: rules.choiceFlow.block; parts: frameParts' answer; has( block, attr ).
 export function frameNode( { target, S, flowBlock, parts, factRecord, settings = () => [], has = () => true } ) {
 	const F = S.frame;
 	const a = { [ F.anchor ]: target.slug, ...F.attributes };
@@ -151,7 +155,9 @@ export function frameNode( { target, S, flowBlock, parts, factRecord, settings =
 	opaque( scrim ) && Object.entries( F.fullscreen ).every( ( [ k ] ) => has( F.block, k ) ) && Object.assign( a, F.fullscreen );
 	const flow = 'flow' === target.kind ? [ { name: flowBlock, attributes: { [ S.flow.linked ]: true, [ S.flow.id ]: target.slug }, innerBlocks: [] } ] : [];
 	const node = { name: F.block, attributes: a, innerBlocks: flow };
-	if ( 'modal' === target.kind ) {
+	if ( 'modal' === target.kind && target.postId ) {
+		a[ F.ref ] = target.postId;
+	} else if ( 'modal' === target.kind ) {
 		node.handover = [ { owner: 'behaviour', kind: 'link', detail: `${ F.block } ${ F.ref }: the id of the ${ target.slug } post (the frame names its post by id only)` } ];
 	}
 	const notes = look.length ? [ `the ${ target.slug } frame's draft look, for Fill to write: ${ look.map( ( l ) => `${ l.attr } ${ l.value } (${ l.part }, ${ l.element })` ).join( '; ' ) }` ] : [];
@@ -184,8 +190,19 @@ export function frameHosts( pageMap, target, S ) {
 	return ( row ) => ( shared ? row === shared : listing.includes( row ) );
 }
 
+// The list a frame is placed in: a tree that is one slotted container (a header or footer post's locked root, whose rows
+// scripts/lib/surface-tree-shape.js::slottedContainers reads from the container's edit.js TEMPLATE) takes it in the row the
+// template puts last, so the tree stays that one root (the build refuses any other footer or header tree); any other tree
+// takes it beside its own blocks.
+export function frameHome( tree ) {
+	const slots = 1 === tree.length ? slottedContainers().get( tree[ 0 ]?.name )?.map( ( r ) => r.rowSlot ) : null;
+	const rows = slots ? ( tree[ 0 ].innerBlocks || [] ).filter( ( b ) => slots.includes( b?.attributes?.rowSlot ) ) : [];
+	const last = rows.sort( ( a, b ) => slots.indexOf( b.attributes.rowSlot ) - slots.indexOf( a.attributes.rowSlot ) )[ 0 ];
+	return last ? ( last.innerBlocks ??= [] ) : tree;
+}
+
 // Places the frames of the targets a surface's opener buttons link to and keeps a modal surface's post to its dialog's inner
-// content (the skeleton proposer's last pass). A row hosts the frame of each target frameHosts gives it. tree: the surface's
+// content (the skeleton proposer's last pass). A row hosts the frame of each target frameHosts gives it, in frameHome. tree: the surface's
 // skeleton (changed in place); targets: openerTargets; row: the surface's page-map row; pageMap; R: the skeleton rules;
 // factRecord; folder; settings( part ); has( block, attr ); keyOf( node ). Returns { placed, notes }.
 export function surfaceFrames( { tree, targets, row, pageMap = [], R, factRecord, folder, settings = () => [], has = () => true, keyOf = () => null } ) {
@@ -200,7 +217,7 @@ export function surfaceFrames( { tree, targets, row, pageMap = [], R, factRecord
 		}
 		const parts = frameParts( { factRecord, surfaceId: t.recordId, folder, opening: t.writes } );
 		const made = frameNode( { target: t, S, flowBlock: R.choiceFlow?.block, parts, factRecord, settings, has } );
-		tree.push( made.node );
+		frameHome( tree ).push( made.node );
 		out.placed.push( t.slug );
 		out.notes.push( ...made.notes );
 	}
