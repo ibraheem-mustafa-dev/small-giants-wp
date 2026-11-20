@@ -5,6 +5,7 @@
 //   node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --store-visible [--apply] [--repo <root>]
+//   node site-build.mjs <client> --site <site> --account-registration [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
@@ -45,6 +46,7 @@ import { runFlowLinks } from './lib/site-build-flow-links.mjs';
 import { flowProductIdsFor } from './lib/site-build-flow-product.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
+import { runAccountRegistration } from './lib/site-build-account-registration.mjs';
 import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
 import { menuLinksOf } from './lib/site-build-menu-links.mjs';
 
@@ -59,6 +61,7 @@ if ( ! client || ( ! site && ! promote ) ) {
 	console.error( '       node site-build.mjs <client> --promote-options <Fill run folder or file> [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --catalogue [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --store-visible [--apply] [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --site <site> --account-registration [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]' );
 	process.exit( 2 );
 }
@@ -101,6 +104,14 @@ if ( args.includes( '--catalogue' ) ) {
 if ( args.includes( '--store-visible' ) ) {
 	try {
 		process.exit( runStoreVisible( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
+if ( args.includes( '--account-registration' ) ) {
+	try {
+		process.exit( runAccountRegistration( { rows: readPageMap( mapFile ), repo, client, runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -187,7 +198,7 @@ try {
 	const counts = tally( first.actions );
 	if ( ! apply ) {
 		console.log( `${ counts.creates } to create, ${ counts.changes } to change (${ first.actions.filter( ( a ) => 'template-remove' === a.type ).length } of them saved templates removed), ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
-		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) );
+		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runAccountRegistration( { rows, repo, client, runPhp, apply: false } ) );
 	}
 	const build = wpBuildPage( repo, site );
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
@@ -217,6 +228,10 @@ try {
 	// The product flow links last, once the posts phase has made the flow posts they name.
 	if ( ! templatesOnly && ! onlyRows && 0 !== runFlowLinks( { rows, runPhp, apply: true } ) ) {
 		throw new Error( 'the product flow links did not complete' );
+	}
+	// The account page's registration switch, once the page map's account row is built (lib/site-build-account-registration.mjs).
+	if ( ! templatesOnly && ! onlyRows && 0 !== runAccountRegistration( { rows, repo, client, runPhp, apply: true } ) ) {
+		throw new Error( 'the account registration switch did not complete' );
 	}
 } catch ( e ) {
 	console.error( `FAILED: ${ e.message }` );
