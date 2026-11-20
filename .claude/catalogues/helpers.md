@@ -15,13 +15,14 @@ This section is **GENERATED** by `plugins/sgs-blocks/scripts/generate-helper-cat
 
 Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, grouped by file, with the one-line purpose from its own docblock (or the adjacent `//` comment when it has no docblock). **UNDOCUMENTED** means neither exists in source — that is a real gap in the code, not a gap in this catalogue; add a docblock rather than inferring a purpose here. **Prints** is what calling the helper can put on the page (tags, ARIA roles, ARIA attributes), read by the identification-facts extractor (`scripts/lib/block_identity_facts.py`) from the helper and every repo function it calls.
 
-#### `includes/helpers-border-style.php` — 4 function(s)
+#### `includes/helpers-border-style.php` — 5 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_border_style_allowed` | `function sgs_border_style_allowed(): array` | Every CSS border-style keyword an SGS border may emit. | no markup |
 | `sgs_border_style_keyword` | `function sgs_border_style_keyword( $raw ): string` | Resolve a stored border-style value to the keyword a width paints with. | no markup |
 | `sgs_border_box_decls` | `function sgs_border_box_decls( $width_box, $style_raw ): array` | Build the border-style + border-width declarations for a 4-side width box and a stored style. | no markup |
+| `sgs_border_edge_width` | `function sgs_border_edge_width( $width_raw, $style_raw ): string` | The widest border a block draws, as a CSS length, for an element that rings itself inside its own border. | no markup |
 | `sgs_border_element_decls` | `function sgs_border_element_decls( array $attributes, string $prefix, string $selector, array $options =…` | Every border declaration one element needs: width, style, colour (flat or gradient, resting and hover) and corner radius at three tiers. | no markup |
 
 #### `includes/helpers-box.php` — 12 function(s)
@@ -80,6 +81,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_business_info_open_status_html` | `function sgs_business_info_open_status_html( array $attributes, bool $editor ): string` | The open-status markup, or '' when Site Info holds no opening hours. | tags div, p, span; aria aria-hidden |
 | `sgs_business_info_open_status_css` | `function sgs_business_info_open_status_css( array $attributes, string $root_sel ): string` | Scoped custom properties for the pill and dot colours; an unset colour emits nothing, so the stylesheet defaults apply. | no markup |
 
+#### `includes/helpers-button-add-to-basket.php` — 2 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_button_add_to_basket` | `function sgs_button_add_to_basket( int $product_id, string $after = 'stay', ?array $deps = null ): ?array` | What an add-to-basket button does for a product. | calls wc_price |
+| `sgs_button_add_label` | `function sgs_button_add_label( string $label, string $price_text ): string` | Replace `{price}` in an add-to-basket label with the product's price as plain text. | no markup |
+
 #### `includes/helpers-button-focus.php` — 6 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -117,6 +125,21 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_button_note_html` | `function sgs_button_note_html( array $attributes ): string` | The note's markup. | tags span |
 
+#### `includes/helpers-button-preset-names.php` — 10 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_button_presets_open` | `function sgs_button_presets_open(): bool` | Whether the site opted in to preset names beyond the starters (`settings.custom.namedButtonPresets` is `true`). | no markup |
+| `sgs_button_preset_slug` | `function sgs_button_preset_slug( string $name ): string` | A preset key as WordPress prints it in a custom property name and as a class modifier. | no markup |
+| `sgs_button_snapshot_presets` | `function sgs_button_snapshot_presets(): array` | The snapshot's presets by slug, each a role => value map; the starters' names when the switch is off. | no markup |
+| `sgs_button_preset_names` | `function sgs_button_preset_names(): array` | Every preset name a block accepts: the starters, then (switch on) the snapshot's other names, as slugs. | no markup |
+| `sgs_button_preset_resolve` | `function sgs_button_preset_resolve( string $name ): string` | A stored style value as the preset slug it names, or '' when no preset has that name. | no markup |
+| `sgs_button_preset_has_role` | `function sgs_button_preset_has_role( string $slug, string $role ): bool` | Whether the snapshot's preset (by slug) sets one role to a non-empty string. | no markup |
+| `sgs_button_named_preset_css` | `function sgs_button_named_preset_css(): string` | The CSS an opted-in site needs for its presets: a rule per name beyond the starters (the starters' own rules are in… | no markup |
+| `sgs_buybox_named_preset_css` | `function sgs_buybox_named_preset_css(): string` | The buy box's add-to-cart rules for each preset name beyond the starters (`.buybox__add-to-cart--{name}`), shaped like the starters' rules… | no markup |
+| `sgs_button_named_presets_print` | `function sgs_button_named_presets_print(): void` | Print the opted-in site's preset CSS as one inline stylesheet, on the page and in the editor canvas (`enqueue_block_assets` runs in both).… | no markup |
+| `sgs_button_preset_names_editor_data` | `function sgs_button_preset_names_editor_data(): void` | Publish the preset names beyond the starters to the editor as `window.sgsButtonPresetNames` (`src/blocks/button/preset-names.js`). Prints… | no markup |
+
 #### `includes/helpers-button-preset.php` — 1 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -131,6 +154,14 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_button_press_rule_for` | `function sgs_button_press_rule_for( string $selector, string $variant, string $guard = '', bool…` | The `:active` rule for one button-shaped element, or `''` when no preset sets a press role for its style. | no markup |
 | `sgs_button_press_rule` | `function sgs_button_press_rule( string $uid, string $variant ): string` | The `:active` rule for one sgs/button, or `''` when no preset sets a press role for its style. | no markup |
 | `sgs_button_press_rules_by_variant` | `function sgs_button_press_rules_by_variant( string $scope ): string` | The `:active` rules for every `.sgs-button--{variant}` inside a scope, one per variant whose preset sets a press role. | no markup |
+
+#### `includes/helpers-button-shared-rules.php` — 3 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_button_press_shared` | `function sgs_button_press_shared( string $variant ): array` | The pressed look for a button's style as a marker class and the rule that reads it. | no markup |
+| `sgs_button_still_class` | `function sgs_button_still_class(): string` | The marker class of a button that holds still under reduced motion. | no markup |
+| `sgs_button_still_rule` | `function sgs_button_still_rule(): string` | Under `prefers-reduced-motion: reduce` a marked button takes no transition, transform or translate, whatever hover, press or motion rule… | no markup |
 
 #### `includes/helpers-button-site-info-label.php` — 3 function(s)
 
@@ -154,12 +185,28 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_cart_panel_css` | `function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): array` | Scoped CSS for the mini-cart panel's own settings (typography, colours, per-device lengths, padding boxes, shadow, motion), for flyout and… | no markup |
 
+#### `includes/helpers-cart-panel-extras.php` — 3 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_cart_gift_box_html` | `function sgs_cart_gift_box_html( array $args ): string` | The gift box: a tick box, and a name and a note that appear when it is ticked. It starts hidden; the view script shows it while the basket… | tags div, input, label, p, span, textarea; roles alert |
+| `sgs_cart_empty_product` | `function sgs_cart_empty_product( $product, ?array $deps = null ): array` | What the empty state's button does with a chosen product: the one-tap add the buy box would make if the shopper changed nothing. | no markup |
+| `sgs_cart_empty_state_html` | `function sgs_cart_empty_state_html( array $args ): string` | The drawer's empty state, centred: an optional picture, the heading, an optional body line, an optional button for one product and an… | tags a, button, div, p |
+
+#### `includes/helpers-cart-panel-items-css.php` — 3 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_cart_qty_stepper_css` | `function sgs_cart_qty_stepper_css( array $attributes, string $p ): array` | Scoped CSS for the quantity stepper (itemQtyStyle "stepper"). | no markup |
+| `sgs_cart_view_cart_css` | `function sgs_cart_view_cart_css( array $attributes, string $p ): array` | Scoped CSS for the "View cart" button or link: its text colour at rest and on hover or keyboard focus. Its typography prints through the… | no markup |
+| `sgs_cart_footer_band_css` | `function sgs_cart_footer_band_css( array $attributes, string $p ): array` | Scoped CSS for the note under the subtotal (its colour; its typography prints through the panel's shared typography loop) and the… | no markup |
+
 #### `includes/helpers-cart-panel.php` — 4 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_cart_trigger_html` | `function sgs_cart_trigger_html( string $mode, string $inner_html, array $args ): string` | Build the cart trigger for the given display mode. | tags a, button, div; aria aria-controls, aria-expanded, aria-label |
-| `sgs_cart_panel_body_html` | `function sgs_cart_panel_body_html( array $args ): string` | Build the shared mini-cart panel body. | tags a, div, h2, p, span; roles status; aria aria-atomic, aria-busy, aria-live |
+| `sgs_cart_panel_body_html` | `function sgs_cart_panel_body_html( array $args ): string` | Build the shared mini-cart panel body. | tags a, div, p, span, style, template; roles status; aria aria-atomic, aria-busy, aria-live |
 | `sgs_cart_close_button_html` | `function sgs_cart_close_button_html(): string` | The drawer's close button. It sits in the panel head row (built into `sgs_cart_panel_body_html()` through `$args['close_html']`), so the… | tags button, circle, ellipse, line, path, polygon, polyline, rect, svg; aria aria-label |
 | `sgs_cart_panel_wrapper_html` | `function sgs_cart_panel_wrapper_html( string $mode, string $body_html, array $args ): string` | Wrap the panel body in the element the display mode's ARIA pattern requires. | tags dialog, div; aria aria-labelledby |
 
@@ -213,6 +260,13 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_connector_line_style` | `function sgs_connector_line_style( $raw ): string` | Resolve a stored connectorLineStyle to solid, dashed or dotted. | no markup |
 | `sgs_connector_line_decls` | `function sgs_connector_line_decls( $line_style, string $axis, string $colour, string $gradient, string…` | Declarations that draw a connector line in the chosen style. | no markup |
+
+#### `includes/helpers-container-fit.php` — 2 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_container_fit_class` | `function sgs_container_fit_class( bool $on_band ): string` | The marker class for a container whose items may shrink. | no markup |
+| `sgs_container_fit_rule` | `function sgs_container_fit_rule(): string` | The one rule every marked container shares (the same text for every instance, so the collector prints it once). | no markup |
 
 #### `includes/helpers-container-separators.php` — 4 function(s)
 
@@ -309,13 +363,16 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_form_submit_shadow_map` | `function sgs_form_submit_shadow_map( string $prefix = 'submit' ): array` | A form button's shadow attribute names for sgs_shadow_decls(). | no markup |
 | `sgs_form_submit_motion_css` | `function sgs_form_submit_motion_css( string $selector, array $attributes, string $block_name = '', string…` | The scoped CSS for a form button's shadow and lift (submit, or the Next and Previous buttons). | no markup |
 
-#### `includes/helpers-free-delivery.php` — 1 function(s)
+#### `includes/helpers-free-delivery.php` — 4 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_free_delivery_threshold` | `function sgs_free_delivery_threshold( $override ): ?float` | Resolve the free-delivery threshold. | no markup |
+| `sgs_delivery_costs_nothing` | `function sgs_delivery_costs_nothing( bool $needs_shipping, array $packages, array $chosen ): bool` | Whether the basket's delivery already costs nothing, whatever the basket total. | no markup |
+| `sgs_cart_delivery_costs_nothing` | `function sgs_cart_delivery_costs_nothing(): bool` | The same decision, read from WooCommerce's cart: its needs-shipping flag, its calculated packages and the session's chosen methods. False… | no markup |
+| `sgs_free_delivery_progress` | `function sgs_free_delivery_progress( float $subtotal, float $threshold, bool $costs_nothing ): array` | The meter's state for a basket. | no markup |
 
-#### `includes/helpers-gallery-grid-css.php` — 7 function(s)
+#### `includes/helpers-gallery-grid-css.php` — 8 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -323,6 +380,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_gallery_grid_owned_keys` | `function sgs_gallery_grid_owned_keys(): array` | The attributes that belong to the image grid, never to the wrapper. | no markup |
 | `sgs_gallery_grid_layout_css` | `function sgs_gallery_grid_layout_css( string $grid_sel, array $attributes ): string` | Scoped CSS for the grid layout's grid settings, on the image grid. | no markup |
 | `sgs_gallery_layout_tiers` | `function sgs_gallery_layout_tiers( array $attributes ): array` | The gallery's layout at each device tier, after the carousel rewrite. | no markup |
+| `sgs_gallery_scroll_bleed_declarations` | `function sgs_gallery_scroll_bleed_declarations( bool $on ): string` | The room a swipe row leaves around its tiles so a tilt, a hover lift or a shadow is not clipped by the row's `overflow-x:auto` (which makes… | no markup |
 | `sgs_gallery_layout_declarations` | `function sgs_gallery_layout_declarations( string $tier ): array` | The full declarations that make the image grid one layout at one device tier, resetting every property the other layouts set, so a narrower… | no markup |
 | `sgs_gallery_layout_css` | `function sgs_gallery_layout_css( string $grid_sel, array $attributes ): string` | The per-device layout override rules, on the image grid and its items. | no markup |
 | `sgs_gallery_scroll_css` | `function sgs_gallery_scroll_css( string $grid_sel, array $attributes ): string` | The swipe row's own settings on the image grid: the width of a card (`scrollItemWidth`, printed as `--sgs-scroll-item-width`, which only a… | no markup |
@@ -661,7 +719,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_scrim_is_visible` | `function sgs_scrim_is_visible( array $opacity, array $blur )` | Whether the scrim paints anything at any device tier. | no markup |
 | `sgs_scrim_render` | `function sgs_scrim_render( array $attributes, string $uid, array $args )` | Build a block's scrim: its scoped CSS, and queue its HTML for `wp_footer`. | tags div; aria aria-hidden |
 | `sgs_scrim_queue` | `function sgs_scrim_queue( $uid = null, $html = null )` | Queue (or, with no argument, read) the scrim HTML printed at `wp_footer`. Keyed by uid, so a block rendered twice queues one scrim. | no markup |
-| `sgs_scrim_print_footer` | `function sgs_scrim_print_footer()` | Print every queued scrim as a direct child of `<body>`. | no markup |
+| `sgs_scrim_print_footer` | `function sgs_scrim_print_footer()` | Print every queued scrim as a direct child of `<body>`, and the script that shows each one while its owner is open (enqueued here, at… | no markup |
 
 #### `includes/helpers-separators-css.php` — 5 function(s)
 
@@ -1001,7 +1059,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**101 files, 481 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**107 files, 509 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -1035,6 +1093,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `MediaElementPanel.js` | `MediaElementPanel (default)`, `declaredKinds` | The media element's panel mount (Spec 49 §9.4). |
 | `MediaGalleryPicker.js` | `MediaGalleryPicker (default)` | MediaGalleryPicker — shared bulk multi-select media component for SGS blocks. |
 | `MotionPausePreview.js` | `MotionPausePreview (default)` | Editor-canvas twin of the shared pause / play button (includes/helpers-motion-pause.php). |
+| `ProductPickerControl.js` | `ProductPickerControl (default)` | Picks one WooCommerce product for a one-tap add-to-basket button: the cart drawer's empty state (`emptyProductId`) and… |
 | `ResponsiveBoxControl.js` | `ResponsiveBoxControl (default)`, `ResponsiveBorderRadiusControl`, `BOX_UNITS`… | ResponsiveBoxControl / ResponsiveBorderRadiusControl — shared responsive box-family editor controls (Box-object interface… |
 | `ResponsiveBoxControls.js` | `ResponsiveBoxControls (default)` | ResponsiveBoxControls — Spec 37 FR-37-16 per-device spacing + width panel. |
 | `ResponsiveControl.js` | `ResponsiveControl (default)` | Responsive breakpoint switcher for block sidebar controls. |
@@ -1072,7 +1131,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 | `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 
-**62 files.**
+**63 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
