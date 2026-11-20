@@ -437,15 +437,14 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		framed.notes.length && rowOf[ m.root.key ] && ( rowOf[ m.root.key ].slotNotes = [ ...( rowOf[ m.root.key ].slotNotes || [] ), ...framed.notes ] );
 	}
 	// Each absorbed part element is its block node's draftSlots entry at the part's calibrated slot, with its children at
-	// the part's sub-part slots, and the block node stands in the part's wrapper beside the wrapper's other content, or
-	// the wrapper the part leaves empty is dropped (lib/skeleton-part-slots.mjs).
+	// the part's sub-part slots; the block node stays where its own element stands, and the wrapper the part leaves empty is
+	// dropped (lib/skeleton-part-slots.mjs).
 	partPending.forEach( ( p ) => {
 		const node = nodeOfKey[ p.into ];
 		if ( ! node ) {
 			return;
 		}
 		const place = placePart( { e: p.e, node, tree: skeleton, nodeOfKey, m } );
-		place?.placed && ( rowOf[ p.into ].placedIn = place.placed );
 		place?.dropped && Object.assign( rowOf[ place.dropped ], { action: 'remove', reason: place.note } );
 		place?.note && ( rowOf[ p.into ].slotNotes = [ ...( rowOf[ p.into ].slotNotes || [] ), place.note ] );
 		if ( ! db ) {

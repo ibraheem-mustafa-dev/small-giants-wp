@@ -1,6 +1,7 @@
 // Where an absorbed part's block stands (lib/skeleton-part-slots.mjs::placePart): the burger the navigation block draws
-// was grouped in the draft with a tablet-only call to action in a compact-only wrapper, so the navigation node stands in
-// that wrapper beside the button; a wrapper whose only content was the part leaves no empty node.
+// was grouped in the draft with a tablet-only call to action in a compact-only wrapper, which the draft hides where the
+// desktop navigation shows, so the navigation stays beside that wrapper, never inside it; a wrapper whose only content was
+// the part leaves no empty node.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
@@ -55,43 +56,43 @@ const ROW = ( { navAt = [ 1440 ], withButton = true, order = [ 42, 56, 45, 54 ] 
 		...order.flatMap( ( id ) => kids[ id ] ) ];
 };
 
-test( 'MUST FAIL (the draft\'s grouping is kept): the button and the navigation that draws the burger are siblings in the wrapper\'s node, at the burger\'s place', () => {
+test( 'MUST FAIL (never under a wrapper hidden where it shows): the desktop navigation stays beside the compact-only wrapper of the burger and a tablet button', () => {
 	const r = run( ROW() );
 	assert.equal( rowAt( r, 'Root/59#0' ).rule, 'drawerOpener', 'the burger is the navigation\'s part' );
 	const wrap = nodeAt( r, 'Root/56#0' );
-	assert.ok( wrap, 'the wrapper is a node' );
-	assert.deepEqual( kidIds( wrap ), [ 'Root/58#0', 'Root/45#0' ], 'the button, then the navigation where the burger was' );
-	assert.ok( facts.decisions.rules.navigation.collapseAttribute[ nodeAt( r, 'Root/45#0' ).name ], 'the moved node is the navigation block' );
-	const row = nodes( r.skeleton ).find( ( n ) => n.innerBlocks?.includes( wrap ) );
-	assert.ok( ! kidIds( row ).includes( 'Root/45#0' ), 'the navigation is no longer a child of the row' );
-	assert.equal( rowAt( r, 'Root/45#0' ).placedIn, 'Root/56#0' );
-	assert.deepEqual( r.problems.filter( ( p ) => /node/.test( p ) && /45|56/.test( p ) ), [], 'the moved node raises no skeleton problem' );
+	assert.deepEqual( kidIds( wrap ), [ 'Root/58#0' ], 'the wrapper keeps its button only' );
+	const holder = nodes( r.skeleton ).find( ( n ) => kidIds( n ).includes( 'Root/45#0' ) );
+	assert.ok( kidIds( holder ).includes( 'Root/56#0' ), 'the navigation is the wrapper\'s sibling' );
+	assert.ok( rowAt( r, 'Root/45#0' ).slotNotes.some( ( n ) => /stays beside Root\/56#0: Root\/56#0 is hidden at 1440, where Root\/45#0 renders/.test( n ) ), 'the review says why' );
+	// No block anywhere stands under a node whose element the draft hides at a width the block's element shows.
+	const parents = new Map();
+	const walk = ( list, p ) => list.forEach( ( n ) => ( parents.set( n, p ), walk( n.innerBlocks || [], n ) ) );
+	walk( r.skeleton, null );
+	const elOf = ( n ) => ROW().find( ( x ) => x.key === idOf( n ) );
+	for ( const [ n, p ] of parents ) {
+		const shown = elOf( n ) && [ 375, 768, 1440 ].filter( ( w ) => elOf( n ).visible[ w ] );
+		p && elOf( p ) && shown && assert.ok( shown.every( ( w ) => elOf( p ).visible[ w ] ), `${ idOf( n ) } under ${ idOf( p ) }` );
+	}
 } );
 
-test( 'MUST FAIL (a wrapper of the part alone): it takes the navigation when it can, and leaves no empty node when it cannot', () => {
-	const alone = run( ROW( { withButton: false } ) );
-	assert.deepEqual( kidIds( nodeAt( alone, 'Root/56#0' ) ), [ 'Root/45#0' ], 'the wrapper holds the navigation in the burger\'s place' );
-	// The navigation renders at the burger's widths too, so it cannot stand in the burger's place.
-	const both = run( ROW( { withButton: false, navAt: [ 375, 768, 1440 ] } ) );
-	assert.equal( nodeAt( both, 'Root/56#0' ), undefined, 'no empty node for the wrapper' );
-	assert.equal( rowAt( both, 'Root/56#0' ).action, 'remove' );
-	assert.ok( nodeAt( both, 'Root/45#0' ), 'the navigation stays where it is' );
-	assert.equal( nodes( both.skeleton ).filter( ( n ) => 'sgs/container' === n.name && ! n.innerBlocks.length ).length, 0, 'no empty container anywhere' );
+test( 'MUST FAIL (a wrapper of the part alone): it is dropped, never left as an empty node, and the navigation stays where it is', () => {
+	for ( const navAt of [ [ 1440 ], [ 375, 768, 1440 ] ] ) {
+		const r = run( ROW( { withButton: false, navAt } ) );
+		assert.equal( nodeAt( r, 'Root/56#0' ), undefined, 'no node for the wrapper' );
+		assert.equal( rowAt( r, 'Root/56#0' ).action, 'remove' );
+		assert.ok( nodeAt( r, 'Root/45#0' ), 'the navigation is in the tree' );
+		assert.equal( nodes( r.skeleton ).filter( ( n ) => 'sgs/container' === n.name && ! n.innerBlocks.length ).length, 0, 'no empty container anywhere' );
+	}
 } );
 
-test( 'MUST FAIL (the move changes nothing at the navigation\'s own widths): a visible element between the wrapper and the navigation keeps the navigation where it is', () => {
-	// The desktop button stands between the wrapper and the navigation: moving the navigation would put it before the button at 1440.
-	const r = run( ROW( { order: [ 42, 56, 54, 45 ] } ) );
-	assert.deepEqual( kidIds( nodeAt( r, 'Root/56#0' ) ), [ 'Root/58#0' ], 'the wrapper keeps its button only' );
-	assert.equal( rowAt( r, 'Root/45#0' ).placedIn, undefined );
-	assert.ok( rowAt( r, 'Root/45#0' ).slotNotes.some( ( n ) => /stays beside Root\/56#0/.test( n ) ), 'the review says why' );
-	// The wrapper renders at the navigation's width (it holds a link shown at every width): the navigation stays.
+test( 'NEGATIVE (a wrapper shown at the navigation\'s width): the navigation stays, and the review names the other reason', () => {
 	const shown = ROW().flatMap( ( e ) => ( 56 === e.tpl ? [ el( 56, 41, 'div', '', { depth: 3, box: at( 500, 0, 160 ), display: 'flex' } ), el( 57, 56, 'a', 'Call us', { depth: 4, box: at( 500, 0 ), attrs: { href: '/call' } } ) ] : [ e ] ) );
 	const kept = run( shown );
 	const holder = nodes( kept.skeleton ).find( ( n ) => kidIds( n ).includes( 'Root/45#0' ) );
 	assert.equal( idOf( holder ), 'Root/41#0', 'a wrapper shown at 1440 does not take the navigation' );
 	assert.ok( nodeAt( kept, 'Root/56#0' ), 'the wrapper is a node' );
-	// The navigation and the desktop button share their own box (44): taking the navigation out of it would lose that box at 1440.
+	assert.ok( rowAt( kept, 'Root/45#0' ).slotNotes.some( ( n ) => /Root\/56#0 renders at Root\/45#0's widths/.test( n ) ) );
+	// The navigation and the desktop button share their own box (44): the navigation stays in it.
 	const boxed = [ ...ROW( { order: [ 42, 56 ] } ), el( 44, 41, 'div', '', { depth: 3, widths: [ 1440 ], box: at( 200, 0, 700 ), display: 'flex' } ), ...ROW( { order: [ 45, 54 ] } ).slice( 3 ).map( ( e ) => ( { ...e, parentKey: 41 === Number( e.parentKey?.match( /\/(\d+)#/ )[ 1 ] ) ? 'Root/44#0' : e.parentKey, depth: e.depth + 1 } ) ) ];
 	const inBox = run( boxed );
 	assert.deepEqual( kidIds( nodeAt( inBox, 'Root/44#0' ) ), [ 'Root/45#0', 'Root/54#0' ], 'the navigation stays in its own box' );
