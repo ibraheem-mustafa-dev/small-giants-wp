@@ -25,9 +25,10 @@ final class SharedRulesAdoptionTest extends TestCase {
 
 	use BlockHarnessRenderTrait;
 
-	/** The shared classes of one prefix on a rendered block's root. */
+	/** The shared classes of one prefix a rendered block carries in its class attributes (not the ones its CSS names). */
 	private static function shared_classes( string $html, string $prefix ): array {
-		preg_match_all( '/\b' . preg_quote( $prefix, '/' ) . '-[0-9a-f]{8}\b/', $html, $m );
+		preg_match_all( '/\bclass="([^"]*)"/', $html, $attrs );
+		preg_match_all( '/\b' . preg_quote( $prefix, '/' ) . '-[0-9a-f]{8}\b/', implode( ' ', $attrs[1] ), $m );
 		return array_values( array_unique( $m[0] ) );
 	}
 
