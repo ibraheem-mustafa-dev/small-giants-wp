@@ -1,0 +1,9 @@
+[
+	{"file": "lib/skeleton-rules.mjs", "find": "if ( fieldIconOf( e ) ) {", "replace": "if ( false ) {", "why": "the mark inside a field is no longer removed"},
+	{"file": "lib/skeleton-rules.mjs", "find": "icon && has( 'leadingIcon' ) && ( out.leadingIcon = icon.slug );", "replace": "", "why": "the field never gets its leading icon"},
+	{"file": "lib/skeleton-rules.mjs", "find": "widths.every( ( w ) => inside( e.box[ w ], control.box[ w ] ) )", "replace": "true", "why": "a mark outside the control's box counts as inside it"},
+	{"file": "lib/skeleton-rules.mjs", "find": "facts.attr?.( controlBlock( control ), 'leadingIcon' ) ? lucideNearest", "replace": "true ? lucideNearest", "why": "a field block with no leadingIcon setting loses its mark"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const control = 1 === controls.length ? controls[ 0 ] : null;", "replace": "const control = controls[ 0 ] ?? null;", "why": "a mark beside two controls is given to the first"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const slug = control && widths.length &&", "replace": "const slug = control &&", "why": "a mark with no box at any width counts as inside the control"},
+	{"file": "lib/skeleton-rules.mjs", "find": "( 'svg' === e.tag || hasSvg( e ) ) ) {\n\t\t\treturn null;", "replace": "false ) {\n\t\t\treturn null;", "why": "no element is a field's mark"}
+]

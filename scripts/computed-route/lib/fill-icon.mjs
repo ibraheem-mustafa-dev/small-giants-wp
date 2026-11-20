@@ -179,6 +179,84 @@ export function lucideSignatures( file = LUCIDE_FILE ) {
 	return map;
 }
 
+// The numbers and command letters of a path's `d` (or of any other geometry value), as tokens.
+const geometryTokens = ( value ) => String( value ).match( /[a-zA-Z]|-?\d*\.?\d+(?:e-?\d+)?/g ) || [];
+
+// How far apart two drawing elements are: Infinity unless they are the same tag drawn with the same geometry attributes and, in a
+// path, the same commands in the same order; else the largest difference between two matching numbers.
+function shapeGap( a, b ) {
+	if ( a.name !== b.name ) {
+		return Infinity;
+	}
+	let gap = 0;
+	for ( const k of GEOMETRY.filter( ( g ) => g in a.attrs || g in b.attrs ) ) {
+		const [ x, y ] = [ geometryTokens( a.attrs[ k ] ?? '' ), geometryTokens( b.attrs[ k ] ?? '' ) ];
+		for ( let i = 0; i < Math.max( x.length, y.length ); i++ ) {
+			const [ nx, ny ] = [ Number( x[ i ] ), Number( y[ i ] ) ];
+			if ( Number.isNaN( nx ) || Number.isNaN( ny ) ) {
+				if ( x[ i ] !== y[ i ] ) {
+					return Infinity;
+				}
+			} else {
+				gap = Math.max( gap, Math.abs( nx - ny ) );
+			}
+		}
+	}
+	return gap;
+}
+
+let lucideShapesCache = null;
+// { name, shapes } for every Lucide icon the block ships, read from includes/lucide-icons.php.
+function lucideShapes( file = LUCIDE_FILE ) {
+	if ( lucideShapesCache?.file === file ) {
+		return lucideShapesCache.list;
+	}
+	const list = [];
+	for ( const m of fs.readFileSync( file, 'utf8' ).matchAll( /^\t\t\t'([a-z0-9-]+)'\s*=>\s*'(?:<!--.*?-->)?(<svg.*?<\/svg>)',$/gm ) ) {
+		const tree = parseTree( m[ 2 ].replace( /\\'/g, "'" ) );
+		tree && list.push( { name: m[ 1 ], shapes: shapesOf( tree ) } );
+	}
+	lucideShapesCache = { file, list };
+	return list;
+}
+
+// The Lucide icon a draft mark is drawn after: the one icon whose every drawing element has a counterpart in the mark (same tag,
+// the same geometry attributes and path commands, every number within `tolerance` of the other, in any order of drawing), or null
+// when none does, or two different icons are equally close. An exact drawing is found by lucideSignatures; this reads a hand-drawn
+// copy of an icon (a circle of radius 7 and a path "m20 20-4-4" for Lucide's search). markup is the mark's `<svg>` source.
+export function lucideNearest( markup, tolerance = 1, file = LUCIDE_FILE ) {
+	const tree = parseTree( String( markup ?? '' ) );
+	const mine = tree ? shapesOf( tree ) : [];
+	if ( ! mine.length ) {
+		return null;
+	}
+	const scored = [];
+	for ( const icon of lucideShapes( file ) ) {
+		if ( icon.shapes.length !== mine.length ) {
+			continue;
+		}
+		const free = [ ...icon.shapes ];
+		let worst = 0;
+		for ( const s of mine ) {
+			let best = -1;
+			let bestGap = Infinity;
+			free.forEach( ( c, i ) => {
+				const g = shapeGap( s, c );
+				g < bestGap && ( ( best = i ), ( bestGap = g ) );
+			} );
+			if ( best < 0 || bestGap > tolerance ) {
+				worst = Infinity;
+				break;
+			}
+			free.splice( best, 1 );
+			worst = Math.max( worst, bestGap );
+		}
+		Number.isFinite( worst ) && scored.push( { name: icon.name, worst } );
+	}
+	scored.sort( ( a, b ) => a.worst - b.worst || ( a.name < b.name ? -1 : 1 ) );
+	return scored.length && ( 1 === scored.length || scored[ 0 ].worst < scored[ 1 ].worst ) ? scored[ 0 ].name : null;
+}
+
 // { signature: brand slug } for each registry brand whose glyph is its own SVG, and { slug: signature } the other way round.
 export function brandSignatures( file = BRAND_FILE ) {
 	const bySig = new Map();

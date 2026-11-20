@@ -639,6 +639,10 @@
 				"button"
 			],
 			"fallback": "sgs/form-field-text",
+			"fieldIcon": {
+				"tolerance": 1,
+				"reason": "the mark drawn inside a text field's own box (a magnifier at the start of a search field) is the field block's leadingIcon setting, drawn after the Lucide icon it copies; the field block draws it, so the mark goes"
+			},
 			"inputPart": "field-input",
 			"inputPartHost": "sgs/form"
 		},

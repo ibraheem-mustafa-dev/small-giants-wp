@@ -1,0 +1,8 @@
+[
+	{"file": "lib/fill-icon.mjs", "find": "if ( best < 0 || bestGap > tolerance ) {", "replace": "if ( best < 0 || bestGap > tolerance + 100 ) {", "why": "any drawing with the same elements is near, however far the numbers are"},
+	{"file": "lib/fill-icon.mjs", "find": "if ( icon.shapes.length !== mine.length ) {", "replace": "if ( icon.shapes.length < mine.length ) {", "why": "an icon with more elements than the mark still matches it"},
+	{"file": "lib/fill-icon.mjs", "find": "scored.length && ( 1 === scored.length || scored[ 0 ].worst < scored[ 1 ].worst ) ? scored[ 0 ].name : null", "replace": "scored.length ? scored[ 0 ].name : null", "why": "two different icons equally close still give an answer"},
+	{"file": "lib/fill-icon.mjs", "find": "scored.sort( ( a, b ) => a.worst - b.worst || ( a.name < b.name ? -1 : 1 ) );", "replace": "", "why": "the nearest icon is no longer first"},
+	{"file": "lib/fill-icon.mjs", "find": "gap = Math.max( gap, Math.abs( nx - ny ) );", "replace": "gap = Math.min( gap, Math.abs( nx - ny ) );", "why": "the smallest number difference stands for the whole shape"},
+	{"file": "lib/fill-icon.mjs", "find": "for ( let i = 0; i < Math.max( x.length, y.length ); i++ ) {", "replace": "for ( let i = 0; i < Math.min( x.length, y.length ); i++ ) {", "why": "numbers or commands one drawing has beyond the other's are ignored"}
+]

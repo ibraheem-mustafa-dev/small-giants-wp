@@ -23,7 +23,7 @@ import { blockPartSurfaces } from './skeleton-surface-role.mjs';
 import { handlerOpens, handlerCloses, opensOn } from './skeleton-handler-opens.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { widgetModel } from './skeleton-widgets.mjs';
-import { keptSvg } from './fill-icon.mjs';
+import { keptSvg, lucideNearest } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
 import { behindContent, contentAnchor } from './skeleton-hero-background.mjs';
@@ -353,6 +353,28 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// option or radio, checkbox or option role. A button, a link or a hidden input is nothing to fill in.
 	const answered = ( k ) => visibleControl( k ) || !! groups.groupAt( k ) || null != view.attr( k, 'aria-pressed' ) || [ 'radio', 'checkbox', 'option' ].includes( String( view.attr( k, 'role' ) ?? '' ).toLowerCase() );
 	const holdsEntry = ( e ) => answered( e ) || desc( e ).some( answered );
+	// The mark a text field draws inside its own box (a magnifier at the start of a search field): a bare element that is or holds
+	// one <svg>, sits beside exactly one control in its parent, lies inside that control's box at every width both render, and is
+	// drawn after a Lucide icon (lucide-icons.php, a hand-drawn copy within rules.formControl.fieldIcon.tolerance). The field block
+	// draws it as `leadingIcon`, so the mark itself goes. { control, slug } for the mark, or null; the control's block must declare
+	// `leadingIcon`.
+	const iconMemo = new Map();
+	const fieldIconOf = ( e ) => {
+		const I = R.formControl?.fieldIcon;
+		if ( ! I || ! bare( e ) || ! ( 'svg' === e.tag || hasSvg( e ) ) ) {
+			return null;
+		}
+		if ( ! iconMemo.has( e.key ) ) {
+			const controls = m.blockKids( m.byKey[ e.parentKey ] || { key: null } ).filter( ( k ) => k !== e && visibleControl( k ) );
+			const control = 1 === controls.length ? controls[ 0 ] : null;
+			const inside = ( a, b ) => a.x >= b.x - 1 && a.y >= b.y - 1 && a.x + a.w <= b.x + b.w + 1 && a.y + a.h <= b.y + b.h + 1;
+			const widths = control ? Object.keys( e.box || {} ).filter( ( w ) => e.box[ w ]?.w > 0 && control.box?.[ w ]?.w > 0 ) : [];
+			const mark = 'svg' === e.tag ? e : m.kids( e ).find( ( k ) => 'svg' === k.tag );
+			const slug = control && widths.length && widths.every( ( w ) => inside( e.box[ w ], control.box[ w ] ) ) && facts.attr?.( controlBlock( control ), 'leadingIcon' ) ? lucideNearest( mark.snippet, I.tolerance ) : null;
+			iconMemo.set( e.key, slug ? { control, slug } : null );
+		}
+		return iconMemo.get( e.key );
+	};
 	// A piece of text that belongs to a form field (its label, required marker, hint or character count): it sits in the
 	// field's wrapper beside the control, or in a <label> there (two levels up at most).
 	const fieldText = ( e ) => {
@@ -396,6 +418,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const marked = texts.some( ( t ) => /\*$/.test( t.raw ) );
 		const out = {};
 		const has = ( n ) => !! facts.attr?.( block, n );
+		const icon = m.blockKids( m.byKey[ e.parentKey ] || { key: null } ).map( fieldIconOf ).find( ( i ) => i?.control === e );
+		icon && has( 'leadingIcon' ) && ( out.leadingIcon = icon.slug );
 		if ( label && has( 'label' ) ) {
 			out.label = label;
 		}
@@ -524,6 +548,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// settings, and a <label> wrapped around the control goes so the field takes its place. A radio or checkbox group in a
 		// form is one field: its group element is the radio or checkbox field, holding the options, absorbing its controls.
 		( { e } ) => {
+			if ( fieldIconOf( e ) ) {
+				return v( 'formControl', { action: 'remove', reason: R.formControl.fieldIcon.reason } );
+			}
 			const group = R.formControl ? groups.groupAt( e ) : null;
 			if ( 'choice' === group?.kind ) {
 				return v( 'formControl', { block: group.block, absorb: true, attributes: fieldContent( e, group.block ) } );

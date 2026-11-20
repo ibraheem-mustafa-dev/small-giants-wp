@@ -624,6 +624,36 @@ test( 'formControl: each control is the field block for its rendered type, its l
 	assert.notEqual( byWords( off, 'Hint for email' ).action, 'remove' );
 } );
 
+test( 'formControl fieldIcon: a mark drawn inside a text field box is the field leadingIcon (the nearest Lucide icon) and goes; MUST FAIL without the rule', () => {
+	const mag = '<svg width="20" height="20" sc-camel-view-box="0 0 24 24" data-dc-tpl="4"><circle cx="11" cy="11" r="7" data-dc-tpl="5"></circle><path d="m20 20-4-4" data-dc-tpl="6"></path></svg>';
+	const search = ( { markup = mag, iconBox = { x: 20, y: 20, w: 20, h: 24 }, type = 'text', tag = 'input' } = {} ) => E( 'label', { style: 'position:relative;display:block', box: { x: 0, y: 0, w: 640, h: 62 } }, [
+		E( 'span', { style: 'position:absolute;left:20px;top:50%', box: iconBox }, [ E( 'svg', { snippet: markup, box: iconBox } ) ] ),
+		E( tag, { attrs: { type, 'aria-label': 'Search FAQs' }, box: { x: 0, y: 0, w: 640, h: 62 } } ) ] );
+	const r = run( section( [ search() ] ) );
+	assert.deepEqual( settled( byTag( r, 'span' ) ), { block: null, action: 'remove', rule: 'formControl' } );
+	assert.equal( byTag( r, 'input' ).block, 'sgs/form-field-text' );
+	const field = JSON.stringify( r.skeleton ).match( /"name":"sgs\/form-field-text","attributes":(\{[^}]*\})/ );
+	assert.equal( JSON.parse( field[ 1 ] ).leadingIcon, 'search' );
+	assert.ok( ! r.proposal.rows.some( ( x ) => 'sgs/icon' === x.block ) );
+	// The rule's entry off: the mark stays its own icon block and the field holds no icon.
+	const f = facts();
+	f.decisions = structuredClone( f.decisions );
+	delete f.decisions.rules.formControl.fieldIcon;
+	const off = run( section( [ search() ] ), { facts: f } );
+	assert.equal( byTag( off, 'span' ).block, 'sgs/icon' );
+	assert.ok( ! JSON.stringify( off.skeleton ).includes( 'leadingIcon' ) );
+	// Negative controls: a mark outside the control's box, a drawing no Lucide icon is near, and a field block with no leadingIcon.
+	assert.equal( byTag( run( section( [ search( { iconBox: { x: 20, y: -40, w: 20, h: 24 } } ) ] ) ), 'span' ).block, 'sgs/icon' );
+	assert.equal( byTag( run( section( [ search( { iconBox: { x: 0, y: 0, w: 0, h: 0 } } ) ] ) ), 'span' ).block, 'sgs/icon', 'a mark with no box is not seen inside the control' );
+	const odd = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m5 5-9-9"></path></svg>';
+	assert.equal( byTag( run( section( [ search( { markup: odd } ) ] ) ), 'span' ).block, 'sgs/icon' );
+	const twin = E( 'label', { style: 'position:relative', box: { x: 0, y: 0, w: 640, h: 62 } }, [ E( 'span', { box: { x: 20, y: 20, w: 20, h: 24 } }, [ E( 'svg', { snippet: mag, box: { x: 20, y: 20, w: 20, h: 24 } } ) ] ), E( 'input', { attrs: { type: 'text' }, box: { x: 0, y: 0, w: 640, h: 62 } } ), E( 'input', { attrs: { type: 'text' }, box: { x: 0, y: 0, w: 640, h: 62 } } ) ] );
+	assert.equal( byTag( run( section( [ twin ] ) ), 'span' ).block, 'sgs/icon', 'a mark inside two controls belongs to neither' );
+	const area = run( section( [ search( { tag: 'textarea' } ) ] ) );
+	assert.equal( byTag( area, 'span' ).block, 'sgs/icon' );
+	assert.ok( ! JSON.stringify( area.skeleton ).includes( 'leadingIcon' ) );
+} );
+
 test( 'formHost: a draft <form> element is the form block with its fields inside; MUST FAIL without the rule', () => {
 	const form = E( 'form', {}, [ E( 'input', { attrs: { type: 'text' } } ), E( 'input', { attrs: { type: 'email' }, y: 40 } ) ] );
 	const r = run( section( [ form ] ) );
