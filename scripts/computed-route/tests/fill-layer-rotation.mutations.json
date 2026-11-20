@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/layer-box.mjs",
+		"find": "return turned && Math.abs( e ) <= 0.5 && Math.abs( f ) <= 0.5 ?",
+		"replace": "return turned ?",
+		"why": "a turn with a pixel offset (a centred tape) would be written as a plain rotation"
+	},
+	{
+		"file": "lib/layer-box.mjs",
+		"find": "Math.abs( a - d ) < 1e-3 && Math.abs( b + c ) < 1e-3 && Math.abs( ( a * a ) + ( b * b ) - 1 ) < 1e-2",
+		"replace": "true",
+		"why": "a scale or a skew would be read as a rotation"
+	},
+	{
+		"file": "lib/fill-layer-rotation.mjs",
+		"find": "const held = hit && motionWrites.some(",
+		"replace": "const held = false && hit && motionWrites.some(",
+		"why": "a layer whose hover state holds the resting pose would be turned twice"
+	},
+	{
+		"file": "lib/fill-layer-rotation.mjs",
+		"find": "LAYER_BLOCK === row.block && '' === ( row.slot ?? '' ) && ! row.state && setting;",
+		"replace": "'' === ( row.slot ?? '' ) && ! row.state && setting;",
+		"why": "another block's transform row would be written to the layer's rotation"
+	},
+	{
+		"file": "lib/fill-layer-rotation.mjs",
+		"find": "LAYER_BLOCK === row.block && '' === ( row.slot ?? '' ) && ! row.state && setting;",
+		"replace": "LAYER_BLOCK === row.block && '' === ( row.slot ?? '' ) && setting;",
+		"why": "a hover-state transform would be written as the resting rotation"
+	},
+	{
+		"file": "lib/fill-layer-rotation.mjs",
+		"find": "'' === ( row.slot ?? '' ) && ! row.state && setting;",
+		"replace": "! row.state && setting;",
+		"why": "an inner part's transform would be written as the layer's rotation"
+	},
+	{
+		"file": "lib/fill-layer-rotation.mjs",
+		"find": "Object.values( degrees ).some( ( d ) => null === d )",
+		"replace": "false",
+		"why": "a width with no turn would be written as a null degree"
+	}
+]

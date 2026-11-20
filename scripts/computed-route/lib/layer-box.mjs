@@ -45,6 +45,22 @@ export function declaredSizes( declaredAt, prop ) {
 	return all.length && all.every( Boolean ) && all.some( ( v ) => v.endsWith( '%' ) ) ? sizes : null;
 }
 
+// The rotation in degrees a computed `transform` is, or null where it is anything else. A rotation is a 2D matrix whose axes are
+// the unit vectors turned by one angle with no translation (the layer's centring or pixel offset is its own transform); `none` is no rotation.
+export function rotationOf( raw ) {
+	const v = String( raw ?? '' ).trim();
+	if ( 'none' === v ) {
+		return 0;
+	}
+	const m = /^matrix\(([^)]+)\)$/.exec( v );
+	const [ a, b, c, d, e, f ] = m ? m[ 1 ].split( ',' ).map( Number ) : [];
+	if ( ! m || [ a, b, c, d, e, f ].some( ( x ) => ! Number.isFinite( x ) ) || 6 !== m[ 1 ].split( ',' ).length ) {
+		return null;
+	}
+	const turned = Math.abs( a - d ) < 1e-3 && Math.abs( b + c ) < 1e-3 && Math.abs( ( a * a ) + ( b * b ) - 1 ) < 1e-2;
+	return turned && Math.abs( e ) <= 0.5 && Math.abs( f ) <= 0.5 ? round( ( Math.atan2( b, a ) * 180 ) / Math.PI ) : null;
+}
+
 // The sides a declared-style object (`{ inset: '0', top: … }`) places a layer by.
 export const sidesOfDeclared = ( declared ) => declaredSides( Object.entries( declared || {} ).map( ( [ k, v ] ) => `${ k }:${ v }` ).join( ';' ) );
 
