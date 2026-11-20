@@ -309,7 +309,7 @@ export async function fillSurface( o ) {
 		result.notes.push( ...forms.notes );
 		// FR-48-82: a block holding a list (an array setting, or one kind of child block) takes the items the draft draws,
 		// read from the surface's skeleton inventory and the draft's logic (lib/fill-list-content.mjs, `idxFor` above).
-		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
+		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, snapshot, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
 		result.writes.push( ...listed.writes );
 		result.unmapped.push( ...listed.unmapped );
 		result.handover.push( ...listed.handover );

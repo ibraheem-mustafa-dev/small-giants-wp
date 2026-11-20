@@ -23,6 +23,7 @@ import { normaliseHref } from './fill-presence.mjs';
 import { templateKeyOf, parseTemplateKey } from './fact-key.mjs';
 import { loadDraft } from './intake-ast.mjs';
 import { listItems } from './fill-list-items.mjs';
+import { parseColour, snapColour, toHex } from './normalise.mjs';
 import { DECISIONS_FILE } from './skeleton-facts.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it).
@@ -52,7 +53,14 @@ export const keyRole = ( name ) => fieldRoles( name )[ 0 ] ?? null;
 // The roles an item key plays: a key the block declares as a picture (role `image-object`, a slot's `source`) is the image key whatever its name; any other takes the roles its words name.
 export const keyRoles = ( k ) => ( 'image-object' === k.role ? [ 'image' ] : fieldRoles( k.key ) );
 
-// Each draft field's item key: { map: { field: key }, unmatched: [field] }. fields: [{ name, image }]; keys: [{ key }].
+// The item key role a draft item colour (a style field: `background:{{ st.bg }}`) goes to, by the property the colour paints: the
+// key the block declares as a background colour or as a text colour (block.json item property `role`).
+export const STYLE_FIELD_KEY_ROLE = { background: 'colour-background', 'background-color': 'colour-background', color: 'color' };
+const COLOUR_KEY_ROLES = new Set( Object.values( STYLE_FIELD_KEY_ROLE ) );
+
+// Each draft field's item key: { map: { field: key }, unmatched: [field] }. fields: [{ name, image, style? }]; keys: [{ key, role? }].
+// A style field (an item's own colour, `style` the property it paints) takes the open key whose role is that of the colour it
+// paints (STYLE_FIELD_KEY_ROLE), by role alone: no word of its name is read.
 // A field takes the key of its own name first. Otherwise, for each role the field plays in order, it takes an open key whose
 // primary role that is; only when the block's item has no such key does a key that names the role as a later one take it
 // (a team member's `name`, primary role author, takes a draft `title` when the item has no title key). Within either
@@ -68,8 +76,12 @@ export function matchFields( fields, keys ) {
 		const k = keys.find( ( x ) => x.key === f.name && ! used.has( x.key ) );
 		k && take( f, k );
 	}
+	for ( const f of fields.filter( ( x ) => x.style && ! ( x.name in map ) ) ) {
+		const k = keys.find( ( x ) => ! used.has( x.key ) && x.role === STYLE_FIELD_KEY_ROLE[ f.style ] );
+		k && take( f, k );
+	}
 	const pick = ( f, open ) => open.find( ( k ) => wordsOf( k.key ).some( ( w ) => wordsOf( f.name ).includes( w ) ) ) ?? open[ 0 ];
-	for ( const f of fields.filter( ( x ) => ! ( x.name in map ) ) ) {
+	for ( const f of fields.filter( ( x ) => ! ( x.name in map ) && ! x.style ) ) {
 		for ( const role of f.image ? [ 'image' ] : fieldRoles( f.name ) ) {
 			const free = keys.filter( ( k ) => ! used.has( k.key ) );
 			const primary = free.filter( ( k ) => keyRoles( k )[ 0 ] === role );
@@ -139,7 +151,7 @@ export function itemPicture( value, media = {} ) {
 }
 
 // One item's settings from the draft item: { attrs, rows } where rows are [{ field, value, reason }] the item cannot hold.
-export function itemAttrs( item, { map, keys, media, pages = null, label } ) {
+export function itemAttrs( item, { map, keys, media, pages = null, label, snapshot = null } ) {
 	const attrs = {};
 	const rows = [];
 	for ( const [ field, key ] of Object.entries( map ) ) {
@@ -155,6 +167,16 @@ export function itemAttrs( item, { map, keys, media, pages = null, label } ) {
 			continue;
 		}
 		if ( null === v || undefined === v || '' === v ) {
+			continue;
+		}
+		// A colour key takes the draft's colour as the palette token it is, else as hex; a gradient or a transparent paint is no colour.
+		if ( COLOUR_KEY_ROLES.has( k.role ) ) {
+			const c = parseColour( v );
+			if ( ! c || 0 === c.a ) {
+				rows.push( { field, value: v, reason: `${ label }'s ${ field } "${ v }" is no solid colour, and ${ key } holds one` } );
+			} else {
+				attrs[ key ] = snapshot?.palette ? snapColour( toHex( c ), snapshot ).value : toHex( c );
+			}
 			continue;
 		}
 		if ( 'link' === keyRole( key ) ) {
@@ -222,7 +244,7 @@ export function withPictures( list, pictures, media = {} ) {
 // A host whose skeleton children are all its item block, one per item, is the list already: each child takes only the
 // item values it does not hold (its own draft element is read for the rest), and nothing is a row but a count that differs.
 // A host holding any other child is not drawing this list.
-export function listDecisions( { block, target, node, list, media = {}, pages = null, template = false } ) {
+export function listDecisions( { block, target, node, list, media = {}, pages = null, template = false, snapshot = null } ) {
 	const out = { writes: [], children: null, childWrites: [], rows: [], notes: [] };
 	// A skeleton child that stands for every item (`itemTemplate`) is no item: each item becomes a copy of it (expandTemplate).
 	const kids = 'children' === target.kind && ! template ? node.innerBlocks || [] : [];
@@ -230,7 +252,7 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 		return out;
 	}
 	const { map, unmatched } = matchFields( list.fields, target.keys );
-	const built = withIdentity( list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }` } ) ), target.keys );
+	const built = withIdentity( list.items.map( ( item, i ) => itemAttrs( item, { map, keys: target.keys, media, pages, label: `item ${ i + 1 }`, snapshot } ) ), target.keys );
 	const fields = Object.entries( map ).map( ( [ f, k ] ) => `${ f } -> ${ k }` ).join( ', ' ) || 'none matched';
 	if ( kids.length ) {
 		if ( kids.length !== built.length ) {
@@ -247,7 +269,11 @@ export function listDecisions( { block, target, node, list, media = {}, pages = 
 		return out;
 	}
 	const where = 'attr' === target.kind ? target.attr : `${ target.child } blocks`;
-	for ( const f of unmatched.filter( ( name ) => list.items.some( ( it ) => null != it[ name ] && '' !== it[ name ] ) ) ) {
+	// An item colour no key of the block holds (a card's own background the block has no setting for) is a note: the element's own
+	// look is read at its part, never lost to a row per item.
+	const styled = new Set( list.fields.filter( ( f ) => f.style ).map( ( f ) => f.name ) );
+	unmatched.filter( ( name ) => styled.has( name ) ).forEach( ( name ) => out.notes.push( `the draft's item colour "${ name }" has no colour key in ${ block }'s ${ target.kind === 'attr' ? target.attr : target.child } items` ) );
+	for ( const f of unmatched.filter( ( name ) => ! styled.has( name ) && list.items.some( ( it ) => null != it[ name ] && '' !== it[ name ] ) ) ) {
 		out.rows.push( { field: f, value: list.items.map( ( it ) => it[ f ] ).filter( ( v ) => null != v ).join( ' | ' ), reason: `the draft's item field "${ f }" has no place in ${ block }'s ${ where } (no item key of its name or role)` } );
 	}
 	// Items holding nothing the block shows (only a link, or nothing) would replace the block's items with empty ones: one
@@ -307,7 +333,7 @@ export function markItemChildren( { nodes, db, schemaOf } ) {
 // Fill's list pass over every node with a draft element. inventory: the surface's skeleton inventory (null when absent);
 // idxFor( component ): logicReader's reader; picturesOf( targetId ): the pictures the draft read found in a target's element. Writes into the tree and returns { writes, children: [{ index, nodes }],
 // unmapped, handover, notes }; the caller places `children` (applyChildren) once nothing else walks the tree.
-export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor = () => null, db, schemaOf, media = {}, pages = null, rootComponent = null, picturesOf = () => null, oneAtATime = currentItemRule() } ) {
+export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor = () => null, db, schemaOf, media = {}, pages = null, rootComponent = null, picturesOf = () => null, oneAtATime = currentItemRule(), snapshot = null } ) {
 	const out = { writes: [], children: [], unmapped: [], handover: [], notes: [] };
 	for ( const rec of nodes ) {
 		const root = rec.targets.find( ( t ) => '' === t.slot && t.finder?.tpl );
@@ -334,7 +360,7 @@ export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFo
 		}
 		// A slider's one slide node that stands for every item of a current-item display (lib/skeleton-current-slide.mjs).
 		const template = 1 === rec.children?.length && !! nodes[ rec.children[ 0 ] ]?.node.itemTemplate;
-		const d = listDecisions( { block: rec.name, target, node, list: withPictures( list, picturesOf( root.id ), media ), media, pages, template } );
+		const d = listDecisions( { block: rec.name, target, node, list: withPictures( list, picturesOf( root.id ), media ), media, pages, template, snapshot } );
 		for ( const w of d.writes ) {
 			const { before, after } = setAttr( node, { attr: w.attr, value: w.value, merge: 'replace' } );
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(content)', attr: w.attr, before, after, widths: [], how: 'content' } );

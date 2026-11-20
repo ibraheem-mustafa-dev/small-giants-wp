@@ -1,0 +1,98 @@
+[
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "const STYLE_COLOUR = /^style:(background|background-color|color)$/;",
+		"replace": "const STYLE_COLOUR = /^style:(background|background-color)$/;",
+		"why": "a text colour hole is no item field"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "const STYLE_COLOUR = /^style:(background|background-color|color)$/;",
+		"replace": "const STYLE_COLOUR = /^style:(background|background-color|color|width)$/;",
+		"why": "a width hole is an item colour"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "! prop || true !== hole.whole ||",
+		"replace": "! prop ||",
+		"why": "a hole inside a longer value is a colour"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "true !== hole.whole || parts.length < 2",
+		"replace": "true !== hole.whole || parts.length < 1",
+		"why": "a path with no head is an item field"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "const names = 'background' === prop ? [ 'background', 'background-color' ] : [ prop ];",
+		"replace": "const names = [ prop ];",
+		"why": "a background-color declaration is not read for a background"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "(?:^|;)\\\\s*${ name }",
+		"replace": "${ name }",
+		"why": "a background-color declaration is read as the text colour"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "item[ f.name ] ??= styleValue( e.attrs?.style, f.style );",
+		"replace": "item[ f.name ] ??= null;",
+		"why": "the item colour's value is never read"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "fields.set( f.name, { name: f.name, image: false, style: f.style } );",
+		"replace": "fields.set( f.name, { name: f.name, image: false } );",
+		"why": "the field forgets the property it paints"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "for ( const f of fields.filter( ( x ) => x.style && ! ( x.name in map ) ) ) {",
+		"replace": "for ( const f of [] ) {",
+		"why": "a style field takes no key"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "x.role === STYLE_FIELD_KEY_ROLE[ f.style ] );",
+		"replace": "COLOUR_KEY_ROLES.has( x.role ) );",
+		"why": "a style field takes any colour key, not the one of its property"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "! ( x.name in map ) && ! x.style ) ) {",
+		"replace": "! ( x.name in map ) ) ) {",
+		"why": "a style field is also matched by the words of its name"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "snapshot?.palette ? snapColour( toHex( c ), snapshot ).value : toHex( c );",
+		"replace": "toHex( c );",
+		"why": "the colour is never snapped to the palette"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "if ( ! c || 0 === c.a ) {",
+		"replace": "if ( ! c ) {",
+		"why": "a transparent paint is written"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "if ( COLOUR_KEY_ROLES.has( k.role ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a colour key is written as words"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "! styled.has( name ) && list.items.some(",
+		"replace": "list.items.some(",
+		"why": "an unplaced item colour is a handover row"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "media, pages, template, snapshot } );",
+		"replace": "media, pages, template } );",
+		"why": "the list pass drops the palette"
+	}
+]

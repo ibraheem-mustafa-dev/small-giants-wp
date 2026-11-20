@@ -10,7 +10,8 @@
 //     each field read as one static string.
 // A field is named by its path after the loop variable (`ms.year` gives `year`); a field held by an <img> or an image
 // placeholder (`id`, `src` or `data-src`) is an image field. A hole in an element's style, an event, a placeholder text or
-// a list binding is no field. Returns { items: [{ field: value }], fields: [{ name, image }], source, reason, current }, `current` true
+// a list binding is no field, except a whole-value hole in `background`, `background-color` or `color` (`background:{{ st.bg }}`):
+// that is an item's own colour (a style field, `style` naming the property), its value the colour the copy's element paints. Returns { items: [{ field: value }], fields: [{ name, image }], source, reason, current }, `current` true
 // for a current-item display (the draft shows one item at a time).
 import { templateKeyOf } from './fact-key.mjs';
 import { classMethod, isFn } from './intake-ast.mjs';
@@ -36,6 +37,33 @@ export function holeField( hole, tag, labelled = false ) {
 		return null;
 	}
 	return { head: parts[ 0 ], name: parts.slice( 1 ).join( '.' ), image, text: 'text' === hole.where, attr: /^attr:(.+)$/.exec( hole.where )?.[ 1 ] ?? null };
+}
+
+// The item colour one template hole sets, or null: { head, name, image: false, text: false, attr: null, style } for a hole that
+// is the whole value of an element's `background`, `background-color` or `color` and whose path has a head and a field (the
+// loop variable's own value: `background:{{ st.bg }}`). A hole inside a longer value (a gradient's stop, a shadow) names no colour
+// of its own, and a path with no head (`R.stSize`: the template's root data) is no item's.
+const STYLE_COLOUR = /^style:(background|background-color|color)$/;
+export function holeStyleField( hole ) {
+	const prop = STYLE_COLOUR.exec( hole?.where || '' )?.[ 1 ];
+	const parts = 'string' === typeof hole?.path ? hole.path.split( '.' ) : [];
+	if ( ! prop || true !== hole.whole || parts.length < 2 || parts.some( ( p ) => ! /^[A-Za-z_$][\w$]*$/.test( p ) ) ) {
+		return null;
+	}
+	return { head: parts[ 0 ], name: parts.slice( 1 ).join( '.' ), image: false, text: false, attr: null, style: prop };
+}
+
+// The value an inline style text gives a property ( `background: rgb(216, 202, 80); color: …` ), or null. `background` also reads
+// a `background-color` declaration, the longhand a browser writes back for a flat colour in some engines.
+export function styleValue( style, prop ) {
+	const names = 'background' === prop ? [ 'background', 'background-color' ] : [ prop ];
+	for ( const name of names ) {
+		const m = new RegExp( `(?:^|;)\\s*${ name }\\s*:\\s*([^;]+)` ).exec( String( style ?? '' ) );
+		if ( m ) {
+			return m[ 1 ].trim();
+		}
+	}
+	return null;
 }
 
 // The fact record's template element for an inventory instance key.
@@ -107,7 +135,8 @@ function loopOf( { inventory, facts, rootKey, rootComponent = null } ) {
 		const t = factOf( facts, e.key, rootComponent );
 		return ( t?.holes || [] ).map( ( h ) => holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() ) ).filter( ( f ) => f && f.head === loop.as );
 	};
-	return { loop, copies, within, holes, byKey };
+	const styleHoles = ( e ) => ( factOf( facts, e.key, rootComponent )?.holes || [] ).map( holeStyleField ).filter( ( f ) => f && f.head === loop.as );
+	return { loop, copies, within, holes, styleHoles, byKey };
 }
 
 // The draft element of the loop's first copy that prints each item field by itself: { [field]: inventory element }, a field
@@ -160,6 +189,11 @@ export function loopItems( o ) {
 				} else {
 					item[ f.name ] = e.attrs?.[ f.attr ] ?? null;
 				}
+			}
+			// An item's own colour: the colour the copy's element paints, read from the style the rendered copy carries.
+			for ( const f of l.styleHoles( e ) ) {
+				fields.set( f.name, { name: f.name, image: false, style: f.style } );
+				item[ f.name ] ??= styleValue( e.attrs?.style, f.style );
 			}
 		}
 		return item;
