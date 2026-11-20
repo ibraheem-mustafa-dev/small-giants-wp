@@ -1,5 +1,5 @@
 {
-  "_comment": "Sites check-styled-part-has-setting.py (buttons pass) does not count, each with the reason. A rule whose site is gone fails --check as stale. `has-setting` rules rest on the framework database's block_attributes.css_element (query: SELECT DISTINCT css_element FROM block_attributes WHERE block_slug='sgs/<block>'), read 2026-11-20. Audit-known fixed looks that are NOT button-kit parts (carousel arrows and dots, lightbox controls, shop filter buttons) are deliberately NOT exempt: they stay `unrecognised` so the ceiling holds them until their own pass.",
+  "_comment": "Sites check-styled-part-has-setting.py (buttons pass) does not count, each with the reason. A rule whose site is gone fails --check as stale. `has-setting` rules rest on the framework database's block_attributes.css_element (query: SELECT DISTINCT css_element FROM block_attributes WHERE block_slug='sgs/<block>'), read 2026-11-20. Audit-known fixed looks that are NOT button-kit parts (carousel arrows and dots, lightbox controls, shop filter buttons) are deliberately NOT exempt: they stay `unrecognised` so the ceiling holds them until their own pass. The parts_exemptions, parts_width_ok and unmapped_exemptions keys serve the parts and unmapped passes: each rule carries a reason, and a rule or width entry that matches nothing fails --check as stale.",
   "exemptions": [
     {
       "id": "nested-sgs-button",
@@ -232,5 +232,12 @@
     "plugins/sgs-blocks/src/blocks/extensions/*": "Block-editor extensions (motion, inline formats, device toggle): editor only.",
     "plugins/sgs-blocks/assets/admin/*": "wp-admin screen script: never runs on the front end.",
     "plugins/sgs-blocks/assets/js/gift-card-*.js": "Selects or enhances the gift card's existing button by class; prints no button of its own."
-  }
+  },
+  "parts_exemptions": [],
+  "parts_width_ok": {
+    "plugins/sgs-blocks/src/blocks/*/editor.css": "Editor-only stylesheets (block.json editorStyle): the block editor canvas, never loaded on the front end.",
+    "plugins/sgs-blocks/src/blocks/*/index.css": "Editor-only stylesheets (block.json editorStyle): the block editor canvas, never loaded on the front end.",
+    "plugins/sgs-blocks/src/components/*": "Inspector and editor UI components (the block editor interface a site owner uses): not part of what a visitor sees."
+  },
+  "unmapped_exemptions": []
 }

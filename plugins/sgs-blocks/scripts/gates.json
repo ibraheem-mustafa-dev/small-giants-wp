@@ -2387,11 +2387,11 @@
   },
   {
     "id": "check-styled-part-has-setting",
-    "cmd": "python scripts/check-styled-part-has-setting.py --check",
+    "cmd": "python scripts/check-styled-part-has-setting.py --check --pass buttons",
     "tier": "fast",
     "added_D": null,
     "added_commit": null,
-    "budget_ms": 4000,
+    "budget_ms": 6500,
     "order": 273
   },
   {
@@ -2402,5 +2402,23 @@
     "added_commit": null,
     "budget_ms": 4000,
     "order": 274
+  },
+  {
+    "id": "check-styled-part-has-setting-parts",
+    "cmd": "python scripts/check-styled-part-has-setting.py --check --pass parts",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 7000,
+    "order": 275
+  },
+  {
+    "id": "check-styled-part-has-setting-unmapped",
+    "cmd": "python scripts/check-styled-part-has-setting.py --check --pass unmapped",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3500,
+    "order": 276
   }
 ]

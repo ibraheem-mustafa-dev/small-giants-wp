@@ -13,15 +13,31 @@ WHY THIS EXISTS
     deliverable), and it stays as the gate that stops a new hard-wired button
     arriving.
 
-PASSES (more are added later; the CLI and the baseline are built for that)
+PASSES (the audit's three; the default runs every pass)
     buttons   every button element an SGS block, include or theme file prints, every
               literal preset slug chosen in PHP, every block or theme stylesheet that
               reads a starter preset's tokens for its own part.
+    parts     a BEM part (.sgs-<block>__<part>) in a block's style.css, its own PHP files,
+              or an includes/ PHP file the block renders through, whose look (colour,
+              background, border, radius, padding, font, letter-spacing, text-transform,
+              shadow) is written as a literal in code while no attribute in
+              block_attributes carries that part as its css_element.
+    unmapped  (a) an `sgs` attribute with a look-like role (color, visual, layout,
+              typography, colour-gradient) the database gives no css_element or no
+              css_property, so the cloning route cannot place it; (b) a visitor-visible
+              __( '...', 'sgs-blocks' ) word printed in a block's render path that no
+              attribute of the block shares a stem with (fixed words with no setting).
+    `parts` and `unmapped` read the framework database (read-only); without it they print
+    SKIPPED and pass, as every database-first gate here does on a clean clone.
 
-CATEGORIES (every site lands in exactly one)
+CATEGORIES
+    buttons       on-kit | target | exempt | unrecognised   (--check gates target + unrecognised)
+    parts         has-setting | exempt | not-a-block | unrecognised   (gates unrecognised)
+    unmapped      exempt | unrecognised                                (gates unrecognised)
     on-kit        the owning block declares the part in supports.sgs.builtinButtons
     target        listed in data/builtin-button-targets.json (design note section 7)
-    exempt        data/styled-part-exemptions.json, each rule with a reason
+    exempt        data/styled-part-exemptions.json, each rule with a reason (parts and unmapped
+                  also carry coded exemptions, each with its reason in the report)
     unrecognised  anything else: reported, and counted by --check against the ceiling
 
 CLI
@@ -29,13 +45,14 @@ CLI
     --fix                  the RENAME pass for the built-in button migration: prints a
                            unified diff (data/builtin-button-renames.json is the map)
     --fix --apply          writes it (atomic); refuses while any reference is unrecognised
-    --check                ratcheted ceiling: exit 1 when target + unrecognised rises above
-                           data/styled-part-baseline.json, when a baseline entry no longer
-                           exists, when the baseline is slack, or when a gate-input
-                           (exemption, target, width) is stale; 0 otherwise
-    --write-baseline       re-measure the baseline; refuses to raise it
-    --self-test            the fixtures (Step 6) plus a planted hard-wired button
-    --pass buttons         the only pass today; the default runs every pass that exists
+    --check                ratcheted ceiling per pass: exit 1 when the gated count rises above
+                           that pass's section of data/styled-part-baseline.json, when a
+                           baseline entry no longer exists, when it is slack, or when a gate
+                           input (exemption, target, width) is stale; 0 otherwise
+    --write-baseline       re-measure the baseline (per pass); refuses to raise it
+    --self-test            the fixtures (Step 6), a planted hard-wired button, a planted part
+                           with no setting and a planted fixed word
+    --pass buttons|parts|unmapped   one pass; the default runs every pass
 
     python check-styled-part-has-setting.py --survey | --fix [--apply] | --check | --self-test
 """
@@ -64,7 +81,8 @@ TARGETS_PATH = os.path.join(DATA, 'builtin-button-targets.json')
 BASELINE_PATH = os.path.join(DATA, 'styled-part-baseline.json')
 RENAMES_PATH = os.path.join(DATA, 'builtin-button-renames.json')
 
-PASSES = ('buttons',)
+PASSES = ('buttons', 'parts', 'unmapped')
+GATED_CATS = {'buttons': ('target', 'unrecognised'), 'parts': ('unrecognised',), 'unmapped': ('unrecognised',)}
 CATEGORIES = ('on-kit', 'target', 'exempt', 'unrecognised')
 
 # Directories that are never source. Pruned during the walk, never after.
@@ -84,9 +102,15 @@ def rel(path, root=REPO):
     return os.path.relpath(path, root).replace('\\', '/')
 
 
+_TEXT_CACHE = {}
+
+
 def read_text(path):
-    with io.open(path, encoding='utf-8', newline='', errors='replace') as f:
-        return f.read()
+    """A file's text, read once per run (the corpus and the two wide enumerations all read the same files)."""
+    if path not in _TEXT_CACHE:
+        with io.open(path, encoding='utf-8', newline='', errors='replace') as f:
+            _TEXT_CACHE[path] = f.read()
+    return _TEXT_CACHE[path]
 
 
 def write_atomic(path, text):
@@ -108,7 +132,9 @@ def load_json(path, default=None):
 # named in a docblock is never counted and every offset and line number holds.
 # ----------------------------------------------------------------------------
 def _blank(s):
-    return re.sub(r'[^\n]', ' ', s)
+    if '\n' not in s:
+        return ' ' * len(s)
+    return '\n'.join(' ' * len(x) for x in s.split('\n'))
 
 
 _PHP_OPEN = re.compile(r'<\?(?:php\b|=)')
@@ -224,7 +250,7 @@ class Corpus:
                 for fn in filenames:
                     p = os.path.join(dirpath, fn)
                     r = rel(p)
-                    if survey_scope(r) or css_scope(r) or fn == 'block.json':
+                    if survey_scope(r) or css_scope(r) or parts_scope(r) or block_js_scope(r) or fn == 'block.json':
                         files[r] = read_text(p)
         return cls(files)
 
@@ -232,10 +258,13 @@ class Corpus:
         txt = self.files.get('plugins/sgs-blocks/src/blocks/%s/block.json' % slug)
         if txt is None:
             return None
-        try:
-            return json.loads(txt)
-        except ValueError:
-            return None
+        cache = self.__dict__.setdefault('_bj', {})
+        if txt not in cache:
+            try:
+                cache[txt] = json.loads(txt)
+            except ValueError:
+                cache[txt] = None
+        return cache[txt]
 
     def block_slugs(self):
         return sorted({r.split('/')[4] for r in self.files
@@ -574,22 +603,24 @@ def crosscheck(corpus, cfg, sites, wide=None):
     return fails
 
 
-def load_baseline():
-    return load_json(BASELINE_PATH, {'ceiling': None, 'entries': {}})
+def load_baseline(p='buttons'):
+    return baseline_section(p)
 
 
-def ratchet(sites, baseline):
+def ratchet(sites, baseline, p='buttons'):
     """Return failures: a key above its baseline count, a key not in it, a baseline key gone or lower."""
-    live = keyed(sites)
+    cats = GATED_CATS[p]
+    label = ' + '.join(cats)
+    live = keyed(sites, cats)
     base = baseline.get('entries', {})
     fails = []
     total_live = sum(live.values())
     ceiling = baseline.get('ceiling')
     if ceiling is None:
-        fails.append('no baseline: run --write-baseline once, then commit data/styled-part-baseline.json')
+        fails.append('no baseline for the %s pass: run --write-baseline --pass %s once, then commit data/styled-part-baseline.json' % (p, p))
         return fails, live
     if total_live > ceiling:
-        fails.append('target + unrecognised is %d, above the ceiling %d' % (total_live, ceiling))
+        fails.append('%s is %d, above the ceiling %d' % (label, total_live, ceiling))
     for k, n in sorted(live.items()):
         if k not in base:
             fails.append('NEW (not in the baseline): %s x%d' % (k, n))
@@ -888,21 +919,819 @@ def load_renames():
 
 
 # ----------------------------------------------------------------------------
+# The framework database (read-only), and the shared name rules of the parts and
+# unmapped passes.
+# ----------------------------------------------------------------------------
+FRAMEWORK_DB = os.environ.get('SGS_FRAMEWORK_DB') or os.path.join(
+    os.path.expanduser('~'), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db')
+ATTR_COLUMNS = ('block_slug', 'attr_name', 'attr_type', 'default_value', 'enum_values', 'role',
+                'css_property', 'css_element', 'source')
+
+
+class Attrs:
+    """block_attributes rows (sgs and sgs-ext sources), indexed by block slug (`sgs/x` -> `x`)."""
+
+    def __init__(self, rows):
+        self.rows = rows
+        self.by_block = {}
+        for r in rows:
+            self.by_block.setdefault(r['block_slug'].split('/', 1)[-1], []).append(r)
+
+    @classmethod
+    def from_db(cls):
+        if not os.path.exists(FRAMEWORK_DB):
+            return None
+        import sqlite3
+        con = sqlite3.connect('file:%s?mode=ro' % FRAMEWORK_DB.replace('\\', '/'), uri=True)
+        try:
+            cur = con.execute('SELECT %s FROM block_attributes WHERE block_slug LIKE \'sgs/%%\' '
+                              'AND source IN (\'sgs\', \'sgs-ext\')' % ', '.join(ATTR_COLUMNS))
+            return cls([dict(zip(ATTR_COLUMNS, row)) for row in cur.fetchall()])
+        finally:
+            con.close()
+
+    def block(self, slug):
+        return self.by_block.get(slug, [])
+
+
+def kebab(s):
+    return re.sub(r'([a-z0-9])([A-Z])', r'\1-\2', s).lower()
+
+
+def norm_key(s):
+    """kebab or camel, any case, no separators, a trailing plural `s` dropped (`add-to-cart` == `addToCart`)."""
+    n = re.sub(r'[^a-z0-9]', '', kebab(s))
+    return n[:-1] if len(n) > 3 and n.endswith('s') else n
+
+
+def block_prefix_forms(slug):
+    n = norm_key(slug)
+    return {n, re.sub(r'[^a-z0-9]', '', slug.lower())}
+
+
+def element_keys(attrs, slugs):
+    """Normalised css_element values of the given blocks, plus each with the block's own prefix removed."""
+    key = (id(attrs), tuple(slugs), 'k')
+    if key in _ELEMENT_CACHE:
+        return set(_ELEMENT_CACHE[key])
+    keys = _ELEMENT_CACHE[key] = set()
+    for slug in slugs:
+        pre = re.sub(r'[^a-z0-9]', '', slug.lower())
+        for r in attrs.block(slug):
+            e = (r['css_element'] or '').strip()
+            if not e or e in ('wrapper', 'inner'):
+                continue
+            k = norm_key(e)
+            keys.add(k)
+            for p in (pre, 'sgs' + pre):
+                if k.startswith(p) and len(k) > len(p):
+                    keys.add(k[len(p):])
+    return keys
+
+
+def resolve_bem_block(name, slugs):
+    """`sgs-buybox-pick` / `wp-block-sgs-gallery` / `product-card` -> the block slug it names, or ''."""
+    n = re.sub(r'^wp-block-', '', name)
+    n = re.sub(r'^sgs-', '', n)
+    if n in slugs:
+        return n
+    best = ''
+    for s in slugs:
+        if n.startswith(s + '-') and len(s) > len(best):
+            best = s
+    return best
+
+
+def include_owner_slug(path, slugs):
+    """The block an includes/ PHP file renders for: a directory named like a block, else the longest
+    block slug that prefixes the file name once `class-`, `class-sgs-`, `helpers-` and `sgs-` are dropped."""
+    parts = path.split('/')
+    if len(parts) > 3 and parts[2] == 'includes' and parts[3] in slugs and len(parts) > 4:
+        return parts[3]
+    stem = re.sub(r'\.php$', '', parts[-1])
+    stem = re.sub(r'^(?:class-)?(?:helpers-|sgs-)?', '', stem)
+    stem = re.sub(r'^(?:helpers-|sgs-)', '', stem)
+    best = ''
+    for s in slugs:
+        if (stem == s or stem.startswith(s + '-')) and len(s) > len(best):
+            best = s
+    return best
+
+
+def file_block(path, slugs):
+    """The block a file belongs to: its block directory, or the includes owner; '' for neither."""
+    m = re.match(r'plugins/sgs-blocks/src/blocks/([^/]+)/', path)
+    if m:
+        return m.group(1)
+    if path.startswith('plugins/sgs-blocks/includes/'):
+        return include_owner_slug(path, slugs)
+    return ''
+
+
+def parts_css_scope(r):
+    """A block stylesheet that reaches the front end, in the block's directory or a sub-directory of it, or a
+    shared partial the blocks `@import` (editor.css, index.css and components/ are editor-only)."""
+    m = re.match(r'plugins/sgs-blocks/src/blocks/[^/]+/(?:[^/]+/)*([^/]+\.css)$', r)
+    if m and '/components/' not in r:
+        return m.group(1) not in ('editor.css', 'index.css')
+    return bool(re.match(r'plugins/sgs-blocks/src/shared/(?:[^/]+/)*[^/]+\.css$', r))
+
+
+def parts_php_scope(r):
+    if not r.endswith('.php') or r.endswith('.asset.php'):
+        return False
+    if re.search(r'(^|/)(tests?|fixtures?|build|vendor)/', r):
+        return False
+    return r.startswith(('plugins/sgs-blocks/src/blocks/', 'plugins/sgs-blocks/includes/'))
+
+
+def block_js_scope(r):
+    """A block directory's own JS (edit, save, view): the evidence for where a class is printed."""
+    return bool(re.match(r'plugins/sgs-blocks/src/blocks/[^/]+/[^/]+\.js$', r))
+
+
+def parts_scope(r):
+    return parts_css_scope(r) or parts_php_scope(r)
+
+
+def editor_side_js(r):
+    return bool(re.search(r'(^|/)(edit[\w.-]*|index|canvas-[\w.-]*|[\w.-]*Panel[\w.-]*|inspector[\w.-]*|[A-Z][\w.-]*)\.js$', r))
+
+
+TEMPLATE_CLASS = re.compile(r'className\s*:\s*[\'"`][^\'"`\n]*$')
+
+
+def printer_index(corpus):
+    """{(bem_block, part): (printed_in_a_front_end_file, printed_in_an_editor_only_file)} over the block JS and PHP."""
+    tok = re.compile(r'(?<![\w-])([A-Za-z][\w-]*?)__([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)')
+    idx = {}
+    for path, text in corpus.files.items():
+        if path.endswith('.css') or not (parts_php_scope(path) or block_js_scope(path)) or '__' not in text:
+            continue
+        editor_file = path.endswith('.js') and editor_side_js(path)
+        for m in tok.finditer(text):
+            # An InnerBlocks template entry (`className: 'sgs-x__part'`) is saved into the post: front end.
+            editor = editor_file and not TEMPLATE_CLASS.search(text[max(0, m.start() - 120):m.start()])
+            f, e = idx.get((m.group(1), m.group(2)), (False, False))
+            idx[(m.group(1), m.group(2))] = (f or not editor, e or editor)
+    return idx
+
+
+# ----------------------------------------------------------------------------
+# PASS parts: a BEM part whose look is a literal in code and has no setting
+# ----------------------------------------------------------------------------
+LOOK_PROP = re.compile(
+    r'^(?:color|background(?:-color|-image)?|border(?:-(?:top|right|bottom|left|inline|block)(?:-(?:start|end))?)?'
+    r'(?:-(?:color|width|style))?|border(?:-(?:top|bottom|start|end)-(?:left|right|start|end))?-radius|border-radius'
+    r'|padding(?:-(?:top|right|bottom|left|inline|block)(?:-(?:start|end))?)?'
+    r'|font|font-(?:family|size|weight|style)|letter-spacing|text-transform|box-shadow)$')
+RESET_VALUE = re.compile(r'^(?:inherit|initial|unset|revert|none|normal|auto|transparent|currentcolor|0|0px|0 0|0 0 0 0|0 none)$', re.I)
+SETTABLE_VAR = re.compile(r'^var\(\s*--(?!wp--)[\w-]+\s*(?:,.*)?\)$', re.I | re.S)
+PHP_DYNAMIC = re.compile(r'\$|%(?:\d+\$)?[sdf]|<\?|\?>|[\'"]\s*\.|\.\s*[\'"]|\{\s*\$')
+BEM_TOK = re.compile(r'\.((?:wp-block-)?[A-Za-z][\w-]*?)__([A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)(?:--[\w-]+)?')
+FOCUS_PSEUDO = re.compile(r':focus(?:-visible|-within)?\b')
+DOTTED_BEM = re.compile(r'\.[A-Za-z][\w-]*__[A-Za-z0-9]')
+STYLE_VARIATION = re.compile(r'\.is-style-')
+EDITOR_MEMBER = re.compile(r'\.[\w-]*(?:__editor-|--editor)[\w-]*|editor-styles-wrapper|\.block-editor|\.is-selected\b|\.is-editor')
+WOO_CLASS = re.compile(r'\.(?:woocommerce|wc-|wp-block-woocommerce|single_add_to_cart|add_to_cart)')
+A11Y_PART = re.compile(r'^(?:screen-reader-text|sr-only|visually-hidden|sr)$')
+COMMERCE_LOOK_FILE = re.compile(r'^plugins/sgs-blocks/includes/woocommerce/')
+
+
+def _split_top(s, sep):
+    out, depth, cur = [], 0, []
+    for ch in s:
+        if ch in '([':
+            depth += 1
+        elif ch in ')]':
+            depth = max(0, depth - 1)
+        if ch == sep and depth == 0:
+            out.append(''.join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+    out.append(''.join(cur))
+    return out
+
+
+def _drop_not(sel):
+    """Remove every `:not( ... )` group (balanced): what a rule excludes is not what it styles."""
+    while True:
+        i = sel.find(':not(')
+        if i < 0:
+            return sel
+        depth, j = 0, i + 4
+        while j < len(sel):
+            if sel[j] == '(':
+                depth += 1
+            elif sel[j] == ')':
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        sel = sel[:i] + sel[j + 1:]
+
+
+def _last_compound(member):
+    pieces, depth, cur = [], 0, []
+    for ch in member:
+        if ch in '([':
+            depth += 1
+        elif ch in ')]':
+            depth = max(0, depth - 1)
+        if depth == 0 and ch in ' \t\r\n>+~':
+            if cur:
+                pieces.append(''.join(cur))
+                cur = []
+        else:
+            cur.append(ch)
+    if cur:
+        pieces.append(''.join(cur))
+    return pieces[-1] if pieces else ''
+
+
+def selector_subjects(sel):
+    """What a selector styles: [(bem_block, part, state)] and woo flag per comma member.
+
+    The subject is the BEM part in the member's last compound (every part of an `:is()` list there);
+    a member whose last compound carries no BEM part (`.sgs-x__list li`) styles that nearest part.
+    A member ending in a WooCommerce class styles WooCommerce markup and has no subject. A focus
+    state is the focus system's, not the part's look. A member under `.is-style-*` is a named block
+    style variation (the author picks it in the style picker, which is its setting); a member under an
+    editor-only class is not painted on the front end.
+    """
+    subjects, woo, focus, other = [], False, False, 0
+    for member in _split_top(_drop_not(sel), ','):
+        if FOCUS_PSEUDO.search(member):
+            focus = True
+            continue
+        if STYLE_VARIATION.search(member) or EDITOR_MEMBER.search(member):
+            other += 1
+            continue
+        last = _last_compound(member)
+        toks = BEM_TOK.findall(last)
+        if not toks:
+            if WOO_CLASS.search(last):
+                woo = True
+                continue
+            toks = BEM_TOK.findall(member)[-1:]
+        for blk, part in toks:
+            subjects.append((blk, part))
+    return subjects, woo, focus, other
+
+
+def _decls(body, is_php):
+    """[(prop, value, kind)] for each look declaration; kind is fixed | reset | var | dynamic."""
+    out = []
+    for d in body.split(';'):
+        m = re.match(r'\s*([a-z-]+)\s*:\s*(.*?)\s*(?:!important)?\s*$', d, re.S)
+        if not m or not LOOK_PROP.match(m.group(1)):
+            continue
+        prop, val = m.group(1), re.sub(r'\s+', ' ', m.group(2)).strip()
+        if not val:
+            continue
+        if is_php and PHP_DYNAMIC.search(val):
+            kind = 'dynamic'
+        elif RESET_VALUE.match(val):
+            kind = 'reset'
+        elif SETTABLE_VAR.match(val):
+            kind = 'var'
+        else:
+            kind = 'fixed'
+        out.append((prop, val, kind))
+    return out
+
+
+def scan_parts(path, text):
+    """Every BEM part styled in one file: {(symbol, bem_block, part): record}. Comments are blanked first."""
+    if not DOTTED_BEM.search(text):
+        return {}, {'focus': 0, 'woo': 0, 'variation-or-editor': 0}     # no `.block__part` selector: skip the slow strip
+    s = strip_for(path, text)
+    is_php = path.endswith('.php')
+    if '{' not in s:
+        return {}, {'focus': 0, 'woo': 0, 'variation-or-editor': 0}
+    idx = None
+    found, dropped = {}, {'focus': 0, 'woo': 0, 'variation-or-editor': 0}
+    for m in re.finditer(r'\{([^{}]*)\}', s):
+        body = m.group(1)
+        if ':' not in body:
+            continue
+        a = max(s.rfind('}', 0, m.start()), s.rfind('{', 0, m.start()), s.rfind(';', 0, m.start()))
+        sel = s[a + 1:m.start()]
+        if '__' not in sel and not WOO_CLASS.search(sel):
+            continue
+        subjects, woo, focus, other = selector_subjects(sel)
+        if other and not subjects:
+            dropped['variation-or-editor'] += 1
+        if focus and not subjects:
+            dropped['focus'] += 1
+        if woo and not subjects:
+            dropped['woo'] += 1
+        if not subjects:
+            continue
+        decls = _decls(body, is_php)
+        if is_php and idx is None:
+            idx = symbol_index(s, path)
+        sym = symbol_at(idx, m.start()) if is_php else '(file)'
+        for blk, part in subjects:
+            rec = found.setdefault((sym, blk, part), {'line': line_of(s, m.start()), 'fixed': {}, 'other': set(),
+                                                      'selectors': []})
+            if len(rec['selectors']) < 3:
+                rec['selectors'].append(re.sub(r'\s+', ' ', sel).strip()[-90:])
+            for prop, val, kind in decls:
+                if kind == 'fixed':
+                    rec['fixed'].setdefault(prop, val)
+                else:
+                    rec['other'].add(kind)
+    return found, dropped
+
+
+# Words too common to name a part on their own: a setting for `card-title` is not a setting for
+# `group-title`, so a shared generic word never makes two parts the same part.
+GENERIC_WORDS = {'title', 'label', 'text', 'item', 'items', 'icon', 'content', 'button', 'btn', 'link', 'name', 'body',
+                 'card', 'row', 'count', 'value', 'badge', 'close', 'wrapper', 'inner', 'list', 'box', 'media', 'image',
+                 'img', 'heading', 'desc', 'description', 'meta', 'wrap', 'container', 'glyph', 'dot', 'panel', 'input'}
+
+
+def word_set(s):
+    return {word_stem(w) for w in re.split(r'[^a-z0-9]+', kebab(s)) if w}
+
+
+def related_element(part_words, element_words):
+    """The part and the element share their distinctive words: one holds every word of the other, and the
+    shared words are not all generic (`org` ~ `org-name`, `back` ~ `nav-back`; `title` !~ `card-title`)."""
+    small, big = (part_words, element_words) if len(part_words) <= len(element_words) else (element_words, part_words)
+    return bool(small) and small <= big and not small <= {word_stem(g) for g in GENERIC_WORDS}
+
+
+_ELEMENT_CACHE = {}
+
+
+def element_words(attrs, slugs):
+    key = (id(attrs), tuple(slugs), 'w')
+    if key in _ELEMENT_CACHE:
+        return _ELEMENT_CACHE[key]
+    out = _ELEMENT_CACHE[key] = set()
+    for slug in slugs:
+        for r in attrs.block(slug):
+            e = (r['css_element'] or '').strip()
+            if e and e not in ('wrapper', 'inner'):
+                out.add(frozenset(word_set(e)))
+    return out
+
+
+def part_keys(owner, bem_block, part):
+    """Normalised names a css_element may use for this part."""
+    keys = {norm_key(part)}
+    owner_n = re.sub(r'[^a-z0-9]', '', owner.lower())
+    bem_n = re.sub(r'[^a-z0-9]', '', re.sub(r'^(?:wp-block-)?(?:sgs-)?', '', bem_block).lower())
+    if owner_n and bem_n != owner_n and bem_n.startswith(owner_n):
+        keys.add(norm_key(bem_n[len(owner_n):] + part))
+    return keys
+
+
+def declared_button_parts(corpus, slug):
+    return {norm_key(p) for p in declared_parts(corpus, slug)} if slug else set()
+
+
+def cfg_parts(cfg):
+    return cfg.get('parts_exemptions', [])
+
+
+def part_rule_matches(rule, site):
+    if 'files' in rule and not any(fnmatch.fnmatchcase(site['file'], g) for g in rule['files']):
+        return False
+    if 'block' in rule and rule['block'] != site['block']:
+        return False
+    if 'part' in rule and not re.search(rule['part'], site['stem']):
+        return False
+    return True
+
+
+def run_parts(corpus, cfg, attrs):
+    """One site per (file, function, part) that carries a fixed look declaration."""
+    slugs = set(corpus.block_slugs())
+    printers = printer_index(corpus)
+    sites, no_look, dropped = [], set(), {'focus': 0, 'woo': 0, 'variation-or-editor': 0}
+    for path in sorted(corpus.files):
+        if not parts_scope(path):
+            continue
+        found, drop = scan_parts(path, corpus.files[path])
+        for k in dropped:
+            dropped[k] += drop[k]
+        own = file_block(path, slugs)
+        for (sym, blk, part), rec in sorted(found.items()):
+            if not rec['fixed']:
+                no_look.add((path, blk, part))
+                continue
+            bem_owner = resolve_bem_block(blk, slugs)
+            owners = [b for b in dict.fromkeys([bem_owner, own]) if b]
+            site = {'file': path, 'line': rec['line'], 'symbol': sym, 'kind': 'part', 'stem': part,
+                    'block': owners[0] if owners else '', 'bem_block': blk,
+                    'declarations': dict(sorted(rec['fixed'].items())),
+                    'snippet': '; '.join('%s: %s' % kv for kv in sorted(rec['fixed'].items()))[:140],
+                    'selectors': rec['selectors'], 'rule': '', 'key': '%s::%s::%s' % (path, sym, part)}
+            if not owners:
+                site['category'], site['reason'] = 'not-a-block', 'the class names no SGS block and the file belongs to none'
+                sites.append(site)
+                continue
+            if COMMERCE_LOOK_FILE.match(path):
+                site['category'], site['reason'], site['rule'] = 'exempt', 'WooCommerce markup the commerce look covers', 'auto:commerce-look'
+            elif A11Y_PART.match(part):
+                site['category'], site['reason'], site['rule'] = 'exempt', 'accessibility: a visually-hidden utility, not a look', 'auto:a11y-utility'
+            else:
+                keys = part_keys(bem_owner or own, blk, part)
+                have = element_keys(attrs, owners)
+                for o in owners:
+                    have |= declared_button_parts(corpus, o)
+                pw = word_set(part)
+                related = any(related_element(pw, set(ew)) for ew in element_words(attrs, owners))
+                front, editor = (False, False)
+                if not (keys & have or related):
+                    front, editor = printers.get((blk, part), (False, False))
+                if keys & have or related:
+                    site['category'], site['reason'] = 'has-setting', 'an attribute of sgs/%s has css_element %s' % (owners[0], part)
+                elif editor and not front:
+                    site['category'], site['reason'], site['rule'] = 'exempt', 'editor canvas only: the class is printed by the block\'s edit code and by no front-end file', 'auto:editor-canvas-only'
+                else:
+                    for rule in cfg_parts(cfg):
+                        if part_rule_matches(rule, site):
+                            site['category'], site['reason'], site['rule'] = 'exempt', rule.get('reason', ''), rule['id']
+                            break
+                    else:
+                        site['category'], site['reason'] = 'unrecognised', 'no attribute of sgs/%s has this part as its css_element' % owners[0]
+            sites.append(site)
+    return sites, {'no-fixed-look': len(no_look), 'focus-rules-skipped': dropped['focus'],
+                   'woo-subject-rules-skipped': dropped['woo'],
+                   'variation-or-editor-rules-skipped': dropped['variation-or-editor']}
+
+
+def wide_parts(corpus_files_scope=None):
+    """A SECOND, dumb enumeration: every file under the plugin whose raw text holds a BEM-selector rule
+    with a look declaration. Shares no code with parts_scope() or the rule reader."""
+    pat = re.compile(r'\.[A-Za-z][\w-]*__[\w-]+[^{}]*\{[^{}]*\b(?:color|background|border|padding|font|letter-spacing|'
+                     r'text-transform|box-shadow)[\w-]*\s*:', re.S)
+    found = set()
+    never = PRUNE | {'scripts', 'tests', 'test', 'docs', 'specs', 'languages', 'patterns-data', 'assets'}
+    root = os.path.join(REPO, 'plugins', 'sgs-blocks')
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in never]
+        for fn in filenames:
+            if not fn.endswith(('.css', '.php')) or fn.endswith('.min.css'):
+                continue
+            p = os.path.join(dirpath, fn)
+            try:
+                if pat.search(read_text(p)):
+                    found.add(rel(p))
+            except OSError:
+                continue
+    return found
+
+
+# ----------------------------------------------------------------------------
+# PASS unmapped: attributes the route cannot place, and fixed words
+# ----------------------------------------------------------------------------
+LOOK_ROLES = ('color', 'visual', 'layout', 'typography', 'colour-gradient')
+STOP = {'a', 'an', 'the', 'to', 'of', 'and', 'or', 'in', 'on', 'for', 'your', 'you', 'is', 'are', 'this', 'that', 'with',
+        'from', 'by', 'it', 'as', 'at', 'be', 'no', 'not', 'my', 'our', 'all', 'any', 'out', 'up'}
+I18N_CALL = re.compile(r'(?<![\w$>:])(esc_html__|esc_html_e|__|_e)\s*\(\s*(\'(?:\\.|[^\'\\])*\'|"(?:\\.|[^"\\])*")\s*,\s*[\'"]sgs-blocks[\'"]')
+NOT_VISIBLE = re.compile(r'WP_Error|wc_add_notice|wp_send_json|error|Error|notice|wp_die|add_settings_error|noscript|fallback|honeypot|-hp\b|\bhp"', re.I)
+HIDDEN_FROM_VISITORS = re.compile(r'screen-reader-text|sr-only|visually-hidden|aria-live|role=\\?"(?:alert|status)', re.I)
+HTML_TAG = r'<(?:a|abbr|b|button|caption|cite|dd|div|dt|em|figcaption|h[1-6]|i|label|legend|li|mark|option|p|small|span|strong|sub|summary|sup|td|th|time)\b[^<>]*>'
+TEXT_TAIL = re.compile('(?:' + HTML_TAG + '|</[A-Za-z0-9]+>)' + r'\s*[\'"`]?\s*\.?\s*(?:esc_html\(\s*|wp_kses_post\(\s*)?$', re.I)
+ATTR_READ = re.compile(r'\$(?:attributes|attrs|atts|attr|args|opts|options|settings|config|cfg|a|d)\s*\[|->get_attr\(|get_option\(')
+
+
+TEXT_ROLES = ('text-content', 'content', 'a11y-text', 'link-content', 'glyph')
+TEXT_NAME = re.compile(r'(?:Label|Text|Title|Heading|Message|Prefix|Suffix|Caption|Note|Hint|Copy|Wording|Placeholder|Name)$')
+ADMIN_SCREEN = re.compile(r'add_menu_page|add_submenu_page|add_options_page|add_settings_section|register_setting\(|settings_fields\(|admin_menu')
+
+
+def is_text_attr(r):
+    """An attribute that holds words a visitor reads: a text role, or a string attribute named like one."""
+    if r['role'] in LOOK_ROLES or (r['attr_type'] or '') != 'string':
+        return False
+    return r['role'] in TEXT_ROLES or bool(TEXT_NAME.search(r['attr_name']))
+
+
+def attr_tokens(name):
+    return {t for t in re.findall(r'[A-Za-z][a-z0-9]*|[0-9]+', re.sub(r'([a-z0-9])([A-Z])', r'\1 \2', name)) if t}
+
+
+def word_stem(w):
+    w = w.lower()
+    return w[:-1] if len(w) > 3 and w.endswith('s') else w
+
+
+def string_tokens(text):
+    return {word_stem(w) for w in re.findall(r"[A-Za-z]+", text) if w.lower() not in STOP and len(w) > 1}
+
+
+def visible_markup(s, pos, end):
+    """Is the i18n call at s[pos:end] printed inside the text of an HTML element a visitor sees?"""
+    a = max(s.rfind(';', 0, pos), s.rfind('{', 0, pos), s.rfind('}', 0, pos))
+    po = max(s.rfind('<?php', 0, pos), s.rfind('<?=', 0, pos))
+    b = len(s)
+    for t in (';', '?>'):
+        j = s.find(t, end)
+        if j >= 0:
+            b = min(b, j)
+    if po > a:
+        head = s[po:pos]
+        if not re.fullmatch(r'<\?(?:php|=)\s*(?:(?:echo|print)\s+)?(?:\\?esc_html\(\s*)?\\?', head):
+            a = po + (5 if s.startswith('<?php', po) else 2)        # the call is part of PHP code in this block
+    if po > a:
+        # the call opens the block (`<?php echo esc_html__( ... )`): its text sits after the markup before the block
+        stmt = s[po:b]
+        tag = re.search(HTML_TAG + r'\s*$', re.sub(r'<\?(?:php|=).*?\?>', 'X', s[max(0, po - 600):po], flags=re.S), re.I)
+        ok = bool(tag) and not HIDDEN_FROM_VISITORS.search(tag.group(0))
+        return ok, s[max(0, po - 160):b]
+    before, stmt = s[a + 1:pos], s[a + 1:b]
+    if re.search(r'=\s*\\?[\'"]?\s*\.?\s*$|=>\s*$|^\s*\$[\w\[\]\'"]+\s*=\s*$', before):
+        return False, stmt
+    if re.search(r'=\s*\\?"\s*$|=\s*\\?\'\s*$', before):
+        return False, stmt
+    # the call sits directly after an element's opening tag: its text, not an attribute or a sprintf argument
+    tail = TEXT_TAIL.search(before)
+    if not tail or HIDDEN_FROM_VISITORS.search(tail.group(0)):
+        return False, stmt
+    return True, stmt
+
+
+def scan_strings(path, text):
+    """[(line, symbol, string, statement)] for each visitor-visible sgs-blocks string in one PHP file."""
+    if 'sgs-blocks' not in text:
+        return []
+    s = strip_php(text)
+    idx = symbol_index(s, path)
+    out = []
+    for m in I18N_CALL.finditer(s):
+        raw = m.group(2)[1:-1]
+        word = re.sub(r'\\(.)', r'\1', raw).strip()
+        if len(re.findall(r'[A-Za-z]', word)) < 2 or re.search(r'\beditor\b', word, re.I):
+            continue
+        ok, stmt = visible_markup(s, m.start(), m.end())
+        if not ok:
+            ok, stmt = assigned_then_printed(s, m)
+        if not ok or NOT_VISIBLE.search(stmt) or ATTR_READ.search(stmt):
+            continue
+        out.append((line_of(s, m.start()), symbol_at(idx, m.start()), word, stmt))
+    return out
+
+
+ASSIGN_HEAD = re.compile(r'\s*\$(\w+)\s*=(?!=)\s*(?:[^;()]*?(?:\?\?|\?:|\?)\s*)?(?:sprintf\(\s*)?$', re.S)
+
+
+def assigned_then_printed(s, m):
+    """`$label = $cond ? __( 'Sale', ... ) : ...;` followed, in the same function, by the variable printed
+    as the text of an element: (True, the printing statement). Anything less direct is not proven visible."""
+    a = max(s.rfind(';', 0, m.start()), s.rfind('{', 0, m.start()), s.rfind('}', 0, m.start()))
+    head = ASSIGN_HEAD.match(s[a + 1:m.start()])
+    if not head:
+        return False, ''
+    end = s.find(';', m.end())
+    if end < 0 or re.search(HTML_TAG, s[a + 1:end]):
+        return False, ''            # the variable holds markup, not words: where it ends up says nothing about this word
+    nxt = re.search(r'\bfunction\b', s[end:])
+    limit = end + nxt.start() if nxt else len(s)
+    for use in re.finditer(r'\$' + re.escape(head.group(1)) + r'(?![\w])(?!\s*\.?=(?!=))', s[end:limit]):
+        q = end + use.start()
+        ok, stmt = visible_markup(s, q, q + len(use.group(0)))
+        if ok:
+            return True, stmt
+    return False, ''
+
+
+def unit_base_mapped(row, rows_by_name):
+    base = rows_by_name.get(row['attr_name'][:-4]) if row['attr_name'].endswith('Unit') else None
+    return bool(base and base['css_property'] and base['css_element'])
+
+
+def attr_line(text, name):
+    m = re.search(r'"%s"\s*:\s*\{' % re.escape(name), text or '')
+    return line_of(text, m.start()) if m else 0
+
+
+def run_unmapped(corpus, cfg, attrs):
+    slugs = set(corpus.block_slugs())
+    sites = []
+    exm = cfg.get('unmapped_exemptions', [])
+
+    def rule_for(site):
+        for rule in exm:
+            if rule.get('kind') and rule['kind'] != site['kind']:
+                continue
+            if 'block' in rule and rule['block'] != site['block']:
+                continue
+            if 'attr' in rule and not re.search(rule['attr'], site['stem']):
+                continue
+            if 'string' in rule and not re.search(rule['string'], site['stem']):
+                continue
+            if 'files' in rule and not any(fnmatch.fnmatchcase(site['file'], g) for g in rule['files']):
+                continue
+            return rule
+        return None
+
+    # (a) attributes the route cannot place
+    for slug in sorted(slugs):
+        bj = corpus.block_json(slug)
+        if not bj:
+            continue
+        in_json = set((bj.get('attributes') or {}).keys())
+        rows = attrs.block(slug)
+        by_name = {r['attr_name']: r for r in rows}
+        path = 'plugins/sgs-blocks/src/blocks/%s/block.json' % slug
+        for r in rows:
+            if r['source'] != 'sgs' or r['role'] not in LOOK_ROLES or r['attr_name'] not in in_json:
+                continue
+            miss_el, miss_pr = not (r['css_element'] or '').strip(), not (r['css_property'] or '').strip()
+            if not (miss_el or miss_pr):
+                continue
+            kind = 'attr-neither' if miss_el and miss_pr else ('attr-no-element' if miss_el else 'attr-no-property')
+            site = {'file': path, 'line': attr_line(corpus.files.get(path), r['attr_name']), 'symbol': r['attr_name'],
+                    'kind': kind, 'stem': r['attr_name'], 'block': slug, 'role': r['role'], 'rule': '',
+                    'snippet': '%s %s; css_element=%s css_property=%s' % (r['role'], r['attr_type'] or '', r['css_element'] or '-', r['css_property'] or '-'),
+                    'key': 'sgs/%s::%s' % (slug, r['attr_name'])}
+            if unit_base_mapped(r, by_name):
+                site['category'], site['reason'], site['rule'] = 'exempt', 'unit companion: the unit rides with `%s`, which the route places' % r['attr_name'][:-4], 'auto:unit-companion'
+            elif r['role'] == 'layout' and r['enum_values'] and not r['css_property'] and re.search(r'^layout$|Layout$', r['attr_name']):
+                site['category'], site['reason'], site['rule'] = 'exempt', 'arrangement selector: it picks a named variant from a list and emits a class, there is no CSS value to place', 'auto:layout-variant-enum'
+            elif r['role'] == 'layout' and r['enum_values'] and not r['css_property'] and re.search(r'Order$', r['attr_name']):
+                site['category'], site['reason'], site['rule'] = 'exempt', 'sort-order selector: it chooses which items come first, it is data selection and not a look', 'auto:sort-order-enum'
+            else:
+                rule = rule_for(site)
+                if rule:
+                    site['category'], site['reason'], site['rule'] = 'exempt', rule.get('reason', ''), rule['id']
+                else:
+                    site['category'], site['reason'] = 'unrecognised', 'the database maps no %s, so the route cannot place it' % ('css_element or css_property' if miss_el and miss_pr else ('css_element' if miss_el else 'css_property'))
+            sites.append(site)
+
+    # (b) fixed words
+    by_owner, admin_skipped = {}, 0
+    for path in sorted(corpus.files):
+        if not parts_php_scope(path):
+            continue
+        owner = file_block(path, slugs)
+        if not owner:
+            continue
+        if ADMIN_SCREEN.search(corpus.files[path]):
+            admin_skipped += len(scan_strings(path, corpus.files[path]))
+            continue
+        for line, sym, word, stmt in scan_strings(path, corpus.files[path]):
+            by_owner.setdefault(owner, []).append((path, line, sym, word))
+    for owner, items in sorted(by_owner.items()):
+        rows = attrs.block(owner)
+        toks = set()
+        defaults = set()
+        for r in rows:
+            if not is_text_attr(r):
+                continue
+            toks |= {word_stem(t) for t in attr_tokens(r['attr_name'])}
+            dv = (r['default_value'] or '').strip().strip('"').lower()
+            if dv:
+                defaults.add(dv)
+        seen = set()
+        for path, line, sym, word in items:
+            if (path, sym, word) in seen:
+                continue
+            seen.add((path, sym, word))
+            if not string_tokens(word):
+                continue            # placeholders and joining words only (`%1$d of %2$d`)
+            if word.lower() in defaults or (string_tokens(word) & toks):
+                continue
+            site = {'file': path, 'line': line, 'symbol': sym, 'kind': 'string', 'stem': word, 'block': owner, 'rule': '',
+                    'snippet': word, 'key': '%s::%s::%s' % (path, sym, word)}
+            rule = rule_for(site)
+            if rule:
+                site['category'], site['reason'], site['rule'] = 'exempt', rule.get('reason', ''), rule['id']
+            else:
+                site['category'], site['reason'] = 'unrecognised', 'a visitor-visible word in sgs/%s that no text attribute of the block shares a stem with' % owner
+            sites.append(site)
+    return sites, {'admin-screen-strings-skipped': admin_skipped}
+
+
+# ----------------------------------------------------------------------------
+# Generic per-pass plumbing: tallies, cross-checks, ratchet, baseline sections
+# ----------------------------------------------------------------------------
+def tally_for(p, sites):
+    cats = set(CATEGORIES) | {'has-setting', 'not-a-block'}
+    t = {}
+    for s in sites:
+        t[s['category']] = t.get(s['category'], 0) + 1
+    return {c: t.get(c, 0) for c in sorted(cats) if c in t or c in CAT_ORDER[p]}
+
+
+CAT_ORDER = {'buttons': CATEGORIES, 'parts': ('has-setting', 'exempt', 'not-a-block', 'unrecognised'),
+             'unmapped': ('exempt', 'unrecognised')}
+
+
+def crosscheck_generic(p, cfg, sites, key, extra_rules=()):
+    """Exemption rules each carry a reason and each still match a site."""
+    fails = []
+    used = {s['rule'] for s in sites if s['rule']}
+    for rule in cfg.get(key, []):
+        if not str(rule.get('reason', '')).strip():
+            fails.append('%s exemption %s carries no reason' % (p, rule.get('id')))
+        if rule['id'] not in used:
+            fails.append('STALE %s rule %s matches no site; a stale allowlist entry is indistinguishable '
+                         'from no entry, remove it' % (p, rule['id']))
+    return fails
+
+
+def crosscheck_parts(corpus, cfg, sites, wide):
+    fails = crosscheck_generic('parts', cfg, sites, 'parts_exemptions')
+    surveyed = {p for p in corpus.files if parts_scope(p)}
+    if wide is not None:
+        globs = cfg.get('parts_width_ok', {})
+        for g, why in sorted(globs.items()):
+            if not str(why).strip():
+                fails.append('parts_width_ok entry %s carries no reason' % g)
+        gap = sorted(f for f in wide - surveyed if not any(fnmatch.fnmatchcase(f, g) for g in globs))
+        if gap:
+            fails.append('CORPUS TOO NARROW: %d file(s) hold a BEM-part rule with a look declaration and are not '
+                         'surveyed, nor named in parts_width_ok: %s' % (len(gap), ', '.join(gap[:6])))
+        for g in sorted(globs):
+            if not any(fnmatch.fnmatchcase(f, g) for f in wide):
+                fails.append('STALE parts_width_ok entry %s: it matches no file that still holds such a rule' % g)
+        # The reverse reconciliation: a file the narrow reader found a fixed look in must be in the wide list.
+        for f in sorted({s['file'] for s in sites}):
+            if f not in wide:
+                fails.append('the rule reader found a fixed look in %s that the wide enumeration did not: one of them is wrong' % f)
+    return fails
+
+
+def crosscheck_unmapped(corpus, cfg, sites, attrs):
+    fails = crosscheck_generic('unmapped', cfg, sites, 'unmapped_exemptions')
+    slugs = set(corpus.block_slugs())
+    db_slugs = {k for k in attrs.by_block}
+    for s in sorted(db_slugs - slugs):
+        fails.append('DB STALE: block sgs/%s has attribute rows but no block.json in the corpus; run /sgs-update' % s)
+    for slug in sorted(slugs):
+        bj = corpus.block_json(slug) or {}
+        missing = sorted(k for k in set((bj.get('attributes') or {}).keys()) - {r['attr_name'] for r in attrs.block(slug)} if not k.startswith('_'))
+        if missing:
+            fails.append('DB BEHIND: sgs/%s block.json declares %d attribute(s) the database does not hold (%s); run /sgs-update'
+                         % (slug, len(missing), ', '.join(missing[:3])))
+    return fails
+
+
+def load_cfg_all():
+    cfg = load_cfg()
+    ex = load_json(EXEMPTIONS_PATH, {}) or {}
+    for k in ('parts_exemptions', 'parts_width_ok', 'unmapped_exemptions'):
+        cfg[k] = ex.get(k, [] if k != 'parts_width_ok' else {})
+    return cfg
+
+
+def baseline_section(p):
+    d = load_json(BASELINE_PATH, {}) or {}
+    return (d.get('passes') or {}).get(p) or {'ceiling': None, 'entries': {}}
+
+
+def write_baseline_section(p, live, comment):
+    d = load_json(BASELINE_PATH, {}) or {}
+    passes = d.get('passes') or {}
+    passes[p] = {'_comment': comment, 'ceiling': sum(live.values()), 'entries': dict(sorted(live.items()))}
+    out = {'_comment': 'Ratcheted ceilings for check-styled-part-has-setting.py, one section per pass: every gated site keyed '
+                       'file::symbol::stem (attribute keys are sgs/<block>::<attribute>) with its count. A section only shrinks. '
+                       'Lower it with --write-baseline --pass <name> after a migration; never raise it to absorb a new finding.',
+           'passes': {k: passes[k] for k in PASSES if k in passes}}
+    write_atomic(BASELINE_PATH, json.dumps(out, indent=2, ensure_ascii=False) + '\n')
+
+
+BASELINE_COMMENTS = {
+    'buttons': 'Every target and unrecognised button site, keyed file::symbol::stem.',
+    'parts': 'Every BEM part with a literal look and no setting, keyed file::symbol::part.',
+    'unmapped': 'Every look-role attribute the database cannot place (sgs/<block>::<attribute>) and every visitor-visible word no attribute shares a stem with (file::symbol::word).',
+}
+
+
+# ----------------------------------------------------------------------------
 # Reports
 # ----------------------------------------------------------------------------
-def print_survey(sites, as_json, corpus, cfg):
+SITE_FIELDS = ('category', 'file', 'line', 'symbol', 'kind', 'stem', 'rule', 'reason', 'snippet')
+
+
+def survey_dict(p, sites, extra=None):
+    """One pass's durable census record: totals, by kind, every site."""
+    t = tally(sites) if p == 'buttons' else tally_for(p, sites)
+    out = {'pass': p, 'totals': dict(t, total=len(sites)),
+           'by_kind': {k: sum(1 for s in sites if s['kind'] == k) for k in sorted({s['kind'] for s in sites})}}
+    if extra:
+        out.update(extra)
+    rows = []
+    for s in sorted(sites, key=lambda s: (s['category'], s['file'], s['line'], s['stem'])):
+        row = {k: s[k] for k in SITE_FIELDS}
+        for k in ('block', 'declarations', 'role'):
+            if k in s:
+                row[k] = s[k]
+        rows.append(row)
+    out['sites'] = rows
+    return out
+
+
+def print_survey(sites, corpus, cfg):
     t = tally(sites)
-    if as_json:
-        out = {
-            'generated_by': 'plugins/sgs-blocks/scripts/check-styled-part-has-setting.py --survey --json',
-            'pass': 'buttons',
-            'totals': dict(t, total=len(sites)),
-            'by_kind': {k: sum(1 for s in sites if s['kind'] == k) for k in sorted({s['kind'] for s in sites})},
-            'sites': [{k: s[k] for k in ('category', 'file', 'line', 'symbol', 'kind', 'stem', 'rule', 'reason', 'snippet')}
-                      for s in sorted(sites, key=lambda s: (s['category'], s['file'], s['line']))],
-        }
-        print(json.dumps(out, indent=2, ensure_ascii=False))
-        return
     for cat in ('target', 'unrecognised'):
         print('\n== %s ==' % cat)
         for s in sorted((x for x in sites if x['category'] == cat), key=lambda s: (s['file'], s['line'])):
@@ -919,6 +1748,33 @@ def print_survey(sites, as_json, corpus, cfg):
     for c in CATEGORIES:
         print('%-14s %d' % (c + ':', t[c]))
     print('%-14s %d  (target + unrecognised, what --check gates)' % ('GATED:', t['target'] + t['unrecognised']))
+
+
+def print_survey_generic(p, sites, extra):
+    t = tally_for(p, sites)
+    print('\n== %s pass ==' % p)
+    kinds = {}
+    for s in sites:
+        kinds.setdefault((s['kind'], s['category']), 0)
+        kinds[(s['kind'], s['category'])] += 1
+    for (k, c), n in sorted(kinds.items()):
+        print('  %-18s %-13s %d' % (k, c, n))
+    print('\n  -- unrecognised --')
+    for s in sorted((x for x in sites if x['category'] == 'unrecognised'), key=lambda s: (s['file'], s['line'], s['stem'])):
+        print('  %-16s %s::%s  [%s]  %s' % (s['kind'], s['file'], s['symbol'], s['stem'], s['snippet'][:80]))
+    print('\n  -- exempt (by rule) --')
+    by = {}
+    for s in sites:
+        if s['category'] == 'exempt':
+            by[s['rule']] = by.get(s['rule'], 0) + 1
+    for rid, n in sorted(by.items()):
+        print('  %5d  %s' % (n, rid))
+    for k, v in (extra or {}).items():
+        print('  %s: %s' % (k, v))
+    print('\nsites: %d' % len(sites))
+    for c, n in t.items():
+        print('%-14s %d' % (c + ':', n))
+    print('%-14s %d  (unrecognised, what --check gates)' % ('GATED:', t.get('unrecognised', 0)))
 
 
 def run_check(corpus, cfg, baseline, wide, quiet=False):
@@ -1123,17 +1979,259 @@ def self_test():
     check('stripper: PHP comments blanked, a // inside a string kept', st.count('<button') == 1 and "'http://x'" in st)
     sj = strip_js("const a = '//x'; // <button\n/* <button */ const b = `<button>`;\n")
     check('stripper: JS comments blanked, strings and templates kept', sj.count('<button') == 1 and "'//x'" in sj)
+
+    # ---- PASS parts ---------------------------------------------------------------------------
+    def row(slug, name, role, prop, el, typ='string', enum=None, default=None):
+        return {'block_slug': 'sgs/' + slug, 'attr_name': name, 'attr_type': typ, 'default_value': default,
+                'enum_values': enum, 'role': role, 'css_property': prop, 'css_element': el, 'source': 'sgs'}
+
+    FXP_CSS = """
+/* .sgs-fx__commented { color: red; } */
+.sgs-fx__title { color: #123456; font-size: 18px; }
+.sgs-fx__badge { background: #f00; border-radius: 4px; padding: 2px 6px; }
+@media (min-width: 600px) { .sgs-fx__badge { padding: 4px; } }
+.sgs-fx__row { display: flex; gap: 8px; margin: 4px; }
+.sgs-fx__chip:focus-visible { box-shadow: 0 0 0 2px #00f; }
+.sgs-fx__tint { color: var(--sgs-fx-colour, #333); }
+.sgs-fx__flat { border: 0; background: none; }
+.sgs-fx__sr-only { color: red; }
+.sgs-fx__aside { color: #444; }
+.sgs-fx__item .sgs-fx__item-label { font-weight: 700; }
+.is-style-bold .sgs-fx__title { font-weight: 900; }
+.sgs-fx__list li { color: #555; }
+.sgs-fx__cartlink .woocommerce-Price-amount { color: #060; }
+.sgs-fx__draft-only { color: #777; }
+"""
+    FXP_PHP = """<?php
+$css = '.sgs-fx__php-part{color:#abc;padding:3px}';
+$dyn = '.sgs-fx__dyn{color:' . $colour . ';background:%s}';
+echo '<div class="sgs-fx__php-part"></div>';
+"""
+    FXP_EDIT = "export default () => <p className=\"sgs-fx__draft-only\">x</p>;\n"
+    p_files = {
+        'plugins/sgs-blocks/src/blocks/fx/block.json': '{"name":"sgs/fx","attributes":{"titleColour":{"type":"string"},"asideColour":{"type":"string"}}}',
+        'plugins/sgs-blocks/src/blocks/fx/style.css': FXP_CSS,
+        'plugins/sgs-blocks/src/blocks/fx/render.php': FXP_PHP,
+        'plugins/sgs-blocks/src/blocks/fx/edit.js': FXP_EDIT,
+    }
+    p_attrs = Attrs([row('fx', 'titleColour', 'color', 'color', 'title'),
+                     row('fx', 'asideLabelColour', 'color', 'color', 'aside-label'),
+                     row('fx', 'itemLabelWeight', 'typography', 'font-weight', 'item-label')])
+    p_cfg = {'parts_exemptions': [], 'parts_width_ok': {}, 'exemptions': [], 'targets': [], 'width_ok': {}}
+    pc = Corpus(dict(p_files))
+    psites, pextra = run_parts(pc, p_cfg, p_attrs)
+    by_part = {s['stem']: s for s in psites}
+    check('parts positive: a part with a literal look and no setting is unrecognised, with its fixed declarations',
+          by_part.get('badge', {}).get('category') == 'unrecognised'
+          and set(by_part['badge']['declarations']) == {'background', 'border-radius', 'padding'})
+    check('parts: the same part written again inside @media is one site, not two', sum(1 for s in psites if s['stem'] == 'badge') == 1)
+    check('parts definition: a part an attribute names as its css_element is has-setting', by_part['title']['category'] == 'has-setting')
+    check("parts definition: a part and a css_element that share their distinctive word meet (aside ~ aside-label)", by_part['aside']['category'] == 'has-setting')
+    check('parts: a nested descendant (`.item .item-label`) is attributed to its own part', by_part['item-label']['category'] == 'has-setting')
+    check('parts negative control: a layout-only rule is not a finding', 'row' not in by_part and pextra['no-fixed-look'] >= 1)
+    check('parts negative control: a focus rule is not a finding', 'chip' not in by_part and pextra['focus-rules-skipped'] == 1)
+    check('parts negative control: a value read from a settable custom property, and a reset, are not fixed looks',
+          'tint' not in by_part and 'flat' not in by_part)
+    check('parts negative control: a commented-out rule is ignored', 'commented' not in by_part)
+    check('parts negative control: a rule under .is-style-* is a named variation, not a fixed look', pextra['variation-or-editor-rules-skipped'] == 1 and by_part['title']['declarations'].get('font-weight') is None)
+    check('parts negative control: a rule whose subject is WooCommerce markup is not a part', 'cartlink' not in by_part and pextra['woo-subject-rules-skipped'] == 1)
+    check('parts edge: a visually-hidden utility is exempt with its reason', by_part['sr-only']['category'] == 'exempt' and by_part['sr-only']['reason'])
+    check('parts edge: a part printed only by edit code is exempt as editor canvas only', by_part['draft-only']['category'] == 'exempt' and by_part['draft-only']['rule'] == 'auto:editor-canvas-only')
+    check('parts edge: a descendant of a part (`.list li`) styles the part', by_part['list']['category'] == 'unrecognised')
+    check('parts edge: CSS written in a PHP string is read; a value built from a variable is not fixed',
+          by_part['php-part']['category'] == 'unrecognised' and set(by_part['php-part']['declarations']) == {'color', 'padding'} and 'dyn' not in by_part)
+    check('parts idempotence: survey twice gives the same keys', [s['key'] for s in run_parts(pc, p_cfg, p_attrs)[0]] == [s['key'] for s in psites])
+    check('parts negative control: survey does not modify the corpus', pc.files['plugins/sgs-blocks/src/blocks/fx/style.css'] == FXP_CSS)
+    # exemptions
+    p_cfg_ex = dict(p_cfg, parts_exemptions=[{'id': 'fx-badge', 'files': ['plugins/sgs-blocks/src/blocks/fx/*.css'], 'part': '^badge$', 'reason': 'fixture'}])
+    ex_sites, _ = run_parts(pc, p_cfg_ex, p_attrs)
+    check('parts edge: an exemption rule moves the part to exempt, with its reason',
+          [s for s in ex_sites if s['stem'] == 'badge'][0]['category'] == 'exempt')
+    stale_p = crosscheck_parts(pc, dict(p_cfg, parts_exemptions=[{'id': 'nope', 'part': '^zzz$', 'reason': 'x'}]), psites, None)
+    check('parts edge: a stale exemption fails the cross-check', any('STALE parts rule nope' in f for f in stale_p))
+    nr_p = crosscheck_parts(pc, dict(p_cfg, parts_exemptions=[{'id': 'bare', 'part': '^badge$'}]),
+                            run_parts(pc, dict(p_cfg, parts_exemptions=[{'id': 'bare', 'part': '^badge$'}]), p_attrs)[0], None)
+    check('parts edge: an exemption with no reason fails the cross-check', any('carries no reason' in f for f in nr_p))
+    # ratchet and the planted part
+    pb = {'ceiling': sum(keyed(psites, GATED_CATS['parts']).values()), 'entries': keyed(psites, GATED_CATS['parts'])}
+    pf0, _ = check_pass('parts', pc, p_cfg, p_attrs, pb)
+    planted_p = Corpus(dict(p_files, **{'plugins/sgs-blocks/src/blocks/fx/extra.css': '.sgs-fx__planted { background: #0f0; border: 1px solid #000; }\n'}))
+    pf1, _ = check_pass('parts', planted_p, p_cfg, p_attrs, pb)
+    check('parts planted: --check is green at its own baseline', not pf0)
+    check('parts planted: a part with no setting makes --check fail', any('NEW (not in the baseline)' in f and 'planted' in f for f in pf1))
+    shrunk_p = Corpus({k: v for k, v in p_files.items() if not k.endswith('style.css')})
+    pf2, _ = check_pass('parts', shrunk_p, p_cfg, p_attrs, pb)
+    check('parts ratchet: a baseline entry that no longer exists fails as stale', any('STALE baseline entry' in f for f in pf2))
+    # corpus control
+    wide_p = {'plugins/sgs-blocks/src/blocks/fx/style.css', 'plugins/sgs-blocks/src/blocks/fx/render.php',
+              'plugins/sgs-blocks/includes/sneaky.css.php'}
+    cxp = crosscheck_parts(pc, p_cfg, psites, wide_p)
+    check('parts corpus control: a wide-only file with a part rule fails closed', any('CORPUS TOO NARROW' in f and 'sneaky' in f for f in cxp))
+    p_cfg_w = dict(p_cfg, parts_width_ok={'plugins/sgs-blocks/includes/sneaky.css.php': 'fixture reason'})
+    check('parts corpus control: parts_width_ok with a reason reconciles it', not any('CORPUS' in f for f in crosscheck_parts(pc, p_cfg_w, psites, wide_p)))
+    check('parts corpus control: a stale parts_width_ok entry fails',
+          any('STALE parts_width_ok' in f for f in crosscheck_parts(pc, dict(p_cfg, parts_width_ok={'plugins/gone/*': 'x'}), psites, wide_p)))
+    check('parts corpus control: a finding in a file the wide list lacks fails (one of the two readers is wrong)',
+          any('wide enumeration did not' in f for f in crosscheck_parts(pc, p_cfg, psites, {'plugins/sgs-blocks/src/blocks/fx/style.css'})))
+
+    # ---- PASS unmapped -------------------------------------------------------------------------
+    UM_BJ = {'name': 'sgs/um', 'attributes': {k: {'type': 'string'} for k in (
+        'titleFontSize', 'titleFontSizeUnit', 'bodyFontSize', 'bodyFontSizeUnit', 'ghostColour', 'layout', 'badgeColour', 'hoverNote',
+        'continueLabel', 'sortOrder')}}
+    um_rows = [row('um', 'titleFontSize', 'typography', 'font-size', None),
+               row('um', 'titleFontSizeUnit', 'typography', None, None),
+               row('um', 'bodyFontSize', 'typography', 'font-size', 'body'),
+               row('um', 'bodyFontSizeUnit', 'typography', None, None),
+               row('um', 'ghostColour', 'color', None, None),
+               row('um', 'layout', 'layout', None, None, enum='["a", "b"]'),
+               row('um', 'badgeColour', 'color', 'color', 'badge'),
+               row('um', 'hoverNote', 'behaviour', None, None),
+               row('um', 'continueLabel', 'text-content', None, None, default='"Continue"'),
+               row('um', 'sortOrder', 'layout', None, None, enum='["a", "b"]'),
+               row('um', 'phantomColour', 'color', None, None)]
+    UM_PHP = """<?php
+echo '<button type="button" class="um__back">' . esc_html__( 'Back', 'sgs-blocks' ) . '</button>';
+echo '<span class="um__go">' . esc_html__( 'Continue', 'sgs-blocks' ) . '</span>';
+echo '<span class="screen-reader-text">' . esc_html__( 'Skip ahead', 'sgs-blocks' ) . '</span>';
+$e = new WP_Error( 'x', __( 'Something failed', 'sgs-blocks' ) );
+echo '<span aria-label="' . esc_attr__( 'Close', 'sgs-blocks' ) . '"></span>';
+echo '<p>' . esc_html( $attributes['note'] ?? __( 'Fallback', 'sgs-blocks' ) ) . '</p>';
+// echo '<b>' . __( 'Commented', 'sgs-blocks' ) . '</b>';
+$sale = $on ? __( 'Sale', 'sgs-blocks' ) : '';
+echo '<i class="um__badge">' . esc_html( $sale ) . '</i>';
+$nav .= helper( 'prev', __( 'Previous', 'sgs-blocks' ) );
+"""
+    u_files = {'plugins/sgs-blocks/src/blocks/um/block.json': json.dumps(UM_BJ),
+               'plugins/sgs-blocks/src/blocks/um/render.php': UM_PHP}
+    u_attrs = Attrs(um_rows)
+    u_cfg = {'unmapped_exemptions': [], 'parts_exemptions': [], 'parts_width_ok': {}, 'exemptions': [], 'targets': [], 'width_ok': {}}
+    uc = Corpus(dict(u_files))
+    usites, uextra = run_unmapped(uc, u_cfg, u_attrs)
+    ukey = {s['key']: s for s in usites}
+    check('unmapped (a) positive: a look attribute with no css_element and no css_property is found',
+          ukey.get('sgs/um::ghostColour', {}).get('kind') == 'attr-neither' and ukey['sgs/um::ghostColour']['category'] == 'unrecognised')
+    check('unmapped (a): a property with no element and a unit with an unmapped base are both found',
+          ukey['sgs/um::titleFontSize']['kind'] == 'attr-no-element' and ukey['sgs/um::titleFontSizeUnit']['category'] == 'unrecognised')
+    check('unmapped (a) edge: a unit companion of a mapped attribute is exempt with its reason',
+          ukey['sgs/um::bodyFontSizeUnit']['category'] == 'exempt' and ukey['sgs/um::bodyFontSizeUnit']['reason'])
+    check('unmapped (a) edge: an arrangement selector and a sort-order selector are exempt',
+          ukey['sgs/um::layout']['rule'] == 'auto:layout-variant-enum' and ukey['sgs/um::sortOrder']['rule'] == 'auto:sort-order-enum')
+    check('unmapped (a) negative control: a fully mapped attribute, a behaviour attribute, and a database row with no block.json entry are not findings',
+          'sgs/um::badgeColour' not in ukey and 'sgs/um::hoverNote' not in ukey and 'sgs/um::phantomColour' not in ukey)
+    strs = {s['stem']: s for s in usites if s['kind'] == 'string'}
+    check('unmapped (b) positive: a visitor-visible word no text attribute shares a stem with is found', strs.get('Back', {}).get('category') == 'unrecognised')
+    check('unmapped (b) negative control: a word an attribute shares a stem with is not (continueLabel ~ Continue)', 'Continue' not in strs)
+    check('unmapped (b) negative control: screen-reader text, error messages, attribute values, attribute fallbacks and comments are not findings',
+          not ({'Skip ahead', 'Something failed', 'Close', 'Fallback', 'Commented'} & set(strs)))
+    check('unmapped (b) edge: a word assigned to a variable that is printed as element text is found; one appended to a markup accumulator is not',
+          'Sale' in strs and 'Previous' not in strs)
+    check('unmapped idempotence: survey twice gives the same keys', [s['key'] for s in run_unmapped(uc, u_cfg, u_attrs)[0]] == [s['key'] for s in usites])
+    check('unmapped negative control: survey does not modify the corpus', uc.files['plugins/sgs-blocks/src/blocks/um/render.php'] == UM_PHP)
+    u_cfg_ex = dict(u_cfg, unmapped_exemptions=[{'id': 'um-back', 'kind': 'string', 'string': '^Back$', 'reason': 'fixture'}])
+    check('unmapped edge: an exemption rule moves a word to exempt, with its reason',
+          [s for s in run_unmapped(uc, u_cfg_ex, u_attrs)[0] if s['stem'] == 'Back'][0]['category'] == 'exempt')
+    check('unmapped edge: a stale exemption fails the cross-check',
+          any('STALE unmapped rule nope' in f for f in crosscheck_unmapped(uc, dict(u_cfg, unmapped_exemptions=[{'id': 'nope', 'string': '^zzz$', 'reason': 'x'}]), usites, u_attrs)))
+    ub = {'ceiling': sum(keyed(usites, GATED_CATS['unmapped']).values()), 'entries': keyed(usites, GATED_CATS['unmapped'])}
+    uf0, _ = check_pass('unmapped', uc, u_cfg, u_attrs, ub)
+    planted_u = Corpus(dict(u_files, **{'plugins/sgs-blocks/src/blocks/um/extra.php': "<?php\necho '<em class=\"um__tag\">' . esc_html__( 'Limited', 'sgs-blocks' ) . '</em>';\n"}))
+    uf1, _ = check_pass('unmapped', planted_u, u_cfg, u_attrs, ub)
+    check('unmapped planted: --check is green at its own baseline', not uf0)
+    check('unmapped planted: a fixed word with no setting makes --check fail', any('NEW (not in the baseline)' in f and 'Limited' in f for f in uf1))
+    bj2 = json.loads(json.dumps(UM_BJ))
+    bj2['attributes']['newGhost'] = {'type': 'string'}
+    uf2, _ = check_pass('unmapped', Corpus(dict(u_files, **{'plugins/sgs-blocks/src/blocks/um/block.json': json.dumps(bj2)})), u_cfg, u_attrs, ub)
+    check('unmapped corpus control: a block.json attribute the database does not hold fails (DB behind the code)', any('DB BEHIND' in f for f in uf2))
+    uf3, _ = check_pass('unmapped', Corpus({}), u_cfg, u_attrs, ub)
+    check('unmapped corpus control: database rows for a block with no block.json fail (DB ahead of the code)', any('DB STALE' in f for f in uf3))
+    check('baseline sections: each pass reads its own section; a missing section is "no baseline", never a pass',
+          any('no baseline for the unmapped pass' in f for f in ratchet(usites, {'ceiling': None, 'entries': {}}, 'unmapped')[0]))
+    check('unmapped (b) stripper: a comment naming a word is blanked', 'Commented' not in {w for _, _, w, _ in scan_strings('x.php', UM_PHP)})
     return fails
 
 
 # ----------------------------------------------------------------------------
 # CLI
 # ----------------------------------------------------------------------------
+def skipped_no_db(p):
+    print('SKIPPED (%s pass): the framework database is not at %s. These passes are database-first; '
+          'run /sgs-update on this machine to build it. Nothing was checked.' % (p, FRAMEWORK_DB))
+    return 0
+
+
+def pass_sites(p, corpus, cfg, attrs):
+    """(sites, extra) for one pass; extra is the pass's informational counts."""
+    if p == 'buttons':
+        return run_survey(corpus, cfg), {}
+    if p == 'parts':
+        return run_parts(corpus, cfg, attrs)
+    return run_unmapped(corpus, cfg, attrs)
+
+
+def check_pass(p, corpus, cfg, attrs, baseline, wide=None):
+    """(failures, sites) for the parts and unmapped passes: cross-checks plus the ratchet."""
+    sites, _ = pass_sites(p, corpus, cfg, attrs)
+    fails = (crosscheck_parts(corpus, cfg, sites, wide) if p == 'parts'
+             else crosscheck_unmapped(corpus, cfg, sites, attrs))
+    rfails, _ = ratchet(sites, baseline, p)
+    return fails + rfails, sites
+
+
+def run_pass(p, a, corpus, cfg, attrs, results):
+    """Run one pass for the requested mode; returns its exit code."""
+    if p != 'buttons' and attrs is None:
+        return skipped_no_db(p) if (a.check or a.write_baseline) else _no_db_error(p)
+    gated = GATED_CATS[p]
+
+    if a.check:
+        if p == 'buttons':
+            rc, _ = run_check(corpus, cfg, load_baseline('buttons'), wide_enumeration())
+            return rc
+        allf, sites = check_pass(p, corpus, cfg, attrs, load_baseline(p), wide_parts() if p == 'parts' else None)
+        t = tally_for(p, sites)
+        n = sum(t.get(c, 0) for c in gated)
+        if allf:
+            print('FAIL (%s): %d finding(s); gated count %d, baseline ceiling %s' % (p, len(allf), n, load_baseline(p).get('ceiling')))
+            for f in allf:
+                print('  - ' + f)
+            return 1
+        print('PASS (%s): gated count %d = baseline ceiling %s; %s' % (
+            p, n, load_baseline(p).get('ceiling'), ', '.join('%s %d' % kv for kv in t.items() if kv[0] not in gated)))
+        return 0
+
+    if a.write_baseline:
+        sites, _ = pass_sites(p, corpus, cfg, attrs)
+        live = keyed(sites, gated)
+        old = load_baseline(p)
+        old_entries = old.get('entries', {})
+        raised = [k for k, n in live.items() if n > old_entries.get(k, 0)] if old.get('ceiling') is not None else []
+        if raised:
+            print('REFUSED (%s): the baseline only shrinks; these would rise or appear: %s' % (p, ', '.join(raised[:5])))
+            return 1
+        write_baseline_section(p, live, BASELINE_COMMENTS[p])
+        print('baseline written (%s): ceiling %d over %d entries' % (p, sum(live.values()), len(live)))
+        return 0
+
+    sites, extra = pass_sites(p, corpus, cfg, attrs)
+    results[p] = survey_dict(p, sites, extra)
+    if not a.json:
+        if p == 'buttons':
+            print_survey(sites, corpus, cfg)
+        else:
+            print_survey_generic(p, sites, extra)
+    return 0
+
+
+def _no_db_error(p):
+    print('ERROR (%s pass): the framework database is not at %s; run /sgs-update.' % (p, FRAMEWORK_DB), file=sys.stderr)
+    return 2
+
+
 def main():
     ap = argparse.ArgumentParser(description='A styled part with no setting (detector).')
     ap.add_argument('--survey', action='store_true')
     ap.add_argument('--json', action='store_true')
-    ap.add_argument('--fix', action='store_true')
+    ap.add_argument('--fix', action='store_true', help='buttons pass only: the rename pass (diff)')
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--check', action='store_true')
     ap.add_argument('--write-baseline', action='store_true')
@@ -1147,72 +2245,19 @@ def main():
         print('\n' + ('SELF-TEST FAILED (%d)' % len(fails) if fails else 'self-test: all assertions passed'))
         return 1 if fails else 0
 
-    rc = 0
-    for p in passes:
-        if p == 'buttons':
-            rc = max(rc, run_buttons(a))
-    return rc
-
-
-def run_buttons(a):
-    cfg = load_cfg()
-    corpus = Corpus.from_disk()
-
-    if a.check:
-        rc, _ = run_check(corpus, cfg, load_baseline(), wide_enumeration())
-        return rc
-
-    if a.write_baseline:
-        sites = run_survey(corpus, cfg)
-        live = keyed(sites)
-        old = load_baseline()
-        old_entries = old.get('entries', {})
-        raised = [k for k, n in live.items() if n > old_entries.get(k, 0)] if old.get('ceiling') is not None else []
-        if raised:
-            print('REFUSED: the baseline only shrinks; these would rise or appear: %s' % ', '.join(raised[:5]))
-            return 1
-        write_atomic(BASELINE_PATH, json.dumps({
-            '_comment': 'Ratcheted ceiling for check-styled-part-has-setting.py (buttons pass): every target and '
-                        'unrecognised site, keyed file::symbol::stem with its count. It only shrinks. Lower it with '
-                        '--write-baseline after a migration; never raise it to absorb a new button.',
-            'pass': 'buttons',
-            'ceiling': sum(live.values()),
-            'entries': dict(sorted(live.items())),
-        }, indent=2, ensure_ascii=False) + '\n')
-        print('baseline written: ceiling %d over %d entries' % (sum(live.values()), len(live)))
-        return 0
-
     if a.fix:
-        renames = load_renames()
-        plan = rename_plan(rename_corpus(), renames)
-        d = diff_text(plan)
-        sys.stdout.write(d)
-        by = {}
-        for old, r, sh in plan['records']:
-            by[sh] = by.get(sh, 0) + 1
-        print('\n# rename references by shape: %s' % ', '.join('%s=%d' % kv for kv in sorted(by.items())))
-        print('# files that would change: %d; diff lines: %d' % (len(plan['files']), d.count('\n')))
-        for old, r, ln, snip in plan['refusals']:
-            print('# UNRECOGNISED  %s  %s:%s  %s' % (old, r, ln, snip))
-        for old, r, ln, sh, snip in plan['shape']:
-            print('# SHAPE-REVIEW  %s  %s:%d  [%s]  %s' % (old, r, ln, sh, snip))
-        for old, r, why in plan['skipped']:
-            print('# SKIPPED       %s  %s  %s' % (old, r, why))
-        if plan['refusals']:
-            print('# REFUSING to write while %d reference(s) are unrecognised' % len(plan['refusals']))
-            return 1
-        if a.apply:
-            for r, (old, new) in plan['files'].items():
-                write_atomic(os.path.join(REPO, r), new)
-            print('# APPLIED: %d file(s) rewritten' % len(plan['files']))
-        else:
-            print('# dry run; add --apply to write')
-        return 0
+        return run_fix(a)
 
-    # --survey (also the default with no flag)
-    sites = run_survey(corpus, cfg)
-    print_survey(sites, a.json, corpus, cfg)
-    if not a.json:
+    cfg = load_cfg_all()
+    corpus = Corpus.from_disk()
+    attrs = Attrs.from_db() if any(p != 'buttons' for p in passes) else None
+    results, rc = {}, 0
+    for p in passes:
+        rc = max(rc, run_pass(p, a, corpus, cfg, attrs, results))
+    if results and a.json:
+        print(json.dumps({'generated_by': 'plugins/sgs-blocks/scripts/check-styled-part-has-setting.py --survey --json',
+                          'passes': results}, indent=2, ensure_ascii=False))
+    elif results and 'buttons' in results and not a.json:
         renames = load_renames()
         plan = rename_plan(rename_corpus(), renames)
         by = {}
@@ -1227,6 +2272,34 @@ def run_buttons(a):
         print('\n== old names also named OUTSIDE the rename trees (not rewritten) ==')
         for r, names in sorted(el.items()):
             print('  %s  %s' % (r, ', '.join(names)))
+    return rc
+
+
+def run_fix(a):
+    renames = load_renames()
+    plan = rename_plan(rename_corpus(), renames)
+    d = diff_text(plan)
+    sys.stdout.write(d)
+    by = {}
+    for old, r, sh in plan['records']:
+        by[sh] = by.get(sh, 0) + 1
+    print('\n# rename references by shape: %s' % ', '.join('%s=%d' % kv for kv in sorted(by.items())))
+    print('# files that would change: %d; diff lines: %d' % (len(plan['files']), d.count('\n')))
+    for old, r, ln, snip in plan['refusals']:
+        print('# UNRECOGNISED  %s  %s:%s  %s' % (old, r, ln, snip))
+    for old, r, ln, sh, snip in plan['shape']:
+        print('# SHAPE-REVIEW  %s  %s:%d  [%s]  %s' % (old, r, ln, sh, snip))
+    for old, r, why in plan['skipped']:
+        print('# SKIPPED       %s  %s  %s' % (old, r, why))
+    if plan['refusals']:
+        print('# REFUSING to write while %d reference(s) are unrecognised' % len(plan['refusals']))
+        return 1
+    if a.apply:
+        for r, (old, new) in plan['files'].items():
+            write_atomic(os.path.join(REPO, r), new)
+        print('# APPLIED: %d file(s) rewritten' % len(plan['files']))
+    else:
+        print('# dry run; add --apply to write')
     return 0
 
 
