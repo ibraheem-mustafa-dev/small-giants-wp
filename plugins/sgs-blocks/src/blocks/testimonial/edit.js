@@ -62,6 +62,9 @@ import {
 	RICH_TEXT_PLAIN,
 } from '../../utils/rich-text-formats';
 
+import { cssLengthValue } from '../../utils/css-length';
+import { resolveTier } from '../../utils/responsive';
+import { composeShadow } from '../../utils/shadow-layers';
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Variants whose stylesheet already paints a border: a chosen colour, style or
@@ -417,6 +420,11 @@ export default function Edit( {
 		roleColourHover,
 		orgColourHover,
 		ratingColourHover,
+		boxShadow,
+		boxShadowColour,
+		quoteMarkGlyph,
+		quoteMarkColour,
+		quoteMarkSize,
 	} = attributes;
 
 	// Effective variant = this card's own explicit choice, else the parent
@@ -526,6 +534,10 @@ export default function Edit( {
 						STYLESHEET_BORDER_VARIANTS.includes( effectiveVariant ),
 				}
 			),
+			// The resting shadow (boxShadow + boxShadowColour), as render.php prints it.
+			...( composeShadow( boxShadow, boxShadowColour ) && {
+				boxShadow: composeShadow( boxShadow, boxShadowColour ),
+			} ),
 			'--sgs-transition-duration': transitionDuration
 				? `${ transitionDuration }ms`
 				: undefined,
@@ -574,6 +586,13 @@ export default function Edit( {
 	const ratingStyle = {
 		...resolveTextColourPreviewStyle( ratingColour, ratingColourGradient ),
 		fontSize: ratingSize ? ratingSize + 'px' : undefined,
+	};
+
+	// The decorative quote mark: colour and per-device size, as render.php prints them.
+	const markStyle = {
+		...( quoteMarkColour && { color: colourVar( quoteMarkColour ) || quoteMarkColour } ),
+		fontSize:
+			cssLengthValue( resolveTier( quoteMarkSize, previewTier, '' ).value ?? '' ) || undefined,
 	};
 
 	const showSummary =
@@ -880,6 +899,22 @@ export default function Edit( {
 								onChange: ( val ) =>
 									setAttributes( {
 										ratingColourHover: val ?? '',
+									} ),
+								linked: true,
+							},
+						],
+					},
+					{
+						key: 'quote-mark',
+						label: __( 'Quote mark colour', 'sgs-blocks' ),
+						states: [
+							{
+								key: 'normal',
+								label: __( 'Normal', 'sgs-blocks' ),
+								value: quoteMarkColour,
+								onChange: ( val ) =>
+									setAttributes( {
+										quoteMarkColour: val ?? '',
 									} ),
 								linked: true,
 							},
@@ -1356,6 +1391,56 @@ export default function Edit( {
 							/>
 						);
 					} )() }
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Card shadow', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ShadowControl
+						label={ __( 'Resting shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ {
+							base: 'boxShadow',
+							colour: 'boxShadowColour',
+						} }
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Quote mark', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<TextControl
+						__next40pxDefaultSize
+						__nextHasNoMarginBottom
+						label={ __( 'Quote mark glyph', 'sgs-blocks' ) }
+						help={ __(
+							'A decorative mark above the quote, for example an opening curly quote. Empty shows none. The colour is under Colour; the size is below.',
+							'sgs-blocks'
+						) }
+						value={ quoteMarkGlyph ?? '' }
+						maxLength={ 8 }
+						onChange={ ( val ) =>
+							setAttributes( { quoteMarkGlyph: val } )
+						}
+					/>
+					<ResponsiveOverride
+						label={ __( 'Quote mark size', 'sgs-blocks' ) }
+						value={ quoteMarkSize }
+						onChange={ ( obj ) =>
+							setAttributes( { quoteMarkSize: obj } )
+						}
+					>
+						{ ( { ownValue, setOwnValue } ) => (
+							<SgsLengthControl
+								label={ __( 'Quote mark size', 'sgs-blocks' ) }
+								hideLabelFromVision
+								scale="font-size"
+								value={ ownValue || '' }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 			</InspectorControls>
 
@@ -2028,6 +2113,15 @@ export default function Edit( {
 			      editable but render no node on the frontend (placeholder only
 			      shows in the editor). ── */ }
 			<div { ...blockProps }>
+				{ quoteMarkGlyph && (
+					<span
+						className="sgs-testimonial__mark"
+						style={ markStyle }
+						aria-hidden="true"
+					>
+						{ quoteMarkGlyph.trim().slice( 0, 8 ) }
+					</span>
+				) }
 				{ showWork && (
 					<figure className="sgs-testimonial__work">
 						<SlotPicture { ...slotProps( 'work' ) } title={ __( 'Work image', 'sgs-blocks' ) } instructions={ __( 'Choose the case-study picture', 'sgs-blocks' ) } />

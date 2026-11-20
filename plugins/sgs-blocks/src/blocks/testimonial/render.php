@@ -167,6 +167,12 @@ $hover_shadow_colour   = $attributes['shadowColourHover'] ?? '';
 // ── Width (WS-4 container-wrapper, content kind: kept-scalar, no tiers) ─────
 $max_width = $attributes['maxWidth'] ?? '';
 
+// ── Resting card shadow (boxShadow + boxShadowColour) and the decorative quote mark ─────────────────────────────
+// Set, the resting shadow replaces the native Shadow support's value (one writer for the card's resting box-shadow); the
+// hover shadow keeps its own attributes. The glyph is at most 8 characters, like the trust bar's separator.
+$sgs_tm_has_box_shadow = '' !== trim( (string) ( $attributes['boxShadow'] ?? '' ) );
+$sgs_tm_mark_glyph     = is_string( $attributes['quoteMarkGlyph'] ?? null ) ? mb_substr( trim( sanitize_text_field( $attributes['quoteMarkGlyph'] ) ), 0, 8 ) : '';
+
 // ── Anchor + scope id (contract §B3: uid is a CLASS, not an id, so the anchor
 // element `id` stays free for ToC targets). ─────────────────────────────────
 $anchor   = $attributes['anchor'] ?? '';
@@ -475,6 +481,11 @@ if ( isset( $style_arr['typography'] ) && is_array( $style_arr['typography'] ) &
 	$base_style_engine_args['typography'] = $style_arr['typography'];
 }
 
+// The resting boxShadow setting is the card's one resting shadow when it is set: the native value is then left out.
+if ( $sgs_tm_has_box_shadow ) {
+	unset( $style_arr['shadow'] );
+}
+
 if ( isset( $style_arr['shadow'] ) && '' !== $style_arr['shadow'] ) {
 	$base_style_engine_args['shadow'] = $style_arr['shadow'];
 }
@@ -505,6 +516,29 @@ if ( ! empty( $base_style_engine_args ) ) {
 			$attributes,
 			( $block instanceof \WP_Block ) ? (string) $block->name : ''
 		);
+	}
+}
+
+// --- Resting shadow (boxShadow + boxShadowColour): a preset slug or a shape composed with its colour, with the forced-colours
+// outline fallback on the same rule. The automatic lift, or a hover recolour of this shape, joins the hover rule below; an
+// explicit shadowHover keeps its own path (the --sgs-hover-shadow property). ---
+$sgs_tm_shadow = array(
+	'normal' => array(),
+	'hover'  => array(),
+);
+if ( $sgs_tm_has_box_shadow ) {
+	$sgs_tm_shadow = sgs_shadow_decls(
+		$attributes,
+		array(
+			'base'         => 'boxShadow',
+			'colour'       => 'boxShadowColour',
+			'hover'        => 'shadowHover',
+			'hover_colour' => 'shadowColourHover',
+		),
+		( $block instanceof \WP_Block ) ? (string) $block->name : ''
+	);
+	if ( $sgs_tm_shadow['normal'] ) {
+		$scoped_css[] = $root_sel . '{' . implode( ';', $sgs_tm_shadow['normal'] ) . ';}';
 	}
 }
 
@@ -684,12 +718,37 @@ $border = sgs_border_element_decls(
 	)
 );
 $hover_decls = array_merge( $hover_decls, $border['hover'] );
+if ( '' === (string) $hover_shadow ) {
+	// No explicit hover shadow: the resting shadow's automatic lift (or its recolour), when it has one.
+	$hover_decls = array_merge( $hover_decls, $sgs_tm_shadow['hover'] );
+}
 
 if ( $hover_decls ) {
 	// Via the ONE shared hover-colour helper, which also emits the
 	// `:focus-visible` twin a keyboard user needs. Now carries only
 	// root-level declarations (border-color) — see the note above.
 	$scoped_css[] = sgs_emit_state_colour_css( $root_sel, array(), $hover_decls );
+}
+
+// ── Quote mark: the decorative glyph's colour and per-device size (the element is printed below). ──
+$sgs_tm_mark_html = '';
+if ( '' !== $sgs_tm_mark_glyph ) {
+	$sgs_tm_mark_sel    = $root_sel . ' .sgs-testimonial__mark';
+	$sgs_tm_mark_colour = sgs_colour_value( is_string( $attributes['quoteMarkColour'] ?? null ) ? $attributes['quoteMarkColour'] : '' );
+	if ( '' !== $sgs_tm_mark_colour ) {
+		$scoped_css[] = $sgs_tm_mark_sel . '{color:' . $sgs_tm_mark_colour . ';}';
+	}
+	$scoped_css[]     = sgs_emit_responsive_css(
+		$sgs_tm_mark_sel,
+		array(
+			array(
+				'value'        => $attributes['quoteMarkSize'] ?? null,
+				'css'          => 'font-size',
+				'unit_default' => 'px',
+			),
+		)
+	);
+	$sgs_tm_mark_html = '<span class="sgs-testimonial__mark" aria-hidden="true">' . esc_html( $sgs_tm_mark_glyph ) . '</span>';
 }
 
 // ── Rating node (fully gated) ───────────────────────────────────────────────
@@ -939,6 +998,9 @@ $inner_html .= $schema_html;
 if ( '' === trim( $inner_html ) ) {
 	return;
 }
+
+// The quote mark leads the card in every variant; it never makes an otherwise empty card render (the guard above).
+$inner_html = $sgs_tm_mark_html . $inner_html;
 
 // ---------------------------------------------------------------------------
 // 3. Build the root element's attributes. D345: the rendered root carries NO

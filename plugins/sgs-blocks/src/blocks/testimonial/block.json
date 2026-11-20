@@ -102,7 +102,9 @@
 						"css:text-decoration-thickness-link": "linkUnderlineThickness",
 						"css:text-decoration-color-link": "linkUnderlineColour",
 						"css:text-decoration-offset-link": "linkUnderlineOffset",
-						"css:border-color-gradient": "borderColourGradient"
+						"css:border-color-gradient": "borderColourGradient",
+						"css:box-shadow": "boxShadow",
+						"css:box-shadow-color": "boxShadowColour"
 					},
 					"states": {
 						"hover": {
@@ -117,6 +119,21 @@
 							}
 						}
 					}
+				},
+				"quote-mark": {
+					"selector": ".sgs-testimonial__mark",
+					"motion": false,
+					"label": "Quote mark",
+					"order": 1.5,
+					"clusters": [
+						"text"
+					],
+					"prefix": "quoteMark",
+					"attrMap": {
+						"css:color": "quoteMarkColour",
+						"css:font-size": "quoteMarkSize"
+					},
+					"_note": "A decorative opening quote glyph (aria-hidden) printed first inside the card, in flow, centred or aligned as the card's text is: quoteMarkGlyph is the glyph itself (free text, at most 8 characters, for example an opening curly quote), quoteMarkColour its colour and quoteMarkSize its size per device. It is a tall glyph in a short line (line-height 0.6, height 0.45em), so the quote sits close beneath it. Unset prints none."
 				},
 				"quote-text": {
 					"text": true,
@@ -713,6 +730,27 @@
 		},
 		"shadowColourHover": {
 			"type": "string"
+		},
+		"boxShadow": {
+			"type": "string",
+			"description": "The card's resting shadow: a shadow preset slug or a box-shadow shape (offsets, blur, spread). Unset keeps the card's own look (or the Styles tab's native Shadow). Set, it replaces that native shadow and, with Lift on hover on, gets the same automatic lift as the other cards."
+		},
+		"boxShadowColour": {
+			"type": "string",
+			"description": "Colour of the resting shadow (a palette slug or any CSS colour); ignored for a preset slug, which carries its own."
+		},
+		"quoteMarkGlyph": {
+			"type": "string",
+			"role": "content",
+			"description": "A decorative quote mark printed first inside the card (for example an opening curly quote), at most 8 characters. Hidden from screen readers. Unset prints none."
+		},
+		"quoteMarkColour": {
+			"type": "string",
+			"description": "Colour of the quote mark (a palette slug or any CSS colour). Unset takes the card's text colour."
+		},
+		"quoteMarkSize": {
+			"type": "object",
+			"description": "Size of the quote mark, one CSS length per device (for example 60px). Unset takes the card's text size."
 		},
 		"_comment_wrapperAttrs": "WS-4 container wrapper (CONTENT kind): width/spacing only — mirrored verbatim from sgs/container block.json.",
 		"maxWidth": {

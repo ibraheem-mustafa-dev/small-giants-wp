@@ -9,6 +9,21 @@
 	transition-timing-function: var(--sgs-transition-easing, ease-in-out);
 }
 
+/* The decorative quote mark (quoteMarkGlyph): a tall glyph in a short line, in flow at the top of the card, so the quote
+   sits close beneath it. It follows the card's text alignment; in a grid variant it takes the whole first row. */
+.sgs-testimonial__mark {
+	display: block;
+	margin: 0;
+	height: 0.4333em;
+	line-height: 0.6;
+	grid-column: 1 / -1;
+}
+
+/* The case-study picture spans five rows beside the text, so the mark takes the text's column, not a row of its own. */
+.sgs-testimonial--case-study-media .sgs-testimonial__mark {
+	grid-column: auto;
+}
+
 /* ===== Shared text elements ===== */
 .sgs-testimonial__quote {
 	font-size: var(--sgs-testimonial-quote-size, var(--wp--preset--font-size--medium));
