@@ -25,9 +25,27 @@ require_once dirname( __DIR__, 3 ) . '/includes/lucide-icons.php';
 
 $fid = field_id( $attributes['fieldName'] ?? 'unnamed' );
 
-$sgs_ft_own   = field_own_style_set_attrs( $attributes );
+$sgs_ft_own = field_own_style_set_attrs( $attributes );
+// A max width caps the whole field (label, input and help), not the input, so it rides on the field's own uid class too.
+$sgs_ft_max_width = is_array( $attributes['maxWidth'] ?? null ) ? array_filter( $attributes['maxWidth'], static fn( $v ): bool => '' !== $v && null !== $v ) : array();
+if ( array() !== $sgs_ft_max_width ) {
+	$sgs_ft_own['maxWidth'] = $sgs_ft_max_width;
+}
 $sgs_ft_uid   = array() === $sgs_ft_own ? '' : 'sgs-fo-' . substr( md5( wp_json_encode( $sgs_ft_own ) ), 0, 8 );
 $sgs_ft_css   = field_own_style_css( $attributes, $sgs_ft_uid );
+if ( '' !== $sgs_ft_uid && array() !== $sgs_ft_max_width ) {
+	$sgs_ft_css .= sgs_emit_responsive_css(
+		'.' . $sgs_ft_uid . '.sgs-form-field',
+		array(
+			array(
+				'value'        => $sgs_ft_max_width,
+				'css'          => 'max-width',
+				'unit_default' => 'px',
+			),
+		),
+		array( 'container' => false )
+	);
+}
 $sgs_ft_icon  = '' !== $sgs_ft_uid && '' !== (string) ( $attributes['leadingIcon'] ?? '' ) ? sgs_get_lucide_icon( (string) $attributes['leadingIcon'] ) : '';
 
 // A gradient wins over the flat icon colour: the Lucide icon is an SVG, so it paints through a stroke gradient def.

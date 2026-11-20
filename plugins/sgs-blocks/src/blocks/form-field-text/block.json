@@ -77,6 +77,20 @@
                     "order": 4,
                     "clusters": [],
                     "_note": "Populated by client-side validation JS, not a block attribute; the <span class=\"sgs-form-field__error\"> has no per-instance style attribute. clusters: []."
+                },
+                "field": {
+                    "label": "Whole field",
+                    "order": 6,
+                    "selector": ".sgs-form-field",
+                    "clusters": [
+                        "layout"
+                    ],
+                    "prefix": "",
+                    "attrMap": {
+                        "css:max-width": "maxWidth"
+                    },
+                    "motion": false,
+                    "_note": "The field's outer box (label, input, help). maxWidth is a per-device length object ({desktop,tablet,mobile}) that caps it, for a field narrower than its row such as a search box; unset leaves the field as wide as its row. Printed by render.php on the field's uid class (the uid exists whenever maxWidth or any input style is set)."
                 }
             }
         }
@@ -233,6 +247,11 @@
             "type": "string",
             "default": "",
             "description": "Width and height of the leading icon as one CSS length. Empty = 1.25rem."
+        },
+        "maxWidth": {
+            "type": "object",
+            "default": {},
+            "description": "Caps the whole field's width per device: {desktop,tablet,mobile}, each a CSS length (a bare number is px). Empty = the field is as wide as its row."
         }
     },
     "render": "file:./render.php",

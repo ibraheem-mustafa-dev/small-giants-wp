@@ -7,8 +7,10 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { useSettings } from '@wordpress/block-editor';
-import { IconPicker, IconPreview, SgsColourPanel, resolveColourToken, fillRow, SgsBorderControl, SgsLengthControl, ShadowControl } from '../../components';
+import { IconPicker, IconPreview, SgsColourPanel, resolveColourToken, fillRow, SgsBorderControl, SgsLengthControl, ShadowControl, ResponsiveOverride } from '../../components';
 import { backgroundPaintPreview, sgsBorderPreview, usePreviewTier, resolveShadowPreviewComposed, sgsLengthPreview } from '../../utils';
+import { cssLengthValue } from '../../utils/css-length';
+import { resolveTier } from '../../utils/responsive';
 import FormFieldAdvancedPanel from '../../components/FormFieldAdvancedPanel';
 import { fieldLabelClasses, fieldDefaultValue } from '../../components/form-field-preview';
 
@@ -19,6 +21,14 @@ const WIDTH_OPTIONS = [
 	{ label: __( 'Half width', 'sgs-blocks' ), value: 'half' },
 	{ label: __( 'One third', 'sgs-blocks' ), value: 'third' },
 	{ label: __( 'Parent grid decides', 'sgs-blocks' ), value: 'auto' },
+];
+
+const MAX_WIDTH_UNITS = [
+	{ value: 'px', label: 'px', default: 600 },
+	{ value: '%', label: '%', default: 100 },
+	{ value: 'rem', label: 'rem', default: 30 },
+	{ value: 'em', label: 'em', default: 30 },
+	{ value: 'ch', label: 'ch', default: 40 },
 ];
 
 export default function Edit( { attributes, setAttributes } ) {
@@ -35,9 +45,11 @@ export default function Edit( { attributes, setAttributes } ) {
 	const previewTier = usePreviewTier();
 	const [ colourPalette ] = useSettings( 'color.palette' );
 	const iconSize = sgsLengthPreview( attributes.leadingIconSize );
+	// The field's max width for the device being previewed (an unset device keeps the wider one, like the frontend).
+	const maxWidthPreview = cssLengthValue( resolveTier( attributes.maxWidth, previewTier, '' ).value ?? '' );
 	const blockProps = useBlockProps( {
 		className,
-		style: iconSize ? { '--sgs-field-icon-size': iconSize } : undefined,
+		style: iconSize || maxWidthPreview ? { '--sgs-field-icon-size': iconSize || undefined, maxWidth: maxWidthPreview || undefined } : undefined,
 	} );
 	const iconColour = resolveColourToken( attributes.leadingIconColour, colourPalette );
 	const radius = attributes.fieldBorderRadius ?? {};
@@ -114,6 +126,24 @@ export default function Edit( { attributes, setAttributes } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					<ResponsiveOverride
+						label={ __( 'Max width', 'sgs-blocks' ) }
+						value={ attributes.maxWidth }
+						onChange={ ( obj ) => setAttributes( { maxWidth: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsLengthControl
+								label={ __( 'Max width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __( 'Caps the whole field so it can be narrower than its row. Empty fills the row.', 'sgs-blocks' ) }
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue || '' : '' }
+								units={ MAX_WIDTH_UNITS }
+								onChange={ ( v ) => setOwnValue( v || '' ) }
+								presets={ false }
+							/>
+						) }
+					</ResponsiveOverride>
 				</PanelBody>
 				<FormFieldAdvancedPanel
 					attributes={ attributes }
