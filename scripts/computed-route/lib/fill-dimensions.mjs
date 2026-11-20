@@ -38,6 +38,7 @@ import { BLOCKS_DIR, defaultPaint, LOOSE } from './resolve.mjs';
 import { WIDTHS, TIER_OF, rowTarget, rowValues, rectAt, reresolve, commit, perNode, regroup, answer } from './fill-regap.mjs';
 import { innerToRoot } from './fill-same-box.mjs';
 import { attrRow } from './db.mjs';
+import { inlineBox, INLINE_LEVEL } from './fill-inline-box.mjs';
 
 const LOGICAL = { 'block-size': 'height', 'inline-size': 'width', 'min-block-size': 'min-height', 'min-inline-size': 'min-width', 'max-block-size': 'max-height', 'max-inline-size': 'max-width' };
 // The size family: physical name -> { kind: exact | min | max, axis: h | w }.
@@ -141,7 +142,11 @@ export function dimensionWrites( { nodes, flat, refOf, reads, db, unmapped, calF
 	const ctx = { reads, db, calFor, snapshot };
 	for ( const row of perNode( unmapped ) ) {
 		let result = null;
-		if ( 'flex-shrink' === row.property ) {
+		if ( 'display' === row.property ) {
+			// A draft's inline-level box (shrink-to-content) against a block that paints block-level (lib/fill-inline-box.mjs).
+			const hit = /^no-setting\b/.test( row.reason ?? '' ) && '' === ( row.slot ?? '' ) && INLINE_LEVEL.test( String( row.value ?? '' ).trim() ) ? rowTarget( { nodes, flat, refOf }, row ) : null;
+			result = hit ? inlineBox( { row, hit, nodes, flat, ctx, out, resolver } ) : null;
+		} else if ( 'flex-shrink' === row.property ) {
 			result = /^no-setting\b/.test( row.reason ?? '' ) && ! row.state && '' === ( row.slot ?? '' ) ? fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) : null;
 		} else {
 			const size = sizeOf( row.property ?? '' );

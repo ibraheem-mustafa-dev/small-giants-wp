@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "const BLOCK_LEVEL = /^(?:block|flex|grid|flow-root|table)$/;",
+		"replace": "const BLOCK_LEVEL = /^/;",
+		"why": "a block that paints inline-level already is shrunk again"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "const declared = widths.filter( ( w ) => ! NO_WIDTH.has(",
+		"replace": "const declared = [].filter( ( w ) => ! NO_WIDTH.has(",
+		"why": "a width the draft declares is overwritten with fit-content"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "Math.abs( ( r.x + r.w / 2 ) - ( p.x + p.w / 2 ) ) <= CENTRE_TOLERANCE && r.x - p.x > MIN_OFFSET",
+		"replace": "r.x - p.x > MIN_OFFSET",
+		"why": "any box off the parent's left edge is called centred"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "&& r.x - p.x > MIN_OFFSET;",
+		"replace": ";",
+		"why": "a box at the parent's left edge is called centred"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "const lost = sides.find( ( s ) => ! held( s.res ) );",
+		"replace": "const lost = null;",
+		"why": "a box that cannot be centred is shrunk to the left edge anyway"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "if ( ! held( size ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a missing width setting is taken as written"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "const size = ask( 'width', widths, 'fit-content' );",
+		"replace": "const size = ask( 'width', widths, '100%' );",
+		"why": "the box keeps the full width"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "[ 'margin-left', 'margin-right' ].map(",
+		"replace": "[ 'margin-left' ].map(",
+		"why": "only one side is centred"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "export const INLINE_LEVEL = /^(?:inline-block|inline-flex|inline-grid|inline-table)$/;",
+		"replace": "export const INLINE_LEVEL = /^(?:inline-block|inline-flex|inline-grid|inline-table|flex)$/;",
+		"why": "a block-level display is treated as inline-level"
+	},
+	{
+		"file": "lib/fill-dimensions.mjs",
+		"find": "result = hit ? inlineBox( { row, hit, nodes, flat, ctx, out, resolver } ) : null;",
+		"replace": "result = null;",
+		"why": "the dimension pass never calls the inline-box rule"
+	},
+	{
+		"file": "lib/fill-inline-box.mjs",
+		"find": "|| row.state ) {",
+		"replace": "|| false ) {",
+		"why": "a state row is read as the resting look"
+	}
+]
