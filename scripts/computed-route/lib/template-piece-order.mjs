@@ -93,8 +93,8 @@ function ruleOrderCards( { tree, r, rootComponent, piece } ) {
 			}
 			return;
 		}
-		if ( holdsLines && free ) {
-			const other = kids.find( ( c ) => ! lines( c ) && ! onlyOrder( c ) && ! title( c ) );
+		const other = holdsLines && free ? kids.find( ( c ) => ! lines( c ) && ! onlyOrder( c ) && ! title( c ) ) : null;
+		if ( other ) {
 			notes.push( `the card around ${ facts.items.block } (${ node.draftRef?.tpl ? templateKeyOf( node.draftRef.tpl, rootComponent ) : node.name }) also holds ${ other.name }, so it stays visible when the order cannot be viewed` );
 		}
 		visit( kids );

@@ -642,3 +642,30 @@ test( 'MUST FAIL: an order- word in an attribute that is not the block\'s Show-t
 	nodesOf( none ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) ).attributes.sgsConditionLoggedIn = 'none';
 	assert.equal( cardOf( runBoth( planted, none ).tree ).attributes.sgsConditionLoggedIn, 'order-viewable' );
 } );
+
+// A container that is itself bound to an order value and holds only the lines and titles has no "other" block: the builder said so
+// by reading `other.name` of nothing.
+test( 'MUST FAIL: a bound container holding only the order lines and titles is placed without a "stays visible" note and without throwing', () => {
+	const planted = plant();
+	const { record } = planted;
+	const tree = plantedTree( record );
+	const card = nodesOf( tree ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) );
+	card.attributes.metadata = { bindings: { text: { source: 'sgs/order', args: { key: 'number' } } } };
+	const base = { key: 'order-confirmation', factRecord: record, rootComponent: 'Page', draft: planted.draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS };
+	let got;
+	assert.doesNotThrow( () => ( got = place( { ...base, tree }, { id: 'order-items', block: 'sgs/order-items', find: 'order-lines' } ) ) );
+	assert.doesNotMatch( got.notes.join( '\n' ), /also holds/, 'no other block is there to name' );
+	assert.equal( cardOf( got.tree ).attributes.sgsConditionLoggedIn, undefined, 'a bound container is left to the binding rule' );
+	// Negative control: with a button of its own beside the lines the note still names it.
+	const withButton = plantedTree( record );
+	const c2 = nodesOf( withButton ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) );
+	c2.attributes.metadata = card.attributes.metadata;
+	c2.innerBlocks.push( { name: 'sgs/button', attributes: { label: 'Keep browsing', url: '/shop/' }, innerBlocks: [] } );
+	assert.match( place( { ...base, tree: withButton }, { id: 'order-items', block: 'sgs/order-items', find: 'order-lines' } ).notes.join( '\n' ), /also holds sgs\/button/ );
+	// A card that already has its own Show-to value is not said to stay visible by default: that value decides.
+	const ruled = plantedTree( record );
+	const c3 = nodesOf( ruled ).find( ( n ) => ( n.innerBlocks || [] ).some( ( c ) => /Your items/.test( c.attributes?.text || '' ) ) );
+	c3.attributes.sgsConditionLoggedIn = 'logged-in';
+	c3.innerBlocks.push( { name: 'sgs/button', attributes: { label: 'Keep browsing', url: '/shop/' }, innerBlocks: [] } );
+	assert.doesNotMatch( place( { ...base, tree: ruled }, { id: 'order-items', block: 'sgs/order-items', find: 'order-lines' } ).notes.join( '\n' ), /also holds/ );
+} );
