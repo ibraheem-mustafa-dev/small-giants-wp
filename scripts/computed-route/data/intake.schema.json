@@ -622,6 +622,12 @@
         "route": {
           "type": "string"
         },
+        "folds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "slug": {
           "type": "string",
           "pattern": "^[a-z0-9-]+$"

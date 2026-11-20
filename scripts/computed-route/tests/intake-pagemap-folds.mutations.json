@@ -1,0 +1,3 @@
+[
+	{"file": "lib/intake-pagemap.mjs", "find": "\t\t\tfold( twin, r.route );\n", "replace": "", "why": "a twin manifest page's route is not recorded"}
+]
