@@ -13,6 +13,7 @@
         "choice"
     ],
     "textdomain": "sgs-blocks",
+    "style": "sgs-form-style",
     "icon": "menu",
     "parent": [
         "sgs/form",

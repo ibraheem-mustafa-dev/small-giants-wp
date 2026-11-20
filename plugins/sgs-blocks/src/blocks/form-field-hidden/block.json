@@ -12,6 +12,7 @@
         "field"
     ],
     "textdomain": "sgs-blocks",
+    "style": "sgs-form-style",
     "icon": "hidden",
     "parent": [
         "sgs/form",

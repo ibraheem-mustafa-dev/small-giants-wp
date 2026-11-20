@@ -13,6 +13,7 @@
         "document"
     ],
     "textdomain": "sgs-blocks",
+    "style": "sgs-form-style",
     "icon": "upload",
     "parent": [
         "sgs/form",

@@ -13,6 +13,7 @@
         "field"
     ],
     "textdomain": "sgs-blocks",
+    "style": "sgs-form-style",
     "icon": "edit",
     "parent": [
         "sgs/form",

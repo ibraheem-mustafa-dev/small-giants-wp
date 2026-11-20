@@ -13,6 +13,7 @@
         "number"
     ],
     "textdomain": "sgs-blocks",
+    "style": "sgs-form-style",
     "icon": "phone",
     "parent": [
         "sgs/form",

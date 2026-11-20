@@ -12,6 +12,7 @@
         "contact"
     ],
     "textdomain": "sgs-blocks",
+    "style": "sgs-form-style",
     "icon": "email",
     "parent": [
         "sgs/form",

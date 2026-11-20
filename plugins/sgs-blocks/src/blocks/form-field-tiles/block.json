@@ -13,6 +13,7 @@
 		"icon"
 	],
 	"textdomain": "sgs-blocks",
+	"style": "sgs-form-style",
 	"icon": "grid-view",
 	"parent": [
 		"sgs/form",
