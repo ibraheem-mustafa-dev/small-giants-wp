@@ -6,6 +6,7 @@
 // row that dropped it (unwrap, absorbed, remove), the rule or the per-site decision that did so, and the host it was
 // absorbed into. Pure functions over the saved inventory, proposal and skeleton: no browser, no site, no database.
 import { resolvedWidths, renderedWidths, pxOf } from './element-facts.mjs';
+import { copylessKey, templateKey } from './fact-key.mjs';
 
 // The looks a box can carry that a block must read to draw it as the draft does.
 export const LOOKS = [ 'background', 'border', 'shadow', 'radius', 'padding', 'width', 'max-width', 'margin-auto', 'text-centre' ];
@@ -113,7 +114,7 @@ export function paintsBox( element, { declared = {}, parent = null } = {} ) {
 }
 
 // A key with every copy index removed: the template element it is a copy of, wherever its hosts sit.
-export const templateOf = ( key ) => String( key ).replace( /#\d+/g, '' );
+export const templateOf = ( key ) => copylessKey( String( key ) ) ?? String( key );
 // A key with its own copy index removed: the loop it is a copy in, under the same host instances.
 export const loopOf = ( key ) => String( key ).replace( /#\d+$/, '' );
 
@@ -154,7 +155,7 @@ export const namedKeys = ( tree ) => new Set( namedReads( tree ).keys() );
 // An element's identity across the surfaces of one client: its template's component and number. An element of the surface's
 // own root template takes the surface's draft file as its component (`component`), since `Root` names a different file on
 // each page of a draft that has one file a page.
-export const identityOf = ( element, component ) => `${ 'Root' === element.template ? component ?? 'Root' : element.template }/${ element.tpl }`;
+export const identityOf = ( element, component ) => templateKey( { dc: 'Root' === element.template ? component ?? 'Root' : element.template, tpl: element.tpl } );
 
 // The identities a surface's inventory holds (every element, painted or not).
 export const heldIdentities = ( { inventory, component } ) => new Set( ( inventory?.elements || [] ).map( ( e ) => identityOf( e, component ) ) );

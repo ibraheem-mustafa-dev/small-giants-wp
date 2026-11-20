@@ -121,8 +121,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "export const identityOf = ( element, component ) => `${ 'Root' === element.template ? component ?? 'Root' : element.template }/${ element.tpl }`;",
-		"replace": "export const identityOf = ( element, component ) => `${ element.template }/${ element.tpl }`;",
+		"find": "export const identityOf = ( element, component ) => templateKey( { dc: 'Root' === element.template ? component ?? 'Root' : element.template, tpl: element.tpl } );",
+		"replace": "export const identityOf = ( element, component ) => templateKey( { dc: element.template, tpl: element.tpl } );",
 		"why": "a root element of one draft file is the same element on every file"
 	},
 	{
@@ -172,5 +172,11 @@
 		"find": "if ( named.has( e.key ) && ! Object.keys( looks ).length ) {",
 		"replace": "if ( false ) {",
 		"why": "a band wrapper that paints only its cap is listed with no looks"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "export const templateOf = ( key ) => copylessKey( String( key ) ) ?? String( key );",
+		"replace": "export const templateOf = ( key ) => String( key );",
+		"why": "a copy under another host instance is not its template element"
 	}
 ]
