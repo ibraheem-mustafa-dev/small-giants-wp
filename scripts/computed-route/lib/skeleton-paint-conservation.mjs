@@ -187,8 +187,115 @@ export function namedIdentities( { inventory, skeleton, component } ) {
 	return out;
 }
 
+// The CSS property a calibrated setting paints, as the look it is (null for a property that paints none of LOOKS).
+export function lookOfProperty( property, tag = '' ) {
+	const p = low( property );
+	if ( /^background(?:-color|-image)?$/.test( p ) ) {
+		return 'background';
+	}
+	if ( /radius$/.test( p ) ) {
+		return 'radius';
+	}
+	if ( /^border(?:-(?:top|right|bottom|left))?(?:-(?:width|style|color))?$/.test( p ) ) {
+		return 'border';
+	}
+	const direct = { 'box-shadow': 'shadow', width: 'width', 'max-width': 'max-width', 'text-align': 'text-centre', fill: 'glyph', stroke: 'glyph', height: 'height' };
+	if ( direct[ p ] ) {
+		return direct[ p ];
+	}
+	if ( /^padding/.test( p ) ) {
+		return 'padding';
+	}
+	if ( /^margin/.test( p ) ) {
+		return 'margin-auto';
+	}
+	if ( /^text-decoration|^text-underline/.test( p ) ) {
+		return 'text-decoration';
+	}
+	if ( [ 'display', 'flex-direction', 'flex-wrap', 'gap', 'row-gap', 'column-gap', 'grid-template-columns', 'justify-content', 'align-items' ].includes( p ) ) {
+		return 'layout';
+	}
+	return 'svg' === low( tag ) && 'color' === p ? 'glyph' : null;
+}
+
+// The looks inherited by the elements inside: a dissolved wrapper's centred text is read at each node inside it, whose own
+// computed text-align is the wrapper's.
+export const INHERITED_LOOKS = [ 'text-centre' ];
+
+// Where a painted element's look goes when no node names it: the closed list of records a proposal row carries as `conserve`
+// (a list of { kind, ... }), each with the fields it must name. A record that `delivers` takes the looks it names off the row
+// once the check can verify it; the others keep the element listed in a class of its own, counted apart and never failing
+// tools/paint-conservation.mjs --check. Any other painted element no node reads is a proposal problem.
+//   setting       a setting of the node at `node` (an element key) carries `looks` (a label's cap is the field's maxWidth):
+//                 verified when that node is in the skeleton and holds `setting` among its attributes or its decided settings.
+//   inherited     `looks` are inherited (INHERITED_LOOKS) and a node inside the element reads them from its own computed values.
+//   host-layout   the block at `node` lays the element's children out itself (a hero's split columns): `looks` is layout only.
+//   no-part       the host block `block` draws the element as a part with a fixed look and its calibration (`checked`, the
+//                 calibration file read) holds no setting that paints any of `looks` at a part: a missing block setting.
+//   handover      `delivers` names the block effect or site setting that paints it (a pointer glare, a reading progress bar).
+//   own-surface   the element is built and read on a surface of its own (`rule`: a linked form, a commerce region).
+//   site-decision a per-site decision dropped it (`source`); a new draft never has one.
+export const RECORD_KINDS = {
+	setting: { needs: [ 'node', 'setting', 'looks' ], delivers: true },
+	inherited: { needs: [ 'looks' ], delivers: true },
+	'host-layout': { needs: [ 'node', 'looks' ], delivers: true },
+	'no-part': { needs: [ 'block', 'looks', 'checked' ], delivers: false },
+	handover: { needs: [ 'delivers' ], delivers: false },
+	'own-surface': { needs: [ 'rule' ], delivers: false },
+	'site-decision': { needs: [ 'source' ], delivers: false },
+};
+
+// The classes of a row that carries a valid record which delivers nothing: listed apart, never a failure of --check.
+export const RECORDED_CLASSES = Object.keys( RECORD_KINDS ).filter( ( k ) => ! RECORD_KINDS[ k ].delivers );
+
+// The skeleton node of each draft element named as a node's own element (its draftRef): Map( key -> node ).
+export function nodesByRef( tree ) {
+	const out = new Map();
+	const walk = ( list ) => ( list || [] ).forEach( ( n ) => {
+		'string' === typeof n.draftRef?.tpl && ! out.has( n.draftRef.tpl ) && out.set( n.draftRef.tpl, n );
+		walk( n.innerBlocks );
+	} );
+	walk( Array.isArray( tree ) ? tree : [ tree ] );
+	return out;
+}
+
+// What a row's records do for the looks left unread: { delivered: [ looks ], listed: record | null, bad: [ text ] }.
+// `nodes`: nodesByRef of the skeleton; `below`: whether a node reads an element inside this one.
+export function checkRecords( records, { looks, nodes, below = false } ) {
+	const out = { delivered: [], listed: null, bad: [] };
+	for ( const rec of [].concat( records || [] ) ) {
+		const kind = RECORD_KINDS[ rec?.kind ];
+		const missing = kind ? kind.needs.filter( ( f ) => null == rec[ f ] || '' === rec[ f ] || ( Array.isArray( rec[ f ] ) && ! rec[ f ].length ) ) : [];
+		if ( ! kind || missing.length ) {
+			out.bad.push( kind ? `${ rec.kind } names no ${ missing.join( ', ' ) }` : `no record kind ${ rec?.kind }` );
+			continue;
+		}
+		if ( ! kind.delivers ) {
+			out.listed ??= rec;
+			continue;
+		}
+		const named = [].concat( rec.looks ).filter( ( l ) => looks.includes( l ) );
+		const node = rec.node ? nodes.get( rec.node ) : null;
+		const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] ) : 'inherited' === rec.kind ? below && named.every( ( l ) => INHERITED_LOOKS.includes( l ) ) : !! node && named.every( ( l ) => 'layout' === l );
+		ok ? out.delivered.push( ...named ) : out.bad.push( `${ rec.kind } ${ rec.node ?? '' } ${ rec.setting ?? '' } cannot be verified` );
+	}
+	return out;
+}
+
 const SITE_DECISION = /^Bean marked /;
 const INSIDE = /^inside a removed element \(([^)]+)\)/;
+
+// A row's records: its own `conserve`, or the record of the element whose removal took it.
+export function recordsOf( row, rows, depth = 0 ) {
+	if ( ! row ) {
+		return [];
+	}
+	if ( row.conserve ) {
+		return [].concat( row.conserve );
+	}
+	const inside = INSIDE.exec( row.reason ?? '' );
+	return inside && depth < 8 ? recordsOf( rows.get( inside[ 1 ] ), rows, depth + 1 ) : [];
+}
 
 // Who dropped a proposal row: `site-decision` (a per-site intake decision, which a new draft does not have), `rule` (a
 // standing rule, named in `rule`), or `none`. A row inside a removed element takes its remover's answer.
@@ -227,7 +334,30 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	const full = [ ...named ].filter( ( k ) => 'full' === reads.get( k ) );
 	const loops = new Set( full.map( loopOf ) );
 	const templates = new Set( full.map( templateOf ) );
-	const counts = { painted: 0, exact: 0, loopCopy: 0, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, unread: 0 };
+	const counts = { painted: 0, exact: 0, loopCopy: 0, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, recorded: 0, listedApart: 0, unread: 0 };
+	const nodes = nodesByRef( skeleton );
+	// The elements that hold an element a node reads in full.
+	const holdsRead = new Set();
+	full.forEach( ( k ) => {
+		for ( let p = byKey.get( byKey.get( k )?.parentKey ); p && ! holdsRead.has( p.key ); p = byKey.get( p.parentKey ) ) {
+			holdsRead.add( p.key );
+		}
+	} );
+	// The row of an unread element, or nothing when its records deliver every look left: { ...row, state } where state is
+	// `recorded` (a record that delivers nothing, or a per-site decision: listed in the record's class) or `unrecorded`.
+	const listRow = ( e, looks, cls, host = null ) => {
+		const row = rows.get( e.key ) ?? null;
+		const dropped = droppedBy( row, rows );
+		const rec = checkRecords( recordsOf( row, rows ), { looks: Object.keys( looks ), nodes, below: holdsRead.has( e.key ) } );
+		const left = Object.fromEntries( Object.entries( looks ).filter( ( [ l ] ) => ! rec.delivered.includes( l ) ) );
+		if ( ! Object.keys( left ).length ) {
+			counts.recorded++;
+			return;
+		}
+		const listed = rec.listed ?? ( 'site-decision' === dropped.by ? { kind: 'site-decision', source: row?.source ?? null } : null );
+		listed && ! rec.bad.length ? counts.listedApart++ : counts.unread++;
+		out.push( { key: e.key, tag: e.tag, words: String( e.words ?? '' ).slice( 0, 60 ), looks: left, class: rec.bad.length ? 'record-unverified' : listed ? listed.kind : cls, was: cls, state: listed && ! rec.bad.length ? 'recorded' : 'unrecorded', record: listed, ...( rec.bad.length ? { recordProblems: rec.bad } : {} ), action: row?.action ?? null, rule: dropped.rule, by: dropped.by, handover: row?.handover?.kind ?? null, into: row?.into ?? null, host: host?.key ?? null, hostBlock: host?.block ?? null, hostSlots: host?.slots ? Object.keys( host.slots ).length : 0 } );
+	};
 	const kids = new Map();
 	elements.forEach( ( e ) => kids.set( e.parentKey, ( kids.get( e.parentKey ) ?? 0 ) + 1 ) );
 	// A sibling's signature: its parent, tag and style attribute. An element with no style attribute has none.
@@ -255,10 +385,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 			continue;
 		}
 		if ( band ) {
-			counts.unread++;
-			const row = rows.get( e.key ) ?? null;
-			const dropped = droppedBy( row, rows );
-			out.push( { key: e.key, tag: e.tag, words: String( e.words ?? '' ).slice( 0, 60 ), looks, class: 'band-only', action: row?.action ?? null, rule: dropped.rule, by: dropped.by, handover: row?.handover?.kind ?? null, into: row?.into ?? null, host: null, hostBlock: null, hostSlots: 0 } );
+			listRow( e, looks, 'band-only' );
 			continue;
 		}
 		if ( named.has( e.key ) ) {
@@ -286,14 +413,26 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 			counts.ownedElsewhere++;
 			continue;
 		}
-		counts.unread++;
 		const row = rows.get( e.key ) ?? null;
-		const host = hostOf( row );
-		const dropped = droppedBy( row, rows );
 		const cls = ! row ? 'no-row' : 'unwrap' === row.action ? 'unwrapped' : 'absorbed' === row.action ? 'host-unread' : 'remove' === row.action ? 'removed' : 'kept-unnamed';
-		out.push( { key: e.key, tag: e.tag, words: String( e.words ?? '' ).slice( 0, 60 ), looks, class: cls, action: row?.action ?? null, rule: dropped.rule, by: dropped.by, handover: row?.handover?.kind ?? null, into: row?.into ?? null, host: host?.key ?? null, hostBlock: host?.block ?? null, hostSlots: host?.slots ? Object.keys( host.slots ).length : 0 } );
+		listRow( e, looks, cls, hostOf( row ) );
 	}
 	return { rows: out, counts };
+}
+
+// The proposal problems of one surface's paint conservation (the propose-time check): one line per class and rule, naming each
+// painted element that is neither read nor validly recorded. Takes the same arguments as conservationRows.
+export function paintProblems( args ) {
+	const groups = new Map();
+	for ( const r of conservationRows( args ).rows.filter( ( x ) => 'unrecorded' === x.state ) ) {
+		const id = JSON.stringify( [ r.class, r.rule, r.hostBlock ] );
+		( groups.get( id ) ?? groups.set( id, [] ).get( id ) ).push( r );
+	}
+	return [ ...groups.values() ].map( ( list ) => {
+		const [ r ] = list;
+		const where = [ r.rule ? `rule ${ r.rule }` : 'no rule', r.hostBlock ? `host ${ r.hostBlock }` : null ].filter( Boolean ).join( ', ' );
+		return `paint conservation: ${ list.length } painted element${ 1 === list.length ? '' : 's' } ${ r.class } (${ where }) no node reads and no record carries: ${ list.slice( 0, 6 ).map( ( x ) => `${ x.key } ${ Object.keys( x.looks ).join( '/' ) }` ).join( '; ' ) }${ list.length > 6 ? `; and ${ list.length - 6 } more` : '' }${ r.recordProblems ? ` (${ r.recordProblems.join( '; ' ) })` : '' }`;
+	} );
 }
 
 // Rows grouped by who dropped them: [ { class, by, rule, count, surfaces, looks: { look: count }, examples } ], largest first.

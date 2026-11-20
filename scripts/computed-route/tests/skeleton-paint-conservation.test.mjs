@@ -4,7 +4,7 @@
 // a loop whose first copy a slot names, a form's field listed once under the form's own surface, a per-site removal.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, namedReads, BAND_LOOKS, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
+import { RECORD_KINDS, RECORDED_CLASSES, INHERITED_LOOKS, lookOfProperty, checkRecords, recordsOf, nodesByRef, paintProblems, styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, namedReads, BAND_LOOKS, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
 import { listAll, loadClient, markdown, main } from '../tools/paint-conservation.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -217,7 +217,7 @@ const surface = ( { chipSlot = false, wrapperNamed = false, wrapperBand = false 
 
 test( 'conservationRows lists each painted element no node reads, with its class, its rule and its host', () => {
 	const { rows, counts } = conservationRows( surface() );
-	assert.deepEqual( counts, { painted: 8, exact: 2, loopCopy: 1, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, unread: 5 } );
+	assert.deepEqual( counts, { painted: 8, exact: 2, loopCopy: 1, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, recorded: 0, listedApart: 0, unread: 5 } );
 	assert.deepEqual( rows.map( ( r ) => [ r.key, r.class, r.by, r.rule ] ), [
 		[ 'Root/2#0', 'unwrapped', 'rule', 'heroInner' ],
 		[ 'Root/5#0', 'host-unread', 'rule', 'optionSetFilter' ],
@@ -314,7 +314,7 @@ test( 'the tool reads a client folder, lists an element once under its narrowest
 	assert.deepEqual( result.rows.map( ( r ) => `${ r.surface } ${ r.key }` ), [ 'form-x Root/5#0', 'form-x Root/5#1', 'home Root/2#0', 'home Root/8#0', 'home Root/9#0' ] );
 	assert.equal( result.counts.demo.home.ownedElsewhere, 2 );
 	const md = markdown( result, 'T' );
-	assert.match( md, /\| demo \| 2 \| 10 \| 2 \| 1 \| 0 \| 0 \| 0 \| 2 \| 5 \|/ );
+	assert.match( md, /\| demo \| 2 \| 10 \| 2 \| 1 \| 0 \| 0 \| 0 \| 2 \| 0 \| 0 \| 5 \|/ );
 	assert.match( md, /\| 2 \| host-unread \| rule \| optionSetFilter \| 1 \|/ );
 	const out = path.join( repo, 'out' );
 	const lines = [];
@@ -330,4 +330,93 @@ test( 'the tool reads a client folder, lists an element once under its narrowest
 	assert.equal( main( [ '--client', 'demo', '--root', repo, '--dir', `demo=${ moved }`, '--skip', 'demo/held-out', '--json' ], { log: ( l ) => viaDir.push( l ) } ), 0 );
 	assert.equal( JSON.parse( viaDir[ 0 ] ).rows.length, 5 );
 	fs.rmSync( repo, { recursive: true } );
+} );
+
+// The record model: a row's `conserve` records where a dissolved element's look goes. A record that delivers takes the looks it
+// names off the list once it can be verified; one that delivers nothing lists the element in its own class, counted apart.
+test( 'a setting record delivers the looks it names only where its node holds the setting (MUST FAIL with no record model)', () => {
+	const s = surface();
+	s.proposal.rows.find( ( r ) => 'Root/2#0' === r.key ).conserve = [ { kind: 'setting', node: 'Root/3#0', setting: 'maxWidth', looks: [ 'background', 'border', 'radius', 'max-width' ] } ];
+	// Negative control: the node does not hold the setting, so the record cannot be verified and the row stays, unrecorded.
+	const unverified = conservationRows( s ).rows.find( ( r ) => 'Root/2#0' === r.key );
+	assert.deepEqual( [ unverified.class, unverified.state, unverified.was ], [ 'record-unverified', 'unrecorded', 'unwrapped' ] );
+	s.skeleton[ 0 ].innerBlocks[ 0 ].decided = { maxWidth: { desktop: '640px' } };
+	const r = conservationRows( s );
+	assert.ok( ! r.rows.some( ( x ) => 'Root/2#0' === x.key ) );
+	assert.deepEqual( [ r.counts.recorded, r.counts.unread ], [ 1, 4 ] );
+	// A record naming only some looks leaves the others listed.
+	s.proposal.rows.find( ( x ) => 'Root/2#0' === x.key ).conserve[ 0 ].looks = [ 'max-width' ];
+	assert.deepEqual( Object.keys( conservationRows( s ).rows.find( ( x ) => 'Root/2#0' === x.key ).looks ).sort(), [ 'background', 'border', 'radius' ] );
+} );
+
+test( 'an inherited look is delivered where a node inside reads it, and a no-part record is listed apart, never unrecorded', () => {
+	const s = surface();
+	s.inventory.elements.find( ( e ) => 'Root/2#0' === e.key ).attrs.style = 'text-align: center';
+	s.proposal.rows.find( ( r ) => 'Root/2#0' === r.key ).conserve = [ { kind: 'inherited', looks: INHERITED_LOOKS } ];
+	assert.ok( ! conservationRows( s ).rows.some( ( r ) => 'Root/2#0' === r.key ) );
+	// Negative control: nothing inside it is a node, so the inherited look reaches no node.
+	s.skeleton[ 0 ].innerBlocks.shift();
+	assert.equal( conservationRows( s ).rows.find( ( r ) => 'Root/2#0' === r.key ).class, 'record-unverified' );
+	const t = surface();
+	t.proposal.rows.find( ( r ) => 'Root/5#0' === r.key ).conserve = [ { kind: 'no-part', block: 'sgs/option-picker', looks: [ 'background', 'radius' ], checked: 'cache/option-picker.json' } ];
+	t.proposal.rows.find( ( r ) => 'Root/5#1' === r.key ).conserve = [ { kind: 'no-part', block: 'sgs/option-picker', looks: [ 'background' ] } ];
+	const rows = conservationRows( t );
+	const chip = rows.rows.find( ( r ) => 'Root/5#0' === r.key );
+	assert.deepEqual( [ chip.class, chip.state, chip.record.block ], [ 'no-part', 'recorded', 'sgs/option-picker' ] );
+	assert.deepEqual( [ rows.rows.find( ( r ) => 'Root/5#1' === r.key ).class, rows.counts.listedApart, rows.counts.unread ], [ 'record-unverified', 1, 4 ], 'a no-part record that names no calibration file is no record' );
+} );
+
+test( 'a per-site decision is listed apart, a row inside a removed element takes its remover\'s record, and a kind outside the list is refused', () => {
+	assert.deepEqual( [ ...RECORDED_CLASSES ].sort(), [ 'handover', 'no-part', 'own-surface', 'site-decision' ] );
+	const rows = new Map( [ [ 'Root/1#0', row( 'Root/1#0', { action: 'remove', conserve: { kind: 'handover', delivers: 'the glare effect' } } ) ], [ 'Root/2#0', row( 'Root/2#0', { action: 'remove', reason: 'inside a removed element (Root/1#0)' } ) ] ] );
+	assert.deepEqual( recordsOf( rows.get( 'Root/2#0' ), rows ), [ { kind: 'handover', delivers: 'the glare effect' } ] );
+	assert.deepEqual( checkRecords( [ { kind: 'moved', node: 'Root/1#0' } ], { looks: [ 'background' ], nodes: new Map() } ).bad, [ 'no record kind moved' ] );
+	const s = surface();
+	Object.assign( s.proposal.rows.find( ( r ) => 'Root/8#0' === r.key ), { rule: null, source: 'client decision', reason: 'Bean marked remove in the intake review' } );
+	const dot = conservationRows( s ).rows.find( ( r ) => 'Root/8#0' === r.key );
+	assert.deepEqual( [ dot.class, dot.state, dot.was ], [ 'site-decision', 'recorded', 'removed' ] );
+	// A valid record beside one that cannot be verified leaves the row unrecorded.
+	s.proposal.rows.find( ( r ) => 'Root/9#0' === r.key ) || s.proposal.rows.push( row( 'Root/9#0', { action: 'remove', conserve: [ { kind: 'handover', delivers: 'the glare effect' }, { kind: 'setting', node: 'Root/3#0' } ] } ) );
+	const grey = conservationRows( s ).rows.find( ( r ) => 'Root/9#0' === r.key );
+	assert.deepEqual( [ grey.class, grey.state ], [ 'record-unverified', 'unrecorded' ] );
+	assert.ok( Object.values( RECORD_KINDS ).every( ( k ) => Array.isArray( k.needs ) ) );
+	assert.equal( nodesByRef( s.skeleton ).get( 'Root/4#0' ).name, 'sgs/option-picker' );
+} );
+
+test( 'lookOfProperty maps a calibrated setting\'s property to the look it paints', () => {
+	const map = [ [ 'background-color', 'background' ], [ 'background-image', 'background' ], [ 'border-top-width', 'border' ], [ 'border-color', 'border' ], [ 'border-top-left-radius', 'radius' ], [ 'border-radius', 'radius' ], [ 'box-shadow', 'shadow' ], [ 'padding-left', 'padding' ], [ 'max-width', 'max-width' ], [ 'width', 'width' ], [ 'margin', 'margin-auto' ], [ 'text-align', 'text-centre' ], [ 'gap', 'layout' ], [ 'text-decoration-color', 'text-decoration' ], [ 'height', 'height' ], [ 'fill', 'glyph' ] ];
+	map.forEach( ( [ p, l ] ) => assert.equal( lookOfProperty( p ), l, p ) );
+	assert.equal( lookOfProperty( 'color' ), null );
+	assert.equal( lookOfProperty( 'color', 'svg' ), 'glyph' );
+	assert.equal( lookOfProperty( 'font-size' ), null );
+} );
+
+test( 'paintProblems names each unrecorded element once per class and rule, and none where every element is read or recorded', () => {
+	const lines = paintProblems( surface() );
+	assert.equal( lines.length, 4 );
+	assert.ok( lines.some( ( l ) => /2 painted elements host-unread \(rule optionSetFilter, host sgs\/option-picker\).*Root\/5#0 background\/radius; Root\/5#1/.test( l ) ), lines.join( '\n' ) );
+	// A recorded row (a per-site removal) is listed, never a problem.
+	const decided = surface();
+	Object.assign( decided.proposal.rows.find( ( r ) => 'Root/8#0' === r.key ), { rule: null, source: 'client decision' } );
+	assert.equal( paintProblems( decided ).length, 3 );
+	const s = surface( { chipSlot: true, wrapperNamed: true } );
+	s.inventory.elements = s.inventory.elements.filter( ( e ) => ! [ 'Root/8#0', 'Root/9#0' ].includes( e.key ) );
+	assert.deepEqual( paintProblems( s ), [] );
+} );
+
+test( 'the tool\'s --check exits 1 while an element is neither read nor recorded', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'paint-check-' ) );
+	const dir = path.join( repo, 'sites', 'demo', 'build', 'skeleton' );
+	fs.mkdirSync( dir, { recursive: true } );
+	const write = ( s ) => [ 'inventory', 'proposal', 'skeleton' ].forEach( ( k ) => fs.writeFileSync( path.join( dir, [ 'home', k, 'json' ].join( '.' ) ), JSON.stringify( s[ k ] ) ) );
+	write( surface() );
+	const lines = [];
+	assert.equal( main( [ '--root', repo, '--client', 'demo', '--check' ], { log: ( l ) => lines.push( l ) } ), 1 );
+	assert.match( lines.at( -1 ), /5 painted elements neither read nor recorded/ );
+	assert.equal( main( [ '--root', repo, '--client', 'demo' ], { log: () => {} } ), 0, 'without --check the list is a report' );
+	const read = surface( { chipSlot: true, wrapperNamed: true } );
+	read.inventory.elements = read.inventory.elements.filter( ( e ) => ! [ 'Root/8#0', 'Root/9#0' ].includes( e.key ) );
+	write( read );
+	assert.equal( main( [ '--root', repo, '--client', 'demo', '--check' ], { log: () => {} } ), 0 );
+	fs.rmSync( repo, { recursive: true, force: true } );
 } );

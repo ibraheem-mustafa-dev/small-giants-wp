@@ -286,5 +286,83 @@
 		"find": "const readSiblings = new Set( full.map(",
 		"replace": "const readSiblings = new Set( [ ...named ].map(",
 		"why": "a band finder's siblings are read through it"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] )",
+		"replace": "const ok = 'setting' === rec.kind ? !! node",
+		"why": "a setting record is taken without its node holding the setting"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": ": 'inherited' === rec.kind ? below && named.every(",
+		"replace": ": 'inherited' === rec.kind ? named.every(",
+		"why": "an inherited look is delivered with no node inside to read it"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const named = [].concat( rec.looks ).filter( ( l ) => looks.includes( l ) );",
+		"replace": "const named = looks;",
+		"why": "a record delivers every look, not only those it names"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "if ( ! kind.delivers ) {\n\t\t\tout.listed ??= rec;\n\t\t\tcontinue;\n\t\t}",
+		"replace": "if ( ! kind.delivers ) {\n\t\t\tout.delivered.push( ...looks );\n\t\t\tcontinue;\n\t\t}",
+		"why": "a record that delivers nothing hides the element from the list"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const missing = kind ? kind.needs.filter(",
+		"replace": "const missing = kind ? [].filter(",
+		"why": "a record missing its required fields is taken"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "if ( row.conserve ) {\n\t\treturn [].concat( row.conserve );\n\t}\n\tconst inside",
+		"replace": "if ( row.conserve ) {\n\t\treturn [].concat( row.conserve );\n\t}\n\treturn [];\n\tconst inside",
+		"why": "a row inside a removed element does not take its remover's record"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const listed = rec.listed ?? ( 'site-decision' === dropped.by ?",
+		"replace": "const listed = rec.listed ?? ( false ?",
+		"why": "a per-site decision is unrecorded"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "class: rec.bad.length ? 'record-unverified' : listed ? listed.kind : cls,",
+		"replace": "class: listed ? listed.kind : cls,",
+		"why": "a record that cannot be verified keeps its own class"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "state: listed && ! rec.bad.length ? 'recorded' : 'unrecorded'",
+		"replace": "state: listed ? 'recorded' : 'unrecorded'",
+		"why": "a record that cannot be verified counts as recorded"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "if ( /radius$/.test( p ) ) {\n\t\treturn 'radius';\n\t}\n\tif ( /^border",
+		"replace": "if ( /^border",
+		"why": "a radius property is read as a border"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "return 'svg' === low( tag ) && 'color' === p ? 'glyph' : null;",
+		"replace": "return 'color' === p ? 'glyph' : null;",
+		"why": "text colour is a glyph look"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "for ( const r of conservationRows( args ).rows.filter( ( x ) => 'unrecorded' === x.state ) ) {",
+		"replace": "for ( const r of conservationRows( args ).rows ) {",
+		"why": "a recorded row is a proposal problem"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "return argv.includes( '--check' ) && unrecorded ? 1 : 0;",
+		"replace": "return 0;",
+		"why": "--check never fails"
 	}
 ]
