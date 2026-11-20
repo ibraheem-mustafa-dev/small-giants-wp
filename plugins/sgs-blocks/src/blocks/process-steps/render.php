@@ -534,6 +534,33 @@ if ( $num_decls ) {
 	$scoped_css[] = "{$num_scope}{" . implode( ';', $num_decls ) . ';}';
 }
 
+// A step's own number colours (steps[].numberBackground / numberColour) beat the block-wide pair for that step only.
+// The steps are the only <div> children of the root (the connector is a <span>), so :nth-of-type(N) is a step's own
+// position. A step that sets a background also clears the block-wide gradient, which would paint over a flat colour.
+// Printed before the hover rules below, which are as specific and so still win while a step is hovered.
+$sgs_ps_step_position = 0;
+foreach ( $steps as $sgs_ps_step ) {
+	++$sgs_ps_step_position;
+	if ( ! is_array( $sgs_ps_step ) ) {
+		continue;
+	}
+	$sgs_ps_step_decls = array();
+	$sgs_ps_step_bg    = 'list' !== $layout ? sgs_background_paint_decl( (string) ( $sgs_ps_step['numberBackground'] ?? '' ), '' ) : '';
+	if ( '' !== $sgs_ps_step_bg ) {
+		$sgs_ps_step_decls[] = $sgs_ps_step_bg;
+		if ( '' !== $number_background_gradient ) {
+			$sgs_ps_step_decls[] = 'background-image:none';
+		}
+	}
+	$sgs_ps_step_colour = sgs_colour_value( (string) ( $sgs_ps_step['numberColour'] ?? '' ) );
+	if ( '' !== $sgs_ps_step_colour ) {
+		$sgs_ps_step_decls[] = 'color:' . $sgs_ps_step_colour;
+	}
+	if ( $sgs_ps_step_decls ) {
+		$scoped_css[] = $root_sel . ' .sgs-process-steps__step:nth-of-type(' . $sgs_ps_step_position . ') .sgs-process-steps__number{' . implode( ';', $sgs_ps_step_decls ) . ';}';
+	}
+}
+
 // Hover badge background — an ANCESTOR-hover rule: hovering the STEP repaints
 // the number badge. Hand-built because sgs_emit_state_colour_css() appends
 // `:hover` directly onto the selector it is given, so it can only express "this

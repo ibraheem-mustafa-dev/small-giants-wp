@@ -346,6 +346,16 @@
 					"description": {
 						"type": "string",
 						"role": "text-content"
+					},
+					"numberBackground": {
+						"type": "string",
+						"role": "colour-background",
+						"description": "This step's own number badge fill. Empty falls back to the block-wide numberBackground."
+					},
+					"numberColour": {
+						"type": "string",
+						"role": "color",
+						"description": "This step's own number colour. Empty falls back to the block-wide numberColour."
 					}
 				}
 			}

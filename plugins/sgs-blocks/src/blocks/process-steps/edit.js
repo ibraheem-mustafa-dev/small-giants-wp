@@ -60,7 +60,7 @@ const NUMBER_STYLE_OPTIONS = [
 	{ label: __( 'None', 'sgs-blocks' ), value: 'none' },
 ];
 
-function StepEditor( { step, index, onChange, onRemove } ) {
+function StepEditor( { step, index, showBackground, onChange, onRemove } ) {
 	const update = ( key, value ) => {
 		onChange( { ...step, [ key ]: value } );
 	};
@@ -101,6 +101,18 @@ function StepEditor( { step, index, onChange, onRemove } ) {
 				value={ { source: 'lucide', name: step.icon || '' } }
 				onChange={ ( { name } ) => update( 'icon', name ) }
 				sources={ [ 'lucide' ] }
+			/>
+			{ showBackground && (
+				<DesignTokenPicker
+					label={ __( 'Number background (this step)', 'sgs-blocks' ) }
+					value={ step.numberBackground || '' }
+					onChange={ ( val ) => update( 'numberBackground', val || '' ) }
+				/>
+			) }
+			<DesignTokenPicker
+				label={ __( 'Number colour (this step)', 'sgs-blocks' ) }
+				value={ step.numberColour || '' }
+				onChange={ ( val ) => update( 'numberColour', val || '' ) }
 			/>
 			<Button
 				variant="secondary"
@@ -371,6 +383,15 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		...( 'list' === layout ? {} : backgroundPaintPreview( numberBackground, attributes.numberBackgroundGradient, palette ) ),
 		...typographyPreviewStyle( numberTypography, 'number', previewTier ),
 	};
+
+	// A step's own number colours beat the block-wide pair for that step (the list layout draws no badge fill).
+	const stepNumStyle = ( step ) => ( {
+		...numStyle,
+		...( step.numberColour ? { color: colourVar( step.numberColour ) } : {} ),
+		...( step.numberBackground && 'list' !== layout
+			? { ...backgroundPaintPreview( step.numberBackground, '', palette ), backgroundImage: 'none' }
+			: {} ),
+	} );
 
 	const titleStyle = {
 		...typographyPreviewStyle( attributes, 'title', previewTier ),
@@ -748,6 +769,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							key={ index }
 							step={ step }
 							index={ index }
+							showBackground={ 'list' !== layout }
 							onChange={ ( updated ) =>
 								updateStep( index, updated )
 							}
@@ -1168,7 +1190,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						{ numberStyle !== 'none' && (
 							<span
 								className="sgs-process-steps__number"
-								style={ numStyle }
+								style={ stepNumStyle( step ) }
 							>
 								{ step.number || index + 1 }
 							</span>
