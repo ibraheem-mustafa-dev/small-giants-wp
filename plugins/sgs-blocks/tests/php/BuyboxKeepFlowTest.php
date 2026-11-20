@@ -121,6 +121,26 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertMatchesSnapshot( 'on-simple-in-stock', $html );
 	}
 
+	/**
+	 * The flow opener's look, before the built-in button kit reads `flowOpener*`: every path that prints the opener, with none of
+	 * those attributes set, renders as today. The keep path of a variable product and the empty-string form of an unset
+	 * attribute are pinned here; the linked (flow replaces Add to Cart) paths of both product types and the keep path of a
+	 * simple product are pinned by the `off-*` and `on-simple-in-stock` snapshots above.
+	 */
+	public function test_the_opener_renders_exactly_as_before_with_no_flow_opener_setting(): void {
+		$keep_variable = self::render( array( 'keepAddToCartWithFlow' => true ) );
+		$this->assertMatchesSnapshot( 'on-variable-linked', $keep_variable );
+		$this->assertStringContainsString( 'buybox__add-to-cart buybox__add-to-cart--secondary buybox__add-to-cart--flow-opener"', $keep_variable );
+		$this->assertStringNotContainsString( 'sgs-bb-fo-', $keep_variable, 'no scope class while nothing is set' );
+		$this->assertSame( $keep_variable, self::render( array( 'keepAddToCartWithFlow' => true, 'flowOpenerStyle' => '' ) ), 'an empty string is unset' );
+		$keep_simple = self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE );
+		$this->assertSame( $keep_simple, self::render( array( 'keepAddToCartWithFlow' => true, 'flowOpenerStyle' => '' ), true, self::SIMPLE ), 'an empty string is unset, simple product' );
+		$this->assertStringNotContainsString( 'sgs-bb-fo-', $keep_simple );
+		$linked_simple = self::render( array(), true, self::SIMPLE );
+		$this->assertSame( $linked_simple, self::render( array( 'flowOpenerStyle' => '' ), true, self::SIMPLE ) );
+		$this->assertStringNotContainsString( '<style', $linked_simple, 'the simple linked path prints no style tag while nothing is set' );
+	}
+
 	public function test_a_simple_product_follows_the_variable_products_precedence_an_explicit_popup_wins(): void {
 		$off = self::render( array(), true, self::SIMPLE );
 		$on  = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartAction' => 'modal', 'addToCartModalId' => 'my-popup' ), true, self::SIMPLE );
