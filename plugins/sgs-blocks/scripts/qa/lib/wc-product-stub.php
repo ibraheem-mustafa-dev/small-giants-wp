@@ -13,7 +13,7 @@
  * reaches the product card's configurator and sgs/buybox's main path.
  *
  * Product file keys: id, name, price_html, price, type ("simple" | "variable"), image_id, image_url (what
- * wp_get_attachment_image_url() answers for image_id), short_description, in_stock, average_rating, review_count,
+ * wp_get_attachment_image_url() answers for image_id), short_description, in_stock, purchasable (default true), average_rating, review_count,
  * variation_price_min, variation_price_max, terms (taxonomy => term slugs, read by has_term() in wp-stubs.php),
  * attributes (a list of {name, visible}: the product's taxonomy attributes, read by get_attributes()).
  *
@@ -58,6 +58,9 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		}
 		public function get_short_description() {
 			return (string) ( $this->data['short_description'] ?? '' );
+		}
+		public function is_purchasable() {
+			return (bool) ( $this->data['purchasable'] ?? true );
 		}
 		public function is_in_stock() {
 			return (bool) ( $this->data['in_stock'] ?? true );

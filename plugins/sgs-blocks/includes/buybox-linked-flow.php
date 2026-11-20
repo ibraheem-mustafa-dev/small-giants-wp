@@ -66,6 +66,42 @@ if ( ! function_exists( 'sgs_buybox_resolve_linked_flow' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_buybox_core_fallback_parts' ) ) {
+	/**
+	 * The WooCommerce core blocks the buybox falls back to (FR-30-2): the gallery and price (`head`), then core's Add to Cart
+	 * (`cart`). The one place the markup lives: render.php prints `head` + `cart` as its no-flow fallback, and a simple product
+	 * with a linked flow prints `head` with the flow's opener in place of `cart`, or beside it (`keepAddToCartWithFlow`).
+	 *
+	 * @return array{head:string,cart:string}
+	 */
+	function sgs_buybox_core_fallback_parts(): array {
+		return array(
+			'head' => '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->',
+			'cart' => '<!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->',
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_keep_setting_applies' ) ) {
+	/**
+	 * Whether `keepAddToCartWithFlow` does anything for these buybox settings: it is on, the layout is not the guided one and
+	 * the button is not set to open a named popup (an explicit popup and the guided layout win over a product-linked flow,
+	 * FR-43-25). The same precedence {@see sgs_buybox_apply_linked_flow()} applies on a variable product, read here from the
+	 * attributes for a simple product, whose render never reaches that function.
+	 *
+	 * @param array<string,mixed> $attributes The buybox block attributes.
+	 * @return bool
+	 */
+	function sgs_buybox_keep_setting_applies( array $attributes ): bool {
+		if ( empty( $attributes['keepAddToCartWithFlow'] ) || 'guided' === (string) ( $attributes['buyboxLayout'] ?? 'standard' ) ) {
+			return false;
+		}
+		$action   = sanitize_key( (string) ( $attributes['addToCartAction'] ?? 'cart' ) );
+		$modal_id = sanitize_text_field( (string) ( $attributes['addToCartModalId'] ?? '' ) );
+		return ! ( 'modal' === $action && '' !== $modal_id );
+	}
+}
+
 if ( ! function_exists( 'sgs_buybox_apply_linked_flow' ) ) {
 	/**
 	 * Decide whether the product-link auto-wiring should override the
@@ -207,20 +243,24 @@ if ( ! function_exists( 'sgs_buybox_simple_keep_flow_html' ) ) {
 	 * A simple (non-variable) product with a linked flow and `keepAddToCartWithFlow`
 	 * on: the core fallback exactly as without a flow, with the flow's opener
 	 * beside core's Add to Cart and the flow's modal after it. Returns '' when
-	 * the product has no resolvable flow, so the caller keeps its core fallback.
+	 * the product has no resolvable flow, or cannot be bought (not purchasable or
+	 * out of stock: core shows no Add to Cart then, and the opener's stock gate is
+	 * inert outside the Interactivity context), so the caller keeps its core fallback.
 	 *
-	 * @param int    $product_id Product ID.
+	 * @param int         $product_id Product ID.
+	 * @param \WC_Product $product    The product.
 	 * @return string Markup (pre-escaped).
 	 */
-	function sgs_buybox_simple_keep_flow_html( int $product_id ): string {
+	function sgs_buybox_simple_keep_flow_html( int $product_id, \WC_Product $product ): string {
 		$flow = sgs_buybox_resolve_linked_flow( $product_id );
-		if ( null === $flow ) {
+		if ( null === $flow || ! $product->is_purchasable() || ! $product->is_in_stock() ) {
 			return '';
 		}
+		$parts = sgs_buybox_core_fallback_parts();
 		ob_start();
-		echo do_blocks( '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
+		echo do_blocks( $parts['head'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
 		echo '<div class="sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow">';
-		echo do_blocks( '<!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
+		echo do_blocks( $parts['cart'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
 		echo sgs_buybox_flow_opener_html( $flow ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
 		echo '</div>';
 		sgs_buybox_render_linked_flow_modal( $flow );
@@ -245,7 +285,7 @@ if ( ! function_exists( 'sgs_buybox_simple_linked_flow_html' ) ) {
 			return '';
 		}
 		ob_start();
-		echo do_blocks( '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
+		echo do_blocks( sgs_buybox_core_fallback_parts()['head'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
 		$flow_label = sgs_buybox_linked_flow_label( $flow );
 		if ( '' !== $flow_label ) {
 			$label = $flow_label;

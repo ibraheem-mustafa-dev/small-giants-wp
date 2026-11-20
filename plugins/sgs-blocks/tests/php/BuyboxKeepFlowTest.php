@@ -29,10 +29,11 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertStringNotContainsString( 'FAIL', $out );
 	}
 
-	/** Render the standard fixture with product 52 linked to a flow. */
-	private static function render( array $attr_overrides, bool $linked = true ): string {
+	/** Render the standard fixture with product 52 linked to a flow; `$product_overrides` changes the product (a simple product: `type`). */
+	private static function render( array $attr_overrides, bool $linked = true, array $product_overrides = array() ): string {
 		$fixture = json_decode( (string) file_get_contents( self::DIR . '/standard.json' ), true, 512, JSON_THROW_ON_ERROR );
-		$fixture['attrs'] = array_merge( $fixture['attrs'], $attr_overrides );
+		$fixture['attrs']   = array_merge( $fixture['attrs'], $attr_overrides );
+		$fixture['product'] = array_merge( $fixture['product'], $product_overrides );
 		if ( $linked ) {
 			$fixture['product']['meta'] = array( '_sgs_choice_flow' => 'lens-flow' );
 		}
@@ -90,5 +91,71 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertStringContainsString( 'data-sgs-modal-open="my-popup"', $html );
 		$this->assertStringNotContainsString( 'sgs-buybox__cart-actions', $html );
 		$this->assertStringNotContainsString( 'sgs-flow-lens-flow', $html );
+	}
+
+	private const SIMPLE = array( 'type' => 'simple' );
+
+	/** The pre-change render of a product/setting pair, kept in tests/fixtures/buybox/snapshots/keep-flow-<name>.html (SGS_UPDATE_SNAPSHOTS=1 writes it on purpose). */
+	private function assertMatchesSnapshot( string $name, string $html ): void {
+		$snap = self::DIR . "/snapshots/keep-flow-$name.html";
+		if ( '1' === getenv( 'SGS_UPDATE_SNAPSHOTS' ) ) {
+			file_put_contents( $snap, $html );
+		}
+		$this->assertFileExists( $snap );
+		$this->assertSame( BuyboxSnapshotTest::norm( (string) file_get_contents( $snap ) ), $html, "$name no longer renders byte-identically" );
+	}
+
+	public function test_off_renders_exactly_as_before_for_a_simple_and_a_variable_product(): void {
+		$this->assertMatchesSnapshot( 'off-simple-linked', self::render( array(), true, self::SIMPLE ) );
+		$this->assertMatchesSnapshot( 'off-simple-linked-explicit-false', self::render( array( 'keepAddToCartWithFlow' => false ), true, self::SIMPLE ) );
+		$this->assertMatchesSnapshot( 'off-simple-unlinked', self::render( array(), false, self::SIMPLE ) );
+		$this->assertMatchesSnapshot( 'off-variable-linked', self::render( array() ) );
+		$this->assertMatchesSnapshot( 'off-variable-linked-explicit-false', self::render( array( 'keepAddToCartWithFlow' => false ) ) );
+		$this->assertMatchesSnapshot( 'off-variable-unlinked', self::render( array(), false ) );
+	}
+
+	public function test_a_simple_product_with_the_setting_on_keeps_its_output_byte_for_byte(): void {
+		$html = self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE );
+		$this->assertSame( 1, substr_count( $html, 'sgs-buybox__cart-actions--with-flow' ) );
+		$this->assertSame( 1, substr_count( $html, 'data-sgs-modal-open="sgs-flow-lens-flow"' ) );
+		$this->assertMatchesSnapshot( 'on-simple-in-stock', $html );
+	}
+
+	public function test_a_simple_product_follows_the_variable_products_precedence_an_explicit_popup_wins(): void {
+		$off = self::render( array(), true, self::SIMPLE );
+		$on  = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartAction' => 'modal', 'addToCartModalId' => 'my-popup' ), true, self::SIMPLE );
+		$this->assertSame( $off, $on, 'with an explicit popup the setting does nothing, as on a variable product' );
+		$this->assertStringNotContainsString( 'sgs-buybox__cart-actions', $on );
+	}
+
+	public function test_a_simple_product_in_the_guided_layout_ignores_the_setting(): void {
+		$off = self::render( array( 'buyboxLayout' => 'guided' ), true, self::SIMPLE );
+		$on  = self::render( array( 'buyboxLayout' => 'guided', 'keepAddToCartWithFlow' => true ), true, self::SIMPLE );
+		$this->assertSame( $off, $on, 'the guided layout never runs the keep setting' );
+		$this->assertStringNotContainsString( 'sgs-buybox__cart-actions', $on );
+	}
+
+	public function test_a_popup_action_with_no_popup_named_still_keeps_on_a_simple_product(): void {
+		$empty = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartAction' => 'modal', 'addToCartModalId' => '  ' ), true, self::SIMPLE );
+		$this->assertSame( self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE ), $empty, 'no popup named falls back to cart mode, so the opener shows' );
+		$this->assertStringContainsString( 'sgs-buybox__cart-actions--with-flow', $empty );
+	}
+
+	public function test_a_simple_product_that_cannot_be_bought_shows_no_opener_and_no_wrapper(): void {
+		$bare = self::render( array(), false, self::SIMPLE );
+		foreach ( array( array( 'in_stock' => false ), array( 'purchasable' => false ) ) as $unavailable ) {
+			$html = self::render( array( 'keepAddToCartWithFlow' => true ), true, array_merge( self::SIMPLE, $unavailable ) );
+			$this->assertStringNotContainsString( 'data-sgs-modal-open', $html, json_encode( $unavailable ) );
+			$this->assertStringNotContainsString( 'sgs-buybox__cart-actions', $html );
+			$this->assertSame( $bare, $html, 'what core does to its own button is all that shows' );
+		}
+	}
+
+	public function test_the_core_fallback_markup_lives_in_one_place(): void {
+		$render  = (string) file_get_contents( __DIR__ . '/../../src/blocks/buybox/render.php' );
+		$include = (string) file_get_contents( __DIR__ . '/../../includes/buybox-linked-flow.php' );
+		$this->assertStringNotContainsString( 'wp:woocommerce/', $render, 'render.php builds its fallback from sgs_buybox_core_fallback_parts()' );
+		$this->assertSame( 1, substr_count( $include, 'wp:woocommerce/add-to-cart-with-options' ), 'the keep path and the no-flow fallback share one copy of the core Add to Cart markup' );
+		$this->assertSame( 1, substr_count( $include, 'wp:woocommerce/product-image-gallery' ), 'one copy of the gallery and price markup' );
 	}
 }

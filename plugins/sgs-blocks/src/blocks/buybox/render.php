@@ -75,7 +75,9 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-variants.php';
 // FR-30-10 Step-10a: include the classic WC gallery so simple products and fallback
 // cases still show a product image. The buybox column layout is the PDP product area
 // for variable products — simple/WC-absent cases use the core fallback here.
-$buybox_core_fallback = '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /--><!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->';
+// The markup lives in includes/buybox-linked-flow.php::sgs_buybox_core_fallback_parts(), which a simple product with a linked flow also builds from.
+$buybox_core_fallback_parts = sgs_buybox_core_fallback_parts();
+$buybox_core_fallback       = $buybox_core_fallback_parts['head'] . $buybox_core_fallback_parts['cart'];
 
 // usesContext['postId'] resolves to the current queried post on a PDP template.
 $buybox_post_id = isset( $block->context['postId'] ) ? absint( $block->context['postId'] ) : 0;
@@ -113,9 +115,10 @@ if ( ! $product instanceof \WC_Product ) {
 
 if ( ! $product->is_type( 'variable' ) ) {
 	// A linked customisation flow (FR-43-25) replaces core's Add to Cart.
-	// keepAddToCartWithFlow (off by default) keeps core's Add to Cart and puts the flow's opener beside it instead.
-	$buybox_simple_flow = ! empty( $attributes['keepAddToCartWithFlow'] )
-		? sgs_buybox_simple_keep_flow_html( $buybox_post_id )
+	// keepAddToCartWithFlow (off by default) keeps core's Add to Cart and puts the flow's opener beside it instead, unless an
+	// explicit popup or the guided layout wins (sgs_buybox_keep_setting_applies(), the precedence the variable path applies).
+	$buybox_simple_flow = sgs_buybox_keep_setting_applies( $attributes )
+		? sgs_buybox_simple_keep_flow_html( $buybox_post_id, $product )
 		: sgs_buybox_simple_linked_flow_html( $buybox_post_id, (string) ( $attributes['addToCartLabel'] ?? '' ) );
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo '' !== $buybox_simple_flow ? $buybox_simple_flow : do_blocks( $buybox_core_fallback );
