@@ -14,6 +14,7 @@ import { listArrangement } from './skeleton-arrangement.mjs';
 import { makeClassifier, overrideFor, W } from './skeleton-classify.mjs';
 import { collapsePoint, childSlots, unitSlots, slideSlots } from './skeleton-child-slots.mjs';
 import { itemFieldSlots } from './skeleton-item-field-slots.mjs';
+import { currentSlide } from './skeleton-current-slide.mjs';
 import { wrapperLinkSlot } from './skeleton-wrapper-link-slot.mjs';
 import { mediaSelfSlot, partSlots, placePart, codeItemSlots, drawnSvgParts, itemSlots, chipSlots } from './skeleton-part-slots.mjs';
 import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-record.mjs';
@@ -368,6 +369,19 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			} else {
 				wordProblems.push( `${ e.key }: ${ block } carries the words "${ m.words( e ) }" of its own and the skeleton has no text block to hold them: they would print nowhere` );
 			}
+		}
+		// A slider whose draft shows one item at a time (a client decision, so no `slides`) gets one slide node standing for
+		// every item: the visible card is the slide's wrapper, its parts read at the elements printing the item's fields.
+		const lone = ! r.slides && ! node.innerBlocks.length && ( R.slider?.blocks || [] ).some( ( b ) => b.block === block ) ? composition[ block ]?.accepts?.[ 0 ] : null;
+		const cur = lone ? currentSlide( { facts, factRecord, inventory, rootKey: e.key, rootComponent, slideBlock: lone, entry: ( x ) => view.entry( x ) } ) : null;
+		if ( cur ) {
+			const card = m.byKey[ cur.card.key ];
+			const slide = base( card, lone, {} );
+			slide.itemTemplate = true;
+			const parts = slideSlots( { cfg: R.slider?.slideSlots, fields: cur.slideFields, slide: card, m, entry: ( x ) => view.entry( x ), finder, settings: calSettings( lone ) } );
+			parts.slots && Object.keys( parts.slots ).length > 0 && Object.assign( slide, { draftSlots: parts.slots } );
+			node.innerBlocks = [ slide ];
+			row.slotNotes = [ ...( row.slotNotes || [] ), ...parts.notes, `the draft shows one item at a time: ${ card.key } is the slide's wrapper and stands for every item` ];
 		}
 		hosts.pop();
 		// An accordion item the draft shows closed at rest holds the panel content read from the draft's data (rule accordion).

@@ -1,0 +1,86 @@
+[
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "slide.itemTemplate = true;",
+		"replace": "",
+		"why": "the slide is not marked as standing for every item"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "node.innerBlocks = [ slide ];",
+		"replace": "",
+		"why": "the slide node is built and dropped"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const slide = base( card, lone, {} );",
+		"replace": "const slide = base( m.byKey[ e.key ], lone, {} );",
+		"why": "the slide is read at the slider's own element, not the card"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "fields: cur.slideFields, slide: card,",
+		"replace": "fields: [], slide: card,",
+		"why": "the card's parts are computed and dropped"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const lone = ! r.slides && ! node.innerBlocks.length && ( R.slider?.blocks || [] ).some( ( b ) => b.block === block )",
+		"replace": "const lone = ! r.slides && ! node.innerBlocks.length",
+		"why": "any block that accepts one child block gets a slide"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "if ( 1 !== heads.size ) {",
+		"replace": "if ( 0 === heads.size ) {",
+		"why": "two different heads are taken for one display"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "return fields.length >= 2 && card && card !== root ?",
+		"replace": "return fields.length >= 2 && card ?",
+		"why": "the slider's own root is called the card"
+	},
+	{
+		"file": "lib/fill-list-items.mjs",
+		"find": "const card = paths[ 0 ]?.find( ( x ) => paths.every( ( p ) => p.includes( x ) ) ) ?? null;",
+		"replace": "const card = paths[ 0 ]?.[ 1 ] ?? null;",
+		"why": "the card is the first field's parent, not the element holding all fields"
+	},
+	{
+		"file": "lib/skeleton-current-slide.mjs",
+		"find": "! f.image && map[ f.name ] &&",
+		"replace": "map[ f.name ] &&",
+		"why": "a picture field is read as a text part"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "if ( i > 0 && 'string' === typeof copy.attributes?.className ) {",
+		"replace": "if ( false ) {",
+		"why": "every copy keeps the draft element's reference class"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "copy.attributes = { ...copy.attributes, ...item.attributes };",
+		"replace": "copy.attributes = { ...item.attributes };",
+		"why": "the copies lose the card look"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "flat[ c.index ].innerBlocks = c.template ? expandTemplate( flat[ c.index ].innerBlocks[ 0 ], c.nodes ) : c.nodes;",
+		"replace": "flat[ c.index ].innerBlocks = c.nodes;",
+		"why": "the template slide is replaced by bare items"
+	},
+	{
+		"file": "lib/fill-list-content.mjs",
+		"find": "const kids = 'children' === target.kind && ! template ? node.innerBlocks || [] : [];",
+		"replace": "const kids = 'children' === target.kind ? node.innerBlocks || [] : [];",
+		"why": "the template child is taken for the first item and the rest are not placed"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "'draftFingerprint', 'itemTemplate',",
+		"replace": "'draftFingerprint',",
+		"why": "the template key leaks into the built tree"
+	}
+]

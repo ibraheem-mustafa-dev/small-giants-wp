@@ -214,6 +214,49 @@ export function currentItems( { facts, rootKey, rootComponent = null, idx } ) {
 	return { items, fields: list.fields, source: `current item ${ list.head } of a ${ items.length }-item list in the draft's logic`, reason: null, current: true };
 }
 
+// The draft elements of a current-item display inside `rootKey` (the one visible copy of an item the code picks by an index):
+// { head, fields: [ { name, image, element } ], card }, where `element` is the inventory element printing the field (the first
+// to print it) and `card` is the element that holds every one of them, the lowest ancestor they share below `rootKey`: the
+// one card the draft shows. null when the element holds no such display, holds several (two different heads), or its fields
+// share no ancestor but the element itself (nothing to call a card). Fields are the words and the pictures the item prints.
+export function currentFieldElements( { inventory, facts, rootKey, rootComponent = null } ) {
+	const { root, els, byKey } = subtreeOf( inventory, rootKey );
+	if ( ! root ) {
+		return null;
+	}
+	const heads = new Map();
+	for ( const e of els ) {
+		const t = factOf( facts, e.key, rootComponent );
+		const loopVars = new Set( [ ...( t?.membership?.scFor || [] ), ...loopsOf( e ) ].map( ( m ) => m.as ) );
+		for ( const h of t?.holes || [] ) {
+			const f = holeField( h, t.realTag || t.tag, ! String( e.words ?? '' ).trim() );
+			if ( f && ! loopVars.has( f.head ) && ( f.text || f.image ) ) {
+				const list = heads.get( f.head ) ?? new Map();
+				list.has( f.name ) || list.set( f.name, { name: f.name, image: f.image, element: e } );
+				heads.set( f.head, list );
+			}
+		}
+	}
+	if ( 1 !== heads.size ) {
+		return null;
+	}
+	const [ [ head, list ] ] = [ ...heads ];
+	const fields = [ ...list.values() ];
+	const upFrom = ( e ) => {
+		const path = [];
+		for ( let x = e; x; x = byKey.get( x.parentKey ) ) {
+			path.push( x );
+			if ( x === root ) {
+				break;
+			}
+		}
+		return path;
+	};
+	const paths = fields.map( ( f ) => upFrom( f.element ) );
+	const card = paths[ 0 ]?.find( ( x ) => paths.every( ( p ) => p.includes( x ) ) ) ?? null;
+	return fields.length >= 2 && card && card !== root ? { head, fields, card } : null;
+}
+
 // The list one element draws: its loop when the rendered inventory shows one, else its current-item display. idx: the
 // parsed logic of the element's draft file (null when the draft folder is not given).
 export function listItems( { inventory, facts, rootKey, rootComponent = null, idx = null } ) {

@@ -61,8 +61,8 @@
 	},
 	{
 		"file": "lib/fill-skeleton.mjs",
-		"find": "'draftFingerprint', 'widthAlternatives', 'handover'",
-		"replace": "'draftFingerprint', 'handover'",
+		"find": "'itemTemplate', 'widthAlternatives', 'handover'",
+		"replace": "'itemTemplate', 'handover'",
 		"why": "the block tree Fill writes would carry the draft key"
 	},
 	{

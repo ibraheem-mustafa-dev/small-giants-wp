@@ -14,7 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadAjv, schemaProblems } from './handoff.mjs';
-import { setAttr } from './tree.mjs';
+import { setAttr, REF_PREFIX } from './tree.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { draftPath, mapEntries, stockEntries } from './fill-media.mjs';
 import { itemSource } from './media/write.mjs';
@@ -222,9 +222,10 @@ export function withPictures( list, pictures, media = {} ) {
 // A host whose skeleton children are all its item block, one per item, is the list already: each child takes only the
 // item values it does not hold (its own draft element is read for the rest), and nothing is a row but a count that differs.
 // A host holding any other child is not drawing this list.
-export function listDecisions( { block, target, node, list, media = {}, pages = null } ) {
+export function listDecisions( { block, target, node, list, media = {}, pages = null, template = false } ) {
 	const out = { writes: [], children: null, childWrites: [], rows: [], notes: [] };
-	const kids = 'children' === target.kind ? node.innerBlocks || [] : [];
+	// A skeleton child that stands for every item (`itemTemplate`) is no item: each item becomes a copy of it (expandTemplate).
+	const kids = 'children' === target.kind && ! template ? node.innerBlocks || [] : [];
 	if ( kids.some( ( k ) => k.name !== target.child ) ) {
 		return out;
 	}
@@ -331,7 +332,9 @@ export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFo
 			}
 			continue;
 		}
-		const d = listDecisions( { block: rec.name, target, node, list: withPictures( list, picturesOf( root.id ), media ), media, pages } );
+		// A slider's one slide node that stands for every item of a current-item display (lib/skeleton-current-slide.mjs).
+		const template = 1 === rec.children?.length && !! nodes[ rec.children[ 0 ] ]?.node.itemTemplate;
+		const d = listDecisions( { block: rec.name, target, node, list: withPictures( list, picturesOf( root.id ), media ), media, pages, template } );
 		for ( const w of d.writes ) {
 			const { before, after } = setAttr( node, { attr: w.attr, value: w.value, merge: 'replace' } );
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(content)', attr: w.attr, before, after, widths: [], how: 'content' } );
@@ -348,7 +351,7 @@ export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFo
 			out.notes.push( `${ ref } ${ rec.name }: the draft shows one item at a time, so ${ oneAtATime.attr } is ${ oneAtATime.value }` );
 		}
 		if ( d.children ) {
-			out.children.push( { index: rec.index, nodes: d.children } );
+			out.children.push( { index: rec.index, nodes: d.children, template } );
 			out.writes.push( { node: ref, index: rec.index, block: rec.name, slot: '', prop: '(content)', attr: 'innerBlocks', before: [], after: d.children.map( ( c ) => ( { name: c.name, attributes: c.attributes } ) ), widths: [], how: 'content' } );
 		}
 		for ( const r of d.rows ) {
@@ -362,6 +365,21 @@ export function listContentWrites( { nodes, flat, refOf, facts, inventory, idxFo
 // Places the children listContentWrites decided: each list host's inner blocks become its items.
 export function applyChildren( flat, children ) {
 	for ( const c of children ) {
-		flat[ c.index ].innerBlocks = c.nodes;
+		flat[ c.index ].innerBlocks = c.template ? expandTemplate( flat[ c.index ].innerBlocks[ 0 ], c.nodes ) : c.nodes;
 	}
+}
+
+// One copy of the template child (the slide Fill wrote the card's look into) per item: the item's words and picture over the
+// template's settings. The first item keeps the template's own reference class (the draft element it was read from); a later
+// copy carries none, so every reference on the page stays unique.
+export function expandTemplate( template, items ) {
+	return items.map( ( item, i ) => {
+		const copy = structuredClone( template );
+		if ( i > 0 && 'string' === typeof copy.attributes?.className ) {
+			copy.attributes.className = copy.attributes.className.split( /\s+/ ).filter( ( c ) => c && ! c.startsWith( REF_PREFIX ) ).join( ' ' );
+			'' === copy.attributes.className && delete copy.attributes.className;
+		}
+		copy.attributes = { ...copy.attributes, ...item.attributes };
+		return copy;
+	} );
 }
