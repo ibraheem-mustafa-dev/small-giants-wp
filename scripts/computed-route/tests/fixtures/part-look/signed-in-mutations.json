@@ -118,5 +118,23 @@
 		"find": ".join( '-' ) || 'account';\n\treturn `${ prefix }",
 		"replace": ".join( '-' );\n\treturn `${ prefix }",
 		"why": "the account page's picture has no name"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "\tif ( ! await openFirstTab() ) {",
+		"replace": "\tif ( ( await openFirstTab(), false ) ) {",
+		"why": "the first tab's answer is ignored, so an item is opened from the last tab's view"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "\tif ( ! await openItem() ) {",
+		"replace": "\tif ( ( await openItem(), false ) ) {",
+		"why": "an item page that did not open is read anyway"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "\t\t1440 === width && notes.push( 'the first tab lists no item",
+		"replace": "\t\tnotes.push( 'the first tab lists no item",
+		"why": "the missing item is noted at every width, not once"
 	}
 ]

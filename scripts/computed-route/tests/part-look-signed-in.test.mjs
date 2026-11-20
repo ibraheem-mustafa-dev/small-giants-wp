@@ -10,7 +10,7 @@ import test, { after, before } from 'node:test';
 import { findPartsInPage, READ_PROPS } from '../lib/fill-part-look.mjs';
 import { loadChromium } from '../lib/fill-read.mjs';
 import { evaluateModes } from '../lib/part-look-modes.mjs';
-import { liveViewPaths, menuInPage, mergeViewReads, openItemInPage, partsOfView, readTabViews, shotName, signInInPage, signedInSeedOf } from '../lib/part-look-signed-in.mjs';
+import { liveViewPaths, menuInPage, mergeViewReads, openItemInPage, partsOfView, readItemView, readTabViews, shotName, signInInPage, signedInSeedOf } from '../lib/part-look-signed-in.mjs';
 import { liveSelectorsFor } from '../lib/part-look-verify.mjs';
 import { loginOf } from '../part-look.mjs';
 
@@ -197,6 +197,25 @@ test( 'MUST FAIL: a tab whose control did not open is noted and not read, so the
 	await tabPage.setContent( ORDERS );
 	assert.equal( await tabPage.evaluate( menuInPage, { action: 'open', index: 9 } ), false );
 	assert.equal( await tabPage.evaluate( menuInPage, { action: 'open', index: 1 } ), true );
+} );
+
+test( 'MUST FAIL: when the first tab does not open again, no item page is read, so the last tab\'s item is never recorded as the first tab\'s', async () => {
+	const steps = [];
+	const notes = [];
+	const done = await readItemView( { width: 375, notes, openFirstTab: async () => ( steps.push( 'tab' ), false ), openItem: async () => ( steps.push( 'item' ), true ), read: async () => steps.push( 'read' ) } );
+	assert.equal( done, false );
+	assert.deepEqual( steps, [ 'tab' ], 'neither the item is opened nor the page read' );
+	assert.deepEqual( notes, [ 'the first tab of the account menu could not be opened again at 375px, so no item page is read' ] );
+	// Negative controls: the tab opens and an item opens, so the page is read with nothing noted; the tab opens and no item does,
+	// so nothing is read and only the 1440 pass notes it.
+	const read = [];
+	const quiet = [];
+	assert.equal( await readItemView( { width: 768, notes: quiet, openFirstTab: async () => true, openItem: async () => true, read: async () => read.push( 'read' ) } ), true );
+	assert.deepEqual( [ read, quiet ], [ [ 'read' ], [] ] );
+	const none = [];
+	assert.equal( await readItemView( { width: 768, notes: none, openFirstTab: async () => true, openItem: async () => false, read: async () => read.push( 'x' ) } ), false );
+	assert.equal( await readItemView( { width: 1440, notes: none, openFirstTab: async () => true, openItem: async () => false, read: async () => read.push( 'x' ) } ), false );
+	assert.deepEqual( [ read, none ], [ [ 'read' ], [ 'the first tab lists no item with an amount and a control, so no item page is read' ] ] );
 } );
 
 test( 'MUST FAIL: a picture\'s file name holds no character a Windows file name refuses, under plain permalinks too, and two views never share one', () => {

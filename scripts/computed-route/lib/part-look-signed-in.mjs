@@ -133,6 +133,23 @@ export async function readTabViews( { tabs, open, read, notes, width } ) {
 	return done;
 }
 
+// Opens the item page from the first tab's list and reads it. `openFirstTab()` answers whether the first tab opened (menuInPage's
+// answer) and `openItem()` whether an item page opened from its list. A first tab that did not open is noted and nothing is read,
+// because the page still shows the last tab's view and an item opened from it would be recorded as the first tab's item page.
+// Returns whether the item page was read.
+export async function readItemView( { openFirstTab, openItem, read, notes, width } ) {
+	if ( ! await openFirstTab() ) {
+		notes.push( `the first tab of the account menu could not be opened again at ${ width }px, so no item page is read` );
+		return false;
+	}
+	if ( ! await openItem() ) {
+		1440 === width && notes.push( 'the first tab lists no item with an amount and a control, so no item page is read' );
+		return false;
+	}
+	await read();
+	return true;
+}
+
 const settle = async ( page ) => {
 	await page.waitForFunction( () => document.querySelector( '#dc-root' )?.children.length > 0, null, { timeout: 45000 } ).catch( () => {} );
 	await page.evaluate( () => document.fonts?.ready ).catch( () => {} );
@@ -185,14 +202,21 @@ export async function readSignedInParts( { draftDir, mainFile, signinFile, spec,
 					read: ( i ) => read( page, width, `tab ${ i + 1 }`, partsOfView( parts, 'tab' ) ),
 				} );
 				// The item page opens from the first tab's list.
-				await page.evaluate( menuInPage, { action: 'open', index: 0 } );
-				await page.waitForTimeout( 700 );
-				if ( await page.evaluate( openItemInPage ) ) {
-					await page.waitForTimeout( 900 );
-					await read( page, width, 'detail', partsOfView( parts, 'detail' ) );
-				} else if ( 1440 === width ) {
-					notes.push( 'the first tab lists no item with an amount and a control, so no item page is read' );
-				}
+				await readItemView( {
+					width,
+					notes,
+					openFirstTab: async () => {
+						const opened = await page.evaluate( menuInPage, { action: 'open', index: 0 } );
+						await page.waitForTimeout( 700 );
+						return opened;
+					},
+					openItem: async () => {
+						const opened = await page.evaluate( openItemInPage );
+						opened && await page.waitForTimeout( 900 );
+						return opened;
+					},
+					read: () => read( page, width, 'detail', partsOfView( parts, 'detail' ) ),
+				} );
 				log( `read ${ mainFile } signed in at ${ width }px: ${ tabs } tabs and ${ views.detail?.[ width ] !== undefined ? 'the item page' : 'no item page' }` );
 			} finally {
 				await ctx.close();
