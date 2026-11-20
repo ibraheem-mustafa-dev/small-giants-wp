@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "part && rows.forEach( ( row, i ) => {",
+		"replace": "false && rows.forEach( ( row, i ) => {",
+		"why": "no item marker is read"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "out[ markerSlotAt( part, i + 1 ) ] = finder( el )",
+		"replace": "out[ markerSlotAt( part, 1 ) ] = finder( el )",
+		"why": "every item's marker is read at the first copy's part"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "el && ( out[ markerSlotAt",
+		"replace": "( out[ markerSlotAt",
+		"why": "an item with no marker element is given a slot"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const part = markerPart( ctx.calSettings?.( slug ) );",
+		"replace": "const part = '.sgs-icon-list > .sgs-icon-list__item:nth-of-type(1) > .sgs-icon-list__icon';",
+		"why": "the marker part is not read from the block's calibration"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const markers = markerSlotsOf( slug, els.filter( ( l ) => ! removedBy( l ) ) );",
+		"replace": "const markers = markerSlotsOf( slug, els );",
+		"why": "a removed row counts as an item copy"
+	}
+]

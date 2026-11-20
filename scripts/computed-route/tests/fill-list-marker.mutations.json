@@ -1,0 +1,86 @@
+[
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "&& all.has( `${ p } > svg` ) );",
+		"replace": "&& true );",
+		"why": "a part that holds no svg is taken as the marker part"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "! p.includes( '::' ) && all.has",
+		"replace": "all.has",
+		"why": "a pseudo-element slot is taken as the marker part"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "const at = [ ...String( part ).matchAll( NTH ) ].at( -1 );",
+		"replace": "const at = [ ...String( part ).matchAll( NTH ) ][ 0 ];",
+		"why": "the first repeated step is set to the copy, not the last"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "Number.isFinite( k ) && markerSlotAt( part, k ) === s && ( out[ k ] = s );",
+		"replace": "Number.isFinite( k ) && ( out[ k ] = s );",
+		"why": "any repeated slot is taken as a copy's marker slot"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "|| ! markerPart( cal?.settings ) ) {\n\t\treturn out;",
+		"replace": ") {\n\t\treturn out;",
+		"why": "a block whose calibration has no marker part is read for markers"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "r.svg?.markup ? 'icon' : /^\\d+\\.?$/",
+		"replace": "r.svg?.markup ? 'emoji' : /^\\d+\\.?$/",
+		"why": "an svg marker is called an emoji"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "/^\\d+\\.?$/.test( r.words || '' )",
+		"replace": "/^\\d+$/.test( r.words || '' )",
+		"why": "a digit with its full stop is not numbered"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "parseInt( s.read.words, 10 ) === i + 1 );",
+		"replace": "true );",
+		"why": "numbers that do not count up from 1 are numbered"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "kinds.every( ( k ) => null === k ) ? 'none' :",
+		"replace": "kinds.every( ( k ) => null === k ) ? null :",
+		"why": "no marker at any item chooses no type"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "kinds.every( ( k ) => k && k === kinds[ 0 ] ) && counts ? kinds[ 0 ] : null;",
+		"replace": "kinds.every( ( k ) => k || ! k ) && counts ? kinds[ 0 ] : null;",
+		"why": "items whose markers differ choose the first item's type"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "attributes[ setting.attr_name ] !== kind && out.writes.push",
+		"replace": "out.writes.push",
+		"why": "a marker type the node already holds is written again"
+	},
+	{
+		"file": "lib/fill-list-marker.mjs",
+		"find": "if ( ! seen[ i ]?.read.svg?.markup ) {\n\t\t\treturn item;",
+		"replace": "if ( false ) {\n\t\t\treturn item;",
+		"why": "an item with no svg read is rewritten"
+	},
+	{
+		"file": "lib/fill-icon.mjs",
+		"find": "! ( requireSvg ? iconSettings( schema ).length : ICON_SETTINGS.some( ( a ) => a in ( schema || {} ) ) )",
+		"replace": "! iconSettings( schema ).length",
+		"why": "an item's icon settings are refused because they hold no iconSvg"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "st.db && take( listMarkerDecisions(",
+		"replace": "st.db && false && take( listMarkerDecisions(",
+		"why": "Fill never reads the item markers"
+	}
+]

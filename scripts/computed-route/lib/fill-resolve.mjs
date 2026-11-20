@@ -11,6 +11,7 @@ import { mediaDecisions, mediaAt, captionOf, factImage, pictureSlotOf, pictureSe
 import { blockMediaSlots } from './media/slots.mjs';
 import { mapDecisions } from './fill-map.mjs';
 import { iconDecisions } from './fill-icon.mjs';
+import { listMarkerDecisions } from './fill-list-marker.mjs';
 import { handoverEntry } from './fill-handover.mjs';
 import { unreadOf } from './fill-unread.mjs';
 import { fillBand } from './fill-band.mjs';
@@ -123,6 +124,8 @@ function fillContent( st, rec, ref, cal ) {
 	const media = mediaDecisions( { slots: blockMediaSlots( rec.name ), attributes: node.attributes || {}, reads, caption: captionOf( atDesktop ), media: { ...st.media, origin: st.origin }, fact: factImage( st.facts, imageTarget?.finder.tpl, st.rootComponent ) } );
 	take( media );
 	take( iconDecisions( { svg: atDesktop[ '' ]?.svg ?? null, schema: blockSchema( rec.name ), attributes: node.attributes || {}, href: hrefs[ '' ] ?? '' } ) );
+	// Each list item's own marker, read at the item's marker part, and the list's marker type (lib/fill-list-marker.mjs).
+	st.db && take( listMarkerDecisions( { db: st.db, block: rec.name, cal, attributes: node.attributes || {}, reads: atDesktop } ) );
 	if ( 'map' === node.attributes?.displayType ) {
 		const embeds = Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, st.reads.widths[ w ]?.[ rec.targets.find( ( t ) => '' === t.slot )?.id ]?.embed ] ).filter( ( [ , e ] ) => e ) );
 		take( mapDecisions( { schema: blockSchema( rec.name ), attributes: node.attributes || {}, embeds } ) );

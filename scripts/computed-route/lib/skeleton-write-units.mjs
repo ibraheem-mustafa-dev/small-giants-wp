@@ -7,7 +7,8 @@ import { brandOwnsAddress } from './brand-registry.mjs';
 import { linkWrite } from './draft-link.mjs';
 import { isMarker } from './skeleton-rules.mjs';
 import { finish, W } from './skeleton-classify.mjs';
-import { itemSlots } from './skeleton-part-slots.mjs';
+import { itemSlots, drawnSvgParts } from './skeleton-part-slots.mjs';
+import { markerPart, markerSlotAt } from './fill-list-marker.mjs';
 import { unitSlots } from './skeleton-child-slots.mjs';
 
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
@@ -138,6 +139,18 @@ export function makeUnits( ctx ) {
 		const kinds = [ ...cls.siteInfoKinds( l ) ].filter( ( [ k ] ) => facts.listItem.kinds.includes( k ) ).sort( ( a, b ) => b[ 1 ].w - a[ 1 ].w );
 		return kinds[ 0 ]?.[ 0 ] || null;
 	};
+	// The marker element a list row draws before its text: its first drawn svg, or none.
+	const markerElOf = ( row ) => ( drawnSvgParts( m.kids( row ), m.isPart )[ 0 ] ?? null );
+	// { <marker part slot of item copy k>: finder } for the rows that draw a marker, when the block's calibration holds a marker part.
+	const markerSlotsOf = ( slug, rows ) => {
+		const part = markerPart( ctx.calSettings?.( slug ) );
+		const out = {};
+		part && rows.forEach( ( row, i ) => {
+			const el = markerElOf( row );
+			el && ( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) );
+		} );
+		return out;
+	};
 	// host: the bare wrapper the list block is (rule listWrapper), whose own box (its grid columns, its gaps) the list's own
 	// settings read; the first link stays the draft element of the link part's settings. Without a host the first link is both.
 	function buildList( els, host = null ) {
@@ -176,6 +189,9 @@ export function makeUnits( ctx ) {
 		// are read at the same link (decisions structural.linkList.itemSlots, lib/skeleton-part-slots.mjs::itemSlots).
 		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: finder( first ), settings: facts.decisions.structural?.linkList?.itemSlots, calibrated: ctx.calSettings( slug ) } ).slots : {};
 		Object.keys( linkSlots ).length && ( node.draftSlots = { ...node.draftSlots, ...linkSlots } );
+		// Each item's own marker is read at the draft element that draws it, at that copy's marker part (lib/fill-list-marker.mjs).
+		const markers = markerSlotsOf( slug, els.filter( ( l ) => ! removedBy( l ) ) );
+		Object.keys( markers ).length && node.draftRef && ( node.draftSlots = { ...node.draftSlots, ...markers } );
 		els.forEach( ( l, i ) => {
 			if ( removedBy( l ) ) {
 				const o = overrides( l, m.words( l ) );
