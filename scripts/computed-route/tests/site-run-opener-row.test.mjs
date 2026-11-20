@@ -4,8 +4,13 @@
 // failed the absence check on 2026-11-01 (restores 066238eef's rule, lost in the 2026-11-02 rewind).
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { openerRow } from '../lib/site-run-opener-row.mjs';
+import { liveAddress } from '../site-run.mjs';
 
+const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const ROWS = [
 	{ id: 1, postType: 'page', slug: 'home', route: 'home' },
 	{ id: 2, postType: 'product', slug: 'product', template: 'single-product', opens: [ { kind: 'flow', slug: 'lens' }, { kind: 'modal', slug: 'size-guide' } ] },
@@ -29,4 +34,10 @@ test( 'MUST FAIL: a modal or flow surface is read live at a page that opens it, 
 	assert.equal( openerRow( { target: { postId: 5 } }, ROWS ), null, 'a form is read on its own page (its draftRoute)' );
 	assert.equal( openerRow( { target: { template: 'single-product' } }, ROWS ), null );
 	assert.equal( openerRow( null, ROWS ), null );
+} );
+
+test( 'MUST FAIL: site-run reads the surface at the opener row\'s address', () => {
+	assert.equal( liveAddress( openerRow( { target: { postId: 120 } }, ROWS ), ROWS, { 'single-product': '/product/frames/' } ), '/product/frames/' );
+	const siteRun = fs.readFileSync( path.join( HERE, '..', 'site-run.mjs' ), 'utf8' );
+	assert.ok( siteRun.includes( 'const address = liveAddress( openerRow( entry, rows ) ?? row, rows, shown );' ), 'prepare reads a modal or flow at its opener row' );
 } );

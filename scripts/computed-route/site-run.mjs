@@ -54,6 +54,7 @@ import { savedInventoryOf, servedInventoryOf } from './lib/skeleton-saved-invent
 import { openRunSession, readEnv } from './lib/wp-run-session.mjs';
 import { isContentOnlySurface, isUnwalkedWooPage, wooContentRole } from './lib/site-build-plan.mjs';
 import { walkChecked } from './lib/site-check-openers.mjs';
+import { openerRow } from './lib/site-run-opener-row.mjs';
 import { rowKey, treeHash } from './lib/site-build-map.mjs';
 import { deleteTestOrdersPhp, templateRecordPhp, testOrderPhp } from './lib/site-build-apply.mjs';
 import { draftProductSlugs, liveFactsPhp, readLiveFacts, templateAddresses, livePrimeFor } from './lib/template-live-address.mjs';
@@ -428,7 +429,8 @@ export async function main( argv ) {
 		// end after their inventory (endWooPage), never proposed, Filled or built over; a template copy read at one of them is.
 		// The account page is Filled like any page.
 		const wooPage = isUnwalkedWooPage( entry.target, row ) ? wooContentRole( row ) : null;
-		const address = liveAddress( row, rows, shown );
+		// A modal or flow has no page of its own: it is read at a page that opens it (lib/site-run-opener-row.mjs).
+		const address = liveAddress( openerRow( entry, rows ) ?? row, rows, shown );
 		const liveUrl = `${ base }${ address ?? '/' }`;
 		// A checkout walk starts with a product in the basket: WooCommerce sends an empty basket's checkout to the basket.
 		const livePrime = livePrimeFor( entry.target?.template ?? row?.template, liveFacts );
