@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const parentBox = ! layer && parentDrawsBox( st, rec, target );",
+		"replace": "const parentBox = false && ! layer && parentDrawsBox( st, rec, target );",
+		"why": "the child draws the box look its parent draws, the tag drawn twice"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "if ( parentBox && BOX_LOOK.test( prop ) &&",
+		"replace": "if ( parentBox && ! BOX_LOOK.test( prop ) &&",
+		"why": "the child leaves its text settings to the parent and keeps the box look"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": "const parentBox = ! layer && parentDrawsBox",
+		"replace": "const parentBox = parentDrawsBox",
+		"why": "a painted layer (pseudo-element) of the child would be judged as the parent's box look"
+	},
+	{
+		"file": "lib/fill-shared-element.mjs",
+		"find": "padding(?:-(?:top|right|bottom|left))?|",
+		"replace": "",
+		"why": "the child's padding is no box look, so the doubled padding stays"
+	},
+	{
+		"file": "lib/fill-shared-element.mjs",
+		"find": "|clip-path|box-shadow)$/",
+		"replace": "|box-shadow)$/",
+		"why": "the child's clip-path is no box look"
+	},
+	{
+		"file": "lib/fill-shared-element.mjs",
+		"find": "if ( '' !== target.slot || null === rec.parent || undefined === rec.parent ) {",
+		"replace": "if ( null === rec.parent || undefined === rec.parent ) {",
+		"why": "a part of the child at the parent's element counts as the shared element"
+	},
+	{
+		"file": "lib/fill-shared-element.mjs",
+		"find": "if ( '' !== target.slot || null === rec.parent || undefined === rec.parent ) {",
+		"replace": "if ( '' !== target.slot ) {",
+		"why": "a node with no parent reads st.nodes[null]"
+	},
+	{
+		"file": "lib/fill-shared-element.mjs",
+		"find": "json( up.finder ) !== json( target.finder )",
+		"replace": "false",
+		"why": "a child reading a different element than its parent loses its box look"
+	},
+	{
+		"file": "lib/fill-shared-element.mjs",
+		"find": "json( up.finder ) !== json( target.finder )",
+		"replace": "up.finder !== target.finder",
+		"why": "a finder object never compares equal by identity"
+	},
+	{
+		"file": "lib/fill-shared-element.mjs",
+		"find": "return !! st.calFor( parent.name, parent ) && Object.keys( snapsOf( st, up.id ) ).length > 0;",
+		"replace": "return Object.keys( snapsOf( st, up.id ) ).length > 0;",
+		"why": "an uncalibrated parent is trusted to draw the box"
+	},
+	{
+		"file": "lib/fill-shared-element.mjs",
+		"find": "return !! st.calFor( parent.name, parent ) && Object.keys( snapsOf( st, up.id ) ).length > 0;",
+		"replace": "return !! st.calFor( parent.name, parent );",
+		"why": "a parent whose element was never read is trusted to draw the box"
+	}
+]

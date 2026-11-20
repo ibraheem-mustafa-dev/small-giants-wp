@@ -18,6 +18,7 @@ import { fillLayerBox } from './fill-layer-box.mjs';
 import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
 import { gutterBaseline } from './fill-gutter.mjs';
+import { BOX_LOOK, parentDrawsBox } from './fill-shared-element.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
 
 // Whether a resolver result writes only settings calibration measured painting `slot` itself (not ones that only reach it).
@@ -187,8 +188,14 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 	}
 	// A decorative layer's stacking, anchor and sides-drawn size are written from the code the applier shares (lib/layer-box.mjs).
 	const boxed = layer ? new Set() : fillLayerBox( { st, rec, ref, target, snaps, apply } );
+	// A block reading the element its parent reads leaves the box look to the parent (lib/fill-shared-element.mjs).
+	const parentBox = ! layer && parentDrawsBox( st, rec, target );
 	for ( const prop of merged ? [ ...ids.filter( ( p ) => ! RADIUS_CORNERS.includes( p ) ), 'border-radius' ] : ids ) {
 		if ( boxed.has( prop ) ) {
+			continue;
+		}
+		if ( parentBox && BOX_LOOK.test( prop ) && allDrafts[ prop ] && Object.keys( allDrafts[ prop ] ).length ) {
+			settled( st, rec, ref, { slot, property: prop, value: valueText( allDrafts[ prop ] ), widths: Object.keys( allDrafts[ prop ] ).map( Number ), reason: 'parent-held', detail: `the parent block reads this draft element too, and draws its box look once` } );
 			continue;
 		}
 		let draft = allDrafts[ prop ];
