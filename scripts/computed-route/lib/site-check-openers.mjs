@@ -10,11 +10,20 @@ import fs from 'fs';
 import { OPENABLE } from './intake-pagemap-openers.mjs';
 
 // In-page: the in-page anchors the page's links and modal-open controls point at, the anchors of the frames it holds, and
-// `present`, the linked anchors some element of the page carries as its id or name (where the browser scrolls a link to).
+// `present`, the linked anchors some element of the page carries as its id or name, as written or percent-decoded (where the browser scrolls a link to).
 export function openersInPage() {
 	const links = [ ...new Set( [ ...document.querySelectorAll( 'a[href^="#"], [data-sgs-modal-open]' ) ].map( ( a ) => a.getAttribute( 'data-sgs-modal-open' ) || ( a.getAttribute( 'href' ) || '' ).slice( 1 ) ).filter( Boolean ) ) ];
 	const frames = [ ...document.querySelectorAll( 'dialog.sgs-modal__dialog' ) ].map( ( d ) => d.parentElement?.id || '' ).filter( Boolean );
-	const present = links.filter( ( a ) => document.getElementById( a ) || document.getElementsByName( a ).length );
+	// A browser looks a fragment up as written, then percent-decoded: #caf%C3%A9 reaches the id café. A malformed escape stays as written.
+	const decoded = ( a ) => {
+		try {
+			return decodeURIComponent( a );
+		} catch ( e ) {
+			return a;
+		}
+	};
+	const holds = ( a ) => document.getElementById( a ) || document.getElementsByName( a ).length;
+	const present = links.filter( ( a ) => holds( a ) || ( decoded( a ) !== a && holds( decoded( a ) ) ) );
 	return { links, frames: [ ...new Set( frames ) ], present };
 }
 

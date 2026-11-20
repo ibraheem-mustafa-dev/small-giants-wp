@@ -67,6 +67,24 @@ test( 'MUST FAIL: the page reading names the linked anchors an element on the pa
 	}
 } );
 
+// A browser looks a fragment up as written first, then percent-decoded (HTML standard, "find a potential indicated element"), so a link
+// to #caf%C3%A9 reaches the element whose id is café. A malformed escape is looked up as written and never throws.
+test( 'MUST FAIL: a linked anchor is also looked up percent-decoded, and a malformed escape does not throw', () => {
+	const el = ( attrs ) => ( { getAttribute: ( k ) => attrs[ k ] ?? null, parentElement: null } );
+	globalThis.document = {
+		querySelectorAll: ( q ) => ( /dialog/.test( q ) ? [] : [ el( { href: '#caf%C3%A9' } ), el( { href: '#gone%C3%A9' } ), el( { href: '#bad%E0%A4%A' } ), el( { href: '#plain' } ), el( { href: '#by%20name' } ), el( { href: '#raw%20id' } ) ] ),
+		getElementById: ( id ) => ( [ 'café', 'plain', 'raw%20id' ].includes( id ) ? {} : null ),
+		getElementsByName: ( n ) => ( 'by name' === n ? [ {} ] : [] ),
+	};
+	try {
+		const got = openersInPage();
+		assert.deepEqual( got.present, [ 'caf%C3%A9', 'plain', 'by%20name', 'raw%20id' ], 'the decoded id and name are found; an id written with a percent escape still is' );
+		assert.deepEqual( deadOpeners( [], { key: 'p', url: 'u', ...got } ).map( ( d ) => d.subject ), [ 'opener #gone%C3%A9 on p', 'opener #bad%E0%A4%A on p' ], 'an absent anchor is dead, decoded or not' );
+	} finally {
+		delete globalThis.document;
+	}
+} );
+
 test( 'MUST FAIL: a walk whose live root, or every live element, is absent fails; one the draft does not show is no absence', () => {
 	assert.equal( walkAbsent( { runs: [ run( { '(state)': {}, 'gen-x-0': { draft: shown, live: shown }, 'gen-x-1': { draft: shown, live: { missing: true } } } ) ] } ), null, 'one missing child is a parity row, not an absent surface' );
 	assert.match( walkAbsent( { runs: [ run( { '(state)': {}, 'gen-x-0': { draft: shown, live: { missing: true } }, 'gen-x-1': { draft: shown, live: shown } } ) ] } ), /no element for the surface's root \(gen-x-0\) in run "open" at 1440/ );
