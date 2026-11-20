@@ -271,6 +271,7 @@ export default function Edit( { attributes, setAttributes } ) {
 							return (
 								<RangeControl
 									label={ __( 'Width (px)', 'sgs-blocks' ) }
+									hideLabelFromVision
 									help={ __(
 										'Fills the containing column/element until set. Set a value on the tablet and mobile devices to size the logo there; an unset device keeps the one above it.',
 										'sgs-blocks'

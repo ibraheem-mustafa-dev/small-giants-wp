@@ -1342,18 +1342,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes={ setAttributes }
 						/>
 					) }
-					{ 'horizontal' === orientation && (
-						<ToggleControl
-							label={ __( 'Entries share the row equally', 'sgs-blocks' ) }
-							checked={ !! attributes.cardsShareRow }
-							onChange={ ( val ) => setAttributes( { cardsShareRow: val } ) }
-							help={ __(
-								'768px and up: every entry takes an equal column of the row, so any number of entries fits without scrolling sideways. Off keeps the card width above. Not used while the scroll effect is pinned horizontal.',
-								'sgs-blocks'
-							) }
-							__nextHasNoMarginBottom
-						/>
-					) }
 				</PanelBody>
 
 				{ /* ── Connector ── */ }

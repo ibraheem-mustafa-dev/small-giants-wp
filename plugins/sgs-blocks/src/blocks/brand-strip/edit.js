@@ -585,34 +585,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							);
 						} }
 					</ResponsiveControl>
-					<ResponsiveControl label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }>
-						{ ( bp ) => {
-							const cap = {
-								desktop: { key: 'maxHeight', value: maxHeight },
-								tablet: { key: 'maxHeightTablet', value: maxHeightTablet ?? maxHeight },
-								mobile: { key: 'maxHeightMobile', value: maxHeightMobile ?? maxHeightTablet ?? maxHeight },
-							}[ bp ];
-							return (
-								<RangeControl
-									label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }
-									help={ __(
-										'Tiles size to fit the columns above and grow with the screen; this caps how big a tile and its logo get on this device so they never pixelate on wide screens. An unset device keeps the one above it.',
-										'sgs-blocks'
-									) }
-									value={ cap.value }
-									onChange={ ( val ) =>
-										setAttributes( { [ cap.key ]: val } )
-									}
-									min={ 12 }
-									max={ 260 }
-									allowReset={ 'desktop' !== bp }
-									resetFallbackValue={ undefined }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
-								/>
-							);
-						} }
-					</ResponsiveControl>
 					<ToggleGroupControl
 						label={ __( 'Logo layout', 'sgs-blocks' ) }
 						help={ __(
@@ -677,6 +649,42 @@ export default function Edit( { attributes, setAttributes } ) {
 						</>
 					) }
 				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Logo size', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<ResponsiveControl label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }>
+						{ ( bp ) => {
+							const cap = {
+								desktop: { key: 'maxHeight', value: maxHeight },
+								tablet: { key: 'maxHeightTablet', value: maxHeightTablet ?? maxHeight },
+								mobile: { key: 'maxHeightMobile', value: maxHeightMobile ?? maxHeightTablet ?? maxHeight },
+							}[ bp ];
+							return (
+								<RangeControl
+									label={ __( 'Logo max height cap (px)', 'sgs-blocks' ) }
+									hideLabelFromVision
+									help={ __(
+										'Tiles size to fit the columns above and grow with the screen; this caps how big a tile and its logo get on this device so they never pixelate on wide screens. An unset device keeps the one above it.',
+										'sgs-blocks'
+									) }
+									value={ cap.value }
+									onChange={ ( val ) =>
+										setAttributes( { [ cap.key ]: val } )
+									}
+									min={ 12 }
+									max={ 260 }
+									allowReset={ 'desktop' !== bp }
+									resetFallbackValue={ undefined }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							);
+						} }
+					</ResponsiveControl>
+				</PanelBody>
+
 
 				<PanelBody
 					title={ __( 'Border', 'sgs-blocks' ) }

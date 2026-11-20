@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { SelectControl } from '@wordpress/components';
+import { SelectControl, ToggleControl } from '@wordpress/components';
 import { ToolsPanelItem } from '../../components/primitives';
 import { ResponsiveOverride, SgsLengthControl, ShadowControl } from '../../components';
 
@@ -104,6 +104,24 @@ export function CardLayoutItems( { attributes, setAttributes } ) {
 					) }
 				</ResponsiveOverride>
 			</ToolsPanelItem>
+			{ 'horizontal' === attributes.orientation && (
+				<ToolsPanelItem
+					label={ __( 'Entries share the row equally', 'sgs-blocks' ) }
+					hasValue={ () => !! attributes.cardsShareRow }
+					onDeselect={ () => setAttributes( { cardsShareRow: false } ) }
+				>
+					<ToggleControl
+						label={ __( 'Entries share the row equally', 'sgs-blocks' ) }
+						checked={ !! attributes.cardsShareRow }
+						onChange={ ( val ) => setAttributes( { cardsShareRow: val } ) }
+						help={ __(
+							'768px and up: every entry takes an equal column of the row, so any number of entries fits without scrolling sideways. Off keeps the card width set under Layout. Not used while the scroll effect is pinned horizontal.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+				</ToolsPanelItem>
+			) }
 			<ToolsPanelItem
 				label={ __( 'Entry alignment', 'sgs-blocks' ) }
 				hasValue={ () => hasKeys( attributes.cardAlign ) }
