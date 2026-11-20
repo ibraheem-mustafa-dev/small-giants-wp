@@ -58,6 +58,29 @@ test( 'width: a stated track list with more columns than live goes to the track 
 	assert.equal( item.writes[ 0 ].attr, 'gridTemplateColumns' );
 } );
 
+// A block whose root is not the grid (a header row's tracks sit on its content band) reads no tracks on the root the pair reads.
+test( 'width: a block whose root lays out no tracks keeps the list its setting already holds for the draft track count (MUST FAIL: the declared list replaced it)', () => {
+	const draft = { 1440: f( { declared: '1fr auto 1fr', styles: { 'grid-template-columns': '591px 170px 591px' } } ), 768: f( { declared: '1fr auto 1fr', styles: { 'grid-template-columns': '280px 170px 280px' } } ), 375: f( { declared: '1fr auto 1fr', styles: { 'grid-template-columns': '63px 170px 94px' } } ) };
+	const live = at( f( { styles: { 'grid-template-columns': 'none' } } ) );
+	const held = { gridTemplateColumns: { mobile: 'minmax(0, 1fr) minmax(0, 2.7fr) minmax(0, 1.49fr)', tablet: 'minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1.5fr)', desktop: 'minmax(0, 3.48fr) minmax(0, 1fr) minmax(0, 3.48fr)' } };
+	const [ item ] = width.decide( { target, draft, live, saved: held, block: 'sgs/site-header-row', db } );
+	assert.equal( item.status, 'equal' );
+	assert.match( item.why, /inner part.*3 tracks/ );
+	// A tier the setting leaves unset follows the wider one.
+	const cascade = { gridTemplateColumns: { desktop: 'minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)' } };
+	assert.equal( width.decide( { target, draft, live, saved: cascade, block: 'sgs/site-header-row', db } )[ 0 ].status, 'equal' );
+	// Negative controls: a list of another track count, an empty setting, and a root that does lay out tracks (wrongly) still write the declared list.
+	const two = { gridTemplateColumns: { desktop: '1fr 1fr' } };
+	assert.deepEqual( [ width.decide( { target, draft, live, saved: two, block: 'sgs/site-header-row', db } )[ 0 ].status, width.decide( { target, draft, live, saved: {}, block: 'sgs/site-header-row', db } )[ 0 ].status ], [ 'op', 'op' ] );
+	const grid = at( f( { styles: { 'grid-template-columns': '335px' } } ) );
+	assert.equal( width.decide( { target, draft, live: grid, saved: held, block: 'sgs/site-header-row', db } )[ 0 ].status, 'op' );
+	// Only the width the setting does not hold is written.
+	const part = { gridTemplateColumns: { desktop: '1fr 1fr 1fr', tablet: '1fr 1fr', mobile: '1fr' } };
+	const [ some ] = width.decide( { target, draft, live, saved: part, block: 'sgs/site-header-row', db } );
+	assert.equal( some.status, 'op' );
+	assert.deepEqual( some.checks.map( ( c ) => c.width ).sort( ( a, b ) => a - b ), [ 375, 768 ], 'the held desktop width is not rewritten or re-checked' );
+} );
+
 const card = ( o = {} ) => f( { tag: 'a', href: '#/our-story', text: 'Our story Learn more', layout: box( 0, 0, 300, 200 ), styles: { cursor: 'pointer' }, ...o } );
 const ctxFor = ( d, extra = {} ) => {
 	const button = { tag: 'span', text: 'Learn more', layout: box( 10, 150, 100, 30 ), styles: {} };

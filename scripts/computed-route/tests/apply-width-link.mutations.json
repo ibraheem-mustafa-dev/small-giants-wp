@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/apply-family-width.mjs",
+		"find": "const innerHeld = ( w ) => 0 === tracksOf( live[ w ].styles[ 'grid-template-columns' ] ) &&",
+		"replace": "const innerHeld = ( w ) => false &&",
+		"why": "the declared list would replace a list the setting already holds"
+	},
+	{
+		"file": "lib/apply-family-width.mjs",
+		"find": "const innerHeld = ( w ) => 0 === tracksOf( live[ w ].styles[ 'grid-template-columns' ] ) &&",
+		"replace": "const innerHeld = ( w ) =>",
+		"why": "a root that does lay out tracks (wrongly) would be taken for an inner grid"
+	},
+	{
+		"file": "lib/apply-family-width.mjs",
+		"find": "tokenCount( heldAt( saved, setting.attr_name, w ) ) === tracksOf( draft[ w ].styles[ 'grid-template-columns' ] );",
+		"replace": "tokenCount( heldAt( saved, setting.attr_name, w ) ) > 0;",
+		"why": "a held list of another track count would be kept"
+	},
+	{
+		"file": "lib/apply-family-width.mjs",
+		"find": "'mobile' === tier ? v.mobile ?? v.tablet ?? v.desktop : 'tablet' === tier ? v.tablet ?? v.desktop : v.desktop ) ?? '' : '';",
+		"replace": "'mobile' === tier ? v.mobile : 'tablet' === tier ? v.tablet : v.desktop ) ?? '' : '';",
+		"why": "an unset tier would not follow the wider one"
+	},
+	{
+		"file": "lib/apply-family-width.mjs",
+		"find": "const apart = stated.filter( ( w ) => ! innerHeld( w ) );",
+		"replace": "const apart = stated.filter( ( w ) => ! innerHeld( w ) || true );",
+		"why": "the held widths would be written again"
+	}
+]

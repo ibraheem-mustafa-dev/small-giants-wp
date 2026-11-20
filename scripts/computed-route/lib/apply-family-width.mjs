@@ -120,15 +120,32 @@ export function tokenCount( list ) {
 	return tokens;
 }
 
+// The track list the saved setting holds at a width: a tier object cascades down from desktop (a mobile tier unset follows the
+// tablet one).
+const heldAt = ( saved, attr, w ) => {
+	const v = saved?.[ attr ];
+	const tier = TIER_OF[ w ];
+	return v && 'object' === typeof v ? ( 'mobile' === tier ? v.mobile ?? v.tablet ?? v.desktop : 'tablet' === tier ? v.tablet ?? v.desktop : v.desktop ) ?? '' : '';
+};
+
 // A grid whose draft states its tracks and whose live column count differs: the declared list goes to the block's track setting.
+// A block whose root is not the grid (its tracks sit on an inner part: a header row's content band) shows no tracks on the
+// root the pair reads, so that read cannot judge it: where the setting already holds a list with the draft's track count
+// at that width, the grid is the block's own and the declared list must not replace what Fill measured (a declared `1fr auto
+// 1fr` lays out differently once the block sets min-width 0 on the grid's children).
 function tracks( { target, draft, live, saved, block, db, widths } ) {
-	const apart = widths.filter( ( w ) => draft[ w ].declared && ! fillOf( draft[ w ].declared ) && tokenCount( draft[ w ].declared ) === tracksOf( draft[ w ].styles[ 'grid-template-columns' ] ) && tracksOf( draft[ w ].styles[ 'grid-template-columns' ] ) !== tracksOf( live[ w ].styles[ 'grid-template-columns' ] ) );
-	if ( ! apart.length ) {
+	const stated = widths.filter( ( w ) => draft[ w ].declared && ! fillOf( draft[ w ].declared ) && tokenCount( draft[ w ].declared ) === tracksOf( draft[ w ].styles[ 'grid-template-columns' ] ) && tracksOf( draft[ w ].styles[ 'grid-template-columns' ] ) !== tracksOf( live[ w ].styles[ 'grid-template-columns' ] ) );
+	if ( ! stated.length ) {
 		return [];
 	}
 	const setting = tierSetting( db, block, 'grid-template-columns' );
 	if ( ! setting ) {
 		return [ { status: 'no-setting', prop: 'columns', why: `${ block } has no per-device track setting` } ];
+	}
+	const innerHeld = ( w ) => 0 === tracksOf( live[ w ].styles[ 'grid-template-columns' ] ) && tokenCount( heldAt( saved, setting.attr_name, w ) ) === tracksOf( draft[ w ].styles[ 'grid-template-columns' ] );
+	const apart = stated.filter( ( w ) => ! innerHeld( w ) );
+	if ( ! apart.length ) {
+		return [ { status: 'equal', prop: 'columns', why: `the tracks sit on an inner part of ${ block } and ${ setting.attr_name } already holds the draft's ${ tracksOf( draft[ stated[ 0 ] ].styles[ 'grid-template-columns' ] ) } tracks` } ];
 	}
 	const want = Object.fromEntries( apart.map( ( w ) => [ w, draft[ w ].declared ] ) );
 	return [ { status: 'op', prop: 'columns', why: `${ target.tpl } lays out ${ Object.values( want ).join( ' | ' ) }`, writes: [ { attr: setting.attr_name, value: tiered( saved, setting.attr_name, want ) } ], checks: apart.map( ( w ) => trackChecks( draft, [ w ] )[ 0 ] ) } ];
