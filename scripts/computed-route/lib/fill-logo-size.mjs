@@ -23,7 +23,8 @@ export function logoSizeSettings( db, block ) {
 	const rows = db.prepare( "SELECT attr_name, css_property, is_responsive, tier_shape FROM block_attributes WHERE block_slug = ? AND css_property IN ('width', 'max-width')" ).all( block );
 	const byName = new Map( rows.map( ( r ) => [ r.attr_name, r ] ) );
 	const sibling = ( base, tier ) => ( 'width' === byName.get( `${ base }${ SIBLING[ tier ] }` )?.css_property ? `${ base }${ SIBLING[ tier ] }` : null );
-	const base = rows.find( ( r ) => 'width' === r.css_property && ! r.tier_shape && ! /(Tablet|Mobile)$/.test( r.attr_name ) && ( sibling( r.attr_name, 'tablet' ) || sibling( r.attr_name, 'mobile' ) ) );
+	// The base is a width that is no tier object or box: unclassified, or flat_sibling once the seeder marks a numeric Tablet/Mobile family.
+	const base = rows.find( ( r ) => 'width' === r.css_property && ( ! r.tier_shape || 'flat_sibling' === r.tier_shape ) && ! /(Tablet|Mobile)$/.test( r.attr_name ) && ( sibling( r.attr_name, 'tablet' ) || sibling( r.attr_name, 'mobile' ) ) );
 	if ( base ) {
 		return { width: base.attr_name, tablet: sibling( base.attr_name, 'tablet' ), mobile: sibling( base.attr_name, 'mobile' ) };
 	}

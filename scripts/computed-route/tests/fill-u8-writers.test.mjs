@@ -81,6 +81,10 @@ test( 'a logo block\'s size settings come from the framework DB: per-device nume
 	const stub = ( rows ) => ( { prepare: ( sql ) => ( { all: () => rows, get: () => undefined } ) } );
 	const pair = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'maxWidth', css_property: 'max-width', is_responsive: 1, tier_shape: 'tier_object' } ] );
 	assert.deepEqual( logoSizeSettings( pair, 'sgs/x' ), { width: 'width', max: 'maxWidth' }, 'a block with no width siblings takes the per-device ceiling' );
+	const flat = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 1, tier_shape: 'flat_sibling' }, { attr_name: 'widthTablet', css_property: 'width', is_responsive: 1, tier_shape: 'flat_sibling' }, { attr_name: 'widthMobile', css_property: 'width', is_responsive: 1, tier_shape: 'flat_sibling' } ] );
+	assert.deepEqual( logoSizeSettings( flat, 'sgs/x' ), { width: 'width', tablet: 'widthTablet', mobile: 'widthMobile' }, 'the same family once the seeder marks it flat_sibling' );
+	const tiered = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 1, tier_shape: 'tier_object' }, { attr_name: 'widthMobile', css_property: 'width', is_responsive: 1, tier_shape: 'flat_sibling' } ] );
+	assert.equal( logoSizeSettings( tiered, 'sgs/x' ), null, 'a width that is a tier object is no flat base (negative control)' );
 	const fontSibling = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'widthMobile', css_property: 'font-size', is_responsive: 1, tier_shape: null } ] );
 	assert.equal( logoSizeSettings( fontSibling, 'sgs/x' ), null, 'a sibling name that paints another property is no width sibling (negative control)' );
 	const untiered = stub( [ { attr_name: 'width', css_property: 'width', is_responsive: 0, tier_shape: null }, { attr_name: 'maxWidth', css_property: 'max-width', is_responsive: 0, tier_shape: null } ] );
