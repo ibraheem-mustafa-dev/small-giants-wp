@@ -15,11 +15,14 @@
 //   whose only buttons add are all left as they are: the buy box block then turns its Add to Cart into the flow's opener (the
 //   product link, FR-43-25) or keeps it, as the draft draws it.
 // Never guessed: no page-map flow, no readable draft logic, no flow record with opening writes, or a product page opening more
-// than one flow gives no value, with the reason.
+// than one flow gives no value, with the reason (the placed buy box's notes carry it, except where the draft draws no flow at all).
+// A control inside a fixed-position bar (a sticky bar repeating the add button) is not the buy box's own control and is not read.
+// Not read: a buy box whose click handlers live in an imported component file; the draft's own logic is all that is read, so such
+// controls give no role and the buy box keeps nothing.
 import fs from 'node:fs';
 import path from 'node:path';
 import { handlerFns, fnWrites, openingWrites } from './intake-pagemap-flow-openers.mjs';
-import { draftLogic } from './template-piece-draft.mjs';
+import { draftLogic, underFixed } from './template-piece-draft.mjs';
 import { elementHandler } from './draft-link.mjs';
 import { effectOf } from './shop-parts-logic.mjs';
 
@@ -28,7 +31,7 @@ import { effectOf } from './shop-parts-logic.mjs';
 export function productFlow( rows, handoffDir ) {
 	const slugs = [ ...new Set( ( rows || [] ).filter( ( r ) => 'product' === r.postType && 'live' === r.collection && r.opensFlow ).map( ( r ) => r.opensFlow ) ) ];
 	if ( ! slugs.length ) {
-		return { why: 'no product row of the page map opens a choice flow' };
+		return { why: 'no product row of the page map opens a choice flow', silent: true };
 	}
 	if ( slugs.length > 1 ) {
 		return { why: `the product rows open ${ slugs.length } different flows (${ slugs.join( ', ' ) }), and the buy box keeps its button beside one` };
@@ -58,17 +61,17 @@ export function controlRole( L, value, writes ) {
 
 // The decision for a placed buy box. `ctx`: the builder's context (pageRows, handoffDir, draftSource); `found`: the run
 // lib/template-piece-buybox.mjs::locateRun returned ({ index, inRun }). Returns { keep, why?, adds, openers, flow }:
-// the inventory keys of the controls that add and of those that open the flow.
+// the inventory keys of the controls that add and of those that open the flow; `silent` is true when the draft draws no flow at all.
 export function keepsAddToCart( ctx, found ) {
 	const flow = productFlow( ctx.pageRows, ctx.handoffDir );
 	if ( flow.why ) {
-		return { keep: false, why: flow.why };
+		return { keep: false, why: flow.why, silent: flow.silent };
 	}
 	const L = draftLogic( ctx.draftSource );
 	if ( ! L ) {
 		return { keep: false, why: 'the draft has no readable logic to say what its buttons do' };
 	}
-	const roles = found.index.elements.filter( ( e ) => found.inRun( e.key ) ).map( ( e ) => ( { key: e.key, ...controlRole( L, elementHandler( e ), flow.writes ) } ) );
+	const roles = found.index.elements.filter( ( e ) => found.inRun( e.key ) && ! underFixed( found.index, e.key ) ).map( ( e ) => ( { key: e.key, ...controlRole( L, elementHandler( e ), flow.writes ) } ) );
 	const openers = roles.filter( ( r ) => r.opens ).map( ( r ) => r.key );
 	const adds = roles.filter( ( r ) => r.adds && ! r.opens ).map( ( r ) => r.key );
 	if ( ! openers.length ) {

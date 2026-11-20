@@ -25,9 +25,8 @@
 // wrapper, so the node has no draftRef and Fill reads no look for it, which the notes say.
 import { countBlocks } from './template-pieces.mjs';
 import { keepsAddToCart } from './template-piece-buybox-flow.mjs';
-import { dcOf, inventoryIndex, locatedKeys, locateParts, nodesWithin, recordSurface, refKey } from './template-piece-draft.mjs';
+import { dcOf, inventoryIndex, locatedKeys, locateParts, nodesWithin, recordSurface, refKey, underFixed } from './template-piece-draft.mjs';
 
-const FIXED = ( e ) => Object.values( e?.position || {} ).some( ( p ) => 'fixed' === p );
 // Homes that put a part outside the buy box block (the template part's title, the accordion on its own surface).
 const ELSEWHERE = [ 'part', 'elsewhere' ];
 
@@ -75,7 +74,7 @@ export function locateRun( ctx, kind, block ) {
 		return refuse( `the shop parts record and the surface inventory disagree on ${ disagree.join( ', ' ) }: the elements those locators land on do not show the record's sample, so the two were read from different versions of the draft (rerun shop-parts.mjs <client> --write and the surface's inventory from the same draft)` );
 	}
 	const all = keys.flatMap( ( k ) => k.keys );
-	const located = all.filter( ( k ) => ! index.chain( k ).some( ( a ) => FIXED( index.byKey.get( a ) ) ) );
+	const located = all.filter( ( k ) => ! underFixed( index, k ) );
 	const notes = all.length > located.length ? [ `${ ctx.key }: ${ all.length - located.length } located element(s) sit in a fixed bar (${ all.filter( ( k ) => ! located.includes( k ) ).join( ', ' ) }): the bar is the buy box's sticky bar setting, not its place` ] : [];
 	if ( ! located.length ) {
 		return refuse( `no part of the record homed on ${ block } is located on an element this inventory shows` );
@@ -127,6 +126,10 @@ export function place( ctx, piece ) {
 	// A flow some buyers skip: the draft's buy box draws its own add-to-basket control beside a separate control that opens the
 	// product page's flow, so the block keeps its Add to Cart and shows the flow's opener beside it (Spec 43 FR-43-25).
 	const keep = keepsAddToCart( ctx, found );
+	if ( ! keep.keep && ! keep.silent ) {
+		// A draft with no flow at all stays silent; every other decline says why, so a missing record or a second flow is not mistaken for a rule.
+		notes.push( `${ key }: ${ piece.block } does not keep Add to Cart beside a flow opener: ${ keep.why }` );
+	}
 	if ( keep.keep ) {
 		box.attributes.keepAddToCartWithFlow = true;
 		notes.push( `${ key }: the buy box keeps its own add-to-basket control (${ keep.adds.join( ', ' ) }) beside the control that opens the flow "${ keep.flow }" (${ keep.openers.join( ', ' ) }), so ${ piece.block } is set to keep Add to Cart with the flow's opener (keepAddToCartWithFlow)` );

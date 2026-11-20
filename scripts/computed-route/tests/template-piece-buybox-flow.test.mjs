@@ -128,6 +128,38 @@ test( 'a draft with no readable logic says what its buttons do nowhere, so nothi
 	assert.match( keepsAddToCart( ctx( { draftSource: null } ), locateRun( ctx(), 'buybox', 'sgs/buybox' ) ).why, /no readable logic/ );
 } );
 
+test( 'MUST FAIL: a sticky bar repeating the add button is not the buy box\'s own add control', () => {
+	// The run's own add control (Root/6) only opens a size dialog; the only control that appends to the basket sits in a
+	// fixed bar inside the run (a sticky bar repeating the add button, which locateRun leaves out of `located`).
+	const base = ctx( {}, { add: 'openSize' } );
+	const bar = [ el( 10, 2, 'div' ), el( 11, 10, 'button', 'Add frame only', 'addFrame' ) ];
+	bar[ 0 ].position = { 1440: 'fixed' };
+	const at = base.inventory.elements.findIndex( ( e ) => 'Root/6#0' === e.key );
+	base.inventory.elements.splice( at, 0, ...bar );
+	const found = locateRun( base, 'buybox', 'sgs/buybox' );
+	assert.ok( found.inRun( 'Root/11#0' ), 'the bar sits inside the run, which is the case the old reading got wrong' );
+	const keep = keepsAddToCart( base, found );
+	assert.equal( keep.keep, false );
+	assert.deepEqual( keep.adds, [] );
+	assert.deepEqual( keep.openers, [ 'Root/5#0' ] );
+	assert.match( keep.why, /no add-to-basket control apart from the one that opens the flow/ );
+} );
+
+test( 'MUST FAIL: a decline for a reason other than "the draft draws no flow" is named in the notes', () => {
+	const notes = ( c ) => place( c, PIECE ).notes.join( '\n' );
+	const two = [ ...ROWS(), { route: 'p2', slug: 'p2', title: 'P2', postType: 'product', collection: 'live', opensFlow: 'another-flow' } ];
+	assert.match( notes( ctx( { pageRows: two } ) ), /single-product: .*does not keep Add to Cart beside a flow opener: the product rows open 2 different flows/ );
+	assert.match( notes( ctx( { drop: [ 5 ] } ) ), /does not keep Add to Cart beside a flow opener: no control in the buy box opens the flow "choice-flow-lens-configurator"/ );
+	assert.match( notes( ctx( { draftSource: null } ) ), /does not keep Add to Cart beside a flow opener: the draft has no readable logic/ );
+	assert.match( notes( ctx( { handoffDir: path.join( FIX, 'nowhere' ) } ) ), /does not keep Add to Cart beside a flow opener: the flow "choice-flow-lens-configurator" has no record in surfaces\.json/ );
+} );
+
+test( 'Mama\'s shape stays silent: a product row with no flow adds no note about the buy box\'s Add to Cart', () => {
+	const rows = ROWS().map( ( { opensFlow, ...r } ) => ( void opensFlow, { ...r } ) );
+	assert.doesNotMatch( ( place( ctx( { pageRows: rows } ), PIECE ).notes || [] ).join( '\n' ), /Add to Cart/ );
+	assert.equal( keepsAddToCart( ctx( { pageRows: rows } ), locateRun( ctx(), 'buybox', 'sgs/buybox' ) ).silent, true );
+} );
+
 test( 'MUST FAIL: the template-piece context carries the page map rows the rule reads', () => {
 	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'keep-cart-' ) );
 	fs.mkdirSync( path.join( repo, 'sites', 'c', 'build' ), { recursive: true } );

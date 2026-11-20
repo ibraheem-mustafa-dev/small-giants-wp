@@ -5,7 +5,7 @@
 	{"file": "lib/template-piece-buybox.mjs", "find": "if ( disagree.length ) {", "replace": "if ( false ) {", "why": "a record that disagrees with the inventory is trusted"},
 	{"file": "lib/template-piece-buybox.mjs", "find": "if ( ctx.draftFile && dcOf( surface.file ) !== dcOf( ctx.draftFile ) ) {", "replace": "if ( false ) {", "why": "a record of another draft file is used"},
 	{"file": "lib/template-piece-buybox.mjs", "find": "const own = surface.parts.filter( ( p ) => 'setting' === p.home?.type && p.home.block === block );", "replace": "const own = surface.parts.filter( ( p ) => 'setting' === p.home?.type );", "why": "parts homed on another block's settings place the buy box"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "const located = all.filter( ( k ) => ! index.chain( k ).some( ( a ) => FIXED( index.byKey.get( a ) ) ) );", "replace": "const located = all;", "why": "a fixed bar stretches the buy box over the page"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "const located = all.filter( ( k ) => ! underFixed( index, k ) );", "replace": "const located = all;", "why": "a fixed bar stretches the buy box over the page"},
 	{"file": "lib/template-piece-buybox.mjs", "find": "if ( h1.length || homedElsewhere.length ) {", "replace": "if ( false ) {", "why": "a run holding the h1 is swallowed into the buy box"},
 	{"file": "lib/template-piece-buybox.mjs", "find": "if ( nodes.some( ( r ) => r.list !== list ) ) {", "replace": "if ( false ) {", "why": "nodes in two places are merged"},
 	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( between.length ) {\n", "replace": "\tif ( false ) {\n", "why": "a node from outside the buy box between its nodes is swallowed"},

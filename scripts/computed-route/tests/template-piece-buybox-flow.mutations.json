@@ -6,10 +6,14 @@
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "\tif ( ! openers.length ) {", "replace": "\tif ( false ) {", "why": "a buy box with no control opening the flow keeps its button"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "const adds = !! effectOf( L, value.replace( /^\\{\\{\\s*|\\s*\\}\\}$/g, '' ).trim() ).appends;", "replace": "const adds = true;", "why": "every control with a handler is an add-to-basket control"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "writes.every( ( w ) => fnWrites( L, fn ).has( w ) )", "replace": "writes.some( ( w ) => fnWrites( L, fn ).has( w ) )", "why": "a control writing part of the opening writes opens the flow"},
-	{"file": "lib/template-piece-buybox-flow.mjs", "find": "found.index.elements.filter( ( e ) => found.inRun( e.key ) )", "replace": "found.index.elements", "why": "a flow opener outside the buy box counts"},
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": "found.index.elements.filter( ( e ) => found.inRun( e.key ) && ! underFixed( found.index, e.key ) )", "replace": "found.index.elements", "why": "a flow opener outside the buy box counts"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "\tif ( ! L ) {", "replace": "\tif ( false ) {", "why": "a draft with no readable logic is read anyway"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": " && 'live' === r.collection && r.opensFlow )", "replace": " && r.opensFlow )", "why": "a static product row's flow counts"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "\tif ( slugs.length > 1 ) {", "replace": "\tif ( false ) {", "why": "two flows on the product rows keep a button beside the first"},
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": "const id = String( row?.draftId || '' ).replace( /^surfaces\\.json /, '' );", "replace": "const id = String( row?.draftId || '' );", "why": "the flow's record is looked up by the row's whole draftId and never found"},
-	{"file": "lib/template-pieces-context.mjs", "find": "\t\tpageRows,\n", "replace": "", "why": "the builders get no page map rows"}
+	{"file": "lib/template-pieces-context.mjs", "find": "\t\tpageRows,\n", "replace": "", "why": "the builders get no page map rows"},
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": " && ! underFixed( found.index, e.key ) )", "replace": " )", "why": "a sticky bar's add button counts as the buy box's own add control"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( ! keep.keep && ! keep.silent ) {", "replace": "\tif ( false ) {", "why": "a declined keep gives no reason in the notes"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( ! keep.keep && ! keep.silent ) {", "replace": "\tif ( ! keep.keep ) {", "why": "a draft that draws no flow at all gets a note about the buy box's Add to Cart"},
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": "return { why: 'no product row of the page map opens a choice flow', silent: true };", "replace": "return { why: 'no product row of the page map opens a choice flow' };", "why": "the no-flow decline is not marked silent"}
 ]

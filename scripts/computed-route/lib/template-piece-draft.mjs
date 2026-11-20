@@ -33,6 +33,9 @@ export function inventoryIndex( inventory ) {
 	return { elements, byKey, order: ( k ) => rank.get( k ) ?? -1, children: ( k ) => kids.get( k ) || [], chain, within: ( k, anc ) => chain( k ).includes( anc ) };
 }
 
+// Whether the element or an ancestor the inventory holds is fixed-position at any width (a sticky bar repeating a control).
+export const underFixed = ( index, key ) => index.chain( key ).some( ( a ) => Object.values( index.byKey.get( a )?.position || {} ).some( ( p ) => 'fixed' === p ) );
+
 // The inventory keys a record's locators land on: every copy of the element numbered `<n>` stamped by `<component>`, the
 // record surface's own component (`rootDc`) being the served root.
 export function locatedKeys( index, locators, rootDc ) {
