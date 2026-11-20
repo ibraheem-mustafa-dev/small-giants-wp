@@ -114,6 +114,11 @@ const EDITOR_INVISIBLE_BY_DESIGN = new Set( [
 	'gridItemTextColourHoverGradient',
 	'groupBorderColourGradientHover',
 	'quoteColourHover',
+	// sgs/text, 2026-11-20 (Stage C shared rules). The drop cap's hover colour, the same
+	// client-set hover VALUE class. It was already unpreviewable; it surfaced when
+	// text/render.php moved the value into the shared hover rule's closure (`use`), which
+	// the render-side variable map does not follow.
+	'firstLetterColourHover',
 
 	// sgs/product-search, 2026-09-07 (colour-conformance migration). Same class
 	// as the hover VALUES above and added as EXACT NAMES, never a pattern -- the
