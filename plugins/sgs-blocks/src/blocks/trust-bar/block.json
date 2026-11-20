@@ -291,7 +291,8 @@
 					"label": "Word badge only (text-only variant)",
 					"order": 5,
 					"clusters": [
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "textBadge",
 					"attrMap": {
