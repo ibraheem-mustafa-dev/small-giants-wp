@@ -80,11 +80,12 @@ def block_json_kind(before: pathlib.Path | None, after: pathlib.Path | None) -> 
         if key not in EDITOR_KEYS and a.get(key) != b.get(key):
             return "block"
     was, now = a.get("attributes") or {}, b.get("attributes") or {}
+    # an "attributes" entry that is a string (a `_comment_*` note) has no render keys; compare it as an empty spec
     for name, spec in was.items():
         if name not in now:
             return "block"
         for key in RENDER_KEYS:
-            if (spec or {}).get(key) != (now[name] or {}).get(key):
+            if (spec if isinstance(spec, dict) else {}).get(key) != (now[name] if isinstance(now[name], dict) else {}).get(key):
                 return "block"
     return "settings"
 
