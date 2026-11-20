@@ -46,7 +46,7 @@ import {
 	gapVar,
 } from '../../utils';
 import { connectorLineCss, connectorLineStyleOf } from '../../utils/connector-line';
-import { timelineCardPreviewStyle, timelineDateRingPreviewStyle, timelineMediaPreviewStyle, timelineMediaWidth, timelineStripPreviewStyle } from './card-preview';
+import { timelineCardPreviewStyle, timelineDateRingPreviewStyle, timelineEntryAlignPreviewStyle, timelineMediaPreviewStyle, timelineMediaWidth, timelineStripPreviewStyle } from './card-preview';
 import { RICH_TEXT_BODY } from '../../utils/rich-text-formats';
 import HorizontalPanelControls, { CardWidthControl, pinnedColourRows } from './horizontal-panel-controls';
 import { cardColourRows, EntryCardControls, EntryDateTypography, EntryDescriptionTypography } from './card-panel-controls';
@@ -1800,6 +1800,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							style={ {
 								...tierBoxLonghands( attributes.contentMargin, previewTier, 'margin' ),
 								...tierBoxLonghands( attributes.contentPadding, previewTier, 'padding' ),
+								...timelineEntryAlignPreviewStyle( attributes, previewTier ),
 							} }
 						>
 							<RichText.Content
@@ -1819,6 +1820,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										...descriptionPreviewStyle,
 										...descriptionColourStyle,
 										...tierBoxLonghands( attributes.descriptionMargin, previewTier, 'margin' ),
+										...timelineEntryAlignPreviewStyle( attributes, previewTier ),
 									} }
 									value={ entry.description }
 								/>

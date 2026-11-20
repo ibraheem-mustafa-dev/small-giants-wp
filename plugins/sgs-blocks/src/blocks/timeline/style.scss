@@ -768,7 +768,8 @@
 	flex: 0 0 min(220px, 80vw);
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	// `cardAlign` prints `--sgs-tl-entry-align` (flex-start for 'start'); unset, the entry is centred.
+	align-items: var(--sgs-tl-entry-align, center);
 	text-align: center;
 	--sgs-text-ms: auto;
 	--sgs-text-me: auto;
@@ -880,27 +881,50 @@
 	}
 }
 
-// Year ring marker (`dateRingSize`, 768px up): the date is a box of one size with its text centred, sitting on the
-// connecting line, and the dot is not drawn. The line runs through the ring's centre: the root's top padding plus half
-// the ring. The ring's own border, background, radius, shadow and padding print on the date at every width.
+// Year ring marker (`dateRingSize`, every width): the date is a box of one size with its text centred, and the dot is not
+// drawn. From 768px up it sits on the connecting line, which runs through the ring's centre: the root's top padding plus
+// half the ring. At 767px and below the entries are rows, so the ring leads its row (the date's order 3 is moved to the
+// start) and the vertical line runs through the ring's centre. The size is per device, so the ring draws at the size
+// set for each. The ring's own border, background, radius, shadow and padding print on the date at every width.
+.sgs-timeline--horizontal.sgs-timeline--date-ring:not(.sgs-timeline--content-same-side) {
+	.sgs-timeline__date {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex: 0 0 auto;
+		box-sizing: border-box;
+		width: var(--sgs-date-ring-size, 3rem);
+		height: var(--sgs-date-ring-size, 3rem);
+		position: relative;
+		z-index: 1;
+	}
+
+	.sgs-timeline__node {
+		display: none;
+	}
+}
+
 @media (min-width: 768px) {
 	.sgs-timeline--horizontal.sgs-timeline--date-ring:not(.sgs-timeline--content-same-side) {
 		--sgs-timeline-h-line-top: calc(var(--wp--preset--spacing--30, 1.5rem) + var(--sgs-date-ring-size, 3rem) / 2);
+	}
+}
 
-		.sgs-timeline__date {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			flex: 0 0 auto;
-			box-sizing: border-box;
-			width: var(--sgs-date-ring-size, 3rem);
-			height: var(--sgs-date-ring-size, 3rem);
-			position: relative;
-			z-index: 1;
+@media (max-width: 767.98px) {
+	.sgs-timeline--horizontal.sgs-timeline--date-ring:not(.sgs-timeline--content-same-side):not(.sgs-timeline--mobile-carousel) {
+		--sgs-timeline-ring-line-left: calc(var(--sgs-date-ring-size, 3rem) / 2 - var(--sgs-connector-width) / 2);
+
+		&::before,
+		.sgs-timeline__progress {
+			left: var(--sgs-timeline-ring-line-left);
 		}
 
-		.sgs-timeline__node {
-			display: none;
+		.sgs-timeline__date {
+			order: 1;
+		}
+
+		.sgs-timeline__content {
+			order: 2;
 		}
 	}
 }

@@ -45,6 +45,22 @@ function tierShadowOf( attributes, tier ) {
 }
 
 /**
+ * The text alignment the entry alignment setting (cardAlign) gives an entry's date, title and description at a device,
+ * as card-device.php prints it. Apply it to the entry, its text area and its description.
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} tier       Previewed device tier.
+ * @return {Object} React style fragment.
+ */
+export function timelineEntryAlignPreviewStyle( attributes, tier ) {
+	const align = tierValueOf( attributes.cardAlign, tier );
+	if ( 'horizontal' !== attributes.orientation || 'same-side' === attributes.contentLayout || ( 'start' !== align && 'center' !== align ) ) {
+		return {};
+	}
+	return { textAlign: align };
+}
+
+/**
  * The inline style a horizontal timeline entry card gets beyond its background colour and padding.
  *
  * @param {Object} attributes Block attributes.
@@ -87,6 +103,13 @@ export function timelineCardPreviewStyle( attributes, tier ) {
 	if ( columnGap ) {
 		style.columnGap = columnGap;
 	}
+	Object.assign( style, timelineEntryAlignPreviewStyle( attributes, tier ) );
+	if ( 'desktop' === tier || 'tablet' === tier ) {
+		const align = tierValueOf( attributes.cardAlign, tier );
+		if ( 'same-side' !== attributes.contentLayout && ( 'start' === align || 'center' === align ) ) {
+			style.alignItems = 'start' === align ? 'flex-start' : 'center';
+		}
+	}
 	return style;
 }
 
@@ -101,6 +124,10 @@ export function timelineCardPreviewStyle( attributes, tier ) {
 export function timelineStripPreviewStyle( attributes, tier ) {
 	const gap = lengthOf( tierValueOf( attributes.cardGap, tier ) );
 	const style = gap ? { columnGap: gap } : {};
+	const rowGap = lengthOf( tierValueOf( attributes.cardRowGap, tier ) );
+	if ( rowGap ) {
+		style.rowGap = rowGap;
+	}
 	if ( attributes.cardsShareRow && 'pinned-horizontal' !== attributes.scrollEffect ) {
 		// The equal-column row (style.scss `.sgs-timeline--cards-share`); the editor's list is the block root.
 		Object.assign( style, { display: 'grid', gridAutoFlow: 'column', gridAutoColumns: 'minmax(0, 1fr)' } );

@@ -360,7 +360,8 @@
 						"css:border-style": "cardBorderStyle",
 						"css:box-shadow": "cardShadow",
 						"css:column-gap": "cardColumnGap",
-						"css:grid-template-areas": "cardLayout"
+						"css:grid-template-areas": "cardLayout",
+						"css:text-align": "cardAlign"
 					},
 					"_note": "The card box of each entry in a horizontal timeline (background, padding, border, radius, shadow), printed on the entry element only when orientation is horizontal. With contentLayout 'same-side' the entry also becomes a two-column card (text on one side, media on the other, contentSide choosing the text side) from 768px up.",
 					"absentIn": [ "vertical" ],
@@ -445,9 +446,10 @@
 					"order": 7,
 					"clusters": ["layout"],
 					"attrMap": {
-						"css:column-gap": "cardGap"
+						"css:column-gap": "cardGap",
+						"css:row-gap": "cardRowGap"
 					},
-					"_note": "The row of cards of a horizontal timeline. cardGap is the space between neighbouring cards per device; the swipeable layout reads it through --sgs-tl-card-gap.",
+					"_note": "The row of cards of a horizontal timeline. cardGap is the space between neighbouring cards per device; the swipeable layout reads it through --sgs-tl-card-gap. cardRowGap is the space between rows, which shows wherever the cards stack (767px and below).",
 					"absentIn": ["vertical"],
 					"absentWhy": "Only the horizontal orientation lays its entries out as a row of cards."
 				},
@@ -1573,6 +1575,16 @@
 			"type": "object",
 			"default": {},
 			"description": "Horizontal timeline: the space between neighbouring cards per device ({desktop,tablet,mobile} tier object of CSS lengths; a bare number is pixels). Empty keeps no gap on the pinned row and the theme spacing on the swipeable cards."
+		},
+		"cardRowGap": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: the space between rows of cards per device ({desktop,tablet,mobile} tier object of CSS lengths; a bare number is pixels). Prints the row gap of the card row, so it shows wherever the cards stack in rows (767px and below, where the row becomes a column). Empty keeps no row gap."
+		},
+		"cardAlign": {
+			"type": "object",
+			"default": {},
+			"description": "Horizontal timeline: how each entry's date, title and description line up per device ({desktop,tablet,mobile} tier object of 'start' or 'center'). 'start' left-aligns the text and puts the date at the start of the entry; 'center' centres them (the stylesheet's own look). Empty keeps centred. The date and entry sit at the start or centre from 768px up; the text alignment applies at every width. Not used by the Text beside image layout, which is always left-aligned."
 		},
 		"cardShadowTablet": {
 			"type": "string",

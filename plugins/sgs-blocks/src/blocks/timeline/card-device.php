@@ -95,6 +95,90 @@ if ( ! empty( $attributes['cardGap'] ) && is_array( $attributes['cardGap'] ) ) {
 	);
 }
 
+// Space between rows of cards per device (`cardRowGap`): the row gap of the card row. A row of cards has one row, so it
+// shows where the cards stack (767px and below, where the list becomes a column).
+if ( ! empty( $attributes['cardRowGap'] ) && is_array( $attributes['cardRowGap'] ) ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel . ' .sgs-timeline__list',
+		array(
+			array(
+				'value'        => $attributes['cardRowGap'],
+				'css'          => 'row-gap',
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+
+// Entry alignment per device (`cardAlign`, 'start' or 'center'): the text alignment of the entry's date, title and
+// description at every width; the entry's own cross-axis alignment (where the date and the ring sit) from 768px up,
+// through `--sgs-tl-entry-align`, which the stylesheet's entry rule reads; and the text margins that centre a text part
+// (`--sgs-text-ms` and `--sgs-text-me`, `auto` centres, `0` starts). The Text beside image layout is always left-aligned.
+if ( 'same-side' !== $content_layout && ! empty( $attributes['cardAlign'] ) && is_array( $attributes['cardAlign'] ) ) {
+	$cd_align_to = static function ( $map ) {
+		return static function ( $raw ) use ( $map ) {
+			return $map[ strtolower( trim( (string) $raw ) ) ] ?? '';
+		};
+	};
+	$cd_text_sel = implode(
+		',',
+		array(
+			$entry_sel,
+			$root_sel . ' .sgs-timeline__date',
+			$root_sel . ' .sgs-timeline__content',
+			$root_sel . ' .sgs-timeline__description',
+		)
+	);
+	$cd_align_css = sgs_emit_responsive_css(
+		$cd_text_sel,
+		array(
+			array(
+				'value'     => $attributes['cardAlign'],
+				'css'       => 'text-align',
+				'transform' => $cd_align_to(
+					array(
+						'start'  => 'start',
+						'center' => 'center',
+					)
+				),
+			),
+		)
+	);
+	$cd_align_css .= sgs_emit_responsive_css(
+		$entry_sel,
+		array(
+			array(
+				'value'     => $attributes['cardAlign'],
+				'css'       => '--sgs-tl-entry-align',
+				'transform' => $cd_align_to(
+					array(
+						'start'  => 'flex-start',
+						'center' => 'center',
+					)
+				),
+			),
+		)
+	);
+	foreach ( array( '--sgs-text-ms', '--sgs-text-me' ) as $cd_prop ) {
+		$cd_align_css .= sgs_emit_responsive_css(
+			$entry_sel . ',' . $root_sel . ' .sgs-timeline__content',
+			array(
+				array(
+					'value'     => $attributes['cardAlign'],
+					'css'       => $cd_prop,
+					'transform' => $cd_align_to(
+						array(
+							'start'  => '0',
+							'center' => 'auto',
+						)
+					),
+				),
+			)
+		);
+	}
+	$scoped_css[] = $cd_align_css;
+}
+
 // Card shadow for tablet and mobile: the same shape and colour pair as `cardShadow`, printed at the tablet (1023px and
 // below) and mobile (767px and below) widths; an unset mobile pair keeps the tablet one.
 $cd_shadow_tiers = array();

@@ -10,10 +10,19 @@ const CARD_LAYOUT_OPTIONS = [
 	{ value: 'stacked', label: __( 'Image on top, text below', 'sgs-blocks' ) },
 ];
 
+/** The entry alignments offered per device. */
+const CARD_ALIGN_OPTIONS = [
+	{ value: '', label: __( 'Centred (default)', 'sgs-blocks' ) },
+	{ value: 'center', label: __( 'Centred', 'sgs-blocks' ) },
+	{ value: 'start', label: __( 'Start (left)', 'sgs-blocks' ) },
+];
+
 /** Attributes the device card controls own; the Entry card panel resets them with its own. */
 export const CARD_DEVICE_ATTRS = {
 	cardLayout: {},
 	cardGap: {},
+	cardRowGap: {},
+	cardAlign: {},
 	cardShadowTablet: '',
 	cardShadowTabletColour: '',
 	cardShadowMobile: '',
@@ -60,7 +69,8 @@ export function TierLengthItem( { label, help, name, attributes, setAttributes }
 }
 
 /**
- * The card layout (text beside the image, or image on top) per device, and the space between cards per device.
+ * The card layout (text beside the image, or image on top) per device, the entry alignment per device, and the space
+ * between cards and between rows per device.
  *
  * @param {Object}   props               Props.
  * @param {Object}   props.attributes    Block attributes.
@@ -94,10 +104,41 @@ export function CardLayoutItems( { attributes, setAttributes } ) {
 					) }
 				</ResponsiveOverride>
 			</ToolsPanelItem>
+			<ToolsPanelItem
+				label={ __( 'Entry alignment', 'sgs-blocks' ) }
+				hasValue={ () => hasKeys( attributes.cardAlign ) }
+				onDeselect={ () => setAttributes( { cardAlign: {} } ) }
+			>
+				<ResponsiveOverride
+					label={ __( 'Entry alignment', 'sgs-blocks' ) }
+					value={ attributes.cardAlign }
+					onChange={ ( obj ) => setAttributes( { cardAlign: obj } ) }
+				>
+					{ ( { ownValue, setOwnValue } ) => (
+						<SelectControl
+							label={ __( 'Entry alignment', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ 'string' === typeof ownValue ? ownValue : '' }
+							options={ CARD_ALIGN_OPTIONS }
+							onChange={ ( val ) => setOwnValue( val ) }
+							help={ __( 'Start left-aligns the date, title and description and puts the date at the start of the entry. Not used by the Text beside image layout.', 'sgs-blocks' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ResponsiveOverride>
+			</ToolsPanelItem>
 			<TierLengthItem
 				name="cardGap"
 				label={ __( 'Space between cards', 'sgs-blocks' ) }
 				help={ __( 'The gap between neighbouring cards for each device. Empty keeps no gap on the pinned row and the theme spacing on swipeable cards.', 'sgs-blocks' ) }
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+			/>
+			<TierLengthItem
+				name="cardRowGap"
+				label={ __( 'Space between card rows', 'sgs-blocks' ) }
+				help={ __( 'The gap between rows of cards for each device. It shows where the cards stack, at 767px and below. Empty keeps no row gap.', 'sgs-blocks' ) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
 			/>

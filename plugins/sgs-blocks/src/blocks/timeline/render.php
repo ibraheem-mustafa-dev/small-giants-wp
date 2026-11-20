@@ -278,11 +278,11 @@ $margin_mobile_obj  = is_array( $sgs_tor_margin_tiers['mobile'] ?? null ) ? $sgs
 // the ToC, so the `id` attribute stays free for the anchor).
 // ---------------------------------------------------------------------------
 
-// The equal-columns and year ring settings stay out of the scope hash while unset (empty, false, or the default solid
+// The equal-columns, year ring, card row gap and card alignment settings stay out of the scope hash while unset (empty, false, or the default solid
 // style), so a timeline that sets none keeps the class suffix it had before they existed.
 $hash_attrs = $attributes;
 foreach ( array_keys( $hash_attrs ) as $hash_key ) {
-	if ( ( 'cardsShareRow' === $hash_key || 0 === strpos( (string) $hash_key, 'dateRing' ) ) && ( empty( $hash_attrs[ $hash_key ] ) || 'solid' === $hash_attrs[ $hash_key ] ) ) {
+	if ( ( in_array( $hash_key, array( 'cardsShareRow', 'cardRowGap', 'cardAlign' ), true ) || 0 === strpos( (string) $hash_key, 'dateRing' ) ) && ( empty( $hash_attrs[ $hash_key ] ) || 'solid' === $hash_attrs[ $hash_key ] ) ) {
 		unset( $hash_attrs[ $hash_key ] );
 	}
 }
