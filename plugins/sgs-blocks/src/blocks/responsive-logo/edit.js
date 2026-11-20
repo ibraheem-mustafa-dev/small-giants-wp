@@ -8,6 +8,7 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import {
+	ResponsiveControl,
 	ResponsiveOverride,
 	SgsLengthControl,
 	BOX_UNITS,
@@ -20,6 +21,9 @@ import {
 	MediaElementPanel,
 } from '../../components';
 import metadata from './block.json';
+
+// The attribute each device's width is stored in.
+const WIDTH_ATTR = { desktop: 'width', tablet: 'widthTablet', mobile: 'widthMobile' };
 
 const SLOTS = metadata.supports.sgs.mediaElements;
 const LOGO_SLOT = SLOTS.find( ( e ) => 'logo' === e.prefix );
@@ -102,6 +106,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		logoSwitchMode,
 		logoSwitchCustomPx,
 		width,
+		widthTablet,
+		widthMobile,
 		shrinkWidth,
 		linkToHome,
 		inlineSvg,
@@ -251,20 +257,39 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Sizing + behaviour', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<RangeControl
-						label={ __( 'Width (px)', 'sgs-blocks' ) }
-						help={ __(
-							'Fills the containing column/element until set. Mobile/tablet scale proportionally.',
-							'sgs-blocks'
-						) }
-						value={ width ?? 240 }
-						onChange={ ( val ) => setAttributes( { width: val } ) }
-						min={ 40 }
-						max={ 600 }
-						step={ 10 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+					<ResponsiveControl label={ __( 'Width (px)', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => {
+							const key = WIDTH_ATTR[ breakpoint ] || 'width';
+							const own = attributes[ key ];
+							// A tier with no value shows the one above it, as the front end keeps it.
+							const inherited =
+								'mobile' === breakpoint
+									? widthTablet ?? width
+									: 'tablet' === breakpoint
+									? width
+									: undefined;
+							return (
+								<RangeControl
+									label={ __( 'Width (px)', 'sgs-blocks' ) }
+									help={ __(
+										'Fills the containing column/element until set. Set a value on the tablet and mobile devices to size the logo there; an unset device keeps the one above it.',
+										'sgs-blocks'
+									) }
+									value={ own ?? inherited ?? 240 }
+									onChange={ ( val ) =>
+										setAttributes( { [ key ]: val } )
+									}
+									min={ 40 }
+									max={ 600 }
+									step={ 1 }
+									allowReset
+									resetFallbackValue={ undefined }
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							);
+						} }
+					</ResponsiveControl>
 
 					<ResponsiveOverride
 						label={ __( 'Size when header shrinks', 'sgs-blocks' ) }

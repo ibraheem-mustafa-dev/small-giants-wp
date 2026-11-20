@@ -173,7 +173,15 @@
 		},
 		"width": {
 			"type": "number",
-			"description": "Desktop logo width in px. No `default`: WP only injects a DECLARED default, so an untouched instance has no `width` key, which render.php reads as 'fill 100% of the containing column/element' (style.scss's `var(--logo-width, 100%)` fallback) instead of a hardcoded pixel value. An operator who moves the Sizing panel's RangeControl gets an explicit px width."
+			"description": "Desktop logo width in px (widthTablet and widthMobile set the tablet and mobile widths). No `default`: WP only injects a DECLARED default, so an untouched instance has no `width` key, which render.php reads as 'fill 100% of the containing column/element' (style.scss's `var(--logo-width, 100%)` fallback) instead of a hardcoded pixel value. An operator who moves the Sizing panel's RangeControl gets an explicit px width."
+		},
+		"widthTablet": {
+			"type": "number",
+			"description": "Logo width in px at 1023px and below. No `default`: unset keeps `width` (the desktop width) at tablet widths. Prints the same `--logo-width` the desktop width prints, inside the tablet media query."
+		},
+		"widthMobile": {
+			"type": "number",
+			"description": "Logo width in px at 767px and below. No `default`: unset keeps `widthTablet`, then `width`. Prints the same `--logo-width` the desktop width prints, inside the mobile media query."
 		},
 		"shrinkWidth": {
 			"type": "object",

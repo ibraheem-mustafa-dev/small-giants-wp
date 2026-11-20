@@ -211,6 +211,28 @@ if ( $width_explicit ) {
 	$scoped_css[] = $sel . '{--logo-width:' . absint( $width ) . 'px}';
 }
 
+// Tablet and mobile widths (`widthTablet`, `widthMobile`, px): the same custom property inside the tablet and mobile
+// media queries (the desktop width prints above). A tier left unset keeps the one above it, so a logo that sets neither
+// prints nothing extra.
+$rl_width_tiers = array();
+foreach ( array( 'tablet' => 'widthTablet', 'mobile' => 'widthMobile' ) as $rl_width_tier => $rl_width_attr ) {
+	if ( isset( $attributes[ $rl_width_attr ] ) && is_numeric( $attributes[ $rl_width_attr ] ) && (int) $attributes[ $rl_width_attr ] > 0 ) {
+		$rl_width_tiers[ $rl_width_tier ] = absint( $attributes[ $rl_width_attr ] );
+	}
+}
+if ( $rl_width_tiers ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$sel,
+		array(
+			array(
+				'value'        => $rl_width_tiers,
+				'css'          => '--logo-width',
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+
 // --- Shrink-with-header/row (proven gap, 2026-09-24): headerShrink
 // (`sgs/site-header`) and rowShrink (`sgs/site-header-row`) both toggle a
 // state class on THEIR OWN root element and reduce only their padding --
