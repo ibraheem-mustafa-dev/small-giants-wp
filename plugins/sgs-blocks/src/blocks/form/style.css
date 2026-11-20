@@ -402,7 +402,10 @@
 	padding-inline-start: calc(1rem + var(--sgs-field-icon-size, 1.25rem) + 0.75rem);
 }
 
+/* A textarea is inline-block, so its field wrapper held a line box under it and measured about 8px taller than the
+   input (the descender gap under a baseline-aligned box). A block box sits flush: the wrapper and the input are one box. */
 textarea.sgs-form-field__input {
+	display: block;
 	resize: vertical;
 	min-height: 100px;
 }
