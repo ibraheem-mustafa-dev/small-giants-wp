@@ -115,7 +115,7 @@ export function decisionsProblems( facts ) {
 	widget( 'rules.tabs', r.tabs?.block, r.tabs?.settings, [ 'label' ] );
 	// A block-owned part's trigger names settings its owning block has (the control that opens the part writes them).
 	for ( const [ k, x ] of Object.entries( r.blockOwnedPart?.byTemplate || {} ) ) {
-		[ 'style', 'label', 'countStyle', 'showZero', 'ariaLabel' ].filter( ( f ) => x.trigger && ! ( x.trigger[ f ] && facts.attr( x.block, x.trigger[ f ] ) ) )
+		[ 'style', 'label', 'countStyle', 'showZero', 'ariaLabel', ...[ 'styleTablet', 'styleMobile' ].filter( ( f ) => x.trigger?.[ f ] ) ].filter( ( f ) => x.trigger && ! ( x.trigger[ f ] && facts.attr( x.block, x.trigger[ f ] ) ) )
 			.forEach( ( f ) => problems.push( `rules.blockOwnedPart.byTemplate.${ k }.trigger.${ f } must name a setting ${ x.block } has` ) );
 	}
 	if ( r.choiceFlow && [ 'block', 'step', 'question', 'result' ].some( ( k ) => ! r.choiceFlow[ k ] ) ) {

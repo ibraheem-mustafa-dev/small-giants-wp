@@ -769,18 +769,26 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const openTargets = R.surfaceOpener ? openerTargets( { pageMap: surface.pageMap || [], folder: handoffOf( facts ) } ) : [];
 	const opensSurface = ( e ) => ( openTargets.length && [ 'a', 'button' ].includes( e.tag ) && handlerOf( e ) ? openedBy( controlWrites( { folder: handoffOf( facts ), component: view.entry( e )?.template.component, handler: handlerOf( e ) } ), openTargets, scope?.id ?? null ) : null );
 	// The owning block's trigger settings drawn from the control (the entry's `trigger` names the block's settings): words
-	// beside a count make a pill with that label, no words an icon; a count that paints its own box is a bubble, else plain;
-	// a count showing zero at rest keeps showing it; a typed aria-label is the trigger's accessible name.
+	// beside a count make a pill with that label, no words an icon; the tablet and phone styles follow the label's own widths
+	// (a label shown from tablet up and hidden on a phone is a pill whose phone style, the entry's `styleMobile`, is the icon; a
+	// tier that agrees with the one above it writes nothing); a count that paints its own box is a bubble, else plain; a count
+	// showing zero at rest keeps showing it; a typed aria-label is the trigger's accessible name.
 	const triggerOf = ( e, T ) => {
 		if ( ! T ) {
 			return {};
 		}
 		const leaves = [ ...( m.words( e ) ? [ e ] : [] ), ...textLeaves( e ) ];
 		const count = leaves.find( numberOnly ) ?? null;
-		const label = leaves.filter( ( k ) => k !== count ).map( ( k ) => m.words( k ).trim() ).filter( Boolean ).join( ' ' );
+		const labelLeaves = leaves.filter( ( k ) => k !== count && m.words( k ).trim() );
+		const label = labelLeaves.map( ( k ) => m.words( k ).trim() ).join( ' ' );
 		const aria = view.attr( e, 'aria-label' );
+		const drawsLabel = ( w ) => labelLeaves.some( ( k ) => k.visible?.[ w ] );
+		const tablet = drawsLabel( 768 ) ? T.pill : T.icon;
+		const mobile = drawsLabel( 375 ) ? T.pill : T.icon;
 		return {
 			[ T.style ]: label ? T.pill : T.icon,
+			...( label && T.styleTablet && T.pill !== tablet ? { [ T.styleTablet ]: tablet } : {} ),
+			...( label && T.styleMobile && mobile !== tablet ? { [ T.styleMobile ]: mobile } : {} ),
 			...( label ? { [ T.label ]: label } : {} ),
 			...( count ? { [ T.countStyle ]: view.ownPaint( count ) ? T.bubble : T.plain } : {} ),
 			...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: { desktop: true } } : {} ),

@@ -12,7 +12,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "if ( ! h || ! [ 'a', 'button' ].includes( e.tag ) ) {", "replace": "if ( ! h ) {", "why": "only a button or link is the burger" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "[ T.style ]: label ? T.pill : T.icon,", "replace": "[ T.style ]: T.pill,", "why": "a control with no words is an icon trigger" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "...( label ? { [ T.label ]: label } : {} ),", "replace": "", "why": "the control's words are the pill label" },
-	{ "file": "lib/skeleton-rules.mjs", "find": "leaves.filter( ( k ) => k !== count )", "replace": "leaves", "why": "the count is not part of the label" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "leaves.filter( ( k ) => k !== count && m.words( k ).trim() )", "replace": "leaves.filter( ( k ) => m.words( k ).trim() )", "why": "the count is not part of the label" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "view.ownPaint( count ) ? T.bubble : T.plain", "replace": "T.bubble", "why": "an unpainted count is plain" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: { desktop: true } } : {} ),", "replace": "...( count ? { [ T.showZero ]: { desktop: true } } : {} ),", "why": "only a count showing zero at rest keeps showing it" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "aria && ! /\\{\\{/.test( aria )", "replace": "aria", "why": "a bound aria-label is no typed name" },
@@ -27,5 +27,12 @@
 	{ "file": "lib/skeleton-narrowing.mjs", "find": "assigned( n ) ? n.arguments.map( literalOf ).filter( Boolean ) : []", "replace": "[]", "why": "a renderVals returned through Object.assign is read" },
 	{ "file": "lib/skeleton-narrowing.mjs", "find": "return 'ObjectExpression' === decl?.init?.type ? decl.init : null;", "replace": "return null;", "why": "an Object.assign argument named by a local literal is read" },
 	{ "file": "lib/skeleton-record.mjs", "find": "|| ! [ NO_COLOUR, UNSET ].some( ( set ) => set.has( String( st.background ?? '' ).toLowerCase() ) )", "replace": "", "why": "an unexpanded background shorthand paints" },
-	{ "file": "lib/skeleton-facts.mjs", "find": "! ( x.trigger[ f ] && facts.attr( x.block, x.trigger[ f ] ) )", "replace": "! x.trigger[ f ]", "why": "a trigger setting must exist on its block" }
+	{ "file": "lib/skeleton-facts.mjs", "find": "! ( x.trigger[ f ] && facts.attr( x.block, x.trigger[ f ] ) )", "replace": "! x.trigger[ f ]", "why": "a trigger setting must exist on its block" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "const mobile = drawsLabel( 375 ) ? T.pill : T.icon;", "replace": "const mobile = tablet;", "why": "the phone would follow the tablet and keep the pill" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "T.styleTablet && T.pill !== tablet ?", "replace": "T.styleTablet ?", "why": "the tablet style would be written even where it agrees with the desktop" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "T.styleMobile && mobile !== tablet ?", "replace": "T.styleMobile ?", "why": "the phone style would be written even where it agrees with the tablet" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "labelLeaves.some( ( k ) => k.visible?.[ w ] )", "replace": "labelLeaves.length > 0", "why": "a hidden label would count as drawn at every width" },
+	{ "file": "data/skeleton-decisions.json", "find": "\"styleMobile\": \"triggerStyleMobile\", ", "replace": "", "why": "the entry would name no phone setting" },
+	{ "file": "lib/skeleton-facts.mjs", "find": "...[ 'styleTablet', 'styleMobile' ].filter( ( f ) => x.trigger?.[ f ] )", "replace": "", "why": "a phone style naming a missing setting would pass" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "const tablet = drawsLabel( 768 ) ? T.pill : T.icon;", "replace": "const tablet = T.pill;", "why": "the tablet would always keep the pill" }
 ]

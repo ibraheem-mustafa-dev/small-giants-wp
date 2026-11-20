@@ -49,7 +49,7 @@ const VALS = 'openBag: () => this.setState( { bag: true } ), closeBag: () => thi
 // rec( … ) the same element's fact-record entry.
 const box = ( n ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { x: n * 10, y: 0, w: 60, h: 20 } ] ) );
 const el = ( n, parent, tag, words, o = {} ) => ( { key: `Root/${ n }#0`, parentKey: parent ? `Root/${ parent }#0` : null, depth: o.depth ?? 1, tag, template: 'Root', tpl: n, attrs: o.attrs || {}, words, allText: o.allText ?? words, membership: [], srcTag: tag, srcOwnText: words,
-	snippet: `<${ tag } data-dc-tpl="${ n }"${ o.click ? ` sc-camel-on-click="{{ ${ o.click } }}"` : '' }>${ words }</${ tag }>`, visible: { 375: true, 768: true, 1440: true }, box: box( n ), display: o.display || 'block', widths: [ 375, 768, 1440 ], flexDirection: 'row' } );
+	snippet: `<${ tag } data-dc-tpl="${ n }"${ o.click ? ` sc-camel-on-click="{{ ${ o.click } }}"` : '' }>${ words }</${ tag }>`, visible: o.visible ?? { 375: true, 768: true, 1440: true }, box: box( n ), display: o.display || 'block', widths: [ 375, 768, 1440 ], flexDirection: 'row' } );
 const rec = ( n, parent, tag, o = {}, chain = [] ) => ( { template: { key: `Root/${ n }`, component: 'Root', n: String( n ), tag, realTag: tag, attrs: { ...( o.attrs || {} ), ...( o.click ? { onClick: `{{ ${ o.click } }}` } : {} ) }, style: { static: o.style || [], holes: [] }, pseudo: {}, holes: [],
 	parent: parent ? `Root/${ parent }` : null, realParent: parent ? `Root/${ parent }` : null, parentChain: chain, membership: { scIf: [], scFor: [], dcImport: [] }, own: {}, inHelmet: false, inFor: false, ref: null, hooks: {}, events: [], words: '', srcLine: n }, logic: { holes: {} }, surfaces: [], instances: [], fingerprint: {} } );
 
@@ -63,7 +63,7 @@ const HEADER = ( pill = {} ) => [
 	[ 4, 2, 'a', 'About', { depth: 2, attrs: { href: '/about' } } ],
 	[ 5, 1, 'button', '', { click: 'toggleMenu', attrs: { 'aria-label': 'Menu' } } ],
 	[ 6, 1, pill.tag ?? 'button', '', { click: pill.click ?? 'openBag', attrs: { 'aria-label': pill.aria ?? 'Bag' }, allText: 'Bag 0' } ],
-	...( false === pill.label ? [] : [ [ 7, 6, 'span', 'Bag', { depth: 2 } ] ] ),
+	...( false === pill.label ? [] : [ [ 7, 6, 'span', 'Bag', { depth: 2, visible: pill.labelVisible } ] ] ),
 	...( false === pill.count ? [] : [ [ 8, 6, 'span', pill.countWords ?? '0', { depth: 2, style: pill.countStyle ?? BUBBLE } ] ] ),
 ];
 const PART = { kind: 'drawer', label: 'Your bag', owner: 'block', draftId: 'Root.dc.html:9:3 <div aria-label="Your bag">' };
@@ -116,6 +116,16 @@ test( 'MUST FAIL: the trigger follows the control\'s structure: no words is an i
 	assert.deepEqual( icon.attributes, { displayMode: 'drawer', triggerStyle: 'icon', pillCountStyle: 'plain' } );
 	const bare = nodeOf( run( { pill: { label: false, count: false, aria: 'Open basket' } } ), 'Root/6#0' );
 	assert.deepEqual( bare.attributes, { displayMode: 'drawer', triggerStyle: 'icon', ariaLabel: 'Open basket' } );
+} );
+
+test( 'MUST FAIL: a label hidden on a phone and shown from tablet up is a pill whose phone style is the icon', () => {
+	const phone = nodeOf( run( { pill: { labelVisible: { 375: false, 768: true, 1440: true } } } ), 'Root/6#0' );
+	assert.deepEqual( phone.attributes, { displayMode: 'drawer', triggerStyle: 'pill', triggerStyleMobile: 'icon', pillLabel: 'Bag', pillCountStyle: 'bubble', showZero: { desktop: true }, ariaLabel: 'Bag' } );
+	// Negative controls: a label drawn at every width writes no tier style; a label hidden at tablet and phone writes the tablet tier once (the phone follows it).
+	const every = nodeOf( run(), 'Root/6#0' );
+	assert.equal( 'triggerStyleMobile' in every.attributes || 'triggerStyleTablet' in every.attributes, false );
+	const narrow = nodeOf( run( { pill: { labelVisible: { 375: false, 768: false, 1440: true } } } ), 'Root/6#0' );
+	assert.deepEqual( [ narrow.attributes.triggerStyle, narrow.attributes.triggerStyleTablet, narrow.attributes.triggerStyleMobile ], [ 'pill', 'icon', undefined ] );
 } );
 
 test( 'MUST FAIL: a renderVals returned through Object.assign is read (its handlers and its lists)', () => {
@@ -200,6 +210,7 @@ test( 'decisionsProblems refuses a block-owned part trigger naming a setting its
 	const bad = decisionsProblems( facts( REPO, ( R ) => ( R.blockOwnedPart.byTemplate.cart.trigger.label = 'noSuchSetting' ) ) );
 	assert.ok( bad.some( ( p ) => /blockOwnedPart\.byTemplate\.cart\.trigger\.label/.test( p ) ) );
 	assert.ok( decisionsProblems( facts( REPO, ( R ) => delete R.blockOwnedPart.byTemplate.cart.trigger.style ) ).some( ( p ) => /trigger\.style/.test( p ) ) );
+	assert.ok( decisionsProblems( facts( REPO, ( R ) => ( R.blockOwnedPart.byTemplate.cart.trigger.styleMobile = 'noSuchSetting' ) ) ).some( ( p ) => /trigger\.styleMobile/.test( p ) ), 'a phone style naming a setting the block lacks is refused' );
 } );
 
 // A drawer surface: its top row holds the logo and a close button; its body a worded link.

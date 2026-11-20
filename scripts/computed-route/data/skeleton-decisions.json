@@ -779,7 +779,7 @@
 			"id": "blockOwnedPart",
 			"scope": "a surface whose root the page map holds as a part with owner `block` of another row (lib/skeleton-surface-role.mjs, the part's draftId naming the surface's record or its root's tag and aria-label); the owning block comes from the row's template",
 			"byTemplate": {
-				"cart": { "block": "sgs/cart", "attributes": { "displayMode": "drawer" }, "trigger": { "style": "triggerStyle", "pill": "pill", "icon": "icon", "label": "pillLabel", "countStyle": "pillCountStyle", "bubble": "bubble", "plain": "plain", "showZero": "showZero", "ariaLabel": "ariaLabel" }, "reason": "the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87)" }
+				"cart": { "block": "sgs/cart", "attributes": { "displayMode": "drawer" }, "trigger": { "style": "triggerStyle", "styleTablet": "triggerStyleTablet", "styleMobile": "triggerStyleMobile", "pill": "pill", "icon": "icon", "label": "pillLabel", "countStyle": "pillCountStyle", "bubble": "bubble", "plain": "plain", "showZero": "showZero", "ariaLabel": "ariaLabel" }, "reason": "the cart page's bag drawer is the cart block's own drawer (sgs/cart displayMode drawer draws its heading, lines, totals, empty message and checkout button: Spec 27, FR-48-87)" }
 			},
 			"reason": "a drawer the page map holds as a block-owned part of another row is drawn by that block, never the navigation drawer: the block is the surface's root and every element in it is absorbed (Bean, 2026-10-23, plan 2026-10-23-cloning-tool-completion S5: the bag drawer is part of the cart block)"
 		},
