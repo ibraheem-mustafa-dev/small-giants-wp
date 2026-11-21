@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "data/part-locators.json",
-		"find": "\"shopPart\": \"buybox-flow-opener\"",
-		"replace": "\"shopPart\": \"buybox-flow-openers\"",
+		"find": "\"shopPart\": \"buybox-flow-opener\"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\t\"flow-opener-note\"",
+		"replace": "\"shopPart\": \"buybox-flow-openers\"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\t\"flow-opener-note\"",
 		"why": "the flow opener locator names a shop part nothing provides"
 	}
 ]
