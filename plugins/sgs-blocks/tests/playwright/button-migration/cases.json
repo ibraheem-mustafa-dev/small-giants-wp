@@ -1,0 +1,38 @@
+{
+	"_doc": "The built-in button migration's look cases, in the OLD attribute names (addToCart*, cta*, cta2*, loginButton*, registerButton*). probe.mjs renders each case through a checkout's real render.php (the QA harness) or, for sgs/account's form buttons, through includes/account/helpers-account-look-css.php::sgs_account_login_look_css, then measures the computed look of every listed button in Chromium. Run on the base checkout it writes the pinned looks; run on the migrated checkout with --sweep it first renames and reshapes each case's attributes through the sweep's own function (scripts/lib/builtin-button-sweep.php) and must measure the same looks. `mamas-*` cases are the real saved values on the local Mama's mirror (pages 103, 628; templates 202, 194, 154's buy box); `rich-*` cases set every old setting the block carries, so a rename that drops one shows.",
+	"buybox": {
+		"fixture": "tests/fixtures/buybox/standard.json",
+		"buttons": [ ".buybox__add-to-cart" ],
+		"cases": {
+			"bb-default": {},
+			"bb-mamas": { "addToCartStyle": "primary", "addToCartBackgroundColour": "mm-yellow", "addToCartBorderColour": "mm-cocoa", "addToCartMinHeight": "64px", "addToCartFontSize": { "desktop": 18 }, "addToCartFontWeight": "700", "addToCartHoverLift": false, "addToCartShowIcon": false, "addToCartShowPrice": true, "addToCartShadow": "4px 4px 0 0", "addToCartShadowColour": "mm-cocoa", "addToCartShadowHover": "7px 7px 0 0" },
+			"bb-rich-outline": { "addToCartStyle": "outline", "addToCartBackgroundColour": "#fff3b0", "addToCartBorderColour": "mm-cocoa", "addToCartMinHeight": "56px", "addToCartPadding": { "top": "14px", "right": "40px", "bottom": "14px", "left": "40px" }, "addToCartFontSize": { "desktop": 20, "tablet": 17, "mobile": 15 }, "addToCartFontSizeUnit": "px", "addToCartFontWeight": "800", "addToCartTextTransform": "uppercase", "addToCartLetterSpacing": { "desktop": 1.5 }, "addToCartLetterSpacingUnit": "px", "addToCartShadow": "0 4px 12px 0", "addToCartShadowColour": "mm-cocoa", "addToCartShadowHover": "0 8px 22px 0", "addToCartShadowColourHover": "mm-yellow", "addToCartHoverLift": true },
+			"bb-secondary-padding-only": { "addToCartStyle": "secondary", "addToCartPadding": { "top": "6px", "bottom": "6px" } },
+			"bb-shadow-lift-on": { "addToCartShadow": "0 4px 12px 0", "addToCartShadowColour": "mm-cocoa" },
+			"bb-shadow-lift-off": { "addToCartShadow": "0 4px 12px 0", "addToCartShadowColour": "mm-cocoa", "addToCartShadowLiftOnHover": false }
+		}
+	},
+	"product-card": {
+		"fixture": "tests/fixtures/motion/render-paths.json",
+		"buttons": [ ".sgs-product-card__cta--primary", ".sgs-product-card__cta--secondary", ".product-card__view", ".product-card__add-to-cart", ".product-card__cta-secondary" ],
+		"paths": [ "typed", "live-wc-simple", "readonly-variable" ],
+		"cases": {
+			"pc-default": { "cta2Text": "Details" },
+			"pc-mamas": { "cta2Text": "Details", "ctaBehaviour": "add-to-basket", "ctaWidthType": "full", "ctaFontSize": 15, "ctaFontWeight": "700", "ctaBorderRadius": { "topLeft": "999px", "topRight": "999px", "bottomLeft": "999px", "bottomRight": "999px" }, "ctaPadding": { "top": "16px", "right": "0px", "bottom": "16px", "left": "0px" } },
+			"pc-rich": { "cta2Text": "Details", "cta2Style": "outline", "ctaBehaviour": "add-to-basket", "ctaStyle": "primary", "ctaColourBackground": "mm-yellow", "ctaColourText": "mm-cocoa", "ctaColourBorder": "mm-cocoa", "ctaColourBackgroundHover": "mm-cocoa", "ctaColourTextHover": "mm-paper", "ctaColourBorderHover": "mm-cocoa", "ctaBorderStyle": "dashed", "ctaBorderWidth": { "top": "3px", "right": "3px", "bottom": "3px", "left": "3px" }, "ctaBorderRadius": { "topLeft": "4px", "topRight": "12px", "bottomLeft": "12px", "bottomRight": "4px" }, "ctaFontSize": 17, "ctaFontWeight": "800", "ctaLineHeight": "1.6", "ctaPadding": { "top": "12px", "right": "28px", "bottom": "12px", "left": "28px" }, "ctaWidthType": "fit", "ctaTextAlign": { "desktop": "left" } },
+			"pc-gradient": { "cta2Text": "Details", "ctaColourBackgroundGradient": "linear-gradient(90deg,#ff0000,#0000ff)", "ctaColourBackgroundHoverGradient": "linear-gradient(90deg,#0000ff,#ff0000)", "ctaColourText": "#ffffff" },
+			"pc-line-height-px": { "cta2Text": "Details", "ctaLineHeight": "24px", "ctaFontSize": 16 },
+			"pc-line-height-none": { "cta2Text": "Details", "ctaLineHeight": "", "ctaFontSize": 13 }
+		}
+	},
+	"account": {
+		"buttons": [ ".woocommerce-form-login__submit", ".woocommerce-form-register__submit", ".woocommerce-MyAccount-content a.button", ".sgs-wishlist-panel__empty-cta" ],
+		"cases": {
+			"acc-default": {},
+			"acc-mamas": { "loginButtonBackground": "mm-yellow", "loginButtonBackgroundHover": "mm-paper", "loginButtonTextHover": "mm-cocoa", "loginButtonBorderColour": "mm-cocoa", "loginButtonBorderStyle": "solid", "loginButtonBorderWidth": { "top": "2px", "right": "2px", "bottom": "2px", "left": "2px" }, "loginButtonBorderRadius": { "desktop": { "topLeft": "999px", "topRight": "999px", "bottomRight": "999px", "bottomLeft": "999px" }, "tablet": { "topLeft": "999px", "topRight": "999px", "bottomRight": "999px", "bottomLeft": "999px" }, "mobile": { "topLeft": "999px", "topRight": "999px", "bottomRight": "999px", "bottomLeft": "999px" } }, "loginButtonShadow": "4px 4px 0 0", "loginButtonShadowColour": "mm-cocoa", "loginButtonMinHeight": { "desktop": "60px" }, "loginButtonPadding": { "desktop": { "top": "0px", "right": "30px", "bottom": "0px", "left": "30px" } }, "loginButtonFontSize": { "desktop": 17 }, "loginButtonFontWeight": "700", "loginButtonScope": "all-forms" },
+			"acc-rich-signin-only": { "loginButtonPreset": "primary", "registerButtonPreset": "outline", "loginButtonBackground": "#fff3b0", "loginButtonText": "mm-cocoa", "loginButtonBackgroundHover": "mm-cocoa", "loginButtonTextHover": "mm-paper", "loginButtonBorderColour": "mm-cocoa", "loginButtonFullWidth": true, "loginButtonMinHeight": { "desktop": "52px", "mobile": "48px" }, "loginButtonFontWeight": "800", "loginButtonTextTransform": "uppercase" },
+			"acc-rich-all-forms": { "loginButtonScope": "all-forms", "loginButtonPreset": "secondary", "registerButtonPreset": "primary", "loginButtonBackground": "mm-yellow", "loginButtonText": "mm-cocoa", "loginButtonBorderColour": "mm-cocoa", "loginButtonFullWidth": true, "loginButtonPadding": { "desktop": { "top": "10px", "right": "24px", "bottom": "10px", "left": "24px" } } },
+			"acc-presets-only": { "loginButtonPreset": "outline", "registerButtonPreset": "primary" }
+		}
+	}
+}
