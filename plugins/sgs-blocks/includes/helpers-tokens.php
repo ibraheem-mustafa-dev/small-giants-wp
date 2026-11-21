@@ -731,9 +731,15 @@ function sgs_shadow_value_composed( ?string $shape, ?string $colour ): string {
  * `linear-gradient(`) is NOT sufficient sanitisation — anything after the
  * opening paren, including a declaration-breakout (`;position:fixed;...`) or
  * a `url(...)` network fetch, would still pass and be emitted verbatim. This
- * helper instead requires the ENTIRE value to be one fully-bounded gradient
- * function built only from a safe character set, then defence-in-depth
- * rejects any residual breakout/URL/markup token.
+ * helper instead requires the ENTIRE value to open with a gradient function,
+ * close on its final `)` and be built only from a safe character set, then
+ * defence-in-depth rejects any residual breakout/URL/markup token.
+ *
+ * A stack of comma-separated gradients (`linear-gradient(...), radial-gradient(...)`)
+ * is accepted on purpose: CSS paints several layers from one `background-image`,
+ * and the computed route writes two stacked draft layers into one overlay
+ * gradient setting. The stack passes the same character set and the same
+ * rejections, so a stack holding `url(`, `;`, `{` or `}` is refused whole.
  *
  * Universal — any block accepting an operator/cloned CSS gradient string
  * MUST route it through this helper before emission (mirrors
@@ -749,8 +755,10 @@ function sgs_css_gradient_value( ?string $value ): string {
 		return '';
 	}
 
-	// Must be exactly one gradient function, fully bounded end-to-end, built
-	// only from a safe character set (letters, digits, whitespace, . , % ( ) # / _ -).
+	// Must open with a gradient function and end on a closing paren, built only
+	// from a safe character set (letters, digits, whitespace, . , % ( ) # / _ -).
+	// The set holds `,` and `(`/`)`, so a comma-separated stack of gradients
+	// (several background layers in one value) matches as well: that is intended.
 	//
 	// `/` and `_` added 2026-08-16 (D643). Without `/`, CSS Color 4 slash syntax
 	// (`rgb(0 0 0 / 50%)`, `hsl(210 50% 40% / .8)`) failed the match and the whole
