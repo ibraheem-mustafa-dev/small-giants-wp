@@ -44,9 +44,26 @@ export function contentWidth( st, rec ) {
 // business line or a list item draws beside its words), named by no target of the node, is false when the draft's own element
 // holds no glyph at any width it is drawn at. An icon the draft draws beside the element, as a block of its own, is not this
 // block's icon. Paths a target names keep their own evidence. cal: the block's calibration; readAt( target, width ): a read.
-export function glyphEvidence( { cal, targets = [], readAt = () => null } ) {
+// others: the root targets of the surface's other nodes. A root element the node shares with other nodes (a menu half read at
+// the group that also holds the phone, account and bag blocks) holds their glyphs too: the glyphs of the outermost other nodes
+// drawn inside it (each another element, its box inside the root's) are theirs, not this block's.
+export function glyphEvidence( { cal, targets = [], readAt = () => null, others = [] } ) {
 	const root = targets.find( ( t ) => '' === ( t.slot ?? '' ) );
-	const drawn = root ? CONTENT_WIDTHS.map( ( w ) => readAt( root, w ) ).filter( ( s ) => s && ! s.missing ) : [];
+	const inside = ( a, b ) => a && b && a.x >= b.x - 1 && a.y >= b.y - 1 && a.x + a.w <= b.x + b.w + 1 && a.y + a.h <= b.y + b.h + 1;
+	const sameElement = ( t ) => JSON.stringify( t.finder ?? null ) === JSON.stringify( root.finder ?? null ) && null != root.finder;
+	const own = ( w ) => {
+		const s = readAt( root, w );
+		if ( ! s || s.missing ) {
+			return null;
+		}
+		if ( ! Number.isInteger( s.glyphs ) ) {
+			return s;
+		}
+		const kids = others.filter( ( t ) => ! sameElement( t ) ).map( ( t ) => readAt( t, w ) ).filter( ( k ) => k && ! k.missing && Number.isInteger( k.glyphs ) && k.rect && inside( k.rect, s.rect ) );
+		const outer = kids.filter( ( k ) => ! kids.some( ( o ) => o !== k && inside( k.rect, o.rect ) && ! inside( o.rect, k.rect ) ) );
+		return { ...s, glyphs: s.glyphs - outer.reduce( ( n, k ) => n + k.glyphs, 0 ) };
+	};
+	const drawn = root ? CONTENT_WIDTHS.map( own ).filter( Boolean ) : [];
 	if ( ! drawn.length || drawn.some( ( s ) => ! Number.isInteger( s.glyphs ) || s.glyphs > 0 ) ) {
 		return {};
 	}
@@ -76,7 +93,7 @@ function fillContent( st, rec, ref, cal ) {
 		const s = st.reads.widths[ w ]?.[ t.id ];
 		return !! s && ! s.missing;
 	} ) ] ) );
-	Object.assign( drawn, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ] } ) );
+	Object.assign( drawn, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ], others: st.nodes.filter( ( r ) => r !== rec ).map( ( r ) => r.targets.find( ( t ) => '' === t.slot ) ).filter( Boolean ) } ) );
 	// The draft lacking a part the block already omits (the rating its showRating switch leaves off) says nothing for a setting that
 	// would hide it: no variant is chosen for hiding what is not drawn.
 	const evidence = st.db ? withoutOmittedAbsences( drawn, absentByDefault( st, rec.name, cal, blockSchema( rec.name ) || {}, node.attributes || {} ) ) : drawn;

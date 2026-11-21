@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/fill-resolve.mjs",
-		"find": "\tObject.assign( drawn, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ] } ) );\n",
+		"find": "\tObject.assign( drawn, glyphEvidence( { cal, targets: rec.targets, readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ], others: st.nodes.filter( ( r ) => r !== rec ).map( ( r ) => r.targets.find( ( t ) => '' === t.slot ) ).filter( Boolean ) } ) );\n",
 		"replace": "",
 		"why": "Fill never uses the glyph evidence"
 	},
@@ -28,5 +28,35 @@
 		"find": "\t\tsnap.glyphs = svgs.length;\n",
 		"replace": "",
 		"why": "the read records no glyph count"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "return { ...s, glyphs: s.glyphs - outer.reduce( ( n, k ) => n + k.glyphs, 0 ) };",
+		"replace": "return s;",
+		"why": "the other blocks' glyphs inside a shared root count as the node's own"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "others.filter( ( t ) => ! sameElement( t ) )",
+		"replace": "others",
+		"why": "a node on the same element is subtracted, so every shared root reads no glyph"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "k.rect && inside( k.rect, s.rect ) );",
+		"replace": "k.rect );",
+		"why": "a block outside the root is subtracted"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "const outer = kids.filter( ( k ) => ! kids.some( ( o ) => o !== k && inside( k.rect, o.rect ) && ! inside( o.rect, k.rect ) ) );",
+		"replace": "const outer = kids;",
+		"why": "a block inside another counted twice"
+	},
+	{
+		"file": "lib/fill-resolve.mjs",
+		"find": "readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ], others: st.nodes.filter( ( r ) => r !== rec )",
+		"replace": "readAt: ( t, w ) => st.reads.widths[ w ]?.[ t.id ], others: st.nodes.filter( ( r ) => false )",
+		"why": "Fill passes no other nodes"
 	}
 ]
