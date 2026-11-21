@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "const snap = collect( [ j.finder, props, resolveSrc, null, null, null, paintSrc, pseudoProps, { textOthers: others } ] );",
+		"replace": "const snap = collect( [ j.finder, props, resolveSrc, null, null, null, paintSrc, pseudoProps ] );",
+		"why": "another node's text would give this node its look again"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "const others = jobs.filter( ( x ) => x.root && x.owner !== j.owner ).map( ( x ) => x.finder );",
+		"replace": "const others = jobs.filter( ( x ) => x.id !== j.id ).map( ( x ) => x.finder );",
+		"why": "a node's own slots would be skipped, so its look would lose its own label's"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "const others = jobs.filter( ( x ) => x.root && x.owner !== j.owner ).map( ( x ) => x.finder );",
+		"replace": "const others = jobs.filter( ( x ) => x.owner !== j.owner && ! x.root ).map( ( x ) => x.finder );",
+		"why": "only other nodes' slots, never their roots, would be skipped"
+	}
+]

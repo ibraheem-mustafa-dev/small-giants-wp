@@ -35,7 +35,10 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		if ( el && null !== j.mark ) {
 			el.setAttribute( scopeAttr, String( j.mark ) );
 		}
-		const snap = collect( [ j.finder, props, resolveSrc, null, null, null, paintSrc, pseudoProps ] );
+		// Text inside another node's element is that node's: the walker's text carrier skips it (`textOthers`), so a group read
+		// as one node (a menu whose element also holds a phone link another node draws) never takes that node's look as its own.
+		const others = jobs.filter( ( x ) => x.root && x.owner !== j.owner ).map( ( x ) => x.finder );
+		const snap = collect( [ j.finder, props, resolveSrc, null, null, null, paintSrc, pseudoProps, { textOthers: others } ] );
 		if ( ! el || snap.missing ) {
 			out[ j.id ] = { missing: true };
 			continue;
