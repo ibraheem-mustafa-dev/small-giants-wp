@@ -408,7 +408,8 @@
       "scrollbar": {
         "thumb": "var(--wp--preset--color--primary)",
         "thumbOnDark": "var(--wp--preset--color--accent)",
-        "track": "transparent"
+        "track": "transparent",
+        "thinWidth": "10px"
       },
       "highlight": {
         "colour": "var(--wp--preset--color--accent)",

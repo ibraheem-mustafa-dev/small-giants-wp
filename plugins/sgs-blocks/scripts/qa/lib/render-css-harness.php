@@ -116,6 +116,10 @@ require_once $sgs_blocks_dir . '/includes/trustpilot-helpers.php';
 // through includes/render-helpers.php rather than the render.php itself.
 require_once $sgs_blocks_dir . '/includes/helpers-link.php';
 
+// Real SGS code: the shared scrollbar choice (sgs_scrollbar_style(), sgs_scrollbar_css()), which the plugin bootstrap
+// loads from sgs-blocks.php for every block with a scrolling area.
+require_once $sgs_blocks_dir . '/includes/helpers-scrollbar.php';
+
 // Real SGS code: sgs/gallery, sgs/card-grid, sgs/timeline and the nav blocks call Sgs_Motion_Loop_Delays (and through it
 // the stagger function and the emitter's per-device writer), and sgs/post-grid calls Sgs_Motion_Loop_Inherit for the
 // cards' inherited entrance, which the plugin bootstrap loads through includes/motion-loader.php rather than the

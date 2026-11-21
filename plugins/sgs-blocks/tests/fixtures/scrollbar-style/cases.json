@@ -1,0 +1,19 @@
+{
+	"_doc": "Shared cases for the scrollbar choice helper (Spec 02 FR-2-35): includes/helpers-scrollbar.php (tests/php/ScrollbarStyleTest.php) and src/utils/scrollbar-style.js (tests/js/scrollbar-style.test.js) must print exactly `css` for each case, so the live page and a canvas drawn in JavaScript cannot drift apart.",
+	"style": [
+		{ "value": null, "start": "hidden", "expect": "hidden" },
+		{ "value": "thin", "start": "hidden", "expect": "thin" },
+		{ "value": "default", "start": "hidden", "expect": "default" },
+		{ "value": "standard", "start": "thin", "expect": "thin" },
+		{ "value": "bogus", "start": "bogus", "expect": "default" }
+	],
+	"css": [
+		{ "selector": ".a .b", "choice": "default", "media": "", "css": "" },
+		{ "selector": ".a .b", "choice": "nonsense", "media": "", "css": "" },
+		{ "selector": "", "choice": "hidden", "media": "", "css": "" },
+		{ "selector": ".a .b", "choice": "hidden", "media": "", "css": ".a .b{scrollbar-width:none;}.a .b::-webkit-scrollbar{display:none;}.a .b>.sgs-overlay-scroll__thumb{display:none;}" },
+		{ "selector": ".a .b", "choice": "thin", "media": "", "css": ".a .b::-webkit-scrollbar{width:var(--wp--custom--scrollbar--thin-width,10px);height:var(--wp--custom--scrollbar--thin-width,10px);}@supports selector(::-webkit-scrollbar){.a .b{scrollbar-color:auto;}}@supports not selector(::-webkit-scrollbar){:where(.a .b){scrollbar-width:thin;}}" },
+		{ "selector": ".k ul", "choice": "hidden", "media": "@container k (max-width:479.98px)", "css": "@container k (max-width:479.98px){.k ul{scrollbar-width:none;}.k ul::-webkit-scrollbar{display:none;}.k ul>.sgs-overlay-scroll__thumb{display:none;}}" },
+		{ "selector": ".x ul, .y :is(ul, ol)", "choice": "hidden", "media": "(max-width:767.98px)", "css": "@media (max-width:767.98px){.x ul, .y :is(ul, ol){scrollbar-width:none;}.x ul::-webkit-scrollbar,.y :is(ul, ol)::-webkit-scrollbar{display:none;}.x ul>.sgs-overlay-scroll__thumb,.y :is(ul, ol)>.sgs-overlay-scroll__thumb{display:none;}}" }
+	]
+}

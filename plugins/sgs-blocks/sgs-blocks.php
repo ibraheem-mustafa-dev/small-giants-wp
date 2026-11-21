@@ -135,6 +135,9 @@ require_once SGS_BLOCKS_PATH . 'includes/shadow-dark-assets.php';
 // Shared slider navigation (arrows, dots, placements): markup helpers + its on-demand stylesheet.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-slider-nav.php';
 
+// Shared scrollbar choice (default, thin, hidden) for every scrolling area inside a block.
+require_once SGS_BLOCKS_PATH . 'includes/helpers-scrollbar.php';
+
 // Shared pause / play button for content that moves on its own (WCAG 2.2.2): markup + stylesheet.
 require_once SGS_BLOCKS_PATH . 'includes/helpers-motion-pause.php';
 

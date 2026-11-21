@@ -13,7 +13,8 @@
  *     `scrollbar-color` to `auto` where `::-webkit-scrollbar` is supported;
  *   - every `::-webkit-scrollbar { display: none }` has its `scrollbar-width: none` pair on the same element (Chrome 121+
  *     ignores the webkit parts once `scrollbar-color` is set, so the standard property is what keeps the bar hidden);
- *   - the theme enqueues the stylesheet synchronously and adds it to the editor, and theme.json carries the three defaults.
+ *   - the theme enqueues the stylesheet synchronously and adds it to the editor, and theme.json carries the three colour
+ *     defaults and `thinWidth` (the thickness the shared scrollbar choice's "thin" reads, Spec 02 FR-2-35).
  * Each check also runs against a planted fault (negative control), so a check that cannot fail fails here.
  */
 
@@ -181,15 +182,12 @@ describe( 'nav drawer scrollbar', () => {
 		expect( thumb[ 'background-color' ] ).toBe( 'var(--sgs-scrollbar-thumb)' );
 	} );
 
-	it( 'resets scrollbar-color to auto where the webkit parts exist, so Chrome keeps them', () => {
-		let reset = null;
-		postcss.parse( css ).walkAtRules( 'supports', ( at ) => {
-			if ( at.params.replace( /\s+/g, ' ' ) === 'selector(::-webkit-scrollbar)' ) {
-				reset = declarationsOf( at.toString(), '.wp-block-sgs-nav-drawer' );
-			}
-		} );
-		expect( reset ).not.toBeNull();
-		expect( reset[ 'scrollbar-color' ] ).toBe( 'auto' );
+	it( 'is thin when unset, which resets scrollbar-color to auto where the webkit parts exist, so Chrome keeps them', () => {
+		const render = fs.readFileSync( path.join( PLUGIN, 'src', 'blocks', 'nav-drawer', 'render.php' ), 'utf8' );
+		expect( render ).toContain( "sgs_scrollbar_css( $root_sel, sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'thin' ) )" );
+		const thin = require( '../fixtures/scrollbar-style/cases.json' ).css.find( ( c ) => c.choice === 'thin' );
+		expect( thin.css ).toContain( `@supports selector(::-webkit-scrollbar){${ thin.selector }{scrollbar-color:auto;}}` );
+		expect( thin.css ).toContain( `@supports not selector(::-webkit-scrollbar){:where(${ thin.selector }){scrollbar-width:thin;}}` );
 	} );
 } );
 
@@ -220,11 +218,12 @@ describe( 'theme wiring', () => {
 		expect( functions ).toContain( "add_editor_style( 'assets/css/scrollbars.css' )" );
 	} );
 
-	it( 'carries the three defaults in theme.json', () => {
+	it( 'carries the three colour defaults and the thin bar thickness in theme.json', () => {
 		expect( themeJson.settings.custom.scrollbar ).toEqual( {
 			thumb: 'var(--wp--preset--color--primary)',
 			thumbOnDark: 'var(--wp--preset--color--accent)',
 			track: 'transparent',
+			thinWidth: '10px',
 		} );
 	} );
 } );
