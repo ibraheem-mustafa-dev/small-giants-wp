@@ -52,5 +52,17 @@
 		"find": "if ( done.wrong.length ) {",
 		"replace": "if ( false ) {",
 		"why": "a read-back that disagrees passes"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "if ( ! ( $back === $new ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a save that changed more than the opening tag is kept"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "\t\tkses_remove_filters();",
+		"replace": "\t\t;",
+		"why": "the save runs through the content filter"
 	}
 ]

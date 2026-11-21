@@ -116,11 +116,20 @@ test( 'a flow whose words are undecided never reaches the site', () => {
 test( 'the PHP sets the attribute on the flow\'s root block and carries its inputs encoded, not interpolated', () => {
 	const label = 'Add "my" prescription\'; DROP';
 	const php = labelApplyPhp( [ { slug: FLOW, id: 120, to: label } ] );
-	assert.ok( php.includes( '\'sgs/choice-flow\'' ) && php.includes( `['attrs']['${ LABEL_ATTR }']` ) && php.includes( 'serialize_blocks' ) );
+	assert.ok( php.includes( '\'sgs/choice-flow\'' ) && php.includes( `$attrs['${ LABEL_ATTR }']` ) && php.includes( 'serialize_block_attributes( $attrs )' ) );
 	assert.ok( ! php.includes( 'DROP' ), 'the label is base64 in the code, never text in it' );
 	const b64 = /base64_decode\( '([^']+)' \)/.exec( php )[ 1 ];
 	assert.deepEqual( JSON.parse( Buffer.from( b64, 'base64' ).toString() ), [ [ 120, FLOW, label ] ] );
 	const unusable = /base64_decode\( '([^']+)' \)/.exec( labelApplyPhp( [ { slug: 'Bad Slug', id: 1, to: 'x' } ] ) )[ 1 ];
 	assert.deepEqual( JSON.parse( Buffer.from( unusable, 'base64' ).toString() ), [], 'an unusable slug is dropped from the list' );
 	assert.ok( labelStatePhp( [ FLOW, 'x y' ] ).includes( 'resolve_choice_flow' ) );
+} );
+
+test( 'MUST FAIL on d6d613ca9: the write rewrites only the flow\'s opening tag, saves past the content filter and proves the read-back', () => {
+	const php = labelApplyPhp( [ { slug: FLOW, id: 120, to: 'Add my prescription' } ] );
+	assert.ok( ! php.includes( 'serialize_blocks(' ), 'the whole post is never re-serialised: every byte outside the opening tag stays as saved' );
+	assert.ok( php.includes( 'kses_remove_filters()' ) && php.includes( 'kses_init_filters()' ), 'the save runs with the content filter off, and puts it back' );
+	assert.match( php, /\$back === \$new/, 'the read-back must equal the written content byte for byte' );
+	assert.match( php, /'post_content' => \$content/, 'a read-back that differs puts the old content back' );
+	assert.ok( php.includes( 'wp:sgs/choice-flow(\\s+' ), 'the tag pattern needs space after the name, so sgs/choice-flow-step never matches' );
 } );

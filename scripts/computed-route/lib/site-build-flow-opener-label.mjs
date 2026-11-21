@@ -88,19 +88,48 @@ export function labelApplyPhp( actions ) {
 	return `$items = json_decode( base64_decode( '${ list }' ), true );
 $set = 0;
 $wrong = array();
+$save = static function ( int $id, string $content ): void {
+	// Past the content filter (it strips markup from block attributes for a user without unfiltered_html), put back after.
+	$kses = false !== has_filter( 'content_save_pre', 'wp_filter_post_kses' );
+	if ( $kses ) {
+		kses_remove_filters();
+	}
+	wp_update_post( wp_slash( array( 'ID' => $id, 'post_content' => $content ) ) );
+	if ( $kses ) {
+		kses_init_filters();
+	}
+};
 foreach ( $items as $item ) {
 	$post = get_post( (int) $item[0] );
-	$blocks = $post ? parse_blocks( $post->post_content ) : array();
-	$done = false;
-	foreach ( $blocks as $i => $b ) {
+	$content = $post ? (string) $post->post_content : '';
+	$attrs = null;
+	foreach ( parse_blocks( $content ) as $b ) {
 		if ( 'sgs/choice-flow' === ( $b['blockName'] ?? '' ) ) {
-			$blocks[ $i ]['attrs']['${ LABEL_ATTR }'] = (string) $item[2];
-			$done = true;
+			$attrs = (array) $b['attrs'];
 			break;
 		}
 	}
-	if ( $done ) {
-		wp_update_post( wp_slash( array( 'ID' => (int) $item[0], 'post_content' => serialize_blocks( $blocks ) ) ) );
+	if ( null !== $attrs ) {
+		$attrs['${ LABEL_ATTR }'] = (string) $item[2];
+		// Only the flow's own opening tag is rewritten: every other byte of the post stays as saved.
+		$new = preg_replace_callback(
+			'#<!--\\s+wp:sgs/choice-flow(\\s+\\{.*?\\})?\\s+(/?)-->#s',
+			static function ( $m ) use ( $attrs ) {
+				return '<!-- wp:sgs/choice-flow ' . serialize_block_attributes( $attrs ) . ' ' . $m[2] . '-->';
+			},
+			$content,
+			1
+		);
+		if ( is_string( $new ) && $new !== $content ) {
+			$save( (int) $item[0], $new );
+			clean_post_cache( (int) $item[0] );
+			$back = (string) get_post_field( 'post_content', (int) $item[0], 'raw' );
+			if ( ! ( $back === $new ) ) {
+				// The save changed more than the tag: the old content goes back, and the flow is reported wrong below.
+				$save( (int) $item[0], $content );
+				clean_post_cache( (int) $item[0] );
+			}
+		}
 	}
 	$now = '';
 	foreach ( parse_blocks( (string) get_post_field( 'post_content', (int) $item[0] ) ) as $b ) {
