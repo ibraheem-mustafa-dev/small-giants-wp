@@ -291,8 +291,8 @@ test( 'address images: a stock photo is found by the media upload\'s file name a
 	assert.match( write, /\$mime = wp_get_image_mime\( \$tmp \);\n\t\t\$ext = \$mime \? wp_get_default_extension_for_mime_type\( \$mime \) : '';/ );
 	assert.match( write, /\$stem = ! empty\( \$u\['stem'\] \) \? \$u\['stem'\] : pathinfo/ );
 	assert.match( write, /media_handle_sideload\( array\( 'name' => sanitize_file_name\( \( '' !== \$stem \? \$stem : 'draft-image' \) \. '\.' \. \$ext \), 'tmp_name' => \$tmp \), 0 \)/ );
-	assert.match( write, /if \( ! \$id && ! empty\( \$img\['stem'\] \) \) \{\n\t\t\t\$stem = \$wpdb->esc_like\( \$img\['stem'\] \) \. '\.%';/ );
-	assert.match( catalogueStatePhp( [], images ), /meta_value LIKE %s OR meta_value LIKE %s \) ORDER BY post_id ASC LIMIT 1", \$stem, '%\/' \. \$stem \)/ );
+	assert.match( write, /if \( ! empty\( \$img\['stem'\] \) \) \{\n\t\t\t\$stem = \$wpdb->esc_like\( \$img\['stem'\] \) \. '\.%';/ );
+	assert.match( catalogueStatePhp( [], images ), /meta_value LIKE %s OR meta_value LIKE %s \) ORDER BY post_id ASC", \$stem, '%\/' \. \$stem \)/ );
 } );
 
 // A new product base is saved by the write and flushed in a request of its own: the product post type registers at

@@ -1,0 +1,80 @@
+[
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $sgs_file_exists( $id ) ) { return $id; }",
+		"replace": "if ( true ) { return $id; }",
+		"why": "a fileless attachment is matched and reused"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "return $file && file_exists( $file );",
+		"replace": "return (bool) $file;",
+		"why": "a recorded path counts as a file though it is not on disk"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$sgs_nofile[] = $id;",
+		"replace": "",
+		"why": "a skipped attachment is not recorded, so neither the plan nor the write says so"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "WHERE meta_key = '_sgs_draft_asset' AND meta_value = %s ORDER BY post_id ASC\", $img['sha']",
+		"replace": "WHERE meta_key = '_sgs_draft_asset' AND meta_value = %s ORDER BY post_id DESC\", $img['sha']",
+		"why": "the newest attachment of an image is tried first"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "'image' => $sgs_file_exists( get_post_thumbnail_id( $id ) ) ? (int) get_post_thumbnail_id( $id ) : 0,",
+		"replace": "'image' => (int) get_post_thumbnail_id( $id ),",
+		"why": "the read counts a fileless thumbnail as the product's image"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "count( array_filter( $wc->get_gallery_image_ids(), $sgs_file_exists ) )",
+		"replace": "count( $wc->get_gallery_image_ids() )",
+		"why": "the read counts fileless gallery images"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $thumb && ! $sgs_file_exists( $thumb ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the write keeps a thumbnail with no file"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$thumb = 0;\n\t}",
+		"replace": "}",
+		"why": "the write reports a fileless thumbnail but keeps it"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "! array_filter( $wc->get_gallery_image_ids(), $sgs_file_exists )",
+		"replace": "! $wc->get_gallery_image_ids()",
+		"why": "the write keeps a gallery whose files are all missing"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $sgs_nofile ) { $done[] = 'image ' . $key",
+		"replace": "if ( false ) { $done[] = 'image ' . $key",
+		"why": "the write does not say it skipped a fileless attachment"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "'imagesNoFile' => (object) $nofile,",
+		"replace": "'imagesNoFile' => (object) array(),",
+		"why": "the read never reports the attachments it skipped"
+	},
+	{
+		"file": "lib/site-build-catalogue.mjs",
+		"find": "s.imageNoFile ? ",
+		"replace": "false ? ",
+		"why": "the plan line does not say a thumbnail's attachment has no file"
+	},
+	{
+		"file": "lib/site-build-catalogue.mjs",
+		"find": "Object.entries( state.imagesNoFile || {} )",
+		"replace": "Object.entries( {} )",
+		"why": "the plan never notes a skipped attachment"
+	}
+]

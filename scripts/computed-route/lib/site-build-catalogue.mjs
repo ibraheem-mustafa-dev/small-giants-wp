@@ -23,11 +23,14 @@
 //   - an address image is found by `_sgs_draft_image_source`, or for a stock photo by the media upload's file name, else
 //     fetched once whatever its address looks like (the file named from its stock name or address, its extension from
 //     the image's own type);
+//   - an attachment whose file is not on disk (a row copied from a mirror that lacks the uploads) is never matched: the
+//     image is uploaded or fetched again, the plan notes the skipped attachment, and a product whose thumbnail or gallery
+//     points only at such attachments counts as having no image there (the draft image or the photo-to-come image replaces it);
 //   - a product that would otherwise have no image (the draft gives none and the product found has none, or the draft's
 //     image cannot be added) gets the "photo to come" image (data/photo-to-come.png, Bean 2026-10-27), so WooCommerce's
 //     product checks let it publish: one attachment per site (found by its file's sha or name on a re-run, never
 //     uploaded twice), `_sgs_photo_to_come` on each product carrying it, and `photoToCome` in catalogue.json's
-//     `sites.<site>` record; an image the product already has is never replaced by it, a draft image replaces it, and
+//     `sites.<site>` record; an image the product already has (its file exists) is never replaced by it, a draft image replaces it, and
 //     the marker is cleared once the product shows another image. The product card shows it as the product's photo.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
@@ -85,7 +88,7 @@ function missing( p, s, state, catalogue ) {
 	}
 	const onPlaceholder = Boolean( s.image ) && s.image === ( state.images[ PHOTO_TO_COME ] || 0 );
 	if ( ! s.image ) {
-		out.push( p.image ? 'image' : 'the photo-to-come image' );
+		out.push( `${ p.image ? 'image' : 'the photo-to-come image' }${ s.imageNoFile ? ` (its attachment ${ s.imageNoFile } has no file)` : '' }` );
 	} else if ( p.image && onPlaceholder ) {
 		out.push( 'image (in place of the photo-to-come image)' );
 	} else if ( Boolean( s.photoToCome ) !== onPlaceholder ) {
@@ -181,6 +184,9 @@ export function planCatalogue( catalogue, state ) {
 	const facets = planFacets( catalogue, state );
 	notes.push( ...facets.notes );
 	problems.push( ...facets.problems );
+	for ( const [ key, ids ] of Object.entries( state.imagesNoFile || {} ) ) {
+		notes.push( `image ${ key }: attachment ${ ids.join( ', ' ) } on this site ${ 1 === ids.length ? 'has' : 'have' } no file, skipped (the image is made again)` );
+	}
 	const bare = actions.filter( ( a ) => a.placeholder ).map( ( a ) => a.draftId );
 	if ( bare.length ) {
 		notes.push( `${ bare.length } product(s) the draft gives no image get the photo-to-come image: ${ bare.join( ', ' ) }` );

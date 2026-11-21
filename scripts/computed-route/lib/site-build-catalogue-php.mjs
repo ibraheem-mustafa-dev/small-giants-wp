@@ -31,21 +31,32 @@ $sgs_find = function ( $p ) {
 	$by_slug = get_page_by_path( $p['slug'], OBJECT, 'product' );
 	return $by_slug ? array( (int) $by_slug->ID, 'slug' ) : array( 0, '' );
 };
-$sgs_attachment = function ( $img ) {
+// Whether an attachment has its file on disk: a row copied from another site (a mirror) can lack it, and a product pointing at
+// it shows a broken image. An attachment with no file is never matched, so the image is made again; the ids skipped for that
+// are kept in $sgs_nofile for the caller to report.
+$sgs_file_exists = function ( $id ) {
+	$file = $id ? get_attached_file( (int) $id ) : '';
+	return $file && file_exists( $file );
+};
+$sgs_nofile = array();
+$sgs_attachment = function ( $img ) use ( $sgs_file_exists, &$sgs_nofile ) {
 	global $wpdb;
 	if ( ! empty( $img['url'] ) ) {
-		$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_sgs_draft_image_source' AND meta_value = %s LIMIT 1", $img['url'] ) );
-		if ( ! $id && ! empty( $img['stem'] ) ) {
+		$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_sgs_draft_image_source' AND meta_value = %s ORDER BY post_id ASC", $img['url'] ) );
+		if ( ! empty( $img['stem'] ) ) {
 			$stem = $wpdb->esc_like( $img['stem'] ) . '.%';
-			$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND ( meta_value LIKE %s OR meta_value LIKE %s ) ORDER BY post_id ASC LIMIT 1", $stem, '%/' . $stem ) );
+			$ids = array_merge( $ids, (array) $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND ( meta_value LIKE %s OR meta_value LIKE %s ) ORDER BY post_id ASC", $stem, '%/' . $stem ) ) );
 		}
-		return $id ? (int) $id : 0;
+	} else {
+		$ids = (array) $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_sgs_draft_asset' AND meta_value = %s ORDER BY post_id ASC", $img['sha'] ) );
+		$like = '%/' . $wpdb->esc_like( $img['name'] );
+		$ids = array_merge( $ids, (array) $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND ( meta_value = %s OR meta_value LIKE %s ) ORDER BY post_id ASC", $img['name'], $like ) ) );
 	}
-	$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_sgs_draft_asset' AND meta_value = %s LIMIT 1", $img['sha'] ) );
-	if ( $id ) { return (int) $id; }
-	$like = '%/' . $wpdb->esc_like( $img['name'] );
-	$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND ( meta_value = %s OR meta_value LIKE %s ) ORDER BY post_id ASC LIMIT 1", $img['name'], $like ) );
-	return $id ? (int) $id : 0;
+	foreach ( array_unique( array_map( 'intval', $ids ) ) as $id ) {
+		if ( $sgs_file_exists( $id ) ) { return $id; }
+		$sgs_nofile[] = $id;
+	}
+	return 0;
 };
 // Whether an order holds a variation: an order line records it as _variation_id item meta (the order items tables are the
 // same under HPOS and legacy storage), which is what WooCommerce reads a line's variation from.
@@ -107,7 +118,7 @@ foreach ( $in as $p ) {
 		$cats = wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'names' ) );
 		$brand = taxonomy_exists( 'product_brand' ) ? wp_get_object_terms( $id, 'product_brand', array( 'fields' => 'names' ) ) : array();
 		$row += array( 'fixture' => $sgs_is_fixture( $id ), 'type' => $wc ? $wc->get_type() : get_post_type( $id ), 'status' => get_post_status( $id ), 'sku' => (string) get_post_meta( $id, '_sku', true ),
-			'price' => $wc ? (string) $wc->get_regular_price() : '', 'image' => (int) get_post_thumbnail_id( $id ), 'gallery' => $wc ? count( $wc->get_gallery_image_ids() ) : 0,
+			'price' => $wc ? (string) $wc->get_regular_price() : '', 'image' => $sgs_file_exists( get_post_thumbnail_id( $id ) ) ? (int) get_post_thumbnail_id( $id ) : 0, 'imageNoFile' => get_post_thumbnail_id( $id ) && ! $sgs_file_exists( get_post_thumbnail_id( $id ) ) ? (int) get_post_thumbnail_id( $id ) : 0, 'gallery' => $wc ? count( array_filter( $wc->get_gallery_image_ids(), $sgs_file_exists ) ) : 0,
 			'categories' => is_wp_error( $cats ) ? array() : $cats, 'brand' => is_wp_error( $brand ) ? array() : $brand, 'rrp' => (string) get_post_meta( $id, '_sgs_rrp', true ),
 			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'variesBy' => (object) $vb, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ),
 			'variationAttributes' => $vattrs, 'attributeTerms' => (object) $aterms, 'variationRows' => $rows );
@@ -116,11 +127,16 @@ foreach ( $in as $p ) {
 	$out[] = $row;
 }
 $found = array();
-foreach ( $imgs as $key => $img ) { $found[ $key ] = $sgs_attachment( $img ); }
+$nofile = array();
+foreach ( $imgs as $key => $img ) {
+	$sgs_nofile = array();
+	$found[ $key ] = $sgs_attachment( $img );
+	if ( $sgs_nofile ) { $nofile[ $key ] = array_values( array_unique( $sgs_nofile ) ); }
+}
 $ptc = (int) ( $found['${ PHOTO_TO_COME }'] ?? 0 );
 $shows = $ptc && function_exists( 'sgs_product_card_has_real_image' ) ? sgs_product_card_has_real_image( (string) wp_get_attachment_url( $ptc ) ) : null;
 $permalinks = (array) get_option( 'woocommerce_permalinks', array() );
-echo wp_json_encode( array( 'woocommerce' => true, 'products' => $out, 'images' => $found, 'facets' => (object) $facets, 'productBase' => trim( (string) ( $permalinks['product_base'] ?? '' ), '/' ), 'brandTaxonomy' => taxonomy_exists( 'product_brand' ), 'photoToComeShows' => $shows, 'plugins' => array_values( (array) get_option( 'active_plugins', array() ) ) ) );`;
+echo wp_json_encode( array( 'woocommerce' => true, 'products' => $out, 'images' => $found, 'imagesNoFile' => (object) $nofile, 'facets' => (object) $facets, 'productBase' => trim( (string) ( $permalinks['product_base'] ?? '' ), '/' ), 'brandTaxonomy' => taxonomy_exists( 'product_brand' ), 'photoToComeShows' => $shows, 'plugins' => array_values( (array) get_option( 'active_plugins', array() ) ) ) );`;
 }
 
 // The write: `steps` is the plan's actions with each product's catalogue record; `uploads` maps an image key to
@@ -147,9 +163,11 @@ if ( $base ) {
 		$done[] = 'product base /' . $base;
 	}
 }
-$image_id = function ( $key ) use ( $imgs, $uploads, $sgs_attachment, &$done, &$issues ) {
+$image_id = function ( $key ) use ( $imgs, $uploads, $sgs_attachment, &$sgs_nofile, &$done, &$issues ) {
 	if ( ! isset( $imgs[ $key ] ) ) { return 0; }
+	$sgs_nofile = array();
 	$have = $sgs_attachment( $imgs[ $key ] );
+	if ( $sgs_nofile ) { $done[] = 'image ' . $key . ': attachment ' . implode( ', ', array_unique( $sgs_nofile ) ) . ' has no file, skipped'; }
 	if ( $have ) { return $have; }
 	$u = $uploads[ $key ] ?? null;
 	if ( ! $u ) { return 0; }
@@ -307,10 +325,14 @@ foreach ( $steps as $s ) {
 			}
 		}
 	}
-	// An image the product has stays, unless it is the photo-to-come image and the draft gives one; a product that would
-	// be left with none gets the photo-to-come image.
+	// An image the product has (one whose file exists) stays, unless it is the photo-to-come image and the draft gives one; a
+	// product that would be left with none gets the photo-to-come image. A thumbnail whose attachment has no file counts as none.
 	$ptc = function () use ( $imgs, $sgs_attachment ) { return isset( $imgs['${ PHOTO_TO_COME }'] ) ? $sgs_attachment( $imgs['${ PHOTO_TO_COME }'] ) : 0; };
 	$thumb = (int) get_post_thumbnail_id( $id );
+	if ( $thumb && ! $sgs_file_exists( $thumb ) ) {
+		$done[] = $p['draftId'] . ': image attachment ' . $thumb . ' has no file, replaced';
+		$thumb = 0;
+	}
 	if ( ! $thumb || ( '${ PHOTO_TO_COME }' !== $s['image'] && $thumb === $ptc() ) ) {
 		$att = $s['image'] ? $image_id( $s['image'] ) : 0;
 		if ( ! $att && ! $thumb ) { $att = $image_id( '${ PHOTO_TO_COME }' ); }
@@ -323,7 +345,7 @@ foreach ( $steps as $s ) {
 		delete_post_meta( $id, '_sgs_photo_to_come' );
 	}
 	$wc = wc_get_product( $id );
-	if ( $s['gallery'] && ! $wc->get_gallery_image_ids() ) {
+	if ( $s['gallery'] && ! array_filter( $wc->get_gallery_image_ids(), $sgs_file_exists ) ) {
 		$ids = array_values( array_filter( array_map( $image_id, $s['gallery'] ) ) );
 		if ( $ids ) { $wc->set_gallery_image_ids( $ids ); $wc->save(); }
 	}

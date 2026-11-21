@@ -2,16 +2,20 @@
 // A stand-in WooCommerce for tests/site-build-catalogue-axes-php.test.mjs: the functions and classes the catalogue step's
 // read and write PHP (lib/site-build-catalogue-php.mjs) call, over an in-memory store that persists between php runs in
 // the state file named by SGS_STATE_FILE. Products, variations and attributes are posts; terms and global attributes are
-// tables; $W['orders'] lists the variation ids an order holds. Just enough of WooCommerce to run the step, not a copy of it.
+// tables; $W['orders'] lists the variation ids an order holds. Attachments are posts of type 'attachment' (their meta
+// holds _wp_attached_file, _sgs_draft_asset, _sgs_draft_image_source); $W['files'] says whether an attachment's file is on
+// disk: an id mapped to false has none (a row copied from a mirror), an id mapped to a path was uploaded here, any other id
+// has its file. Just enough of WooCommerce to run the step, not a copy of it.
 define( 'ABSPATH', sys_get_temp_dir() . '/sgs-stub-abspath/' );
 @mkdir( ABSPATH . 'wp-admin/includes', 0777, true );
+@mkdir( ABSPATH . 'uploads', 0777, true );
 foreach ( array( 'file', 'media', 'image' ) as $f ) { file_put_contents( ABSPATH . "wp-admin/includes/$f.php", "<?php\n" ); }
 const OBJECT = 'OBJECT';
 class WooCommerce {}
 class WC_Data_Exception extends Exception {
 	public function __construct( $code = '', $message = '' ) { parent::__construct( $message ); }
 }
-$W = is_file( SGS_STATE_FILE ) ? json_decode( file_get_contents( SGS_STATE_FILE ), true ) : array( 'next' => 100, 'posts' => array(), 'terms' => array(), 'attrs' => array(), 'objterms' => array(), 'orders' => array(), 'meta' => array() );
+$W = is_file( SGS_STATE_FILE ) ? json_decode( file_get_contents( SGS_STATE_FILE ), true ) : array( 'next' => 100, 'posts' => array(), 'terms' => array(), 'attrs' => array(), 'objterms' => array(), 'orders' => array(), 'meta' => array(), 'files' => array() );
 register_shutdown_function( function () { global $W; file_put_contents( SGS_STATE_FILE, json_encode( $W ) ); } );
 
 function sgs_next() { global $W; return $W['next']++; }
@@ -141,6 +145,46 @@ function get_option( $name, $d = false ) { return array( 'default_product_cat' =
 function update_option( $n, $v ) {}
 function delete_transient( $n ) {}
 function wp_get_attachment_url( $id ) { return ''; }
+// The attachment functions: a file is on disk unless $W['files'] maps the id to false; an uploaded one has its own path.
+function get_attached_file( $id ) {
+	global $W;
+	if ( ! $id ) { return false; }
+	$f = $W['files'][ $id ] ?? true;
+	if ( false === $f ) { return ABSPATH . 'uploads/missing-' . $id; }
+	if ( is_string( $f ) ) { return $f; }
+	$path = ABSPATH . 'uploads/att-' . $id;
+	if ( ! is_file( $path ) ) { file_put_contents( $path, 'x' ); }
+	return $path;
+}
+function sgs_attachment_row( $name ) { return array( 'type' => 'attachment', 'parent' => 0, 'status' => 'inherit', 'name' => $name, 'slug' => 'att-' . $name, 'sku' => '', 'price' => '', 'thumb' => 0, 'gallery' => array(), 'attrs' => array(), 'defaults' => array(), 'vattrs' => array(), 'meta' => array() ); }
+function sanitize_file_name( $n ) { return preg_replace( '/[^A-Za-z0-9._-]+/', '-', $n ); }
+function sanitize_text_field( $t ) { return trim( (string) $t ); }
+function wp_check_filetype( $f ) { return array( 'type' => 'image/png', 'ext' => 'png' ); }
+function wp_upload_bits( $name, $deprecated, $bits ) {
+	$path = ABSPATH . 'uploads/' . uniqid() . '-' . $name;
+	file_put_contents( $path, $bits );
+	return array( 'file' => $path, 'url' => '', 'error' => false );
+}
+function wp_insert_attachment( $a, $file ) {
+	global $W;
+	$id = sgs_next();
+	$W['posts'][ $id ] = sgs_attachment_row( $a['post_title'] );
+	$W['posts'][ $id ]['meta']['_wp_attached_file'] = basename( $file );
+	$W['files'][ $id ] = $file;
+	return $id;
+}
+function wp_generate_attachment_metadata( $id, $file ) { return array(); }
+function wp_update_attachment_metadata( $id, $m ) {}
+function download_url( $u ) { $t = ABSPATH . 'uploads/dl-' . uniqid(); file_put_contents( $t, 'x' ); return $t; }
+function wp_get_image_mime( $f ) { return 'image/jpeg'; }
+function wp_get_default_extension_for_mime_type( $m ) { return 'jpg'; }
+function wp_delete_file( $f ) { @unlink( $f ); }
+function wp_parse_url( $u, $c = -1 ) { return parse_url( $u, $c ); }
+function media_handle_sideload( $file, $parent ) {
+	$to = ABSPATH . 'uploads/' . uniqid() . '-' . $file['name'];
+	rename( $file['tmp_name'], $to );
+	return wp_insert_attachment( array( 'post_title' => $file['name'] ), $to );
+}
 function wp_json_encode( $v ) { return json_encode( $v ); }
 function is_wp_error( $v ) { return false; }
 function sanitize_hex_color( $c ) { return $c; }
@@ -170,7 +214,24 @@ class SgsStubDb {
 	public $postmeta = 'wp_postmeta';
 	public function prepare( $sql, ...$args ) { return vsprintf( str_replace( array( '%d', '%s' ), array( '%d', "'%s'" ), $sql ), $args ); }
 	public function esc_like( $s ) { return $s; }
-	// The only query the step makes that this stand-in answers: does an order item hold this variation?
+	// The attachment lookups: the rows of type 'attachment' whose meta under the queried key equals, or LIKE-matches, any of the
+	// quoted values, ascending by id (descending when the query says so).
+	public function get_col( $sql ) {
+		global $W;
+		if ( ! preg_match( "/meta_key = '(\w+)'/", $sql, $k ) || ! preg_match_all( "/meta_value (=|LIKE) '([^']*)'/", $sql, $m, PREG_SET_ORDER ) ) { return array(); }
+		$out = array();
+		foreach ( $W['posts'] as $id => $p ) {
+			if ( ! $p || 'attachment' !== $p['type'] || ! isset( $p['meta'][ $k[1] ] ) ) { continue; }
+			foreach ( $m as $c ) {
+				$hit = '=' === $c[1] ? $p['meta'][ $k[1] ] === $c[2] : (bool) preg_match( '/^' . str_replace( '%', '.*', preg_quote( $c[2], '/' ) ) . '$/', $p['meta'][ $k[1] ] );
+				if ( $hit ) { $out[] = (string) $id; break; }
+			}
+		}
+		sort( $out, SORT_NUMERIC );
+		if ( false !== strpos( $sql, 'ORDER BY post_id DESC' ) ) { $out = array_reverse( $out ); }
+		return $out;
+	}
+	// The only scalar query the step makes that this stand-in answers: does an order item hold this variation?
 	public function get_var( $sql ) {
 		global $W;
 		return preg_match( '/woocommerce_order_itemmeta WHERE meta_key = \'_variation_id\' AND meta_value = (\d+)/', $sql, $m ) && in_array( (int) $m[1], $W['orders'], true ) ? '9' : null;
