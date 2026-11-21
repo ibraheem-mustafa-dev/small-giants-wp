@@ -1,0 +1,302 @@
+{
+    "(theme.json alone)": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "12px 24px 12px 24px",
+            "border": "2px solid #1F7A7A",
+            "border-radius": "8px",
+            "background": "#1F7A7A",
+            "color": "#ffffff",
+            "font": "inherit",
+            "font-size": "15px",
+            "font-weight": "600",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#1A202C",
+            "border-color": "#1A202C",
+            "color": "#ffffff"
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "eye-care-ward-end": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 52px)",
+            "min-width": "44px",
+            "padding": "0px 28px 0px 28px",
+            "border": "0px solid",
+            "border-radius": "0px",
+            "background": "",
+            "color": "",
+            "font": "inherit",
+            "font-size": "13px",
+            "font-weight": "400",
+            "letter-spacing": "1.3px",
+            "text-transform": "uppercase",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#2a2a2a",
+            "border-color": "",
+            "color": ""
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "helping-doctors": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "12px 24px 12px 24px",
+            "border": "2px solid #2d6e5e",
+            "border-radius": "8px",
+            "background": "#2d6e5e",
+            "color": "#ffffff",
+            "font": "inherit",
+            "font-size": "15px",
+            "font-weight": "600",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#1a1a1a",
+            "border-color": "#1a1a1a",
+            "color": "#ffffff"
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "indus-foods": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "12px 18px 12px 18px",
+            "border": "0px solid",
+            "border-radius": "999px",
+            "background": "",
+            "color": "",
+            "font": "inherit",
+            "font-size": "15px",
+            "font-weight": "600",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#2c3e50",
+            "border-color": "",
+            "color": "#d8ca50"
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "mamas-munches": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "12px 24px 12px 24px",
+            "border": "2px solid #e68a95",
+            "border-radius": "10px",
+            "background": "#e68a95",
+            "color": "#3a2e26",
+            "font": "inherit",
+            "font-size": "15px",
+            "font-weight": "600",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#41322b",
+            "border-color": "#41322b",
+            "color": "#f7f1ec"
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "mamas-munches-redesign": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "0px 30px 0px 30px",
+            "border": "2px solid",
+            "border-radius": "999px",
+            "background": "",
+            "color": "",
+            "font": "inherit",
+            "font-size": "17px",
+            "font-weight": "700",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "",
+            "border-color": "",
+            "color": ""
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "sgs-construction": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "12px 24px 12px 24px",
+            "border": "2px solid #1C1C1C",
+            "border-radius": "8px",
+            "background": "#1C1C1C",
+            "color": "#ffffff",
+            "font": "inherit",
+            "font-size": "15px",
+            "font-weight": "600",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#1C1C1C",
+            "border-color": "#1C1C1C",
+            "color": "#ffffff"
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "sgs-healthcare": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "12px 24px 12px 24px",
+            "border": "2px solid #1A5F6B",
+            "border-radius": "8px",
+            "background": "#1A5F6B",
+            "color": "#ffffff",
+            "font": "inherit",
+            "font-size": "15px",
+            "font-weight": "600",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#1A2E35",
+            "border-color": "#1A2E35",
+            "color": "#ffffff"
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "sgs-mosque": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "12px 24px 12px 24px",
+            "border": "2px solid #1A3D2B",
+            "border-radius": "8px",
+            "background": "#1A3D2B",
+            "color": "#ffffff",
+            "font": "inherit",
+            "font-size": "15px",
+            "font-weight": "600",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#1A2E22",
+            "border-color": "#1A2E22",
+            "color": "#ffffff"
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    },
+    "sgs-professional": {
+        ".sgs-shop-load-more__button": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-height": "max(44px, 48px)",
+            "min-width": "44px",
+            "padding": "12px 24px 12px 24px",
+            "border": "2px solid #1E2D5E",
+            "border-radius": "8px",
+            "background": "#1E2D5E",
+            "color": "#ffffff",
+            "font": "inherit",
+            "font-size": "15px",
+            "font-weight": "600",
+            "letter-spacing": "normal",
+            "text-transform": "none",
+            "cursor": "pointer",
+            "transition": "none"
+        },
+        ".sgs-shop-load-more__button:hover": {
+            "background": "#1E2D5E",
+            "border-color": "#1E2D5E",
+            "color": "#ffffff"
+        },
+        ".sgs-shop-load-more__button:disabled": {
+            "cursor": "progress",
+            "opacity": "0.75"
+        }
+    }
+}
