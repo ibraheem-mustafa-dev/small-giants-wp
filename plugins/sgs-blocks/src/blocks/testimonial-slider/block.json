@@ -20,6 +20,10 @@
 			"motion": true,
 			"collection": true,
 			"iconPicker": true,
+			"builtinButtons": [
+				{ "prefix": "arrow", "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "shadow" ], "elements": [ "pause" ] }
+			],
+			"carouselDots": { "prefix": "dot", "part": "dot", "label": "Carousel dots" },
 			"containerKind": "layout",
 			"elements": {
 				"slider": {
@@ -78,16 +82,63 @@
 				"arrow": {
 					"label": "Prev/next arrow",
 					"order": 3,
-					"clusters": [],
-					"_note": "showArrows toggles visibility only — no colour/size/style attrs exist per-arrow; styling comes from static style.css theme defaults.",
+					"clusters": [ "text", "fill", "layout" ],
+					"prefix": "arrow",
+					"attrMap": {
+						"css:background-color": "arrowColourBackground",
+						"css:color": "arrowColourText",
+						"css:border-color": "arrowColourBorder",
+						"css:border-width": "arrowBorderWidth",
+						"css:border-style": "arrowBorderStyle",
+						"css:border-radius": "arrowBorderRadius",
+						"css:width": "arrowSize",
+						"css:height": "arrowSize",
+						"css:box-shadow": "arrowShadow",
+						"css:box-shadow-color": "arrowShadowColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "arrowColourBackgroundHover",
+								"css:color": "arrowColourTextHover",
+								"css:border-color": "arrowColourBorderHover",
+								"css:box-shadow": "arrowShadowHover",
+								"css:box-shadow-color": "arrowShadowColourHover"
+							}
+						}
+					},
+					"_note": "showArrows toggles visibility. The look is the button kit's `arrow` set (supports.sgs.builtinButtons, prefix arrow: colour, hover colour, border, radius, size, shadow), printed by includes/helpers-carousel-dots.php::sgs_carousel_controls_css; unset, style.css draws the 44px primary circle. The pause button wears the same set.",
 					"absentIn": [ "controls-off" ],
 					"absentWhy": "Arrows and dots print only when showArrows and showDots are on."
 				},
 				"dot": {
 					"label": "Navigation dot",
 					"order": 4,
-					"clusters": [],
-					"_note": "showDots toggles visibility only — no colour/size attrs exist per-dot.",
+					"clusters": [ "fill", "layout" ],
+					"prefix": "dot",
+					"attrMap": {
+						"css:width": "dotSize",
+						"css:height": "dotSize",
+						"css:gap": "dotGap",
+						"css:background-color": "dotColour",
+						"css:border-width": "dotBorderWidth",
+						"css:border-color": "dotBorderColour",
+						"css:border-radius": "dotRadius"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "dotColourHover"
+							}
+						},
+						"current": {
+							"attrMap": {
+								"css:background-color": "dotColourActive",
+								"css:width": "dotActiveWidth"
+							}
+						}
+					},
+					"_note": "showDots toggles visibility. The look is the carousel dots kit (supports.sgs.carouselDots, prefix dot: size, current width, gap, colour with hover and current, border, radius), printed by sgs_carousel_controls_css; unset, style.css draws the 10px muted dot.",
 					"absentIn": [ "controls-off" ],
 					"absentWhy": "Arrows and dots print only when showArrows and showDots are on."
 				},
@@ -590,7 +641,30 @@
 				"vertical-lr"
 			],
 			"default": ""
-		}
+		},
+		"arrowColourBackground": {"type":"string","_generated":"button-kit"},
+		"arrowColourText": {"type":"string","_generated":"button-kit"},
+		"arrowColourBorder": {"type":"string","_generated":"button-kit"},
+		"arrowColourBackgroundHover": {"type":"string","_generated":"button-kit"},
+		"arrowColourTextHover": {"type":"string","_generated":"button-kit"},
+		"arrowColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"arrowBorderStyle": {"type":"string","_generated":"button-kit"},
+		"arrowBorderWidth": {"type":"object","_generated":"button-kit"},
+		"arrowBorderRadius": {"type":"object","_generated":"button-kit"},
+		"arrowSize": {"type":"object","_generated":"button-kit"},
+		"arrowShadow": {"type":"string","_generated":"button-kit"},
+		"arrowShadowColour": {"type":"string","_generated":"button-kit"},
+		"arrowShadowHover": {"type":"string","_generated":"button-kit"},
+		"arrowShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"dotSize": {"type":"object","_generated":"carousel-dots"},
+		"dotActiveWidth": {"type":"object","_generated":"carousel-dots"},
+		"dotGap": {"type":"object","_generated":"carousel-dots"},
+		"dotColour": {"type":"string","_generated":"carousel-dots"},
+		"dotColourActive": {"type":"string","_generated":"carousel-dots"},
+		"dotColourHover": {"type":"string","_generated":"carousel-dots"},
+		"dotBorderWidth": {"type":"string","_generated":"carousel-dots"},
+		"dotBorderColour": {"type":"string","_generated":"carousel-dots"},
+		"dotRadius": {"type":"string","_generated":"carousel-dots"}
 	},
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",

@@ -736,6 +736,17 @@ $gallery_responsive_css .= sgs_gallery_grid_layout_css( $root_sel . ' .sgs-galle
 // A device tier whose layout differs from the desktop one (and the swipe row's card width and edge padding).
 $gallery_responsive_css .= sgs_gallery_layout_css( $root_sel . ' .sgs-gallery__grid', $attributes );
 $gallery_responsive_css .= sgs_gallery_scroll_css( $root_sel . ' .sgs-gallery__grid', $attributes );
+// The carousel's arrows, pause button and dots (the button kit, prefix `arrow`; the carousel dots kit, prefix `dot`): rules only for a look setting that is set.
+$gallery_responsive_css .= sgs_carousel_controls_css(
+	$attributes,
+	$root_sel,
+	array(
+		'arrows' => array( '.sgs-gallery__carousel-prev', '.sgs-gallery__carousel-next', '.sgs-gallery__pause' ),
+		'dots'   => '.sgs-gallery__carousel-dots',
+		'dot'    => '.sgs-gallery__dot',
+		'active' => '.sgs-gallery__dot--active',
+	)
+);
 
 // Lines between the grid layout's items: the shared Separators setting
 // (includes/helpers-separators.php), flow path, on the image grid. Masonry and carousel

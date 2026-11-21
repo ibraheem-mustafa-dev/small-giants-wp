@@ -151,8 +151,8 @@
 	display:        flex;
 	align-items:    center;
 	justify-content: center;
-	width:          44px;
-	height:         44px;
+	width:          var( --sgs-carousel-arrow-size, 44px );
+	height:         var( --sgs-carousel-arrow-size, 44px );
 	border:         none;
 	border-radius:  50%;
 	background:     rgba( 0, 0, 0, 0.55 );
@@ -204,10 +204,10 @@
 }
 
 .sgs-gallery__dot {
-	width:        10px;
-	height:       10px;
-	min-width:    44px;
-	min-height:   44px;
+	width:        var( --sgs-carousel-dot-size, 10px );
+	height:       var( --sgs-carousel-dot-size, 10px );
+	min-width:    var( --sgs-carousel-dot-size, 44px );
+	min-height:   var( --sgs-carousel-dot-size, 44px );
 	padding:      0;
 	border:       none;
 	border-radius: 50%;

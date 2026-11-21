@@ -28,6 +28,8 @@ import {
 	SgsBoxControl,
 	SgsSeparatorControl,
 } from '../../components';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
+import CarouselDotsPanel from '../../components/CarouselDotsPanel';
 import ScrollSidewaysPanel from './components/ScrollSidewaysPanel';
 import PinEdgeControl from './components/PinEdgeControl';
 import HoverAsCardPanel from './components/HoverAsCardPanel';
@@ -1205,6 +1207,18 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/container"
+				prefix="arrow"
+			/>
+			<CarouselDotsPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/container"
+				prefix="dot"
+			/>
 
 			{ hasBandProps ? (
 				<div { ...blockProps }>

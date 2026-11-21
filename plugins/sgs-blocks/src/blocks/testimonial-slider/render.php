@@ -358,6 +358,19 @@ if ( isset( $attributes['slideBleed'] ) && is_array( $attributes['slideBleed'] )
 		)
 	);
 }
+// The arrows and the pause button (the button kit, prefix `arrow`) and the dots (the carousel dots kit, prefix `dot`): rules only for a
+// look setting that is set, so a slider with none set prints what it always did.
+$slider_scoped_css .= sgs_carousel_controls_css(
+	$attributes,
+	$root_sel,
+	array(
+		'arrows'     => array( '.sgs-testimonial-slider__arrow', '.sgs-testimonial-slider__pause' ),
+		'dots'       => '.sgs-testimonial-slider__dots',
+		'dot'        => '.sgs-testimonial-slider__dot',
+		'active'     => '.sgs-testimonial-slider__dot--active',
+		'dot_pseudo' => '::before',
+	)
+);
 $track_style_attr   = '';
 
 // ── Unique prefix for slide/dot IDs ────────────────────────────────────────

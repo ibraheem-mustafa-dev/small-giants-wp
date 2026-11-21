@@ -192,9 +192,10 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 44px;
-	height: 44px;
-	border-radius: 50%;
+	width: var(--sgs-carousel-arrow-size, 44px);
+	height: var(--sgs-carousel-arrow-size, 44px);
+	/* The arrow's own settings (arrowBorderRadius, arrowSize...) print scoped rules that out-rank this; the custom property is the overridable default. */
+	border-radius: var(--sgs-carousel-arrow-radius, 50%);
 	border: none;
 	background: var(--wp--preset--color--primary, #0F7E80);
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #ffffff));
@@ -231,8 +232,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 22px;
-	height: 22px;
+	/* Half the arrow, which is 22px of the 44px default, so an arrow sized by arrowSize keeps its icon in proportion. */
+	width: var(--sgs-carousel-arrow-icon, 50%);
+	height: var(--sgs-carousel-arrow-icon, 50%);
 	pointer-events: none;
 }
 
@@ -322,8 +324,8 @@
  * and centring. This rule gives it the slider's look.
  */
 .sgs-testimonial-slider__pause {
-	width: 44px;
-	height: 44px;
+	width: var(--sgs-carousel-arrow-size, 44px);
+	height: var(--sgs-carousel-arrow-size, 44px);
 	border-radius: 50%;
 	border: 1px solid var(--wp--preset--color--border, #ccc);
 	background: var(--wp--preset--color--surface, #fff);

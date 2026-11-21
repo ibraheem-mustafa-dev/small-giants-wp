@@ -137,4 +137,85 @@ final class CarouselControlsRenderPinTest extends TestCase {
 		$pinned = json_decode( (string) file_get_contents( $file ), true );
 		$this->assertNotSame( $pinned['html'], str_replace( 'sgs-testimonial-slider__arrow', 'sgs-testimonial-slider__arrowX', $pinned['html'] ) );
 	}
+
+	/**
+	 * Per block: the look settings to set, and the rules the scoped CSS must then hold.
+	 *
+	 * @return array<string, array{0: string, 1: array<string, mixed>, 2: array<int, string>}>
+	 */
+	public static function set_looks(): array {
+		$look = array(
+			'arrowColourBackground' => '#112233',
+			'arrowColourText'       => '#ffffff',
+			'arrowSize'             => array( 'desktop' => 36, 'mobile' => 28 ),
+			'arrowBorderRadius'     => array( 'desktop' => array( 'topLeft' => '4px', 'topRight' => '4px', 'bottomRight' => '4px', 'bottomLeft' => '4px' ) ),
+			'dotSize'               => array( 'desktop' => 8 ),
+			'dotGap'                => array( 'desktop' => 12 ),
+			'dotColour'             => '#cccccc',
+			'dotColourActive'       => '#112233',
+			'dotActiveWidth'        => array( 'desktop' => 24 ),
+		);
+		return array(
+			'testimonial-slider' => array(
+				'testimonial-slider',
+				$look,
+				array(
+					'.wp-block-sgs-testimonial-slider .sgs-testimonial-slider__arrow, ',
+					'.sgs-testimonial-slider__pause{background-color:#112233;',
+					'.sgs-testimonial-slider__arrow, ', // the arrows and the pause button are one comma list.
+					'width:36px;height:36px;',
+					'border-top-left-radius:4px;border-top-right-radius:4px;border-bottom-left-radius:4px;border-bottom-right-radius:4px;', // the per-device corners the panel writes, printed by the kit's radius rule.
+					'--sgs-carousel-arrow-size:36px;',
+					'.sgs-testimonial-slider__dot:not(.sgs-testimonial-slider__dot--active)::before{background-color:#cccccc;}',
+					'.sgs-testimonial-slider__dot--active::before{background-color:#112233;}',
+					'.sgs-testimonial-slider__dots{gap:12px;}',
+					'.sgs-testimonial-slider__dot::before{width:8px;height:8px;',
+					'.sgs-testimonial-slider__dot--active::before{width:24px;min-width:24px;}',
+				),
+			),
+			'container-scroll-row' => array(
+				'container-scroll-row',
+				$look,
+				array(
+					'.sgs-container__arrow{background-color:#112233;',
+					'.sgs-container__arrow{width:36px;height:36px;}',
+					'border-top-left-radius:4px;border-top-right-radius:4px;border-bottom-left-radius:4px;border-bottom-right-radius:4px;',
+					'.sgs-container__dot:not(.sgs-container__dot--active)::before{background-color:#cccccc;}',
+					'.sgs-container__dots{gap:12px;}',
+					'.sgs-container__dot--active::before{width:24px;min-width:24px;}',
+				),
+			),
+			'gallery-carousel' => array(
+				'gallery-carousel',
+				$look,
+				array(
+					'.sgs-gallery__carousel-prev, ',
+					'.sgs-gallery__pause{background-color:#112233;',
+					'width:36px;height:36px;',
+					'border-top-left-radius:4px;border-top-right-radius:4px;border-bottom-left-radius:4px;border-bottom-right-radius:4px;',
+					'.sgs-gallery__dot:not(.sgs-gallery__dot--active){background-color:#cccccc;}',
+					'.sgs-gallery__dot--active{background-color:#112233;}',
+					'.sgs-gallery__carousel-dots{gap:12px;}',
+					'.sgs-gallery__dot--active{width:24px;min-width:24px;}',
+				),
+			),
+		);
+	}
+
+	/**
+	 * @param string                $name     Pin case name.
+	 * @param array<string, mixed>  $look     Look settings to add.
+	 * @param array<int, string>    $expected Strings the scoped CSS must contain.
+	 */
+	#[DataProvider( 'set_looks' )]
+	public function test_set_look_settings_print_scoped_rules_and_never_an_inline_style( string $name, array $look, array $expected ): void {
+		$case = self::cases()[ $name ];
+		$now  = $this->render( $case[0], array_merge( $case[1], $look ), $case[2], $case[3] );
+		foreach ( $expected as $snippet ) {
+			$this->assertStringContainsString( $snippet, $now['css'], $name . ' scoped CSS lacks ' . $snippet );
+		}
+		$this->assertStringNotContainsString( 'style="', $now['html'], $name . ' prints no inline style attribute' );
+		$pinned = json_decode( (string) file_get_contents( self::DIR . $name . '.json' ), true );
+		$this->assertNotSame( $pinned['css'], $now['css'], 'a set look changes the CSS: the pin guards the unset case only' );
+	}
 }

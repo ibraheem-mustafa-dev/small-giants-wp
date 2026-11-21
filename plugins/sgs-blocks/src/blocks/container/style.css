@@ -348,11 +348,12 @@
 	align-items: center;
 	justify-content: center;
 	box-sizing: border-box;
-	width: 44px;
-	height: 44px;
+	width: var(--sgs-carousel-arrow-size, 44px);
+	height: var(--sgs-carousel-arrow-size, 44px);
 	padding: 0;
 	border: none;
-	border-radius: 50%;
+	/* The arrow's own settings (arrowBorderRadius, arrowSize...) print scoped rules that out-rank this; the custom property is the overridable default. */
+	border-radius: var(--sgs-carousel-arrow-radius, 50%);
 	background: var(--wp--preset--color--primary, #0F7E80);
 	color: var(--wp--preset--color--primary-text, var(--wp--preset--color--text-inverse, #ffffff));
 	cursor: pointer;
@@ -364,8 +365,9 @@
 
 .sgs-container__arrow svg {
 	display: block;
-	width: 22px;
-	height: 22px;
+	/* Half the arrow, which is 22px of the 44px default, so an arrow sized by arrowSize keeps its icon in proportion. */
+	width: var(--sgs-carousel-arrow-icon, 50%);
+	height: var(--sgs-carousel-arrow-icon, 50%);
 	pointer-events: none;
 }
 
@@ -397,7 +399,7 @@
 	align-items: center;
 	justify-content: center;
 	box-sizing: border-box;
-	width: 32px;
+	width: var(--sgs-carousel-dot-hit, 32px);
 	height: 44px;
 	min-width: 0;
 	min-height: 0;

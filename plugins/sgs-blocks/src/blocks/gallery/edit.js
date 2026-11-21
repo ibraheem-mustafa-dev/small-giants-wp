@@ -65,6 +65,8 @@ import GalleryCanvas from './components/GalleryCanvas';
 import GalleryBorderControl from './components/GalleryBorderControl';
 import GalleryTilePanel from './components/GalleryTilePanel';
 import MediaElementPanel from '../../components/MediaElementPanel';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
+import CarouselDotsPanel from '../../components/CarouselDotsPanel';
 import mediaPreview from '../../components/media/mediaPreview';
 import metadata from './block.json';
 
@@ -505,6 +507,19 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				blockName="sgs/gallery"
 				atoms={ [ 'object-fit', 'sizing', 'shape' ] }
 				context="item"
+			/>
+
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/gallery"
+				prefix="arrow"
+			/>
+			<CarouselDotsPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/gallery"
+				prefix="dot"
 			/>
 
 			<GalleryCanvas

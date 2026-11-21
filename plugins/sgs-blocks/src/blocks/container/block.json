@@ -24,6 +24,10 @@
 		"html": false,
 		"color": false,
 		"sgs": {
+			"builtinButtons": [
+				{ "prefix": "arrow", "part": "arrow", "label": "Scroll row arrows", "groups": [ "colour", "border", "size", "shadow" ] }
+			],
+			"carouselDots": { "prefix": "dot", "part": "dot", "label": "Scroll row dots" },
 			"mediaElements": [
 				{
 					"prefix": "background",
@@ -928,7 +932,30 @@
 		"backgroundSvgTextShadow": {"type":"boolean","_generated":"media-atoms"},
 		"backgroundSvgParts": {"type":"array","default":[],"_generated":"media-atoms"},
 		"backgroundSvgPartsTrigger": {"type":"string","_generated":"media-atoms"},
-		"backgroundPlayback": {"type":"object","_generated":"media-atoms"}
+		"backgroundPlayback": {"type":"object","_generated":"media-atoms"},
+		"arrowColourBackground": {"type":"string","_generated":"button-kit"},
+		"arrowColourText": {"type":"string","_generated":"button-kit"},
+		"arrowColourBorder": {"type":"string","_generated":"button-kit"},
+		"arrowColourBackgroundHover": {"type":"string","_generated":"button-kit"},
+		"arrowColourTextHover": {"type":"string","_generated":"button-kit"},
+		"arrowColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"arrowBorderStyle": {"type":"string","_generated":"button-kit"},
+		"arrowBorderWidth": {"type":"object","_generated":"button-kit"},
+		"arrowBorderRadius": {"type":"object","_generated":"button-kit"},
+		"arrowSize": {"type":"object","_generated":"button-kit"},
+		"arrowShadow": {"type":"string","_generated":"button-kit"},
+		"arrowShadowColour": {"type":"string","_generated":"button-kit"},
+		"arrowShadowHover": {"type":"string","_generated":"button-kit"},
+		"arrowShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"dotSize": {"type":"object","_generated":"carousel-dots"},
+		"dotActiveWidth": {"type":"object","_generated":"carousel-dots"},
+		"dotGap": {"type":"object","_generated":"carousel-dots"},
+		"dotColour": {"type":"string","_generated":"carousel-dots"},
+		"dotColourActive": {"type":"string","_generated":"carousel-dots"},
+		"dotColourHover": {"type":"string","_generated":"carousel-dots"},
+		"dotBorderWidth": {"type":"string","_generated":"carousel-dots"},
+		"dotBorderColour": {"type":"string","_generated":"carousel-dots"},
+		"dotRadius": {"type":"string","_generated":"carousel-dots"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

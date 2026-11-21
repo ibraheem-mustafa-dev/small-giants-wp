@@ -3350,6 +3350,19 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// grid/flex rules written above on the same selector.
 			if ( $sgs_scroll_row_on && $uid ) {
 				$responsive_css .= sgs_container_scroll_row_css( $grid_sel, $attributes, $container_queries, $padding_on_band ? ( $attributes['padding'] ?? array() ) : array() );
+				// The row's arrows and dots (the button kit, prefix `arrow`; the carousel dots kit, prefix `dot`): rules only for a look setting that is set.
+				$responsive_css .= sgs_carousel_controls_css(
+					$attributes,
+					'.' . $uid . '.' . $uid,
+					array(
+						'arrows'     => array( '.sgs-container__arrow' ),
+						'dots'       => '.sgs-container__dots',
+						'dot'        => '.sgs-container__dot',
+						'active'     => '.sgs-container__dot--active',
+						'dot_pseudo' => '::before',
+					),
+					array( 'container' => $container_queries )
+				);
 			}
 
 			$style_tag = '';

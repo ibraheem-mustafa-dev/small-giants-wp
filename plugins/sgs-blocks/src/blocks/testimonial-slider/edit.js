@@ -27,6 +27,8 @@ import { SgsColourPanel, fillRow, textRow, IconPicker, ResponsiveOverride, Respo
 } from '../../components';
 import { resolveResponsiveTier } from '../../utils/responsive';
 import { containerWrapperPreview, backgroundPaintPreview, textPaintPreview, typographyPreviewStyle, usePreviewTier, BandWrap } from '../../utils';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
+import CarouselDotsPanel from '../../components/CarouselDotsPanel';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
@@ -709,6 +711,18 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/testimonial-slider"
+				prefix="arrow"
+			/>
+			<CarouselDotsPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/testimonial-slider"
+				prefix="dot"
+			/>
 			{ /* showLayout={false}: the block owns its own slide structure (__stage > __track,
 			     --sgs-slides-visible) and declares no container layout attributes. */ }
 			<ContainerWrapperControls
