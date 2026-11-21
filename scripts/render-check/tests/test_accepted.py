@@ -20,6 +20,14 @@ def test_where_narrows_an_entry_to_its_state():
     assert cmp.accepted_by(REST, "home", 375, [ENTRY]) is None
 
 
+def test_where_is_the_state_word_never_a_part_of_the_element():
+    # MUST FAIL on 1ee6b05b8: "rest" was found inside the probe's key (".sgs-focus-rests"), so a resting sign-off accepted a focus change.
+    focus_on_rests = {"el": "a.sgs-menu", "where": "focus on a.sgs-menu.sgs-focus-rests"}
+    entry = {"state": "*", "element": "sgs-menu", "where": "rest", "commit": "x", "pair": "x.png"}
+    assert cmp.accepted_by(focus_on_rests, "home", 375, [entry]) is None
+    assert cmp.validate_accepted({"entries": [dict(entry, where="focsu")]}) != []
+
+
 def test_an_entry_without_where_covers_every_state():
     plain = {k: v for k, v in ENTRY.items() if k != "where"}
     assert cmp.accepted_by(REST, "home", 375, [plain]) is plain

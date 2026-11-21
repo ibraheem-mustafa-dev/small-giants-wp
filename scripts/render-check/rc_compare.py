@@ -172,12 +172,14 @@ def validate_accepted(data: dict) -> list[str]:
         for k in ("state", "commit", "pair"):
             if not str(e.get(k, "")).strip():
                 errs.append(f"entry {i}: missing {k}")
+        if "where" in e and e["where"] not in ("rest", "hover", "focus"):
+            errs.append(f"entry {i}: where must be rest, hover or focus, not {e['where']!r}")
     return errs
 
 
 def accepted_by(d: dict, state: str, width: int, entries: list[dict]) -> dict | None:
-    """The first entry that covers one difference: its state pattern, and its width, element and where (a part of the
-    difference's `rest`, `hover on ...` or `focus on ...`) when it names them."""
+    """The first entry that covers one difference: its state pattern, and its width, element and where (the difference's
+    state word: `rest`, `hover` or `focus`, never a part of the probed element's key) when it names them."""
     for e in entries:
         if not fnmatch.fnmatch(state, e["state"]):
             continue
@@ -185,7 +187,7 @@ def accepted_by(d: dict, state: str, width: int, entries: list[dict]) -> dict | 
             continue
         if e.get("element") and e["element"] not in d["el"]:
             continue
-        if e.get("where") and e["where"] not in str(d.get("where", "")):
+        if e.get("where") and e["where"] != str(d.get("where", "")).split(" on ", 1)[0]:
             continue
         return e
     return None
