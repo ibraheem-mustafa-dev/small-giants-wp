@@ -391,6 +391,8 @@ export default function Edit( { attributes, setAttributes } ) {
 			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="signedOutSignIn" />
 			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="signedOutRegister" />
 			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="emptyState" />
+			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="loginButton" />
+			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="registerButton" />
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
 					<ServerSideRender

@@ -35,7 +35,6 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 		rrpPillPadding,
 		rrpPillRadius,
 		priceRowGap,
-		addToCartPadding,
 		pickerVariationSwatch,
 		gallerySavingBadge,
 		gallerySavingBadgeFormat,
@@ -180,12 +179,6 @@ export function BuyboxExtraSettingsPanels3( { attributes, setAttributes } ) {
 					onChange={ ( val ) => setAttributes( { priceRowGap: val ?? '' } ) }
 					help={ __( 'Space between the price, the RRP and the saving pill. Empty = the default 8px.', 'sgs-blocks' ) }
 					presets={ false }
-				/>
-				<SgsBoxControl
-					label={ __( 'Add to cart button padding', 'sgs-blocks' ) }
-					values={ addToCartPadding ?? {} }
-					presets
-					onChange={ ( next ) => setAttributes( { addToCartPadding: next } ) }
 				/>
 			</PanelBody>
 

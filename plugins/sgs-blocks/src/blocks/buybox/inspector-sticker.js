@@ -10,14 +10,7 @@ import {
 	SgsLengthControl,
 	SgsBoxControl,
 	SgsBorderControl,
-	ShadowControl,
-	shadowAttrKeys,
 } from '../../components';
-
-const CART_SHADOW_KEYS = shadowAttrKeys( 'addToCartShadow', {
-	hover: true,
-	hoverColour: true,
-} );
 
 const CORNERS = [
 	[ 'top-left', __( 'Top left', 'sgs-blocks' ) ],
@@ -27,9 +20,9 @@ const CORNERS = [
 ];
 
 /**
- * Settings-tab panels for the photo sticker (gallery-sticker.php) and the add-to-cart
- * button's shadow. The sticker's fill and text colours sit in the Colours panel
- * (inspector-extra.js); its type controls sit in the Typography panel.
+ * Settings-tab panel for the photo sticker (gallery-sticker.php). The sticker's fill and text colours sit in the Colours
+ * panel (inspector-extra.js); its type controls sit in the Typography panel. The add-to-cart button's shadow is in the
+ * button kit's panel (components/BuiltinButtonPanel.js, prefix addToCart).
  *
  * @param {Object}   o
  * @param {Object}   o.attributes    The block's attributes.
@@ -239,19 +232,6 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 						/>
 					</>
 				) }
-			</PanelBody>
-
-			<PanelBody
-				title={ __( 'Add to cart shadow', 'sgs-blocks' ) }
-				initialOpen={ false }
-			>
-				<ShadowControl
-					label={ __( 'Button shadow', 'sgs-blocks' ) }
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					attrNames={ CART_SHADOW_KEYS }
-					liftPrefix="addToCart"
-				/>
 			</PanelBody>
 		</>
 	);

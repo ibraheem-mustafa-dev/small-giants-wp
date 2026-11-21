@@ -69,6 +69,8 @@ export function declaredButton( blockName, prefix ) {
  * @param {Function} props.setAttributes Block `setAttributes`.
  * @param {string}   props.blockName     Block name, to read the button's `supports.sgs.builtinButtons` entry.
  * @param {string}   props.prefix        The button's attribute prefix.
+ * @param {Function} [props.seedForPreset] Optional: given the preset slug just picked, returns further attributes to write with it
+ *                                         (the product card seeds its colours and border from the preset).
  * @return {Object|null} The mounted panels, or null.
  */
 export default function BuiltinButtonPanel( {
@@ -76,6 +78,7 @@ export default function BuiltinButtonPanel( {
 	setAttributes,
 	blockName,
 	prefix,
+	seedForPreset,
 } ) {
 	const entry = declaredButton( blockName, prefix );
 	if ( ! entry ) {
@@ -90,6 +93,7 @@ export default function BuiltinButtonPanel( {
 				prefix={ prefix }
 				label={ entry.label }
 				groups={ entry.groups }
+				seedForPreset={ seedForPreset }
 			/>
 		</Suspense>
 	);

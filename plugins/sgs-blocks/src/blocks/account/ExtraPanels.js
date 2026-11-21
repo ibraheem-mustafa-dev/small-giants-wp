@@ -369,29 +369,8 @@ export function RegisterFormPanel( { attributes, setAttributes } ) {
  */
 export function SignInButtonPanel( { attributes, setAttributes } ) {
 	const p = { attributes, setAttributes };
-	const radius = attributes.loginButtonBorderRadius;
 	return (
-		<PanelBody title={ __( 'Sign in button and link', 'sgs-blocks' ) } initialOpen={ false }>
-			<Choice
-				{ ...p }
-				name="loginButtonPreset"
-				label={ __( 'Start from the site’s button style', 'sgs-blocks' ) }
-				options={ [
-					{ label: __( 'WooCommerce button', 'sgs-blocks' ), value: '' },
-					{ label: __( 'Primary button', 'sgs-blocks' ), value: 'primary' },
-					{ label: __( 'Secondary button', 'sgs-blocks' ), value: 'secondary' },
-				] }
-			/>
-			<Choice
-				{ ...p }
-				name="registerButtonPreset"
-				label={ __( 'Register button: start from the site’s button style', 'sgs-blocks' ) }
-				options={ [
-					{ label: __( 'WooCommerce button', 'sgs-blocks' ), value: '' },
-					{ label: __( 'Primary button', 'sgs-blocks' ), value: 'primary' },
-					{ label: __( 'Secondary button', 'sgs-blocks' ), value: 'secondary' },
-				] }
-			/>
+		<PanelBody title={ __( 'Sign in button scope and link', 'sgs-blocks' ) } initialOpen={ false }>
 			<Choice
 				{ ...p }
 				name="loginButtonScope"
@@ -400,49 +379,6 @@ export function SignInButtonPanel( { attributes, setAttributes } ) {
 					{ label: __( 'Sign in button only', 'sgs-blocks' ), value: '' },
 					{ label: __( 'Every form button (register, reset, account, address)', 'sgs-blocks' ), value: 'all-forms' },
 				] }
-			/>
-			<Toggle { ...p } name="loginButtonFullWidth" label={ __( 'Full width', 'sgs-blocks' ) } />
-			<ResponsiveOverride
-				label={ __( 'Minimum height', 'sgs-blocks' ) }
-				value={ attributes.loginButtonMinHeight }
-				onChange={ ( obj ) => setAttributes( { loginButtonMinHeight: obj } ) }
-			>
-				{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
-					<SgsLengthControl
-						presets
-						label={ __( 'Minimum height', 'sgs-blocks' ) }
-						hideLabelFromVision
-						value={ ownValue ?? '' }
-						placeholder={ inherited ? effectiveValue : '' }
-						onChange={ ( val ) => setOwnValue( val || undefined ) }
-					/>
-				) }
-			</ResponsiveOverride>
-			<TierBox { ...p } name="loginButtonPadding" label={ __( 'Padding', 'sgs-blocks' ) } />
-			<SgsBorderControl
-				widthValues={ attributes.loginButtonBorderWidth ?? {} }
-				onWidthChange={ ( next ) => setAttributes( { loginButtonBorderWidth: next } ) }
-				styleValue={ attributes.loginButtonBorderStyle }
-				onStyleChange={ ( val ) => setAttributes( { loginButtonBorderStyle: val || undefined } ) }
-				colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-				colourValue={ attributes.loginButtonBorderColour }
-				onColourChange={ ( val ) => setAttributes( { loginButtonBorderColour: val || undefined } ) }
-				colourLinked
-				radiusValues={ {
-					base: radius?.desktop ?? {},
-					tablet: radius?.tablet ?? {},
-					mobile: radius?.mobile ?? {},
-				} }
-				onRadiusChange={ ( tier, next ) => {
-					const key = 'base' === tier ? 'desktop' : tier;
-					setAttributes( { loginButtonBorderRadius: { ...radius, [ key ]: next } } );
-				} }
-			/>
-			<ShadowControl
-				label={ __( 'Button shadow', 'sgs-blocks' ) }
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				attrNames={ { base: 'loginButtonShadow', colour: 'loginButtonShadowColour' } }
 			/>
 			<Choice
 				{ ...p }

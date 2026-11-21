@@ -374,13 +374,6 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 	if ( hairlineMarginDecls.length ) {
 		css += `${ root } .sgs-buybox__stock-hairline{${ hairlineMarginDecls.join( ';' ) };}`;
 	}
-	const cartPadding = attributes.addToCartPadding || {};
-	const cartPaddingDecls = [ 'top', 'right', 'bottom', 'left' ]
-		.filter( ( side ) => safeLength( cartPadding[ side ] ) )
-		.map( ( side ) => `padding-${ side }:${ safeLength( cartPadding[ side ] ) }` );
-	if ( cartPaddingDecls.length ) {
-		css += `${ root } .buybox__add-to-cart{${ cartPaddingDecls.join( ';' ) };}`;
-	}
 	const galleryThumbSizeValue = safeLength( tierValueOf( attributes.galleryThumbSize, tier ) || '' );
 	if ( galleryThumbSizeValue ) {
 		css += `${ root }{--sgs-buybox-thumb-size:${ galleryThumbSizeValue };}`;
@@ -1216,29 +1209,8 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 			  }
 			: {} ),
 	};
-	const cartStyle = {
-		...typographyPreviewStyle( attributes, 'addToCart', tier ),
-		...( attributes.addToCartBackgroundColour
-			? backgroundPaintPreview(
-					attributes.addToCartBackgroundColour,
-					'',
-					palette
-			  )
-			: {} ),
-		...( attributes.addToCartBorderColour
-			? {
-					borderColor:
-						resolveColourToken(
-							attributes.addToCartBorderColour,
-							palette
-						) || attributes.addToCartBorderColour,
-			  }
-			: {} ),
-		...( attributes.addToCartMinHeight &&
-		! /[;{}<>]/.test( attributes.addToCartMinHeight )
-			? { minHeight: attributes.addToCartMinHeight }
-			: {} ),
-	};
+	// Add to Cart's own look (the built-in button kit), previewed at the device being edited.
+	const cartStyle = buttonKitStyle( attributes, 'addToCart', { tier, palette } );
 	const cartVariant = presetNames().includes( attributes.addToCartStyle )
 		? ` buybox__add-to-cart--${ attributes.addToCartStyle }`
 		: '';

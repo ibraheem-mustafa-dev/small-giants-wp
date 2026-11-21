@@ -64,6 +64,7 @@ const TYPOGRAPHY_TARGET = {
  * @param {string}   props.prefix        The button's attribute prefix.
  * @param {string}   props.label         Panel title.
  * @param {string[]} [props.groups]      Declared groups; omitted means every group except `gradient`.
+ * @param {Function} [props.seedForPreset] Optional: the preset slug just picked in, further attributes out, written in the same step.
  * @return {JSX.Element|null} The panels.
  */
 export default function BuiltinButtonPanelBody( {
@@ -73,6 +74,7 @@ export default function BuiltinButtonPanelBody( {
 	prefix,
 	label,
 	groups,
+	seedForPreset,
 } ) {
 	const shown =
 		Array.isArray( groups ) && groups.length ? groups : DEFAULT_GROUPS;
@@ -212,7 +214,10 @@ export default function BuiltinButtonPanelBody( {
 								} ),
 							] }
 							onChange={ ( value ) =>
-								setAttributes( { [ attr( 'Style' ) ]: value } )
+								setAttributes( {
+									[ attr( 'Style' ) ]: value,
+									...( seedForPreset ? seedForPreset( value ) : {} ),
+								} )
 							}
 						/>
 					) }
@@ -394,6 +399,8 @@ export default function BuiltinButtonPanelBody( {
 								hover: attr( 'ShadowHover' ),
 								hoverColour: attr( 'ShadowColourHover' ),
 							} }
+							// A block that declares `{prefix}ShadowLiftOnHover` (the buy box's Add to Cart) gets its switch here too.
+							liftPrefix={ prefix }
 						/>
 					) }
 					{ has( 'typography' ) && (

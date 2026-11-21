@@ -279,6 +279,18 @@ describe( 'BuiltinButtonPanel: the preset choice', () => {
 		m.unmount();
 	} );
 
+	test( 'a block that hands a seed gets it written with the pick, and one that hands none gets the pick alone', async () => {
+		declare( [ { ...FLOW_OPENER, groups: [ 'preset' ] } ] );
+		const seeded = await mount( { seedForPreset: ( slug ) => ( 'outline' === slug ? { flowOpenerColourText: '#111' } : {} ) } );
+		seeded.type( 'select[aria-label="Button style"]', 'outline' );
+		expect( seeded.setAttributes ).toHaveBeenCalledWith( { flowOpenerStyle: 'outline', flowOpenerColourText: '#111' } );
+		seeded.unmount();
+		const plain = await mount();
+		plain.type( 'select[aria-label="Button style"]', 'outline' );
+		expect( plain.setAttributes ).toHaveBeenCalledWith( { flowOpenerStyle: 'outline' } );
+		plain.unmount();
+	} );
+
 	test( 'Block default writes an empty string', async () => {
 		declare( [ { ...FLOW_OPENER, groups: [ 'preset' ] } ] );
 		const m = await mount( {}, { flowOpenerStyle: 'primary' } );

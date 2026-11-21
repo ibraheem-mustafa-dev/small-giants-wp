@@ -1,6 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	useBlockProps,
+	useSettings,
 	InspectorControls,
 	MediaUploadCheck,
 	MediaPlaceholder,
@@ -9,8 +10,6 @@ import {
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
 	TypographyControls,
-	ResponsiveBoxControl,
-	ResponsiveBorderRadiusControl,
 	LinkPopoverField,
 	DesignTokenPicker,
 	SgsColourPanel,
@@ -19,7 +18,7 @@ import {
 	MediaElementPanel,
 	SsrPreviewGuard, ResponsiveOverride, SgsBoxControl, LinkUnderlineControl, ShadowControl } from '../../components';
 import { BUTTON_PRESETS } from '../button/presets';
-import { presetNames, presetOptions } from '../button/preset-names';
+import { presetNames } from '../button/preset-names';
 import { LINK_SOURCES_NO_TOP } from '../../shared/link-source-options';
 import { ListingContentPanel, ListingShapePanel, ListingDotsPanel, ListingRowsPanel, ListingOverlaysPanel } from './listing-panels';
 import { cardPartColourRows } from './card-part-rows';
@@ -57,6 +56,8 @@ import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { RICH_TEXT_BODY, RICH_TEXT_PLAIN } from '../../utils/rich-text-formats';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
+import buttonKitStyle from '../../components/button-kit/button-kit-style';
 /** Sentinel value for the "No product connected" option. */
 const TYPED_VALUE = '__typed__';
 
@@ -80,13 +81,6 @@ const CTA_BEHAVIOUR_OPTIONS = [
 	{ value: 'add-to-basket', label: __( 'Add to basket (cart proxy)', 'sgs-blocks' ) },
 	{ value: 'buy-now', label: __( 'Buy now (add + go to checkout)', 'sgs-blocks' ) },
 ];
-
-/** Allowed CTA style options — mirrors btn-* vocabulary in style.css. */
-const CTA_STYLE_LABELS = {
-	primary: __( 'Primary', 'sgs-blocks' ),
-	secondary: __( 'Secondary', 'sgs-blocks' ),
-	outline: __( 'Outline', 'sgs-blocks' ),
-};
 
 /** CTA text alignment: empty keeps the stylesheet's centred default. */
 const CTA_TEXT_ALIGN_OPTIONS = [
@@ -687,6 +681,35 @@ const IMAGE_ATOMS = [ 'source', 'meaning', 'object-fit', 'focal-point', 'sizing'
 const THUMB_ATOMS = [ 'object-fit', 'shape' ];
 const LOGO_ATOMS = [ 'source', 'sizing' ];
 
+/**
+ * The attributes a preset pick seeds on the primary button: its colours, border and weight from the editor's preset table, so the
+ * button the editor shows is the button the page prints. The box values are uniform (every side and corner equal), as the presets are;
+ * the radius is stored per device, as the button kit's panel writes it.
+ *
+ * @param {string} slug The picked preset ('primary', 'secondary', 'outline' or a site's own).
+ * @return {Object} Attributes to write with the pick; empty when the editor has no table row for the name.
+ */
+function ctaPresetSeed( slug ) {
+	const preset = BUTTON_PRESETS[ slug ];
+	if ( ! preset ) {
+		return {};
+	}
+	const width = `${ preset.borderWidthTop }px`;
+	const radius = `${ preset.borderRadiusTL }px`;
+	return {
+		ctaColourBackground: preset.colourBackground,
+		ctaColourText: preset.colourText,
+		ctaColourBorder: preset.borderColour,
+		ctaColourBackgroundHover: preset.colourBackgroundHover,
+		ctaColourTextHover: preset.colourTextHover,
+		ctaColourBorderHover: preset.borderColourHover,
+		ctaBorderStyle: preset.borderStyle,
+		ctaBorderWidth: { top: width, right: width, bottom: width, left: width },
+		ctaBorderRadius: { desktop: { topLeft: radius, topRight: radius, bottomLeft: radius, bottomRight: radius } },
+		ctaFontWeight: preset.fontWeight,
+	};
+}
+
 export default function Edit( { attributes, setAttributes, clientId, context, name } ) {
 	const {
 		variantStyle,
@@ -776,28 +799,11 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		attributeTagBorderRadius,
 		noReviewsText,
 		// Built-in CTA styling (typed + bound share the same cta* attrs).
-		ctaColourBackground,
-		ctaColourBackgroundGradient,
-		ctaColourText,
-		ctaColourTextGradient,
-		ctaColourBorder,
-		ctaColourBorderGradient,
 		ctaColourBackgroundHover,
-		ctaColourBackgroundHoverGradient,
 		ctaColourTextHover,
-		ctaColourTextHoverGradient,
 		ctaColourBorderHover,
-		ctaColourBorderHoverGradient,
-		ctaBorderStyle,
-		ctaBorderWidth,
-		ctaBorderRadius,
-		ctaFontWeight,
-		ctaFontSize,
-		ctaLineHeight,
 		ctaTextAlign,
 		cta2TextAlign,
-		ctaPadding,
-		ctaWidthType,
 		cardPadding,
 		// Card root colour/border (R2c, B-3/B-8) — block-private, replaces the
 		// native style.color/__experimentalBorder path.
@@ -905,6 +911,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		return colourVar( v );
 	};
 	const cardTier = usePreviewTier();
+	const [ pcPalette ] = useSettings( 'color.palette' );
 	const typedParts = typedCardPreview( attributes, cardTier );
 	const typedPreviewStyle = {};
 	const typedPreviewClasses = [];
@@ -969,34 +976,20 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 	const pricePreviewStyle = typedParts.price;
 	const descPreviewStyle = typedParts.desc;
 	const priceNotePreviewStyle = typedParts.priceNote;
-	const ctaPaddingBox = ctaPadding && typeof ctaPadding === 'object' ? ctaPadding : {};
-	const ctaHasPadding =
-		ctaPaddingBox.top || ctaPaddingBox.right || ctaPaddingBox.bottom || ctaPaddingBox.left;
-	// A2 — ctaBorderWidth/ctaBorderRadius are {top,right,bottom,left} /
-	// {topLeft,topRight,bottomLeft,bottomRight} objects (mirrors sgs/button).
+	// The buttons' own look (the built-in button kit, prefixes `cta` and `cta2`): the kit's canvas twin draws it at the device being edited.
+	// The alignment and the card's "no shadow" switch are this block's own.
+	const ctaKitStyle = buttonKitStyle( attributes, 'cta', { tier: cardTier, palette: pcPalette } );
+	const cta2KitStyle = buttonKitStyle( attributes, 'cta2', { tier: cardTier, palette: pcPalette } );
 	const ctaPreviewStyle = {
-		backgroundColor: resolvePcColour( ctaColourBackground ),
-		color: resolvePcColour( ctaColourText ),
-		...sgsBorderPreview( { widthValues: ctaBorderWidth, styleValue: ctaBorderStyle, colourValue: ctaColourBorder, colourGradientValue: attributes.ctaColourBorderGradient, radiusValues: ctaBorderRadius } ),
-		fontWeight: ctaFontWeight || undefined,
-		lineHeight: ctaLineHeight || undefined,
+		...ctaKitStyle,
 		textAlign: ctaTextAlign || undefined,
 		justifyContent: CTA_JUSTIFY_CONTENT[ ctaTextAlign ] || undefined,
-		fontSize:
-			ctaFontSize !== undefined && ctaFontSize !== null && '' !== ctaFontSize
-				? `${ ctaFontSize }px`
-				: undefined,
-		...( ctaHasPadding
-			? {
-					paddingTop: ctaPaddingBox.top || '0',
-					paddingRight: ctaPaddingBox.right || '0',
-					paddingBottom: ctaPaddingBox.bottom || '0',
-					paddingLeft: ctaPaddingBox.left || '0',
-			  }
-			: {} ),
-		width: 'full' === ctaWidthType ? '100%' : undefined,
 		...( false === attributes.showCtaShadow ? { boxShadow: 'none' } : {} ),
-		...typedParts.ctaGradients,
+	};
+	const cta2PreviewStyle = {
+		...cta2KitStyle,
+		textAlign: cta2TextAlign || undefined,
+		justifyContent: CTA_JUSTIFY_CONTENT[ cta2TextAlign ] || undefined,
 	};
 
 	/*
@@ -1490,83 +1483,6 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		}
 	);
 	colourRows.push(
-		{
-			key: 'ctaBackground',
-			label: __( 'Button background colour', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: ctaColourBackground,
-					onChange: ( val ) => setAttributes( { ctaColourBackground: val ?? '' } ),
-					linked: true,
-					gradientValue: ctaColourBackgroundGradient,
-					onGradientChange: ( val ) =>
-						setAttributes( { ctaColourBackgroundGradient: val ?? '' } ),
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: ctaColourBackgroundHover,
-					onChange: ( val ) => setAttributes( { ctaColourBackgroundHover: val ?? '' } ),
-					linked: true,
-					gradientValue: ctaColourBackgroundHoverGradient,
-					onGradientChange: ( val ) =>
-						setAttributes( { ctaColourBackgroundHoverGradient: val ?? '' } ),
-				},
-			],
-		},
-		{
-			key: 'ctaText',
-			label: __( 'Button text colour', 'sgs-blocks' ),
-			gradientCapable: true,
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: ctaColourText,
-					onChange: ( val ) => setAttributes( { ctaColourText: val ?? '' } ),
-					linked: true,
-					gradientValue: ctaColourTextGradient,
-					onGradientChange: ( val ) => setAttributes( { ctaColourTextGradient: val ?? '' } ),
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: ctaColourTextHover,
-					onChange: ( val ) => setAttributes( { ctaColourTextHover: val ?? '' } ),
-					linked: true,
-					gradientValue: ctaColourTextHoverGradient,
-					onGradientChange: ( val ) => setAttributes( { ctaColourTextHoverGradient: val ?? '' } ),
-				},
-			],
-		},
-		{
-			key: 'ctaBorder',
-			label: __( 'Button border colour', 'sgs-blocks' ),
-			states: [
-				{
-					key: 'normal',
-					label: __( 'Normal', 'sgs-blocks' ),
-					value: ctaColourBorder,
-					onChange: ( val ) => setAttributes( { ctaColourBorder: val ?? '' } ),
-					linked: true,
-					gradientValue: ctaColourBorderGradient,
-					onGradientChange: ( val ) =>
-						setAttributes( { ctaColourBorderGradient: val ?? '' } ),
-				},
-				{
-					key: 'hover',
-					label: __( 'Hover', 'sgs-blocks' ),
-					value: ctaColourBorderHover,
-					onChange: ( val ) => setAttributes( { ctaColourBorderHover: val ?? '' } ),
-					linked: true,
-					gradientValue: ctaColourBorderHoverGradient,
-					onGradientChange: ( val ) =>
-						setAttributes( { ctaColourBorderHoverGradient: val ?? '' } ),
-				},
-			],
-		},
 		{
 			key: 'pickerLabel',
 			label: __( 'Picker label colour', 'sgs-blocks' ),
@@ -2907,324 +2823,32 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 					     .sgs-button--{style} + a stable
 					     .sgs-product-card__cta--primary marker, bound mode uses
 					     .product-card__view / .product-card__add-to-cart. ── */ }
-					<SelectControl
-						label={ __( 'Primary button style', 'sgs-blocks' ) }
-						value={ ctaStyle || 'primary' }
-						options={ presetOptions( CTA_STYLE_LABELS ) }
-						onChange={ ( v ) => {
-							/*
-							 * ctaStyle is now the SINGLE style attribute driving the
-							 * sgs-button--{ctaStyle} class in BOTH typed and bound
-							 * markup (the separate style-preset attr was merged away — D-merge). The cta*
-							 * colour/border/weight attrs style the button in both
-							 * modes, so every style change reseeds them from
-							 * BUTTON_PRESETS[v] regardless of typed/bound — otherwise
-							 * switching to secondary/outline would leave a
-							 * primary-coloured button under a
-							 * .sgs-button--secondary/outline class. The "Reset colours
-							 * to preset" button below covers the case where the picked
-							 * value is unchanged (onChange doesn't refire) but the user
-							 * wants to snap hand-tweaked colours back to the preset.
-							 */
-							const preset = BUTTON_PRESETS[ v ];
-							setAttributes( {
-								ctaStyle: v,
-								...( preset
-									? {
-											ctaColourBackground: preset.colourBackground,
-											ctaColourText: preset.colourText,
-											ctaColourBorder: preset.borderColour,
-											ctaColourBackgroundHover: preset.colourBackgroundHover,
-											ctaColourTextHover: preset.colourTextHover,
-											ctaColourBorderHover: preset.borderColourHover,
-											ctaBorderStyle: preset.borderStyle,
-											// A2 box-object migration: presets are uniform
-											// (all sides/corners equal), so a uniform-object
-											// seed from the single preset value preserves
-											// current behaviour exactly.
-											ctaBorderWidth: {
-												top: `${ preset.borderWidthTop }px`,
-												right: `${ preset.borderWidthTop }px`,
-												bottom: `${ preset.borderWidthTop }px`,
-												left: `${ preset.borderWidthTop }px`,
-											},
-											ctaBorderRadius: {
-												topLeft: `${ preset.borderRadiusTL }px`,
-												topRight: `${ preset.borderRadiusTL }px`,
-												bottomLeft: `${ preset.borderRadiusTL }px`,
-												bottomRight: `${ preset.borderRadiusTL }px`,
-											},
-											ctaFontWeight: preset.fontWeight,
-									  }
-									: {} ),
-							} );
-						} }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
 					<p style={ { marginTop: 0 } }>
 						{ __(
-							'Colour, border, corner radius, and padding for the primary button.',
+							'The style, colours, border, corner radius, padding, width and text of the primary button are in Styles, Call to action button.',
 							'sgs-blocks'
 						) }
 					</p>
 					{ /*
-					 * Style (primary/secondary/outline) is now set ONLY by the
-					 * unified "Primary button style" SelectControl above —
-					 * the separate style-preset attr was merged into ctaStyle (D-merge). A
-					 * SelectControl's onChange cannot re-fire when the picked
-					 * value is unchanged, so a user who has hand-tweaked a
-					 * colour needs an explicit button to snap the colours back
-					 * to the CURRENT style's preset values.
+					 * Picking a style in the button kit's panel seeds the colours, border and weight from the preset (ctaPresetSeed). A picker's
+					 * onChange cannot re-fire when the picked value is unchanged, so a user who has hand-tweaked a colour needs an explicit
+					 * button to snap the colours back to the CURRENT style's preset values.
 					 */ }
 					<Button
 						variant="secondary"
-						onClick={ () => {
-							const preset =
-								BUTTON_PRESETS[ ctaStyle || 'primary' ];
-							if ( ! preset ) {
-								return;
-							}
-							setAttributes( {
-								ctaColourBackground:
-									preset.colourBackground,
-								ctaColourText: preset.colourText,
-								ctaColourBorder: preset.borderColour,
-								ctaColourBackgroundHover:
-									preset.colourBackgroundHover,
-								ctaColourTextHover:
-									preset.colourTextHover,
-								ctaColourBorderHover:
-									preset.borderColourHover,
-								ctaBorderStyle: preset.borderStyle,
-								ctaBorderWidth: {
-									top: `${ preset.borderWidthTop }px`,
-									right: `${ preset.borderWidthTop }px`,
-									bottom: `${ preset.borderWidthTop }px`,
-									left: `${ preset.borderWidthTop }px`,
-								},
-								ctaBorderRadius: {
-									topLeft: `${ preset.borderRadiusTL }px`,
-									topRight: `${ preset.borderRadiusTL }px`,
-									bottomLeft: `${ preset.borderRadiusTL }px`,
-									bottomRight: `${ preset.borderRadiusTL }px`,
-								},
-								ctaFontWeight: preset.fontWeight,
-							} );
-						} }
+						onClick={ () => setAttributes( ctaPresetSeed( ctaStyle || 'primary' ) ) }
 						style={ { marginBottom: 16 } }
 					>
 						{ __( 'Reset colours to preset', 'sgs-blocks' ) }
 					</Button>
-					<ToolsPanel
-						className="sgs-nested-tools-panel"
-						label={ __( 'Button style', 'sgs-blocks' ) }
-						resetAll={ () =>
-							setAttributes( {
-								ctaWidthType: 'fit',
-								ctaBorderWidth: {
-									top: '2px',
-									right: '2px',
-									bottom: '2px',
-									left: '2px',
-								},
-								ctaBorderRadius: {
-									topLeft: '10px',
-									topRight: '10px',
-									bottomLeft: '10px',
-									bottomRight: '10px',
-								},
-								ctaFontSize: undefined,
-								ctaPadding: {},
-								ctaColourBackground: '',
-								ctaColourText: '',
-								ctaColourBorder: '',
-							} )
-						}
-					>
-						<ToolsPanelItem
-							label={ __( 'Width', 'sgs-blocks' ) }
-							hasValue={ () => ( ctaWidthType || 'fit' ) !== 'fit' }
-							onDeselect={ () =>
-								setAttributes( { ctaWidthType: 'fit' } )
-							}
-							isShownByDefault
-						>
-							<SelectControl
-								label={ __( 'Width', 'sgs-blocks' ) }
-								value={ ctaWidthType || 'fit' }
-								options={ [
-									{
-										value: 'fit',
-										label: __( 'Fit content', 'sgs-blocks' ),
-									},
-									{
-										value: 'full',
-										label: __( 'Full width', 'sgs-blocks' ),
-									},
-								] }
-								onChange={ ( v ) =>
-									setAttributes( { ctaWidthType: v } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						{ /* A2 box-object migration (2026-07-26): mirrors sgs/button
-						   (button/edit.js:596) exactly — ResponsiveBoxControl /
-						   ResponsiveBorderRadiusControl with showResponsive={false}
-						   (single-tier; no ctaBorderWidth/RadiusTablet/Mobile attrs
-						   exist), writing the object straight to the attr. */ }
-						<ToolsPanelItem
-							label={ __( 'Border width', 'sgs-blocks' ) }
-							hasValue={ () =>
-								JSON.stringify( ctaBorderWidth ?? {} ) !==
-								JSON.stringify( {
-									top: '2px',
-									right: '2px',
-									bottom: '2px',
-									left: '2px',
-								} )
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									ctaBorderWidth: {
-										top: '2px',
-										right: '2px',
-										bottom: '2px',
-										left: '2px',
-									},
-								} )
-							}
-							isShownByDefault
-						>
-							<ResponsiveBoxControl
-								label={ __( 'Border width', 'sgs-blocks' ) }
-								presets={ [ '10', '20', '30' ] }
-								values={ { base: ctaBorderWidth ?? {} } }
-								showResponsive={ false }
-								onChange={ ( _tier, next ) =>
-									setAttributes( { ctaBorderWidth: next } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Corner radius', 'sgs-blocks' ) }
-							hasValue={ () =>
-								JSON.stringify( ctaBorderRadius ?? {} ) !==
-								JSON.stringify( {
-									topLeft: '10px',
-									topRight: '10px',
-									bottomLeft: '10px',
-									bottomRight: '10px',
-								} )
-							}
-							onDeselect={ () =>
-								setAttributes( {
-									ctaBorderRadius: {
-										topLeft: '10px',
-										topRight: '10px',
-										bottomLeft: '10px',
-										bottomRight: '10px',
-									},
-								} )
-							}
-						>
-							<ResponsiveBorderRadiusControl
-								label={ __( 'Corner radius', 'sgs-blocks' ) }
-								values={ { base: ctaBorderRadius ?? {} } }
-								showResponsive={ false }
-								onChange={ ( _tier, next ) =>
-									setAttributes( { ctaBorderRadius: next } )
-								}
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Font size (px)', 'sgs-blocks' ) }
-							hasValue={ () =>
-								ctaFontSize !== null &&
-								ctaFontSize !== undefined
-							}
-							onDeselect={ () =>
-								setAttributes( { ctaFontSize: undefined } )
-							}
-						>
-							<NumberControl
-								label={ __( 'Font size (px)', 'sgs-blocks' ) }
-								value={ ctaFontSize ?? '' }
-								min={ 8 }
-								max={ 48 }
-								onChange={ ( v ) =>
-									setAttributes( {
-										ctaFontSize:
-											v === '' || v === undefined
-												? undefined
-												: Number.parseInt( v, 10 ),
-									} )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Line height', 'sgs-blocks' ) }
-							hasValue={ () => '1.4' !== ( ctaLineHeight ?? '1.4' ) }
-							onDeselect={ () =>
-								setAttributes( { ctaLineHeight: '1.4' } )
-							}
-						>
-							<TextControl
-								label={ __( 'Line height', 'sgs-blocks' ) }
-								help={ __(
-									'A number (1.4) or a length (24px). Empty keeps the default.',
-									'sgs-blocks'
-								) }
-								value={ ctaLineHeight ?? '' }
-								onChange={ ( v ) =>
-									setAttributes( { ctaLineHeight: v } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Text alignment', 'sgs-blocks' ) }
-							hasValue={ () => !! ctaTextAlign }
-							onDeselect={ () =>
-								setAttributes( { ctaTextAlign: '' } )
-							}
-						>
-							<SelectControl
-								label={ __( 'Text alignment', 'sgs-blocks' ) }
-								value={ ctaTextAlign || '' }
-								options={ CTA_TEXT_ALIGN_OPTIONS }
-								onChange={ ( v ) =>
-									setAttributes( { ctaTextAlign: v } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
-							/>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Button padding', 'sgs-blocks' ) }
-							hasValue={ () =>
-								!! ctaPadding &&
-								Object.keys( ctaPadding ).length > 0
-							}
-							onDeselect={ () =>
-								setAttributes( { ctaPadding: {} } )
-							}
-						>
-							<SgsBoxControl
-								label={ __( 'Button padding', 'sgs-blocks' ) }
-								values={ ctaPadding ?? {} }
-								presets
-								onChange={ ( next ) =>
-									setAttributes( { ctaPadding: next } )
-								}
-							/>
-						</ToolsPanelItem>
-					</ToolsPanel>
+					<SelectControl
+						label={ __( 'Text alignment', 'sgs-blocks' ) }
+						value={ ctaTextAlign || '' }
+						options={ CTA_TEXT_ALIGN_OPTIONS }
+						onChange={ ( v ) => setAttributes( { ctaTextAlign: v } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
 
 					{ /* Secondary button */ }
 					<hr style={ { margin: '12px 0' } } />
@@ -3253,19 +2877,6 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								linkSource={ attributes.cta2UrlSource || '' }
 								linkSources={ LINK_SOURCES_NO_TOP }
 								searchOnly
-							/>
-							<SelectControl
-								label={ __(
-									'Secondary button style',
-									'sgs-blocks'
-								) }
-								value={ cta2Style || 'secondary' }
-								options={ presetOptions( CTA_STYLE_LABELS ) }
-								onChange={ ( v ) =>
-									setAttributes( { cta2Style: v } )
-								}
-								__nextHasNoMarginBottom
-								__next40pxDefaultSize
 							/>
 							<SelectControl
 								label={ __(
@@ -3492,6 +3103,22 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 						</ToolsPanel>
 					</PanelBody>
 			</InspectorControls>
+
+			{ /* The two built-in buttons' look (the built-in button kit: preset, colours, border, radius, padding, width, minimum height,
+			     shadow, type), each in its own Styles panel. Picking a preset on the primary button seeds its colours, border and weight. */ }
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/product-card"
+				prefix="cta"
+				seedForPreset={ ctaPresetSeed }
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/product-card"
+				prefix="cta2"
+			/>
 
 			{ isBound ? (
 				/* Bound mode: server-side render preview */
@@ -3764,10 +3391,7 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 							{ ( cta2Text || '' ) !== '' && (
 								<span
 									className={ `sgs-button sgs-button--${ safeCta2Style } sgs-product-card__cta--secondary` }
-									style={ {
-										textAlign: cta2TextAlign || undefined,
-										justifyContent: CTA_JUSTIFY_CONTENT[ cta2TextAlign ] || undefined,
-									} }
+									style={ cta2PreviewStyle }
 								>
 									{ cta2Text }
 								</span>

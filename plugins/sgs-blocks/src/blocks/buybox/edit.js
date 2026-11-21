@@ -461,6 +461,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				/>
 			</InspectorControls>
 
+			{ /* Add to Cart: the built-in button kit's panel for the `addToCart` button (preset, colours, border, padding, width,
+			     minimum height, shadow, type). The show-price, cart-icon and hover-lift switches stay in "Add to cart button". */ }
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/buybox"
+				prefix="addToCart"
+			/>
 			{ /* The flow's opener button (Spec 43 FR-43-25): the built-in button kit's one panel, which mounts its own Styles
 			     group. A flow is linked per product, which the editor cannot see, so the panel always shows. */ }
 			<BuiltinButtonPanel
