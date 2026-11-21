@@ -207,6 +207,29 @@ function selfTest() {
 		sizedEntry?.fields.css_property === 'width' && sizedEntry.fields.tier_shape === 'tier_object' && sizedEntry.fields.css_element === 'arrow' && sizedEntry.fields.role === 'layout'
 	);
 	ck( 'groups: size is opt-in, so the default groups write no Size', ! registry.defaultGroups.includes( 'size' ) && ! namesOf( done.next ).some( ( n ) => /(?:flowOpener|back)Size$/.test( n ) ) );
+	// The contentAlign group is opt-in (one tier object of justify-content values); hoverLift is a default group (one px length, named so it cannot meet a block's boolean `{prefix}HoverLift`).
+	const aligned = JSON.parse( fixText );
+	aligned.supports.sgs.builtinButtons = [ { prefix: 'btn', part: 'btn', label: 'Btn', groups: [ 'contentAlign', 'hoverLift' ] } ];
+	const alignedPlan = planBlock( JSON.stringify( aligned, null, '	' ), registry, new Set() );
+	const alignedAttrs = Object.fromEntries( generatedOf( alignedPlan.next ).map( ( [ n, d ] ) => [ n, strip( d ) ] ) );
+	ck(
+		'groups: contentAlign writes btnContentAlign as an object and hoverLift writes btnHoverLiftDistance as a string, nothing else',
+		JSON.stringify( alignedAttrs ) === JSON.stringify( { btnContentAlign: { type: 'object' }, btnHoverLiftDistance: { type: 'string' } } )
+	);
+	const alignEntry = alignedPlan.entries.find( ( e ) => 'btnContentAlign' === e.attr );
+	const liftEntry = alignedPlan.entries.find( ( e ) => 'btnHoverLiftDistance' === e.attr );
+	ck(
+		'groups: the override rows name justify-content (tier object) and a hover-state transform',
+		alignEntry?.fields.css_property === 'justify-content' && alignEntry.fields.tier_shape === 'tier_object' && liftEntry?.fields.css_property === 'transform' && liftEntry.fields.css_state === 'hover'
+	);
+	ck(
+		'groups: contentAlign is opt-in and hoverLift is a default group',
+		! registry.defaultGroups.includes( 'contentAlign' ) && registry.defaultGroups.includes( 'hoverLift' ) && ! namesOf( done.next ).some( ( n ) => /ContentAlign$/.test( n ) ) && namesOf( done.next ).includes( 'flowOpenerHoverLiftDistance' ) && ! namesOf( done.next ).includes( 'backHoverLiftDistance' )
+	);
+	ck(
+		'registry: a row whose values are not a non-empty list of strings is refused',
+		throws( () => validateRegistry( { ...registry, groups: { ...registry.groups, contentAlign: [ { ...registry.groups.contentAlign[ 0 ], values: [] } ] } } ) ).includes( 'values must be a non-empty list' )
+	);
 	ck(
 		'groups: an unknown group fails naming it and the known ones',
 		( () => {

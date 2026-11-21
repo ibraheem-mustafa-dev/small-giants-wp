@@ -24,13 +24,13 @@
 					"prefix": "cta",
 					"part": "cta",
 					"label": "Call to action button",
-					"groups": [ "preset", "colour", "gradient", "border", "padding", "width", "minHeight", "shadow", "typography" ]
+					"groups": [ "preset", "colour", "gradient", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "cta2",
 					"part": "cta2",
 					"label": "Secondary call to action button",
-					"groups": [ "preset", "colour", "gradient", "border", "padding", "width", "minHeight", "shadow", "typography" ]
+					"groups": [ "preset", "colour", "gradient", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				}
 			],
 			"motion": true,
@@ -3355,10 +3355,12 @@
 		"logoMinHeight": {"type":"object","_generated":"media-atoms"},
 		"logoMaxHeight": {"type":"object","_generated":"media-atoms"},
 		"ctaMinHeight": {"type":"object","_generated":"button-kit"},
+		"ctaContentAlign": {"type":"object","_generated":"button-kit"},
 		"ctaShadow": {"type":"string","_generated":"button-kit"},
 		"ctaShadowColour": {"type":"string","_generated":"button-kit"},
 		"ctaShadowHover": {"type":"string","_generated":"button-kit"},
 		"ctaShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"ctaHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"ctaFontFamily": {"type":"string","_generated":"button-kit"},
 		"ctaFontStyle": {"type":"string","_generated":"button-kit"},
 		"ctaTextTransform": {"type":"string","_generated":"button-kit"},
@@ -3385,10 +3387,12 @@
 		"cta2Padding": {"type":"object","_generated":"button-kit"},
 		"cta2WidthType": {"type":"string","_generated":"button-kit"},
 		"cta2MinHeight": {"type":"object","_generated":"button-kit"},
+		"cta2ContentAlign": {"type":"object","_generated":"button-kit"},
 		"cta2Shadow": {"type":"string","_generated":"button-kit"},
 		"cta2ShadowColour": {"type":"string","_generated":"button-kit"},
 		"cta2ShadowHover": {"type":"string","_generated":"button-kit"},
 		"cta2ShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"cta2HoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"cta2FontFamily": {"type":"string","_generated":"button-kit"},
 		"cta2FontWeight": {"type":"string","_generated":"button-kit"},
 		"cta2FontStyle": {"type":"string","_generated":"button-kit"},

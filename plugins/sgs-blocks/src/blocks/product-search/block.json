@@ -327,6 +327,7 @@
 		"submitShadowColour": {"type":"string","_generated":"button-kit"},
 		"submitShadowHover": {"type":"string","_generated":"button-kit"},
 		"submitShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"submitHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"submitFontFamily": {"type":"string","_generated":"button-kit"},
 		"submitFontWeight": {"type":"string","_generated":"button-kit"},
 		"submitFontStyle": {"type":"string","_generated":"button-kit"},

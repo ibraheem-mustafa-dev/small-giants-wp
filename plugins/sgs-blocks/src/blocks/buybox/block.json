@@ -32,12 +32,14 @@
 				{
 					"prefix": "flowOpener",
 					"part": "flow-opener",
-					"label": "Flow opener button"
+					"label": "Flow opener button",
+					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "addToCart",
 					"part": "add-to-cart",
-					"label": "Add to Cart button"
+					"label": "Add to Cart button",
+					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				}
 			],
 			"spacingDefaults": {
@@ -3978,10 +3980,12 @@
 		"flowOpenerPadding": {"type":"object","_generated":"button-kit"},
 		"flowOpenerWidthType": {"type":"string","_generated":"button-kit"},
 		"flowOpenerMinHeight": {"type":"object","_generated":"button-kit"},
+		"flowOpenerContentAlign": {"type":"object","_generated":"button-kit"},
 		"flowOpenerShadow": {"type":"string","_generated":"button-kit"},
 		"flowOpenerShadowColour": {"type":"string","_generated":"button-kit"},
 		"flowOpenerShadowHover": {"type":"string","_generated":"button-kit"},
 		"flowOpenerShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"flowOpenerHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"flowOpenerFontFamily": {"type":"string","_generated":"button-kit"},
 		"flowOpenerFontWeight": {"type":"string","_generated":"button-kit"},
 		"flowOpenerFontStyle": {"type":"string","_generated":"button-kit"},
@@ -4001,6 +4005,8 @@
 		"addToCartBorderWidth": {"type":"object","_generated":"button-kit"},
 		"addToCartBorderRadius": {"type":"object","_generated":"button-kit"},
 		"addToCartWidthType": {"type":"string","_generated":"button-kit"},
+		"addToCartContentAlign": {"type":"object","_generated":"button-kit"},
+		"addToCartHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"addToCartFontFamily": {"type":"string","_generated":"button-kit"},
 		"addToCartFontStyle": {"type":"string","_generated":"button-kit"},
 		"addToCartTextDecoration": {"type":"string","_generated":"button-kit"},

@@ -85,6 +85,9 @@ export function validateRegistry( registry ) {
 			if ( 'box_only' === row.tier_shape && ! BOX_VALUE_SHAPES.includes( row.value_shape ) ) {
 				problems.push( `base "${ row.base }": a box_only row needs a value_shape of ${ BOX_VALUE_SHAPES.join( ', ' ) } (the database labels a flat and a per-device box alike)` );
 			}
+			if ( undefined !== row.values && ( ! Array.isArray( row.values ) || ! row.values.length || row.values.some( ( v ) => 'string' !== typeof v || ! v ) ) ) {
+				problems.push( `base "${ row.base }": values must be a non-empty list of strings` );
+			}
 			if ( row.value_shape && 'box_only' !== row.tier_shape ) {
 				problems.push( `base "${ row.base }": value_shape on a row that is not box_only` );
 			}

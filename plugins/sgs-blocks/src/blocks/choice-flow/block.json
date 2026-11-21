@@ -23,7 +23,7 @@
 					"prefix": "back",
 					"part": "back",
 					"label": "Back button",
-					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "shadow" ]
+					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "shadow", "hoverLift" ]
 				},
 				{
 					"prefix": "skip",
@@ -33,17 +33,20 @@
 				{
 					"prefix": "continue",
 					"part": "continue",
-					"label": "Continue button"
+					"label": "Continue button",
+					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "addToBasket",
 					"part": "add-to-basket",
-					"label": "Add to basket button"
+					"label": "Add to basket button",
+					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "buyNow",
 					"part": "buy-now",
-					"label": "Buy now button"
+					"label": "Buy now button",
+					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "contentAlign", "shadow", "hoverLift", "typography" ]
 				},
 				{
 					"prefix": "closeButton",
@@ -511,6 +514,7 @@
 		"backShadowColour": {"type":"string","_generated":"button-kit"},
 		"backShadowHover": {"type":"string","_generated":"button-kit"},
 		"backShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"backHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"skipStyle": {"type":"string","_generated":"button-kit"},
 		"skipColourBackground": {"type":"string","_generated":"button-kit"},
 		"skipColourText": {"type":"string","_generated":"button-kit"},
@@ -528,6 +532,7 @@
 		"skipShadowColour": {"type":"string","_generated":"button-kit"},
 		"skipShadowHover": {"type":"string","_generated":"button-kit"},
 		"skipShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"skipHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"skipFontFamily": {"type":"string","_generated":"button-kit"},
 		"skipFontWeight": {"type":"string","_generated":"button-kit"},
 		"skipFontStyle": {"type":"string","_generated":"button-kit"},
@@ -552,10 +557,12 @@
 		"continuePadding": {"type":"object","_generated":"button-kit"},
 		"continueWidthType": {"type":"string","_generated":"button-kit"},
 		"continueMinHeight": {"type":"object","_generated":"button-kit"},
+		"continueContentAlign": {"type":"object","_generated":"button-kit"},
 		"continueShadow": {"type":"string","_generated":"button-kit"},
 		"continueShadowColour": {"type":"string","_generated":"button-kit"},
 		"continueShadowHover": {"type":"string","_generated":"button-kit"},
 		"continueShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"continueHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"continueFontFamily": {"type":"string","_generated":"button-kit"},
 		"continueFontWeight": {"type":"string","_generated":"button-kit"},
 		"continueFontStyle": {"type":"string","_generated":"button-kit"},
@@ -580,10 +587,12 @@
 		"addToBasketPadding": {"type":"object","_generated":"button-kit"},
 		"addToBasketWidthType": {"type":"string","_generated":"button-kit"},
 		"addToBasketMinHeight": {"type":"object","_generated":"button-kit"},
+		"addToBasketContentAlign": {"type":"object","_generated":"button-kit"},
 		"addToBasketShadow": {"type":"string","_generated":"button-kit"},
 		"addToBasketShadowColour": {"type":"string","_generated":"button-kit"},
 		"addToBasketShadowHover": {"type":"string","_generated":"button-kit"},
 		"addToBasketShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"addToBasketHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"addToBasketFontFamily": {"type":"string","_generated":"button-kit"},
 		"addToBasketFontWeight": {"type":"string","_generated":"button-kit"},
 		"addToBasketFontStyle": {"type":"string","_generated":"button-kit"},
@@ -608,10 +617,12 @@
 		"buyNowPadding": {"type":"object","_generated":"button-kit"},
 		"buyNowWidthType": {"type":"string","_generated":"button-kit"},
 		"buyNowMinHeight": {"type":"object","_generated":"button-kit"},
+		"buyNowContentAlign": {"type":"object","_generated":"button-kit"},
 		"buyNowShadow": {"type":"string","_generated":"button-kit"},
 		"buyNowShadowColour": {"type":"string","_generated":"button-kit"},
 		"buyNowShadowHover": {"type":"string","_generated":"button-kit"},
 		"buyNowShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"buyNowHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"buyNowFontFamily": {"type":"string","_generated":"button-kit"},
 		"buyNowFontWeight": {"type":"string","_generated":"button-kit"},
 		"buyNowFontStyle": {"type":"string","_generated":"button-kit"},
@@ -640,6 +651,7 @@
 		"closeButtonShadowColour": {"type":"string","_generated":"button-kit"},
 		"closeButtonShadowHover": {"type":"string","_generated":"button-kit"},
 		"closeButtonShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"closeButtonHoverLiftDistance": {"type":"string","_generated":"button-kit"},
 		"closeButtonFontFamily": {"type":"string","_generated":"button-kit"},
 		"closeButtonFontWeight": {"type":"string","_generated":"button-kit"},
 		"closeButtonFontStyle": {"type":"string","_generated":"button-kit"},

@@ -15,6 +15,7 @@
 	"flowOpenerShadowColour": { "type": "string" },
 	"flowOpenerShadowHover": { "type": "string" },
 	"flowOpenerShadowColourHover": { "type": "string" },
+	"flowOpenerHoverLiftDistance": { "type": "string" },
 	"flowOpenerFontFamily": { "type": "string" },
 	"flowOpenerFontWeight": { "type": "string" },
 	"flowOpenerFontStyle": { "type": "string" },
