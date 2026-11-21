@@ -127,6 +127,9 @@ final class ButtonMigrationSweepTest extends TestCase {
 		$this->assertFalse( sgs_builtin_button_sweep_same_attrs( array( 'a' => array( 'desktop' => '1px' ) ), array( 'a' => array( 'desktop' => '2px' ) ) ) );
 		$this->assertFalse( sgs_builtin_button_sweep_same_attrs( array( 'a' => 1 ), array( 'a' => 1, 'b' => 2 ) ) );
 		$this->assertTrue( sgs_builtin_button_sweep_same_attrs( array( 'b' => 2, 'a' => new stdClass() ), array( 'a' => array(), 'b' => 2 ) ) );
+		// MUST FAIL on dda55a2c4: two values json_encode cannot encode (a stray byte) both gave false, and false === false passed.
+		$this->assertFalse( sgs_builtin_button_sweep_same_attrs( array( 'a' => "caf\xE9" ), array( 'a' => "caf\xE8" ) ) );
+		$this->assertTrue( sgs_builtin_button_sweep_same_attrs( array( 'a' => "caf\xE9" ), array( 'a' => "caf\xE9" ) ) );
 	}
 
 	public function test_it_is_idempotent_and_a_value_already_swept_is_left_alone(): void {

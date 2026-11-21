@@ -33,15 +33,7 @@ foreach ( $cases as $name => $case ) {
 		// The sweep's proof: the rewrite of the old attributes against the attributes parsed back from the written content.
 		$expect       = sgs_builtin_button_sweep_attrs( $case['block'], (array) $case['attrs'], $map );
 		$parsed       = json_decode( '{' . substr( serialize_block_attributes( $expect ), 1 ), true );
-		if ( function_exists( 'sgs_builtin_button_sweep_same_attrs' ) ) {
-			$out[ $name ] = sgs_builtin_button_sweep_same_attrs( $expect, (array) $parsed );
-		} else {
-			// c1a832ea6's comparison in sgs_sweep_prove, kept so the test shows it refusing a cleared value.
-			ksort( $expect );
-			$parsed = (array) $parsed;
-			ksort( $parsed );
-			$out[ $name ] = json_encode( $expect ) === json_encode( $parsed );
-		}
+		$out[ $name ] = sgs_builtin_button_sweep_same_attrs( $expect, (array) $parsed );
 		continue;
 	}
 	if ( 'attrs' === $case['fn'] ) {
