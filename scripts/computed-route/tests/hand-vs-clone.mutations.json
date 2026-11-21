@@ -1,0 +1,22 @@
+[
+	{"file": "lib/hand-vs-clone.mjs", "find": "\tif ( 'sgsCustomCss' === attr ) {", "replace": "\tif ( false ) {", "why": "custom CSS is its own group"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\tif ( SITE_ID.test( attr ) || facts.contentAttrs( block )?.has( attr ) ) {", "replace": "\tif ( facts.contentAttrs( block )?.has( attr ) ) {", "why": "a per-site id is content"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\tif ( SITE_ID.test( attr ) || facts.contentAttrs( block )?.has( attr ) ) {", "replace": "\tif ( SITE_ID.test( attr ) ) {", "why": "the database's content settings are content"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "const SITE_ID = /^(id|ref)$|Id$|ID$|Note$/;", "replace": "const SITE_ID = /^(id|ref)$|Id$|ID$|Note$|Ref$/;", "why": "drawerRef is a look, not an id"},
+	{"file": "lib/hand-vs-clone.mjs", "find": ".filter( ( [ k ] ) => '_key' !== k )", "replace": "", "why": "item keys never count"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "filter( ( c ) => c && ! ROUTE_CLASS.test( c ) )", "replace": "filter( ( c ) => c )", "why": "the route pairing class never counts"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\t\t\tif ( c ) {\n\t\t\t\tout.className = c;", "replace": "\t\t\tif ( false ) {\n\t\t\t\tout.className = c;", "why": "a look class counts"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\t\tprev = t in v ? v[ t ] : prev;", "replace": "\t\tprev = v[ t ];", "why": "a device left out shows the next wider one"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\tif ( pa && pb ) {", "replace": "\tif ( false ) {", "why": "per-device values compare device by device"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\tlet score = a.parent === b.parent ? 3 : 0;", "replace": "\tlet score = 0;", "why": "the same parent counts"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\t\t\tscore += same( v, b.attrs[ k ] ) ? 2 : 1;", "replace": "\t\t\tscore += 1;", "why": "an equal setting counts more than a shared name"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\tcands.sort( ( x, y ) => y.score - x.score || x.gap - y.gap || x.i - y.i || x.j - y.j );", "replace": "\tcands.sort( ( x, y ) => x.i - y.i || x.j - y.j );", "why": "the most alike pair first"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\t\tif ( ! usedH.has( c.i ) && ! usedC.has( c.j ) ) {", "replace": "\t\tif ( ! usedH.has( c.i ) ) {", "why": "a clone block pairs once"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\t\t\tif ( devices.length ) {", "replace": "\t\t\tif ( true ) {", "why": "equal shown values make no row"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\t\tif ( ! ( k in h.attrs ) ) {\n\t\t\trows.push( { kind: 'clone-only'", "replace": "\t\tif ( false ) {\n\t\t\trows.push( { kind: 'clone-only'", "why": "the clone's own settings are listed"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\t\ths.forEach( ( h, i ) => pairs.some( ( p ) => p[ 0 ] === i ) || blocks.push( { name, hand: h.order, clone: null, rows: [] } ) );", "replace": "", "why": "a hand-built block with no partner is listed"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "\t\tcs.forEach( ( c, j ) => pairs.some( ( p ) => p[ 1 ] === j ) || blocks.push( { name, hand: null, clone: c.order, rows: [] } ) );", "replace": "", "why": "a clone block with no partner is listed"},
+	{"file": "lib/hand-vs-clone.mjs", "find": "filter( ( r ) => content || 'content' !== r.group )", "replace": "filter( ( r ) => true )", "why": "content rows are hidden unless asked"},
+	{"file": "tools/hand-vs-clone.mjs", "find": "filter( ( d ) => fs.existsSync( path.join( fillDir, d, 'filled.tree.json' ) ) )", "replace": "filter( ( d ) => d )", "why": "a run with no Fill tree is skipped"},
+	{"file": "tools/hand-vs-clone.mjs", "find": "find( ( s ) => s.head.includes( needle ) )", "replace": "find( ( s ) => s )", "why": "the section is the one the @@@ line names"}
+]
