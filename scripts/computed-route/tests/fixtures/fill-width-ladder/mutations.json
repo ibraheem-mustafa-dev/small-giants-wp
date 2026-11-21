@@ -61,8 +61,8 @@
  },
  {
   "file": "lib/fill-width-ladder.mjs",
-  "find": "if ( home === target || row.state ) {",
-  "replace": "if ( home === target ) {",
+  "find": "if ( home === target || row.state || sameDraft ) {",
+  "replace": "if ( home === target || sameDraft ) {",
   "why": "a state row takes the written element's rest read"
  },
  {

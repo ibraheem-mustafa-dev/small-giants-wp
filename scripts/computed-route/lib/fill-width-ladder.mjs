@@ -167,7 +167,10 @@ const DECLARED_FORM = /var\(|calc\(|clamp\(|min\(|max\(|%|\d(?:r?em|v[wh]|vmin|v
 // no read at is left out); a row value declared in a form the computed read loses (DECLARED_FORM) is kept at its width.
 export function valuesAt( row, reads, target, home ) {
 	const own = rowValues( row, reads, target );
-	if ( home === target || row.state ) {
+	// Two targets whose finders name one draft element (the node's own element is also its part's slot: a bag button that is
+	// the cart's trigger) are one element: its values are read once, never summed with themselves.
+	const sameDraft = !! target?.finder && !! home?.finder && JSON.stringify( target.finder ) === JSON.stringify( home.finder );
+	if ( home === target || row.state || sameDraft ) {
 		return own;
 	}
 	const homeAt = ( w ) => {

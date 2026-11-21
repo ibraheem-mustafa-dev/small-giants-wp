@@ -290,3 +290,13 @@ test( 'the padding sum does not fire for a margin, a value that is not px, or a 
 	assert.deepEqual( valuesAt( em, reads, ROOT, INNER ), { 375: '2.5rem', 768: '2.5rem', 1440: '2.5rem' }, 'a declared form is kept, never summed' );
 	assert.deepEqual( valuesAt( { node: 'n0', slot: '', property: 'padding-left', value: '40px' }, reads, ROOT, ROOT ), { 375: '40px', 768: '40px', 1440: '40px' }, 'the row on the written element itself' );
 } );
+
+test( 'MUST FAIL: a padding side read on a target whose finder names the same draft element as the written one is read once, never summed with itself', () => {
+	const root = { ...ROOT, finder: { tpl: 'Root/44#0' } };
+	const part = { ...INNER, finder: { tpl: 'Root/44#0' } };
+	const reads = readsOf( { '0:': { 375: { 'padding-left': '11px' }, 1440: { 'padding-left': '14px' } }, '0:.in': { 375: { 'padding-left': '11px' }, 1440: { 'padding-left': '14px' } } } );
+	const row = { node: 'n0', slot: '', property: 'padding-left', value: JSON.stringify( { 375: '11px', 1440: '14px' } ) };
+	assert.deepEqual( valuesAt( row, reads, root, part ), { 375: '11px', 1440: '14px' } );
+	assert.deepEqual( valuesAt( row, reads, root, { ...part, finder: { tpl: 'Root/45#0' } } ), { 375: '22px', 1440: '28px' }, 'negative control: two draft elements still sum' );
+	assert.deepEqual( valuesAt( row, reads, ROOT, INNER ), { 375: '22px', 1440: '28px' }, 'negative control: targets with no finder still sum' );
+} );

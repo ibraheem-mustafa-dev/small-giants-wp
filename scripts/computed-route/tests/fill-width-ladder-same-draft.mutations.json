@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/fill-width-ladder.mjs", "find": "if ( home === target || row.state || sameDraft ) {", "replace": "if ( home === target || row.state ) {", "why": "one draft element's padding is summed with itself (the bag pill at twice the draft's padding)" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "const sameDraft = !! target?.finder && !! home?.finder && JSON.stringify( target.finder ) === JSON.stringify( home.finder );", "replace": "const sameDraft = JSON.stringify( target?.finder ) === JSON.stringify( home?.finder );", "why": "targets with no finder count as one element" },
+	{ "file": "lib/fill-width-ladder.mjs", "find": "const sameDraft = !! target?.finder && !! home?.finder && JSON.stringify( target.finder ) === JSON.stringify( home.finder );", "replace": "const sameDraft = !! target?.finder && !! home?.finder;", "why": "any two found elements count as one" }
+]
