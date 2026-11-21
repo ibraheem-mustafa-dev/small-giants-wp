@@ -89,6 +89,18 @@ function sgs_collect_css( string $css ): void {
 	if ( '' === $css ) {
 		return;
 	}
+	// A fenced shared group (helpers-shared-rules.php) inside a block's one `<style>` is cut out here, as sgs_style_tags()
+	// cuts it into a tag of its own: each stretch is collected in order, so the shared text is kept once, where the first
+	// instance printed it, whichever way the block printed its CSS.
+	if ( \defined( 'SGS_SHARED_RULES_OPEN' ) && false !== \strpos( $css, \SGS_SHARED_RULES_OPEN ) ) {
+		$parts = \preg_split( '#' . \preg_quote( \SGS_SHARED_RULES_OPEN, '#' ) . '(.*?)' . \preg_quote( \SGS_SHARED_RULES_CLOSE, '#' ) . '#s', $css, -1, PREG_SPLIT_DELIM_CAPTURE );
+		if ( \is_array( $parts ) && \count( $parts ) > 1 ) {
+			foreach ( $parts as $part ) {
+				sgs_collect_css( $part );
+			}
+			return;
+		}
+	}
 	$key = \md5( $css );
 	if ( ! isset( $GLOBALS['sgs_collected_css'][ $key ] ) ) {
 		$GLOBALS['sgs_collected_css'][ $key ] = $css;

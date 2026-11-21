@@ -61,6 +61,21 @@ final class SharedRulesTest extends TestCase {
 		return implode( '', $GLOBALS['sgs_collected_css'] );
 	}
 
+	public function test_a_shared_group_printed_inside_one_plain_tag_is_still_kept_once(): void {
+		// A block that prints its whole CSS, fences and all, in one `<style>` (the product card, the account, the product
+		// search and the carousels print the button kit's preset this way): the collector cuts the group out itself.
+		foreach ( array( '11111111', '22222222', '33333333' ) as $n ) {
+			$shared = sgs_shared_rules( 'sgs-state-colour', self::hover_rule( 'red' ) );
+			\SGS\Blocks\sgs_collect_css( '.sgs-product-card-' . $n . '{gap:1px}' . $shared['css'] . '.sgs-product-card-' . $n . ':hover{color:black}' );
+		}
+		$css = self::page_css();
+		$this->assertSame( 1, substr_count( $css, ':hover{color:red}' ), 'MUST FAIL on 7575f2935: three cards printed three copies of the one shared rule' );
+		$this->assertSame( 3, substr_count( $css, '{gap:1px}' ), 'each card keeps its own rule' );
+		$this->assertStringNotContainsString( SGS_SHARED_RULES_OPEN, $css, 'the fences are cut, as sgs_style_tags() cuts them' );
+		$this->assertLessThan( strpos( $css, '.sgs-product-card-11111111:hover{color:black}' ), strpos( $css, ':hover{color:red}' ), 'the shared rule stays where the first card printed it, before its later own rule' );
+		$this->assertLessThan( strpos( $css, '.sgs-product-card-22222222{gap:1px}' ), strpos( $css, '.sgs-product-card-11111111:hover{color:black}' ), 'cards keep their render order' );
+	}
+
 	public function test_identical_declarations_share_one_class_and_print_one_rule(): void {
 		$a = self::render_instance( 'sgs-nav-bar-menu-11111111', 'red', '.sgs-nav-bar-menu-11111111{gap:1px}' );
 		$b = self::render_instance( 'sgs-nav-bar-menu-22222222', 'red', '.sgs-nav-bar-menu-22222222{gap:2px}' );
