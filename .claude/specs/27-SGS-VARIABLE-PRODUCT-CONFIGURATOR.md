@@ -1,13 +1,13 @@
 ---
 doc_type: spec
 spec_id: 27
-spec_version: 8.7
+spec_version: 8.8
 status: active
 title: "SGS Product & WooCommerce Layer"
 project: small-giants-wp
 authors: Bean + Claude (Opus 4.8)
 created: 2026-06-03
-last_verified: 2026-11-19
+last_verified: 2026-11-21
 absorbs: [24, 25, 28, 30]
 absorbed_by: null
 related:
@@ -781,7 +781,7 @@ A product-page draft is a WooCommerce page TYPE, and every shop client needs the
 
 | Layer | WooCommerce core (compose + style) | SGS shipped (wire) | SGS new (build) |
 |---|---|---|---|
-| PDP | Single Product template chassis; Product Gallery (variation-aware at WC 9.9 or later, **Beta**; see FR-30-0); Title/Rating/Price/Breadcrumbs; Add-to-Cart+Options as the simple-product/no-JS fallback; Related/Up-sells | option-picker + cart proxy + variation manifest (FR-30-7) | price-display coupling (FR-30-8); template parts (FR-30-2) |
+| PDP | Single Product template chassis; Product Gallery (variation-aware at WC 9.9 or later, **Beta**; see FR-30-0); Title/Rating/Price/Breadcrumbs; Add-to-Cart+Options as the fallback for grouped and external products and the no-JS fallback; Related/Up-sells | option-picker + cart proxy + variation manifest (FR-30-7) | price-display coupling (FR-30-8); template parts (FR-30-2) |
 | Shop | Product Collection; Product Filters (price/attribute/rating/stock); Active Filters (the chips, styled not rebuilt) | - | product search (FR-30-5); searchable attribute filter (FR-30-6); archive UX shell (FR-30-3) |
 | Cart/Checkout | Cart + Checkout blocks (Store API); Mini-Cart with core slide-out drawer (Blocks 10.1 or later) | - | styling only (FR-30-4); the site's own cloned template copy around the block, its look settings on the Cart and Checkout blocks themselves (FR-30-18; Spec 48 FR-48-56, FR-48-87); free-delivery bar, gift order, commerce note, basket count (FR-30-20 to FR-30-24) |
 | Account | Classic account output (`WC_Shortcode_My_Account`) | two-tier wishlist | `sgs/account` wrapper block, Saved items endpoint and page, saved-item alerts (FR-30-14/15); its field settings (FR-30-18) |
@@ -804,9 +804,9 @@ Declare `add_theme_support('woocommerce')` + `wc-product-gallery-zoom` / `-light
 
 #### FR-30-2 -- PDP composition (single-product.html) -- built
 
-Compose: Product Gallery (thumbnails + zoom) -> Title/Rating/Price (+ FR-30-8 price display) -> **the shipped SGS option-picker wired per FR-30-7** (no interim WC-native selector; core Add-to-Cart+Options remains the rendering path for SIMPLE products and the no-JS fallback) -> trust strip (`sgs/trust-bar`, typed mode) -> content sections (existing `sgs/*` blocks in generic slots; the composition MUST include a generic content slot suitable for statutory allergen information for food clients: content stays client-side, the SLOT is structural) -> reviews (FR-30-10) -> related products. Variant rules: never render a selector when only one variant exists; unavailable options show disabled ("Coming soon"/"Sold out"; labels operator-editable per FR-30-7), never hidden.
+Compose: Product Gallery (thumbnails + zoom) -> Title/Rating/Price (+ FR-30-8 price display) -> **the shipped SGS option-picker wired per FR-30-7** (no interim WC-native selector). A SIMPLE product renders through the same `sgs/buybox` as one implicit choice with no pickers (`plugins/sgs-blocks/includes/class-product-manifest.php::Product_Manifest::build_simple`, read by `plugins/sgs-blocks/src/blocks/buybox/render.php`; Bean, 2026-11-21: the buy box's button kit applies theme-wide): the `.sgs-buybox` wrapper, the gallery column (the featured image, then the product's WooCommerce gallery), price row, stock line, notify form, note and its own `.buybox__add-to-cart` carrying every Add to Cart setting, posting the product itself (`addToCartId`, no variation) through the cart proxy; a linked flow's opener prints as on a variable product (Spec 43 FR-43-25). A simple product WooCommerce will not sell shows its price and photos with no Add to Cart. Core Add-to-Cart+Options remains the rendering path for grouped and external products, a simple product with no price, and the no-JS fallback -> trust strip (`sgs/trust-bar`, typed mode) -> content sections (existing `sgs/*` blocks in generic slots; the composition MUST include a generic content slot suitable for statutory allergen information for food clients: content stays client-side, the SLOT is structural) -> reviews (FR-30-10) -> related products. Variant rules: never render a selector when only one variant exists; unavailable options show disabled ("Coming soon"/"Sold out"; labels operator-editable per FR-30-7), never hidden.
 
-**Done when:** a real variable product on the canary renders the full composition; selecting pills updates price + gallery image; add-to-cart puts the CORRECT `variation_id` in the cart (cart response inspected via the proxy); a SIMPLE product renders the core Add-to-Cart path; axe reports 0 violations.
+**Done when:** a real variable product on the canary renders the full composition; selecting pills updates price + gallery image; add-to-cart puts the CORRECT `variation_id` in the cart (cart response inspected via the proxy); a SIMPLE product renders the buy box's own Add to Cart with the template's Add to Cart look and adding it puts the product in the cart; axe reports 0 violations.
 
 #### FR-30-3 -- Shop archive UX shell -- built
 
@@ -923,7 +923,7 @@ Designed as pages, researched (Baymard, CMA209, the WooCommerce account template
 A cloned client's product page is laid out from the draft, and buy boxes are heavily bespoke (Bean, 2026-10-11: "super awkward to code a block to enable all of that"). Today `sgs/buybox` is one block (274 attributes, `plugins/sgs-blocks/src/blocks/buybox/render.php`) with a single extras slot, so every new layout means more attributes. The buy box becomes parts: gallery, title, price, rating, pack-size picker, purchase type, quantity, add to basket, sticky add-to-basket bar, trust row and the existing extras. The parts are laid out with `sgs/container` inside the `sgs-pdp-buybox` template part, the way the shop filter already composes WooCommerce's filter parts (FR-30-3).
 - **One store, reused.** The parts share one live product state through the existing `sgs/product-card` Interactivity API store (`product-card/view.js`), which `buybox/render.php` already mounts (`data-wp-interactive="sgs/product-card"`, with a context whose keys match product-card's). Each part mounts that store with an explicit `productId` context, since the buy box never reads ambient loop state. Because a context does not reach sibling parts laid out in separate containers, the live selection (chosen pack size, purchase type, quantity, price) is held in the store's state keyed by `productId`, so every part on the page reads the same product. No new namespace.
 - **One source of truth.** Each part's markup comes from its own render function. `sgs/buybox` stays as a composite that calls those same render functions in today's arrangement (as it already does for its partials, such as `buybox/gallery-col.php` and `buybox/extras.php`), so the composite and the parts cannot drift, and existing product pages keep working with no deprecation path (`.claude/rules/block-authoring.md` bans `deprecated.js`).
-- **Editor fallback and empty state.** The editor has no product, so each part draws its sample in the canvas from the composite's sample product (`buybox/canvas-mock.js::BuyboxCanvasMock`, split per part), with the same markup classes its render function emits. On the front end, a part with no resolvable product renders no markup (no dead controls), and a simple product keeps the composite's existing fallback to WooCommerce's own price and add-to-basket blocks.
+- **Editor fallback and empty state.** The editor has no product, so each part draws its sample in the canvas from the composite's sample product (`buybox/canvas-mock.js::BuyboxCanvasMock`, split per part), with the same markup classes its render function emits. On the front end, a part with no resolvable product renders no markup (no dead controls), and a simple product renders through the composite as one implicit choice (no picker part), as it does today.
 
 A visual detail no part's settings cover goes in the part's custom CSS input and is listed by the cloning route; the same pattern on two clients becomes a setting. Unique behaviour (Mama's subscribe and save) is a separate decision on the cloning gap list (Spec 48 §13).
 
