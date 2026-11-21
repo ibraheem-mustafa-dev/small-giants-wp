@@ -160,6 +160,7 @@
 					"_note": "supports.color is explicitly {background:false,text:false} and spacing.padding is false — layout is scoped to margin only (every other layout member is a real gap, not a missing declaration)."
 				},
 				"icon": {
+					"selector": ".sgs-cart__icon",
 					"label": "Cart icon",
 					"order": 2,
 					"clusters": [ "text", "fill", "layout"],
@@ -188,6 +189,7 @@
 					"absentWhy": "The pill trigger shows its label and count in place of the icon."
 				},
 				"badge": {
+					"selector": ".sgs-cart__badge",
 					"label": "Item-count badge",
 					"order": 3,
 					"clusters": [ "text", "fill" ],
@@ -211,6 +213,7 @@
 					"_note": "badgeColour/badgeTextColour do not follow the default {prefix}{suffix} convention — explicit attrMap required per ROLLOUT REQUIREMENT 1. Gradient siblings: badgeColourGradient paints a hand-built ::after layer (NOT sgs_block_background_layer_css() — the badge is already position:absolute, which that helper would silently override), freeing the element's own background-image for badgeTextColourGradient's background-clip:text. badgeTextColourHover/badgeTextColourHoverGradient are safe to paint directly on .sgs-cart__badge because the badge's own background always lives on its ::after layer, never on the badge element itself — background-clip:text on hover cannot clip a background that isn't there."
 				},
 				"panel": {
+					"selector": ".sgs-cart__panel",
 					"restingShadow": true,
 					"label": "Mini-cart panel",
 					"order": 4,
@@ -268,6 +271,7 @@
 					"_note": "Wave B — triggerStyle:'pill' swaps the icon+badge trigger for a word (pillLabel) beside the live item count, in a pill (matches a 'Bag'/'Cart' text trigger draft shape). Only rendered/styled when triggerStyle is 'pill' — the icon element above stays the trigger for triggerStyle:'icon' (the default). HAND-BUILT ::after for the background (same reasoning as badge/panel above: .sgs-cart__trigger is already position:relative in style.css, and a text gradient's background-clip:text must not be clipped by the pill's own fill) — pillTextColour styles the LABEL only; the count beside it keeps using the existing badgeTextColour/badgeTextColourGradient attributes (same badge element, restyled inline for the pill via CSS, so one colour control governs the count in both trigger styles). Border (compliance correction, Spec 35 §14/§1 field 9f): pillBorderWidth (box object, base only) + pillBorderStyle (enum) + pillBorderColour (flat, no gradient sibling) mount through `SgsBorderControl`, mirroring sgs/whatsapp-cta's cardBorderWidth/cardBorderStyle/cardBorderColour (card-fields.js CardTypographyPanel) — no ad-hoc second colour mechanism. pillBorderRadius stays the one exception: a plain CSS-length STRING (default '' — CSS default of border-radius:999px in style.css governs), NOT a responsive 4-corner tier object, per Spec 32 §6.1's deliberate-keep for a single uniform pill radius (mirrors sgs/option-picker's pillBorderRadius) — `SgsBorderControl`'s `onRadiusChange` pairing is typed for that 4-corner tier shape, so pairing this scalar there would force the very object migration §6.1 exempts; it is mounted immediately alongside the composite instead (PillBorderControl.js). `layout` cluster added (compliance pass) purely so css:border-color/css:border-width/css:border-style/css:border-radius — all members of that cluster, per scripts/consistency/cluster-member-sets.json — resolve against this element's own attrMap instead of reporting ORPHAN:STYLE-DEFECT; no other `layout` member (padding/margin/gap/etc.) has an attrMap entry here, so none of them are newly claimed."
 				},
 				"freeDeliveryTrack": {
+					"selector": ".sgs-cart__free-delivery-track",
 					"motion": false,
 					"label": "Free-delivery progress track",
 					"order": 7,
@@ -280,6 +284,7 @@
 					"_note": "Wave B — the empty background of the free-delivery progress bar in the mini-cart panel (flyout or drawer). Only rendered when a threshold (manual override or the WooCommerce free-shipping zone method's min_amount) resolves to a positive number; both empty hides the whole feature. Built entirely client-side (panel-render.js) against Store API cart totals — see render.php's data-free-delivery-* attributes on the block wrapper, which is the only part of this feature render.php can own (the panel BODY markup lives in the shared includes/helpers-cart-panel.php, outside this build's file scope). freeDeliveryMessage/freeDeliverySuccessMessage (the progress-bar's two text states, edited in PanelSettingsControls.js) are declared here as `contentAttrs` — the content half of this element, not a style attribute, following Spec 35's PLACEMENT model (THE ELEMENT MANIFEST §ContentAttrs)."
 				},
 				"freeDeliveryFill": {
+					"selector": ".sgs-cart__free-delivery-fill",
 					"motion": false,
 					"label": "Free-delivery progress fill",
 					"order": 8,
@@ -388,6 +393,7 @@
 					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"panelEmpty": {
+					"selector": ".sgs-cart__panel-empty",
 					"motion": false,
 					"label": "Empty-cart block",
 					"order": 15,
@@ -402,6 +408,7 @@
 					}
 				},
 				"emptyMessage": {
+					"selector": ".sgs-cart__panel-empty-message",
 					"motion": false,
 					"label": "Empty-cart message",
 					"order": 16,
@@ -416,6 +423,7 @@
 					}
 				},
 				"emptyCta": {
+					"selector": ".sgs-cart__panel-empty-cta",
 					"motion": false,
 					"label": "Empty-cart button",
 					"order": 17,
@@ -433,6 +441,7 @@
 					}
 				},
 				"itemThumb": {
+					"selector": ".sgs-cart__item-thumb",
 					"motion": false,
 					"label": "Item image",
 					"order": 18,
@@ -448,6 +457,7 @@
 					}
 				},
 				"item": {
+					"selector": ".sgs-cart__item",
 					"motion": false,
 					"label": "Item row",
 					"order": 19,
@@ -549,6 +559,7 @@
 					"_note": "The band holding the free-delivery message and its bar. Set only the bottom border width for a line under it."
 				},
 				"itemBrand": {
+					"selector": ".sgs-cart__item-brand",
 					"motion": false,
 					"label": "Item brand",
 					"order": 20,
@@ -561,6 +572,7 @@
 					}
 				},
 				"itemName": {
+					"selector": ".sgs-cart__item-name",
 					"motion": false,
 					"label": "Item name",
 					"order": 21,
@@ -571,6 +583,7 @@
 					"attrMap": {}
 				},
 				"itemDetail": {
+					"selector": ".sgs-cart__item-details",
 					"motion": false,
 					"label": "Item details (lens line)",
 					"order": 22,
@@ -583,6 +596,7 @@
 					}
 				},
 				"itemPrice": {
+					"selector": ".sgs-cart__item-price",
 					"motion": false,
 					"label": "Item line price",
 					"order": 23,
@@ -593,6 +607,7 @@
 					"attrMap": {}
 				},
 				"itemAction": {
+					"selector": ".sgs-cart__item-action",
 					"motion": false,
 					"label": "Item action link",
 					"order": 24,
@@ -607,6 +622,7 @@
 					}
 				},
 				"itemRemove": {
+					"selector": ".sgs-cart__item-remove--text",
 					"motion": false,
 					"label": "Item remove link",
 					"order": 25,
@@ -667,6 +683,7 @@
 					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				},
 				"freeDeliveryText": {
+					"selector": ".sgs-cart__free-delivery-text",
 					"motion": false,
 					"label": "Free-delivery message",
 					"order": 28,
@@ -679,6 +696,7 @@
 					}
 				},
 				"freeDeliveryBar": {
+					"selector": ".sgs-cart__free-delivery-track",
 					"motion": false,
 					"label": "Free-delivery bar geometry",
 					"order": 29,
