@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "hover.length && await readHover( { page, found, parts: hover, log } );",
+		"replace": "void hover;",
+		"why": "the part reader never hovers a part"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "hover: builtin.map( ( b ) => b.part ), headed, log } ) );",
+		"replace": "headed, log } ) );",
+		"why": "the part-look command never names the parts to hover"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "Object.assign( shopParts, openerShopParts( controls ) );",
+		"replace": "void controls;",
+		"why": "the flow opener is never located"
+	},
+	{
+		"file": "site-build.mjs",
+		"find": "runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply: false, pending: true } ) ||",
+		"replace": "runFlowLinks( { rows, runPhp, apply: false, pending: true } ) ||",
+		"why": "a whole build's dry run never plans the opener words"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"shopPart\": \"buybox-flow-opener\"",
+		"replace": "\"shopPart\": \"buybox-flow-openers\"",
+		"why": "the flow opener locator names a shop part nothing provides"
+	}
+]
