@@ -18,6 +18,7 @@ import { recordTree, settle, scrollThrough, breakpoints, probeTargets } from './
 import { blockNoisy, makeViewer } from './lib/session.mjs';
 import { normaliser } from './lib/normalise.mjs';
 import { runActions } from './lib/actions.mjs';
+import { probeClip } from './lib/clip.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const { chromium } = await import( pathToFileURL( path.join( HERE, '../../plugins/sgs-blocks/node_modules/playwright/index.mjs' ) ).href );
@@ -338,11 +339,13 @@ async function domJobOnce( job, side ) {
 					const el = page.locator( `[data-rc-probe="${ i }"]` );
 					await el.scrollIntoViewIfNeeded().catch( () => {} );
 					const box = await el.boundingBox();
-					if ( box ) {
-						const pad = 16;
-						const x = Math.max( 0, box.x - pad );
-						const y = Math.max( 0, box.y - pad );
-						await page.screenshot( { path: path.join( dir, 'probes', `${ name }-${ i }-${ kind }.png` ), clip: { x, y, width: Math.min( job.width - x, box.width + 2 * pad ), height: box.height + 2 * pad }, animations: 'disabled' } );
+					// The probe picture is a crop of the viewport for the report's pair, never the reading itself: an element
+					// that cannot scroll into view (an open menu or drawer locks the page's scroll) has no crop, and the
+					// state is still compared by its readings.
+					const clip = box && probeClip( box, page.viewportSize() );
+					if ( clip ) {
+						await page.screenshot( { path: path.join( dir, 'probes', `${ name }-${ i }-${ kind }.png` ), clip, animations: 'disabled' } )
+							.catch( ( e ) => ( data.shotNotes = data.shotNotes || [] ).push( `probe ${ i } ${ kind }: ${ String( e ).split( '\n' )[ 0 ].slice( 0, 160 ) }` ) );
 					}
 				}
 				await cdp.send( 'CSS.forcePseudoState', { nodeId, forcedPseudoClasses: [] } );
