@@ -178,6 +178,13 @@ export function optionCardColourRows( { attributes, setAttributes } ) {
 			attributes,
 			setAttributes,
 		} ),
+		fillRow( {
+			key: 'optionMediaBand',
+			label: __( 'Picture band', 'sgs-blocks' ),
+			attrs: { base: 'optionMediaBackground' },
+			attributes,
+			setAttributes,
+		} ),
 	];
 	return rows;
 }
@@ -275,6 +282,7 @@ export function OptionCardStyle( { attributes, clientId } ) {
 				...tierBoxLonghands( a.optionBadgePadding, tier, 'padding' ),
 			},
 		],
+		[ `${ scope } .sgs-choice-flow-question__option-media`, { backgroundColor: colourVar( a.optionMediaBackground ) } ],
 	];
 	const css = rules
 		.map( ( [ selector, style ] ) => [ selector, cssText( style ) ] )

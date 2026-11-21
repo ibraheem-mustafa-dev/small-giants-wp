@@ -17,6 +17,8 @@
  *   clears the stage gradient the showcase layout lays over a chosen card, so the colour shows.
  * - The badge box (`optionBadgeBorder` per device, `optionBadgeRadius`, `optionBadgePadding` per device), as
  *   sgs/nav-drawer-menu's `badgeBorder` and sgs/nav-bar-menu's `itemBadgePadding` and `itemBadgeBorderRadius`.
+ * - The picture band (`optionMediaBackground`): the band's fill, and the blank band the showcase layout draws on a
+ *   picture-less card beside pictured ones.
  *
  * render.php is past its line cap, so it makes one call to each function here.
  *
@@ -128,6 +130,12 @@ if ( ! function_exists( 'sgs_choice_flow_question_option_card_css' ) ) {
 		$badge_radius = sgs_css_length_value( (string) ( $attributes['optionBadgeRadius'] ?? '' ) );
 		if ( '' !== $badge_radius ) {
 			$css .= $badge . '{border-radius:' . $badge_radius . ';}';
+		}
+
+		// The band behind an option's picture, and the blank band of a picture-less card beside pictured ones.
+		$band = sgs_colour_value( (string) ( $attributes['optionMediaBackground'] ?? '' ) );
+		if ( '' !== $band ) {
+			$css .= $scope . '.sgs-choice-flow-question__option-media,' . $card . ':not(:has(.sgs-choice-flow-question__option-media))::before{background-color:' . $band . ';background-image:none;}';
 		}
 
 		if ( '' === $css ) {

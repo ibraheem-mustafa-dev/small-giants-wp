@@ -135,6 +135,20 @@
 					"motion": false,
 					"_note": "Each option's button, the card a shopper clicks (render.php, both option paths); scoped CSS from helpers-option-card-style.php. Border width, style, corners and padding apply to every card; the fill, border colour and shadow at rest and on hover apply to the cards that are not chosen; the current state is the chosen card (.sgs-choice-flow-question__option-button--selected, set by sgs/choice-flow's view script; names shaped like sgs/form-field-tiles' tileSelected*). Empty keeps the stylesheet's card. The hover lift belongs to the option's motion hover state (the option element)."
 				},
+				"option-media": {
+					"selector": ".sgs-choice-flow-question__option-media",
+					"label": "Option picture band",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:background-color": "optionMediaBackground"
+					},
+					"motion": false,
+					"_note": "The band an option's picture sits in (render.php prints it only when the option has a picture), and the blank band the showcase layout draws on a picture-less card beside pictured ones; scoped CSS from helpers-option-card-style.php. Empty keeps the stylesheet's stage colour."
+				},
 				"question": {
 					"selector": ".sgs-choice-flow-question__title",
 					"text": true,
@@ -603,6 +617,10 @@
 		"optionCardSelectedShadowColour": {
 			"type": "string",
 			"description": "Colour of the chosen option card's shadow. Empty = the shadow's own colour."
+		},
+		"optionMediaBackground": {
+			"type": "string",
+			"description": "Fill of the band behind an option's picture (and the blank band of a picture-less card beside pictured ones in the showcase layout), a palette slug or any colour. Empty keeps the stage colour."
 		},
 		"optionLoading": {"type":"string","_generated":"media-atoms"},
 		"optionFit": {"type":"object","_generated":"media-atoms"},
