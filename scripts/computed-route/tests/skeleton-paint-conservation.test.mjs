@@ -359,7 +359,7 @@ test( 'the tool reads a client folder, lists an element once under its narrowest
 	put( 'form-x', { inventory: { elements: page.inventory.elements.filter( ( e ) => /^Root\/5#/.test( e.key ) ) }, proposal: { rows: page.proposal.rows.filter( ( r ) => /^Root\/5#/.test( r.key ) ) }, skeleton: [] } );
 	put( 'held-out', page );
 	fs.writeFileSync( path.join( dir, 'half.inventory.json' ), '{"elements":[]}' );
-	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'surfaces.json' ), JSON.stringify( { home: { draftIndex: 'Home.dc.html' }, 'form-x': { draftIndex: 'Home.dc.html' }, 'held-out': { draftIndex: 'Other.dc.html' } } ) );
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'surfaces.json' ), JSON.stringify( { home: { draftIndex: 'Home.dc.html' }, 'form-x': { draftIndex: 'Home.dc.html' }, 'held-out': { draftIndex: 'Other.dc.html' }, half: { draftIndex: 'Home.dc.html' } } ) );
 	const skip = new Set( [ 'demo/held-out' ] );
 	assert.deepEqual( loadClient( { repo, client: 'demo', skip } ).map( ( s ) => [ s.surface, s.component ] ), [ [ 'form-x', 'Home' ], [ 'home', 'Home' ] ], 'a surface missing a file and a skipped surface are left out' );
 	const result = listAll( { repo, clients: [ 'demo' ], skip } );
@@ -381,6 +381,36 @@ test( 'the tool reads a client folder, lists an element once under its narrowest
 	const viaDir = [];
 	assert.equal( main( [ '--client', 'demo', '--root', repo, '--dir', `demo=${ moved }`, '--skip', 'demo/held-out', '--json' ], { log: ( l ) => viaDir.push( l ) } ), 0 );
 	assert.equal( JSON.parse( viaDir[ 0 ] ).rows.length, 5 );
+	fs.rmSync( repo, { recursive: true } );
+} );
+
+test( 'a surface the manifest does not list is reported by name and never read, nor taken as another surface (MUST FAIL where every inventory trio in the folder loads)', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'paint-conservation-' ) );
+	const dir = path.join( repo, 'sites', 'demo', 'build', 'skeleton' );
+	fs.mkdirSync( dir, { recursive: true } );
+	const put = ( folder, name, s ) => [ 'inventory', 'proposal', 'skeleton' ].forEach( ( k ) => fs.writeFileSync( path.join( folder, `${ name }.${ k }.json` ), JSON.stringify( s[ k ] ) ) );
+	const page = surface();
+	put( dir, 'home', page );
+	// A stale regeneration of a surface the manifest dropped, whose skeleton names the grey box the page leaves unread.
+	put( dir, 'old-page', { inventory: { elements: [ el( 'Root/9#0', 'background: grey' ) ] }, proposal: { rows: [] }, skeleton: [ node( 'sgs/container', 'Root/9#0' ) ] } );
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'surfaces.json' ), JSON.stringify( { home: { draftIndex: 'Home.dc.html' } } ) );
+	const unlisted = [];
+	assert.deepEqual( loadClient( { repo, client: 'demo', unlisted } ).map( ( s ) => s.surface ), [ 'home' ] );
+	assert.deepEqual( unlisted, [ 'old-page' ] );
+	const result = listAll( { repo, clients: [ 'demo' ] } );
+	assert.deepEqual( result.unlisted, { demo: [ 'old-page' ] } );
+	assert.ok( result.rows.some( ( r ) => 'home' === r.surface && 'Root/9#0' === r.key ), 'the stale surface does not read the page\'s element' );
+	assert.match( markdown( result, 'T' ), /Surfaces the manifest does not list \(not read\): demo\/old-page/ );
+	// The same holds for a folder given with --dir.
+	const moved = path.join( repo, 'elsewhere' );
+	fs.cpSync( dir, moved, { recursive: true } );
+	assert.deepEqual( listAll( { repo, clients: [ 'demo' ], dirs: { demo: moved } } ).unlisted, { demo: [ 'old-page' ] } );
+	// Negative control: once the manifest lists it, it is read and reads the element.
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'surfaces.json' ), JSON.stringify( { home: { draftIndex: 'Home.dc.html' }, 'old-page': { draftIndex: 'Home.dc.html' } } ) );
+	const listed = listAll( { repo, clients: [ 'demo' ] } );
+	assert.deepEqual( listed.unlisted, { demo: [] } );
+	assert.ok( ! listed.rows.some( ( r ) => 'home' === r.surface && 'Root/9#0' === r.key ) );
+	assert.doesNotMatch( markdown( listed, 'T' ), /manifest does not list/ );
 	fs.rmSync( repo, { recursive: true } );
 } );
 
@@ -475,6 +505,7 @@ test( 'the tool\'s --check exits 1 while an element is neither read nor recorded
 	const dir = path.join( repo, 'sites', 'demo', 'build', 'skeleton' );
 	fs.mkdirSync( dir, { recursive: true } );
 	const write = ( s ) => [ 'inventory', 'proposal', 'skeleton' ].forEach( ( k ) => fs.writeFileSync( path.join( dir, [ 'home', k, 'json' ].join( '.' ) ), JSON.stringify( s[ k ] ) ) );
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'surfaces.json' ), JSON.stringify( { home: { draftIndex: 'Home.dc.html' } } ) );
 	write( surface() );
 	const lines = [];
 	assert.equal( main( [ '--root', repo, '--client', 'demo', '--check' ], { log: ( l ) => lines.push( l ) } ), 1 );

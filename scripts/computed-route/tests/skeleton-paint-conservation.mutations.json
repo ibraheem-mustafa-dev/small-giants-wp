@@ -133,14 +133,14 @@
 	},
 	{
 		"file": "tools/paint-conservation.mjs",
-		"find": "if ( ! surface || skip.has( `${ client }/${ surface }` ) || ! files.every(",
-		"replace": "if ( ! surface || ! files.every(",
+		"find": "if ( ! surface || skip.has( `${ client }/${ surface }` ) ) {",
+		"replace": "if ( ! surface ) {",
 		"why": "a skipped surface is listed"
 	},
 	{
 		"file": "tools/paint-conservation.mjs",
-		"find": "if ( ! surface || skip.has( `${ client }/${ surface }` ) || ! files.every( ( x ) => fs.existsSync( x ) ) ) {",
-		"replace": "if ( ! surface || skip.has( `${ client }/${ surface }` ) ) {",
+		"find": "if ( ! files.every( ( x ) => fs.existsSync( x ) ) ) {",
+		"replace": "if ( false ) {",
 		"why": "a surface missing a file is read"
 	},
 	{
@@ -526,5 +526,29 @@
 		"find": "instanceCopy: ( e ) => templateOf( e.key ), siblingCopy: signature };",
 		"replace": "instanceCopy: ( e ) => templateOf( e.key ) };",
 		"why": "a like sibling is no copy"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "\t\tif ( ! Object.hasOwn( manifest, surface ) ) {\n\t\t\tunlisted?.push( surface );\n\t\t\tcontinue;\n\t\t}",
+		"replace": "",
+		"why": "every inventory trio in the folder loads"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "\t\t\tunlisted?.push( surface );",
+		"replace": "",
+		"why": "an unlisted surface is dropped silently"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "\tstale.length && lines.push( '', `Surfaces the manifest does not list (not read): ${ stale.join( ', ' ) }` );",
+		"replace": "",
+		"why": "the report does not name the unlisted surfaces"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "const surfaces = loadClient( { repo, client, dir: dirs[ client ] ?? null, skip, unlisted: unlisted[ client ] } );",
+		"replace": "const surfaces = loadClient( { repo, client, dir: dirs[ client ] ?? null, skip } );",
+		"why": "listAll does not collect the unlisted surfaces"
 	}
 ]

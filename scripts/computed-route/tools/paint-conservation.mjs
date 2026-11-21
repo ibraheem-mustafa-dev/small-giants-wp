@@ -21,8 +21,10 @@ import { readSlotMap } from '../lib/cache.mjs';
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 
-// The surfaces of one client that hold all three files: [ { surface, inventory, proposal, skeleton, component } ].
-export function loadClient( { repo, client, dir = null, skip = new Set() } ) {
+// The surfaces of one client that the client's surfaces.json lists and that hold all three files: [ { surface, inventory,
+// proposal, skeleton, component } ]. A surface the folder holds an inventory for and the manifest does not list (a stale
+// regeneration) is never read, so it is never another surface either: its name goes to `unlisted` (an array, when given).
+export function loadClient( { repo, client, dir = null, skip = new Set(), unlisted = null } ) {
 	const folder = dir ?? path.join( repo, 'sites', client, 'build', 'skeleton' );
 	const manifestFile = path.join( repo, 'sites', client, 'build', 'surfaces.json' );
 	const manifest = fs.existsSync( manifestFile ) ? readJson( manifestFile ) : {};
@@ -30,7 +32,14 @@ export function loadClient( { repo, client, dir = null, skip = new Set() } ) {
 	for ( const f of fs.existsSync( folder ) ? fs.readdirSync( folder ).sort() : [] ) {
 		const surface = /^(.+)\.inventory\.json$/.exec( f )?.[ 1 ];
 		const files = surface ? [ 'inventory', 'proposal', 'skeleton' ].map( ( k ) => path.join( folder, `${ surface }.${ k }.json` ) ) : [];
-		if ( ! surface || skip.has( `${ client }/${ surface }` ) || ! files.every( ( x ) => fs.existsSync( x ) ) ) {
+		if ( ! surface || skip.has( `${ client }/${ surface }` ) ) {
+			continue;
+		}
+		if ( ! Object.hasOwn( manifest, surface ) ) {
+			unlisted?.push( surface );
+			continue;
+		}
+		if ( ! files.every( ( x ) => fs.existsSync( x ) ) ) {
 			continue;
 		}
 		const [ inventory, proposal, skeleton ] = files.map( readJson );
@@ -39,15 +48,18 @@ export function loadClient( { repo, client, dir = null, skip = new Set() } ) {
 	return out;
 }
 
-// Every client's rows and counts: { rows, counts: { client: { surface: counts } } }. Each row carries its client and surface.
+// Every client's rows and counts: { rows, counts: { client: { surface: counts } }, unlisted: { client: [ surface ] } }. Each row
+// carries its client and surface; `unlisted` names the surfaces left unread because the manifest does not list them.
 // calibration( block ): the block's calibrated settings from the cache's slot map, or null where it has none.
 export const calibrationFrom = ( dir ) => ( block ) => ( block ? readSlotMap( dir, block )?.settings ?? null : null );
 
 export function listAll( { repo, clients, dirs = {}, skip = new Set(), calibration = calibrationFrom( path.join( HERE, '..', 'cache' ) ) } ) {
 	const rows = [];
 	const counts = {};
+	const unlisted = {};
 	for ( const client of clients ) {
-		const surfaces = loadClient( { repo, client, dir: dirs[ client ] ?? null, skip } );
+		unlisted[ client ] = [];
+		const surfaces = loadClient( { repo, client, dir: dirs[ client ] ?? null, skip, unlisted: unlisted[ client ] } );
 		const named = surfaces.map( ( s ) => ( { surface: s.surface, identities: namedIdentities( s ), held: heldIdentities( s ), size: s.inventory.elements.length } ) );
 		counts[ client ] = {};
 		for ( const s of surfaces ) {
@@ -60,13 +72,13 @@ export function listAll( { repo, clients, dirs = {}, skip = new Set(), calibrati
 			rows.push( ...r.rows.map( ( row ) => ( { client, surface: s.surface, ...row } ) ) );
 		}
 	}
-	return { rows, counts };
+	return { rows, counts, unlisted };
 }
 
 const cell = ( v ) => String( v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, ' ' );
 
 // The groups as markdown: a totals line per client, then one table row per (class, dropped by, rule).
-export function markdown( { rows, counts }, title ) {
+export function markdown( { rows, counts, unlisted = {} }, title ) {
 	const total = ( client, k ) => Object.values( counts[ client ] ).reduce( ( n, c ) => n + c[ k ], 0 );
 	const sum = ( client, keys ) => keys.reduce( ( n, k ) => n + total( client, k ), 0 );
 	const READ = [ 'exact', 'loopCopy', 'instanceCopy', 'siblingCopy', 'otherSurface', 'ownedElsewhere', 'recorded' ];
@@ -75,6 +87,8 @@ export function markdown( { rows, counts }, title ) {
 	for ( const client of Object.keys( counts ) ) {
 		lines.push( `| ${ client } | ${ Object.keys( counts[ client ] ).length } | ${ [ 'painted', 'exact', 'loopCopy', 'instanceCopy', 'siblingCopy', 'otherSurface', 'ownedElsewhere', 'recorded', 'listedApart', 'unread' ].map( ( k ) => total( client, k ) ).join( ' | ' ) } |` );
 	}
+	const stale = Object.entries( unlisted ).flatMap( ( [ client, names ] ) => names.map( ( n ) => `${ client }/${ n }` ) );
+	stale.length && lines.push( '', `Surfaces the manifest does not list (not read): ${ stale.join( ', ' ) }` );
 	const unread = rows.filter( ( r ) => 'recorded' === r.state );
 	const byBlock = {};
 	unread.forEach( ( r ) => Object.keys( r.looks ).forEach( ( l ) => {
