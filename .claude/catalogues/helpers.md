@@ -96,7 +96,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_button_focus_before_owner` | `function sgs_button_focus_before_owner( array $attributes, string $block_name = 'sgs/button' ): string` | The label of the motion effect on the button root that claims the `::before` paint slot, or `''`. | no markup |
 | `sgs_button_focus_signature_refused` | `function sgs_button_focus_signature_refused( array $attributes ): bool` | Whether Signature is refused: a gradient border or a `::before`-owning motion effect is on the button. | no markup |
 | `sgs_button_focus_class` | `function sgs_button_focus_class( array $attributes ): string` | The focus-system class the button root carries, or `''` (Default, or a refused Signature). | no markup |
-| `sgs_button_focus_host_border` | `function sgs_button_focus_host_border( array $widths, string $border_style, string $preset ): string` | The `--sgs-focus-host-border` value of a signature button: its own border width (the widest side when the sides differ), else its preset's… | no markup |
+| `sgs_button_focus_host_border` | `function sgs_button_focus_host_border( array $widths, string $border_style, string $preset, string…` | The `--sgs-focus-host-border` value of a signature button: its own border width (the widest side when the sides differ), else its preset's… | no markup |
 | `sgs_button_focus_group_host_border` | `function sgs_button_focus_group_host_border( array $context ): string` | The `--sgs-focus-host-border` value a preset-less button takes from its sgs/multi-button group default border. | no markup |
 
 #### `includes/helpers-button-icon-circle.php` — 1 function(s)
@@ -125,7 +125,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_button_note_html` | `function sgs_button_note_html( array $attributes ): string` | The note's markup. | tags span |
 
-#### `includes/helpers-button-preset-names.php` — 10 function(s)
+#### `includes/helpers-button-preset-names.php` — 11 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -135,15 +135,17 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_button_preset_names` | `function sgs_button_preset_names(): array` | Every preset name a block accepts: the starters, then (switch on) the snapshot's other names, as slugs. | no markup |
 | `sgs_button_preset_resolve` | `function sgs_button_preset_resolve( string $name ): string` | A stored style value as the preset slug it names, or '' when no preset has that name. | no markup |
 | `sgs_button_preset_has_role` | `function sgs_button_preset_has_role( string $slug, string $role ): bool` | Whether the snapshot's preset (by slug) sets one role to a non-empty string. | no markup |
+| `sgs_button_preset_sets` | `function sgs_button_preset_sets( string $slug, string $role ): bool` | Whether the site's `buttonPresets` sets one role of one preset to a non-empty string, whether or not the site opted in to named presets… | no markup |
 | `sgs_button_named_preset_css` | `function sgs_button_named_preset_css(): string` | The CSS an opted-in site needs for its presets: a rule per name beyond the starters (the starters' own rules are in… | no markup |
 | `sgs_buybox_named_preset_css` | `function sgs_buybox_named_preset_css(): string` | The buy box's add-to-cart rules for each preset name beyond the starters (`.buybox__add-to-cart--{name}`), shaped like the starters' rules… | no markup |
 | `sgs_button_named_presets_print` | `function sgs_button_named_presets_print(): void` | Print the opted-in site's preset CSS as one inline stylesheet, on the page and in the editor canvas (`enqueue_block_assets` runs in both).… | no markup |
 | `sgs_button_preset_names_editor_data` | `function sgs_button_preset_names_editor_data(): void` | Publish the preset names beyond the starters to the editor as `window.sgsButtonPresetNames` (`src/blocks/button/preset-names.js`). Prints… | no markup |
 
-#### `includes/helpers-button-preset.php` — 1 function(s)
+#### `includes/helpers-button-preset.php` — 2 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
+| `sgs_button_preset_kit_rules` | `function sgs_button_preset_kit_rules( string $selector, string $preset, bool $resting, bool $colours ): string` | The rules of one preset for the built-in button kit, without the reduced-motion twin (`sgs_button_preset_css( ..., $kit )` adds it). | no markup |
 | `sgs_button_preset_css` | `function sgs_button_preset_css( string $selector, string $preset, bool $resting = true, bool $colours = true…` | The CSS for one preset on one selector. | no markup |
 
 #### `includes/helpers-button-press.php` — 3 function(s)
@@ -170,13 +172,27 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_button_site_info_label` | `function sgs_button_site_info_label( string $source ): string` | The plain-text Site Info value for a link source. | no markup |
 | `sgs_button_site_info_label_html` | `function sgs_button_site_info_label_html( string $label, string $source ): string` | The label HTML for a Site Info value: an email address is obscured the same way as its mailto: link (antispambot() returns only character… | no markup |
 
-#### `includes/helpers-button-style.php` — 3 function(s)
+#### `includes/helpers-button-style.php` — 8 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_button_element_line_height` | `function sgs_button_element_line_height( $value ): string` | Sanitise a button line-height: a unitless number or a CSS length. | no markup |
 | `sgs_button_element_text_align_css` | `function sgs_button_element_text_align_css( string $selector, $value ): string` | Scoped CSS for the text alignment of a built-in CTA, per breakpoint. | no markup |
 | `sgs_button_element_style_css` | `function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer =…` | Build a scoped CSS string (base rule + hover/focus rule) for a built-in button-like element, reading a prefixed attribute set. | no markup |
+| `sgs_builtin_button_attr` | `function sgs_builtin_button_attr( string $prefix, string $base ): string` | The attribute name for one base of a declared built-in button (the twin of JS `builtinButtonAttrName()`). | no markup |
+| `sgs_button_kit_look_bases` | `function sgs_button_kit_look_bases(): array` | The attribute names (after the prefix) the look step of the built-in button kit reads: colour and hover colour, the six gradient colours… | no markup |
+| `sgs_button_kit_shared` | `function sgs_button_kit_shared( array $attrs, string $prefix, string $element = '' ): array` | The shared rules of one built-in button's preset: the preset itself, and its pressed look, each as a minted class and the fenced rule that… | no markup |
+| `sgs_button_kit_classes` | `function sgs_button_kit_classes( array $attrs, string $prefix, string $element = '' ): string` | The classes a built-in button carries so its shared preset rules apply: ' sgs-btn-kit-<hash>' and, where the preset sets a pressed look, '… | no markup |
+| `sgs_button_kit_css` | `function sgs_button_kit_css( array $attrs, string $prefix, string $selector, array $opts = array() ): string` | Scoped CSS for one built-in button (a button a block renders itself in PHP) from its prefixed look set: the preset choice, colours and… | no markup |
+
+#### `includes/helpers-carousel-dots.php` — 4 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_carousel_dots_attr` | `function sgs_carousel_dots_attr( string $prefix, string $base ): string` | The attribute name for one base of the declared carousel dots (the twin of JS `carouselDotsAttrName()`). | no markup |
+| `sgs_carousel_dots_css` | `function sgs_carousel_dots_css( array $attrs, string $prefix, array $selectors, array $opts = array() )…` | The CSS for one slider's dots from its prefixed look settings. | no markup |
+| `sgs_carousel_arrow_icon_transform` | `function sgs_carousel_arrow_icon_transform( $raw ): string` | The arrow icon for an arrow size: half of it, as the 22px icon is half the 44px default arrow. | no markup |
+| `sgs_carousel_controls_css` | `function sgs_carousel_controls_css( array $attributes, string $scope, array $parts, array $opts = array() )…` | The look of a slider's arrows, pause button and dots, from the two kits' prefixed settings. | no markup |
 
 #### `includes/helpers-cart-panel-css.php` — 1 function(s)
 
@@ -410,13 +426,15 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_grid_item_needs_scoped_css` | `function sgs_grid_item_needs_scoped_css( array $s ): bool` | Does any grid-item state need a scoped rule (and so a uid)? | no markup |
 | `sgs_grid_item_state_css` | `function sgs_grid_item_state_css( array $s, string $uid, array $attributes = array(), string $block_name = ''…` | The scoped grid-item state rules at both cell depths: background hover, text-colour gradient and hover, the border-gradient ring, and the… | no markup |
 
-#### `includes/helpers-hover-lift.php` — 3 function(s)
+#### `includes/helpers-hover-lift.php` — 5 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_hover_lift_px` | `function sgs_hover_lift_px( $raw ): int` | The lift distance as a whole number of pixels, clamped to 0..SGS_HOVER_LIFT_MAX_PX. | no markup |
 | `sgs_hover_lift_decls` | `function sgs_hover_lift_decls( int $px, bool $reset_transform = false ): string` | The declarations a lift paints on hover and focus. | no markup |
 | `sgs_hover_lift_rule` | `function sgs_hover_lift_rule( string $selector, $raw, bool $reset_transform = false ): string` | The complete touch-safe hover and focus rule pair for a lift, gated on motion being allowed. | no markup |
+| `sgs_hover_lift_distance_px` | `function sgs_hover_lift_distance_px( $raw ): ?int` | A built-in button's lift distance setting (`{prefix}HoverLiftDistance`) as whole pixels. | no markup |
+| `sgs_hover_lift_distance_rule` | `function sgs_hover_lift_distance_rule( string $selector, $raw ): string` | The hover and keyboard-focus rule that makes a button's total movement exactly the setting, whatever lift the site's button token adds. | no markup |
 
 #### `includes/helpers-hover-links.php` — 1 function(s)
 
@@ -656,7 +674,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_preselect_axes_from_url` | `function sgs_preselect_axes_from_url( array $axes ): array` | The requested term slug per axis, keyed by taxonomy. | no markup |
 | `sgs_preselect_apply_to_manifest` | `function sgs_preselect_apply_to_manifest( array $manifest ): array` | Point a manifest's default at the combination the URL asks for. | no markup |
 
-#### `includes/helpers-responsive.php` — 16 function(s)
+#### `includes/helpers-responsive.php` — 17 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -668,6 +686,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_responsive_atoms_from_spec` | `function sgs_responsive_atoms_from_spec( array $spec )` | Expand one property spec into a flat list of scalar "atoms". | no markup |
 | `sgs_responsive_format_atom_value` | `function sgs_responsive_format_atom_value( $raw, $unit, $cast, $transform )` | Format one raw atom value into a CSS value string, or null if unusable. | no markup |
 | `sgs_responsive_sanitise_css_value` | `function sgs_responsive_sanitise_css_value( $value )` | Sanitise a free-text CSS length/expression value for a scoped <style>. | no markup |
+| `sgs_length_transform` | `function sgs_length_transform( $raw ): string` | Responsive-emitter `transform` for one stored length per device (a min height, a width, a gap). | no markup |
 | `sgs_emit_responsive_css` | `function sgs_emit_responsive_css( $selector, array $prop_map, array $opts = array() )` | Emit scoped responsive CSS for object-model properties on one selector. | no markup |
 | `sgs_emit_tier_decls` | `function sgs_emit_tier_decls( string $selector, array $tiers ): string` | Print READY per-tier declaration lists on one selector. | no markup |
 | `sgs_canonicalise_responsive_attrs` | `function sgs_canonicalise_responsive_attrs( array $attrs )` | Canonicalisation ORACLE for object-model responsive attributes. | no markup |
@@ -1030,7 +1049,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_font_size_value` | `function sgs_font_size_value( ?string $slug_or_value ): string` | Resolve a font-size attribute value to a CSS font-size string. | no markup |
 | `sgs_transition_vars` | `function sgs_transition_vars( array $attributes ): array` | Build CSS custom properties for transition duration and easing. | no markup |
 
-#### `includes/helpers-trust-bar-item.php` — 9 function(s)
+#### `includes/helpers-trust-bar-item.php` — 12 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -1043,6 +1062,9 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_trust_bar_scrub_spacing` | `function sgs_trust_bar_scrub_spacing( $value, int $depth )` | Drop everything from a spacing value that cannot become a CSS length. | no markup |
 | `sgs_trust_bar_library_icon_svg` | `function sgs_trust_bar_library_icon_svg( string $slug ): string` | SVG for an icon slug (Lucide, WordPress or SGS library), sanitised for output. | tags circle, ellipse, line, path, polygon, polyline, rect, svg; aria aria-hidden, aria-label |
 | `sgs_trust_bar_item_css` | `function sgs_trust_bar_item_css( array $attributes, string $root_sel ): string` | Scoped CSS for the badge item's own spacing: `itemGap` (icon to label) and `itemPadding`, both responsive tier objects. | no markup |
+| `sgs_trust_bar_separator_glyph` | `function sgs_trust_bar_separator_glyph( array $attributes, string $badge_style ): string` | The separator glyph the bar prints between its badges. | no markup |
+| `sgs_trust_bar_separator_html` | `function sgs_trust_bar_separator_html( string $glyph ): string` | The separator element printed after a badge. | tags span; aria aria-hidden |
+| `sgs_trust_bar_text_badge_css` | `function sgs_trust_bar_text_badge_css( array $attributes, string $badge_style, string $root_sel, string…` | Scoped CSS for the text-only badge's own look (fill, border colour and width, corner radius) and the separator's colour. Every value is… | no markup |
 
 #### `includes/helpers-typography.php` — 8 function(s)
 
@@ -1065,7 +1087,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**108 files, 510 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**109 files, 527 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -1077,6 +1099,8 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `AuthoredText.js` | `AuthoredText (default)` | AuthoredText — the editor canvas's print of a typed rich value (a setting edited with `SgsFreeTextField type="rich"`), the twin… |
 | `BooleanResponsiveControl.js` | `BooleanResponsiveControl (default)` | BooleanResponsiveControl — a single ToggleControl on Desktop, a 3-way Inherit/On/Off switch on Tablet/Mobile, driven by the… |
 | `BorderStyleControl.js` | `BorderStyleControl (default)` | BorderStyleControl — thin SGS wrapper matching WP core's native `BorderControlStylePicker` exactly (Bean-directed, 2026-08-19). |
+| `BuiltinButtonPanel.js` | `BuiltinButtonPanel (default)`, `builtinButtonAttrName`, `builtinButtonAttrKeys`… | The built-in button kit's editor panel mount. |
+| `CarouselDotsPanel.js` | `CarouselDotsPanel (default)`, `carouselDotsAttrName`, `carouselDotsAttrKeys`… | The carousel dots kit's editor panel mount. |
 | `ColumnShapePicker.js` | `ColumnShapePicker (default)`, `weightsToTrack`, `activeShapeKey`, `ColumnShapePicker` | ColumnShapePicker — pick a column SHAPE by clicking a diagram (FR-37-42). |
 | `ControlLabelContext.js` | `ControlLabelContext` | The visible label of the wrapper a control sits in (`ResponsiveOverride`). A control mounted without its own label takes this as… |
 | `DateTimePickerField.js` | `DateTimePickerField (default)` | DateTimePickerField — the SGS standard DATE control (golden-controls.json goldens/input.json `date` row, Bean-approved live… |
@@ -1137,7 +1161,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 | `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 
-**63 files.**
+**65 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
