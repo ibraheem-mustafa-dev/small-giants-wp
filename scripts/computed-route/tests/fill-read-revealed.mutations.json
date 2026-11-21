@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "const reached = await setDraftState( page, g.reveal ).catch( () => 0 );",
+		"replace": "const reached = 1;",
+		"why": "the state's keys are set before the read"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "for ( const j of jobs.filter( ( x ) => x.reveal ) ) {",
+		"replace": "for ( const j of jobs.filter( ( x ) => x.reveal || x.id ) ) {",
+		"why": "only a job with a state is read here"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "out.declared[ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, null, { tokens: true } ).catch( () => null );",
+		"replace": "",
+		"why": "the declared values are read in the state"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "await restoreDraftState( page, REVEAL_SLOT );",
+		"replace": "",
+		"why": "the state is put back"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "out.unreached.push( { ids: g.jobs.map( ( j ) => j.id ), reason:",
+		"replace": "( { ids: g.jobs.map( ( j ) => j.id ), reason:",
+		"why": "a state that cannot be set is said"
+	}
+]

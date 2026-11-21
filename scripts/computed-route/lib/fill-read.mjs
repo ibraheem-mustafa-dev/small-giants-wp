@@ -21,6 +21,7 @@ import { standInJobs } from './region-stand-in.mjs';
 import { openState } from './fill-open.mjs';
 import { fireScrollReveals } from './scroll-reveals.mjs';
 import { showBranches } from './fill-data-branches.mjs';
+import { setDraftState, snapshotDraftState, restoreDraftState, draftStateChanged } from './intake-state.mjs';
 
 const RESOLVE = resolveFinder.toString();
 const COLLECT = collectPair.toString();
@@ -99,7 +100,46 @@ export function jobsFor( nodes ) {
 		// band): a text descendant there is another node's element, never this one's look. A block that draws its items as child
 		// blocks (`itemChildren`, lib/fill-list-content.mjs::markItemChildren) has them once Fill places the items.
 		own: n.children.length > 0 || !! n.itemChildren,
+		// A target only a draft state shows (lib/fill-skeleton.mjs::skeletonNodes `reveal`) is read in that state (readRevealed).
+		...( t.reveal ? { reveal: t.reveal } : {} ),
 	} ) ) );
+}
+
+const REVEAL_SLOT = 'revealed-read';
+
+// The targets only a draft state shows (each job's `reveal`, { component, keys }: an accordion's answer when the draft opens
+// no item at load, lib/skeleton-child-slots.mjs::unitSlots). The rest read finds none of them; for each state the keys are set
+// on the live component (lib/intake-state.mjs::setDraftState, the path intake revealed them by), the re-render settles, the
+// state's targets are read as the rest read reads every target (`props`, `pseudo`: the collectMany lists for this width) and,
+// with `cdp`, their declared values, then the state is put back. Returns { widths: { id: snapshot }, declared: { id: values },
+// unreached: [ { ids, reason } ] }; a state that cannot be set leaves its targets missing, with the reason.
+export async function readRevealed( { page, cdp = null, jobs, props, pseudo = null, log = () => {} } ) {
+	const out = { widths: {}, declared: {}, unreached: [] };
+	const groups = new Map();
+	for ( const j of jobs.filter( ( x ) => x.reveal ) ) {
+		const id = JSON.stringify( [ j.reveal.component, j.reveal.keys ] );
+		( groups.get( id ) ?? groups.set( id, { reveal: j.reveal, jobs: [] } ).get( id ) ).jobs.push( j );
+	}
+	for ( const g of groups.values() ) {
+		await snapshotDraftState( page, REVEAL_SLOT );
+		try {
+			const reached = await setDraftState( page, g.reveal ).catch( () => 0 );
+			if ( ! reached ) {
+				out.unreached.push( { ids: g.jobs.map( ( j ) => j.id ), reason: `the keys ${ Object.keys( g.reveal.keys ).join( ', ' ) } cannot be set: ${ g.reveal.component } is not mounted or its setState refused them` } );
+				continue;
+			}
+			await settleAnimations( page, { floor: 120, cap: 3000 } );
+			Object.assign( out.widths, await page.evaluate( collectMany, [ g.jobs, COLLECT, RESOLVE, PAINT_SRC, props, pseudo, SCOPE_ATTR ] ) );
+			for ( const j of cdp ? g.jobs.filter( ( x ) => ! out.widths[ x.id ]?.missing ) : [] ) {
+				out.declared[ j.id ] = await declaredValues( cdp, j.finder, RESOLVE, null, { tokens: true } ).catch( () => null );
+			}
+		} finally {
+			await restoreDraftState( page, REVEAL_SLOT );
+			await settleAnimations( page, { floor: 60, cap: 3000 } );
+			await draftStateChanged( page, REVEAL_SLOT ) && log( `revealed state ${ JSON.stringify( g.reveal.keys ) } of ${ g.reveal.component } was not fully restored` );
+		}
+	}
+	return out;
 }
 
 // In-page. For each root job, the flex item its element is: the outermost of the element and the wrappers above it that
@@ -227,6 +267,11 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				}
 			}
 			result.widths[ width ] = await page.evaluate( collectMany, [ stamped, COLLECT, RESOLVE, PAINT_SRC, full ? PROPS : LENGTH_PROPS, full ? PSEUDO_PROPS : null, SCOPE_ATTR ] );
+			// A target only a draft state shows is read in that state, its declared values with it at the full widths.
+			const cdpRevealed = full && jobs.some( ( j ) => j.reveal ) ? await openDevtools( page ) : null;
+			const revealed = await readRevealed( { page, cdp: cdpRevealed, jobs, props: full ? PROPS : LENGTH_PROPS, pseudo: full ? PSEUDO_PROPS : null, log } );
+			Object.assign( result.widths[ width ], revealed.widths );
+			revealed.unreached.forEach( ( u ) => log( `read ${ width }px: ${ u.ids.join( ', ' ) } not read: ${ u.reason }` ) );
 			// A width that resolves none is legitimate when the surface is hidden there by design; it is a failure when the route
 			// aborted a request (the draft's runtime never loaded), or when every width resolves none.
 			if ( jobs.length && jobs.every( ( j ) => result.widths[ width ][ j.id ]?.missing ) ) {
@@ -241,7 +286,8 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				const cdp = await openDevtools( page );
 				result.declared[ width ] = {};
 				result.declaredWritten[ width ] = {};
-				const found = jobs.filter( ( x ) => ! result.widths[ width ][ x.id ]?.missing );
+				const found = jobs.filter( ( x ) => ! x.reveal && ! result.widths[ width ][ x.id ]?.missing );
+				Object.assign( result.declared[ width ], revealed.declared );
 				for ( const j of found ) {
 					// A read that throws, or finds no element where the computed read found one, is a recorded outcome (`failures`,
 					// lib/fill-report.mjs::readFailureRows), never only a log line.
@@ -309,7 +355,7 @@ export async function readDraft( { url, nodes, open = null, headless = true, swe
 				await page.setViewportSize( { width, height: 900 } );
 				await page.waitForTimeout( 80 );
 				const want = Object.fromEntries( Object.entries( missing ).map( ( [ id, by ] ) => [ id, Object.fromEntries( ( by[ width ] || [] ).map( ( p ) => [ p, true ] ) ) ] ) );
-				for ( const [ id, styles ] of Object.entries( await readExtras( page, jobs.filter( ( j ) => result.widths[ width ][ j.id ] && ! result.widths[ width ][ j.id ].missing ), want, RESOLVE ) ) ) {
+				for ( const [ id, styles ] of Object.entries( await readExtras( page, jobs.filter( ( j ) => ! j.reveal && result.widths[ width ][ j.id ] && ! result.widths[ width ][ j.id ].missing ), want, RESOLVE ) ) ) {
 					result.widths[ width ][ id ].styles = { ...result.widths[ width ][ id ].styles, ...styles };
 				}
 			}

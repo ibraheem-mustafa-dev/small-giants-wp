@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/skeleton-child-slots.mjs",
+		"find": "const opened = shown ? null : units.map( ( u ) => shownOpen( u, revealed, m ) ).find( Boolean ) ?? null;",
+		"replace": "const opened = null;",
+		"why": "a draft that opens no unit at load takes its open unit from the revealed state"
+	},
+	{
+		"file": "lib/skeleton-child-slots.mjs",
+		"find": "'current' === which && opened && ( out.reveals[ path ] = opened.reveal );",
+		"replace": "",
+		"why": "each current path carries the state that shows it"
+	},
+	{
+		"file": "lib/skeleton-child-slots.mjs",
+		"find": "return 1 === keys.length && keys[ 0 ] === u.key && 'string' === typeof r.reveal?.component;",
+		"replace": "return keys.includes( u.key );",
+		"why": "only a state setting the unit's own key alone opens it"
+	},
+	{
+		"file": "lib/skeleton-child-slots.mjs",
+		"find": "if ( x === u.el ) {",
+		"replace": "if ( x ) {",
+		"why": "the revealed panel lies inside the unit"
+	},
+	{
+		"file": "lib/skeleton-child-slots.mjs",
+		"find": "const panels = revealed.filter( ( r ) => own( r ) && inUnit( r ) );",
+		"replace": "const panels = revealed.filter( ( r ) => own( r ) && ( inUnit( r ) || ! m.byKey[ r.parentKey ] ) );",
+		"why": "only the topmost revealed element counts, one per unit"
+	},
+	{
+		"file": "lib/skeleton-child-slots.mjs",
+		"find": "return 1 === panels.length ? { unit:",
+		"replace": "return panels.length ? { unit:",
+		"why": "a unit with two revealed panels has no one answer"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "...( node.draftSlotReveals?.[ slot ] ? { reveal: node.draftSlotReveals[ slot ] } : {} )",
+		"replace": "",
+		"why": "the node's slot reveals reach the targets"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "'draftFingerprint', 'draftSlotReveals', 'itemTemplate',",
+		"replace": "'draftFingerprint', 'itemTemplate',",
+		"why": "the slot reveals are stripped from the tree written to the site"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "if ( ! node.draftSlots?.[ slot ] || ! isStr( reveal?.component ) || ! reveal.keys || 'object' !== typeof reveal.keys || ! Object.keys( reveal.keys ).length ) {",
+		"replace": "if ( ! node.draftSlots?.[ slot ] ) {",
+		"why": "a reveal names its component and keys"
+	},
+	{
+		"file": "lib/fill-read.mjs",
+		"find": "...( t.reveal ? { reveal: t.reveal } : {} ),",
+		"replace": "",
+		"why": "a job carries its target's reveal"
+	}
+]

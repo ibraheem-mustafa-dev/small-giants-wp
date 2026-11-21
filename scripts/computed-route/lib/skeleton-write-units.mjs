@@ -327,10 +327,11 @@ export function makeUnits( ctx ) {
 		const run = cls.accordionRun( md );
 		const boxed = bareBox( md.parent );
 		const node = boxed ? base( md.parent, D.block, run.attributes ) : { name: D.block, attributes: run.attributes };
-		const us = boxed && D.childSlots ? unitSlots( { cfg: D.childSlots, units: run.units.units, open: run.units.open, m, finder, settings: ctx.calSettings( D.block ) } ) : null;
+		const us = boxed && D.childSlots ? unitSlots( { cfg: D.childSlots, units: run.units.units, open: run.units.open, m, finder, settings: ctx.calSettings( D.block ), revealed: ctx.inventory?.revealed || [] } ) : null;
 		if ( us && Object.keys( us.slots ).length ) {
 			node.draftSlots = us.slots;
 			Object.keys( us.states ).length && ( node.draftSlotStates = us.states );
+			Object.keys( us.reveals ).length && ( node.draftSlotReveals = us.reveals );
 		}
 		node.innerBlocks = els.flatMap( ( k ) => [].concat( w.buildNode( k, D.block ) || [] ) );
 		const row = ctx.rowOf[ els[ 0 ].key ];

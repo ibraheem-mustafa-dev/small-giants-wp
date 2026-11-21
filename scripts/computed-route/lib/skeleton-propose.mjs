@@ -282,7 +282,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A block whose children are the draft's repeated units keeps their parts' look as its own settings: a closed and an
 		// open unit's row, header, icon and answer are read at the calibrated children's paths (lib/skeleton-child-slots.mjs::unitSlots).
 		const unitCfg = r.units ? R[ r.rule ]?.childSlots : null;
-		const us = unitCfg ? unitSlots( { cfg: unitCfg, units: r.units.units, open: r.units.open, m, finder, settings: calSettings( block ) } ) : null;
+		const us = unitCfg ? unitSlots( { cfg: unitCfg, units: r.units.units, open: r.units.open, m, finder, settings: calSettings( block ), revealed: inventory.revealed || [] } ) : null;
 		us && Object.assign( slots, us.slots );
 		us?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...us.notes ] );
 		// An option picker's chips (rules.optionSet.chipSlots): the pill settings are read at the draft's chips.
@@ -317,6 +317,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// The open unit's paths are read in the state the fixture's current child renders at rest (lib/fill-skeleton.mjs::skeletonNodes).
 		const slotStates = Object.fromEntries( Object.entries( us?.states || {} ).filter( ( [ p ] ) => node.draftSlots?.[ p ] ) );
 		Object.keys( slotStates ).length && ( node.draftSlotStates = slotStates );
+		// An open unit only a state shows is read with the draft in that state (lib/fill-read.mjs::readRevealed).
+		const slotReveals = Object.fromEntries( Object.entries( us?.reveals || {} ).filter( ( [ p ] ) => node.draftSlots?.[ p ] ) );
+		Object.keys( slotReveals ).length && ( node.draftSlotReveals = slotReveals );
 		if ( drawn ) {
 			// The calibrated child slots of a block that draws its children (a nav's resting and current item link).
 			const cfg = ( R.drawsChildren?.blocks || [] ).find( ( d ) => d.block === block )?.childSlots;

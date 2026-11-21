@@ -117,7 +117,9 @@ export function scopeFinder( f, scope ) {
 // Every node of a skeleton, depth-first (the index addRefs gives each ref), with its parent, its children's indices and
 // its measuring targets: the draftRef (slot '') then each draftSlots entry. A target is { id, index, slot, finder,
 // scoped, state }: `state` is the slot's `draftSlotStates` entry (a state the block's fixture renders at that path at rest,
-// lib/skeleton-child-slots.mjs::unitSlots), else null. A node with no draftRef has no targets: Fill reads nothing for it,
+// lib/skeleton-child-slots.mjs::unitSlots), else null; `reveal`, only on a slot the node's `draftSlotReveals` names, is the
+// draft state ({ component, keys }) that shows the slot's element, read with the draft in it (lib/fill-read.mjs::readRevealed).
+// A node with no draftRef has no targets: Fill reads nothing for it,
 // and its children inherit past it.
 export function skeletonNodes( tree ) {
 	const nodes = [];
@@ -131,7 +133,7 @@ export function skeletonNodes( tree ) {
 		if ( undefined !== node.draftRef ) {
 			rec.targets.push( { id: `${ index }:`, index, slot: '', finder: node.draftRef, scoped: false } );
 			for ( const [ slot, finder ] of Object.entries( node.draftSlots || {} ) ) {
-				rec.targets.push( { id: `${ index }:${ slot }`, index, slot, finder, scoped: true, state: node.draftSlotStates?.[ slot ] ?? null } );
+				rec.targets.push( { id: `${ index }:${ slot }`, index, slot, finder, scoped: true, state: node.draftSlotStates?.[ slot ] ?? null, ...( node.draftSlotReveals?.[ slot ] ? { reveal: node.draftSlotReveals[ slot ] } : {} ) } );
 			}
 			// The wrappers the block dissolved (`draftBandWrappers`): read only as evidence of the content band's width
 			// (lib/fill-band.mjs), at a slot name no setting is calibrated at.
@@ -241,6 +243,11 @@ export function skeletonProblems( tree ) {
 				problems.push( `${ label } draftSlotStates "${ slot }" must name a draftSlots path and a state word` );
 			}
 		}
+		for ( const [ slot, reveal ] of Object.entries( node.draftSlotReveals || {} ) ) {
+			if ( ! node.draftSlots?.[ slot ] || ! isStr( reveal?.component ) || ! reveal.keys || 'object' !== typeof reveal.keys || ! Object.keys( reveal.keys ).length ) {
+				problems.push( `${ label } draftSlotReveals "${ slot }" must name a draftSlots path and the state that shows it ({ component, keys })` );
+			}
+		}
 		if ( undefined !== node.draftFingerprint && ! ( node.draftFingerprint && 'object' === typeof node.draftFingerprint && isStr( node.draftFingerprint.tag ) ) ) {
 			problems.push( `${ label } draftFingerprint must be { tag, cls, styleHash }` );
 		}
@@ -251,7 +258,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftPieceParts', 'draftFingerprint', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftPieceParts', 'draftFingerprint', 'draftSlotReveals', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

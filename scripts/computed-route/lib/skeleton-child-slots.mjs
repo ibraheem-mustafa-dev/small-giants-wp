@@ -70,15 +70,22 @@ export const UNIT_PARTS = Object.keys( PARTS );
 // (lib/fill-resolve-element.mjs::ownerKeeps keeps the first), never a mix of the two. The current child renders a state at
 // rest (`currentState`, the fixture's item saved open): each current path is that state's (`states`), so a setting of that
 // state calibrated there takes the open unit's read ahead of the resting setting (lib/fill-resolve-element.mjs::fillElement).
-// units: [{ el, control, rendered, title, category }]; open: the indices of the units shown open. Returns { slots, states, notes }.
-export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {} } ) {
-	const out = { slots: {}, states: {}, notes: [] };
+// A draft that shows no unit open at load opens one in a state the inventory read (`revealed`, lib/skeleton-inventory.mjs:
+// each record an element only that state shows, with the `reveal` { component, keys } that shows it): the open unit is then
+// the first unit holding exactly one revealed panel (shownOpen), and each current path is read in that state (`reveals`: the
+// path's { component, keys }, which Fill sets before reading it: lib/fill-read.mjs::readRevealed).
+// units: [{ el, control, rendered, title, category, key }]; open: the indices of the units shown open. Returns { slots,
+// states, reveals, notes }.
+export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {}, revealed = [] } ) {
+	const out = { slots: {}, states: {}, reveals: {}, notes: [] };
 	if ( ! cfg ) {
 		return out;
 	}
 	const stepOf = ( name ) => stepsOf( settings[ name ]?.slot )[ 0 ] ?? null;
 	const child = { resting: stepOf( cfg.resting ), current: stepOf( cfg.current ) };
-	const unit = { resting: units.find( ( u, i ) => ! open.includes( i ) ) ?? null, current: units.find( ( u, i ) => open.includes( i ) ) ?? null };
+	const shown = units.find( ( u, i ) => open.includes( i ) ) ?? null;
+	const opened = shown ? null : units.map( ( u ) => shownOpen( u, revealed, m ) ).find( Boolean ) ?? null;
+	const unit = { resting: units.find( ( u, i ) => ! open.includes( i ) ) ?? null, current: shown ?? opened?.unit ?? null };
 	const said = new Set();
 	const say = ( text ) => said.has( text ) || ( said.add( text ), out.notes.push( text ) );
 	for ( const which of [ 'resting', 'current' ] ) {
@@ -100,10 +107,32 @@ export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {
 			} else {
 				out.slots[ path ] = finder( el );
 				'current' === which && cfg.currentState && ( out.states[ path ] = cfg.currentState );
+				'current' === which && opened && ( out.reveals[ path ] = opened.reveal );
 			}
 		}
 	}
 	return out;
+}
+
+// A unit as the state that opens it shows it: { unit (its panel the one revealed panel), reveal }, or null. A revealed panel
+// is a record the inventory read in a state that sets the unit's own toggle key and nothing else, the topmost revealed
+// element on its way up to the unit (its parent is an element shown at load).
+function shownOpen( u, revealed, m ) {
+	const own = ( r ) => {
+		const keys = Object.keys( r.reveal?.keys || {} );
+		return 1 === keys.length && keys[ 0 ] === u.key && 'string' === typeof r.reveal?.component;
+	};
+	// Inside the unit through elements shown at load: a revealed element under another revealed one finds no parent there.
+	const inUnit = ( r ) => {
+		for ( let x = m.byKey[ r.parentKey ]; x; x = m.byKey[ x.parentKey ] ) {
+			if ( x === u.el ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	const panels = revealed.filter( ( r ) => own( r ) && inUnit( r ) );
+	return 1 === panels.length ? { unit: { ...u, rendered: panels }, reveal: { component: panels[ 0 ].reveal.component, keys: panels[ 0 ].reveal.keys } } : null;
 }
 
 // An icon ring: an element drawn at the widest read width as a square, holding no letter or digit (a typed `+`, an icon

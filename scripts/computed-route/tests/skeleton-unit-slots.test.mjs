@@ -90,7 +90,7 @@ test( 'a part whose setting the calibration measured on no such child, or a miss
 	const s = unitSlots( { cfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: { ...settings, contentPadding: { slot: `${ TWO } > .content`, slots: [ `${ TWO } > .content` ] } } } );
 	assert.equal( undefined, s.slots[ `${ ONE } > .content` ] );
 	assert.match( s.notes.join( ' ' ), /measured contentPadding on no current child/ );
-	assert.deepEqual( unitSlots( { cfg: null, units: [ a.u ], m, finder } ), { slots: {}, states: {}, notes: [] } );
+	assert.deepEqual( unitSlots( { cfg: null, units: [ a.u ], m, finder } ), { slots: {}, states: {}, reveals: {}, notes: [] } );
 	const bare = unitSlots( { cfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: {} } );
 	assert.deepEqual( bare.slots, {} );
 	assert.match( bare.notes.join( ' ' ), /no slot for headerFontWeight/ );

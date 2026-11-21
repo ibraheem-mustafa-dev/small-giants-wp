@@ -79,8 +79,8 @@
 	},
 	{
 		"file": "lib/fill-skeleton.mjs",
-		"find": "'draftFingerprint', 'itemTemplate',",
-		"replace": "'draftFingerprint',",
+		"find": "'draftSlotReveals', 'itemTemplate',",
+		"replace": "'draftSlotReveals',",
 		"why": "the template key leaks into the built tree"
 	}
 ]
