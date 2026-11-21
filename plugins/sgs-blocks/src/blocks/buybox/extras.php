@@ -160,7 +160,7 @@ if ( ! function_exists( 'sgs_buybox_stock_status' ) ) {
 	 * management (falling back to the site's global low-stock notification
 	 * threshold) — never a fabricated or hardcoded quantity.
 	 *
-	 * @param int    $variation_id       The default combo's variation product ID.
+	 * @param int    $variation_id       The default combo's variation product ID, or a simple product's own ID.
 	 * @param bool   $in_stock           The default combo's in-stock flag (manifest).
 	 * @param string $fallback_text      The manifest's own out-of-stock text (e.g. "Out of stock"
 	 *                                   or the JS store's "Unavailable" — see product-card/view.js).
@@ -181,7 +181,7 @@ if ( ! function_exists( 'sgs_buybox_stock_status' ) ) {
 
 		if ( $variation_id > 0 && class_exists( 'WooCommerce' ) && function_exists( 'wc_get_product' ) ) {
 			$variation = wc_get_product( $variation_id );
-			if ( $variation instanceof \WC_Product_Variation && $variation->managing_stock() ) {
+			if ( $variation instanceof \WC_Product && $variation->managing_stock() ) {
 				$quantity   = $variation->get_stock_quantity();
 				$low_amount = $variation->get_low_stock_amount();
 				if ( '' === $low_amount || null === $low_amount ) {

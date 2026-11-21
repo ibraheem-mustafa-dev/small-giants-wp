@@ -7,10 +7,12 @@
  * per-axis pickers, live price row, stock status, add-to-cart proxy form,
  * dismissible error region, and availability live region.
  *
- * Requires:  WooCommerce active + a variable product in context.
+ * Requires:  WooCommerce active + a variable or simple product in context. A
+ *            simple product renders through the same markup as one implicit
+ *            choice with no pickers (Product_Manifest::build_simple()).
  * Fallback:  do_blocks() of core woocommerce/product-price +
- *            woocommerce/add-to-cart-with-options for simple products,
- *            manifest-null, cap-exceeded, and WC-absent cases.
+ *            woocommerce/add-to-cart-with-options for other product types
+ *            (grouped, external), manifest-null, cap-exceeded, and WC-absent cases.
  *
  * Engine:    mounts data-wp-interactive="sgs/product-card" — INTENTIONAL.
  *            That store IS the shipped configurator (proxy wire, 409 re-sync,
@@ -70,12 +72,10 @@ require_once dirname( __DIR__, 3 ) . '/includes/helpers-colour-variants.php';
 
 /* ── 1. Resolve product ──────────────────────────────────────────────────── */
 
-// Core-blocks fallback markup (FR-30-2): simple products, WC absent, manifest
-// null, and cap-exceeded all fall back to the standard WC price + add-to-cart.
-// FR-30-10 Step-10a: include the classic WC gallery so simple products and fallback
-// cases still show a product image. The buybox column layout is the PDP product area
-// for variable products — simple/WC-absent cases use the core fallback here.
-// The markup lives in includes/buybox-linked-flow.php::sgs_buybox_core_fallback_parts(), which a simple product with a linked flow also builds from.
+// Core-blocks fallback markup (FR-30-2): WC absent, no product, a product type other than
+// simple and variable (grouped, external), manifest null, and cap-exceeded all fall back to
+// the standard WC gallery, price and add-to-cart. The markup lives in
+// includes/buybox-linked-flow.php::sgs_buybox_core_fallback_parts().
 $buybox_core_fallback_parts = sgs_buybox_core_fallback_parts();
 $buybox_core_fallback       = $buybox_core_fallback_parts['head'] . $buybox_core_fallback_parts['cart'];
 
@@ -111,29 +111,27 @@ if ( ! $product instanceof \WC_Product ) {
 	return;
 }
 
-/* ── 3. Simple product / non-variable: core fallback ────────────────────── */
+/* ── 3-4. Build manifest: a variable product's choices, or a simple product's one implicit choice ── */
 
-if ( ! $product->is_type( 'variable' ) ) {
-	// A linked customisation flow (FR-43-25) replaces core's Add to Cart.
-	// keepAddToCartWithFlow (off by default) keeps core's Add to Cart and puts the flow's opener beside it instead, unless an
-	// explicit popup or the guided layout wins (sgs_buybox_keep_setting_applies(), the precedence the variable path applies).
-	$buybox_simple_flow = sgs_buybox_keep_setting_applies( $attributes )
-		? sgs_buybox_simple_keep_flow_html( $buybox_post_id, $product, $attributes )
-		: sgs_buybox_simple_linked_flow_html( $buybox_post_id, (string) ( $attributes['addToCartLabel'] ?? '' ), $attributes );
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	echo '' !== $buybox_simple_flow ? $buybox_simple_flow : do_blocks( $buybox_core_fallback );
-	return;
+// A simple product renders through the same markup and settings as a variable one with nothing to choose (the button kit
+// applies theme-wide, Bean 2026-11-21): no pickers, and its own Add to Cart posting the product itself. Any other type
+// (grouped, external) has no manifest and keeps the core fallback.
+if ( $product->is_type( 'variable' ) ) {
+	$manifest = \SGS\Blocks\Product_Manifest::build( $buybox_post_id );
+} else {
+	$manifest = $product->is_type( 'simple' ) ? \SGS\Blocks\Product_Manifest::build_simple( $buybox_post_id ) : null;
 }
-
-/* ── 4. Build manifest ───────────────────────────────────────────────────── */
-
-$manifest = \SGS\Blocks\Product_Manifest::build( $buybox_post_id );
 
 if ( null === $manifest ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo do_blocks( $buybox_core_fallback );
 	return;
 }
+
+// Whether the product can go in the basket at all. A variation's own stock and purchasability ride in its combination
+// (`inStock`) and the cart proxy; a simple product that WooCommerce will not sell (a catalogue-only product) shows its
+// price and photos with no Add to Cart, no flow opener, no note and no add-to-basket bar, as WooCommerce would.
+$buybox_can_buy = $product->is_type( 'variable' ) || $product->is_purchasable();
 
 /*
  * Deep-link preselection: a product card's colour swatch appends
@@ -217,7 +215,8 @@ $buybox_rrp_show_price = (bool) ( $attributes['rrpShowPrice'] ?? false );
 // Existing $stock_text/hidden behaviour is untouched unless showStockStatus is on.
 $buybox_show_stock_status = (bool) ( $attributes['showStockStatus'] ?? false );
 $buybox_stock_in_label    = (string) ( $attributes['stockInStockLabel'] ?? '' );
-$buybox_stock_status      = sgs_buybox_stock_status( (int) $def['variationId'], (bool) $def['inStock'], $stock_text, $buybox_stock_in_label );
+// A simple product's combination has no variation: its low-stock reading is the product's own.
+$buybox_stock_status      = sgs_buybox_stock_status( (int) $def['variationId'] > 0 ? (int) $def['variationId'] : $buybox_post_id, (bool) $def['inStock'], $stock_text, $buybox_stock_in_label );
 
 // Computed early (ahead of $wrapper_attrs below, which embeds the
 // term-label map as a data attribute) rather than inline in the §8b picker
@@ -564,7 +563,8 @@ $add_to_cart_opens_modal = ( 'modal' === $add_to_cart_action && '' !== $add_to_c
 // Spec 43 FR-43-25 — a product-linked Choice Flow auto-wires this same modal
 // mode when no explicit addToCartAction:modal already wins (includes/buybox-
 // linked-flow.php owns the decision + the resolved flow post).
-$buybox_linked_flow_wire = sgs_buybox_apply_linked_flow( $buybox_post_id, $buybox_is_guided, $add_to_cart_action, $add_to_cart_modal_id, $add_to_cart_opens_modal, ! empty( $attributes['keepAddToCartWithFlow'] ) );
+// A product that cannot be bought gets no flow (product 0 links none).
+$buybox_linked_flow_wire = sgs_buybox_apply_linked_flow( $buybox_can_buy ? $buybox_post_id : 0, $buybox_is_guided, $add_to_cart_action, $add_to_cart_modal_id, $add_to_cart_opens_modal, ! empty( $attributes['keepAddToCartWithFlow'] ) );
 $add_to_cart_action      = $buybox_linked_flow_wire['action'];
 $add_to_cart_modal_id    = $buybox_linked_flow_wire['modal_id'];
 $add_to_cart_opens_modal = $buybox_linked_flow_wire['opens_modal'];
@@ -764,7 +764,7 @@ if ( null !== $margin_mob_val ) {
 // existing buybox keeps rendering exactly as before.
 $buybox_sticky          = sgs_buybox_sticky_data( $attributes );
 $buybox_bar             = sgs_buybox_sticky_bar_data( $attributes );
-$buybox_bar_on          = array_sum( $buybox_bar ) > 0;
+$buybox_bar_on          = array_sum( $buybox_bar ) > 0 && $buybox_can_buy;
 $buybox_wrapper_classes = 'sgs-buybox ' . $uid;
 if ( $buybox_sticky['enabled'] ) {
 	$buybox_wrapper_classes .= ' sgs-buybox--sticky-config';
@@ -1577,7 +1577,7 @@ if ( $buybox_linked_flow_post instanceof \WP_Post ) {
 
 	<?php
 	// ── 8c-iv. Optional free-text note (noteField, Spec 27 FR-27-PS8), the last choice before the add. The modal CTA collects nothing, so it gets no note.
-	if ( ! $add_to_cart_opens_modal ) {
+	if ( ! $add_to_cart_opens_modal && $buybox_can_buy ) {
 		echo sgs_buybox_note_html( sgs_buybox_note_config( $attributes ), (int) $buybox_post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every value is escaped inside.
 	}
 	?>
@@ -1589,7 +1589,7 @@ if ( $buybox_side_cart ) {
 	ob_start();
 }
 ?>
-	<?php if ( $add_to_cart_opens_modal ) : ?>
+	<?php if ( $buybox_can_buy && $add_to_cart_opens_modal ) : ?>
 		<?php
 		// ── 8d (modal mode). Spec 43 Phase 3/4 §5a — opens an sgs/modal instead
 		// of submitting the cart. Built in includes/buybox-modal-cta.php so this
@@ -1608,7 +1608,7 @@ if ( $buybox_side_cart ) {
 			$buybox_linked_flow_post instanceof \WP_Post && ! $buybox_keep_flow ? sgs_buybox_linked_flow_note( $buybox_linked_flow_post ) : ''
 		);
 		?>
-	<?php else : ?>
+	<?php elseif ( $buybox_can_buy ) : ?>
 		<?php
 		// ── 8d. Add-to-cart form (mirrors product-card L948-963 proxy form pattern).
 		// HIDDEN WHEN OUT OF STOCK: `data-wp-bind--disabled` evaluates a single path

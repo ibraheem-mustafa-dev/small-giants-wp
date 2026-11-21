@@ -1010,12 +1010,12 @@ function expressFields( ctx ) {
 	return { sgs_picks: slugs, sgs_pick_counts: counts, ...noteFields };
 }
 
-/** True when the buy box's own "Add to basket" would go ahead: in stock, nothing pending, a variation chosen, picks complete, a compulsory note written. */
+/** True when the buy box's own "Add to basket" would go ahead: in stock, nothing pending, a variation chosen (a product with options), picks complete, a compulsory note written. A simple product has no axes and adds itself. */
 function expressUsable( ctx, ref ) {
 	if ( ctx.pending || ! ctx.inStock || ! buildAddBody( ctx ) ) {
 		return false;
 	}
-	if ( ctx.combos && Object.keys( ctx.combos ).length && ! ( parseInt( ctx.selectedVariationId, 10 ) > 0 ) ) {
+	if ( Array.isArray( ctx.axes ) && ctx.axes.length && ! ( parseInt( ctx.selectedVariationId, 10 ) > 0 ) ) {
 		return false;
 	}
 	return '0' !== ref.dataset.sgsPicksReady && '0' !== ref.dataset.sgsNoteReady;

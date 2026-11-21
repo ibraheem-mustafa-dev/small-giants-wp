@@ -9,8 +9,8 @@ import AuthoredText from '../../components/AuthoredText';
 import { presetNames } from '../button/preset-names';
 
 /**
- * Whether the flow's opener shows beside Add to Cart: the same conditions as
- * includes/buybox-linked-flow.php::sgs_buybox_keep_setting_applies(). The setting is on, the layout is not guided, and the
+ * Whether the flow's opener shows beside Add to Cart: the same conditions render.php applies through
+ * includes/buybox-linked-flow.php::sgs_buybox_apply_linked_flow(). The setting is on, the layout is not guided, and the
  * button does not open a named popup (a popup action with no popup named falls back to cart mode, so the opener shows).
  *
  * @param {Object} attributes Block attributes.

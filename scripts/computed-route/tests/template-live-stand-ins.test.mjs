@@ -127,14 +127,14 @@ test( 'negative control: a product the draft names wins over a flow-linked one, 
 	assert.equal( addressOf( [ FIXTURE_LINKED, REAL_UNLINKED ], { flowLinked: true } ), '/product/lens-cloth/' );
 } );
 
-// A simple product's buy box returns before the .sgs-buybox wrapper and prints core's own Add to Cart (render.php, the
-// `! $product->is_type( 'variable' )` branch: sgs_buybox_simple_keep_flow_html / sgs_buybox_simple_linked_flow_html), which none of
-// the buy box's addToCart* settings styles; a variable product prints the styled `.sgs-buybox .buybox__add-to-cart`.
+// The pick prefers a variable product linked to a flow (it also carries the option pickers); since 2026-11-21 a simple product's buy
+// box prints the same styled `.sgs-buybox .buybox__add-to-cart` (render.php, Product_Manifest::build_simple), so a simple one is a
+// sound fallback.
 const SIMPLE_LINKED = { id: 38, type: 'simple', name: 'Lens engraving', slug: 'lens-engraving', meta: FLOW };
 const SIMPLE_LINKED_LATER = { id: 44, type: 'simple', name: 'Lens tint', slug: 'lens-tint', meta: FLOW };
 const VARIABLE_LINKED_LATER = { id: 43, type: 'variable', name: 'Wayfarer', slug: 'wayfarer', meta: FLOW };
 
-test( 'MUST FAIL: with flowLinked a variable product linked to a flow is preferred over a lower-ID simple one, whose Add to Cart the buy box does not style', () => {
+test( 'MUST FAIL: with flowLinked a variable product linked to a flow is preferred over a lower-ID simple one', () => {
 	assert.equal( addressOf( [ SIMPLE_LINKED, REAL_LINKED ], { flowLinked: true } ), '/product/aviator-classic/' );
 	assert.equal( addressOf( [ SIMPLE_LINKED, REAL_LINKED, VARIABLE_LINKED_LATER ], { flowLinked: true } ), '/product/aviator-classic/', 'the lowest-ID variable one, so the pick is deterministic' );
 	assert.equal( addressOf( [ FIXTURE_LINKED, SIMPLE_LINKED, { ...FIXTURE_SKU, meta: FLOW }, REAL_LINKED ], { flowLinked: true } ), '/product/aviator-classic/', 'a linked variable fixture is no choice' );

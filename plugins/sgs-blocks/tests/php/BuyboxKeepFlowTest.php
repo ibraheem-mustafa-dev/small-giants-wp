@@ -2,7 +2,9 @@
 /**
  * Tests: sgs/buybox `keepAddToCartWithFlow` (Spec 43 FR-43-25). A product linked to a choice flow gets the flow's opener in
  * place of Add to Cart (today's behaviour, setting off). With the setting on, Add to Cart stays exactly as without a flow
- * and the flow's opener renders beside it as a second button; the modal renders once.
+ * and the flow's opener renders beside it as a second button; the modal renders once. A simple product renders through the same
+ * buy box markup (a one-choice manifest), so these paths are the same markup on both product types; BuyboxSimpleProductTest
+ * covers the simple product's own render.
  *
  * The helper logic runs in tests/php/run-buybox-keep-flow-standalone.php (child process, own stubs); the render wiring runs
  * the real render.php through the harness with a flow that resolves (tests/fixtures/buybox/flow-render-wrapper.php).
@@ -98,13 +100,6 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertSame( self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE ), self::render( array( 'keepAddToCartWithFlow' => true, 'openerBeforeAddToCart' => false ), true, self::SIMPLE ) );
 	}
 
-	public function test_a_simple_products_opener_note_takes_the_note_colour(): void {
-		$html = self::render( array( 'keepAddToCartWithFlow' => true, 'openerNoteColour' => '#b8b0a4' ), true, self::SIMPLE );
-		$this->assertSame( 1, preg_match( '/class="[^"]*buybox__add-to-cart--flow-opener[^"]*(sgs-bb-fo-[0-9a-f]{8})/', $html, $m ), 'the opener carries its own scope class' );
-		$this->assertStringContainsString( '.' . $m[1] . '.' . $m[1] . ' .buybox__add-to-cart-note{color:#b8b0a4;}', $html );
-		$this->assertStringNotContainsString( 'sgs-bb-fo-', self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE ), 'no note colour: no scope class, as before' );
-	}
-
 	public function test_on_without_a_linked_flow_renders_as_without_the_setting(): void {
 		$this->assertSame( self::render( array(), false ), self::render( array( 'keepAddToCartWithFlow' => true ), false ) );
 	}
@@ -128,27 +123,24 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertSame( BuyboxSnapshotTest::norm( (string) file_get_contents( $snap ) ), $html, "$name no longer renders byte-identically" );
 	}
 
-	public function test_off_renders_exactly_as_before_for_a_simple_and_a_variable_product(): void {
-		$this->assertMatchesSnapshot( 'off-simple-linked', self::render( array(), true, self::SIMPLE ) );
-		$this->assertMatchesSnapshot( 'off-simple-linked-explicit-false', self::render( array( 'keepAddToCartWithFlow' => false ), true, self::SIMPLE ) );
-		$this->assertMatchesSnapshot( 'off-simple-unlinked', self::render( array(), false, self::SIMPLE ) );
+	public function test_off_renders_exactly_as_before_for_a_variable_product(): void {
 		$this->assertMatchesSnapshot( 'off-variable-linked', self::render( array() ) );
 		$this->assertMatchesSnapshot( 'off-variable-linked-explicit-false', self::render( array( 'keepAddToCartWithFlow' => false ) ) );
 		$this->assertMatchesSnapshot( 'off-variable-unlinked', self::render( array(), false ) );
 	}
 
-	public function test_a_simple_product_with_the_setting_on_keeps_its_output_byte_for_byte(): void {
+	public function test_a_simple_product_with_the_setting_on_keeps_add_to_cart_and_one_opener(): void {
 		$html = self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE );
 		$this->assertSame( 1, substr_count( $html, 'sgs-buybox__cart-actions--with-flow' ) );
 		$this->assertSame( 1, substr_count( $html, 'data-sgs-modal-open="sgs-flow-lens-flow"' ) );
-		$this->assertMatchesSnapshot( 'on-simple-in-stock', $html );
+		$this->assertSame( 1, substr_count( $html, 'data-wp-on--submit="actions.addToCart"' ), 'the buy box\'s own Add to Cart' );
 	}
 
 	/**
 	 * The flow opener's look, before the built-in button kit reads `flowOpener*`: every path that prints the opener, with none of
 	 * those attributes set, renders as today. The keep path of a variable product and the empty-string form of an unset
-	 * attribute are pinned here; the linked (flow replaces Add to Cart) paths of both product types and the keep path of a
-	 * simple product are pinned by the `off-*` and `on-simple-in-stock` snapshots above.
+	 * attribute are pinned here; the linked (flow replaces Add to Cart) path of a variable product is pinned by the `off-*`
+	 * snapshots above. A simple product prints the same opener markup through the same render.
 	 */
 	public function test_the_opener_renders_exactly_as_before_with_no_flow_opener_setting(): void {
 		$keep_variable = self::render( array( 'keepAddToCartWithFlow' => true ) );
@@ -161,7 +153,7 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertStringNotContainsString( 'sgs-bb-fo-', $keep_simple );
 		$linked_simple = self::render( array(), true, self::SIMPLE );
 		$this->assertSame( $linked_simple, self::render( array( 'flowOpenerStyle' => '' ), true, self::SIMPLE ) );
-		$this->assertStringNotContainsString( '<style', $linked_simple, 'the simple linked path prints no style tag while nothing is set' );
+		$this->assertStringNotContainsString( 'flow-opener', $linked_simple, 'the button the flow replaces carries no opener class while nothing is set' );
 	}
 
 	/** The opener button's class attribute and the CSS rules (the `<style>` text) in a render. */
@@ -195,18 +187,15 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertStringContainsString( 'buybox__add-to-cart--secondary', self::opener_class( $html ), 'no preset named: the secondary modifier stays' );
 	}
 
-	public function test_a_simple_products_opener_gets_its_kit_css_in_a_style_tag_beside_it(): void {
+	public function test_a_simple_products_opener_gets_its_kit_css_on_the_buy_boxs_own_scope(): void {
 		foreach ( array( true, false ) as $keep ) {
 			$html  = self::render( array( 'keepAddToCartWithFlow' => $keep, 'flowOpenerColourBackground' => 'accent', 'flowOpenerStyle' => 'primary' ), true, self::SIMPLE );
 			$label = $keep ? 'keep path' : 'linked path';
 			preg_match( '#<button type="button" class="([^"]*)"[^>]*data-sgs-modal-open#', $html, $m );
-			$this->assertMatchesRegularExpression( '#sgs-bb-fo-[0-9a-f]{8}#', $m[1] ?? '', "$label: the opener carries a scope class" );
-			$this->assertStringContainsString( 'buybox__add-to-cart--flow-opener', $m[1], "$label: and the opener class the kit's selector names" );
-			preg_match( '#sgs-bb-fo-[0-9a-f]{8}#', $m[1], $scope );
+			$this->assertStringContainsString( 'buybox__add-to-cart--flow-opener', $m[1] ?? '', "$label: the opener class the kit's selector names" );
+			$this->assertStringNotContainsString( 'sgs-bb-fo-', $html, "$label: no scope class of its own" );
 			$css = self::css( $html );
-			$sel = '.' . $scope[0] . '.' . $scope[0] . '.buybox__add-to-cart:where(.buybox__add-to-cart--flow-opener){';
-			$this->assertStringContainsString( $sel, $css, "$label: the kit prints on the scoped selector, the scope class doubled so it weighs what the shared preset rule weighs" );
-			$this->assertMatchesRegularExpression( '#' . preg_quote( $sel, '#' ) . '(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css, "$label: the colour prints" );
+			$this->assertMatchesRegularExpression( '#\.wp-block-sgs-buybox \.buybox__add-to-cart:where\(\.buybox__add-to-cart--flow-opener\)\{(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css, "$label: the colour prints on the buy box's own scope" );
 			$this->assertMatchesRegularExpression( '#sgs-btn-kit-[0-9a-f]{8}#', $m[1], "$label: the preset's shared class rides on the button" );
 			$this->assertStringNotContainsString( 'buybox__add-to-cart--secondary', $m[1], "$label: a named preset drops the secondary modifier" );
 			$this->assertStringNotContainsString( ' style="', $html, "$label: no inline style" );
@@ -243,10 +232,10 @@ final class BuyboxKeepFlowTest extends TestCase {
 	}
 
 	public function test_a_simple_product_follows_the_variable_products_precedence_an_explicit_popup_wins(): void {
-		$off = self::render( array(), true, self::SIMPLE );
-		$on  = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartAction' => 'modal', 'addToCartModalId' => 'my-popup' ), true, self::SIMPLE );
-		$this->assertSame( $off, $on, 'with an explicit popup the setting does nothing, as on a variable product' );
+		$on = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartAction' => 'modal', 'addToCartModalId' => 'my-popup' ), true, self::SIMPLE );
+		$this->assertStringContainsString( 'data-sgs-modal-open="my-popup"', $on, 'the explicit popup wins, as on a variable product' );
 		$this->assertStringNotContainsString( 'sgs-buybox__cart-actions', $on );
+		$this->assertStringNotContainsString( 'sgs-flow-lens-flow', $on );
 	}
 
 	public function test_a_simple_product_in_the_guided_layout_ignores_the_setting(): void {
@@ -262,21 +251,25 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertStringContainsString( 'sgs-buybox__cart-actions--with-flow', $empty );
 	}
 
-	public function test_a_simple_product_that_cannot_be_bought_shows_no_opener_and_no_wrapper(): void {
-		$bare = self::render( array(), false, self::SIMPLE );
-		foreach ( array( array( 'in_stock' => false ), array( 'purchasable' => false ) ) as $unavailable ) {
-			$html = self::render( array( 'keepAddToCartWithFlow' => true ), true, array_merge( self::SIMPLE, $unavailable ) );
-			$this->assertStringNotContainsString( 'data-sgs-modal-open', $html, json_encode( $unavailable ) );
-			$this->assertStringNotContainsString( 'sgs-buybox__cart-actions', $html );
-			$this->assertSame( $bare, $html, 'what core does to its own button is all that shows' );
-		}
+	public function test_a_simple_product_that_cannot_be_bought_shows_no_working_opener(): void {
+		// Not purchasable: no opener and no wrapper at all, the same render as with no flow linked.
+		$unbuyable = array_merge( self::SIMPLE, array( 'purchasable' => false ) );
+		$html      = self::render( array( 'keepAddToCartWithFlow' => true ), true, $unbuyable );
+		$this->assertStringNotContainsString( 'data-sgs-modal-open', $html );
+		$this->assertStringNotContainsString( 'sgs-buybox__cart-actions', $html );
+		$this->assertSame( self::render( array( 'keepAddToCartWithFlow' => true ), false, $unbuyable ), $html );
+		// Out of stock: as on a variable product, the form and the opener are both bound hidden while the seeded stock flag is false.
+		$sold_out = self::render( array( 'keepAddToCartWithFlow' => true ), true, array_merge( self::SIMPLE, array( 'in_stock' => false ) ) );
+		$this->assertStringContainsString( '"inStock":false', $sold_out );
+		$this->assertMatchesRegularExpression( '#<div class="buybox__cart-form buybox__cart-form--modal" data-wp-bind--hidden="!context\.inStock"><button type="button"[^>]*data-sgs-modal-open#', $sold_out );
+		$this->assertMatchesRegularExpression( '#<form\s+class="buybox__cart-form"\s+data-wp-bind--hidden="!context\.inStock"#', $sold_out );
 	}
 
 	public function test_the_core_fallback_markup_lives_in_one_place(): void {
 		$render  = (string) file_get_contents( __DIR__ . '/../../src/blocks/buybox/render.php' );
 		$include = (string) file_get_contents( __DIR__ . '/../../includes/buybox-linked-flow.php' );
 		$this->assertStringNotContainsString( 'wp:woocommerce/', $render, 'render.php builds its fallback from sgs_buybox_core_fallback_parts()' );
-		$this->assertSame( 1, substr_count( $include, 'wp:woocommerce/add-to-cart-with-options' ), 'the keep path and the no-flow fallback share one copy of the core Add to Cart markup' );
+		$this->assertSame( 1, substr_count( $include, 'wp:woocommerce/add-to-cart-with-options' ), 'one copy of the core Add to Cart markup' );
 		$this->assertSame( 1, substr_count( $include, 'wp:woocommerce/product-image-gallery' ), 'one copy of the gallery and price markup' );
 	}
 }

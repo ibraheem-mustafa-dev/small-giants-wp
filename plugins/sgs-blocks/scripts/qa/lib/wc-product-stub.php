@@ -12,7 +12,7 @@
  * (manifest-stub.php) its Product_Manifest comes from the fixture through `Product_Manifest::build()`'s cache, which
  * reaches the product card's configurator and sgs/buybox's main path.
  *
- * Product file keys: id, name, price_html, price, type ("simple" | "variable"), image_id, image_url (what
+ * Product file keys: id, name, price_html, price, regular_price, sale_price, sku, gallery_image_ids, stock_quantity, type ("simple" | "variable" | "grouped" | "external"), image_id, image_url (what
  * wp_get_attachment_image_url() answers for image_id), short_description, in_stock, purchasable (default true), average_rating, review_count,
  * variation_price_min, variation_price_max, terms (taxonomy => term slugs, read by has_term() in wp-stubs.php),
  * attributes (a list of {name, visible}: the product's taxonomy attributes, read by get_attributes()).
@@ -49,6 +49,36 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		}
 		public function get_price() {
 			return (string) ( $this->data['price'] ?? '' );
+		}
+		/** The file's `regular_price` (default: `price`), `sale_price` (default ''), on sale when a sale price is set. */
+		public function get_regular_price() {
+			return (string) ( $this->data['regular_price'] ?? $this->get_price() );
+		}
+		public function get_sale_price() {
+			return (string) ( $this->data['sale_price'] ?? '' );
+		}
+		public function is_on_sale() {
+			return '' !== $this->get_sale_price();
+		}
+		public function get_date_on_sale_to() {
+			return null;
+		}
+		public function get_sku() {
+			return (string) ( $this->data['sku'] ?? '' );
+		}
+		/** The file's `gallery_image_ids`: the product's own WooCommerce gallery. */
+		public function get_gallery_image_ids() {
+			return (array) ( $this->data['gallery_image_ids'] ?? array() );
+		}
+		/** The file's `stock_quantity` (null: stock not managed). */
+		public function managing_stock() {
+			return null !== ( $this->data['stock_quantity'] ?? null );
+		}
+		public function get_stock_quantity() {
+			return $this->data['stock_quantity'] ?? null;
+		}
+		public function get_low_stock_amount() {
+			return '';
 		}
 		public function get_image_id() {
 			return (int) ( $this->data['image_id'] ?? 0 );

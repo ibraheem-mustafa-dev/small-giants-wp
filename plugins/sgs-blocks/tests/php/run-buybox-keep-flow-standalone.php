@@ -28,21 +28,8 @@ namespace {
 		public $post_content = '';
 	}
 
-	/** A product answering the two questions the keep path asks. */
-	class WC_Product {
-		public $purchasable = true;
-		public $in_stock    = true;
-		public function is_purchasable() {
-			return $this->purchasable;
-		}
-		public function is_in_stock() {
-			return $this->in_stock;
-		}
-	}
-
 	$GLOBALS['sgs_t_meta']   = array();
 	$GLOBALS['sgs_t_modals'] = 0;
-	$GLOBALS['sgs_t_blocks'] = array();
 
 	function get_post_meta( $id, $key = '', $single = false ) {
 		return $GLOBALS['sgs_t_meta'][ $id ][ $key ] ?? '';
@@ -67,10 +54,6 @@ namespace {
 	}
 	function sgs_rich_text_kses( $s, $x = false ) {
 		return (string) $s;
-	}
-	function do_blocks( $c ) {
-		$GLOBALS['sgs_t_blocks'][] = $c;
-		return (string) preg_replace( '/<!--\s*\/?wp:[^>]*-->\s*/', '', $c ) . ( str_contains( $c, 'add-to-cart-with-options' ) ? '<form class="cart">CORE ADD TO CART</form>' : '' );
 	}
 	function render_block( array $b ) {
 		++$GLOBALS['sgs_t_modals'];
@@ -157,64 +140,17 @@ namespace {
 	$default = sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm' );
 	$ok( str_contains( $default, '<svg class="buybox__cart-icon"' ) && str_contains( sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm', true ), '<svg' ) && ! str_contains( sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm', false ), '<svg' ), 'modal helper: icon on by default, off only when asked' );
 
-	// 7. A simple product.
-	$GLOBALS['sgs_t_modals'] = 0;
-	$buyable                 = new WC_Product();
-	$simple                  = sgs_buybox_simple_keep_flow_html( 52, $buyable );
-	$ok( str_contains( $simple, 'CORE ADD TO CART' ) && str_contains( $simple, 'data-sgs-modal-open="sgs-flow-lens-flow"' ) && str_contains( $simple, 'sgs-buybox__cart-actions--with-flow' ), 'simple + on: core Add to Cart kept, opener beside it in the wrapper' );
-	$ok( strpos( $simple, 'CORE ADD TO CART' ) < strpos( $simple, 'data-sgs-modal-open' ) && 1 === substr_count( $simple, 'class="sgs-modal"' ), 'simple + on: opener after the core button, modal printed once' );
-	$ok( '' === sgs_buybox_simple_keep_flow_html( 99, $buyable ), 'simple + on + no flow: empty, the caller keeps its core fallback' );
-	$off = sgs_buybox_simple_linked_flow_html( 52, 'Add to Cart' );
-	$ok( ! str_contains( $off, 'CORE ADD TO CART' ) && ! str_contains( $off, 'with-flow' ) && str_contains( $off, 'Add prescription lenses' ), 'simple + off: the core button is replaced by the opener (unchanged)' );
-
-	// The modal prints once a page (sgs_buybox_render_linked_flow_modal's guard), so these later calls carry none.
-	$first = sgs_buybox_simple_keep_flow_html( 52, $buyable, array( 'openerBeforeAddToCart' => true ) );
-	$ok( false !== strpos( $first, 'data-sgs-modal-open' ) && strpos( $first, 'data-sgs-modal-open' ) < strpos( $first, 'CORE ADD TO CART' ) && 1 === substr_count( $first, 'CORE ADD TO CART' ) && 1 === substr_count( $first, 'data-sgs-modal-open="sgs-flow-lens-flow"' ) && str_contains( $first, 'sgs-buybox__cart-actions--with-flow' ), 'simple + on + openerBeforeAddToCart: the opener before the core button in the wrapper, each once' );
-	$ok( sgs_buybox_simple_keep_flow_html( 52, $buyable ) === sgs_buybox_simple_keep_flow_html( 52, $buyable, array( 'openerBeforeAddToCart' => false ) ), 'simple + on + openerBeforeAddToCart false: byte-identical to the setting absent' );
-
-	// 7b. The keep path's output and the core blocks it asks for are exactly what they were before the markup moved to one place.
-	$head_markup = '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->';
-	$cart_markup = '<!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->';
-	$GLOBALS['sgs_t_blocks'] = array();
-	sgs_buybox_simple_keep_flow_html( 52, $buyable );
-	$ok( array( $head_markup, $cart_markup ) === $GLOBALS['sgs_t_blocks'], 'simple + on: asks core for the gallery and price, then Add to Cart, with the same markup as before' );
-	$ok( $simple === '<div class="sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow"><form class="cart">CORE ADD TO CART</form><div class="buybox__cart-form buybox__cart-form--modal" data-wp-bind--hidden="!context.inStock"><button type="button" class="wp-element-button buybox__add-to-cart buybox__add-to-cart--secondary buybox__add-to-cart--flow-opener" aria-haspopup="dialog" data-sgs-modal-open="sgs-flow-lens-flow"><span class="buybox__cart-label">Add prescription lenses</span></button></div></div><div class="sgs-modal" id="sgs-flow-lens-flow"></div>', 'simple + on: the whole output is the markup it was before the change (the modal stub follows the wrapper)' );
-	$GLOBALS['sgs_t_blocks'] = array();
-	sgs_buybox_simple_linked_flow_html( 52, 'Add to Cart' );
-	$ok( array( $head_markup ) === $GLOBALS['sgs_t_blocks'], 'simple + off: asks core for the gallery and price only, with the same markup as before' );
+	// 7. The core fallback markup render.php prints where the buy box cannot render (one place, unchanged).
 	$parts = sgs_buybox_core_fallback_parts();
-	$ok( $head_markup === $parts['head'] && $cart_markup === $parts['cart'], 'the no-flow fallback render.php prints (head + cart) is the markup both simple paths build from' );
-
-	// 7c. A simple product that cannot be bought gets no opener and no wrapper: the caller keeps core's own fallback.
-	$sold_out           = new WC_Product();
-	$sold_out->in_stock = false;
-	$unbuyable              = new WC_Product();
-	$unbuyable->purchasable = false;
-	$ok( '' === sgs_buybox_simple_keep_flow_html( 52, $sold_out ), 'simple + on + out of stock: no opener, no wrapper' );
-	$ok( '' === sgs_buybox_simple_keep_flow_html( 52, $unbuyable ), 'simple + on + not purchasable: no opener, no wrapper' );
-
-	// 7d. The setting follows the variable path's precedence on a simple product: the helper agrees with sgs_buybox_apply_linked_flow().
-	$agree = true;
-	foreach ( array( 'standard', 'guided', 'configurator' ) as $layout ) {
-		foreach ( array( 'cart', 'modal', 'Modal', 'bogus' ) as $action ) {
-			foreach ( array( '', '  ', 'my-popup' ) as $modal_id ) {
-				$attrs = array( 'keepAddToCartWithFlow' => true, 'buyboxLayout' => $layout, 'addToCartAction' => $action, 'addToCartModalId' => $modal_id );
-				$act   = sanitize_key( $action );
-				$act   = in_array( $act, array( 'cart', 'modal' ), true ) ? $act : 'cart';
-				$mid   = sanitize_text_field( $modal_id );
-				$wire  = sgs_buybox_apply_linked_flow( 52, 'guided' === $layout, $act, $mid, 'modal' === $act && '' !== $mid, true );
-				$agree = $agree && ( sgs_buybox_keep_setting_applies( $attrs ) === ( true === $wire['keep'] ) );
-			}
-		}
-	}
-	$ok( $agree, 'the keep setting applies on a simple product exactly when it does on a variable one (layout x action x popup id)' );
-	$ok( false === sgs_buybox_keep_setting_applies( array( 'buyboxLayout' => 'standard' ) ) && false === sgs_buybox_keep_setting_applies( array( 'keepAddToCartWithFlow' => false ) ), 'setting off or absent: never applies' );
+	$ok( '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->' === $parts['head'] && '<!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->' === $parts['cart'], 'the core fallback is the gallery and price, then core Add to Cart' );
 
 	// 8. Two buyboxes linking the same flow still print the modal once.
 	$GLOBALS['sgs_t_modals'] = 0;
+	ob_start();
 	sgs_buybox_render_linked_flow_modal( $flow );
 	sgs_buybox_render_linked_flow_modal( $flow );
-	$ok( 0 === $GLOBALS['sgs_t_modals'], 'modal already printed above is not printed twice (static guard)' );
+	ob_end_clean();
+	$ok( 1 === $GLOBALS['sgs_t_modals'], 'the modal prints once however many buy boxes link the flow (static guard)' );
 
 	echo "\n$pass passed, $fail failed\n";
 	exit( $fail > 0 ? 1 : 0 );

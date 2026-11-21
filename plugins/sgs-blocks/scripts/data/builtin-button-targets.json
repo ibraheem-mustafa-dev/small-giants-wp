@@ -5,7 +5,7 @@
       "id": "buybox-flow-opener",
       "block": "sgs/buybox", "prefix": "flowOpener", "phase": "first mover",
       "files": ["plugins/sgs-blocks/includes/buybox-linked-flow.php"],
-      "symbol": "^(sgs_buybox_flow_opener_html|sgs_buybox_simple_linked_flow_html)$"
+      "symbol": "^(sgs_buybox_flow_opener_html)$"
     },
     {
       "id": "buybox-add-to-cart",

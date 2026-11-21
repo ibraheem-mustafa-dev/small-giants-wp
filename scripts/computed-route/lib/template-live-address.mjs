@@ -74,11 +74,10 @@ ${ flowLinked ? FLOW_LINKED_PICK_PHP : '' }if ( null === $sgs_out['product'] ) {
 }
 
 // The first real variable product linked to a choice flow whose link resolves (the buy box's own resolver where the plugin is
-// loaded), else the first real product of any type linked to one. A simple product's buy box returns before its `.sgs-buybox`
-// wrapper and prints core's own Add to Cart (plugins/sgs-blocks/src/blocks/buybox/render.php, the `! $product->is_type( 'variable' )`
-// branch: sgs_buybox_simple_keep_flow_html, sgs_buybox_simple_linked_flow_html), which no `addToCart*` setting styles and the live
-// selector of Add to Cart (data/part-live-selectors.json) does not find; a variable product prints `.sgs-buybox .buybox__add-to-cart`
-// with the opener beside it (keepAddToCartWithFlow) or in its place. So the verify reads a variable product when the shop has one.
+// loaded), else the first real product of any type linked to one. The preference for a variable product dates from when a simple
+// product's buy box printed core's own Add to Cart; since 2026-11-21 a simple product prints the same `.sgs-buybox .buybox__add-to-cart`
+// (plugins/sgs-blocks/src/blocks/buybox/render.php, Product_Manifest::build_simple), with the opener beside it (keepAddToCartWithFlow)
+// or in its place, so either type reads the same parts; the variable one also carries the option pickers.
 const FLOW_LINKED_PICK_PHP = `if ( null === $sgs_out['product'] ) {
 	$sgs_linked_first = null;
 	foreach ( get_posts( array( 'post_type' => 'product', 'post_status' => 'publish', 'posts_per_page' => 50, 'orderby' => 'ID', 'order' => 'ASC', 'fields' => 'ids', 'meta_key' => '_sgs_choice_flow', 'meta_compare' => 'EXISTS' ) ) as $sgs_id ) {

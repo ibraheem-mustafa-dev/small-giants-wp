@@ -23,10 +23,12 @@
  * rendered as a second, secondary-looking button beside them
  * ({@see sgs_buybox_flow_opener_html()}). The modal still renders once.
  *
+ * A simple product takes the same path as a variable one: render.php gives it a one-choice manifest
+ * (`Product_Manifest::build_simple()`), so the opener, the kept Add to Cart and their order are the same markup on both.
+ *
  * The opener's own look is the built-in button kit's `flowOpener` button (`block.json` `supports.sgs.builtinButtons`; attributes
- * `flowOpener*`), and it applies to every opener the flow prints: the second button beside a kept Add to Cart, a simple
- * product's opener, and the Add to Cart button itself where the flow replaces it (a variable product without the keep
- * setting). Every `flowOpener*` setting is unset by default, and then the opener renders as it always has: the secondary
+ * `flowOpener*`), and it applies to every opener the flow prints: the second button beside a kept Add to Cart, and the Add to
+ * Cart button itself where the flow replaces it (without the keep setting). Every `flowOpener*` setting is unset by default, and then the opener renders as it always has: the secondary
  * preset (the plain base look when Add to Cart is already secondary), wearing Add to Cart's rules through
  * `buybox__add-to-cart`. A setting left unset keeps following Add to Cart's value; a set one prints through
  * {@see sgs_button_kit_css()} on the opener's own selector (the opener's class is `buybox__add-to-cart--flow-opener`, added
@@ -118,9 +120,9 @@ if ( ! function_exists( 'sgs_buybox_resolve_linked_flow' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_core_fallback_parts' ) ) {
 	/**
-	 * The WooCommerce core blocks the buybox falls back to (FR-30-2): the gallery and price (`head`), then core's Add to Cart
-	 * (`cart`). The one place the markup lives: render.php prints `head` + `cart` as its no-flow fallback, and a simple product
-	 * with a linked flow prints `head` with the flow's opener in place of `cart`, or beside it (`keepAddToCartWithFlow`).
+	 * The WooCommerce core blocks the buybox falls back to (FR-30-2) where it cannot render its own markup (WooCommerce absent,
+	 * no product, a grouped or external product, no manifest, the context over its size cap): the gallery and price (`head`),
+	 * then core's Add to Cart (`cart`). The one place the markup lives; render.php prints `head` + `cart`.
 	 *
 	 * @return array{head:string,cart:string}
 	 */
@@ -129,26 +131,6 @@ if ( ! function_exists( 'sgs_buybox_core_fallback_parts' ) ) {
 			'head' => '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->',
 			'cart' => '<!-- wp:woocommerce/add-to-cart-with-options {"isDescendentOfSingleProductBlock":true} /-->',
 		);
-	}
-}
-
-if ( ! function_exists( 'sgs_buybox_keep_setting_applies' ) ) {
-	/**
-	 * Whether `keepAddToCartWithFlow` does anything for these buybox settings: it is on, the layout is not the guided one and
-	 * the button is not set to open a named popup (an explicit popup and the guided layout win over a product-linked flow,
-	 * FR-43-25). The same precedence {@see sgs_buybox_apply_linked_flow()} applies on a variable product, read here from the
-	 * attributes for a simple product, whose render never reaches that function.
-	 *
-	 * @param array<string,mixed> $attributes The buybox block attributes.
-	 * @return bool
-	 */
-	function sgs_buybox_keep_setting_applies( array $attributes ): bool {
-		if ( empty( $attributes['keepAddToCartWithFlow'] ) || 'guided' === (string) ( $attributes['buyboxLayout'] ?? 'standard' ) ) {
-			return false;
-		}
-		$action   = sanitize_key( (string) ( $attributes['addToCartAction'] ?? 'cart' ) );
-		$modal_id = sanitize_text_field( (string) ( $attributes['addToCartModalId'] ?? '' ) );
-		return ! ( 'modal' === $action && '' !== $modal_id );
 	}
 }
 
@@ -323,8 +305,7 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_selector' ) ) {
 	 * keeps the text readable on the hover fill) out-ranks it. A rule printed after Add to Cart's wins a tie.
 	 *
 	 * @param string $scope A scope selector: the buy box root plus a descendant combinator (`.uid.wp-block-sgs-buybox `, with the
-	 *                      trailing space) on a variable product; the opener's own instance class doubled (`.sgs-bb-fo-<hash>.sgs-bb-fo-<hash>`,
-	 *                      which weighs as much as the shared preset rule) on a simple product, where the classes sit on the one button.
+	 *                      trailing space).
 	 * @return string
 	 */
 	function sgs_buybox_flow_opener_selector( string $scope ): string {
@@ -396,7 +377,7 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_cta_classes' ) ) {
 if ( ! function_exists( 'sgs_buybox_opener_note_css' ) ) {
 	/**
 	 * The flow opener note's colour rule (`openerNoteColour`) on `$scope .buybox__add-to-cart-note`; '' when unset. render.php prints it
-	 * with the buy box's own scope, and a simple product's opener (which renders before that scope exists) with its own instance class.
+	 * with the buy box's own scope.
 	 *
 	 * @param array<string,mixed> $attributes The buybox block attributes.
 	 * @param string              $scope      The selector the rule is scoped to.
@@ -405,44 +386,6 @@ if ( ! function_exists( 'sgs_buybox_opener_note_css' ) ) {
 	function sgs_buybox_opener_note_css( array $attributes, string $scope ): string {
 		$colour = sgs_colour_value( (string) ( $attributes['openerNoteColour'] ?? '' ) );
 		return '' === $colour ? '' : $scope . ' .buybox__add-to-cart-note{color:' . $colour . ';}';
-	}
-}
-
-if ( ! function_exists( 'sgs_buybox_flow_opener_scope_class' ) ) {
-	/**
-	 * The instance class a simple product's opener carries, from the `flowOpener*` attributes it was given ('' when none is set).
-	 * A simple product's render returns before the buy box builds its own scope, so the opener brings one: two openers with the
-	 * same settings share a class and a rule.
-	 *
-	 * @param array<string,mixed> $attributes The buybox block attributes.
-	 * @return string
-	 */
-	function sgs_buybox_flow_opener_scope_class( array $attributes ): string {
-		$set = sgs_buybox_flow_opener_attrs( $attributes );
-		// The note colour also needs the scope on a simple product, whose render has no buy box scope; it is no kit setting.
-		$note = (string) ( $attributes['openerNoteColour'] ?? '' );
-		if ( '' !== $note && '' !== sgs_buybox_opener_note_css( $attributes, '.x' ) ) {
-			$set['openerNoteColour'] = $note;
-		}
-		return array() === $set ? '' : 'sgs-bb-fo-' . substr( md5( (string) wp_json_encode( $set ) ), 0, 8 );
-	}
-}
-
-if ( ! function_exists( 'sgs_buybox_flow_opener_style_tag' ) ) {
-	/**
-	 * A simple product's opener's kit CSS in `<style>` tags, the channel render.php prints its `$scoped_css` through: the shared
-	 * preset groups each in a tag of their own (`sgs_style_tags()`), so the collector keeps one copy of each a page. '' when no
-	 * `flowOpener*` attribute prints.
-	 *
-	 * @param array<string,mixed> $attributes The buybox block attributes.
-	 * @return string
-	 */
-	function sgs_buybox_flow_opener_style_tag( array $attributes ): string {
-		$scope = sgs_buybox_flow_opener_scope_class( $attributes );
-		if ( '' === $scope ) {
-			return '';
-		}
-		return sgs_style_tags( wp_strip_all_tags( sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( '.' . $scope . '.' . $scope ) ) . sgs_buybox_opener_note_css( $attributes, '.' . $scope . '.' . $scope ) ) );
 	}
 }
 
@@ -458,85 +401,16 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_html' ) ) {
 	 *
 	 * @param \WP_Post $flow             The linked `sgs_choice_flow` post.
 	 * @param string   $add_to_cart_look The Add to Cart button's preset slug ('' for the default look).
-	 * @param array<string,mixed> $attributes The buybox block attributes: `flowOpenerStyle` naming a preset replaces the secondary look (the kit prints that preset), and a simple product's opener takes its scope class from them.
-	 * @param bool     $own_scope        Whether the button carries its own instance class when a `flowOpener*` setting is set (a simple product, whose render has no buy box scope).
+	 * @param array<string,mixed> $attributes The buybox block attributes: `flowOpenerStyle` naming a preset replaces the secondary look (the kit prints that preset).
 	 * @return string Fully escaped HTML.
 	 */
-	function sgs_buybox_flow_opener_html( \WP_Post $flow, string $add_to_cart_look = '', array $attributes = array(), bool $own_scope = false ): string {
+	function sgs_buybox_flow_opener_html( \WP_Post $flow, string $add_to_cart_look = '', array $attributes = array() ): string {
 		$label = sgs_buybox_linked_flow_label( $flow );
 		if ( '' === $label ) {
 			$label = __( 'Choose your options', 'sgs-blocks' );
 		}
-		$look  = 'secondary' === $add_to_cart_look || sgs_buybox_flow_opener_names_preset( $attributes ) ? '' : ' buybox__add-to-cart--secondary';
-		$scope = $own_scope ? sgs_buybox_flow_opener_scope_class( $attributes ) : '';
-		return sgs_buybox_modal_cta_html( $label, 'wp-element-button buybox__add-to-cart' . $look . ' buybox__add-to-cart--flow-opener' . ( '' !== $scope ? ' ' . $scope : '' ) . sgs_buybox_flow_opener_kit_classes( $attributes ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), false, sgs_buybox_linked_flow_note( $flow ) );
-	}
-}
-
-if ( ! function_exists( 'sgs_buybox_simple_keep_flow_html' ) ) {
-	/**
-	 * A simple (non-variable) product with a linked flow and `keepAddToCartWithFlow`
-	 * on: the core fallback exactly as without a flow, with the flow's opener
-	 * beside core's Add to Cart (after it, or before it with `openerBeforeAddToCart`) and the flow's modal after them. Returns '' when
-	 * the product has no resolvable flow, or cannot be bought (not purchasable or
-	 * out of stock: core shows no Add to Cart then, and the opener's stock gate is
-	 * inert outside the Interactivity context), so the caller keeps its core fallback.
-	 *
-	 * @param int         $product_id Product ID.
-	 * @param \WC_Product $product    The product.
-	 * @param array<string,mixed> $attributes The buybox block attributes, for the opener's own look (`flowOpener*`).
-	 * @return string Markup (pre-escaped).
-	 */
-	function sgs_buybox_simple_keep_flow_html( int $product_id, \WC_Product $product, array $attributes = array() ): string {
-		$flow = sgs_buybox_resolve_linked_flow( $product_id );
-		if ( null === $flow || ! $product->is_purchasable() || ! $product->is_in_stock() ) {
-			return '';
-		}
-		$parts = sgs_buybox_core_fallback_parts();
-		ob_start();
-		echo do_blocks( $parts['head'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
-		echo sgs_buybox_flow_opener_style_tag( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the CSS is built from sanitised values and stripped of tags.
-		// openerBeforeAddToCart puts the opener before core's Add to Cart, in the markup as on screen.
-		$opener = sgs_buybox_flow_opener_html( $flow, '', $attributes, true );
-		$first  = ! empty( $attributes['openerBeforeAddToCart'] );
-		echo '<div class="sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow">';
-		echo $first ? $opener : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
-		echo do_blocks( $parts['cart'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
-		echo $first ? '' : $opener; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
-		echo '</div>';
-		sgs_buybox_render_linked_flow_modal( $flow );
-		return (string) ob_get_clean();
-	}
-}
-
-if ( ! function_exists( 'sgs_buybox_simple_linked_flow_html' ) ) {
-	/**
-	 * A simple (non-variable) product with a linked flow: the gallery and
-	 * price from WooCommerce's own blocks, then the flow's opener and its
-	 * full-screen modal in place of WooCommerce's Add to Cart. Returns '' when
-	 * the product has no resolvable flow, so the caller keeps its core fallback.
-	 *
-	 * @param int    $product_id Product ID.
-	 * @param string $label      The buybox's Add to Cart label.
-	 * @param array<string,mixed> $attributes The buybox block attributes, for the opener's own look (`flowOpener*`): no buy box rule reaches this button, so those settings are its only look.
-	 * @return string Markup (pre-escaped).
-	 */
-	function sgs_buybox_simple_linked_flow_html( int $product_id, string $label, array $attributes = array() ): string {
-		$flow = sgs_buybox_resolve_linked_flow( $product_id );
-		if ( null === $flow ) {
-			return '';
-		}
-		ob_start();
-		echo do_blocks( sgs_buybox_core_fallback_parts()['head'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
-		$flow_label = sgs_buybox_linked_flow_label( $flow );
-		if ( '' !== $flow_label ) {
-			$label = $flow_label;
-		}
-		$scope = sgs_buybox_flow_opener_scope_class( $attributes );
-		echo sgs_buybox_flow_opener_style_tag( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the CSS is built from sanitised values and stripped of tags.
-		echo sgs_buybox_modal_cta_html( '' !== $label ? $label : __( 'Add to Cart', 'sgs-blocks' ), 'wp-element-button buybox__add-to-cart' . sgs_buybox_flow_opener_cta_classes( $attributes ) . ( '' !== $scope ? ' ' . $scope : '' ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), true, sgs_buybox_linked_flow_note( $flow ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
-		sgs_buybox_render_linked_flow_modal( $flow );
-		return (string) ob_get_clean();
+		$look = 'secondary' === $add_to_cart_look || sgs_buybox_flow_opener_names_preset( $attributes ) ? '' : ' buybox__add-to-cart--secondary';
+		return sgs_buybox_modal_cta_html( $label, 'wp-element-button buybox__add-to-cart' . $look . ' buybox__add-to-cart--flow-opener' . sgs_buybox_flow_opener_kit_classes( $attributes ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), false, sgs_buybox_linked_flow_note( $flow ) );
 	}
 }
 

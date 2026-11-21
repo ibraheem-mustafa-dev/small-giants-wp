@@ -492,10 +492,10 @@
      }
     },
     "core-fallback": {
-     "unrendered": "no WooCommerce, not a WC_Product, a simple product, no manifest or a context over 24 KB: render.php echoes core WooCommerce blocks through do_blocks() (not stubbed) and prints none of the buybox's own markup, so no buybox part exists there by design"
+     "unrendered": "no WooCommerce, not a WC_Product, a grouped or external product, a simple product with no price, no manifest or a context over 24 KB: render.php echoes core WooCommerce blocks through do_blocks() (not stubbed) and prints none of the buybox's own markup, so no buybox part exists there by design"
     }
    },
-   "pathsWhy": "render.php's guards (class_exists WooCommerce, wc_get_product, is_type variable, Product_Manifest::build, the 24 KB context cap) all hand the page to the same core fallback; only the main path prints buybox markup."
+   "pathsWhy": "render.php's guards (class_exists WooCommerce, wc_get_product, the product type, Product_Manifest::build or build_simple, the 24 KB context cap) all hand the page to the same core fallback; only the main path prints buybox markup (a simple product takes the main path with one implicit choice, the same parts as a variable one)."
   },
   "card-grid": {
    "base": {

@@ -22,12 +22,19 @@ namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/class-configurator-meta.php';
+
 /**
  * Class Product_Manifest
  *
  * Builds the sparse valid-combinations manifest for a WC variable product.
  */
 final class Product_Manifest {
+
+	/**
+	 * The one combination key of a simple product's manifest (`build_simple()`): it has no option, so no "taxonomy:slug" key.
+	 */
+	public const SIMPLE_KEY = 'product';
 
 	/**
 	 * The largest original, in bytes, that structured data, Open Graph and the feed will point at (Facebook's 8 MB limit).
@@ -204,6 +211,163 @@ final class Product_Manifest {
 			$bytes = \is_string( $file ) && '' !== $file && \is_readable( $file ) ? (int) \filesize( $file ) : 0;
 		}
 		return $bytes <= self::SHARE_MAX_BYTES;
+	}
+
+	/**
+	 * One manifest combination: the price, tax parts, stock, photos, per-unit and schema fields of one buyable item (a variation of a
+	 * variable product, or a simple product itself). `build()` and `build_simple()` both write their combinations here, so the two
+	 * shapes cannot drift.
+	 *
+	 * @param \WC_Product $item          The variation or the simple product.
+	 * @param int         $item_id       Its post ID (its per-unit meta lives there).
+	 * @param int[]       $gallery_ids   Its photo attachment IDs, highest authority first (gallery[0] is the main photo).
+	 * @param bool        $has_own_image Whether the item has a photo of its own (a variation's, not its parent's).
+	 * @param int         $decimals      The shop's price decimals.
+	 * @param array       $images        The manifest's `images` map (attachment id => sharp src and srcset), added to.
+	 * @param array       $shares        Attachment id => the large share address, added to.
+	 * @return array The combination.
+	 */
+	private static function combo( \WC_Product $item, int $item_id, array $gallery_ids, bool $has_own_image, int $decimals, array &$images, array &$shares ): array {
+		// Price minor-int (tax-display correct; never own division).
+		$multiplier    = (int) \round( 10 ** $decimals );
+		$price_minor   = (int) \round( \wc_get_price_to_display( $item ) * $multiplier );
+		$regular_price = $item->get_regular_price();
+		$regular_minor = (int) \round(
+			\wc_get_price_to_display( $item, array( 'price' => $regular_price ) ) * $multiplier
+		);
+
+		$sale_minor = null;
+		if ( $item->is_on_sale() ) {
+			$sale_price = $item->get_sale_price();
+			$sale_minor = (int) \round(
+				\wc_get_price_to_display( $item, array( 'price' => $sale_price ) ) * $multiplier
+			);
+		}
+
+		// Tax components for the per-card taxDisplayMode (FR-27-H3 / TAX-UI).
+		// Computed directly from WC tax functions so they are correct whether
+		// the shop displays prices inc or ex tax: the active price ex-tax, the
+		// VAT amount on it, and the regular price ex-tax for the struck line.
+		// When tax is disabled / zero-rated, $tax_minor is 0 and ex == display
+		// (the ex-plus-vat mode then shows no VAT line).
+		$ex_minor         = (int) \round( \wc_get_price_excluding_tax( $item ) * $multiplier );
+		$inc_minor        = (int) \round( \wc_get_price_including_tax( $item ) * $multiplier );
+		$tax_minor        = \max( 0, $inc_minor - $ex_minor );
+		$regular_ex_minor = (int) \round(
+			\wc_get_price_excluding_tax( $item, array( 'price' => $regular_price ) ) * $multiplier
+		);
+
+		// pctOff: guarded /0, capped at 95.
+		$pct_off = 0;
+		if ( $regular_minor > 0 && $item->is_on_sale() ) {
+			$pct_off = (int) \floor( ( $regular_minor - $price_minor ) / $regular_minor * 100 );
+			// Clamp both ends: a custom woocommerce_get_price_to_display filter
+			// (subscriptions / wholesale / VAT plugins) could invert sale vs
+			// regular and yield a negative; never surface "-21% off" to U4.
+			if ( $pct_off < 0 ) {
+				$pct_off = 0;
+			} elseif ( $pct_off > 95 ) {
+				$pct_off = 95;
+			}
+		}
+
+		// inStock: MUST use is_in_stock() — is_purchasable() lies for OOS (fixture 546).
+		$in_stock = (bool) $item->is_in_stock();
+
+		$gallery = array();
+		foreach ( $gallery_ids as $gid ) {
+			$gallery_item = self::gallery_item( $gid );
+			if ( null !== $gallery_item ) {
+				$gallery[] = $gallery_item;
+				if ( ! isset( $images[ $gid ] ) ) {
+					$data = self::image_data( $gid );
+					if ( null !== $data ) {
+						$images[ $gid ] = $data;
+					}
+					$shares[ $gid ] = self::share_url( $gid );
+				}
+			}
+		}
+
+		// imageUrl is gallery[0].url ('' when no image resolves); the SSR main
+		// <img>, the no-image gate and the view.js swap all read it.
+		$image_url = '' !== ( $gallery[0]['url'] ?? '' ) ? $gallery[0]['url'] : '';
+		$image_id  = (int) ( $gallery[0]['id'] ?? 0 );
+
+		// Translated "% off" label seeded per combo so view.js shows the SAME
+		// (localised) string on swap that the SSR literal shows (i18n parity).
+		$pct_display = $pct_off > 0
+			/* translators: %d is the discount percentage, e.g. "30% off". */
+			? sprintf( \__( '%d%% off', 'sgs-blocks' ), $pct_off )
+			: '';
+
+		// B3: per-unit pricing + cosmetic discount label (FR-27-B3).
+		// Reads the item's postmeta registered in class-configurator-meta.php.
+		// Sanitiser methods are called here as a second defence-in-depth layer;
+		// the registered sanitize_callback already ran at save time.
+		$unit_divisor = Configurator_Meta::sanitize_divisor( \get_post_meta( $item_id, '_sgs_unit_divisor', true ) );
+		$unit_label   = \sanitize_text_field( (string) \get_post_meta( $item_id, '_sgs_unit_label', true ) );
+		$discount_lbl = Configurator_Meta::sanitize_discount_label( \get_post_meta( $item_id, '_sgs_discount_label', true ) );
+
+		// E1 schema fields (SEC-1: computed here so the JSON-LD emitter reads
+		// them from the manifest and never re-reads WC).
+		// - incMinor: the VAT-INCLUSIVE price as a minor int, ALWAYS inc-VAT
+		// regardless of the shop's tax-display setting (SEC-2). Schema/OG
+		// price must be inc-VAT or Google Merchant suspends the account for a
+		// price mismatch. exMinor + taxMinor == the inclusive price.
+		// - sku: the item's SKU (plain text).
+		// - gtin: GTIN-13 etc. from WC's global_unique_id field (WC 9.2+),
+		// digits only; '' when unset or WC too old.
+		// - saleEndDate: scheduled sale-end as Y-m-d for Offer.priceValidUntil;
+		// '' when not a scheduled sale (the emitter then OMITS priceValidUntil
+		// rather than fabricating a rolling date).
+		$inc_price_minor = $ex_minor + $tax_minor;
+		$sku             = \sanitize_text_field( (string) $item->get_sku() );
+		$gtin            = '';
+		if ( \method_exists( $item, 'get_global_unique_id' ) ) {
+			$gtin = \preg_replace( '/\D/', '', (string) $item->get_global_unique_id() );
+		}
+		$sale_end_date = '';
+		if ( $item->is_on_sale() ) {
+			$sale_to = $item->get_date_on_sale_to();
+			if ( $sale_to ) {
+				$sale_end_date = $sale_to->date( 'Y-m-d' );
+			}
+		}
+
+		return array(
+			'variationId'    => $item_id,
+			'priceMinor'     => $price_minor,
+			'regularMinor'   => $regular_minor,
+			'saleMinor'      => $sale_minor,
+			'pctOff'         => $pct_off,
+			'pctDisplay'     => $pct_display,
+			'inStock'        => $in_stock,
+			'imageUrl'       => $image_url,
+			// The main photo's attachment id (keys the manifest `images` map; 0 when no image resolves).
+			'imageId'        => $image_id,
+			// The large, format-safe address of the main photo for structured data, Open Graph and the feed
+			// ('' when no image resolves). Server-only: the lean seed strips it.
+			'imageFull'      => $image_id > 0 ? (string) ( $shares[ $image_id ] ?? '' ) : '',
+			// True when the variation has its own featured image (not the parent's).
+			'hasOwnImage'    => $has_own_image,
+			// Tax components for the per-card taxDisplayMode (TAX-UI / FR-27-H3).
+			'exMinor'        => $ex_minor,
+			'taxMinor'       => $tax_minor,
+			'regularExMinor' => $regular_ex_minor,
+			// B3: per-unit pricing + cosmetic discount label.
+			'unitDivisor'    => $unit_divisor,
+			'unitLabel'      => $unit_label,
+			'discountLabel'  => $discount_lbl,
+			// E1: schema fields read by the JSON-LD emitter (SEC-1/SEC-2).
+			'incMinor'       => $inc_price_minor,
+			'sku'            => $sku,
+			'gtin'           => $gtin,
+			'saleEndDate'    => $sale_end_date,
+			// Ordered { id, url, w, h, alt } items; imageUrl == gallery[0].url.
+			// Empty array when no image resolves.
+			'gallery'        => $gallery,
+		);
 	}
 
 	/**
@@ -393,52 +557,6 @@ final class Product_Manifest {
 			\ksort( $key_parts ); // Sort by taxonomy ascending for a stable key.
 			$combo_key = \implode( '|', $key_parts );
 
-			// Price minor-int (tax-display correct; never own division).
-			$multiplier    = (int) \round( 10 ** $decimals );
-			$price_minor   = (int) \round( \wc_get_price_to_display( $variation ) * $multiplier );
-			$regular_price = $variation->get_regular_price();
-			$regular_minor = (int) \round(
-				\wc_get_price_to_display( $variation, array( 'price' => $regular_price ) ) * $multiplier
-			);
-
-			$sale_minor = null;
-			if ( $variation->is_on_sale() ) {
-				$sale_price = $variation->get_sale_price();
-				$sale_minor = (int) \round(
-					\wc_get_price_to_display( $variation, array( 'price' => $sale_price ) ) * $multiplier
-				);
-			}
-
-			// Tax components for the per-card taxDisplayMode (FR-27-H3 / TAX-UI).
-			// Computed directly from WC tax functions so they are correct whether
-			// the shop displays prices inc or ex tax: the active price ex-tax, the
-			// VAT amount on it, and the regular price ex-tax for the struck line.
-			// When tax is disabled / zero-rated, $tax_minor is 0 and ex == display
-			// (the ex-plus-vat mode then shows no VAT line).
-			$ex_minor         = (int) \round( \wc_get_price_excluding_tax( $variation ) * $multiplier );
-			$inc_minor        = (int) \round( \wc_get_price_including_tax( $variation ) * $multiplier );
-			$tax_minor        = \max( 0, $inc_minor - $ex_minor );
-			$regular_ex_minor = (int) \round(
-				\wc_get_price_excluding_tax( $variation, array( 'price' => $regular_price ) ) * $multiplier
-			);
-
-			// pctOff: guarded /0, capped at 95.
-			$pct_off = 0;
-			if ( $regular_minor > 0 && $variation->is_on_sale() ) {
-				$pct_off = (int) \floor( ( $regular_minor - $price_minor ) / $regular_minor * 100 );
-				// Clamp both ends: a custom woocommerce_get_price_to_display filter
-				// (subscriptions / wholesale / VAT plugins) could invert sale vs
-				// regular and yield a negative; never surface "-21% off" to U4.
-				if ( $pct_off < 0 ) {
-					$pct_off = 0;
-				} elseif ( $pct_off > 95 ) {
-					$pct_off = 95;
-				}
-			}
-
-			// inStock: MUST use is_in_stock() — is_purchasable() lies for OOS (fixture 546).
-			$in_stock = (bool) $variation->is_in_stock();
-
 			// Image set, highest authority first: the operator's per-variation
 			// gallery (`_sgs_variation_gallery`), the variation's own featured
 			// image, the parent featured image, then the parent's WooCommerce
@@ -466,100 +584,7 @@ final class Product_Manifest {
 					$parent_gallery_ids
 				)
 			);
-			$gallery     = array();
-			foreach ( $gallery_ids as $gid ) {
-				$item = self::gallery_item( $gid );
-				if ( null !== $item ) {
-					$gallery[] = $item;
-					if ( ! isset( $images[ $gid ] ) ) {
-						$data = self::image_data( $gid );
-						if ( null !== $data ) {
-							$images[ $gid ] = $data;
-						}
-						$shares[ $gid ] = self::share_url( $gid );
-					}
-				}
-			}
-
-			// imageUrl is gallery[0].url ('' when no image resolves); the SSR main
-			// <img>, the no-image gate and the view.js swap all read it.
-			$image_url = '' !== ( $gallery[0]['url'] ?? '' ) ? $gallery[0]['url'] : '';
-			$image_id  = (int) ( $gallery[0]['id'] ?? 0 );
-
-			// Translated "% off" label seeded per combo so view.js shows the SAME
-			// (localised) string on swap that the SSR literal shows (i18n parity).
-			$pct_display = $pct_off > 0
-				/* translators: %d is the discount percentage, e.g. "30% off". */
-				? sprintf( \__( '%d%% off', 'sgs-blocks' ), $pct_off )
-				: '';
-
-			// B3: per-unit pricing + cosmetic discount label (FR-27-B3).
-			// Reads variation postmeta registered in class-configurator-meta.php.
-			// Sanitiser methods are called here as a second defence-in-depth layer;
-			// the registered sanitize_callback already ran at save time.
-			$unit_divisor = Configurator_Meta::sanitize_divisor( \get_post_meta( $child_id, '_sgs_unit_divisor', true ) );
-			$unit_label   = \sanitize_text_field( (string) \get_post_meta( $child_id, '_sgs_unit_label', true ) );
-			$discount_lbl = Configurator_Meta::sanitize_discount_label( \get_post_meta( $child_id, '_sgs_discount_label', true ) );
-
-			// E1 schema fields (SEC-1: computed here so the JSON-LD emitter reads
-			// them from the manifest and never re-reads WC).
-			// - incMinor: the VAT-INCLUSIVE price as a minor int, ALWAYS inc-VAT
-			// regardless of the shop's tax-display setting (SEC-2). Schema/OG
-			// price must be inc-VAT or Google Merchant suspends the account for a
-			// price mismatch. exMinor + taxMinor == the inclusive price.
-			// - sku: variation SKU (plain text).
-			// - gtin: GTIN-13 etc. from WC's global_unique_id field (WC 9.2+),
-			// digits only; '' when unset or WC too old.
-			// - saleEndDate: scheduled sale-end as Y-m-d for Offer.priceValidUntil;
-			// '' when not a scheduled sale (the emitter then OMITS priceValidUntil
-			// rather than fabricating a rolling date).
-			$inc_price_minor = $ex_minor + $tax_minor;
-			$sku             = \sanitize_text_field( (string) $variation->get_sku() );
-			$gtin            = '';
-			if ( \method_exists( $variation, 'get_global_unique_id' ) ) {
-				$gtin = \preg_replace( '/\D/', '', (string) $variation->get_global_unique_id() );
-			}
-			$sale_end_date = '';
-			if ( $variation->is_on_sale() ) {
-				$sale_to = $variation->get_date_on_sale_to();
-				if ( $sale_to ) {
-					$sale_end_date = $sale_to->date( 'Y-m-d' );
-				}
-			}
-
-			$combos[ $combo_key ] = array(
-				'variationId'    => (int) $child_id,
-				'priceMinor'     => $price_minor,
-				'regularMinor'   => $regular_minor,
-				'saleMinor'      => $sale_minor,
-				'pctOff'         => $pct_off,
-				'pctDisplay'     => $pct_display,
-				'inStock'        => $in_stock,
-				'imageUrl'       => $image_url,
-				// The main photo's attachment id (keys the manifest `images` map; 0 when no image resolves).
-				'imageId'        => $image_id,
-				// The large, format-safe address of the main photo for structured data, Open Graph and the feed
-				// ('' when no image resolves). Server-only: the lean seed strips it.
-				'imageFull'      => $image_id > 0 ? (string) ( $shares[ $image_id ] ?? '' ) : '',
-				// True when the variation has its own featured image (not the parent's).
-				'hasOwnImage'    => $vid > 0,
-				// Tax components for the per-card taxDisplayMode (TAX-UI / FR-27-H3).
-				'exMinor'        => $ex_minor,
-				'taxMinor'       => $tax_minor,
-				'regularExMinor' => $regular_ex_minor,
-				// B3: per-unit pricing + cosmetic discount label.
-				'unitDivisor'    => $unit_divisor,
-				'unitLabel'      => $unit_label,
-				'discountLabel'  => $discount_lbl,
-				// E1: schema fields read by the JSON-LD emitter (SEC-1/SEC-2).
-				'incMinor'       => $inc_price_minor,
-				'sku'            => $sku,
-				'gtin'           => $gtin,
-				'saleEndDate'    => $sale_end_date,
-				// Ordered { id, url, w, h, alt } items; imageUrl == gallery[0].url.
-				// Empty array when no image resolves.
-				'gallery'        => $gallery,
-			);
+			$combos[ $combo_key ] = self::combo( $variation, (int) $child_id, $gallery_ids, $vid > 0, (int) $decimals, $images, $shares );
 		}
 
 		if ( empty( $combos ) ) {
@@ -625,5 +650,51 @@ final class Product_Manifest {
 		\set_transient( $cache_key, $manifest, \DAY_IN_SECONDS );
 
 		return $manifest;
+	}
+	/**
+	 * The manifest of a simple product: the same shape `build()` returns, holding one combination (`SIMPLE_KEY`) and no axes,
+	 * so sgs/buybox renders a simple product through its own markup and settings, as a variable product with nothing to
+	 * choose. The combination's `variationId` is 0: the add-to-cart store then posts the product's own ID (`addToCartId`).
+	 * Its photos are the product's featured image followed by its WooCommerce gallery.
+	 *
+	 * Returns null when WooCommerce is absent, the product is not a published simple product, or it has no price (WooCommerce
+	 * then shows neither a price nor an Add to Cart, and the buy box keeps WooCommerce's own blocks). Not cached: one product
+	 * is a handful of reads, and every render reads it fresh. Every caller of `build()` keeps reading variable products only.
+	 *
+	 * @param int $product_id WC product ID.
+	 * @return array|null Manifest array, or null.
+	 */
+	public static function build_simple( int $product_id ): ?array {
+		if ( ! \function_exists( 'wc_get_product' ) ) {
+			return null;
+		}
+		$product = \wc_get_product( $product_id );
+		if ( ! $product || ! $product->is_type( 'simple' ) || 'publish' !== \get_post_status( $product_id ) || '' === (string) $product->get_price() ) {
+			return null;
+		}
+
+		$decimals    = (int) \wc_get_price_decimals();
+		$images      = array();
+		$shares      = array();
+		$image_id    = (int) $product->get_image_id();
+		$gallery_ids = Configurator_Meta::sanitize_id_array(
+			\array_merge(
+				array( $image_id ),
+				\method_exists( $product, 'get_gallery_image_ids' ) ? \array_map( 'intval', (array) $product->get_gallery_image_ids() ) : array()
+			)
+		);
+		$combo                = self::combo( $product, $product_id, $gallery_ids, $image_id > 0, $decimals, $images, $shares );
+		$combo['variationId'] = 0;
+
+		return array(
+			'decimals'       => $decimals,
+			'currencySymbol' => \html_entity_decode( (string) \get_woocommerce_currency_symbol(), ENT_QUOTES, 'UTF-8' ),
+			'generatedAt'    => 0,
+			'axes'           => array(),
+			'combos'         => array( self::SIMPLE_KEY => $combo ),
+			'images'         => $images,
+			'defaultKey'     => self::SIMPLE_KEY,
+			'defaultAxes'    => array(),
+		);
 	}
 }
