@@ -238,8 +238,10 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// `children` is pulled out and rendered explicitly (see canvas below) so
 	// the attribution RichText can sit alongside it as a flat sibling — a
 	// literal spread would let innerBlocksProps.children silently win over
-	// the RichText.
-	const { children: innerBlocksChildren, ...innerBlocksRest } = useInnerBlocksProps( {}, {
+	// the RichText. blockProps goes in, so its class list, style and ref merge
+	// with the inner-blocks props (a second spread would replace the root's
+	// classes with the layout class alone).
+	const { children: innerBlocksChildren, ...innerBlocksRest } = useInnerBlocksProps( blockProps, {
 		template: QUOTE_BODY_TEMPLATE,
 	} );
 
@@ -779,9 +781,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     is destructured out and rendered explicitly alongside the RichText
 			     sibling — spreading innerBlocksProps as-is would make its internal
 			     `children` win over literal JSX children and drop the RichText.
-			     Contract §B3: NO wrapper div — blockProps spreads straight onto the
-			     <blockquote>, which IS the block root. */ }
-			<blockquote { ...blockProps } { ...innerBlocksRest }>
+			     Contract §B3: NO wrapper div — the merged block props spread straight
+			     onto the <blockquote>, which IS the block root. */ }
+			<blockquote { ...innerBlocksRest }>
 				{ innerBlocksChildren }
 				{ attributionEnabled && (
 					<RichText
