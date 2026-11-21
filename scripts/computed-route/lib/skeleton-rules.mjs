@@ -20,6 +20,7 @@ import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { productTiles } from './skeleton-product-tile.mjs';
 import { reviewPlatformRegions } from './skeleton-review-platform.mjs';
+import { pictureTileGrids } from './skeleton-picture-tiles.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
@@ -925,6 +926,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The review sections that name a review platform (lib/skeleton-review-platform.mjs), each that platform's review block.
 	const reviews = R.reviewPlatform ? reviewPlatformRegions( { m, rule: R.reviewPlatform } ) : { regions: new Map(), notes: [] };
 	const tiles = R.productTile ? productTiles( { m, products: surface.products, money: R.commerceRegion?.money } ) : { tiles: new Map(), listings: new Set(), notes: [] };
+	// The grids of titled picture tiles, each one link or control (lib/skeleton-picture-tiles.mjs), each a card grid.
+	const pictureGrids = R.pictureTileGrid ? pictureTileGrids( { m, rule: R.pictureTileGrid, money: R.commerceRegion?.money } ) : { grids: new Map(), notes: [] };
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], folder: handoffOf( facts ) } ) : null;
@@ -1197,6 +1200,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const decided = style ? { [ S.style.setting ]: style } : null;
 			return v( 'headerStripBar', { block: S.block, absorb: true, attributes: { [ S.items.setting ]: items, ...( decided || {} ) }, ...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );
 		},
+		// The parent of a loop of titled picture tiles, each one link or control, is one card grid (rules.pictureTileGrid): the
+		// block draws the cards, so the tiles are absorbed; each card's link the draft gives no address for is a handover.
+		( { e } ) => {
+			const g = pictureGrids.grids.get( e.key );
+			return g ? v( 'pictureTileGrid', { block: g.block, absorb: true, attributes: g.attributes, reason: `${ R.pictureTileGrid.reason }; ${ g.reason }`, ...( g.handovers.length ? { handover: g.handovers[ 0 ], handovers: g.handovers } : {} ) } ) : null;
+		},
 		// The first section of a page holding its h1 is the hero; with an image inside it is the split hero. A page wrapper (the
 		// `<main>`, or an element holding two or more stacked sections) is never the hero: the hero is its first block child
 		// holding the h1 among two or more (however many wrappers deep), and a section after that one is not. A wrapper's only
@@ -1395,5 +1404,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, widgets: () => ( R.accordion || R.slider || R.tabs ? widgets() : null ), accordionRun: ( md ) => ( { attributes: accordionSettings( md ), notes: widgets().toggleIcon( md ).notes, units: { units: md.units, open: md.open } } ), iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, productTiles: tiles, reviewPlatforms: reviews, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, widgets: () => ( R.accordion || R.slider || R.tabs ? widgets() : null ), accordionRun: ( md ) => ( { attributes: accordionSettings( md ), notes: widgets().toggleIcon( md ).notes, units: { units: md.units, open: md.open } } ), iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, productTiles: tiles, reviewPlatforms: reviews, pictureTileGrids: pictureGrids, choiceFlow: flow };
 }
