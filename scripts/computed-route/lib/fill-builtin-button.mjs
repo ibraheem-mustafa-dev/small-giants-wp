@@ -11,8 +11,11 @@
 //   - the content alignment: `<prefix>ContentAlign` from the button's computed justify-content (a label at one end and a price or note at
 //     the other is space-between), per device, nothing where it is the block's own centre (the draft's `normal` or `center`);
 //   - the hover lift: `<prefix>HoverLiftDistance` from how far the hovered button moves up (the Y translation of its hovered transform
-//     against its resting one), whole px, nothing where the draft does not move up. A preset carries no per-button distance, so both are
-//     written whether or not a preset matched. Each is written only where the block declares the attribute (`names`).
+//     against its resting one), whole px; `0px` for a draft button whose hover was read and does not move up (it stays still where the
+//     site's preset or `default` button token lifts); nothing where the resting or hovered transform is not a pure translation (a scale,
+//     rotation or skew: the lift rule prints `transform:none` on hover and would drop it), or where no hover was read at 1440. A preset
+//     carries no per-button distance, so both are written whether or not a preset matched. Each is written only where the block declares
+//     the attribute (`names`).
 // A part the draft does not draw, a preset choice the database does not hold for the part, or draft instances that disagree
 // write nothing here. Pure: the block's rows, the part-look build and the reads in, the build adjusted and notes out.
 import fs from 'node:fs';
@@ -68,14 +71,25 @@ const ALIGN_VALUES = { 'flex-start': 'flex-start', start: 'flex-start', 'flex-en
 const ALIGN_OWN = [ 'center', 'normal', '' ];
 // The Y translation of a computed `transform` (px, up is negative): 'none' is 0, a matrix reads its ty, anything else is unreadable (null).
 export function translateY( transform ) {
+	return transformShape( transform )?.ty ?? null;
+}
+
+// A computed `transform` as { ty, pure }: its Y translation and whether it is a pure translation (the matrix's other cells are the identity's:
+// no scale, rotation, skew or perspective). 'none' is { 0, true }; anything the route cannot read is null.
+export function transformShape( transform ) {
 	const text = String( transform ?? '' ).trim();
 	if ( '' === text || 'none' === text ) {
-		return 0;
+		return { ty: 0, pure: true };
 	}
 	const m = /^matrix(3d)?\(([^)]*)\)$/.exec( text );
 	const n = m ? m[ 2 ].split( ',' ).map( ( v ) => Number.parseFloat( v ) ) : [];
 	const ty = n[ m?.[ 1 ] ? 13 : 5 ];
-	return m && n.length === ( m[ 1 ] ? 16 : 6 ) && Number.isFinite( ty ) ? ty : null;
+	if ( ! m || n.length !== ( m[ 1 ] ? 16 : 6 ) || ! n.every( Number.isFinite ) ) {
+		return null;
+	}
+	// The cells that are not a translation, by their identity value: 2D a b c d; 3D the whole upper 3x3 and the bottom row's w.
+	const fixed = m[ 1 ] ? { 0: 1, 1: 0, 2: 0, 3: 0, 4: 0, 5: 1, 6: 0, 7: 0, 8: 0, 9: 0, 10: 1, 11: 0, 15: 1 } : { 0: 1, 1: 0, 2: 0, 3: 1 };
+	return { ty, pure: Object.entries( fixed ).every( ( [ i, v ] ) => Math.abs( n[ i ] - v ) < 0.001 ) };
 }
 
 // The `<prefix>ContentAlign` write of a part: the draft's computed justify-content at each width, as { desktop, tablet?, mobile? } where a
@@ -111,20 +125,21 @@ export function contentAlignWrite( { attr, part, instances, explicit = false } )
 }
 
 // The `<prefix>HoverLiftDistance` write of a part: whole px the hovered button moves up from its resting place at 1440. { write } or { skip }.
-export function hoverLiftWrite( { attr, part, instance, explicit = false } ) {
+export function hoverLiftWrite( { attr, part, instance } ) {
 	if ( ! instance?.hover ) {
 		return { skip: `the draft's hovered look was not read at 1440` };
 	}
-	const [ rest, hover ] = [ translateY( instance.styles?.transform ), translateY( instance.hover.transform ) ];
-	if ( null === rest || null === hover ) {
+	const [ rest, hover ] = [ transformShape( instance.styles?.transform ), transformShape( instance.hover.transform ) ];
+	if ( ! rest || ! hover ) {
 		return { skip: 'the hovered transform is not a translation the route reads' };
 	}
-	const up = Math.round( rest - hover );
-	// `explicit`: the button follows another whose lift is written, so a button that does not move up writes 0px (stays still).
-	if ( up < 1 && explicit ) {
-		return { write: { attr, value: '0px', part, property: 'transform (hover)', draft: { 1440: '0px' }, defaultNotRead: true } };
+	// The lift rule prints `transform:none` on hover (cancelling the site token's own hover transform), which would drop a scale, rotation or skew.
+	if ( ! rest.pure || ! hover.pure ) {
+		return { skip: `a lift distance cannot hold the draft's scaling hover (resting transform ${ instance.styles?.transform || 'none' }, hovered ${ instance.hover.transform })` };
 	}
-	return up >= 1 ? { write: { attr, value: `${ Math.min( up, 24 ) }px`, part, property: 'transform (hover)', draft: { 1440: `${ up }px` }, defaultNotRead: true } } : { skip: `the draft's button does not move up on hover` };
+	// A button that does not move up writes 0px: it stays still where the site's preset or `default` token lifts.
+	const up = Math.round( rest.ty - hover.ty );
+	return { write: { attr, value: up >= 1 ? `${ Math.min( up, 24 ) }px` : '0px', part, property: 'transform (hover)', draft: { 1440: `${ Math.max( up, 0 ) }px` }, defaultNotRead: true } };
 }
 
 let declaredIndex = null;
@@ -274,23 +289,22 @@ export function applyBuiltinButtons( { block, build, rows, names, db, reads, pre
 		companions: build.writes.filter( ( w ) => w.companionOf ).length,
 	} );
 	// A button that follows another (`follows` in its block.json declaration: every setting it leaves unset takes the other's, as the
-	// buy box's flow opener takes Add to Cart's through the class it wears) gets its own content alignment and lift written where the
-	// followed button got one and this button's draft does not match it: its centre or 0px, or it would show the other's.
+	// buy box's flow opener takes Add to Cart's through the class it wears) gets its own content alignment written where the
+	// followed button got one and this button's draft does not match it: its centre, or it would show the other's. Its lift needs no pass of
+	// its own: the main pass above writes 0px for a still button, so a follower never takes the followed button's lift.
 	for ( const { prefix, part, follows } of buttons.filter( ( b ) => b.follows ) ) {
 		const instances = reads[ part ] || {};
 		if ( ! WIDTHS.some( ( w ) => instances[ w ]?.length ) ) {
 			continue;
 		}
-		for ( const [ base, made ] of [ [ 'ContentAlign', () => contentAlignWrite( { attr: `${ prefix }ContentAlign`, part, instances, explicit: true } ) ], [ 'HoverLiftDistance', () => hoverLiftWrite( { attr: `${ prefix }HoverLiftDistance`, part, instance: ( instances[ 1440 ] || [] )[ 0 ], explicit: true } ) ] ] ) {
-			const attr = `${ prefix }${ base }`;
-			if ( ! names.has( attr ) || build.writes.some( ( w ) => w.attr === attr ) || ! build.writes.some( ( w ) => w.attr === `${ follows }${ base }` ) ) {
-				continue;
-			}
-			const own = made();
-			if ( own.write ) {
-				build.writes.push( own.write );
-				build.settings[ attr ] = { status: 'written', reason: `it follows ${ follows }, whose ${ base } is written`, part, code: 'ContentAlign' === base ? 'contentAlign' : 'hoverLift' };
-			}
+		const attr = `${ prefix }ContentAlign`;
+		if ( ! names.has( attr ) || build.writes.some( ( w ) => w.attr === attr ) || ! build.writes.some( ( w ) => w.attr === `${ follows }ContentAlign` ) ) {
+			continue;
+		}
+		const own = contentAlignWrite( { attr, part, instances, explicit: true } );
+		if ( own.write ) {
+			build.writes.push( own.write );
+			build.settings[ attr ] = { status: 'written', reason: `it follows ${ follows }, whose ContentAlign is written`, part, code: 'contentAlign' };
 		}
 	}
 	return out;

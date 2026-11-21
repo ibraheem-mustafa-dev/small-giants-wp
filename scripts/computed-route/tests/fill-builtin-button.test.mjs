@@ -239,26 +239,87 @@ test( 'a justify-content the setting cannot hold (space-around) writes nothing',
 	assert.equal( run( { reads: readsOf( spread( { 'justify-content': 'space-around' } ) ) } ).value( 'flowOpenerContentAlign' ), undefined );
 } );
 
-test( 'MUST FAIL: a draft button that rises on hover writes {prefix}HoverLiftDistance as the whole px it moves up, a still one writes none', () => {
+test( 'MUST FAIL: a draft button that rises on hover writes {prefix}HoverLiftDistance as the whole px it moves up, a still one writes 0px', () => {
 	const rising = run();
 	assert.equal( rising.value( 'flowOpenerHoverLiftDistance' ), '2px', 'the Eye Care opener rises 2px (matrix ty -2)' );
 	assert.equal( rising.build.settings.flowOpenerHoverLiftDistance.status, 'written' );
 	assert.equal( rising.out.buttons[ 0 ].lift, '2px' );
 	const still = run( { reads: readsOf( styles(), hovered( { transform: 'none' } ) ) } );
-	assert.equal( still.value( 'flowOpenerHoverLiftDistance' ), undefined, 'a still button writes no lift (negative control)' );
-	assert.match( still.build.settings.flowOpenerHoverLiftDistance.reason, /does not move up on hover/ );
-	assert.equal( still.out.buttons[ 0 ].lift, null );
+	assert.equal( still.value( 'flowOpenerHoverLiftDistance' ), '0px', 'a still button writes 0px so a preset that lifts does not lift it' );
+	assert.equal( still.build.settings.flowOpenerHoverLiftDistance.status, 'written' );
+	assert.equal( still.out.buttons[ 0 ].lift, '0px' );
 } );
 
-test( 'the lift is the movement against the resting transform: 3px from a resting -1px, none for a sink, a scale or a sub-pixel move', () => {
+test( 'the lift is the movement against the resting transform: 3px from a resting -1px, 0px for a sink or a sub-pixel move, none for a scale', () => {
 	const lift = ( rest, hover ) => run( { reads: readsOf( styles( { transform: rest } ), hovered( { transform: hover } ) ) } ).value( 'flowOpenerHoverLiftDistance' );
 	assert.equal( lift( 'matrix(1, 0, 0, 1, 0, -1)', 'matrix(1, 0, 0, 1, 0, -4)' ), '3px' );
-	assert.equal( lift( 'none', 'matrix(1, 0, 0, 1, 0, 4)' ), undefined, 'a sinking button' );
+	assert.equal( lift( 'none', 'matrix(1, 0, 0, 1, 0, 4)' ), '0px', 'a sinking button stays still' );
 	assert.equal( lift( 'none', 'matrix(1.05, 0, 0, 1.05, 0, 0)' ), undefined, 'a scale alone is no lift' );
-	assert.equal( lift( 'none', 'matrix(1, 0, 0, 1, 0, -0.4)' ), undefined, 'a move that rounds to 0px' );
+	assert.equal( lift( 'none', 'matrix(1, 0, 0, 1, 0, -0.4)' ), '0px', 'a move that rounds to 0px' );
 	assert.equal( lift( 'none', 'matrix(1, 0, 0, 1, 0, -60)' ), '24px', 'capped at the setting\'s 24px ceiling' );
 	assert.equal( lift( 'none', 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -5, 0, 1)' ), '5px', 'a 3D matrix reads its Y translation' );
 	assert.equal( lift( 'none', 'perspective(10px)' ), undefined, 'a transform the route cannot read writes nothing' );
+	assert.equal( lift( 'perspective(10px)', 'matrix(1, 0, 0, 1, 0, -2)' ), undefined, 'an unreadable resting transform writes nothing' );
+} );
+
+// A lift distance prints `transform:none` on hover (to cancel the site token's own hover transform) plus a `translate` lift, so it cannot
+// hold a scaling, rotating or skewing hover: that draft is skipped. A still draft button writes 0px, or a preset that lifts would lift it.
+const SCALE_LIFT = 'matrix(1.05, 0, 0, 1.05, 0, -2)';
+const liftOf = ( rest, hover, extra = {} ) => run( { reads: readsOf( styles( { transform: rest } ), hovered( { transform: hover } ) ), ...extra } );
+
+test( 'MUST FAIL: a hover that scales and lifts (matrix(1.05, 0, 0, 1.05, 0, -2)) writes no lift distance and says a lift cannot hold the scaling hover', () => {
+	const r = liftOf( 'none', SCALE_LIFT );
+	assert.equal( r.value( 'flowOpenerHoverLiftDistance' ), undefined, 'transform:none would drop the 1.05 scale' );
+	assert.equal( r.build.settings.flowOpenerHoverLiftDistance.status, 'not-written' );
+	assert.match( r.build.settings.flowOpenerHoverLiftDistance.reason, /lift distance cannot hold the draft's scaling hover/ );
+	assert.equal( r.out.buttons[ 0 ].lift, null );
+} );
+
+test( 'MUST FAIL: a scale-only hover, a rotating or skewing one, a scaling resting transform and a non-translation matrix3d write no lift distance', () => {
+	for ( const [ rest, hover, label ] of [
+		[ 'none', 'matrix(1.05, 0, 0, 1.05, 0, 0)', 'a scale alone' ],
+		[ 'none', 'matrix(0.9961, 0.0872, -0.0872, 0.9961, 0, -2)', 'a rotation with a lift' ],
+		[ 'none', 'matrix(1, 0, 0.2, 1, 0, -2)', 'a skew with a lift' ],
+		[ 'matrix(1.02, 0, 0, 1.02, 0, 0)', 'matrix(1, 0, 0, 1, 0, -2)', 'a scaling resting transform' ],
+		[ 'none', 'matrix3d(1.05, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -2, 0, 1)', 'a 3D scale across with a lift' ],
+		[ 'none', 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0.001, 0, -2, 0, 1)', 'a 3D perspective with a lift' ],
+	] ) {
+		const r = liftOf( rest, hover );
+		assert.equal( r.value( 'flowOpenerHoverLiftDistance' ), undefined, label );
+		assert.match( r.build.settings.flowOpenerHoverLiftDistance.reason, /cannot hold the draft's scaling hover/, label );
+	}
+} );
+
+test( 'MUST FAIL: a still draft button (none, an equal translation, a sink, a sub-pixel move) writes a 0px lift distance so a lifting preset does not lift it', () => {
+	for ( const [ rest, hover, label ] of [
+		[ 'none', 'none', 'none resting and hovered' ],
+		[ 'matrix(1, 0, 0, 1, 0, 0)', 'matrix(1, 0, 0, 1, 0, 0)', 'an identity matrix' ],
+		[ 'matrix(1, 0, 0, 1, 0, -3)', 'matrix(1, 0, 0, 1, 0, -3)', 'an equal translation' ],
+		[ 'none', 'matrix(1, 0, 0, 1, 0, 4)', 'a sink' ],
+		[ 'none', 'matrix(1, 0, 0, 1, 0, -0.4)', 'a move that rounds to 0px' ],
+		[ 'none', 'matrix(1, 0, 0, 1, 6, 0)', 'a sideways move' ],
+		[ 'none', 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)', 'a 3D identity' ],
+	] ) {
+		const r = liftOf( rest, hover );
+		assert.equal( r.value( 'flowOpenerHoverLiftDistance' ), '0px', label );
+		assert.equal( r.build.settings.flowOpenerHoverLiftDistance.status, 'written', label );
+		assert.equal( r.out.buttons[ 0 ].lift, '0px', label );
+		assert.equal( r.build.writes.find( ( w ) => 'flowOpenerHoverLiftDistance' === w.attr ).draft[ 1440 ], '0px', `${ label }: the recorded draft movement is never negative` );
+	}
+} );
+
+test( 'negative control: a pure 2px lift (matrix or matrix3d, from a resting translation too) still writes the whole px it moves up', () => {
+	assert.equal( liftOf( 'none', 'matrix(1, 0, 0, 1, 0, -2)' ).value( 'flowOpenerHoverLiftDistance' ), '2px' );
+	assert.equal( liftOf( 'none', 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -2, 0, 1)' ).value( 'flowOpenerHoverLiftDistance' ), '2px' );
+	assert.equal( liftOf( 'matrix(1, 0, 0, 1, 0, -1)', 'matrix(1, 0, 0, 1, 0, -4)' ).value( 'flowOpenerHoverLiftDistance' ), '3px' );
+} );
+
+test( 'negative control: a hover not read at 1440 writes no lift distance, still or not', () => {
+	const reads = readsOf();
+	reads[ PART ][ 1440 ] = [ instance( styles(), null ) ];
+	const r = run( { reads } );
+	assert.equal( r.value( 'flowOpenerHoverLiftDistance' ), undefined );
+	assert.match( r.build.settings.flowOpenerHoverLiftDistance.reason, /hovered look was not read at 1440/ );
 } );
 
 test( 'translateY reads none, a matrix and a matrix3d, and nothing else', () => {
@@ -306,15 +367,24 @@ test( 'MUST FAIL: a centred, still opener beside a spread, lifting Add to Cart w
 	assert.equal( r.value( 'flowOpenerHoverLiftDistance' ), '0px', 'the opener stays still' );
 } );
 
-test( 'negative control: an opener that matches Add to Cart, or a pair with nothing written, writes no extra value', () => {
+test( 'MUST FAIL: the follower path skips a scaling hover too (a follower never writes a lift distance for it)', () => {
+	const r = run( { reads: pairReads( [ styles(), hovered( { transform: SCALE_LIFT } ) ], [ styles(), hovered() ] ), buttons: FOLLOWS } );
+	assert.equal( r.value( 'addToCartHoverLiftDistance' ), '2px' );
+	assert.equal( r.value( 'flowOpenerHoverLiftDistance' ), undefined );
+	assert.match( r.build.settings.flowOpenerHoverLiftDistance.reason, /cannot hold the draft's scaling hover/ );
+} );
+
+test( 'negative control: an opener that matches Add to Cart writes its own values; a pair of centred, still buttons writes no alignment and a 0px lift each', () => {
 	const same = run( { reads: pairReads( [ spread(), hovered() ], [ spread(), hovered() ] ), buttons: FOLLOWS } );
 	assert.deepEqual( same.value( 'flowOpenerContentAlign' ), { desktop: 'space-between' }, 'its own spread, as before' );
 	assert.equal( same.value( 'flowOpenerHoverLiftDistance' ), '2px' );
 	const plain = run( { reads: pairReads( [ styles(), hovered( { transform: 'none' } ) ], [ styles(), hovered( { transform: 'none' } ) ] ), buttons: FOLLOWS } );
 	assert.equal( plain.value( 'flowOpenerContentAlign' ), undefined, 'Add to Cart centred: nothing to override' );
-	assert.equal( plain.value( 'flowOpenerHoverLiftDistance' ), undefined, 'Add to Cart still: nothing to override' );
+	assert.equal( plain.value( 'flowOpenerHoverLiftDistance' ), '0px', 'a still draft button writes 0px whatever the other does' );
+	assert.equal( plain.value( 'addToCartHoverLiftDistance' ), '0px' );
 	const unlinked = run( { reads: pairReads( [ styles(), hovered( { transform: 'none' } ) ], [ spread(), hovered() ] ), buttons: FOLLOWS.map( ( { follows, ...b } ) => ( void follows, b ) ) } );
 	assert.equal( unlinked.value( 'flowOpenerContentAlign' ), undefined, 'a button that follows no other keeps the default rule' );
+	assert.equal( unlinked.value( 'flowOpenerHoverLiftDistance' ), '0px', 'a still button writes 0px follower or not' );
 } );
 
 test( 'MUST FAIL: the buy box declares that its flow opener follows Add to Cart', () => {
