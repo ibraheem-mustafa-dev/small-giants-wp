@@ -17,6 +17,7 @@ class SgsStubProduct {
 	public function __construct( $d ) { $this->d = $d; }
 	public function get_id() { return $this->d['id']; }
 	public function get_type() { return $this->d['type']; }
+	public function is_type( $t ) { return $this->d['type'] === $t; }
 	public function get_name() { return $this->d['name']; }
 	public function get_sku() { return $this->d['sku'] ?? ''; }
 	public function get_status() { return 'publish'; }
@@ -108,7 +109,7 @@ test( 'negative control: a shop of only gift cards and fixtures has no product a
 const FLOW = { _sgs_choice_flow: 'lens-flow' };
 const FIXTURE_LINKED = { id: 40, type: 'simple', name: 'Fixture simple product', slug: 'fixture-simple-product', sku: 'sgs-fixture-simple', meta: FLOW };
 const REAL_UNLINKED = { id: 41, type: 'simple', name: 'Lens cloth', slug: 'lens-cloth' };
-const REAL_EMPTY_LINK = { id: 39, type: 'simple', name: 'Case', slug: 'case', meta: { _sgs_choice_flow: '' } };
+const REAL_EMPTY_LINK = { id: 39, type: 'variable', name: 'Case', slug: 'case', meta: { _sgs_choice_flow: '' } };
 const REAL_LINKED = { id: 42, type: 'variable', name: 'Aviator Classic', slug: 'aviator-classic', meta: FLOW };
 const addressOf = ( products, opts ) => factsFor( products, [], () => productAddressPhp( opts ) ).product;
 
@@ -124,6 +125,26 @@ test( 'negative control: without flowLinked the product address is the first rea
 test( 'negative control: a product the draft names wins over a flow-linked one, and a shop with no real linked product falls back to the first real product', () => {
 	assert.equal( addressOf( [ REAL_UNLINKED, REAL_LINKED ], { productSlugs: [ 'lens-cloth' ], flowLinked: true } ), '/product/lens-cloth/' );
 	assert.equal( addressOf( [ FIXTURE_LINKED, REAL_UNLINKED ], { flowLinked: true } ), '/product/lens-cloth/' );
+} );
+
+// A simple product's buy box returns before the .sgs-buybox wrapper and prints core's own Add to Cart (render.php, the
+// `! $product->is_type( 'variable' )` branch: sgs_buybox_simple_keep_flow_html / sgs_buybox_simple_linked_flow_html), which none of
+// the buy box's addToCart* settings styles; a variable product prints the styled `.sgs-buybox .buybox__add-to-cart`.
+const SIMPLE_LINKED = { id: 38, type: 'simple', name: 'Lens engraving', slug: 'lens-engraving', meta: FLOW };
+const SIMPLE_LINKED_LATER = { id: 44, type: 'simple', name: 'Lens tint', slug: 'lens-tint', meta: FLOW };
+const VARIABLE_LINKED_LATER = { id: 43, type: 'variable', name: 'Wayfarer', slug: 'wayfarer', meta: FLOW };
+
+test( 'MUST FAIL: with flowLinked a variable product linked to a flow is preferred over a lower-ID simple one, whose Add to Cart the buy box does not style', () => {
+	assert.equal( addressOf( [ SIMPLE_LINKED, REAL_LINKED ], { flowLinked: true } ), '/product/aviator-classic/' );
+	assert.equal( addressOf( [ SIMPLE_LINKED, REAL_LINKED, VARIABLE_LINKED_LATER ], { flowLinked: true } ), '/product/aviator-classic/', 'the lowest-ID variable one, so the pick is deterministic' );
+	assert.equal( addressOf( [ FIXTURE_LINKED, SIMPLE_LINKED, { ...FIXTURE_SKU, meta: FLOW }, REAL_LINKED ], { flowLinked: true } ), '/product/aviator-classic/', 'a linked variable fixture is no choice' );
+} );
+
+test( 'negative control: with no real linked variable product, flowLinked falls back to the first real linked product of any type', () => {
+	assert.equal( addressOf( [ REAL_UNLINKED, SIMPLE_LINKED ], { flowLinked: true } ), '/product/lens-engraving/' );
+	assert.equal( addressOf( [ SIMPLE_LINKED_LATER, SIMPLE_LINKED ], { flowLinked: true } ), '/product/lens-engraving/', 'the lowest-ID one, so the fallback is deterministic' );
+	assert.equal( addressOf( [ { ...FIXTURE_SKU, meta: FLOW }, SIMPLE_LINKED ], { flowLinked: true } ), '/product/lens-engraving/', 'a linked variable fixture is never picked, even as the fallback' );
+	assert.equal( addressOf( [ SIMPLE_LINKED, REAL_LINKED ], { productSlugs: [ 'lens-engraving' ], flowLinked: true } ), '/product/lens-engraving/', 'a product the draft names still wins' );
 } );
 
 test( 'the product address PHP tries no basket and writes nothing', () => {
