@@ -8,7 +8,7 @@ status: active
 
 Calibration (a slow browser measurement on a mirror) is how the route learns where each block setting paints and what each site's default look is, and its records went stale because nothing checked them. Bean's design (2026-11-21): one written record per block, kept right by an offline check that runs the block's real code, and each site's defaults calculated from the block, the theme with the site's snapshot, and the browser's fixed defaults. Done looks like: changing a block so a setting paints differently fails `npm run build` with the exact entries to add, remove or change; a clone on a scratch mirror runs with no calibration cache folder.
 
-Evidence: the trial on `sgs/button`, `sgs/cart`, `sgs/form` and `sgs/nav-bar-menu` (`E:\sgs-tmp\setting-record-trial\REPORT.md`; its scripts are the reference implementation): 1,127 placements confirmed both ways, all 1,485 disagreements traced to code (1,303 calibration's), four planted faults caught, Mama's defaults 97.4 to 99.2% exact with every difference named.
+Evidence: the trial on `sgs/button`, `sgs/cart`, `sgs/form` and `sgs/nav-bar-menu` (`E:\sgs-tmp\setting-record-trial\REPORT.md`; its scripts are the reference implementation): 1,127 placements confirmed both ways; of 1,485 disagreements, 1,075 traced one by one or by a rule tied to code and 410 sorted by default into "the setting switches on a whole look" (a sample of 15 held, the rest unproven until Task 1's exact check); four planted faults caught; Mama's defaults 97.4 to 99.2% exact with every difference named.
 
 ## Approach
 
@@ -22,7 +22,7 @@ Solve and walker changes; client sites; new block features.
 
 ## Order
 
-Task 1 adds new files only and may land any time. Tasks 2, 3 and 4 change the offline runner, the framework database and the route, so they land after the 2026-11-28 cloning date, in order (2, then 3, then 4); each reseed runs alone. Task 5 joins the next plugin round.
+Everything lands before the 2026-11-28 cloning date (Bean, 2026-11-21 evening): the general cloning stream's test clones of all three sites run on the setting record. Order: Task 1 (new files only) now; Task 2 (the shared offline runner) next, announced to the general cloning session first; Task 3's reseed only after plugin round 5's reseed and publish, never at the same time, announced first; Task 4 (the route switch) after Task 3, its route commits sequenced with the general cloning session's route work. Task 5 joins the next plugin round.
 
 ## Risks
 
@@ -43,11 +43,11 @@ Read the four-block table and the runner gaps in `E:\sgs-tmp\setting-record-tria
 - **Why:** the proven check lives in a scratch folder. **Read first:** the trial's `check.py`, `probe.py`, `cascade.py`, `fill.py`, `plant.py`.
 - **Changes:** new `plugins/sgs-blocks/scripts/setting-record/`: `check.py` (every setting run, compared both ways, parts in markup order, add/remove/change lists), setting instances generated from `block.json` (no calibration planner), the trial's cascade reader (nested `@media`, specificity), its vocabulary rules, a render cache keyed on the code, entries marked `value` or `switched-on`, fixtures that switch every part on (a framework menu with current, disabled and featured sub-links), the data-file schema, and a self-test whose planted faults must fail.
 - **Touches:** the new folder only.
-- **Done when:** `check.py --self-test` kills all four planted faults and the trial's four final records pass.
+- **Done when:** `check.py --self-test` kills all four planted faults; the trial's four final records pass; and every switched-on entry is proved exactly, not sampled: for each, the cascade reader computes the part's property on the plain and the changed render and the value differs (the trial sorted 410 such entries by default and checked 15 by hand; an entry that fails is removed or re-filed).
 - **Depends on:** none
 - **Status:** not started
 
-### Task 2: Offline runner fixes (after 2026-11-28)
+### Task 2: Offline runner fixes
 - **Why:** 128 trial disagreements were things the runner cannot see. **Read first:** REPORT.md runner gaps; `scripts/qa/lib/render-css-harness.php`, `wp-stubs.php`.
 - **Changes:** fire the plugin's `render_block` filters; print the `wp_footer` queue; style-engine spacing; the `wp-block-sgs-<name>` wrapper class; `parsed_block` attributes; Interactivity directives from the block's initial state; theme CSS available to the check.
 - **Touches:** the shared offline runner.
@@ -55,15 +55,15 @@ Read the four-block table and the runner gaps in `E:\sgs-tmp\setting-record-tria
 - **Depends on:** 1
 - **Status:** not started
 
-### Task 3: Every block's record, seeded and gated (after 2026-11-28)
+### Task 3: Every block's record, seeded and gated
 - **Why:** the route needs every block's record, kept right on every change. **Read first:** `dbschema/seed_reference_data.py`, `dbschema/schema.sql`, `scripts/build-with-gates.mjs`.
 - **Changes:** one data file per block filled by script (agreement plus cause, as the trial did); tables `setting_placements`, `block_part_order`, `block_part_defaults` and `seed_reference_data.py::_seed_setting_records`; the check in the fast tier for changed blocks and the full tier for all.
 - **Touches:** data files, schema, framework DB reseed, build gates.
-- **Done when:** `check.py --all` passes with zero untraced entries, and a planted fault fails `npm run build`.
+- **Done when:** `check.py --all` passes with zero untraced entries and every switched-on entry proved by the cascade (as in Task 1), and a planted fault fails `npm run build`.
 - **Depends on:** 2
 - **Status:** not started
 
-### Task 4: Calculated defaults and the route switch (after 2026-11-28)
+### Task 4: Calculated defaults and the route switch
 - **Why:** calibration's second job, then its retirement. **Read first:** the trial's `defaults.py` and `theme_css.php`; `scripts/computed-route/lib/cache.mjs::readPaint`, `lib/fill-dimensions.mjs::blockPaint`, `lib/fill-width-ladder.mjs`.
 - **Changes:** the defaults calculator (snapshot to global styles, the theme's PHP and stylesheets, the browser table from Chromium 145 incl. form controls) writing the shape `readPaint` returns; the route reads placements from the database; the two pixel-size reads compare declared values; slot maps, paint files and `calibrate.mjs` retired; Spec 48's calibration requirements and the LEDGER updated.
 - **Touches:** `scripts/computed-route`.
