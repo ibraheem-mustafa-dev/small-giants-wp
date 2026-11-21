@@ -251,6 +251,8 @@ final class Sgs_Media_Formats {
 				$metadata['sizes'][ $name ]['file']      = $twin['file'];
 				$metadata['sizes'][ $name ]['mime-type'] = $source_mime;
 				$metadata['sizes'][ $name ]['filesize']  = $twin['bytes'];
+				// Kept in the source format on purpose, so `wp sgs media modernise` does not convert it again.
+				$metadata['sizes'][ $name ]['sgs_source_kept'] = true;
 			} elseif ( null !== $twin ) {
 				wp_delete_file( $twin['path'] );
 			}

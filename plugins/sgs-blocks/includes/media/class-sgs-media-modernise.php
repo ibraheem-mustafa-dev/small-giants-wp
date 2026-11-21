@@ -28,8 +28,16 @@ final class Sgs_Media_Modernise {
 	 * @return bool
 	 */
 	public static function needs_subsizes( array $meta ): bool {
-		$mimes = array_unique( array_column( (array) ( $meta['sizes'] ?? array() ), 'mime-type' ) );
-		return (bool) array_diff( $mimes, array( 'image/avif', 'image/webp' ) );
+		foreach ( (array) ( $meta['sizes'] ?? array() ) as $size ) {
+			// A copy `Sgs_Media_Formats::discard_oversized` kept in the source format (the modern one was larger) is done.
+			if ( ! empty( $size['sgs_source_kept'] ) ) {
+				continue;
+			}
+			if ( ! in_array( (string) ( $size['mime-type'] ?? '' ), array( 'image/avif', 'image/webp' ), true ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

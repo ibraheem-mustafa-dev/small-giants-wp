@@ -254,4 +254,36 @@ final class MediaFormatsTest extends TestCase {
 		$this->assertTrue( Sgs_Media_Modernise::needs_full_copy( $modern ), 'edited since: a new copy is due' );
 		$this->assertTrue( Sgs_Media_Modernise::needs_subsizes( array( 'sizes' => array( 'thumbnail' => array( 'mime-type' => 'image/jpeg' ) ) ) ) );
 	}
+
+	public function test_a_copy_kept_in_the_source_format_is_marked_and_not_selected_again(): void {
+		$dir = sys_get_temp_dir() . '/sgs-kept-' . getmypid();
+		@mkdir( $dir );
+		file_put_contents( $dir . '/icon.png', str_repeat( 'p', 900 ) );
+		file_put_contents( $dir . '/icon-150x150.avif', str_repeat( 'a', 800 ) );
+		$GLOBALS['sgs_kept'] = $dir;
+		function get_post_mime_type( $id ) { return 'image/png'; }
+		function get_attached_file( $id ) { return $GLOBALS['sgs_kept'] . '/icon.png'; }
+		function wp_get_original_image_path( $id ) { return $GLOBALS['sgs_kept'] . '/icon.png'; }
+		function trailingslashit( $p ) { return rtrim( $p, '/' ) . '/'; }
+		function wp_basename( $p ) { return basename( (string) $p ); }
+		function wp_filesize( $p ) { clearstatcache(); return file_exists( $p ) ? (int) filesize( $p ) : 0; }
+		function wp_delete_file( $p ) { @unlink( $p ); }
+		function is_wp_error( $v ): bool { return false; }
+		function wp_get_image_editor( $f ) {
+			return new class() {
+				public function resize( $w, $h, $c ) { return true; }
+				public function generate_filename( $s, $d, $ext ) { return $GLOBALS['sgs_kept'] . '/icon-150x150.' . $ext; }
+				public function save( $path, $mime ) { file_put_contents( $path, str_repeat( 'p', 300 ) ); return array( 'path' => $path ); }
+			};
+		}
+		$meta = array( 'file' => '2026/09/icon.png', 'sizes' => array( 'thumbnail' => array( 'file' => 'icon-150x150.avif', 'width' => 150, 'height' => 150, 'mime-type' => 'image/avif' ) ) );
+		$out  = Sgs_Media_Formats::discard_oversized( $meta, 9 );
+		$this->assertSame( 'image/png', $out['sizes']['thumbnail']['mime-type'], 'the PNG twin is smaller, so it is kept' );
+		$this->assertTrue( $out['sizes']['thumbnail']['sgs_source_kept'], 'MUST FAIL without the mark' );
+
+		require_once dirname( __DIR__, 2 ) . '/includes/media/class-sgs-media-modernise.php';
+		$this->assertFalse( Sgs_Media_Modernise::needs_subsizes( $out ), 'a copy kept on purpose is not converted again' );
+		unset( $out['sizes']['thumbnail']['sgs_source_kept'] );
+		$this->assertTrue( Sgs_Media_Modernise::needs_subsizes( $out ), 'an unmarked PNG copy is still due' );
+	}
 }
