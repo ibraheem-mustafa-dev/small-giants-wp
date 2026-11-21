@@ -13,7 +13,7 @@ import { PAINT_LINE } from '../lib/template-pieces-context.mjs';
 import { proposeSurface } from '../skeleton.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
-import { INVENTORY, TREE, RECORD, STALE, KEPT } from './fixtures/piece-paint-fixture.mjs';
+import { INVENTORY, TREE, RECORD, STALE, KEPT, PAIR_IN } from './fixtures/piece-paint-fixture.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 
@@ -39,14 +39,17 @@ function productRepo() {
 test( 'MUST FAIL: propose checks paint again after the pieces, replacing the proposal\'s paint lines and keeping its other problems', () => {
 	const f = productRepo();
 	try {
-		const propose = () => ( { skeleton: TREE(), proposal: { counts: {}, rows: [], problems: [ KEPT, STALE ] }, problems: [ KEPT, STALE ] } );
+		const propose = () => ( { skeleton: TREE(), proposal: { counts: {}, rows: [], problems: [ KEPT, PAIR_IN, STALE ] }, problems: [ KEPT, PAIR_IN, STALE ] } );
 		const r = proposeSurface( { client: CLIENT, surface: 'product', repo: f.repo, db, propose } );
 		assert.equal( r.proposal.templatePieces.placed[ 0 ].id, 'buy-box' );
 		assert.ok( ! r.problems.includes( STALE ), 'the line from the tree before the pieces is replaced' );
-		assert.deepEqual( r.proposal.templatePieces.missingFeatures.map( ( m ) => m.key ), [ 'Root/9#0', 'Root/20#0' ] );
+		assert.deepEqual( r.proposal.templatePieces.missingFeatures.map( ( m ) => m.key ), [ 'Root/9#0', 'Root/20#0', 'Root/11#0' ] );
 		assert.match( r.proposal.templatePieces.notes.join( '\n' ), /Root\/9#0 background \(buybox-size:hint\)/ );
 		// Negative controls: the non-conservation problem survives, and paint outside every piece is still a problem.
 		assert.equal( r.problems[ 0 ], KEPT );
+		// A paint pairing line about an element inside the buy box's run is the piece's missing feature in the result and the saved proposal.
+		assert.ok( ! r.problems.includes( PAIR_IN ) && ! r.proposal.problems.includes( PAIR_IN ), 'the pairing line about the choice inside the run leaves the problems' );
+		assert.equal( r.proposal.templatePieces.missingFeatures.find( ( m ) => 'Root/11#0' === m.key )?.class, 'pairing' );
 		assert.deepEqual( r.proposal.problems.filter( ( x ) => PAINT_LINE.test( x ) ).length, 1 );
 		assert.ok( ! r.proposal.problems.includes( STALE ), 'the saved proposal\'s problems are the check after the pieces' );
 		assert.match( r.problems.join( '\n' ), /^paint conservation: .*Root\/18#0 background/m );

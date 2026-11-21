@@ -154,18 +154,26 @@ export function piecesPass( { repo, client, entry, tree, inventory, data = loadP
 // The proposal problem lines paint conservation writes (lib/skeleton-paint-conservation.mjs::paintProblems), told from the
 // others by their opening words.
 export const PAINT_LINE = /^paint conservation: /;
+// The proposal problem lines the part pairing writes (lib/skeleton-part-pairing.mjs::pairingNotes): `paint pairing: <element key> <why>`.
+export const PAIRING_LINE = /^paint pairing: (\S+) (.*)$/s;
 
 // Paint conservation of a tree with its pieces placed (Spec 48 section 3.4). A placed row that names the draft elements its
 // piece replaced (`run`, lib/template-piece-buybox.mjs::place) owns the paint inside them: an element there that no node
 // reads (the piece's block names its located parts' elements in `draftPieceParts`, so those are read) is a missing feature
 // of the piece's block, never a proposal problem, as long as every element of its identity (its template's component and
 // number, every copy) sits inside the run; an identity drawn outside every run too stays with the check. Everything else is
-// checked as the proposal checks it. Returns { problems, unread, missing, notes }:
-//   problems  `problems` with every paint conservation line replaced by this tree's (every other line kept, in order);
+// checked as the proposal checks it. A `paint pairing:` line (an element no single measured part of a block could take) about an
+// element of that same identity is the piece's too: it leaves the problems and is a missing feature of the piece with the pairing
+// reason (`reason`; the element's row gains it when conservation already listed it), as the piece's block replaced the draft
+// elements the pairing was about. A pairing line about an element outside every run, one with a copy drawn outside, or one naming
+// no inventory element stays a problem. Returns { problems, unread, missing, notes }:
+//   problems  `problems` with every paint conservation line replaced by this tree's and every pairing line about an element a run
+//             owns removed (every other line kept, in order);
 //   unread    the rows a record lists apart (lib/skeleton-paint-conservation.mjs::unreadList) on this tree;
 //   missing   one row per painted element a run owns that no node reads: { piece, block, key, tag, words, looks, class,
-//             state, part (the record's missing-features part located on it or on an element holding it, else null), shownIn? };
-//   notes     one line per piece with missing rows, naming each element and its looks.
+//             state, part (the record's missing-features part located on it or on an element holding it, else null), shownIn? },
+//             and one per pairing line moved here ({ ..., class: 'pairing', looks: [], reason });
+//   notes     one line per piece with missing rows, naming each element and its looks, and one per piece with pairing rows.
 // `rows`: the proposal's rows; `view` and `calibration`: as the proposal's check takes them; `key`: the template, for the notes.
 export function piecesPaint( { key = '', inventory, rows = [], tree, placed = [], problems = [], view = null, calibration = () => null, strict = STRICT_DEFAULT } ) {
 	const all = [ ...( inventory?.elements || [] ), ...( inventory?.revealed || [] ) ];
@@ -190,7 +198,20 @@ export function piecesPaint( { key = '', inventory, rows = [], tree, placed = []
 		const part = Object.entries( p.missingParts || {} ).find( ( [ , keys ] ) => chain( r.key ).some( ( x ) => keys.includes( x ) ) )?.[ 0 ] ?? null;
 		return { piece: p.id, block: p.block, key: r.key, tag: r.tag, words: r.words, looks: Object.keys( r.looks ), class: r.class, state: r.state, part, ...( r.shownIn ? { shownIn: r.shownIn } : {} ) };
 	} );
+	const moved = [];
+	const kept = problems.filter( ( x ) => {
+		const m = 'string' === typeof x ? PAIRING_LINE.exec( x ) : null;
+		const e = m ? byKey.get( m[ 1 ] ) : null;
+		const p = e && owned.has( identityOf( e, null ) ) ? pieceOf( e.key ) : null;
+		p && moved.push( { piece: p.id, block: p.block, key: e.key, tag: e.tag, words: String( e.words ?? '' ).slice( 0, 60 ), looks: [], class: 'pairing', state: 'unrecorded', part: null, reason: m[ 2 ] } );
+		return ! p;
+	} );
+	moved.forEach( ( r ) => {
+		const had = missing.find( ( x ) => x.piece === r.piece && x.key === r.key );
+		had ? Object.assign( had, { reason: r.reason } ) : missing.push( r );
+	} );
 	const checked = { ...args, ownedElsewhere: owned };
-	const notes = runs.map( ( p ) => [ p, missing.filter( ( m ) => m.piece === p.id ) ] ).filter( ( [ , list ] ) => list.length ).map( ( [ p, list ] ) => `${ key }: inside ${ p.block }'s draft elements (${ p.run.join( ', ' ) }) the draft paints ${ list.length } element${ 1 === list.length ? '' : 's' } no located part of ${ p.block } reads, each a missing feature of ${ p.block } (proposal templatePieces.missingFeatures), not a paint conservation problem: ${ list.map( ( m ) => `${ m.key }${ m.shownIn ? ' (a state)' : '' } ${ m.looks.join( '/' ) }${ m.part ? ` (${ m.part })` : '' }` ).join( '; ' ) }` );
-	return { problems: [ ...problems.filter( ( x ) => ! PAINT_LINE.test( x ) ), ...paintProblems( { ...checked, strict } ) ], unread: unreadList( checked ), missing, notes };
+	const notes = runs.map( ( p ) => [ p, missing.filter( ( m ) => m.piece === p.id && 'pairing' !== m.class ) ] ).filter( ( [ , list ] ) => list.length ).map( ( [ p, list ] ) => `${ key }: inside ${ p.block }'s draft elements (${ p.run.join( ', ' ) }) the draft paints ${ list.length } element${ 1 === list.length ? '' : 's' } no located part of ${ p.block } reads, each a missing feature of ${ p.block } (proposal templatePieces.missingFeatures), not a paint conservation problem: ${ list.map( ( m ) => `${ m.key }${ m.shownIn ? ' (a state)' : '' } ${ m.looks.join( '/' ) }${ m.part ? ` (${ m.part })` : '' }` ).join( '; ' ) }` );
+	const pairNotes = runs.map( ( p ) => [ p, moved.filter( ( m ) => m.piece === p.id ) ] ).filter( ( [ , list ] ) => list.length ).map( ( [ p, list ] ) => `${ key }: inside ${ p.block }'s draft elements (${ p.run.join( ', ' ) }) ${ list.length } element${ 1 === list.length ? '' : 's' } could not be paired with one measured part of a block, each a missing feature of ${ p.block } (proposal templatePieces.missingFeatures), not a paint pairing problem: ${ list.map( ( m ) => `${ m.key } ${ m.reason }` ).join( '; ' ) }` );
+	return { problems: [ ...kept.filter( ( x ) => ! PAINT_LINE.test( x ) ), ...paintProblems( { ...checked, strict } ) ], unread: unreadList( checked ), missing, notes: [ ...notes, ...pairNotes ] };
 }

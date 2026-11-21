@@ -34,4 +34,11 @@ export const RECORD = { surfaces: [ { kind: 'buybox', file: 'Product.dc.html', p
 ] } ] };
 export const keysOf = ( rows ) => rows.map( ( r ) => r.key ).sort();
 export const STALE = 'paint conservation: 1 painted element host-unread (rule optionSet, host sgs/option-picker) no node reads and no record carries: Root/11#0 background';
-export const KEPT = 'paint pairing: Root/11#0 fits several measured parts of sgs/option-picker: not paired, so its looks are not read';
+// A paint pairing line about an element outside every run (the related section's painted box): the check after the pieces keeps it.
+export const KEPT = 'paint pairing: Root/18#0 fits several measured parts of sgs/container: not paired, so its looks are not read';
+// A paint pairing line about the choice inside the buy box's run (the part pairing refused it on the draft, the piece replaced it).
+export const PAIR_IN = 'paint pairing: Root/11#0 fits several measured parts of sgs/option-picker (a | b): not paired, so its looks are not read';
+// A paint pairing line about the mark drawn inside the run and again outside it (Root/19#0 and its copy in the related section).
+export const PAIR_COPY = 'paint pairing: Root/19#0 fits one measured part of sgs/option-picker, and another finder holds it: not paired, so its looks are not read';
+// A paint pairing line naming no inventory element: kept as it is.
+export const PAIR_UNKNOWN = 'paint pairing: Root/999#0 fits several measured parts of sgs/option-picker: not paired, so its looks are not read';

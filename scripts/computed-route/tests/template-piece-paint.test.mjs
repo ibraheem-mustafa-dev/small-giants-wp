@@ -10,7 +10,7 @@ import { place } from '../lib/template-piece-buybox.mjs';
 import * as pieceCtx from '../lib/template-pieces-context.mjs';
 import { conservationRows } from '../lib/skeleton-paint-conservation.mjs';
 import { skeletonProblems, cleanTree, skeletonNodes } from '../lib/fill-skeleton.mjs';
-import { PIECE, INVENTORY, TREE, RECORD, STALE, KEPT, keysOf } from './fixtures/piece-paint-fixture.mjs';
+import { PIECE, INVENTORY, TREE, RECORD, STALE, KEPT, PAIR_IN, PAIR_COPY, PAIR_UNKNOWN, keysOf } from './fixtures/piece-paint-fixture.mjs';
 
 const ctx = () => ( { key: 'single-product', tree: TREE(), inventory: INVENTORY, shopParts: RECORD, draftFile: 'Product.dc.html' } );
 
@@ -52,4 +52,21 @@ test( 'MUST FAIL: paint inside the buy box\'s run that no located part reads is 
 	const none = pieceCtx.piecesPaint( { inventory: INVENTORY, rows: [], tree: got.tree, placed: got.placed.map( ( { run, ...p } ) => p ), problems: [] } );
 	assert.deepEqual( none.missing, [] );
 	assert.match( none.problems.join( '\n' ), /Root\/9#0 background/ );
+} );
+
+test( 'MUST FAIL: a paint pairing problem about an element inside the buy box\'s run is its missing feature with the pairing reason; one outside every run, one with a copy outside and one naming no element stay problems', () => {
+	const got = place( ctx(), PIECE );
+	const out = pieceCtx.piecesPaint( { key: 'single-product', inventory: INVENTORY, rows: [], tree: got.tree, placed: got.placed, problems: [ KEPT, PAIR_IN, PAIR_COPY, PAIR_UNKNOWN, STALE ] } );
+	assert.deepEqual( out.problems.filter( ( x ) => /^paint pairing: /.test( x ) ), [ KEPT, PAIR_COPY, PAIR_UNKNOWN ], 'only the pairing line about the choice inside the run leaves the problems' );
+	const moved = out.missing.find( ( m ) => 'Root/11#0' === m.key );
+	assert.deepEqual( [ moved?.piece, moved?.block, moved?.class, moved?.reason ], [ 'buy-box', 'sgs/buybox', 'pairing', 'fits several measured parts of sgs/option-picker (a | b): not paired, so its looks are not read' ] );
+	assert.match( out.notes.join( '\n' ), /inside sgs\/buybox's draft elements \(Root\/8#0, Root\/12#0\) 1 element could not be paired with one measured part of a block, each a missing feature of sgs\/buybox .*: Root\/11#0 fits several/ );
+	// An element conservation already lists as unread keeps its one row and gains the reason.
+	const both = pieceCtx.piecesPaint( { key: 'single-product', inventory: INVENTORY, rows: [], tree: got.tree, placed: got.placed, problems: [ 'paint pairing: Root/9#0 fits several measured parts of sgs/label: not paired, so its looks are not read' ] } );
+	assert.equal( both.missing.filter( ( m ) => 'Root/9#0' === m.key ).length, 1 );
+	assert.equal( both.missing.find( ( m ) => 'Root/9#0' === m.key ).reason, 'fits several measured parts of sgs/label: not paired, so its looks are not read' );
+	assert.equal( both.problems.filter( ( x ) => /^paint pairing: /.test( x ) ).length, 0 );
+	// A placed row with no run owns nothing: every pairing line stays.
+	const none = pieceCtx.piecesPaint( { inventory: INVENTORY, rows: [], tree: got.tree, placed: got.placed.map( ( { run, ...p } ) => p ), problems: [ PAIR_IN ] } );
+	assert.deepEqual( none.problems.filter( ( x ) => /^paint pairing: /.test( x ) ), [ PAIR_IN ] );
 } );
