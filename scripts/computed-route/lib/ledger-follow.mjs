@@ -28,7 +28,8 @@ export function targetParents( targets ) {
 	return new Map( targets.map( ( t ) => [ t.id, t.slot ? rootId.get( t.index ) ?? null : ( null === t.parent ? null : rootId.get( t.parent ) ?? null ) ] ) );
 }
 
-// Marks knock-on rows. rows: unmerged ledger rows ({ id, key, width, stage, proof }), in any order; targets in document
+// Marks knock-on rows. rows: unmerged ledger rows ({ id, key, width, stage, proof, outOfFlow? }: outOfFlow when the element
+// is absolute or fixed on both sides), in any order; targets in document
 // order. Returns the rows with `follows` ({ id, ref, key, width }) and the cause's stage on each knock-on row.
 export function markFollows( rows, targets ) {
 	const parentOf = targetParents( targets );
@@ -41,7 +42,7 @@ export function markFollows( rows, targets ) {
 		}
 		byIdW.get( k ).push( r );
 	}
-	const has = ( id, w, keys ) => ( byIdW.get( `${ id }@${ w }` ) || [] ).find( ( r ) => keys.includes( r.pseudo ? '' : r.key ) ) || null;
+	const has = ( id, w, keys ) => ( byIdW.get( `${ id }@${ w }` ) || [] ).find( ( r ) => keys.includes( r.pseudo || r.state ? '' : r.key ) ) || null;
 	const isInside = ( id, anc ) => {
 		for ( let p = parentOf.get( id ); p; p = parentOf.get( p ) ) {
 			if ( p === anc ) {
@@ -65,7 +66,8 @@ export function markFollows( rows, targets ) {
 			return null;
 		}
 		if ( INNER[ k ] ) {
-			const inner = targets.filter( ( t ) => isInside( t.id, r.id ) ).map( ( t ) => has( t.id, r.width, INNER[ k ] ) ).find( Boolean );
+			// An inner element out of flow on both sides (absolute or fixed) sizes nothing around it.
+			const inner = targets.filter( ( t ) => isInside( t.id, r.id ) ).map( ( t ) => has( t.id, r.width, INNER[ k ] ) ).find( ( c ) => c && ! c.outOfFlow );
 			return inner || null;
 		}
 		const p = parentOf.get( r.id ) ?? null;

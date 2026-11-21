@@ -32,7 +32,7 @@
 	{"file": "lib/ledger-pairs.mjs", "find": "\tfor ( const [ ref, attrs ] of lastLoad || [] ) {", "replace": "\tfor ( const [ ref, attrs ] of [] ) {", "why": "the build's read-back is the built tree"},
 	{"file": "lib/ledger-follow.mjs", "find": "\t\tif ( r.pseudo || ! OWN[ k ] || has( r.id, r.width, OWN[ k ] ) ) {", "replace": "\t\tif ( r.pseudo || ! OWN[ k ] ) {", "why": "an own sizing row keeps the box's own stage"},
 	{"file": "lib/ledger-follow.mjs", "find": "\t\tif ( sib ) {", "replace": "\t\tif ( false ) {", "why": "a place pushed by an earlier sibling follows it"},
-	{"file": "lib/ledger-follow.mjs", "find": "\t\t\tconst inner = targets.filter( ( t ) => isInside( t.id, r.id ) ).map( ( t ) => has( t.id, r.width, INNER[ k ] ) ).find( Boolean );", "replace": "\t\t\tconst inner = null;", "why": "a size pushed by an inner row follows it"},
+	{"file": "lib/ledger-follow.mjs", "find": "\t\t\tconst inner = targets.filter( ( t ) => isInside( t.id, r.id ) ).map( ( t ) => has( t.id, r.width, INNER[ k ] ) ).find( ( c ) => c && ! c.outOfFlow );", "replace": "\t\t\tconst inner = null;", "why": "a size pushed by an inner row follows it"},
 	{"file": "lib/ledger-report.mjs", "find": "\tconst keep = rows.filter( ( r ) => ! ( 'text' === r.key && '' === r.slot && hasInner.has( `${ r.index }@${ r.width }` ) ) );", "replace": "\tconst keep = rows;", "why": "an outer words row folds into its inner one"},
 	{"file": "lib/ledger-report.mjs", "find": "\t\t\tby.get( k ).widths.push( r.width );", "replace": "\t\t\tby.set( `${ k }${ r.width }`, { ...r, widths: [ r.width ] } );", "why": "widths of one difference merge"}
 ]

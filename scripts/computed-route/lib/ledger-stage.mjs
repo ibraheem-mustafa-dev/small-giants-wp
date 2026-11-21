@@ -3,6 +3,8 @@
 // reads are consulted: the draft inventory, the proposal, the skeleton, the Fill report, the built tree, the apply plan.
 // Pure functions: no browser, no site, no file reads.
 import { sameValue } from '../../parity/lib/compare.mjs';
+import { longhandsOf } from './css-families.mjs';
+import { writeProps } from './ledger-paint.mjs';
 
 // The closed set of stages, in the order they are tried for a paired element's difference (no-node, other-block and
 // live-only are decided for unpaired elements and the surface's own root, lib/ledger-pairs.mjs).
@@ -20,6 +22,8 @@ BOX_PROPS[ 'paint-w' ] = BOX_PROPS.w;
 BOX_PROPS[ 'paint-h' ] = BOX_PROPS.h;
 const MOTION_PROPS = [ 'motion', 'animation-name', 'animation-duration', 'animation-delay', 'animation-timing-function', 'animation-iteration-count', 'animation', 'motion root', 'transform' ];
 
+const TRANSITION_LEAD = [ 'transition-property', 'transition-duration' ];
+
 // Difference keys that are the element's words, picture or link.
 export const CONTENT_KEYS = new Set( [ 'text', 'text presence', 'img', 'href' ] );
 
@@ -34,14 +38,11 @@ export function propsFor( key ) {
 	if ( [ 'keyframes', 'animation', 'running-after-action' ].includes( key ) ) {
 		return MOTION_PROPS;
 	}
-	if ( 'border-radius' === key ) {
-		return [ 'border-radius', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius' ];
-	}
-	return [ key ];
+	// A shorthand is answered by itself and its longhands (border-radius by its corners, transition by its timings), the
+	// longhands that say whether and how long anything moves first.
+	const lead = TRANSITION_LEAD.filter( ( p ) => 'transition' === key );
+	return [ ...new Set( [ key, ...lead, ...longhandsOf( key ).filter( ( p ) => p !== key ) ] ) ];
 }
-
-// The CSS properties one Fill write row covers: its `prop` (a comma list for a combined write) and its `covers`.
-const writeProps = ( w ) => [ ...String( w.prop || '' ).split( /,\s*/ ), ...( Array.isArray( w.covers ) ? w.covers : String( w.covers || '' ).split( /,\s*/ ) ) ].filter( Boolean );
 // The settings Fill writes as custom CSS: a width ladder, a step ladder or a residual rule (a ladder written into a setting
 // that holds a box per device is that setting, not custom CSS).
 export const CUSTOM_CSS_ATTRS = new Set( [ 'sgsCustomCss', 'sgsCustomCssId', 'sgsCustomCssNote' ] );
@@ -67,12 +68,13 @@ export function fillIndex( report ) {
 
 const EMPTY = { writes: [], unmapped: [], settled: [], alreadyHeld: [], customCssGaps: [], residual: [], unread: [] };
 
-// Rows of one section for the node that name one of `props`, the target's own slot first: [ rows at the slot ] when any,
-// else the node's rows at any slot (a property read on the root and written on an inner element, `readSlot`). Rows come in
-// the order of `props` (the property the difference is most directly about first), then report order.
-function rowsFor( list, props, slot, nameOf ) {
+// Rows of one section for the node that name one of `props` in the difference's state (a row with no `state` is the rest
+// look's; a hover row answers only a hover difference), the target's own slot first: [ rows at the slot ] when any, else the
+// node's rows at any slot (a property read on the root and written on an inner element, `readSlot`). Rows come in the order
+// of `props` (the property the difference is most directly about first), then report order.
+function rowsFor( list, props, slot, nameOf, state = null ) {
 	const rank = ( r ) => Math.min( ...nameOf( r ).map( ( p ) => props.indexOf( p ) ).filter( ( i ) => i >= 0 ) );
-	const hit = list.filter( ( r ) => nameOf( r ).some( ( p ) => props.includes( p ) ) );
+	const hit = list.filter( ( r ) => ( r.state || null ) === state && nameOf( r ).some( ( p ) => props.includes( p ) ) );
 	const own = hit.filter( ( r ) => ( r.slot ?? r.part ?? '' ) === slot || ( r.readSlot ?? null ) === slot );
 	return ( own.length ? own : hit ).map( ( r, i ) => [ rank( r ), i, r ] ).sort( ( a, b ) => a[ 0 ] - b[ 0 ] || a[ 1 ] - b[ 1 ] ).map( ( x ) => x[ 2 ] );
 }
@@ -86,11 +88,13 @@ const atWidth = ( r, w ) => {
 const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 const trim = ( row ) => JSON.parse( JSON.stringify( row, ( k, v ) => ( 'string' === typeof v && v.length > 400 ? `${ v.slice( 0, 400 ) }…` : v ) ) );
 
-// The stage of one difference of a paired element. diff: { key, width, draft, live, pseudo? }; target: { ref, slot, block,
-// draftKey, top }; ctx: { fill: fillIndex(), built: Map ref -> attributes, apply: Map ref -> plan rows, inventory: Map key ->
-// element, fillProps: Set of the properties Fill reads, live: { selector, box, parent? } }. Returns { stage, proof }.
+// The stage of one difference of a paired element. diff: { key, width, draft, live, pseudo?, state? } (state: hover for a
+// hover row, absent at rest); target: { ref, slot, block, draftKey, top }; ctx: { fill: fillIndex(), built: Map ref ->
+// attributes, apply: Map ref -> plan rows, inventory: Map key -> element, fillProps: Set of the properties Fill reads, live:
+// { selector, box, parent? } }. Returns { stage, proof }.
 export function stageOf( diff, target, ctx ) {
 	const { key, width } = diff;
+	const state = diff.state || null;
 	const rows = ctx.fill.get( target.ref ) || EMPTY;
 	const liveAt = ctx.live || null;
 	if ( CONTENT_KEYS.has( key ) ) {
@@ -110,7 +114,7 @@ export function stageOf( diff, target, ctx ) {
 	}
 	// The inventory's own reading of the same element, where it holds the property.
 	const inv = target.draftKey ? ctx.inventory.get( target.draftKey ) : null;
-	const invVal = ! diff.pseudo ? inv?.resolved?.[ width ]?.[ key ] : undefined;
+	const invVal = ! diff.pseudo && ! state ? inv?.resolved?.[ width ]?.[ key ] : undefined;
 	if ( undefined !== invVal && undefined !== diff.draft && ! sameValue( key, String( invVal ), String( diff.draft ), 0.5 ) ) {
 		return { stage: 'draft-read', proof: { record: 'inventory.resolved', key: target.draftKey, width, inventory: invVal, draftLive: diff.draft } };
 	}
@@ -119,7 +123,7 @@ export function stageOf( diff, target, ctx ) {
 	if ( failed.length ) {
 		return { stage: 'apply-failed', proof: { record: 'apply plan', rows: failed.slice( 0, 2 ).map( trim ) } };
 	}
-	const writes = rowsFor( rows.writes, props, target.slot, writeProps );
+	const writes = rowsFor( rows.writes, props, target.slot, writeProps, state );
 	if ( writes.length ) {
 		const atW = writes.filter( ( w ) => atWidth( w, width ) );
 		const use = atW.length ? atW : writes;
@@ -141,12 +145,12 @@ export function stageOf( diff, target, ctx ) {
 	if ( gaps.length ) {
 		return { stage: 'custom-css', proof: { record: rows.customCssGaps.includes( gaps[ 0 ] ) ? 'fill-report.customCssGaps' : 'fill-report.residualCss.rules', row: trim( gaps[ 0 ] ), shown: false, live: liveAt } };
 	}
-	const un = rowsFor( rows.unmapped, props, target.slot, ( r ) => [ r.property ] );
+	const un = rowsFor( rows.unmapped, props, target.slot, ( r ) => [ r.property ], state );
 	if ( un.length ) {
 		const top = un.filter( ( r ) => r.property === un[ 0 ].property );
 		return { stage: 'unmapped', proof: { record: 'fill-report.unmapped', reason: un[ 0 ].reason, ...( top.length > 1 ? { reasons: top.slice( 0, 4 ).map( ( r ) => r.reason ) } : {} ), row: trim( un[ 0 ] ) } };
 	}
-	const st = rowsFor( rows.settled, props, target.slot, ( r ) => [ r.property ] ).filter( ( r ) => atWidth( r, width ) );
+	const st = rowsFor( rows.settled, props, target.slot, ( r ) => [ r.property ], state ).filter( ( r ) => atWidth( r, width ) );
 	if ( st.length ) {
 		const css = st.find( ( r ) => CUSTOM_CSS_SETTLED.has( r.reason ) );
 		if ( css ) {
@@ -154,7 +158,7 @@ export function stageOf( diff, target, ctx ) {
 		}
 		return { stage: 'judged-equal', proof: { record: 'fill-report.settled', reason: st[ 0 ].reason, baseline: st[ 0 ].detail ?? null, value: st[ 0 ].value, draftLive: diff.draft, live: diff.live, row: trim( st[ 0 ] ) } };
 	}
-	const held = rowsFor( rows.alreadyHeld, props, target.slot, ( r ) => [ r.property ] );
+	const held = rowsFor( rows.alreadyHeld, props, target.slot, ( r ) => [ r.property ], state );
 	if ( held.length ) {
 		return { stage: 'judged-equal', proof: { record: 'fill-report.alreadyHeld', reason: held[ 0 ].reason, baseline: held[ 0 ].detail ?? null, value: held[ 0 ].value, draftLive: diff.draft, live: diff.live, row: trim( held[ 0 ] ) } };
 	}

@@ -4,7 +4,7 @@
 export function mergeWidths( rows ) {
 	const by = new Map();
 	for ( const r of rows ) {
-		const k = JSON.stringify( [ r.id, r.key, r.pseudo ?? null, r.draft, r.live, r.stage ] );
+		const k = JSON.stringify( [ r.id, r.key, r.pseudo ?? null, r.state ?? null, r.draft, r.live, r.stage ] );
 		if ( by.has( k ) ) {
 			by.get( k ).widths.push( r.width );
 		} else {
@@ -48,7 +48,7 @@ export function summarise( rows ) {
 			byBlock.set( b, new Map() );
 		}
 		inc( byBlock.get( b ), r.stage );
-		const key = `${ r.pseudo ? `${ r.pseudo } ` : '' }${ r.key }${ r.follows ? ' (follows)' : '' }`;
+		const key = `${ r.state ? `:${ r.state } ` : '' }${ r.pseudo ? `${ r.pseudo } ` : '' }${ r.key }${ r.follows ? ' (follows)' : '' }`;
 		const gk = JSON.stringify( [ r.stage, b, r.slot || '', key ] );
 		if ( ! groups.has( gk ) ) {
 			groups.set( gk, { stage: r.stage, block: b, slot: r.slot || '', key, rows: [] } );
@@ -84,9 +84,9 @@ export function ledgerMarkdown( { client, surface, site, widths, seconds, summar
 		out.push( `| ${ cell( u.draftKey ) } ${ cell( u.snippet ) } | ${ cell( u.paints.join( ', ' ) || 'nothing (layout only)' ) } | ${ u.widths.join( '/' ) } | ${ u.stage } | ${ proofLine( u.proof ) } |` );
 	}
 	out.push( '', '## Notes', '', ...notes.map( ( n ) => `- ${ n }` ), '' );
-	out.push( '## Every row', '', '| Element | Block | Part | Property | Widths | Draft | Live | Stage |', '|---|---|---|---|---|---|---|---|' );
+	out.push( '## Every row', '', 'State is rest unless named; "on" is the live part the block paints the property on when it is not the paired element.', '', '| Element | Block | Part | Property | State | Widths | Draft | Live | Stage |', '|---|---|---|---|---|---|---|---|---|' );
 	for ( const r of rows ) {
-		out.push( `| ${ cell( r.ref ) } (${ cell( r.draftKey ) }) | ${ cell( r.block ) } | ${ cell( r.slot ) } | ${ cell( r.pseudo ? `${ r.pseudo } ${ r.key }` : r.key ) } | ${ r.widths.join( '/' ) } | ${ cell( r.draft ) } | ${ cell( r.live ) } | ${ r.stage } |` );
+		out.push( `| ${ cell( r.ref ) } (${ cell( r.draftKey ) }) | ${ cell( r.block ) } | ${ cell( r.slot ) }${ r.paintedOn ? ` (on ${ cell( r.paintedOn ) })` : '' } | ${ cell( r.pseudo ? `${ r.pseudo } ${ r.key }` : r.key ) }${ r.covers ? ` (${ cell( r.covers.join( ', ' ) ) })` : '' } | ${ r.state || '' } | ${ r.widths.join( '/' ) } | ${ cell( r.draft ) } | ${ cell( r.live ) } | ${ r.stage } |` );
 	}
 	return `${ out.join( '\n' ) }\n`;
 }

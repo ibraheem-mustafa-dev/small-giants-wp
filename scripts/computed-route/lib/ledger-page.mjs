@@ -4,6 +4,7 @@
 // clicked, typed or written.
 import { collectPair, resolveFinder, DEFAULT_PROPS, PSEUDO_PROPS } from '../../parity/lib/collect.mjs';
 import { PAINT_SRC } from '../../parity/lib/paint.mjs';
+import { readHover } from './ledger-hover.mjs';
 
 // The look read on every element: the walker's list and the rest of what the eye sees (margins, offsets on every side, the
 // stacking, blend, filter and background family, the overflow and wrapping).
@@ -87,6 +88,13 @@ export function readBatchInPage( [ items, collectSrc, resolveSrc, paintSrc, prop
 			try {
 				const snap = collect( [ sel( n ), props, resolveSrc, null, null, null, paintSrc, pseudoProps, { others, textOthers: others, paintPart: true } ] );
 				rec.snap = snap.missing ? null : snap;
+				// An aria-label names an element that paints no words; it is not words a visitor sees, so the comparison takes
+				// such an element's words as none (`ariaLabel` keeps the name).
+				const aria = String( el.getAttribute( 'aria-label' ) || '' ).replace( /\s+/g, ' ' ).trim();
+				if ( rec.snap?.text && aria && rec.snap.text === aria.slice( 0, 400 ) && ! String( el.innerText || '' ).trim() ) {
+					rec.snap.ariaLabel = rec.snap.text;
+					rec.snap.text = '';
+				}
 				// An element the walker's visibility test refuses (no offsetParent) still has its box: read it here.
 				if ( ! rec.snap ) {
 					rec.snap = null;
@@ -103,8 +111,9 @@ export function readBatchInPage( [ items, collectSrc, resolveSrc, paintSrc, prop
 }
 
 // Opens `url` at `width` in a fresh context, scrolls through the page once so every entrance has run, returns to the top,
-// waits `settleMs`, and reads `items`. Returns readBatchInPage's result.
-export async function readPage( browser, url, width, items, { settleMs = 1500, height = 900 } = {} ) {
+// waits `settleMs`, and reads `items`. Returns readBatchInPage's result; with `hover` (lib/ledger-hover.mjs::readHover's
+// items, each naming a read item's n), the hover reads too, as `__hover`.
+export async function readPage( browser, url, width, items, { settleMs = 1500, height = 900, hover = null } = {} ) {
 	const ctx = await browser.newContext( { viewport: { width, height } } );
 	try {
 		const page = await ctx.newPage();
@@ -119,7 +128,11 @@ export async function readPage( browser, url, width, items, { settleMs = 1500, h
 			window.scrollTo( { top: 0, behavior: 'instant' } );
 		} );
 		await page.waitForTimeout( settleMs );
-		return await page.evaluate( readBatchInPage, [ items, collectPair.toString(), resolveFinder.toString(), PAINT_SRC, LOOK_PROPS, PSEUDO_PROPS ] );
+		const out = await page.evaluate( readBatchInPage, [ items, collectPair.toString(), resolveFinder.toString(), PAINT_SRC, LOOK_PROPS, PSEUDO_PROPS ] );
+		if ( hover?.length ) {
+			out.__hover = await readHover( page, hover );
+		}
+		return out;
 	} finally {
 		await ctx.close();
 	}

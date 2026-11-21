@@ -24,8 +24,20 @@ const unplaced = ( key, d, l ) => {
 	}
 	return false;
 };
+// An alignment keyword and its flex form place alike (`end` and `flex-end`, `start` and `flex-start`) unless either side
+// lays out in a reversed flex direction, where the flex form follows the reversed main axis.
+const ALIGN = new Set( [ 'align-items', 'justify-content', 'align-content', 'align-self', 'justify-items', 'justify-self' ] );
+const alignWord = ( v ) => String( v ?? '' ).trim().replace( /^flex-(start|end)$/, '$1' );
+function sameAlignment( r, ds, ls ) {
+	if ( ! ALIGN.has( r.key ) || r.pseudo ) {
+		return false;
+	}
+	const reversed = [ ds, ls ].some( ( s ) => /reverse/.test( String( s?.styles?.[ 'flex-direction' ] ?? '' ) ) );
+	return ! reversed && alignWord( r.draft ) === alignWord( r.live );
+}
+
 // The properties read from the element painting the first text (collect.mjs::collectPair): absent on a side that paints no text.
-const TEXT_READ = new Set( [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset' ] );
+export const TEXT_READ = new Set( [ 'font-family', 'font-size', 'font-weight', 'font-style', 'line-height', 'letter-spacing', 'text-transform', 'color', 'text-shadow', 'text-decoration-line', 'text-decoration-color', 'text-decoration-thickness', 'text-underline-offset' ] );
 
 // One side paints text and the other none: one `text presence` row in place of a row per text property.
 function foldTextPresence( rows ) {
@@ -77,7 +89,7 @@ export function pairDiffs( d, l, pd = null, pl = null, tol = TOLERANCE ) {
 			add( 'tag', 'tag', `<${ ds.tag }> (${ tagClass( ds.tag ) })`, `<${ ls.tag }> (${ tagClass( ls.tag ) })` );
 		}
 		for ( const r of comparePair( { draft: 'draft', live: 'live', box: [ 'w', 'h' ] }, { ...ds, tag: null }, { ...ls, tag: null }, tol ) ) {
-			if ( unplaced( r.key, ds, ls ) ) {
+			if ( unplaced( r.key, ds, ls ) || sameAlignment( r, ds, ls ) ) {
 				continue;
 			}
 			add( r.kind, r.key, r.draft, r.live, r.pseudo ? { pseudo: r.pseudo } : {} );
