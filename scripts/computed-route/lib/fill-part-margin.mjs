@@ -59,7 +59,7 @@ export function partMarginWrites( { nodes, flat, refOf, reads, db, unmapped, cal
 		const sole = soleWidths( { nodes, reads }, rec, target, { side: row.property, px: Object.fromEntries( widths.map( ( w ) => [ w, parseFloat( all[ w ] ) || 0 ] ) ) } );
 		const apart = widths.filter( ( w ) => ! sole.includes( w ) );
 		if ( apart.length ) {
-			out.unmapped.push( row );
+			out.unmapped.push( { ...row, reason: `${ row.reason }; part-margin: the part is not the block's only visible element at ${ apart.join( ', ' ) } (another element of the block or a child block is shown there)` } );
 			continue;
 		}
 		const draft = Object.fromEntries( widths.filter( ( w ) => undefined !== all[ w ] ).map( ( w ) => [ w, all[ w ] ] ) );

@@ -66,6 +66,7 @@ test( 'negative control: a part beside another visible element of the block, or 
 	const beside = world( { bar: [ 375, 1440 ] } );
 	assert.deepEqual( soleWidths( beside, beside.nodes[ 0 ], beside.nodes[ 0 ].targets[ 2 ] ), [ 768 ] );
 	assert.equal( run( beside, [ row() ] ).unmapped.length, 1 );
+	assert.match( run( beside, [ row() ] ).unmapped[ 0 ].reason, /part-margin: the part is not the block's only visible element at 375/ );
 	assert.equal( beside.flat[ 0 ].attributes.margin, undefined );
 	const child = world( { kids: [ [ 768 ] ] } );
 	assert.deepEqual( soleWidths( child, child.nodes[ 0 ], child.nodes[ 0 ].targets[ 2 ] ), [ 375 ] );
