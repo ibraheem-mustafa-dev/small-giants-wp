@@ -217,6 +217,14 @@ final class CarouselControlsRenderPinTest extends TestCase {
 			$this->assertStringContainsString( $snippet, $now['css'], $name . ' scoped CSS lacks ' . $snippet );
 		}
 		$this->assertStringNotContainsString( 'style="', $now['html'], $name . ' prints no inline style attribute' );
+		// The size custom properties sit on the arrows, never on the block's scope, where a slider nested inside it would inherit them.
+		if ( preg_match_all( '/([^{}]*)\{[^{}]*--sgs-carousel-arrow-(?:size|icon):/', $now['css'], $rules ) ) {
+			foreach ( $rules[1] as $selector ) {
+				foreach ( explode( ',', $selector ) as $part ) {
+					$this->assertMatchesRegularExpression( '/(arrow|carousel-prev|carousel-next|pause)[\w-]*\s*$/', trim( $part ), 'MUST FAIL on b11aec700: ' . $name . ' declares an arrow size on ' . trim( $part ) );
+				}
+			}
+		}
 		$pinned = json_decode( (string) file_get_contents( self::DIR . $name . '.json' ), true );
 		$this->assertNotSame( $pinned['css'], $now['css'], 'a set look changes the CSS: the pin guards the unset case only' );
 	}

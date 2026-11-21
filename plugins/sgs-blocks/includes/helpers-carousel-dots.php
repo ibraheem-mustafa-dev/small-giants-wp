@@ -215,11 +215,12 @@ if ( ! function_exists( 'sgs_carousel_controls_css' ) ) {
 		}
 		if ( array() !== $arrows ) {
 			$css .= sgs_button_kit_css( $attributes, 'arrow', implode( ', ', $arrows ), $opts );
-			// The arrow size as a custom property on the scope, which a block's own stylesheet reads with its default as the fallback.
+			// The arrow size, and its icon half, as custom properties on the arrows themselves, which a block's own stylesheet reads
+			// with its default as the fallback (on the scope they would reach a slider nested inside this one).
 			$size = $attributes['arrowSize'] ?? array();
 			if ( is_array( $size ) && array() !== $size ) {
 				$css .= sgs_emit_responsive_css(
-					$scope,
+					implode( ', ', $arrows ),
 					array(
 						array(
 							'value'     => $size,
