@@ -136,5 +136,5 @@ test( 'MUST FAIL on d6d613ca9: the write rewrites only the flow\'s opening tag, 
 
 test( 'MUST FAIL on bea6be759: a post holding two choice-flow tags is never rewritten by text', () => {
 	const php = labelApplyPhp( [ { slug: FLOW, id: 120, to: 'Add my prescription' } ] );
-	assert.ok( php.includes( "1 !== preg_match_all( '#<!--\\s+wp:sgs/choice-flow\\s#', $content )" ), 'the write runs only when the post holds one flow tag, so a nested flow never takes the root flow\'s attributes' );
+	assert.ok( php.includes( "if ( null !== $attrs && 1 !== preg_match_all( '#<!--\\s+wp:sgs/choice-flow\\s#', $content ) ) {\n\t\t$attrs = null;" ), 'the write runs only when the post holds one flow tag, so a nested flow never takes the root flow\'s attributes' );
 } );
