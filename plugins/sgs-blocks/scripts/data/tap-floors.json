@@ -628,6 +628,72 @@
    "selector": ".sgs-testimonial-slider__dot",
    "property": "height",
    "reason": "Settings checked: arrowSize sizes the arrows and the pause button; dotSize and dotActiveWidth size the painted dot (the ::before inside this button), not the button, which is the tap area; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search__input",
+   "property": "min-height",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search__submit",
+   "property": "min-width",
+   "reason": "Settings checked: submitMinHeight (the search button's minimum height, from the built-in button kit). While it is set the kit prints a rule on the button that out-ranks this floor (sgs_button_kit_css); while it is unset 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search__submit",
+   "property": "min-height",
+   "reason": "Settings checked: submitMinHeight (the search button's minimum height, from the built-in button kit). While it is set the kit prints a rule on the button that out-ranks this floor (sgs_button_kit_css); while it is unset 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search__results [role=\"option\"]",
+   "property": "min-height",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search__skeleton",
+   "property": "min-height",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search--icon summary.sgs-product-search__icon-toggle",
+   "property": "min-width",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search--icon summary.sgs-product-search__icon-toggle",
+   "property": "min-height",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle, .sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle",
+   "property": "min-width",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search--overlay .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle, .sgs-product-search--cmdk .sgs-product-search__overlay-trigger-wrap .sgs-product-search__icon-toggle",
+   "property": "min-height",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search__dialog .sgs-product-search__close",
+   "property": "min-width",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "product-search",
+   "selector": ".sgs-product-search__dialog .sgs-product-search__close",
+   "property": "min-height",
+   "reason": "Settings checked: the submit* set (the search button's look) only; no setting sizes this element, so 44px is SGS's own default."
   }
  ]
 }

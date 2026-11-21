@@ -3,14 +3,11 @@
   "passes": {
     "buttons": {
       "_comment": "Every target and unrecognised button site, keyed file::symbol::stem.",
-      "ceiling": 100,
+      "ceiling": 96,
       "entries": {
         "plugins/sgs-blocks/includes/account/helpers-account-address-editor.php::sgs_account_address_card_html::sgs-account__addr-save": 1,
         "plugins/sgs-blocks/includes/account/helpers-account-button-icon.php::sgs_account_button_icons::woocommerce-form-login__submit": 1,
         "plugins/sgs-blocks/includes/account/helpers-account-button-icon.php::sgs_account_button_icons::woocommerce-form-register__submit": 1,
-        "plugins/sgs-blocks/includes/account/helpers-account-signed-out.php::sgs_account_empty_card_html::preset:primary": 1,
-        "plugins/sgs-blocks/includes/account/helpers-account-signed-out.php::sgs_account_signed_out_html::preset:primary": 1,
-        "plugins/sgs-blocks/includes/account/helpers-account-signed-out.php::sgs_account_signed_out_html::preset:secondary": 1,
         "plugins/sgs-blocks/includes/account/templates/form-reset-password.php::(file)::button": 1,
         "plugins/sgs-blocks/includes/buybox-modal-cta.php::sgs_buybox_modal_cta_html::%1$s": 1,
         "plugins/sgs-blocks/includes/choice-flow-chrome.php::sgs_choice_flow_chrome_header_html::sgs-choice-flow__chrome-close": 1,
@@ -71,7 +68,6 @@
         "plugins/sgs-blocks/src/blocks/product-card/thumb-strip.js::renderThumbStrip::(no-class)": 1,
         "plugins/sgs-blocks/src/blocks/product-search/render.php::(file)::sgs-product-search__close": 1,
         "plugins/sgs-blocks/src/blocks/product-search/render.php::(file)::sgs-product-search__icon-toggle": 1,
-        "plugins/sgs-blocks/src/blocks/product-search/render.php::(file)::sgs-product-search__submit": 1,
         "plugins/sgs-blocks/src/blocks/trustpilot-reviews/render.php::(file)::sgs-trustpilot-reviews__arrow": 2,
         "plugins/sgs-blocks/src/blocks/trustpilot-reviews/render.php::(file)::sgs-trustpilot-reviews__dot": 1,
         "plugins/sgs-blocks/src/shared/effects/nav-drilldown.js::closeOpenPanel::sgs-nav-drawer-menu__drill-back-btn": 1,
@@ -100,7 +96,7 @@
     },
     "parts": {
       "_comment": "Every BEM part with a literal look and no setting, keyed file::symbol::part.",
-      "ceiling": 278,
+      "ceiling": 277,
       "entries": {
         "plugins/sgs-blocks/src/blocks/accordion/style.css::(file)::chevron": 1,
         "plugins/sgs-blocks/src/blocks/accordion/style.css::(file)::icon-close": 1,
@@ -324,7 +320,6 @@
         "plugins/sgs-blocks/src/blocks/product-search/style.css::(file)::icon-toggle": 1,
         "plugins/sgs-blocks/src/blocks/product-search/style.css::(file)::panel": 1,
         "plugins/sgs-blocks/src/blocks/product-search/style.css::(file)::skeleton": 1,
-        "plugins/sgs-blocks/src/blocks/product-search/style.css::(file)::submit": 1,
         "plugins/sgs-blocks/src/blocks/star-rating/style.css::(file)::count": 1,
         "plugins/sgs-blocks/src/blocks/star-rating/style.css::(file)::label": 1,
         "plugins/sgs-blocks/src/blocks/star-rating/style.css::(file)::numeric": 1,

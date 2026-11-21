@@ -27,9 +27,22 @@
       ]
     },
     {
-      "id": "account-signed-out-and-empty-state",
-      "block": "sgs/account", "prefix": "signedOutSignIn, signedOutRegister, emptyState", "phase": "first mover",
-      "files": ["plugins/sgs-blocks/includes/account/helpers-account-signed-out.php"]
+      "id": "account-signed-out-sign-in",
+      "block": "sgs/account", "prefix": "signedOutSignIn", "phase": "first mover",
+      "files": ["plugins/sgs-blocks/includes/account/helpers-account-signed-out.php"],
+      "symbol": "^sgs_account_signed_out_html$", "snippet": "sign_in_label"
+    },
+    {
+      "id": "account-signed-out-register",
+      "block": "sgs/account", "prefix": "signedOutRegister", "phase": "first mover",
+      "files": ["plugins/sgs-blocks/includes/account/helpers-account-signed-out.php"],
+      "symbol": "^sgs_account_signed_out_html$", "snippet": "register_label"
+    },
+    {
+      "id": "account-empty-state",
+      "block": "sgs/account", "prefix": "emptyState", "phase": "first mover",
+      "files": ["plugins/sgs-blocks/includes/account/helpers-account-signed-out.php"],
+      "symbol": "^sgs_account_empty_card_html$"
     },
     {
       "id": "account-login-register-submit",
@@ -37,12 +50,6 @@
       "files": ["plugins/sgs-blocks/includes/account/helpers-account-button-icon.php"],
       "kind": "class-string",
       "class": "woocommerce-form-(login|register)__submit"
-    },
-    {
-      "id": "product-search-submit",
-      "block": "sgs/product-search", "prefix": "submit", "phase": "first mover",
-      "files": ["plugins/sgs-blocks/src/blocks/product-search/render.php"],
-      "class": "__submit"
     },
     {
       "id": "theme-load-more",

@@ -20,6 +20,9 @@ import {
 
 import { authoredTextPlain } from '../../utils/authored-text';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
+import buttonKitStyle from '../../components/button-kit/button-kit-style';
+import { presetNames } from '../button/preset-names';
 // NumberControl is experimental — fall back gracefully to TextControl if absent.
 let NumberControl;
 try {
@@ -89,6 +92,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	// directly (style.css:37 + render.php's sgs_border_states_css() scoped
 	// rule).
 	const inputPreviewStyle = borderPaintPreview( inputBorderColour, inputBorderColourGradient, colourPalette );
+
+	// The search button's own look (the built-in button kit, prefix `submit`), previewed at the device being edited on the inline
+	// bar's button, the one the front end's form prints; the compact trigger of the other display modes is a different element. A
+	// named preset gives the canvas button the shared button look's classes, as the page prints the preset on the button.
+	const submitPreview = buttonKitStyle( attributes, 'submit', { tier: previewTier, palette: colourPalette } );
+	const submitClass = presetNames().includes( attributes.submitStyle )
+		? `sgs-product-search__submit sgs-button sgs-button--${ attributes.submitStyle }`
+		: 'sgs-product-search__submit';
 
 	// CHECK A: listboxBackgroundColour/Gradient paints
 	// `.sgs-product-search__results` (style.css — var(--sgs-ps-listbox-bg*));
@@ -513,6 +524,14 @@ export default function Edit( { attributes, setAttributes } ) {
 				) }
 			</InspectorControls>
 
+			{ /* The search button (Spec 32: the built-in button kit's one panel, which mounts its own Styles group). */ }
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/product-search"
+				prefix="submit"
+			/>
+
 			<div { ...blockProps }>
 				{ isIcon || isOverlay || isPalette ? (
 					/* Icon / overlay / command-palette editor preview — compact trigger button, matches the collapsed state. */
@@ -573,7 +592,8 @@ export default function Edit( { attributes, setAttributes } ) {
 							/>
 							<button
 								type="button"
-								className="sgs-product-search__submit"
+								className={ submitClass }
+								style={ submitPreview }
 								disabled
 								aria-label={
 									authoredTextPlain( buttonLabel ) || __( 'Search', 'sgs-blocks' )

@@ -22,6 +22,13 @@
 			"wide"
 		],
 		"sgs": {
+			"builtinButtons": [
+				{
+					"prefix": "submit",
+					"part": "submit",
+					"label": "Search button"
+				}
+			],
 			"motion": true,
 			"headerEssential": true,
 			"scrim": {
@@ -302,7 +309,35 @@
 		"scrimBlur": {
 			"type": "object",
 			"default": {}
-		}
+		},
+		"submitStyle": {"type":"string","_generated":"button-kit"},
+		"submitColourBackground": {"type":"string","_generated":"button-kit"},
+		"submitColourText": {"type":"string","_generated":"button-kit"},
+		"submitColourBorder": {"type":"string","_generated":"button-kit"},
+		"submitColourBackgroundHover": {"type":"string","_generated":"button-kit"},
+		"submitColourTextHover": {"type":"string","_generated":"button-kit"},
+		"submitColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"submitBorderStyle": {"type":"string","_generated":"button-kit"},
+		"submitBorderWidth": {"type":"object","_generated":"button-kit"},
+		"submitBorderRadius": {"type":"object","_generated":"button-kit"},
+		"submitPadding": {"type":"object","_generated":"button-kit"},
+		"submitWidthType": {"type":"string","_generated":"button-kit"},
+		"submitMinHeight": {"type":"object","_generated":"button-kit"},
+		"submitShadow": {"type":"string","_generated":"button-kit"},
+		"submitShadowColour": {"type":"string","_generated":"button-kit"},
+		"submitShadowHover": {"type":"string","_generated":"button-kit"},
+		"submitShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"submitFontFamily": {"type":"string","_generated":"button-kit"},
+		"submitFontWeight": {"type":"string","_generated":"button-kit"},
+		"submitFontStyle": {"type":"string","_generated":"button-kit"},
+		"submitTextTransform": {"type":"string","_generated":"button-kit"},
+		"submitTextDecoration": {"type":"string","_generated":"button-kit"},
+		"submitFontSize": {"type":"object","_generated":"button-kit"},
+		"submitLineHeight": {"type":"object","_generated":"button-kit"},
+		"submitLetterSpacing": {"type":"object","_generated":"button-kit"},
+		"submitFontSizeUnit": {"type":"string","_generated":"button-kit"},
+		"submitLineHeightUnit": {"type":"string","_generated":"button-kit"},
+		"submitLetterSpacingUnit": {"type":"string","_generated":"button-kit"}
 	},
 	"render": "file:./render.php",
 	"editorScript": "file:./index.js",

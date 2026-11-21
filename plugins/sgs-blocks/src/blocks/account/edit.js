@@ -388,15 +388,9 @@ export default function Edit( { attributes, setAttributes } ) {
 			</InspectorControls>
 			{ /* The block's built-in buttons (the built-in button kit's one panel, which mounts its own Styles group): the signed-out
 			     card's two buttons and the button in the empty-state card. The canvas is the server render, so no twin is needed. */ }
-			{ [ 'signedOutSignIn', 'signedOutRegister', 'emptyState' ].map( ( prefix ) => (
-				<BuiltinButtonPanel
-					key={ prefix }
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					blockName="sgs/account"
-					prefix={ prefix }
-				/>
-			) ) }
+			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="signedOutSignIn" />
+			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="signedOutRegister" />
+			<BuiltinButtonPanel attributes={ attributes } setAttributes={ setAttributes } blockName="sgs/account" prefix="emptyState" />
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
 					<ServerSideRender

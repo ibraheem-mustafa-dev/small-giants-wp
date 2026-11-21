@@ -263,6 +263,17 @@ if ( '' !== $sgs_ps_fit_css ) {
 	$sgs_scoped_css[] = $sgs_ps_fit_css;
 }
 
+// --- Search button: the built-in button kit's `submit` set (preset, colours, border, padding, width, type, min height and
+// shadow). Keyed on the bare uid class for the same reason as the colour overrides (the dialog modes reparent the form out of
+// the wrapper); `.sgs-product-search__form` lifts the weight to (0,3,0), level with the shared preset rule, which the kit's
+// look rules follow. Every setting is unset by default, so the button keeps style.css's look (a fixed primary fill, an 8px
+// radius) and a class string of ''. ---
+$sgs_ps_submit_css = sgs_button_kit_css( $attributes, 'submit', '.' . $sgs_style_uid . ' .sgs-product-search__form .sgs-product-search__submit', array( 'element' => '.sgs-product-search__submit' ) );
+if ( '' !== $sgs_ps_submit_css ) {
+	$sgs_scoped_css[] = $sgs_ps_submit_css;
+}
+$sgs_ps_submit_classes = sgs_button_kit_classes( $attributes, 'submit', '.sgs-product-search__submit' );
+
 // --- Base padding/margin — WP-native style.spacing objects (skip-serialised
 // in block.json → not auto-inlined by get_block_wrapper_attributes()).
 // Emitted scoped via the stable core style engine. ---
@@ -452,7 +463,7 @@ ob_start();
 
 			<button
 				type="submit"
-				class="sgs-product-search__submit"
+				class="sgs-product-search__submit<?php echo esc_attr( $sgs_ps_submit_classes ); ?>"
 				aria-label="<?php echo esc_attr( $button_label_plain ); ?>"
 			>
 				<svg
