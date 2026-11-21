@@ -2474,5 +2474,23 @@
     "added_commit": null,
     "budget_ms": 3000,
     "order": 280
+  },
+  {
+    "id": "check-overlay-element",
+    "cmd": "python scripts/check-overlay-element.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 281
+  },
+  {
+    "id": "check-overlay-element-self-test",
+    "cmd": "python scripts/check-overlay-element.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 282
   }
 ]
