@@ -85,14 +85,14 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "\t\tif ( loops.has( loopOf( e.key ) ) ) {",
-		"replace": "\t\tif ( false ) {",
+		"find": "const copyId = { loopCopy: ( e ) => loopOf( e.key ), instanceCopy",
+		"replace": "const copyId = { instanceCopy",
 		"why": "a loop copy is not read through its representative"
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "\t\tif ( templates.has( templateOf( e.key ) ) ) {",
-		"replace": "\t\tif ( false ) {",
+		"find": "instanceCopy: ( e ) => templateOf( e.key ), siblingCopy: signature",
+		"replace": "siblingCopy: signature",
 		"why": "a copy under another host instance is listed as unread"
 	},
 	{
@@ -259,8 +259,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "\t\tif ( readSiblings.has( signature( e ) ) ) {",
-		"replace": "\t\tif ( false ) {",
+		"find": "siblingCopy: new Set( keys.map( ( k ) => byKey.get( k ) ).filter( Boolean ).map( signature ).filter( Boolean ) )",
+		"replace": "siblingCopy: new Set()",
 		"why": "a like sibling of a read element is listed"
 	},
 	{
@@ -283,8 +283,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "const readSiblings = new Set( full.map(",
-		"replace": "const readSiblings = new Set( [ ...named ].map(",
+		"find": "const fullCopies = copiesOf( full );",
+		"replace": "const fullCopies = copiesOf( [ ...named ] );",
 		"why": "a band finder's siblings are read through it"
 	},
 	{
