@@ -16,7 +16,7 @@
 	{"file":"lib/skeleton-part-pairing.mjs","find":"const id = [ c[ 0 ].head, ...chain.get( e ).map( ( x ) => x.key ) ].join( '|' );","replace":"const id = c[ 0 ].head;","why":"elements of different items claiming one repeated part conflict"},
 	{"file":"lib/skeleton-part-pairing.mjs","find":"if ( g.pseudo ) {","replace":"if ( false ) {","why":"a pseudo-element part is not said"},
 	{"file":"lib/skeleton-part-pairing.mjs","find":"look && ( ! s.state || 'current' === s.state ) && set.add( look );","replace":"look && set.add( look );","why":"a hover setting counts as painting the resting look"},
-	{"file":"lib/skeleton-part-pairing.mjs","find":"if ( ! looks.some( ( l ) => painted.has( l ) ) ) {","replace":"if ( false ) {","why":"a part that paints none of the looks reads the element"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"if ( null === looks ? ! slotLooks.size : ! looks.some( ( l ) => painted.has( l ) ) ) {","replace":"if ( null === looks ? ! slotLooks.size : false ) {","why":"a part that paints none of the looks reads the element"},
 	{"file":"lib/skeleton-part-pairing.mjs","find":"const members = g.members.filter( ( t ) => svg || ! GLYPH_TAGS.has( model.parts.get( t )?.tag ) );","replace":"const members = g.members;","why":"an svg member's slot reads a draft element that is no svg"},
 	{"file":"lib/skeleton-part-pairing.mjs","find":"if ( at && ! held.has( slot ) ) {","replace":"if ( at ) {","why":"a slot another finder holds is taken again"},
 	{"file":"lib/skeleton-part-pairing.mjs","find":"const mine = ( x ) => x === e || copylessKey( x.key ) === copylessKey( e.key );","replace":"const mine = ( x ) => x === e;","why":"a loop copy read through another copy's slot is not read"},

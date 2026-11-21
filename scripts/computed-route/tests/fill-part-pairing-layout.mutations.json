@@ -19,14 +19,14 @@
 	},
 	{
 		"file": "lib/fill-part-pairing.mjs",
-		"find": "if ( items.size < 2 || children.some( ( t ) => ! under( t ) ) ) {",
-		"replace": "if ( items.size < 1 || children.some( ( t ) => ! under( t ) ) ) {",
-		"why": "one item is enough"
+		"find": "if ( items.size < 2 && ! alikeChildren( {",
+		"replace": "if ( items.size < 0 && ! alikeChildren( {",
+		"why": "one item is enough even when its siblings differ from it"
 	},
 	{
 		"file": "lib/fill-part-pairing.mjs",
-		"find": "if ( items.size < 2 || children.some( ( t ) => ! under( t ) ) ) {",
-		"replace": "if ( items.size < 2 ) {",
+		"find": "if ( items.size < 1 || children.some( ( t ) => ! under( t ) ) ) {",
+		"replace": "if ( items.size < 1 ) {",
 		"why": "a child of the read element outside the part is ignored"
 	},
 	{
@@ -43,8 +43,8 @@
 	},
 	{
 		"file": "lib/fill-part-pairing.mjs",
-		"find": "return ( finder ) => parent.get( finder?.tpl ?? finder );",
-		"replace": "return ( finder ) => parent.get( finder );",
+		"find": "return Object.assign( ( finder ) => parent.get( keyOf( finder ) ), {",
+		"replace": "return Object.assign( ( finder ) => parent.get( finder ), {",
 		"why": "a { tpl } finder is never looked up"
 	},
 	{
