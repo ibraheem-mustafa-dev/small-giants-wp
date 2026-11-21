@@ -1,0 +1,12 @@
+[
+	{"file": "lib/run-ledger.mjs", "find": "\t\t\tfs.appendFileSync( file, list.map( ( r ) => `${ JSON.stringify( r ) }\\n` ).join( '' ) );", "replace": "\t\t\tfs.writeFileSync( file, list.map( ( r ) => `${ JSON.stringify( r ) }\\n` ).join( '' ) );", "why": "a second stage's rows must not replace the first's"},
+	{"file": "lib/run-ledger.mjs", "find": "\t\treturn { file: null, append: () => 0 };", "replace": "\t\treturn { file: null, append: ( r ) => r.length };", "why": "a writer with no file writes nothing"},
+	{"file": "lib/run-ledger.mjs", "find": "\t\t\tif ( bad ) {", "replace": "\t\t\tif ( false ) {", "why": "a malformed row is refused"},
+	{"file": "lib/run-ledger.mjs", "find": "widths: [ ...widths ].map( Number ).sort( ( a, b ) => a - b )", "replace": "widths: [ ...widths ].map( Number )", "why": "widths sorted"},
+	{"file": "lib/run-ledger.mjs", "find": "\t! OUTCOME_KINDS.includes( row?.outcome?.kind ) && out.push(", "replace": "\tfalse && out.push(", "why": "an outcome outside the closed list is refused"},
+	{"file": "lib/run-ledger.mjs", "find": "\t! row?.draftKey && ! row?.node && out.push(", "replace": "\tfalse && out.push(", "why": "a row names an element or node"},
+	{"file": "lib/run-ledger.mjs", "find": "\t\tif ( ! r.draftKey || [ 'inventory', 'verify' ].includes( r.stage ) ) {", "replace": "\t\tif ( ! r.draftKey ) {", "why": "an inventory row covers nothing"},
+	{"file": "lib/run-ledger.mjs", "find": "\t\t[ prop, ...longhandsOf( prop ) ].forEach(", "replace": "\t\t[ prop ].forEach(", "why": "a shorthand row covers its longhands"},
+	{"file": "lib/run-ledger.mjs", "find": "\t\tif ( ! named.has( e.key ) ) {", "replace": "\t\tif ( false ) {", "why": "only named elements are checked"},
+	{"file": "lib/run-ledger.mjs", "find": "\tconst out = new Set( ( proposal?.rows || [] ).map( ( r ) => r.key ) );", "replace": "\tconst out = new Set();", "why": "a proposal row names its element"}
+]
