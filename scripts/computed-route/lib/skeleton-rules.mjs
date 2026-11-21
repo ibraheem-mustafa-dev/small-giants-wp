@@ -407,9 +407,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( ! R.formControl || controlBlock( e ) || ! all( e ) || 'button' === e.tag || HEADING.test( e.tag ) || m.blockKids( e ).some( ( k ) => controlBlock( k ) ) ) {
 			return false;
 		}
-		const p = m.byKey[ e.parentKey ];
-		return holdsControl( p ) || ( !! p && 'label' === p.tag && holdsControl( m.byKey[ p.parentKey ] ) ) || ( 'label' === e.tag && holdsControl( p ) );
+		return !! fieldScope( e );
 	};
+	// The field wrapper a piece of field text sits in (fieldText), or null.
+	const fieldScope = ( e ) => {
+		const p = m.byKey[ e.parentKey ];
+		const up = p ? m.byKey[ p.parentKey ] : null;
+		return holdsControl( p ) ? p : p && 'label' === p.tag && holdsControl( up ) ? up : null;
+	};
+	// The element inside a field wrapper that becomes the field block's node: the first control or field group in document order.
+	const fieldIn = ( scope ) => ( scope ? desc( scope ).find( ( k ) => controlBlock( k ) || groups.groupAt( k ) ) ?? null : null );
 	// The words a field's removed texts carried, as the field block's own settings: the label (the <label> naming the field, else
 	// the first text in its wrapper: a group's <legend>), whether it is required (a control marked required, or a required marker
 	// "*" beside the label), and the remaining hint. The marker and a character count ("0 / 800") are drawn by the field block
@@ -587,12 +594,22 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return v( 'formControl', { block, absorb: true, attributes: fieldContent( e, block ), ...( cap ? { decided: cap } : {} ) } );
 			}
 			if ( R.formControl && 'label' === e.tag && m.blockKids( e ).some( ( k ) => controlBlock( k ) || groups.groupAt( k ) ) ) {
-				// The cap the label puts on its lone control is the field's own setting: the label's record names where it goes.
+				// The cap the label puts on its lone control is the field's own setting: the label's record names where it goes. The
+				// field block lays its label text and its control out itself (`hostLays`), so the label's row and column are no look
+				// a wrapper must keep.
 				const control = m.blockKids( e ).find( ( k ) => controlBlock( k ) && wrapperCapOf( k, controlBlock( k ) ) );
 				const C = R.formControl.wrapperCap;
-				return v( 'formControl', { action: 'unwrap', ...( control ? { conserve: [ { kind: 'setting', node: control.key, setting: C.setting, looks: [ lookOfProperty( C.property ) ] } ] } : {} ) } );
+				const field = fieldIn( e );
+				return v( 'formControl', { action: 'unwrap', ...( field ? { hostLays: field.key } : {} ), ...( control ? { conserve: [ { kind: 'setting', node: control.key, setting: C.setting, looks: [ lookOfProperty( C.property ) ] } ] } : {} ) } );
 			}
-			return fieldText( e ) ? v( 'formControl', { action: 'remove', reason: R.formControl.fieldTextReason } ) : null;
+			if ( ! fieldText( e ) ) {
+				return null;
+			}
+			// A removed field text that lays out its own pieces (a label over its hint) is laid out by the field block, which draws
+			// its label and help text in that order: its row records the field's node (lib/skeleton-paint-conservation.mjs host-layout).
+			const field = fieldIn( fieldScope( e ) );
+			const lays = field && Object.keys( paintsBox( e, { declared: declared( e, tokens ), parent: m.byKey[ e.parentKey ] ?? null, children: m.kids( e ).length } ) ).includes( 'layout' );
+			return v( 'formControl', { action: 'remove', reason: R.formControl.fieldTextReason, ...( lays ? { conserve: [ { kind: 'host-layout', node: field.key, looks: [ 'layout' ] } ] } : {} ) } );
 		},
 		// The wrappers a mounted component adds (Spec 48A FR-48A-17: a button or field built once and mounted through
 		// dc-import): the mount's host element, and the component's own root inside it, go when they are layout-neutral, so

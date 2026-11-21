@@ -112,5 +112,29 @@
 		"find": " ...( r.conserve ? { conserve: r.conserve } : {} ),",
 		"replace": "",
 		"why": "the row does not carry the verdict's record"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( field ? { hostLays: field.key } : {} ), ...( control ?",
+		"replace": "...( control ?",
+		"why": "a label laying out its field's text and control no longer records that the field lays them out, so it stays a container"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const fieldIn = ( scope ) => ( scope ? desc( scope ).find( ( k ) => controlBlock( k ) || groups.groupAt( k ) ) ?? null : null );",
+		"replace": "const fieldIn = ( scope ) => ( scope ? desc( scope ).find( ( k ) => groups.groupAt( k ) ) ?? null : null );",
+		"why": "a lone control is never the field that lays out its label"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( lays ? { conserve: [ { kind: 'host-layout', node: field.key, looks: [ 'layout' ] } ] } : {} ) } );",
+		"replace": "} );",
+		"why": "a removed field text that lays out a title over a hint records nothing"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "children: m.kids( e ).length } ) ).includes( 'layout' );",
+		"replace": "children: 0 } ) ).includes( 'layout' );",
+		"why": "a removed field text's own column is never seen as layout"
 	}
 ]

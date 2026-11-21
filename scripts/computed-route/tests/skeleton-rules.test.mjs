@@ -921,3 +921,26 @@ test( 'formControl wrapperCap: the max-width a label declares round a lone contr
 	delete off.decisions.rules.formControl.wrapperCap;
 	assert.equal( capOf( run( section( [ field() ] ), { facts: off } ) ), undefined, 'the rule\'s entry off writes none' );
 } );
+
+test( 'formControl: a <label> that lays its label text and control out as a column unwraps, its row records that the field block lays them out (host-layout), and the field is the grid\'s cell; a removed label text that lays out its title over its hint records the same; a label that paints a box stays; MUST FAIL without the host-layout record', () => {
+	const label = ( style, kids ) => E( 'label', { style, display: 'flex' }, kids );
+	const grid = ( style = 'display:flex;flex-direction:column;gap:8px' ) => section( [ E( 'div', { style: 'display:grid;grid-template-columns:repeat(2,1fr);gap:18px', display: 'grid' }, [
+		label( style, [ E( 'span', { words: 'Full name' } ), E( 'input', { attrs: { type: 'text' } } ) ] ),
+		label( style, [ E( 'span', { words: 'Email' } ), E( 'input', { attrs: { type: 'email' } } ) ] ),
+	] ) ] );
+	const r = run( grid() );
+	const labels = r.proposal.rows.filter( ( x ) => 'label' === x.tag );
+	assert.deepEqual( labels.map( ( x ) => [ x.action, x.rule ] ), [ [ 'unwrap', 'formControl' ], [ 'unwrap', 'formControl' ] ], 'the label wrappers go' );
+	assert.deepEqual( labels[ 0 ].conserve, [ { kind: 'host-layout', node: 'Root/5#0', looks: [ 'layout' ] } ], 'the field block at the input lays the label and control out' );
+	const cells = r.skeleton[ 0 ].innerBlocks[ 0 ].innerBlocks.map( ( n ) => n.name );
+	assert.deepEqual( cells, [ 'sgs/form-field-text', 'sgs/form-field-email' ], 'the fields are the grid\'s cells, with no container between' );
+	assert.ok( ! r.problems.some( ( p ) => /paint conservation/.test( p ) ), r.problems.join( '\n' ) );
+	// Negative control: a label that draws a box of its own (a border) keeps it, since no field setting reads the label's border.
+	const boxed = run( grid( 'display:flex;flex-direction:column;gap:8px;border:2px dashed #3A2A22;padding:10px' ) );
+	assert.ok( boxed.proposal.rows.filter( ( x ) => 'label' === x.tag ).every( ( x ) => 'unwrap' !== x.action ), 'a painted label is not dissolved' );
+	// A checkbox whose label text is a column of a title over a hint: the field draws its label and help text, so the removed column records the field.
+	const tick = run( section( [ label( 'display:flex;align-items:center;gap:12px', [ E( 'input', { attrs: { type: 'checkbox' } } ), E( 'span', { style: 'display:flex;flex-direction:column', display: 'flex' }, [ E( 'span', { words: 'This is a gift' } ), E( 'span', { words: 'Add a note.' } ) ] ) ] ) ] ) );
+	const column = tick.proposal.rows.find( ( x ) => 'Root/4#0' === x.key );
+	assert.deepEqual( [ column.action, column.rule, column.conserve ], [ 'remove', 'formControl', [ { kind: 'host-layout', node: 'Root/3#0', looks: [ 'layout' ] } ] ] );
+	assert.ok( ! tick.problems.some( ( p ) => /paint conservation/.test( p ) ), tick.problems.join( '\n' ) );
+} );
