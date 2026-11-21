@@ -500,6 +500,7 @@
 					}
 				},
 				"field-textarea": {
+					"selector": "textarea.sgs-form-field__input",
 					"motion": false,
 					"label": "Textarea control",
 					"order": 8,
