@@ -19,7 +19,7 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1603 | repo-wide tooling (naming lint, site utilities) |
+| `scripts/` | 1606 | repo-wide tooling (naming lint, site utilities) |
 | `plugins/sgs-blocks/scripts/` | 954 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
