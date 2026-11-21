@@ -11,7 +11,7 @@ export function stageClock( now = Date.now ) {
 		// Each width of a read runs at once, so the longest width is what the stage cost; the others are kept per stage.
 		addReads( timing = {} ) {
 			const widths = Object.values( timing );
-			for ( const stage of [ 'loadMs', 'readMs', 'stateMs', 'scrollMs' ] ) {
+			for ( const stage of [ 'loadMs', 'readMs', 'contentMs', 'stateMs', 'scrollMs' ] ) {
 				add( `reads.${ stage.replace( /Ms$/, '' ) }`, Math.max( 0, ...widths.map( ( t ) => t[ stage ] || 0 ) ) );
 			}
 		},

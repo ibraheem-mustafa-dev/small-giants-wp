@@ -1,0 +1,9 @@
+[
+	{"file": "lib/calibrate-read.mjs", "find": "\tif ( contentAt ) {\n\t\tcontent[ w ] = await contentAt( page );\n\t}", "replace": "", "why": "the style pass reads no content"},
+	{"file": "lib/calibrate-read.mjs", "find": "hoverWhy[ n ] || [] ] ) ), ...( contentAt ? { content } : {} ) } );", "replace": "hoverWhy[ n ] || [] ] ) ) } );", "why": "readAll drops the content it read"},
+	{"file": "lib/calibrate-read.mjs", "find": "hoverWhy[ n ] || [] ] ) ), ...( contentAt ? { content } : {} ) } );", "replace": "hoverWhy[ n ] || [] ] ) ), content } );", "why": "a pass asked for no content returns an empty content read, which would stand in for the separate pass"},
+	{"file": "lib/calibrate-read.mjs", "find": "timing, settle, settleGone, owner, extraProps, content, contentAt } );", "replace": "timing, settle, settleGone, owner, extraProps, content } );", "why": "readWidth never gets the content reader"},
+	{"file": "lib/calibrate-content.mjs", "find": "export const contentReadArgs = ( count, needles ) => [ count, CAL_PREFIX, elementPath.toString(), needles, LINK_ATTRS, undefined ];", "replace": "export const contentReadArgs = ( count, needles ) => [ count, CAL_PREFIX, elementPath.toString(), needles, [], undefined ];", "why": "link attributes are not searched"},
+	{"file": "lib/calibrate-pages.mjs", "find": "\tconst contentAt = list.some( ( i ) => i.content ) && ! settleGone ? contentReader( list.length, needles ) : null;", "replace": "\tconst contentAt = list.some( ( i ) => i.content ) ? contentReader( list.length, needles ) : null;", "why": "a fixture that holds the style read for settleGone has its content read late too"},
+	{"file": "lib/calibrate-pages.mjs", "find": "passes[ 0 ].content ?? await clock.time(", "replace": "await clock.time(", "why": "the separate content pass still loads every page"}
+]

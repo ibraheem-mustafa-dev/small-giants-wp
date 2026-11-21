@@ -244,8 +244,16 @@ export function readContentInPage( [ count, prefix, pathSrc, needles, linkAttrs,
 	return out;
 }
 
+// readContentInPage's arguments for every instance of a page.
+export const contentReadArgs = ( count, needles ) => [ count, CAL_PREFIX, elementPath.toString(), needles, LINK_ATTRS, undefined ];
+
+// The content read of one loaded calibration page at one width, for lib/calibrate-read.mjs::readAll's `contentAt`: the page's
+// style pass reads it on the same load, so no page is loaded again for it.
+export const contentReader = ( count, needles ) => ( p ) => p.evaluate( readContentInPage, contentReadArgs( count, needles ) );
+
 // Reads every instance's content at each width, each width in its own page of the logged-in context, as the style
-// reader does. Returns { width: [ instanceReads ] }. A block with no content instance is never read.
+// reader does. Returns { width: [ instanceReads ] }. A block with no content instance is never read. Used for a pass
+// whose style read waits for a fixture's settleGone first; otherwise the style pass reads the content (contentReader).
 export async function readContentAll( page, url, instances, needles ) {
 	const out = {};
 	const ctx = page.context();
@@ -256,7 +264,7 @@ export async function readContentAll( page, url, instances, needles ) {
 			await p.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
 			await p.waitForSelector( `.${ CAL_PREFIX }0`, { state: 'attached', timeout: EDITOR_TIMEOUT_MS } );
 			await p.waitForTimeout( 800 );
-			out[ w ] = await p.evaluate( readContentInPage, [ instances.length, CAL_PREFIX, elementPath.toString(), needles, LINK_ATTRS, undefined ] );
+			out[ w ] = await p.evaluate( readContentInPage, contentReadArgs( instances.length, needles ) );
 		} finally {
 			await p.close();
 		}

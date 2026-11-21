@@ -195,7 +195,9 @@ const SETTLE_TIMEOUT_MS = 120000;
 // instance, their baseline) again with the window scrolled. Returns { width: [instanceReads] } plus
 // { scrolled: { width: { n: read } }, scrollMissed: [n], hoverMissed: [n] (state instances read at no width),
 // hoverWhy: { n: [ '<width>px: <why>' ] } (why each width's read failed: hidden, no instance, or the browser's error) }. The widths are read in parallel, each in its own page of the logged-in context.
-export async function readAll( page, url, instances, { settle = null, settleGone = null, owner = { block: 'the block', site: 'this site' }, extraProps = [] } = {} ) {
+// contentAt(page) (lib/calibrate-content.mjs::contentReader), when given, is read on the same load right after the resting
+// style read and before any state trigger, and returned as { content: { width: result } }.
+export async function readAll( page, url, instances, { settle = null, settleGone = null, owner = { block: 'the block', site: 'this site' }, extraProps = [], contentAt = null } = {} ) {
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
@@ -203,11 +205,12 @@ export async function readAll( page, url, instances, { settle = null, settleGone
 	const hoverHit = new Set();
 	const hoverWhy = {};
 	const timing = {};
+	const content = {};
 	const ctx = page.context();
 	await Promise.all( WIDTHS.map( async ( w ) => {
 		const p = await ctx.newPage();
 		try {
-			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, timing, settle, settleGone, owner, extraProps } );
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, timing, settle, settleGone, owner, extraProps, content, contentAt } );
 		} finally {
 			await p.close();
 		}
@@ -218,7 +221,7 @@ export async function readAll( page, url, instances, { settle = null, settleGone
 	scrollMissed.sort( ( a, b ) => a - b );
 	hoverMissed.sort( ( a, b ) => a - b );
 	hoverMissed.forEach( ( n ) => hoverWhy[ n ]?.sort( ( a, b ) => parseInt( a, 10 ) - parseInt( b, 10 ) ) );
-	return Object.assign( out, { timing, scrolled, scrollMissed, hoverMissed, hoverWhy: Object.fromEntries( hoverMissed.map( ( n ) => [ n, hoverWhy[ n ] || [] ] ) ) } );
+	return Object.assign( out, { timing, scrolled, scrollMissed, hoverMissed, hoverWhy: Object.fromEntries( hoverMissed.map( ( n ) => [ n, hoverWhy[ n ] || [] ] ) ), ...( contentAt ? { content } : {} ) } );
 }
 
 // The untested-state reason for a state instance read at no width, from readAll's hoverWhy lines. Each width names
@@ -382,7 +385,7 @@ export function missingDependencyReason( block, site, noticeText ) {
 }
 
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
-async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, timing = {}, settle = null, settleGone = null, owner, extraProps } ) {
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, timing = {}, settle = null, settleGone = null, owner, extraProps, content = {}, contentAt = null } ) {
 	const t0 = Date.now();
 	await page.setViewportSize( { width: w, height: 900 } );
 	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
@@ -418,6 +421,10 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	const t1 = Date.now();
 	out[ w ] = await readInstances( page, args( instances, undefined, extraProps ) );
 	const t2 = Date.now();
+	if ( contentAt ) {
+		content[ w ] = await contentAt( page );
+	}
+	const tc = Date.now();
 	const calibrationUrl = page.url();
 	for ( const [ n, inst ] of instances.entries() ) {
 		if ( ! [ 'hover', 'focus', 'class', 'probe', 'open' ].includes( inst.trigger ) ) {
@@ -464,5 +471,5 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		} );
 		await page.evaluate( () => window.scrollTo( { top: 0, behavior: 'instant' } ) );
 	}
-	timing[ w ] = { loadMs: t1 - t0, readMs: t2 - t1, stateMs: t3 - t2, scrollMs: Date.now() - t3 };
+	timing[ w ] = { loadMs: t1 - t0, readMs: t2 - t1, contentMs: tc - t2, stateMs: t3 - tc, scrollMs: Date.now() - t3 };
 }

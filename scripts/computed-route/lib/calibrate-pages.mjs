@@ -8,7 +8,7 @@ import { spawn } from 'child_process';
 import { writeTree } from './tree.mjs';
 import { CHILD_TIMEOUT_MS, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout, pageCapFor, replanQueue } from './calibrate-chunk.mjs';
 import { WIDTHS, buildTree, slotFor, stateTarget, readAll } from './calibrate.mjs';
-import { readContentAll } from './calibrate-content.mjs';
+import { readContentAll, contentReader } from './calibrate-content.mjs';
 import { setBasket, pickPass } from './calibrate-basket.mjs';
 import { setWishlist } from './calibrate-wishlist.mjs';
 import { wpEvalRunner } from './calibration-refs.mjs';
@@ -116,7 +116,10 @@ export async function measurePages( block, instances, { fixture, site, target, e
 		// A fixture's `settleGone` holds every pass until no element matches it (a block its script unhides after load).
 		const settleGone = fixture.settleGone || null;
 		const owner = { block, site };
-		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner, extraProps } ) ) ];
+		// A page holding a content instance has its content read on this pass's own load (lib/calibrate-read.mjs::readAll
+		// `contentAt`), unless the fixture holds the style read for settleGone: that page's content keeps a load of its own.
+		const contentAt = list.some( ( i ) => i.content ) && ! settleGone ? contentReader( list.length, needles ) : null;
+		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner, extraProps, contentAt } ) ) ];
 		clock.addReads( passes[ 0 ].timing );
 		// Once a page shows how many elements each instance draws, the pages still queued hold no more than the element budget
 		// (lib/calibrate-chunk.mjs::pageCapFor): a block whose instances draw hundreds of elements reads fewer per page.
@@ -148,9 +151,9 @@ export async function measurePages( block, instances, { fixture, site, target, e
 				setWishlist( runPhp, env.user, false );
 			}
 		}
-		// A second pass only when this chunk holds a content instance: the content read records node existence, text and
-		// link attributes, which no computed-style read carries.
-		const contentReads = list.some( ( i ) => i.content ) ? await clock.time( 'contentRead', () => readContentAll( shared.page, pageUrl, list, needles ) ) : {};
+		// The content read (node existence, text and link attributes, which no computed-style read carries) only when this
+		// chunk holds a content instance: from the style pass, else a pass of its own.
+		const contentReads = list.some( ( i ) => i.content ) ? passes[ 0 ].content ?? await clock.time( 'contentRead', () => readContentAll( shared.page, pageUrl, list, needles ) ) : {};
 		// Each instance keeps its own reads and its chunk's default reads (rest and scrolled) for its variant.
 		const chunkDefault = {};
 		const chunkBase = {};
