@@ -73,7 +73,9 @@ copy_tree() {
   done
   if [[ "$src" == /mnt/* ]] && [ -x "$WINTAR" ]; then
     local stage tarw tarl listl what try
-    stage="$(mktemp -d /tmp/sgs-sync.XXXXXX)"
+    # mktemp makes the stage owner-only (700) and rsync -a copies the stage's own mode onto the destination folder, which
+    # would leave the plugin or theme folder unreadable to every reader but www-data (the route reads it from Windows).
+    stage="$(mktemp -d /tmp/sgs-sync.XXXXXX)"; chmod 755 "$stage"
     tarl="$(dirname "$src")/.sgs-sync-$$-$(basename "$src").tar"
     tarw="$(wslpath -w "$tarl")"
     listl="$tarl.list"
@@ -95,7 +97,7 @@ copy_tree() {
         return
       fi
       rm -f "$tarl" "$listl"; rm -rf "$stage"
-      stage="$(mktemp -d /tmp/sgs-sync.XXXXXX)"
+      stage="$(mktemp -d /tmp/sgs-sync.XXXXXX)"; chmod 755 "$stage"
       SYNC_TEMP+=("$stage")
     done
     rm -rf "$stage"
