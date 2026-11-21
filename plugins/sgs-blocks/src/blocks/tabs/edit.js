@@ -32,6 +32,7 @@ import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { spacingAxesFor } from '../../utils/spacing-axes';
 import { tabsIndicatorGradientCss, tabButtonStyle } from './preview-style';
 import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
+import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import { scrollbarCss, scrollbarStyle as scrollbarChoice } from '../../utils/scrollbar-style';
 import { QUERY_MOBILE } from '../../utils/breakpoints';
 
@@ -413,80 +414,142 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 					setAttributes={ setAttributes }
 					kind="layout"
 				/>
-				<PanelBody title={ __( 'Layout', 'sgs-blocks' ) }>
-					<SelectControl
+				{ /* Layout holds seven settings, so it is a ToolsPanel (Spec 35 A5, CO-3): orientation, tab
+				   style and tab alignment show by default, the rest come from the "+" menu (or show
+				   when set). Reset all writes each setting's block.json default. */ }
+				<ToolsPanel
+					label={ __( 'Layout', 'sgs-blocks' ) }
+					resetAll={ () =>
+						setAttributes( {
+							orientation: 'horizontal',
+							tabAlignment: 'start',
+							tabStyle: 'underline',
+							transitionDuration: 200,
+							hideEmptyTabs: true,
+							mobileLayout: 'stack',
+							scrollbarStyle: undefined,
+						} )
+					}
+				>
+					<ToolsPanelItem
 						label={ __( 'Orientation', 'sgs-blocks' ) }
-						value={ orientation }
-						options={ ORIENTATION_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { orientation: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<LogicalAlignControl
-						label={ __( 'Tab alignment', 'sgs-blocks' ) }
-						value={ tabAlignment }
-						withStretch
-						onChange={ ( val ) =>
-							setAttributes( { tabAlignment: val } )
-						}
-					/>
-					<SelectControl
-						label={ __( 'Tab style', 'sgs-blocks' ) }
-						value={ tabStyle }
-						options={ STYLE_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { tabStyle: val } )
-						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<RangeControl
-						label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
-						value={ transitionDuration }
-						onChange={ ( val ) =>
-							setAttributes( { transitionDuration: val } )
-						}
-						min={ 100 }
-						max={ 500 }
-						step={ 50 }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					<ToggleControl
-						label={ __( 'Hide empty tabs', 'sgs-blocks' ) }
-						help={ __(
-							'Hide a tab whose content renders empty (no text or media), together with its button.',
-							'sgs-blocks'
-						) }
-						checked={ hideEmptyTabs }
-						onChange={ ( val ) =>
-							setAttributes( { hideEmptyTabs: val } )
-						}
-						__nextHasNoMarginBottom
-					/>
-					<SelectControl
-						label={ __( 'On phones', 'sgs-blocks' ) }
-						help={ __( 'Below 768px: stack the tabs as full-width buttons, or keep them as a row.', 'sgs-blocks' ) }
-						value={ mobileLayout || 'stack' }
-						options={ [
-							{ label: __( 'Stacked buttons', 'sgs-blocks' ), value: 'stack' },
-							{ label: __( 'Keep the tab row', 'sgs-blocks' ), value: 'row' },
-						] }
-						onChange={ ( val ) => setAttributes( { mobileLayout: val } ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
-					{ 'vertical' === orientation && (
-						<ScrollbarStyleControl
-							label={ __( 'Tab row scrollbar on phones', 'sgs-blocks' ) }
-							value={ attributes.scrollbarStyle }
-							start="hidden"
-							onChange={ ( val ) => setAttributes( { scrollbarStyle: val } ) }
+						hasValue={ () => 'horizontal' !== orientation }
+						onDeselect={ () => setAttributes( { orientation: 'horizontal' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Orientation', 'sgs-blocks' ) }
+							value={ orientation }
+							options={ ORIENTATION_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { orientation: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
 						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Tab alignment', 'sgs-blocks' ) }
+						hasValue={ () => 'start' !== tabAlignment }
+						onDeselect={ () => setAttributes( { tabAlignment: 'start' } ) }
+						isShownByDefault
+					>
+						<LogicalAlignControl
+							label={ __( 'Tab alignment', 'sgs-blocks' ) }
+							value={ tabAlignment }
+							withStretch
+							onChange={ ( val ) =>
+								setAttributes( { tabAlignment: val } )
+							}
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Tab style', 'sgs-blocks' ) }
+						hasValue={ () => 'underline' !== tabStyle }
+						onDeselect={ () => setAttributes( { tabStyle: 'underline' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Tab style', 'sgs-blocks' ) }
+							value={ tabStyle }
+							options={ STYLE_OPTIONS }
+							onChange={ ( val ) =>
+								setAttributes( { tabStyle: val } )
+							}
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Transition duration', 'sgs-blocks' ) }
+						hasValue={ () => 200 !== transitionDuration }
+						onDeselect={ () => setAttributes( { transitionDuration: 200 } ) }
+					>
+						<RangeControl
+							label={ __( 'Transition duration (ms)', 'sgs-blocks' ) }
+							value={ transitionDuration }
+							onChange={ ( val ) =>
+								setAttributes( { transitionDuration: val } )
+							}
+							min={ 100 }
+							max={ 500 }
+							step={ 50 }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Hide empty tabs', 'sgs-blocks' ) }
+						hasValue={ () => true !== hideEmptyTabs }
+						onDeselect={ () => setAttributes( { hideEmptyTabs: true } ) }
+					>
+						<ToggleControl
+							label={ __( 'Hide empty tabs', 'sgs-blocks' ) }
+							help={ __(
+								'Hide a tab whose content renders empty (no text or media), together with its button.',
+								'sgs-blocks'
+							) }
+							checked={ hideEmptyTabs }
+							onChange={ ( val ) =>
+								setAttributes( { hideEmptyTabs: val } )
+							}
+							__nextHasNoMarginBottom
+						/>
+					</ToolsPanelItem>
+					<ToolsPanelItem
+						label={ __( 'Tab layout on phones', 'sgs-blocks' ) }
+						hasValue={ () => 'stack' !== ( mobileLayout || 'stack' ) }
+						onDeselect={ () => setAttributes( { mobileLayout: 'stack' } ) }
+					>
+						<SelectControl
+							label={ __( 'Tab layout on phones', 'sgs-blocks' ) }
+							help={ __( 'Below 768px: stack the tabs as full-width buttons, or keep them as a row.', 'sgs-blocks' ) }
+							value={ mobileLayout || 'stack' }
+							options={ [
+								{ label: __( 'Stacked buttons', 'sgs-blocks' ), value: 'stack' },
+								{ label: __( 'Keep the tab row', 'sgs-blocks' ), value: 'row' },
+							] }
+							onChange={ ( val ) => setAttributes( { mobileLayout: val } ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					</ToolsPanelItem>
+					{ 'vertical' === orientation && (
+						<ToolsPanelItem
+							label={ __( 'Tab row scrollbar', 'sgs-blocks' ) }
+							hasValue={ () => undefined !== attributes.scrollbarStyle }
+							onDeselect={ () => setAttributes( { scrollbarStyle: undefined } ) }
+						>
+							<ScrollbarStyleControl
+								label={ __( 'Tab row scrollbar', 'sgs-blocks' ) }
+								help={ __( 'Below 768px the vertical tab list becomes a row that scrolls sideways.', 'sgs-blocks' ) }
+								value={ attributes.scrollbarStyle }
+								start="hidden"
+								onChange={ ( val ) => setAttributes( { scrollbarStyle: val } ) }
+							/>
+						</ToolsPanelItem>
 					) }
-				</PanelBody>
+				</ToolsPanel>
 
 				<PanelBody
 					title={ __( 'Accessibility', 'sgs-blocks' ) }
