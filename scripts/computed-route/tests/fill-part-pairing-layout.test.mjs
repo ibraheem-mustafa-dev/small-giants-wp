@@ -65,3 +65,22 @@ test( 'negative control: no draft parents, a distributing property, one item, a 
 	const nested = { elements: navInventory.elements.map( ( e ) => ( 'Root/47#0' === e.key ? { ...e, parentKey: 'Root/46#0' } : e ) ) };
 	assert.match( navAsk( { parentOf: pairing.draftParents( nested ) } ) ?? '', /^unpaired-part/, 'a link inside another element of the nav is not the nav\'s item' );
 } );
+
+// A skeleton that names one link of a nav's five: the nav's children are all links and as many as the read counted, so the
+// one named link stands for every item and the nav's gap is the bar's.
+const fiveLinks = ( over = {} ) => ( { elements: [ { key: 'Root/45#0', parentKey: 'Root/40#0', tag: 'nav' }, ...[ 0, 1, 2, 3, 4 ].map( ( n ) => ( { key: `Root/47#${ n }`, parentKey: 'Root/45#0', tag: 'a', ...( over[ n ] ?? {} ) } ) ) ] } );
+const oneLink = [ navTargets[ 0 ], { id: 'l3', slot: link( 3 ), finder: { tpl: 'Root/47#2' } } ];
+const oneAsk = ( o = {} ) => navAsk( { targets: oneLink, readAt: ( id, w ) => ( 1440 === w ? { nav: { rect: { x: 300, y: 20, w: 700, h: 40 }, layoutChildren: 5 }, l3: navReads().l3 }[ id ] : null ), parentOf: pairing.draftParents( fiveLinks() ), ...o } );
+
+test( 'MUST FAIL: one named link of five is the nav\'s item when every child of the nav is a link and their count is the read\'s', () => {
+	assert.equal( oneAsk(), null );
+	assert.equal( pairing.draftParents( fiveLinks() ).children( { tpl: 'Root/45#0' } ).length, 5 );
+	assert.equal( pairing.draftParents( fiveLinks() ).element( { tpl: 'Root/47#2' } ).tag, 'a' );
+} );
+
+test( 'negative control: one named link stays unpaired when a child is another tag, the counts differ or the draft has no tags', () => {
+	assert.match( oneAsk( { parentOf: pairing.draftParents( fiveLinks( { 4: { tag: 'button' } } ) ) } ) ?? '', /^unpaired-part/, 'a child of another tag is not an item' );
+	assert.match( oneAsk( { readAt: ( id, w ) => ( 1440 === w ? { nav: { rect: { x: 300, y: 20, w: 700, h: 40 }, layoutChildren: 6 }, l3: navReads().l3 }[ id ] : null ) } ) ?? '', /^unpaired-part/, 'the nav lays out a child the inventory does not hold as an item' );
+	assert.match( oneAsk( { parentOf: pairing.draftParents( { elements: fiveLinks().elements.map( ( { tag, ...e } ) => e ) } ) } ) ?? '', /^unpaired-part/, 'no tag, no evidence the children are alike' );
+	assert.match( oneAsk( { attr: 'flexWrap', prop: 'justify-content', value: 'space-between' } ) ?? '', /^unpaired-part/, 'a distributing property is still never the part\'s' );
+} );

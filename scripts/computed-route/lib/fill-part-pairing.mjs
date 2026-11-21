@@ -36,21 +36,43 @@ export const exactHome = ( db, block, cal, element ) => partHome( db, block, cal
 const CHILD_LAYOUT = [ 'align-items', 'align-content', 'justify-content', 'justify-items', 'flex-direction', 'flex-wrap', 'gap', 'row-gap', 'column-gap' ];
 
 // The draft parent of a target's element, from the surface's skeleton inventory: ( finder ) => the parent's key, or
-// undefined. A finder is a skeleton draftRef or draftSlots value ({ tpl: 'Root/47#1' }) or the key itself.
+// undefined. A finder is a skeleton draftRef or draftSlots value ({ tpl: 'Root/47#1' }) or the key itself. The function
+// also carries `children( finder )` (the inventory records of the element's children, in document order) and
+// `element( finder )` (the element's own record), which laysOutItems asks for.
 export function draftParents( inventory ) {
-	const parent = new Map( ( inventory?.elements ?? [] ).map( ( e ) => [ e.key, e.parentKey ] ) );
-	return ( finder ) => parent.get( finder?.tpl ?? finder );
+	const rows = inventory?.elements ?? [];
+	const parent = new Map( rows.map( ( e ) => [ e.key, e.parentKey ] ) );
+	const byKey = new Map( rows.map( ( e ) => [ e.key, e ] ) );
+	const kids = new Map();
+	rows.forEach( ( e ) => kids.set( e.parentKey, [ ...( kids.get( e.parentKey ) ?? [] ), e ] ) );
+	const keyOf = ( finder ) => finder?.tpl ?? finder;
+	return Object.assign( ( finder ) => parent.get( keyOf( finder ) ), {
+		children: ( finder ) => kids.get( keyOf( finder ) ) ?? [],
+		element: ( finder ) => byKey.get( keyOf( finder ) ),
+	} );
 }
 
 // The properties that distribute every laid-out child of a box along its axis: read from a box that may lay out more than
 // the part's children, they are not the part's.
 const DISTRIBUTION = [ 'justify-content', 'align-content' ];
 
+// Whether every child of the draft element `own` has the tag of the one targeted item's element, and their number is the
+// count the read gave at every width in `checked` where the element is drawn (`drawn( w )`; a width that draws nothing has
+// no children to count).
+function alikeChildren( { parentOf, own, item, checked, count, drawn } ) {
+	const kids = parentOf.children?.( own ) ?? [];
+	const tag = parentOf.element?.( item?.finder )?.tag;
+	const shown = checked.filter( drawn );
+	return !! tag && kids.length > 0 && kids.every( ( k ) => k.tag === tag ) && shown.length > 0 && shown.every( ( w ) => count( w ) === kids.length );
+}
+
 // Whether the read element lays out the part's items when the draft draws each item as one element and the block wraps it
 // (the draft's <nav> lays out its links, where the block puts each link in an item inside its bar): the draft has no
 // element of its own at `home` (laysOutPart asks); the targets whose element is a child of the read element's sit under `home` in two or more
 // of its items (each its own first step below `home`), each box inside the read element's box at every width read; and no
-// target outside `home` is a child of the read element. parentOf: lib/fill-part-pairing.mjs::draftParents.
+// target outside `home` is a child of the read element. One targeted item is enough when the draft shows it stands for
+// them all: every child of the read element has the item's tag and their count is the read's `layoutChildren` at every
+// width read (a skeleton that names one link of five). parentOf: lib/fill-part-pairing.mjs::draftParents.
 function laysOutItems( { readSlot, home, prop, targets, readAt, parentOf } ) {
 	const self = targets.find( ( t ) => ( t.slot ?? '' ) === readSlot );
 	if ( ! parentOf || ! self?.finder || DISTRIBUTION.includes( prop ) ) {
@@ -61,11 +83,14 @@ function laysOutItems( { readSlot, home, prop, targets, readAt, parentOf } ) {
 	const under = ( t ) => LOOSE( t.slot ?? '' ).startsWith( `${ home } > ` );
 	const depth = home.split( ' > ' ).length;
 	const items = new Set( children.filter( under ).map( ( t ) => String( t.slot ).split( ' > ' ).slice( 0, depth + 1 ).join( ' > ' ) ) );
-	if ( items.size < 2 || children.some( ( t ) => ! under( t ) ) ) {
+	if ( items.size < 1 || children.some( ( t ) => ! under( t ) ) ) {
+		return false;
+	}
+	const checked = WIDTHS.filter( ( w ) => readAt( self.id, w )?.rect && ! readAt( self.id, w ).missing );
+	if ( items.size < 2 && ! alikeChildren( { parentOf, own, item: children[ 0 ], checked, count: ( w ) => readAt( self.id, w ).layoutChildren, drawn: ( w ) => readAt( self.id, w ).rect.w > 0 && readAt( self.id, w ).rect.h > 0 } ) ) {
 		return false;
 	}
 	const inside = ( a, b ) => a.x >= b.x - 1 && a.y >= b.y - 1 && a.x + a.w <= b.x + b.w + 1 && a.y + a.h <= b.y + b.h + 1;
-	const checked = WIDTHS.filter( ( w ) => readAt( self.id, w )?.rect && ! readAt( self.id, w ).missing );
 	return checked.length > 0 && checked.every( ( w ) => children.map( ( t ) => readAt( t.id, w ) ).filter( ( r ) => r && ! r.missing && r.rect && ( r.rect.w > 0 || r.rect.h > 0 ) ).every( ( r ) => inside( r.rect, readAt( self.id, w ).rect ) ) );
 }
 
