@@ -79,7 +79,8 @@ export function mediaEntry( { map, site, repo, folder, file } ) {
 }
 
 // What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset, url } | { reason } | null, menu( kind ) -> id | null,
-// items( kind ) -> { label: identifier }, attribute( slug ) -> { id } | { reason } | null (null when no site is named) }.
+// items( kind ) -> { label: identifier }, attribute( slug ) -> { id } | { reason } | null, product( draftId ) -> { id } |
+// { reason } | null (null when no site is named) }.
 export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const folder = path.join( repo, 'sites', client, 'handoff' );
@@ -116,6 +117,17 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 			const id = records.map( ( r ) => r[ slug ] ).find( ( x ) => Number.isInteger( x ) && x > 0 );
 			const where = [ ...new Set( [ site, recordSite( site ) ] ) ].join( ' or ' );
 			return id ? { id } : { reason: records.length ? `catalogue.json records no attribute for ${ slug } on ${ where }` : `catalogue.json records no attributes for ${ where } (run site-build.mjs --catalogue --apply on it)` };
+		},
+		// The product the catalogue step made for a draft product id (catalogue.json `sites.<site>.products.<draftId>.id`), the
+		// site's own record, else the record of the test site a mirror copies.
+		product: ( draftId ) => {
+			if ( ! site ) {
+				return null;
+			}
+			const made = [ ...new Set( [ site, recordSite( site ) ] ) ].map( ( x ) => sites[ x ]?.products ).filter( Boolean );
+			const id = made.map( ( r ) => r[ draftId ]?.id ).find( ( x ) => Number.isInteger( x ) && x > 0 );
+			const where = [ ...new Set( [ site, recordSite( site ) ] ) ].join( ' or ' );
+			return id ? { id } : { reason: made.length ? `catalogue.json records no product for draft product ${ draftId } on ${ where }` : `catalogue.json records no products for ${ where } (run site-build.mjs --catalogue --apply on it)` };
 		},
 	};
 }

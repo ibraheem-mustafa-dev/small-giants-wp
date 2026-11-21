@@ -404,6 +404,13 @@ export function makeContent( ctx ) {
 			const id = carried.menu( top.menu );
 			id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ top.menu } menu` ) : out.missing.push( `${ e.key }: no menu ref is carried: menu-map.json holds no ${ top.menu } menu for this site (run site-build.mjs --menus --apply)` );
 		}
+		// A product tile's card shows the product the site build made for the draft product it names (rules.productTile).
+		// Without it the card would show no product, so a missing one is reported.
+		if ( top?.product && attrExists( block, 'productId' ) && carried.product ) {
+			const hit = carried.product( top.product );
+			hit?.id && Object.assign( out.attrs, { productId: hit.id } ) && ( out.said.productId = `catalogue.json: the product made for draft product ${ top.product }` );
+			hit?.reason && out.missing.push( `${ e.key }: no productId is carried: ${ hit.reason }` );
+		}
 		// Each half of a split header menu names the item the split falls after by the identifier the site recorded for it
 		// (lib/site-build-map.mjs::itemIdentifier). Without it the block draws every item in both halves, so a missing one is
 		// reported, never left out in silence.

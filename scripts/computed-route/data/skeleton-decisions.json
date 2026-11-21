@@ -184,6 +184,13 @@
 				}
 			}
 		},
+		"productTile": {
+			"block": "sgs/product-card",
+			"attributes": { "sourceMode": "wc-product" },
+			"listing": "sgs/container",
+			"listingReason": "the element whose children are all a loop's product tiles lays the cards out, so it is the layout container, as the hand-built reference shop's home page holds its best sellers in an sgs/container grid; never a block that accepts only product cards because of that (the wishlist panel draws the visitor's saved products, not these)",
+			"reason": "a tile of a priced loop on a page that is not a WooCommerce page, whose words name one product of the draft catalogue (its name, with its brand when the catalogue gives one), is the site's own product card bound to that product, the card the shop's collection draws, as the hand-built reference shop's home page has its best sellers (each an sgs/product-card in wc-product mode with its productId); found by structure and by the catalogue (lib/skeleton-product-tile.mjs), never by a draft's words; a loop any tile of which names no single product stays the draft's own blocks, because a card with no product prints nothing (2026-11-21)"
+		},
 		"drawsChildren": {
 			"reason": "a block that draws the draft element's children itself, though it is neither a leaf nor holds an array item schema: the children are absorbed, never built",
 			"blocks": [

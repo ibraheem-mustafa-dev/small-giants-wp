@@ -18,6 +18,7 @@ import { paintsBox, lookOfProperty, BAND_LOOKS, INHERITED_LOOKS } from './skelet
 import { positioned, clash } from './skeleton-absorb-wrapper.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
+import { productTiles } from './skeleton-product-tile.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
@@ -909,6 +910,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
 	// The shop's filter rail beside its product listing (lib/skeleton-filter-rail.mjs), from the draft catalogue's facets.
 	const rail = region?.key ? filterRail( { m, region, filters: surface.commerce.filters, rule: R.filterRail, money: R.commerceRegion.money } ) : null;
+	// The product tiles of a page that is not the shop (lib/skeleton-product-tile.mjs), each bound to its catalogue product.
+	const tiles = R.productTile ? productTiles( { m, products: surface.products, money: R.commerceRegion?.money } ) : { tiles: new Map(), listings: new Set(), notes: [] };
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
 	const flow = R.choiceFlow && 'choiceFlow' === role?.role ? choiceFlowModel( { view, rootKey: view.entry( m.root )?.template.key ?? null, R: R.choiceFlow, formControl: R.formControl, brands: facts.brands || [], surfaceKind: surface.kind, parts: scope?.surfaceParts ?? [], folder: handoffOf( facts ) } ) : null;
@@ -1024,6 +1027,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
 		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
 		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason } ) : null ),
+		// A tile of a priced loop naming a catalogue product, on a page that is not the shop, is the site's product card bound
+		// to that product (rules.productTile): the card draws the tile, so its elements are absorbed.
+		( { e } ) => ( tiles.listings.has( e.key ) && R.productTile.listing ? v( 'productTile', { block: R.productTile.listing, reason: R.productTile.listingReason } ) : null ),
+		( { e } ) => {
+			const t = tiles.tiles.get( e.key );
+			return t ? v( 'productTile', { block: R.productTile.block, absorb: true, attributes: { ...( R.productTile.attributes || {} ) }, product: t.draftId, reason: `${ R.productTile.reason }; the tile names the catalogue product ${ t.draftId } "${ t.name }"${ t.brand ? ` (${ t.brand })` : '' }` } ) : null;
+		},
 		// The control that opens the drawer, inside a header whose navigation block draws its own opener below its collapse
 		// point: the navigation block draws it, so it is absorbed there.
 		( { e } ) => {
@@ -1358,5 +1368,5 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return null;
 	};
 
-	return { ruleFor, drawsChildren, declared, widgets: () => ( R.accordion || R.slider || R.tabs ? widgets() : null ), accordionRun: ( md ) => ( { attributes: accordionSettings( md ), notes: widgets().toggleIcon( md ).notes, units: { units: md.units, open: md.open } } ), iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, choiceFlow: flow };
+	return { ruleFor, drawsChildren, declared, widgets: () => ( R.accordion || R.slider || R.tabs ? widgets() : null ), accordionRun: ( md ) => ( { attributes: accordionSettings( md ), notes: widgets().toggleIcon( md ).notes, units: { units: md.units, open: md.open } } ), iconRun: panel.iconRun, siteInfoBrand: panel.siteInfoBrand, commerceRegion: region, filterRail: rail, productTiles: tiles, choiceFlow: flow };
 }

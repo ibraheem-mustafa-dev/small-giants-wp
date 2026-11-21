@@ -44,6 +44,7 @@ import { savedInventoryOf } from './lib/skeleton-saved-inventory.mjs';
 import { skeletonDir, readDecisions, readPicks, recordDecision, recordSiteName, finaliseRequest, applyPicks } from './lib/skeleton-finalise.mjs';
 import { commerceOf } from './lib/skeleton-commerce-region.mjs';
 import { loadCatalogue } from './lib/catalogue-read.mjs';
+import { tileProducts } from './lib/skeleton-product-tile.mjs';
 import { piecesPass } from './lib/template-pieces-context.mjs';
 
 const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
@@ -142,9 +143,15 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const formLinks = formLinksFor( { repo, client, refs } );
 	// A WooCommerce page's template surface places WooCommerce's piece at the draft's commerce region (lib/skeleton-commerce-region.mjs),
 	// and the shop's its filter rail from the draft catalogue's facets (lib/skeleton-filter-rail.mjs).
-	const commerce = commerceOf( readSurface( repo, client, surface ), readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] ), loadCatalogue( repo, client ) );
+	const pageRows = readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] );
+	const catalogue = loadCatalogue( repo, client );
+	const commerce = commerceOf( readSurface( repo, client, surface ), pageRows, catalogue );
 	const site = readSurface( repo, client, surface ).site;
-	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), calParts: calPartsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, surfaceRoute: ctx.route, db } );
+	// The catalogue products a page that is not a WooCommerce page binds its product tiles to (lib/skeleton-product-tile.mjs):
+	// the surface's template, else its page row's.
+	const target = readSurface( repo, client, surface ).target || {};
+	const products = tileProducts( { catalogue, template: target.template ?? pageRows.find( ( row ) => null != target.postId && row.id === target.postId )?.template ?? null, commerce } );
+	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, products, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), calParts: calPartsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, surfaceRoute: ctx.route, db } );
 	// A template's working pieces (the buy box, the bound title, the shop's sorting) replace the draft's imitation of them (data/template-pieces.json).
 	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory } );
 	Object.assign( r, { skeleton: pieces.tree, problems: [ ...r.problems, ...pieces.problems ] } );

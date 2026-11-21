@@ -9,7 +9,7 @@
 	{"file": "lib/skeleton-rules.mjs", "find": "const menu = R.megaOpenerMenu ? menuOfOpener(", "replace": "const menu = false ? menuOfOpener(", "why": "the rule never fires"},
 	{"file": "lib/skeleton-rules.mjs", "find": "block: R.megaOpenerMenu.block, absorb: true, menu, attributes: { ...R.megaOpenerMenu.attributes } }", "replace": "block: R.megaOpenerMenu.block, absorb: true, attributes: { ...R.megaOpenerMenu.attributes } }", "why": "the verdict names no menu"},
 	{"file": "lib/skeleton-rules.mjs", "find": "attributes: { ...R.megaOpenerMenu.attributes } } ) : null;", "replace": "attributes: {} } ) : null;", "why": "the burger is not switched off"},
-	{"file": "lib/skeleton-classify.mjs", "find": "...( r.menu ? { menu: r.menu } : {} ), ...( r.split", "replace": "...( r.split", "why": "the candidate loses the menu"},
+	{"file": "lib/skeleton-classify.mjs", "find": "...( r.menu ? { menu: r.menu } : {} ), ...( r.product", "replace": "...( r.product", "why": "the candidate loses the menu"},
 	{"file": "lib/skeleton-propose.mjs", "find": "carriedAttrs( block, e, top );", "replace": "carriedAttrs( block, e );", "why": "the carry never sees the menu"},
 	{"file": "lib/skeleton-propose.mjs", "find": "megaOpeners: megaOpenerMenus( draftLinks?.menuItems ),", "replace": "megaOpeners: new Map(),", "why": "the surface knows no openers"},
 	{"file": "lib/skeleton-write-content.mjs", "find": "if ( top?.menu && attrExists( block, 'ref' ) ) {", "replace": "if ( false ) {", "why": "no ref is written"},

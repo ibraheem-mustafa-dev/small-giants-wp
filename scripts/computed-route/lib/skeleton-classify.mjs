@@ -122,7 +122,7 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), ...( r.hostSetting ? { hostSetting: r.hostSetting } : {} ), ...( r.absorbedBy ? { absorbedBy: r.absorbedBy } : {} ), candidates: [] };
 		}
 		const C = {};
-		add( C, r.block, 'rule', W.rule, `rule ${ r.rule }: ${ r.reason }`, { attributes: r.attributes, ...( r.wordBound ? { wordBound: r.wordBound } : {} ), ...( r.menu ? { menu: r.menu } : {} ), ...( r.split ? { split: r.split } : {} ) } );
+		add( C, r.block, 'rule', W.rule, `rule ${ r.rule }: ${ r.reason }`, { attributes: r.attributes, ...( r.wordBound ? { wordBound: r.wordBound } : {} ), ...( r.menu ? { menu: r.menu } : {} ), ...( r.product ? { product: r.product } : {} ), ...( r.split ? { split: r.split } : {} ) } );
 		return { ...finish( C ), ...base, absorb: !! r.absorb };
 	};
 
@@ -278,5 +278,5 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return { ...finish( C ), stale };
 	}
 
-	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, drawsChildren: rules.drawsChildren, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, choiceFlow: rules.choiceFlow, widgets: rules.widgets, accordionRun: rules.accordionRun };
+	return { classify: ( ...a ) => sgsOnly( classify( ...a ), facts.replacedBy, facts.decisions.rules?.coreExceptions || [] ), brandFor, siteInfoKinds, isColumnLabel, briefOnly, drawsChildren: rules.drawsChildren, iconRun: rules.iconRun, siteInfoBrand: rules.siteInfoBrand, commerceRegion: rules.commerceRegion, filterRail: rules.filterRail, productTiles: rules.productTiles, choiceFlow: rules.choiceFlow, widgets: rules.widgets, accordionRun: rules.accordionRun };
 }
