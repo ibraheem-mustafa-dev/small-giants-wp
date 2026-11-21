@@ -325,30 +325,6 @@
   },
   {
    "block": "gallery",
-   "selector": ".sgs-gallery__carousel-prev, .sgs-gallery__carousel-next",
-   "property": "height",
-   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
-  },
-  {
-   "block": "gallery",
-   "selector": ".sgs-gallery__carousel-prev, .sgs-gallery__carousel-next",
-   "property": "width",
-   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
-  },
-  {
-   "block": "gallery",
-   "selector": ".sgs-gallery__dot",
-   "property": "min-height",
-   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
-  },
-  {
-   "block": "gallery",
-   "selector": ".sgs-gallery__dot",
-   "property": "min-width",
-   "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
-  },
-  {
-   "block": "gallery",
    "selector": ".sgs-gallery__lightbox-close",
    "property": "height",
    "reason": "No gallery setting sizes the carousel arrows, dots or lightbox close button: imageSize and tileMinHeight size the tiles and images."
@@ -637,21 +613,21 @@
   },
   {
    "block": "container",
-   "selector": ".sgs-container__arrow",
-   "property": "width",
-   "reason": "Settings checked: scrollItemWidth (the row's item width) and the container's other size settings; none sizes the arrow or dot buttons in the controls bar after the row, so 44px is SGS's own default."
-  },
-  {
-   "block": "container",
-   "selector": ".sgs-container__arrow",
-   "property": "height",
-   "reason": "Settings checked: scrollItemWidth (the row's item width) and the container's other size settings; none sizes the arrow or dot buttons in the controls bar after the row, so 44px is SGS's own default."
-  },
-  {
-   "block": "container",
    "selector": ".sgs-container__dot",
    "property": "height",
    "reason": "Settings checked: scrollItemWidth (the row's item width) and the container's other size settings; none sizes the arrow or dot buttons in the controls bar after the row, so 44px is SGS's own default."
+  },
+  {
+   "block": "testimonial-slider",
+   "selector": ".sgs-testimonial-slider__dot",
+   "property": "width",
+   "reason": "Settings checked: arrowSize sizes the arrows and the pause button; dotSize and dotActiveWidth size the painted dot (the ::before inside this button), not the button, which is the tap area; no setting sizes this element, so 44px is SGS's own default."
+  },
+  {
+   "block": "testimonial-slider",
+   "selector": ".sgs-testimonial-slider__dot",
+   "property": "height",
+   "reason": "Settings checked: arrowSize sizes the arrows and the pause button; dotSize and dotActiveWidth size the painted dot (the ::before inside this button), not the button, which is the tap area; no setting sizes this element, so 44px is SGS's own default."
   }
  ]
 }

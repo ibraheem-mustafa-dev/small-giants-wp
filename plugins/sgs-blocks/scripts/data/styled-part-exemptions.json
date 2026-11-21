@@ -1,5 +1,5 @@
 {
-  "_comment": "Sites check-styled-part-has-setting.py (buttons pass) does not count, each with the reason. A rule whose site is gone fails --check as stale. `has-setting` rules rest on the framework database's block_attributes.css_element (query: SELECT DISTINCT css_element FROM block_attributes WHERE block_slug='sgs/<block>'), read 2026-11-20. Audit-known fixed looks that are NOT button-kit parts (carousel arrows and dots, lightbox controls, shop filter buttons) are deliberately NOT exempt: they stay `unrecognised` so the ceiling holds them until their own pass. The parts_exemptions, parts_width_ok and unmapped_exemptions keys serve the parts and unmapped passes: each rule carries a reason, and a rule or width entry that matches nothing fails --check as stale.",
+  "_comment": "Sites check-styled-part-has-setting.py (buttons pass) does not count, each with the reason. A rule whose site is gone fails --check as stale. `has-setting` rules rest on the framework database's block_attributes.css_element (query: SELECT DISTINCT css_element FROM block_attributes WHERE block_slug='sgs/<block>'), read 2026-11-20. Audit-known fixed looks that are NOT button-kit parts (the gallery's lightbox controls, shop filter buttons; carousel arrows and dots are on the kits for sgs/testimonial-slider, sgs/container and sgs/gallery) are deliberately NOT exempt: they stay `unrecognised` so the ceiling holds them until their own pass. The parts_exemptions, parts_width_ok and unmapped_exemptions keys serve the parts and unmapped passes: each rule carries a reason, and a rule or width entry that matches nothing fails --check as stale.",
   "exemptions": [
     {
       "id": "nested-sgs-button",
@@ -174,6 +174,13 @@
       ],
       "class": "__arrows",
       "reason": "The announcement arrows have look settings (framework DB: sgs/notice-banner css_element arrows)."
+    },
+    {
+      "id": "has-setting-slider-nav",
+      "files": [
+        "plugins/sgs-blocks/includes/helpers-slider-nav.php"
+      ],
+      "reason": "The shared slider arrows and dots are printed for sgs/google-reviews and sgs/container, and each has look settings for them (button kit prefix arrow, carousel dots kit prefix dot; framework DB css_element arrow and dot). A new block that adopts the helper must declare the same."
     },
     {
       "id": "has-setting-info-toggle",

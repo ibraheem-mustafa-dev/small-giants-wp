@@ -4982,6 +4982,28 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "flowOpenerPadding",
+      "fields": {
+        "css_property": "padding"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "flowOpenerStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "flowOpenerWidthType",
+      "fields": {
+        "css_property": "width"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "galleryColumnGap",
       "fields": {
         "css_property": "gap",
@@ -6206,14 +6228,6 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "pickerDotRingThickness",
-      "fields": {
-        "css_property": "border-width",
-        "css_element": "pick-dot"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "pickerDotSize",
       "fields": {
         "css_property": "width",
@@ -6459,15 +6473,6 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "rrpChip"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "rrpPillBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "rrp-pill"
       }
     },
     {
@@ -9554,12 +9559,23 @@
     },
     {
       "slug": "sgs/container",
-      "attr": "backgroundColour",
+      "attr": "arrowBorderRadius",
       "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_property": "border-radius"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "arrowBorderWidth",
+      "fields": {
+        "css_property": "border-width"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "arrowSize",
+      "fields": {
+        "css_property": "height,width"
       }
     },
     {
@@ -14625,6 +14641,27 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "arrowBorderRadius",
+      "fields": {
+        "css_property": "border-radius"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "arrowBorderWidth",
+      "fields": {
+        "css_property": "border-width"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
+      "attr": "arrowSize",
+      "fields": {
+        "css_property": "height,width"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "borderStyle",
       "fields": {
         "css_property": "border-style",
@@ -14801,16 +14838,6 @@
         "css_layer": "GRID_AREA",
         "css_element": "item",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/gallery",
-      "attr": "tileColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_layer": "GRID_AREA",
-        "css_element": "item"
       }
     },
     {
@@ -15409,6 +15436,15 @@
         "css_layer": "OUTER",
         "css_element": "arrow",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "arrowSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "OUTER",
+        "css_element": "arrow"
       }
     },
     {
@@ -32332,6 +32368,30 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "arrowBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "backgroundColour",
       "fields": {
         "css_property": "background-color",
@@ -38004,6 +38064,14 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "pickerDotRingThickness",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "pick-dot"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "pickerDotShape",
       "fields": {
         "css_property": "border-radius",
@@ -38164,6 +38232,15 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "price-row"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "rrpPillBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "rrp-pill"
       }
     },
     {
@@ -39038,6 +39115,16 @@
       "fields": {
         "css_property": "min-height",
         "css_element": "link"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
@@ -41592,6 +41679,16 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "tileColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "GRID_AREA",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "tileColourGradient",
       "fields": {
         "css_property": "background-image",
@@ -41966,15 +42063,6 @@
         "css_layer": "OUTER",
         "css_element": "arrow",
         "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
-      "attr": "arrowSize",
-      "fields": {
-        "css_property": "height,width",
-        "css_layer": "OUTER",
-        "css_element": "arrow"
       }
     },
     {
@@ -49692,6 +49780,105 @@
     },
     {
       "slug": "sgs/testimonial-slider",
+      "attr": "arrowBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "arrow",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "arrow",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowColourText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "arrow",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowShadowColourHover",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_element": "arrow",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowShadowHover",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "arrow",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -49737,6 +49924,86 @@
         "css_property": "border-radius",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotActiveWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "dot",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "dot"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "dot"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "dot"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotColourActive",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "dot",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "dot",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "dot"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "dot"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "dotSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "dot"
       }
     },
     {
