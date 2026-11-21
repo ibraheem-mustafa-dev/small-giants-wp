@@ -137,6 +137,11 @@ test( 'widthWrapper: a centred block wrapper under a footer goes and its rows ta
 	assert.equal( r.skeleton[ 0 ].innerBlocks[ 1 ].innerBlocks.length, 4, 'the unwrapped wrapper two rows give their four paragraphs to the columns row' );
 	assert.notEqual( run( tree, { kind: 'footer', facts: facts( 'widthWrapper' ), ...inner } ).proposal.rows[ 1 ].action, 'unwrap' );
 	assert.notEqual( run( tree, { kind: 'footer' } ).proposal.rows[ 1 ].action, 'unwrap', 'no slot reads the cap: the wrapper stays' );
+	// A wrapper that paints only its cap and centring: with no slot and no band finder reading the cap (no calibration), the
+	// guard keeps it (MUST FAIL where any cap is taken as read); with the calibrated slot it goes.
+	const capOnly = E( 'footer', {}, [ E( 'div', { style: 'max-width:1240px;margin:0 auto' }, [ rowEl( 'One' ), rowEl( 'Two' ) ] ) ] );
+	assert.notEqual( run( capOnly, { kind: 'footer' } ).proposal.rows[ 1 ].action, 'unwrap', 'a cap nothing reads keeps the wrapper' );
+	assert.equal( run( capOnly, { kind: 'footer', ...inner } ).proposal.rows[ 1 ].action, 'unwrap', 'negative control: the calibrated slot reads the cap' );
 	const grid = E( 'footer', {}, [ E( 'div', { style: 'max-width:1440px;margin:0 auto;display:grid', display: 'grid' }, [ E( 'div', {}, [ E( 'p', { words: 'A' } ) ] ), E( 'div', {}, [ E( 'p', { words: 'B' } ) ] ) ] ) ] );
 	assert.notEqual( run( grid, { kind: 'footer' } ).proposal.rows[ 1 ].action, 'unwrap', 'a centred grid under the footer is its row' );
 } );
