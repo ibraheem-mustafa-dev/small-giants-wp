@@ -876,9 +876,9 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 // The Add to Cart button's look: the built-in button kit's `addToCart` button (includes/buybox-linked-flow.php::sgs_buybox_add_to_cart_kit_css).
 $sgs_bb_add_to_cart_css = sgs_buybox_add_to_cart_kit_css( $attributes, $root_sel );
 // The flow opener's note colour (openerNoteColour); the note prints only where the linked flow sets one.
-$sgs_bb_opener_note_colour = sgs_colour_value( (string) ( $attributes['openerNoteColour'] ?? '' ) );
-if ( '' !== $sgs_bb_opener_note_colour ) {
-	$scoped_css[] = $root_sel . ' .buybox__add-to-cart-note{color:' . $sgs_bb_opener_note_colour . ';}';
+$sgs_bb_opener_note_css = sgs_buybox_opener_note_css( $attributes, $root_sel );
+if ( '' !== $sgs_bb_opener_note_css ) {
+	$scoped_css[] = $sgs_bb_opener_note_css;
 }
 if ( '' !== $sgs_bb_add_to_cart_css ) {
 	$scoped_css[] = $sgs_bb_add_to_cart_css;

@@ -393,6 +393,21 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_cta_classes' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_buybox_opener_note_css' ) ) {
+	/**
+	 * The flow opener note's colour rule (`openerNoteColour`) on `$scope .buybox__add-to-cart-note`; '' when unset. render.php prints it
+	 * with the buy box's own scope, and a simple product's opener (which renders before that scope exists) with its own instance class.
+	 *
+	 * @param array<string,mixed> $attributes The buybox block attributes.
+	 * @param string              $scope      The selector the rule is scoped to.
+	 * @return string CSS text.
+	 */
+	function sgs_buybox_opener_note_css( array $attributes, string $scope ): string {
+		$colour = sgs_colour_value( (string) ( $attributes['openerNoteColour'] ?? '' ) );
+		return '' === $colour ? '' : $scope . ' .buybox__add-to-cart-note{color:' . $colour . ';}';
+	}
+}
+
 if ( ! function_exists( 'sgs_buybox_flow_opener_scope_class' ) ) {
 	/**
 	 * The instance class a simple product's opener carries, from the `flowOpener*` attributes it was given ('' when none is set).
@@ -404,6 +419,11 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_scope_class' ) ) {
 	 */
 	function sgs_buybox_flow_opener_scope_class( array $attributes ): string {
 		$set = sgs_buybox_flow_opener_attrs( $attributes );
+		// The note colour also needs the scope on a simple product, whose render has no buy box scope; it is no kit setting.
+		$note = (string) ( $attributes['openerNoteColour'] ?? '' );
+		if ( '' !== $note && '' !== sgs_buybox_opener_note_css( $attributes, '.x' ) ) {
+			$set['openerNoteColour'] = $note;
+		}
 		return array() === $set ? '' : 'sgs-bb-fo-' . substr( md5( (string) wp_json_encode( $set ) ), 0, 8 );
 	}
 }
@@ -422,7 +442,7 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_style_tag' ) ) {
 		if ( '' === $scope ) {
 			return '';
 		}
-		return sgs_style_tags( wp_strip_all_tags( sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( '.' . $scope . '.' . $scope ) ) ) );
+		return sgs_style_tags( wp_strip_all_tags( sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( '.' . $scope . '.' . $scope ) ) . sgs_buybox_opener_note_css( $attributes, '.' . $scope . '.' . $scope ) ) );
 	}
 }
 

@@ -98,6 +98,13 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertSame( self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE ), self::render( array( 'keepAddToCartWithFlow' => true, 'openerBeforeAddToCart' => false ), true, self::SIMPLE ) );
 	}
 
+	public function test_a_simple_products_opener_note_takes_the_note_colour(): void {
+		$html = self::render( array( 'keepAddToCartWithFlow' => true, 'openerNoteColour' => '#b8b0a4' ), true, self::SIMPLE );
+		$this->assertSame( 1, preg_match( '/class="[^"]*buybox__add-to-cart--flow-opener[^"]*(sgs-bb-fo-[0-9a-f]{8})/', $html, $m ), 'the opener carries its own scope class' );
+		$this->assertStringContainsString( '.' . $m[1] . '.' . $m[1] . ' .buybox__add-to-cart-note{color:#b8b0a4;}', $html );
+		$this->assertStringNotContainsString( 'sgs-bb-fo-', self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE ), 'no note colour: no scope class, as before' );
+	}
+
 	public function test_on_without_a_linked_flow_renders_as_without_the_setting(): void {
 		$this->assertSame( self::render( array(), false ), self::render( array( 'keepAddToCartWithFlow' => true ), false ) );
 	}
