@@ -55,7 +55,7 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "&& ! ( dest.band && BAND_LOOKS.includes( l ) ) );",
+		"find": "&& ! ( ( dest.band || dest.sizing ) && BAND_LOOKS.includes( l ) ) );",
 		"replace": "&& ! BAND_LOOKS.includes( l ) );",
 		"why": "a cap no band finder reads is taken as read"
 	},
@@ -73,8 +73,8 @@
 	},
 	{
 		"file": "lib/skeleton-write-slots.mjs",
-		"find": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band };",
-		"replace": "return { all: framed, band };",
+		"find": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band, sizing };",
+		"replace": "return { all: framed, band, sizing };",
 		"why": "a free calibrated host slot does not read the wrapper"
 	},
 	{

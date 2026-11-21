@@ -49,8 +49,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "\tfor ( const w of resolvedWidths( element ) ) {\n\t\tcomputedLooks(",
-		"replace": "\tfor ( const w of [] ) {\n\t\tcomputedLooks(",
+		"find": "const computed = new Map( resolvedWidths( element ).map(",
+		"replace": "const computed = new Map( [].map(",
 		"why": "the computed values are never read"
 	},
 	{
