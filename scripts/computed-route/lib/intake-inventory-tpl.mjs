@@ -180,8 +180,15 @@ export function templateRecords( census, add ) {
 	return { rmRecords, defs: later.filter( ( x ) => x.def ) };
 }
 
-// One K (css-animation) record from an animation declaration row (the shorthand or animation-name).
+// The script bindings (`{{ name }}`) a declaration's value holds: the value is the logic's at run time, not this text.
+export const boundNames = ( value ) => [ ...String( value ?? '' ).matchAll( /\{\{\s*([^}]+?)\s*\}\}/g ) ].map( ( m ) => m[ 1 ] );
+
+// One K (css-animation) record from an animation declaration row (the shorthand or animation-name). A declaration bound to
+// script values (`animation:{{ tickerAnim }}`) keeps the binding as its source code and is marked `bound` in its meta: the
+// inventory stage reads what the element renders at each width (lib/intake-inventory-sample.mjs::sampleTargets) and
+// lib/intake-inventory-bound.mjs::resolveBound fills the record from that rendered value.
 export function animationRecord( add, r, element, source, { tpl = [], extra = [], trigger = null, status = null } = {} ) {
+	const bound = boundNames( r.detail.value );
 	const a = /^-?(webkit-)?animation$/.test( r.detail.property ) ? parseAnimation( r.detail.value )[ 0 ] : { name: /animation-name/.test( r.detail.property ) ? r.detail.value : null, duration_ms: null, delay_ms: null, easing: null, iterations: 1, direction: null, fill: null };
 	const none = 'none' === a.name || 'none' === String( r.detail.value ).trim();
 	return add( 'K', {
@@ -190,7 +197,7 @@ export function animationRecord( add, r, element, source, { tpl = [], extra = []
 		properties: [ { property: 'animation-name', from: null, to: a.name ?? r.detail.value } ], duration_ms: a.duration_ms, delay_ms: a.delay_ms, stagger: null, easing: a.easing,
 		iterations: a.iterations, direction: a.direction, fill: a.fill, reduced_motion: { behaviour: 'unchanged', detail: 'no reduced-motion rule' },
 		status: status ?? ( none ? 'no-op' : 'active' ), trace: traceOf( [ r, ...extra ] ), ...( none ? { notes: 'animation: none declares no motion' } : {} ),
-	}, [ r, ...extra ], { tpl, names: a.name && ! none ? [ a.name ] : [], rm: true } );
+	}, [ r, ...extra ], { tpl, names: a.name && ! none && ! bound.length ? [ a.name ] : [], rm: true, ...( bound.length ? { bound } : {} ) } );
 }
 
 // Fills reduced_motion on every TR and K record an RM record's selector matches (or `*`): final-state.

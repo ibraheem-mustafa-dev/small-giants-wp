@@ -3,23 +3,35 @@
 // determinism harness at each tested width: the page is opened (lib/intake-harness.mjs::openHarness), fonts are
 // settled, and the clock is advanced to each sample time (sampleTimes: 0, the midpoint and the end of the interval, or
 // of the harness's frame-loop length) with sampleAt's clock kind; at each time the target's inline and computed value
-// of every property the record writes is read. A target that is not rendered on the page is a gap row.
+// of every property the record writes is read. A target that is not rendered on the page is a gap row. A K record whose
+// animation declaration is bound to script values is read the same way, once per width, for the animation it renders.
 import { openHarness, sampleAt, sampleTimes, HARNESS_DEFAULTS } from './intake-harness.mjs';
 
 export const SAMPLE_WIDTHS = [ 375, 768, 1440 ];
 
-// The J records to sample: interval or frame-loop writers with a template target. Each: { id, comp, n, properties,
-// duration } (duration: the interval in ms, else rafFrames × stepMs).
+// The animation longhands a bound animation declaration is read through (lib/intake-inventory-bound.mjs::resolveBound).
+export const ANIMATION_LONGHANDS = Object.freeze( [ 'animation-name', 'animation-duration', 'animation-timing-function', 'animation-delay', 'animation-iteration-count', 'animation-direction', 'animation-fill-mode' ] );
+
+// The records to sample. Each: { id, comp, n, properties, duration, times? } (duration: the interval in ms, else
+// rafFrames × stepMs; `times`: the sample times when they are not sampleTimes( duration )).
+//  - J records: interval or frame-loop writers with a template target, read at 0, the midpoint and the end.
+//  - K records whose declaration is bound to script values (meta `bound`, lib/intake-inventory-tpl.mjs::animationRecord)
+//    with a template target: the animation longhands the element renders, read once after the frame-loop length, when the
+//    logic has rendered at the page's width.
 export function sampleTargets( records, meta ) {
-	return records.filter( ( r ) => 'J' === meta.get( r.id )?.prefix && [ 'interval', 'loop' ].includes( r.trigger.type ) && 'active' === r.status && null !== r.element.template_tpl_id )
+	const settle = HARNESS_DEFAULTS.rafFrames * HARNESS_DEFAULTS.stepMs;
+	const target = ( r ) => ( { id: r.id, comp: ( meta.get( r.id ).tpl[ 0 ] || '' ).split( ':' ).slice( 0, -1 ).join( ':' ) || r.element.dc, n: [ r.element.template_tpl_id ].flat()[ 0 ] } );
+	const writers = records.filter( ( r ) => 'J' === meta.get( r.id )?.prefix && [ 'interval', 'loop' ].includes( r.trigger.type ) && 'active' === r.status && null !== r.element.template_tpl_id )
 		.map( ( r ) => {
 			const delay = meta.get( r.id ).trigger?.delay;
 			return {
-				id: r.id, comp: ( meta.get( r.id ).tpl[ 0 ] || '' ).split( ':' ).slice( 0, -1 ).join( ':' ) || r.element.dc,
-				n: [ r.element.template_tpl_id ].flat()[ 0 ], properties: r.properties.map( ( p ) => p.property ),
-				duration: 'interval' === r.trigger.type && Number.isFinite( delay ) && delay > 0 ? delay : HARNESS_DEFAULTS.rafFrames * HARNESS_DEFAULTS.stepMs,
+				...target( r ), properties: r.properties.map( ( p ) => p.property ),
+				duration: 'interval' === r.trigger.type && Number.isFinite( delay ) && delay > 0 ? delay : settle,
 			};
 		} );
+	const bound = records.filter( ( r ) => 'K' === meta.get( r.id )?.prefix && meta.get( r.id ).bound?.length && null != r.element.template_tpl_id )
+		.map( ( r ) => ( { ...target( r ), properties: [ ...ANIMATION_LONGHANDS ], duration: settle, times: [ settle ] } ) );
+	return [ ...writers, ...bound ];
 }
 
 // In-page: the inline and computed values of `props` on the first rendered copy of comp:n, or null.
@@ -41,7 +53,7 @@ export async function sampleWriters( { folder, index, harPath, file = index, has
 	if ( ! targets.length ) {
 		return { samples, gaps };
 	}
-	const timesOf = new Map( targets.map( ( t ) => [ t.id, sampleTimes( t.duration ) ] ) );
+	const timesOf = new Map( targets.map( ( t ) => [ t.id, t.times ?? sampleTimes( t.duration ) ] ) );
 	const all = [ ...new Set( [ ...timesOf.values() ].flat() ) ].sort( ( a, b ) => a - b );
 	for ( const width of widths ) {
 		let h = null;

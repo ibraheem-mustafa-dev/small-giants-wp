@@ -10,7 +10,8 @@ import { loadAjv, schemaProblems, readJson, sha256, MASTER_SCHEMAS } from './han
 import { staticCensus } from './intake-census.mjs';
 import { codeModel, offsetOf } from './intake-inventory-code.mjs';
 import { stateWriters } from './intake-inventory-keys.mjs';
-import { animationRecords } from './intake-inventory-anim.mjs';
+import { animationRecords, keyframeProperties } from './intake-inventory-anim.mjs';
+import { resolveBound } from './intake-inventory-bound.mjs';
 import { surfaceRecords } from './intake-inventory-surfaces.mjs';
 import { propVariants } from './intake-props.mjs';
 import { sampleTargets, sampleWriters } from './intake-inventory-sample.mjs';
@@ -158,7 +159,13 @@ export function inventoryBase( { census, folder, routing = null, pageRows = null
 // sampled record's trace says so.
 export function withSamples( { head, drafts, pv, core }, samples = [] ) {
 	const sampled = new Set( samples.map( ( s ) => s.recordId ) );
-	const records = core.anim.records.map( ( r ) => ( sampled.has( r.id ) ? { ...r, trace: { observed: 'yes', phases: [ ...new Set( samples.filter( ( s ) => s.recordId === r.id ).map( ( s ) => `sampled:${ s.width }` ) ) ], note: 'sampled under the harness clock (inventory.samples)' } } : r ) );
+	// A record bound to script values takes the animation its element rendered (lib/intake-inventory-bound.mjs).
+	const keyframesOf = ( name ) => keyframeProperties( ( core.model.census?.rows || [] ).find( ( r ) => 'keyframes' === r.kind && '@keyframes' === r.detail?.via && r.detail.name === name )?.detail.stops );
+	const resolved = ( r ) => {
+		const bound = core.anim.meta.get( r.id )?.bound;
+		return bound?.length ? resolveBound( r, bound, samples.filter( ( s ) => s.recordId === r.id ), keyframesOf ) : r;
+	};
+	const records = core.anim.records.map( ( r ) => ( sampled.has( r.id ) ? { ...resolved( r ), trace: { observed: 'yes', phases: [ ...new Set( samples.filter( ( s ) => s.recordId === r.id ).map( ( s ) => `sampled:${ s.width }` ) ) ], note: 'sampled under the harness clock (inventory.samples)' } } : r ) );
 	const inv = {
 		animations: { ...head, drafts, records, counts: core.anim.counts, unresolved: core.anim.unresolved },
 		surfaces: { ...head, records: core.surf.records, counts: core.surf.counts, unresolved: core.surf.unresolved },

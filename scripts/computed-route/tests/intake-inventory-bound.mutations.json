@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/intake-inventory-tpl.mjs",
+		"find": "rm: true, ...( bound.length ? { bound } : {} ) } );",
+		"replace": "rm: true } );",
+		"why": "a bound declaration would never be marked, so never read for what it renders"
+	},
+	{
+		"file": "lib/intake-inventory-sample.mjs",
+		"find": "const bound = records.filter( ( r ) => 'K' === meta.get( r.id )?.prefix && meta.get( r.id ).bound?.length && null != r.element.template_tpl_id )",
+		"replace": "const bound = records.filter( ( r ) => false )",
+		"why": "the inventory stage would sample no bound animation"
+	},
+	{
+		"file": "lib/intake-inventory-sample.mjs",
+		"find": "const bound = records.filter( ( r ) => 'K' === meta.get( r.id )?.prefix && meta.get( r.id ).bound?.length && null != r.element.template_tpl_id )",
+		"replace": "const bound = records.filter( ( r ) => 'K' === meta.get( r.id )?.prefix && null != r.element.template_tpl_id )",
+		"why": "every literal animation would be sampled too (the negative control)"
+	},
+	{
+		"file": "lib/intake-inventory.mjs",
+		"find": "return bound?.length ? resolveBound( r, bound, samples.filter( ( s ) => s.recordId === r.id ), keyframesOf ) : r;",
+		"replace": "return r;",
+		"why": "the sampled rendered animation would never reach the record"
+	},
+	{
+		"file": "lib/intake-inventory.mjs",
+		"find": "'keyframes' === r.kind && '@keyframes' === r.detail?.via && r.detail.name === name",
+		"replace": "'keyframes' === r.kind && '@keyframes' === r.detail?.via",
+		"why": "any keyframes rule would be taken for the rendered name's"
+	},
+	{
+		"file": "lib/intake-inventory-bound.mjs",
+		"find": "properties: [ { property: 'animation-name', from: null, to: a.name }, ...keyframesOf( a.name ) ],",
+		"replace": "properties: [ { property: 'animation-name', from: null, to: a.name } ],",
+		"why": "the rendered keyframes' translate would be lost, so loopingKeys would see no track"
+	},
+	{
+		"file": "lib/intake-inventory-bound.mjs",
+		"find": "const runs = widths.filter( ( w ) => 'none' !== byWidth.get( w ) );",
+		"replace": "const runs = widths;",
+		"why": "a width rendering no animation would count as running"
+	},
+	{
+		"file": "lib/intake-inventory-bound.mjs",
+		"find": "trigger: some ? { type: 'media-query', detail } : { type: rec.trigger?.type ?? 'load', detail },",
+		"replace": "trigger: { type: rec.trigger?.type ?? 'load', detail },",
+		"why": "a ticker running on a phone only would read as running at every width"
+	},
+	{
+		"file": "lib/intake-inventory-bound.mjs",
+		"find": "return { ...rec, status: 'no-op', notes:",
+		"replace": "return { ...rec, status: rec.status, notes:",
+		"why": "a binding that renders no animation would stay active"
+	},
+	{
+		"file": "lib/intake-inventory-bound.mjs",
+		"find": "const rest = [ 'animation-duration', 'animation-timing-function', 'animation-delay', 'animation-iteration-count', 'animation-direction', 'animation-fill-mode' ].map( ( p ) => ( initial[ p ] === at( p ) ? '' : at( p ) ) );",
+		"replace": "const rest = [ 'animation-duration', 'animation-timing-function', 'animation-delay', 'animation-iteration-count', 'animation-direction', 'animation-fill-mode' ].map( ( p ) => at( p ) );",
+		"why": "a fill-mode none would be read as the animation's name"
+	},
+	{
+		"file": "lib/intake-inventory-bound.mjs",
+		"find": "const at = ( p ) => String( values?.[ p ]?.computed ?? '' ).split( ',' )[ 0 ].trim();",
+		"replace": "const at = ( p ) => String( values?.[ p ]?.computed ?? '' ).trim();",
+		"why": "a list of animations would be read as one"
+	}
+]
