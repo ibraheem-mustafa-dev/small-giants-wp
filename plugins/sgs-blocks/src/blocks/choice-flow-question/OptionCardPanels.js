@@ -54,7 +54,8 @@ export function TierPadding( { label, value, onChange } ) {
 }
 
 /**
- * The "Option card" panel: border (width, style, colour at rest and on hover, corners), padding and the three shadows.
+ * The "Option card" panel: border (width, style, one colour swatch whose Normal, Hover and Current tabs are the card at
+ * rest, on hover and chosen, corners), padding, the card shadow (Normal and Hover tabs) and the chosen card's shadow.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -85,6 +86,13 @@ export function OptionCardPanel( { attributes, setAttributes } ) {
 						onChange: ( val ) => setAttributes( { optionCardColourBorderHover: val ?? '' } ),
 						linked: true,
 					},
+					{
+						key: 'current',
+						label: __( 'Current', 'sgs-blocks' ),
+						value: attributes.optionCardSelectedBorderColour,
+						onChange: ( val ) => setAttributes( { optionCardSelectedBorderColour: val ?? '' } ),
+						linked: true,
+					},
 				] }
 				radiusValues={ { base: attributes.optionCardBorderRadius ?? {} } }
 				showRadiusResponsive={ false }
@@ -99,14 +107,14 @@ export function OptionCardPanel( { attributes, setAttributes } ) {
 				label={ __( 'Card shadow', 'sgs-blocks' ) }
 				attributes={ attributes }
 				setAttributes={ setAttributes }
-				attrNames={ { base: 'optionCardShadow', colour: 'optionCardShadowColour' } }
+				attrNames={ {
+					base: 'optionCardShadow',
+					colour: 'optionCardShadowColour',
+					hover: 'optionCardHoverShadow',
+					hoverColour: 'optionCardHoverShadowColour',
+				} }
 			/>
-			<ShadowControl
-				label={ __( 'Card hover shadow', 'sgs-blocks' ) }
-				attributes={ attributes }
-				setAttributes={ setAttributes }
-				attrNames={ { base: 'optionCardHoverShadow', colour: 'optionCardHoverShadowColour' } }
-			/>
+			{ /* ShadowControl has Normal and Hover states only, so the chosen card's shadow is its own control. */ }
 			<ShadowControl
 				label={ __( 'Chosen card shadow', 'sgs-blocks' ) }
 				attributes={ attributes }
@@ -118,7 +126,7 @@ export function OptionCardPanel( { attributes, setAttributes } ) {
 }
 
 /**
- * The "Option badge box" panel: the badge tag's border per device, its corners and its padding per device.
+ * The "Option badge" panel (the option-badge element's label): the badge tag's border per device, its corners and its padding per device.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -127,7 +135,7 @@ export function OptionCardPanel( { attributes, setAttributes } ) {
  */
 export function OptionBadgeBoxPanel( { attributes, setAttributes } ) {
 	return (
-		<PanelBody title={ __( 'Option badge box', 'sgs-blocks' ) } initialOpen={ false }>
+		<PanelBody title={ __( 'Option badge', 'sgs-blocks' ) } initialOpen={ false }>
 			<TierBorderControl
 				label={ __( 'Badge border', 'sgs-blocks' ) }
 				value={ attributes.optionBadgeBorder }
@@ -189,7 +197,7 @@ export function OptionCheckPanel( { attributes, setAttributes } ) {
 }
 
 /**
- * The colour rows for the option card, the chosen card, the picture band and the tick.
+ * The colour rows for the option card (its Current tab is the chosen card), the picture band and the tick.
  *
  * @param {Object}   props
  * @param {Object}   props.attributes    Block attributes.
@@ -202,21 +210,11 @@ export function optionCardColourRows( { attributes, setAttributes } ) {
 			key: 'optionCardFill',
 			heading: __( 'Option cards', 'sgs-blocks' ),
 			label: __( 'Option card fill', 'sgs-blocks' ),
-			attrs: { base: 'optionCardColourBackground', hover: 'optionCardColourBackgroundHover' },
-			attributes,
-			setAttributes,
-		} ),
-		fillRow( {
-			key: 'optionCardSelectedFill',
-			label: __( 'Chosen card fill', 'sgs-blocks' ),
-			attrs: { base: 'optionCardSelectedBackgroundColour' },
-			attributes,
-			setAttributes,
-		} ),
-		fillRow( {
-			key: 'optionCardSelectedBorder',
-			label: __( 'Chosen card border', 'sgs-blocks' ),
-			attrs: { base: 'optionCardSelectedBorderColour' },
+			attrs: {
+				base: 'optionCardColourBackground',
+				hover: 'optionCardColourBackgroundHover',
+				current: 'optionCardSelectedBackgroundColour',
+			},
 			attributes,
 			setAttributes,
 		} ),
