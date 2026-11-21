@@ -3,8 +3,12 @@
 // Every value reaches the PHP as base64 JSON, so no shell quoting touches it. The WooCommerce calls follow the client
 // seed that preceded this step (find a product by SKU, find-or-create a global attribute and register its taxonomy in
 // this process, find-or-create terms by name, variations keyed by their attribute values, sync the parent, publish last
-// so the product preflight gate sees the variations and image). A product left with no image gets the photo-to-come
+// so the product preflight gate sees the variations and image). A product the route made (its SKU is the catalogue's own,
+// `sgs-draft-*`) also gains a choice the catalogue added later and the terms of the choices it has, makes the variations it
+// lacks, and trashes each old variation that does not cover every choice, or sets it private when an order holds it
+// (lib/site-build-catalogue-axes.mjs). A product left with no image gets the photo-to-come
 // image (the catalogue image keyed PHOTO_TO_COME) and `_sgs_photo_to_come`, which goes once it shows another image.
+import { SKU_PREFIX } from './catalogue-read.mjs';
 import { facetApplyPhp, facetStatePhp } from './site-build-catalogue-facets.mjs';
 
 // Each attribute's `variesBy` goes on its terms as `_sgs_variesby_value` when they have none; a held product (no
@@ -43,6 +47,12 @@ $sgs_attachment = function ( $img ) {
 	$id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND ( meta_value = %s OR meta_value LIKE %s ) ORDER BY post_id ASC LIMIT 1", $img['name'], $like ) );
 	return $id ? (int) $id : 0;
 };
+// Whether an order holds a variation: an order line records it as _variation_id item meta (the order items tables are the
+// same under HPOS and legacy storage), which is what WooCommerce reads a line's variation from.
+$sgs_ordered = function ( $vid ) {
+	global $wpdb;
+	return (bool) $wpdb->get_var( $wpdb->prepare( "SELECT order_item_id FROM {$wpdb->prefix}woocommerce_order_itemmeta WHERE meta_key = '_variation_id' AND meta_value = %d LIMIT 1", $vid ) );
+};
 $sgs_variesby = function ( $value ) {
 	return class_exists( '\\SGS\\Blocks\\Configurator_Meta' ) ? \\SGS\\Blocks\\Configurator_Meta::sanitize_variesby( $value ) : (string) $value;
 };
@@ -51,7 +61,9 @@ $sgs_variesby = function ( $value ) {
 // The read: per product { draftId, id, how, fixture, type, status, sku, price, image, gallery, categories, brand, rrp,
 // draftMeta, photoToCome (the `_sgs_photo_to_come` marker), attributes (pa_ slugs), variesBy (per attribute taxonomy,
 // the `_sgs_variesby_value` of each of the product's terms, '' for none, as the preflight reads it), variations (SKUs),
-// permalink, facets (per facet slug, its term names) }, every image's attachment id, whether the product card shows the
+// permalink, facets (per facet slug, its term names), variationAttributes (the attribute taxonomies that are a choice),
+// attributeTerms (per attribute taxonomy, the product's term names) and, for a product with the route's SKU prefix,
+// variationRows (each variation: id, sku, status, options per attribute taxonomy as a term slug, ordered: an order holds it) }, every image's attachment id, whether the product card shows the
 // photo-to-come attachment as a photo (includes/product-card-no-photo.php::sgs_product_card_has_real_image; null when the
 // site lacks it or the attachment), every facet's attribute (lib/site-build-catalogue-facets.mjs) and the site's
 // WooCommerce facts (active, product base, the brand taxonomy, active plugins). `catalogue` gives the facets.
@@ -69,21 +81,36 @@ foreach ( $in as $p ) {
 		$wc = wc_get_product( $id );
 		$attrs = array();
 		$vb = array();
+		$vattrs = array();
+		$aterms = array();
 		foreach ( $wc ? $wc->get_attributes() : array() as $tax => $a ) {
 			$attrs[] = (string) $tax;
+			if ( $a->get_variation() ) { $vattrs[] = (string) $tax; }
 			if ( taxonomy_exists( $tax ) ) {
+				$aterms[ $tax ] = array_values( wc_get_product_terms( $id, $tax, array( 'fields' => 'names' ) ) );
 				$vb[ $tax ] = array();
 				foreach ( wc_get_product_terms( $id, $tax, array( 'fields' => 'ids' ) ) as $tid ) { $vb[ $tax ][] = $sgs_variesby( get_term_meta( $tid, '_sgs_variesby_value', true ) ); }
 			}
 		}
 		$vars = array();
 		foreach ( $wc ? $wc->get_children() : array() as $vid ) { $vars[] = (string) get_post_meta( $vid, '_sku', true ); }
+		$rows = array();
+		if ( $wc && $wc->is_type( 'variable' ) && 0 === strpos( (string) get_post_meta( $id, '_sku', true ), '${ SKU_PREFIX }' ) ) {
+			foreach ( $wc->get_children() as $vid ) {
+				$va = wc_get_product( $vid );
+				if ( ! $va ) { continue; }
+				$opts = array();
+				foreach ( $va->get_attributes() as $k => $val ) { $opts[ (string) $k ] = (string) $val; }
+				$rows[] = array( 'id' => (int) $vid, 'sku' => (string) $va->get_sku(), 'status' => (string) get_post_status( $vid ), 'options' => (object) $opts, 'ordered' => $sgs_ordered( $vid ) );
+			}
+		}
 		$cats = wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'names' ) );
 		$brand = taxonomy_exists( 'product_brand' ) ? wp_get_object_terms( $id, 'product_brand', array( 'fields' => 'names' ) ) : array();
 		$row += array( 'fixture' => $sgs_is_fixture( $id ), 'type' => $wc ? $wc->get_type() : get_post_type( $id ), 'status' => get_post_status( $id ), 'sku' => (string) get_post_meta( $id, '_sku', true ),
 			'price' => $wc ? (string) $wc->get_regular_price() : '', 'image' => (int) get_post_thumbnail_id( $id ), 'gallery' => $wc ? count( $wc->get_gallery_image_ids() ) : 0,
 			'categories' => is_wp_error( $cats ) ? array() : $cats, 'brand' => is_wp_error( $brand ) ? array() : $brand, 'rrp' => (string) get_post_meta( $id, '_sgs_rrp', true ),
-			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'variesBy' => (object) $vb, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ) );
+			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'variesBy' => (object) $vb, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ),
+			'variationAttributes' => $vattrs, 'attributeTerms' => (object) $aterms, 'variationRows' => $rows );
 		$row['facets'] = $sgs_product_facets( $id );
 	}
 	$out[] = $row;
@@ -174,6 +201,8 @@ foreach ( $steps as $s ) {
 	list( $id ) = $sgs_find( $p );
 	if ( $id && $sgs_is_fixture( $id ) ) { $issues[] = $p['draftId'] . ': matches fixture product ' . $id . ', left'; continue; }
 	$ours = ! $id || (string) get_post_meta( $id, '_sku', true ) === $p['sku'];
+	// The route's own product: it exists and carries the catalogue's own SKU, which has the route's prefix.
+	$route = $id && $ours && 0 === strpos( $p['sku'], '${ SKU_PREFIX }' );
 	$wc = $id ? wc_get_product( $id ) : ( 'variable' === $p['type'] ? new WC_Product_Variable() : new WC_Product_Simple() );
 	if ( ! $id ) {
 		$wc->set_name( $p['name'] );
@@ -210,6 +239,48 @@ foreach ( $steps as $s ) {
 		}
 		$wc->set_attributes( $list );
 		$wc->set_default_attributes( $defaults );
+	} elseif ( $route && $p['attributes'] && $wc->is_type( 'variable' ) ) {
+		// A product the route made gains each choice it lacks (a filter-only attribute of the slug becomes the choice and keeps its
+		// terms) and each term of a choice it has; a swatch already set is never replaced.
+		$list = $wc->get_attributes();
+		$defaults = $wc->get_default_attributes();
+		$changed = false;
+		foreach ( $p['attributes'] as $a ) {
+			$tax = $attribute( $a['label'], $a['slug'] );
+			if ( ! $tax ) { $issues[] = $p['draftId'] . ': attribute ' . $a['slug'] . ' not created'; continue; }
+			$taxes[ $a['slug'] ] = $tax;
+			$cur = isset( $list[ $tax ] ) ? $list[ $tax ] : null;
+			$ids = $cur ? array_map( 'intval', $cur->get_options() ) : array();
+			$grew = array();
+			foreach ( $a['options'] as $o ) {
+				$t = $term( $o['term'], $tax );
+				if ( ! $t ) { continue; }
+				if ( ! in_array( (int) $t->term_id, $ids, true ) ) { $ids[] = (int) $t->term_id; $grew[] = $o['term']; }
+				if ( $o['swatch'] && '' === (string) get_term_meta( $t->term_id, '_sgs_swatch_color', true ) ) { update_term_meta( $t->term_id, '_sgs_swatch_color', sanitize_hex_color( $o['swatch'] ) ); }
+				if ( $a['default'] === $o['term'] && ! isset( $defaults[ $tax ] ) ) { $defaults[ $tax ] = $t->slug; }
+			}
+			if ( $cur && $cur->get_variation() && ! $grew ) { continue; }
+			$attr = $cur ? $cur : new WC_Product_Attribute();
+			if ( ! $cur ) {
+				$attr->set_id( wc_attribute_taxonomy_id_by_name( $tax ) );
+				$attr->set_name( $tax );
+				$attr->set_position( count( $list ) );
+			}
+			$attr->set_options( $ids );
+			if ( ! $attr->get_variation() ) {
+				$attr->set_visible( true );
+				$attr->set_variation( true );
+				$done[] = $p['draftId'] . ': choice ' . $tax . ' added';
+			} else {
+				$done[] = $p['draftId'] . ': term(s) ' . implode( ', ', $grew ) . ' added to choice ' . $tax;
+			}
+			$list[ $tax ] = $attr;
+			$changed = true;
+		}
+		if ( $changed ) {
+			$wc->set_attributes( $list );
+			$wc->set_default_attributes( $defaults );
+		}
 	}
 	$id = $wc->save();
 	if ( ! $ours ) {
@@ -254,24 +325,67 @@ foreach ( $steps as $s ) {
 		$ids = array_values( array_filter( array_map( $image_id, $s['gallery'] ) ) );
 		if ( $ids ) { $wc->set_gallery_image_ids( $ids ); $wc->save(); }
 	}
+	// Whether a variation gives a value for every one of the catalogue's choices (null for a product that is not the route's).
+	$covers = null;
+	if ( $route ) {
+		$axes = array();
+		foreach ( $p['attributes'] as $a ) { $axes[] = wc_attribute_taxonomy_name( $a['slug'] ); }
+		$covers = function ( $vid ) use ( $axes ) {
+			$va = wc_get_product( $vid );
+			$set = $va ? $va->get_attributes() : array();
+			foreach ( $axes as $tax ) { if ( '' === (string) ( $set[ $tax ] ?? '' ) ) { return false; } }
+			return (bool) $va;
+		};
+	}
+	if ( $route && 'variable' === $p['type'] && $wc->is_type( 'variable' ) && $p['variations'] ) {
+		// An old variation that gives no value for one of the catalogue's choices is trashed; one an order holds is set private
+		// (the order keeps its line) and reported; one already private stays.
+		$swept = false;
+		foreach ( $wc->get_children() as $vid ) {
+			$old = wc_get_product( $vid );
+			if ( ! $old || 'private' === get_post_status( $vid ) || $covers( $vid ) ) { continue; }
+			if ( $sgs_ordered( $vid ) ) {
+				$old->set_status( 'private' );
+				$old->save();
+				$done[] = $p['draftId'] . ': variation ' . $vid . ' (' . $old->get_sku() . ') set private, an order holds it';
+			} else {
+				$old->delete( false );
+				$done[] = $p['draftId'] . ': old variation ' . $vid . ' (' . $old->get_sku() . ') trashed, it misses a choice';
+			}
+			$swept = true;
+		}
+		if ( $swept ) {
+			wc_delete_product_transients( $id );
+			$wc = wc_get_product( $id );
+		}
+	}
 	if ( ( $ours || ! $wc->get_children() ) && 'variable' === $p['type'] && $wc->is_type( 'variable' ) ) {
 		$have = array();
-		foreach ( $wc->get_children() as $vid ) { $have[ (string) get_post_meta( $vid, '_sku', true ) ] = $vid; }
+		// A variation of the route's product that misses a choice does not hold its SKU's place.
+		foreach ( $wc->get_children() as $vid ) {
+			if ( $covers && ! $covers( $vid ) ) { continue; }
+			$have[ (string) get_post_meta( $vid, '_sku', true ) ] = $vid;
+		}
 		foreach ( $p['variations'] as $v ) {
 			if ( isset( $have[ $v['sku'] ] ) ) { continue; }
-			$va = new WC_Product_Variation();
-			$va->set_parent_id( $id );
-			$va->set_sku( $v['sku'] );
-			$va->set_regular_price( (string) $v['price'] );
-			$set = array();
-			foreach ( $v['options'] as $slug => $name ) {
-				$tax = wc_attribute_taxonomy_name( $slug );
-				$t = get_term_by( 'name', $name, $tax );
-				if ( $t ) { $set[ $tax ] = $t->slug; }
+			try {
+				$va = new WC_Product_Variation();
+				$va->set_parent_id( $id );
+				$va->set_sku( $v['sku'] );
+				$va->set_regular_price( (string) $v['price'] );
+				$set = array();
+				foreach ( $v['options'] as $slug => $name ) {
+					$tax = wc_attribute_taxonomy_name( $slug );
+					$t = get_term_by( 'name', $name, $tax );
+					if ( $t ) { $set[ $tax ] = $t->slug; }
+				}
+				$va->set_attributes( $set );
+				$va->set_status( 'publish' );
+				$vid = $va->save();
+			} catch ( Exception $e ) {
+				$issues[] = $p['draftId'] . ': variation ' . $v['sku'] . ' not made: ' . $e->getMessage();
+				continue;
 			}
-			$va->set_attributes( $set );
-			$va->set_status( 'publish' );
-			$vid = $va->save();
 			foreach ( $p['attributes'] as $a ) {
 				if ( ! $a['packSize'] || ! isset( $v['options'][ $a['slug'] ] ) ) { continue; }
 				foreach ( $a['options'] as $o ) {

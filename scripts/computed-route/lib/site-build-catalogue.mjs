@@ -5,8 +5,10 @@
 //     and lacks something the catalogue gives it), `exists` (nothing to add) or `left` (the product found is a fixture or
 //     calibration product: `_sgs_cr_fixture`, `_sgs_fixture` or an `sgs-fixture-` SKU, never touched);
 //   - apply: creates what is missing and only fills what an existing product lacks (a product the catalogue did not make
-//     keeps its name, price and choices; its variations are made only when it has none), then reads the site again, which
-//     must plan nothing, and records each draft id's product id and permalink in catalogue.json's `sites.<site>`;
+//     keeps its name, price and choices; its variations are made only when it has none; a product the route made, whose SKU is
+//     the catalogue's own `sgs-draft-*`, also gains a choice the catalogue added later, with its terms and variations, and its
+//     old variations that miss a choice are trashed, or set private when an order holds one, lib/site-build-catalogue-axes.mjs),
+//     then reads the site again, which must plan nothing, and records each draft id's product id and permalink in catalogue.json's `sites.<site>`;
 //   - the product base the draft's manifest declares is set when the site's differs; a product's address is then the
 //     one the link resolver writes (lib/draft-link.mjs);
 //   - each facet (a filter the draft's shop offers) is a global attribute with its terms, and each product's terms a
@@ -36,6 +38,7 @@ import { catalogueProblems } from './intake-catalogue-run.mjs';
 import { PHOTO_TO_COME, catalogueApplyPhp, catalogueStatePhp, productBaseFlushPhp } from './site-build-catalogue-php.mjs';
 import { stockFileName, stockKey } from './media-stock.mjs';
 import { attributeFacets, facetLack, facetSay, planFacets, tallyFacets } from './site-build-catalogue-facets.mjs';
+import { axisActs, axisChanges, axisLacks, axisNotes, routeMade } from './site-build-catalogue-axes.mjs';
 import { runToggle } from './site-build-catalogue-toggle.mjs';
 
 export { PHOTO_TO_COME };
@@ -145,14 +148,21 @@ export function planCatalogue( catalogue, state ) {
 			actions.push( { ...step, action: 'left', say: `left ${ p.draftId }: product ${ s.id } is a fixture` } );
 			continue;
 		}
-		const lack = missing( p, s, state, catalogue );
+		const route = routeMade( p, s );
+		const axes = axisChanges( p, s );
+		notes.push( ...axisNotes( p, s, axes, route ) );
+		// An old variation that misses a choice does not hold its SKU's place (the write skips it too).
+		const missed = route && axes ? new Set( [ ...axes.trash, ...axes.priv, ...axes.kept ].map( ( r ) => r.sku ) ) : null;
+		const lack = [ ...( route && axes ? axisLacks( axes ) : [] ), ...missing( p, missed ? { ...s, variations: s.variations.filter( ( k ) => ! missed.has( k ) ) } : s, state, catalogue ) ];
+		const acts = route && axes ? axisActs( axes ) : [];
 		if ( s.type !== p.type ) {
 			notes.push( `${ p.draftId }: product ${ s.id } (found by ${ s.how }) is ${ s.type }, the catalogue's is ${ p.type }; its type is left` );
 		}
 		if ( s.permalink && ! s.permalink.endsWith( address ) && ! productBase ) {
 			notes.push( `${ p.draftId }: product ${ s.id } is at ${ s.permalink }, not ${ address }, so draft links to it miss` );
 		}
-		actions.push( { ...step, action: lack.length ? 'complete' : 'exists', placeholder: step.photoToCome && ! s.image, id: s.id, say: lack.length ? `complete ${ p.draftId }: product ${ s.id } (found by ${ s.how }) lacks ${ lack.join( ', ' ) }` : `exists ${ p.draftId }: product ${ s.id }` } );
+		const what = [ lack.length && `lacks ${ lack.join( ', ' ) }`, ...acts ].filter( Boolean ).join( '; ' );
+		actions.push( { ...step, action: what ? 'complete' : 'exists', placeholder: step.photoToCome && ! s.image, id: s.id, say: what ? `complete ${ p.draftId }: product ${ s.id } (found by ${ s.how }) ${ what }` : `exists ${ p.draftId }: product ${ s.id }` } );
 	}
 	for ( const [ kind, re ] of Object.entries( GAP_PLUGINS ) ) {
 		const gaps = catalogue.gaps.filter( ( g ) => g.kind === kind );

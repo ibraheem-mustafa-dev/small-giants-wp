@@ -1,0 +1,140 @@
+[
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "Boolean( s.sku ) && s.sku === p.sku && s.sku.startsWith( SKU_PREFIX )",
+		"replace": "Boolean( s.sku ) && s.sku === p.sku",
+		"why": "a product with the catalogue's SKU but no route prefix is the route's"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "Boolean( s.sku ) && s.sku === p.sku && s.sku.startsWith( SKU_PREFIX )",
+		"replace": "Boolean( s.sku ) && s.sku.startsWith( SKU_PREFIX )",
+		"why": "any product with a route-prefixed SKU is the route's, whatever the catalogue's SKU is"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "! Array.isArray( s.variationAttributes ) || ",
+		"replace": "",
+		"why": "a state without the attribute detail is planned as if the product held no choices"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "'variable' !== s.type || ",
+		"replace": "",
+		"why": "a found product that is not variable is planned for choices"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "'variable' !== p.type || ",
+		"replace": "",
+		"why": "a catalogue product that is not variable is planned for choices"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "|| ! p.attributes.length ) {",
+		"replace": "|| false ) {",
+		"why": "a catalogue product with no attribute is planned for choices"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "p.attributes.filter( ( a ) => ! have.has( taxOf( a.slug ) ) )",
+		"replace": "p.attributes.filter( ( a ) => true )",
+		"why": "every attribute is a choice to add, the ones the product has included"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "p.attributes.filter( ( a ) => have.has( taxOf( a.slug ) ) ).map(",
+		"replace": "p.attributes.filter( ( a ) => true ).map(",
+		"why": "terms are planned for choices the product lacks too"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": ".filter( ( x ) => x.names.length );",
+		"replace": ";",
+		"why": "a choice with no term to add is planned"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "! p.attributes.every( ( a ) => r.options?.[ taxOf( a.slug ) ] )",
+		"replace": "! p.attributes.some( ( a ) => r.options?.[ taxOf( a.slug ) ] )",
+		"why": "a variation with a value for any one choice counts as covering them all"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "const old = p.variations.length ? ( s.variationRows || [] ).filter(",
+		"replace": "const old = true ? ( s.variationRows || [] ).filter(",
+		"why": "a product the catalogue gives no variation is swept bare"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "trash: old.filter( ( r ) => 'private' !== r.status && ! r.ordered )",
+		"replace": "trash: old.filter( ( r ) => ! r.ordered )",
+		"why": "a private variation is trashed"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "priv: old.filter( ( r ) => 'private' !== r.status && r.ordered )",
+		"replace": "priv: old.filter( ( r ) => r.ordered )",
+		"why": "a variation already private is set private again"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "kept: old.filter( ( r ) => 'private' === r.status )",
+		"replace": "kept: []",
+		"why": "a private old variation is not noted"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "`the choice ${ a.label } (",
+		"replace": "`${ a.label } (",
+		"why": "the plan line does not say a choice is added"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "`trashes ${ c.trash.length } old variation(s)",
+		"replace": "`removes ${ c.trash.length } old variation(s)",
+		"why": "the plan line does not say trash"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "`sets ${ c.priv.length } old variation(s) that miss a choice private, an order holds",
+		"replace": "`sets ${ c.priv.length } old variation(s) that miss a choice private, nobody holds",
+		"why": "the plan line does not say an order holds it"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "if ( c && ! route && c.axes.length ) {",
+		"replace": "if ( c && c.axes.length ) {",
+		"why": "a route-made product is noted as made by another author"
+	},
+	{
+		"file": "lib/site-build-catalogue.mjs",
+		"find": "...( route && axes ? axisLacks( axes ) : [] )",
+		"replace": "...( axes ? axisLacks( axes ) : [] )",
+		"why": "a product another author made is planned for a choice"
+	},
+	{
+		"file": "lib/site-build-catalogue.mjs",
+		"find": "const acts = route && axes ? axisActs( axes ) : [];",
+		"replace": "const acts = axes ? axisActs( axes ) : [];",
+		"why": "a product another author made has its old variations trashed"
+	},
+	{
+		"file": "lib/site-build-catalogue.mjs",
+		"find": "notes.push( ...axisNotes( p, s, axes, route ) );",
+		"replace": "",
+		"why": "the notes about choices are dropped"
+	},
+	{
+		"file": "lib/site-build-catalogue.mjs",
+		"find": "missed ? { ...s, variations: s.variations.filter( ( k ) => ! missed.has( k ) ) } : s",
+		"replace": "s",
+		"why": "an old variation that misses a choice holds its SKU's place in the plan"
+	},
+	{
+		"file": "lib/site-build-catalogue.mjs",
+		"find": "[ lack.length && `lacks ${ lack.join( ', ' ) }`, ...acts ]",
+		"replace": "[ lack.length && `lacks ${ lack.join( ', ' ) }` ]",
+		"why": "the plan does not name the old variations to trash"
+	}
+]

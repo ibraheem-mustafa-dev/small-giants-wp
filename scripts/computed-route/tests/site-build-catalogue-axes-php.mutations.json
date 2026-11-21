@@ -1,0 +1,134 @@
+[
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$route = $id && $ours && 0 === strpos( $p['sku'], '${ SKU_PREFIX }' );",
+		"replace": "$route = $id && 0 === strpos( $p['sku'], '${ SKU_PREFIX }' );",
+		"why": "a product another author made is the route's"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$route = $id && $ours && 0 === strpos( $p['sku'], '${ SKU_PREFIX }' );",
+		"replace": "$route = $id && $ours;",
+		"why": "a product with no route prefix is the route's"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "} elseif ( $route && $p['attributes'] && $wc->is_type( 'variable' ) ) {",
+		"replace": "} elseif ( false ) {",
+		"why": "an existing product never gains a choice"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $cur && $cur->get_variation() && ! $grew ) { continue; }",
+		"replace": "",
+		"why": "a settled choice is rewritten and reported each run"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$ids[] = (int) $t->term_id; $grew[] = $o['term'];",
+		"replace": "$ids[] = (int) $t->term_id;",
+		"why": "a term the choice lacks is never added"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( ! $attr->get_variation() ) {",
+		"replace": "if ( true ) {",
+		"why": "a term added to a choice the product has is reported as a new choice"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$attr->set_variation( true );\n\t\t\t\t$done[] = $p['draftId'] . ': choice ' . $tax . ' added';",
+		"replace": "$attr->set_variation( false );\n\t\t\t\t$done[] = $p['draftId'] . ': choice ' . $tax . ' added';",
+		"why": "the added attribute is no variation"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $a['default'] === $o['term'] && ! isset( $defaults[ $tax ] ) ) { $defaults[ $tax ] = $t->slug; }",
+		"replace": "",
+		"why": "the new choice has no default"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( ! $old || 'private' === get_post_status( $vid ) || $covers( $vid ) ) { continue; }",
+		"replace": "if ( ! $old || $covers( $vid ) ) { continue; }",
+		"why": "a private old variation is swept again"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( ! $old || 'private' === get_post_status( $vid ) || $covers( $vid ) ) { continue; }",
+		"replace": "if ( ! $old || 'private' === get_post_status( $vid ) || false ) { continue; }",
+		"why": "every variation is swept, those that cover the choices too"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $sgs_ordered( $vid ) ) {\n\t\t\t\t$old->set_status( 'private' );",
+		"replace": "if ( false ) {\n\t\t\t\t$old->set_status( 'private' );",
+		"why": "an order-held variation is trashed"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $sgs_ordered( $vid ) ) {\n\t\t\t\t$old->set_status( 'private' );",
+		"replace": "if ( true ) {\n\t\t\t\t$old->set_status( 'private' );",
+		"why": "an order-free variation is set private, never trashed"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$old->set_status( 'private' );",
+		"replace": "$old->set_status( 'publish' );",
+		"why": "an order-held variation stays public"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$old->delete( false );",
+		"replace": "",
+		"why": "an old variation is never trashed"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $covers && ! $covers( $vid ) ) { continue; }",
+		"replace": "",
+		"why": "an old variation that misses a choice holds its SKU's place in the write"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "} catch ( Exception $e ) {",
+		"replace": "} catch ( InvalidArgumentException $e ) {",
+		"why": "a SKU clash stops the run"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$issues[] = $p['draftId'] . ': variation ' . $v['sku'] . ' not made: ' . $e->getMessage();",
+		"replace": "",
+		"why": "a variation not made is not reported"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "'ordered' => $sgs_ordered( $vid ) );",
+		"replace": "'ordered' => false );",
+		"why": "the read never says an order holds a variation"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $a->get_variation() ) { $vattrs[] = (string) $tax; }",
+		"replace": "",
+		"why": "the read lists no attribute as a choice"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "if ( $wc && $wc->is_type( 'variable' ) && 0 === strpos( (string) get_post_meta( $id, '_sku', true ), '${ SKU_PREFIX }' ) ) {",
+		"replace": "if ( $wc && $wc->is_type( 'variable' ) ) {",
+		"why": "the read gathers variation rows of any product"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "meta_key = '_variation_id' AND meta_value = %d LIMIT 1",
+		"replace": "meta_key = '_product_id' AND meta_value = %d LIMIT 1",
+		"why": "an order is looked up by the wrong item meta"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$aterms[ $tax ] = array_values( wc_get_product_terms( $id, $tax, array( 'fields' => 'names' ) ) );",
+		"replace": "$aterms[ $tax ] = array_values( wc_get_product_terms( $id, $tax, array( 'fields' => 'ids' ) ) );",
+		"why": "the read gives the terms as ids, not names"
+	}
+]
