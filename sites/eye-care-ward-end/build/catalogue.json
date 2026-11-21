@@ -119,7 +119,7 @@
       ],
       "wildcard": null,
       "toggleLabel": null,
-      "axis": false,
+      "axis": true,
       "files": [
         "Eye Care Birmingham.dc.html"
       ]
@@ -385,27 +385,140 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Gold",
+              "term": "Gold",
+              "price": null,
+              "swatch": "#c6a469",
+              "badge": null
+            },
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Gunmetal",
+              "term": "Gunmetal",
+              "price": null,
+              "swatch": "#5d6268",
+              "badge": null
+            },
+            {
+              "value": "Silver",
+              "term": "Silver",
+              "price": null,
+              "swatch": "#b9bcc0",
+              "badge": null
+            }
+          ],
+          "default": "Gold"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-1-s",
+          "sku": "sgs-draft-1-s-gold",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Gold"
           },
           "price": 139
         },
         {
-          "sku": "sgs-draft-1-m",
+          "sku": "sgs-draft-1-s-black",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 139
         },
         {
-          "sku": "sgs-draft-1-l",
+          "sku": "sgs-draft-1-s-gunmetal",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Gunmetal"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-s-silver",
+          "options": {
+            "size": "S",
+            "colour": "Silver"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-m-gold",
+          "options": {
+            "size": "M",
+            "colour": "Gold"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-m-gunmetal",
+          "options": {
+            "size": "M",
+            "colour": "Gunmetal"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-m-silver",
+          "options": {
+            "size": "M",
+            "colour": "Silver"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-l-gold",
+          "options": {
+            "size": "L",
+            "colour": "Gold"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-l-gunmetal",
+          "options": {
+            "size": "L",
+            "colour": "Gunmetal"
+          },
+          "price": 139
+        },
+        {
+          "sku": "sgs-draft-1-l-silver",
+          "options": {
+            "size": "L",
+            "colour": "Silver"
           },
           "price": 139
         }
@@ -485,27 +598,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Ivory",
+              "term": "Ivory",
+              "price": null,
+              "swatch": "#e8e1d3",
+              "badge": null
+            },
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Havana",
+              "term": "Havana",
+              "price": null,
+              "swatch": "#7d5030",
+              "badge": null
+            }
+          ],
+          "default": "Ivory"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-2-s",
+          "sku": "sgs-draft-2-s-ivory",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Ivory"
           },
           "price": 289
         },
         {
-          "sku": "sgs-draft-2-m",
+          "sku": "sgs-draft-2-s-black",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 289
         },
         {
-          "sku": "sgs-draft-2-l",
+          "sku": "sgs-draft-2-s-havana",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Havana"
+          },
+          "price": 289
+        },
+        {
+          "sku": "sgs-draft-2-m-ivory",
+          "options": {
+            "size": "M",
+            "colour": "Ivory"
+          },
+          "price": 289
+        },
+        {
+          "sku": "sgs-draft-2-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 289
+        },
+        {
+          "sku": "sgs-draft-2-m-havana",
+          "options": {
+            "size": "M",
+            "colour": "Havana"
+          },
+          "price": 289
+        },
+        {
+          "sku": "sgs-draft-2-l-ivory",
+          "options": {
+            "size": "L",
+            "colour": "Ivory"
+          },
+          "price": 289
+        },
+        {
+          "sku": "sgs-draft-2-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 289
+        },
+        {
+          "sku": "sgs-draft-2-l-havana",
+          "options": {
+            "size": "L",
+            "colour": "Havana"
           },
           "price": 289
         }
@@ -588,27 +783,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Gunmetal",
+              "term": "Gunmetal",
+              "price": null,
+              "swatch": "#5d6268",
+              "badge": null
+            },
+            {
+              "value": "Brown",
+              "term": "Brown",
+              "price": null,
+              "swatch": "#4e3526",
+              "badge": null
+            }
+          ],
+          "default": "Black"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-3-s",
+          "sku": "sgs-draft-3-s-black",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 119
         },
         {
-          "sku": "sgs-draft-3-m",
+          "sku": "sgs-draft-3-s-gunmetal",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Gunmetal"
           },
           "price": 119
         },
         {
-          "sku": "sgs-draft-3-l",
+          "sku": "sgs-draft-3-s-brown",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Brown"
+          },
+          "price": 119
+        },
+        {
+          "sku": "sgs-draft-3-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 119
+        },
+        {
+          "sku": "sgs-draft-3-m-gunmetal",
+          "options": {
+            "size": "M",
+            "colour": "Gunmetal"
+          },
+          "price": 119
+        },
+        {
+          "sku": "sgs-draft-3-m-brown",
+          "options": {
+            "size": "M",
+            "colour": "Brown"
+          },
+          "price": 119
+        },
+        {
+          "sku": "sgs-draft-3-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 119
+        },
+        {
+          "sku": "sgs-draft-3-l-gunmetal",
+          "options": {
+            "size": "L",
+            "colour": "Gunmetal"
+          },
+          "price": 119
+        },
+        {
+          "sku": "sgs-draft-3-l-brown",
+          "options": {
+            "size": "L",
+            "colour": "Brown"
           },
           "price": 119
         }
@@ -686,27 +963,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Ivory",
+              "term": "Ivory",
+              "price": null,
+              "swatch": "#e8e1d3",
+              "badge": null
+            },
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Havana",
+              "term": "Havana",
+              "price": null,
+              "swatch": "#7d5030",
+              "badge": null
+            }
+          ],
+          "default": "Ivory"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-4-s",
+          "sku": "sgs-draft-4-s-ivory",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Ivory"
           },
           "price": 239
         },
         {
-          "sku": "sgs-draft-4-m",
+          "sku": "sgs-draft-4-s-black",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 239
         },
         {
-          "sku": "sgs-draft-4-l",
+          "sku": "sgs-draft-4-s-havana",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Havana"
+          },
+          "price": 239
+        },
+        {
+          "sku": "sgs-draft-4-m-ivory",
+          "options": {
+            "size": "M",
+            "colour": "Ivory"
+          },
+          "price": 239
+        },
+        {
+          "sku": "sgs-draft-4-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 239
+        },
+        {
+          "sku": "sgs-draft-4-m-havana",
+          "options": {
+            "size": "M",
+            "colour": "Havana"
+          },
+          "price": 239
+        },
+        {
+          "sku": "sgs-draft-4-l-ivory",
+          "options": {
+            "size": "L",
+            "colour": "Ivory"
+          },
+          "price": 239
+        },
+        {
+          "sku": "sgs-draft-4-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 239
+        },
+        {
+          "sku": "sgs-draft-4-l-havana",
+          "options": {
+            "size": "L",
+            "colour": "Havana"
           },
           "price": 239
         }
@@ -790,27 +1149,202 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Havana",
+              "term": "Havana",
+              "price": null,
+              "swatch": "#7d5030",
+              "badge": null
+            },
+            {
+              "value": "Tortoise",
+              "term": "Tortoise",
+              "price": null,
+              "swatch": "#8a5a2b",
+              "badge": null
+            },
+            {
+              "value": "Crystal",
+              "term": "Crystal",
+              "price": null,
+              "swatch": "#d9dde0",
+              "badge": null
+            },
+            {
+              "value": "Navy",
+              "term": "Navy",
+              "price": null,
+              "swatch": "#2b3550",
+              "badge": null
+            },
+            {
+              "value": "Gold",
+              "term": "Gold",
+              "price": null,
+              "swatch": "#c6a469",
+              "badge": null
+            }
+          ],
+          "default": "Black"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-5-s",
+          "sku": "sgs-draft-5-s-black",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 129
         },
         {
-          "sku": "sgs-draft-5-m",
+          "sku": "sgs-draft-5-s-havana",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Havana"
           },
           "price": 129
         },
         {
-          "sku": "sgs-draft-5-l",
+          "sku": "sgs-draft-5-s-tortoise",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Tortoise"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-s-crystal",
+          "options": {
+            "size": "S",
+            "colour": "Crystal"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-s-navy",
+          "options": {
+            "size": "S",
+            "colour": "Navy"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-s-gold",
+          "options": {
+            "size": "S",
+            "colour": "Gold"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-m-havana",
+          "options": {
+            "size": "M",
+            "colour": "Havana"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-m-tortoise",
+          "options": {
+            "size": "M",
+            "colour": "Tortoise"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-m-crystal",
+          "options": {
+            "size": "M",
+            "colour": "Crystal"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-m-navy",
+          "options": {
+            "size": "M",
+            "colour": "Navy"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-m-gold",
+          "options": {
+            "size": "M",
+            "colour": "Gold"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-l-havana",
+          "options": {
+            "size": "L",
+            "colour": "Havana"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-l-tortoise",
+          "options": {
+            "size": "L",
+            "colour": "Tortoise"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-l-crystal",
+          "options": {
+            "size": "L",
+            "colour": "Crystal"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-l-navy",
+          "options": {
+            "size": "L",
+            "colour": "Navy"
+          },
+          "price": 129
+        },
+        {
+          "sku": "sgs-draft-5-l-gold",
+          "options": {
+            "size": "L",
+            "colour": "Gold"
           },
           "price": 129
         }
@@ -891,27 +1425,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Gold",
+              "term": "Gold",
+              "price": null,
+              "swatch": "#c6a469",
+              "badge": null
+            },
+            {
+              "value": "Gunmetal",
+              "term": "Gunmetal",
+              "price": null,
+              "swatch": "#5d6268",
+              "badge": null
+            },
+            {
+              "value": "Silver",
+              "term": "Silver",
+              "price": null,
+              "swatch": "#b9bcc0",
+              "badge": null
+            }
+          ],
+          "default": "Gold"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-6-s",
+          "sku": "sgs-draft-6-s-gold",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Gold"
           },
           "price": 135
         },
         {
-          "sku": "sgs-draft-6-m",
+          "sku": "sgs-draft-6-s-gunmetal",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Gunmetal"
           },
           "price": 135
         },
         {
-          "sku": "sgs-draft-6-l",
+          "sku": "sgs-draft-6-s-silver",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Silver"
+          },
+          "price": 135
+        },
+        {
+          "sku": "sgs-draft-6-m-gold",
+          "options": {
+            "size": "M",
+            "colour": "Gold"
+          },
+          "price": 135
+        },
+        {
+          "sku": "sgs-draft-6-m-gunmetal",
+          "options": {
+            "size": "M",
+            "colour": "Gunmetal"
+          },
+          "price": 135
+        },
+        {
+          "sku": "sgs-draft-6-m-silver",
+          "options": {
+            "size": "M",
+            "colour": "Silver"
+          },
+          "price": 135
+        },
+        {
+          "sku": "sgs-draft-6-l-gold",
+          "options": {
+            "size": "L",
+            "colour": "Gold"
+          },
+          "price": 135
+        },
+        {
+          "sku": "sgs-draft-6-l-gunmetal",
+          "options": {
+            "size": "L",
+            "colour": "Gunmetal"
+          },
+          "price": 135
+        },
+        {
+          "sku": "sgs-draft-6-l-silver",
+          "options": {
+            "size": "L",
+            "colour": "Silver"
           },
           "price": 135
         }
@@ -990,27 +1606,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Gold",
+              "term": "Gold",
+              "price": null,
+              "swatch": "#c6a469",
+              "badge": null
+            },
+            {
+              "value": "Havana",
+              "term": "Havana",
+              "price": null,
+              "swatch": "#7d5030",
+              "badge": null
+            }
+          ],
+          "default": "Black"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-7-s",
+          "sku": "sgs-draft-7-s-black",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 199
         },
         {
-          "sku": "sgs-draft-7-m",
+          "sku": "sgs-draft-7-s-gold",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Gold"
           },
           "price": 199
         },
         {
-          "sku": "sgs-draft-7-l",
+          "sku": "sgs-draft-7-s-havana",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Havana"
+          },
+          "price": 199
+        },
+        {
+          "sku": "sgs-draft-7-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 199
+        },
+        {
+          "sku": "sgs-draft-7-m-gold",
+          "options": {
+            "size": "M",
+            "colour": "Gold"
+          },
+          "price": 199
+        },
+        {
+          "sku": "sgs-draft-7-m-havana",
+          "options": {
+            "size": "M",
+            "colour": "Havana"
+          },
+          "price": 199
+        },
+        {
+          "sku": "sgs-draft-7-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 199
+        },
+        {
+          "sku": "sgs-draft-7-l-gold",
+          "options": {
+            "size": "L",
+            "colour": "Gold"
+          },
+          "price": 199
+        },
+        {
+          "sku": "sgs-draft-7-l-havana",
+          "options": {
+            "size": "L",
+            "colour": "Havana"
           },
           "price": 199
         }
@@ -1091,27 +1789,78 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Havana",
+              "term": "Havana",
+              "price": null,
+              "swatch": "#7d5030",
+              "badge": null
+            },
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            }
+          ],
+          "default": "Havana"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-8-s",
+          "sku": "sgs-draft-8-s-havana",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Havana"
           },
           "price": 59
         },
         {
-          "sku": "sgs-draft-8-m",
+          "sku": "sgs-draft-8-s-black",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 59
         },
         {
-          "sku": "sgs-draft-8-l",
+          "sku": "sgs-draft-8-m-havana",
           "options": {
-            "size": "L"
+            "size": "M",
+            "colour": "Havana"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-8-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-8-l-havana",
+          "options": {
+            "size": "L",
+            "colour": "Havana"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-8-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
           },
           "price": 59
         }
@@ -1189,27 +1938,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Gunmetal",
+              "term": "Gunmetal",
+              "price": null,
+              "swatch": "#5d6268",
+              "badge": null
+            },
+            {
+              "value": "Gold",
+              "term": "Gold",
+              "price": null,
+              "swatch": "#c6a469",
+              "badge": null
+            }
+          ],
+          "default": "Black"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-9-s",
+          "sku": "sgs-draft-9-s-black",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 109
         },
         {
-          "sku": "sgs-draft-9-m",
+          "sku": "sgs-draft-9-s-gunmetal",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Gunmetal"
           },
           "price": 109
         },
         {
-          "sku": "sgs-draft-9-l",
+          "sku": "sgs-draft-9-s-gold",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Gold"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-9-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-9-m-gunmetal",
+          "options": {
+            "size": "M",
+            "colour": "Gunmetal"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-9-m-gold",
+          "options": {
+            "size": "M",
+            "colour": "Gold"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-9-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-9-l-gunmetal",
+          "options": {
+            "size": "L",
+            "colour": "Gunmetal"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-9-l-gold",
+          "options": {
+            "size": "L",
+            "colour": "Gold"
           },
           "price": 109
         }
@@ -1286,27 +2117,78 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Red",
+              "term": "Red",
+              "price": null,
+              "swatch": "#8d2b26",
+              "badge": null
+            }
+          ],
+          "default": "Black"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-10-s",
+          "sku": "sgs-draft-10-s-black",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 169
         },
         {
-          "sku": "sgs-draft-10-m",
+          "sku": "sgs-draft-10-s-red",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Red"
           },
           "price": 169
         },
         {
-          "sku": "sgs-draft-10-l",
+          "sku": "sgs-draft-10-m-black",
           "options": {
-            "size": "L"
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 169
+        },
+        {
+          "sku": "sgs-draft-10-m-red",
+          "options": {
+            "size": "M",
+            "colour": "Red"
+          },
+          "price": 169
+        },
+        {
+          "sku": "sgs-draft-10-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 169
+        },
+        {
+          "sku": "sgs-draft-10-l-red",
+          "options": {
+            "size": "L",
+            "colour": "Red"
           },
           "price": 169
         }
@@ -1385,27 +2267,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Tortoise",
+              "term": "Tortoise",
+              "price": null,
+              "swatch": "#8a5a2b",
+              "badge": null
+            },
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Crystal",
+              "term": "Crystal",
+              "price": null,
+              "swatch": "#d9dde0",
+              "badge": null
+            }
+          ],
+          "default": "Tortoise"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-11-s",
+          "sku": "sgs-draft-11-s-tortoise",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Tortoise"
           },
           "price": 59
         },
         {
-          "sku": "sgs-draft-11-m",
+          "sku": "sgs-draft-11-s-black",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 59
         },
         {
-          "sku": "sgs-draft-11-l",
+          "sku": "sgs-draft-11-s-crystal",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Crystal"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-11-m-tortoise",
+          "options": {
+            "size": "M",
+            "colour": "Tortoise"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-11-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-11-m-crystal",
+          "options": {
+            "size": "M",
+            "colour": "Crystal"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-11-l-tortoise",
+          "options": {
+            "size": "L",
+            "colour": "Tortoise"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-11-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 59
+        },
+        {
+          "sku": "sgs-draft-11-l-crystal",
+          "options": {
+            "size": "L",
+            "colour": "Crystal"
           },
           "price": 59
         }
@@ -1482,27 +2446,78 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Silver",
+              "term": "Silver",
+              "price": null,
+              "swatch": "#b9bcc0",
+              "badge": null
+            }
+          ],
+          "default": "Black"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-12-s",
+          "sku": "sgs-draft-12-s-black",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 339
         },
         {
-          "sku": "sgs-draft-12-m",
+          "sku": "sgs-draft-12-s-silver",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Silver"
           },
           "price": 339
         },
         {
-          "sku": "sgs-draft-12-l",
+          "sku": "sgs-draft-12-m-black",
           "options": {
-            "size": "L"
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 339
+        },
+        {
+          "sku": "sgs-draft-12-m-silver",
+          "options": {
+            "size": "M",
+            "colour": "Silver"
+          },
+          "price": 339
+        },
+        {
+          "sku": "sgs-draft-12-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 339
+        },
+        {
+          "sku": "sgs-draft-12-l-silver",
+          "options": {
+            "size": "L",
+            "colour": "Silver"
           },
           "price": 339
         }
@@ -1583,27 +2598,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Gunmetal",
+              "term": "Gunmetal",
+              "price": null,
+              "swatch": "#5d6268",
+              "badge": null
+            },
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Navy",
+              "term": "Navy",
+              "price": null,
+              "swatch": "#2b3550",
+              "badge": null
+            }
+          ],
+          "default": "Gunmetal"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-13-s",
+          "sku": "sgs-draft-13-s-gunmetal",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Gunmetal"
           },
           "price": 99
         },
         {
-          "sku": "sgs-draft-13-m",
+          "sku": "sgs-draft-13-s-black",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 99
         },
         {
-          "sku": "sgs-draft-13-l",
+          "sku": "sgs-draft-13-s-navy",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Navy"
+          },
+          "price": 99
+        },
+        {
+          "sku": "sgs-draft-13-m-gunmetal",
+          "options": {
+            "size": "M",
+            "colour": "Gunmetal"
+          },
+          "price": 99
+        },
+        {
+          "sku": "sgs-draft-13-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 99
+        },
+        {
+          "sku": "sgs-draft-13-m-navy",
+          "options": {
+            "size": "M",
+            "colour": "Navy"
+          },
+          "price": 99
+        },
+        {
+          "sku": "sgs-draft-13-l-gunmetal",
+          "options": {
+            "size": "L",
+            "colour": "Gunmetal"
+          },
+          "price": 99
+        },
+        {
+          "sku": "sgs-draft-13-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 99
+        },
+        {
+          "sku": "sgs-draft-13-l-navy",
+          "options": {
+            "size": "L",
+            "colour": "Navy"
           },
           "price": 99
         }
@@ -1681,27 +2778,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Havana",
+              "term": "Havana",
+              "price": null,
+              "swatch": "#7d5030",
+              "badge": null
+            },
+            {
+              "value": "Ivory",
+              "term": "Ivory",
+              "price": null,
+              "swatch": "#e8e1d3",
+              "badge": null
+            }
+          ],
+          "default": "Black"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-14-s",
+          "sku": "sgs-draft-14-s-black",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 215
         },
         {
-          "sku": "sgs-draft-14-m",
+          "sku": "sgs-draft-14-s-havana",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Havana"
           },
           "price": 215
         },
         {
-          "sku": "sgs-draft-14-l",
+          "sku": "sgs-draft-14-s-ivory",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Ivory"
+          },
+          "price": 215
+        },
+        {
+          "sku": "sgs-draft-14-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 215
+        },
+        {
+          "sku": "sgs-draft-14-m-havana",
+          "options": {
+            "size": "M",
+            "colour": "Havana"
+          },
+          "price": 215
+        },
+        {
+          "sku": "sgs-draft-14-m-ivory",
+          "options": {
+            "size": "M",
+            "colour": "Ivory"
+          },
+          "price": 215
+        },
+        {
+          "sku": "sgs-draft-14-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 215
+        },
+        {
+          "sku": "sgs-draft-14-l-havana",
+          "options": {
+            "size": "L",
+            "colour": "Havana"
+          },
+          "price": 215
+        },
+        {
+          "sku": "sgs-draft-14-l-ivory",
+          "options": {
+            "size": "L",
+            "colour": "Ivory"
           },
           "price": 215
         }
@@ -1779,27 +2958,109 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Rose gold",
+              "term": "Rose gold",
+              "price": null,
+              "swatch": "#c98f7f",
+              "badge": null
+            },
+            {
+              "value": "Gold",
+              "term": "Gold",
+              "price": null,
+              "swatch": "#c6a469",
+              "badge": null
+            },
+            {
+              "value": "Silver",
+              "term": "Silver",
+              "price": null,
+              "swatch": "#b9bcc0",
+              "badge": null
+            }
+          ],
+          "default": "Rose gold"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-15-s",
+          "sku": "sgs-draft-15-s-rose-gold",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Rose gold"
           },
           "price": 109
         },
         {
-          "sku": "sgs-draft-15-m",
+          "sku": "sgs-draft-15-s-gold",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Gold"
           },
           "price": 109
         },
         {
-          "sku": "sgs-draft-15-l",
+          "sku": "sgs-draft-15-s-silver",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Silver"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-15-m-rose-gold",
+          "options": {
+            "size": "M",
+            "colour": "Rose gold"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-15-m-gold",
+          "options": {
+            "size": "M",
+            "colour": "Gold"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-15-m-silver",
+          "options": {
+            "size": "M",
+            "colour": "Silver"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-15-l-rose-gold",
+          "options": {
+            "size": "L",
+            "colour": "Rose gold"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-15-l-gold",
+          "options": {
+            "size": "L",
+            "colour": "Gold"
+          },
+          "price": 109
+        },
+        {
+          "sku": "sgs-draft-15-l-silver",
+          "options": {
+            "size": "L",
+            "colour": "Silver"
           },
           "price": 109
         }
@@ -1880,34 +3141,128 @@
             }
           ],
           "default": "M"
+        },
+        {
+          "key": "curSwatch",
+          "label": "Colour",
+          "slug": "colour",
+          "packSize": false,
+          "variesBy": "color",
+          "options": [
+            {
+              "value": "Black",
+              "term": "Black",
+              "price": null,
+              "swatch": "#1b1b1b",
+              "badge": null
+            },
+            {
+              "value": "Havana",
+              "term": "Havana",
+              "price": null,
+              "swatch": "#7d5030",
+              "badge": null
+            },
+            {
+              "value": "Navy",
+              "term": "Navy",
+              "price": null,
+              "swatch": "#2b3550",
+              "badge": null
+            }
+          ],
+          "default": "Black"
         }
       ],
       "variations": [
         {
-          "sku": "sgs-draft-16-s",
+          "sku": "sgs-draft-16-s-black",
           "options": {
-            "size": "S"
+            "size": "S",
+            "colour": "Black"
           },
           "price": 115
         },
         {
-          "sku": "sgs-draft-16-m",
+          "sku": "sgs-draft-16-s-havana",
           "options": {
-            "size": "M"
+            "size": "S",
+            "colour": "Havana"
           },
           "price": 115
         },
         {
-          "sku": "sgs-draft-16-l",
+          "sku": "sgs-draft-16-s-navy",
           "options": {
-            "size": "L"
+            "size": "S",
+            "colour": "Navy"
+          },
+          "price": 115
+        },
+        {
+          "sku": "sgs-draft-16-m-black",
+          "options": {
+            "size": "M",
+            "colour": "Black"
+          },
+          "price": 115
+        },
+        {
+          "sku": "sgs-draft-16-m-havana",
+          "options": {
+            "size": "M",
+            "colour": "Havana"
+          },
+          "price": 115
+        },
+        {
+          "sku": "sgs-draft-16-m-navy",
+          "options": {
+            "size": "M",
+            "colour": "Navy"
+          },
+          "price": 115
+        },
+        {
+          "sku": "sgs-draft-16-l-black",
+          "options": {
+            "size": "L",
+            "colour": "Black"
+          },
+          "price": 115
+        },
+        {
+          "sku": "sgs-draft-16-l-havana",
+          "options": {
+            "size": "L",
+            "colour": "Havana"
+          },
+          "price": 115
+        },
+        {
+          "sku": "sgs-draft-16-l-navy",
+          "options": {
+            "size": "L",
+            "colour": "Navy"
           },
           "price": 115
         }
       ]
     }
   ],
-  "gaps": [],
+  "gaps": [
+    {
+      "draftId": "*",
+      "kind": "draft-omission",
+      "detail": "the product page's Colour picker writes state key \"curSwatch\" over each product's own list \"cols\", but the basket line does not read it, so the shopper's pick never reaches the basket; it is made the \"Colour\" choice (one variation per option) on 16 products and the omission is listed as a draft defect",
+      "defect": {
+        "id": "defect:Eye Care Birmingham:basket-line:curSwatch",
+        "construct": "basket line",
+        "declares": "a colour picker on the product page that writes \"curSwatch\" over each product's own list \"cols\", so the shopper chooses a colour for the product",
+        "renders": "the basket line (in Eye Care Birmingham.dc.html) never reads \"curSwatch\", so which colour the shopper chose is not in the basket and the line cannot tell one colour of the product from another"
+      }
+    }
+  ],
   "sites": {
     "local-eye-care": {
       "builtAt": "2026-10-28T10:32:20.719Z",

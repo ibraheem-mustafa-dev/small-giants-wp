@@ -35,6 +35,19 @@
 			"built": null,
 			"listedOn": "2026-10-26",
 			"sentOn": null
+		},
+		{
+			"id": "defect:Eye Care Birmingham:basket-line:curSwatch",
+			"draftId": "Eye Care Birmingham:basket-line:curSwatch",
+			"construct": "basket line",
+			"test": "omitted-choice",
+			"declares": "a colour picker on the product page that writes \"curSwatch\" over each product's own list \"cols\", so the shopper chooses a colour for the product",
+			"renders": "the basket line (in Eye Care Birmingham.dc.html) never reads \"curSwatch\", so which colour the shopper chose is not in the basket and the line cannot tell one colour of the product from another",
+			"owner": "Claude Design",
+			"widths": [],
+			"built": null,
+			"listedOn": "2026-11-21",
+			"sentOn": null
 		}
 	]
 }
