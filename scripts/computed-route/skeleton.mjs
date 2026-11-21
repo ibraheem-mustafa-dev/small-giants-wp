@@ -190,6 +190,8 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		const c = r.proposal.counts;
 		log( `propose ${ surface }: ${ c.skeletonNodes } skeleton nodes (${ c.expandedNodes } with Fill's generated icons), ${ c.low } low confidence, ${ c.removed } removed or absorbed, ${ c.unresolved } unresolved, ${ r.problems.length } problems` );
 		r.problems.forEach( ( x ) => log( ` - ${ x }` ) );
+		const unread = r.proposal.paintUnread || [];
+		unread.length && log( `paint not shown: ${ unread.length } painted element${ 1 === unread.length ? '' : 's' } no block reads (recorded, not conserved): ${ Object.entries( unread.reduce( ( o, x ) => ( { ...o, [ x.block ]: ( o[ x.block ] || 0 ) + 1 } ), {} ) ).map( ( [ b, n ] ) => [ b, n ].join( ' ' ) ).join( ', ' ) }` );
 		process.exitCode = r.problems.length ? 1 : 0;
 	} else if ( 'review' === cmd ) {
 		write( p.review, reviewSurface( { client, surface, repo } ) );

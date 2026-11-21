@@ -34,6 +34,10 @@ import { makeContent, skeletonSettings } from './skeleton-write-content.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
 import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
+import { DISSOLVED_LOOKS } from './skeleton-rules.mjs';
+import { conservationRows, nodesByRef, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
+import { absorbedSlots } from './skeleton-conserve-slots.mjs';
+import { slotMapFile } from './cache.mjs';
 
 // A carried or decided value as text: an id as itself, a Source object as its JSON.
 const shown = ( v ) => ( v && 'object' === typeof v ? JSON.stringify( v ) : String( v ) );
@@ -116,7 +120,7 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs), surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) and
 // surfaceRoute (its surfaces.json route: the page whose page-map row may hold it as a part) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calTags = () => ( {} ), calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, surfaceRoute = null } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calTags = () => ( {} ), calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, surfaceRoute = null, strictPaint = STRICT_DEFAULT } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -133,7 +137,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
 	// (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r ) => w.unwrapReads( e, r ) } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -507,7 +511,43 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		top !== m.root && ( x.strip = top.key );
 	} );
 	built && R.clientBuiltSurface && rows.forEach( ( x ) => Object.assign( x, { rule: 'clientBuiltSurface', builtPost: built, low: false }, 'unresolved' === x.action ? { action: null } : {} ) );
-	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ) ];
+	// Paint conservation (lib/skeleton-paint-conservation.mjs): every painted draft element is read by a node or its row records
+	// where its look goes. A rule's dropped rows take the rule's record (DISSOLVED_LOOKS), a removal that hands its look over takes
+	// a handover, and each host's absorbed painted elements are read at the host's calibrated part slots where a slot lands on
+	// them, or recorded no-part where no part of the host's calibration paints their looks (lib/skeleton-conserve-slots.mjs).
+	// What is left is a proposal problem.
+	rows.forEach( ( x ) => {
+		const D = DISSOLVED_LOOKS[ x.rule ];
+		if ( x.conserve ) {
+			return;
+		}
+		if ( D ) {
+			x.conserve = [ { ...D, rule: x.rule, ...( 'site-decision' === D.kind ? { source: built ? [ 'rule', x.rule, 'built post', built ].join( ' ' ) : [ 'rule', x.rule ].join( ' ' ) } : {} ) } ];
+		} else if ( 'remove' === x.action && x.handover?.detail ) {
+			x.conserve = [ { kind: 'handover', delivers: x.handover.detail } ];
+		}
+	} );
+	const calibration = ( block ) => calSettings( block ) ?? null;
+	const unread = conservationRows( { inventory, proposal: { rows }, skeleton, view, calibration } ).rows.filter( ( x ) => 'host-unread' === x.class && x.host );
+	const refNodes = nodesByRef( skeleton );
+	for ( const hostKey of new Set( unread.map( ( x ) => x.host ) ) ) {
+		const node = refNodes.get( hostKey );
+		const host = m.byKey[ hostKey ];
+		if ( ! node || ! host ) {
+			continue;
+		}
+		const absorbed = unread.filter( ( x ) => x.host === hostKey ).map( ( x ) => ( { element: m.byKey[ x.key ], looks: Object.keys( x.looks ) } ) ).filter( ( a ) => a.element );
+		const made = absorbedSlots( { host, node, absorbed, kids: ( x ) => m.kids( x ).filter( ( k ) => ! m.isPart( k ) ), finder, settings: calSettings( node.name ), tags: calTags( node.name ), block: node.name, checked: slotMapFile( 'cache', node.name ).split( '\\' ).join( '/' ) } );
+		if ( Object.keys( made.slots ).length ) {
+			node.draftSlots = { ...node.draftSlots, ...made.slots };
+			rowOf[ hostKey ] && ( rowOf[ hostKey ].slots = { ...rowOf[ hostKey ].slots, ...made.slots } );
+		}
+		made.records.forEach( ( rec, key ) => rowOf[ key ] && ( rowOf[ key ].conserve = [ rec ] ) );
+		made.unmatched.length && rowOf[ hostKey ] && ( rowOf[ hostKey ].slotNotes = [ ...( rowOf[ hostKey ].slotNotes || [] ), ...made.unmatched.map( ( u ) => [ u.key, 'paints', u.looks.join( '/' ), 'which parts of', node.name, 'paint (', u.parts.join( ' | ' ), '), and no calibrated slot lands on it' ].join( ' ' ) ) ] );
+	}
+	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ), ...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ];
+	// The painted elements a record lists and no block reads (RECORDED-UNREAD): looks the clone does not show, named for the run's report.
+	const paintUnread = unreadList( { inventory, proposal: { rows }, skeleton, view, calibration } );
 	const proposal = {
 		generated: new Date().toISOString(), inventory: inventory.generated, source: inventory.source, surface, siteName: facts.siteName, surfaceParts: scope?.surfaceParts ?? [], stripRoots: ctx.stripRoots, recordDisagreements: view.disagreements, recordUntranslated: view.untranslated,
 		confidenceFormula: 'min(1, top.score) * top.score / (top.score + second.score); a score is the sum of the evidence weights', weights: W, ...( built ? { builtPost: built } : {} ),
@@ -516,7 +556,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		...( cls.commerceRegion ? { commerceRegion: cls.commerceRegion.note ? { note: cls.commerceRegion.note } : { key: cls.commerceRegion.key, role: cls.commerceRegion.role, block: cls.commerceRegion.block } } : {} ),
 		...( cls.filterRail ? { filterRail: cls.filterRail.note ? { note: cls.filterRail.note } : { key: cls.filterRail.key, groups: cls.filterRail.groups, notes: cls.filterRail.notes, attributeIds: ctx.railIds || {} } } : {} ),
 		counts: { inventoryElements: m.els.length, parts: m.els.filter( m.isPart ).length, rows: rows.length, skeletonNodes: count( skeleton ), expandedNodes: count( expandSiteInfoRows( skeleton ) ), low: rows.filter( ( r ) => r.low && ! r.action ).length, removed: rows.filter( ( r ) => [ 'remove', 'absorbed', 'unwrap' ].includes( r.action ) ).length, unresolved: rows.filter( ( r ) => 'unresolved' === r.action ).length, byRule: rows.reduce( ( o, r ) => ( r.rule ? { ...o, [ r.rule ]: ( o[ r.rule ] || 0 ) + 1 } : o ), {} ) },
-		widthAlternatives, problems, rows,
+		widthAlternatives, problems, paintUnread, rows,
 	};
 	return { skeleton, proposal, problems };
 }

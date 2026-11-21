@@ -1,9 +1,116 @@
 [
-	{"file": "lib/skeleton-rules.mjs", "find": "if ( fieldIconOf( e ) ) {", "replace": "if ( false ) {", "why": "the mark inside a field is no longer removed"},
-	{"file": "lib/skeleton-rules.mjs", "find": "icon && has( 'leadingIcon' ) && ( out.leadingIcon = icon.slug );", "replace": "", "why": "the field never gets its leading icon"},
-	{"file": "lib/skeleton-rules.mjs", "find": "widths.every( ( w ) => inside( e.box[ w ], control.box[ w ] ) )", "replace": "true", "why": "a mark outside the control's box counts as inside it"},
-	{"file": "lib/skeleton-rules.mjs", "find": "facts.attr?.( controlBlock( control ), 'leadingIcon' ) ? lucideNearest", "replace": "true ? lucideNearest", "why": "a field block with no leadingIcon setting loses its mark"},
-	{"file": "lib/skeleton-rules.mjs", "find": "const control = 1 === controls.length ? controls[ 0 ] : null;", "replace": "const control = controls[ 0 ] ?? null;", "why": "a mark beside two controls is given to the first"},
-	{"file": "lib/skeleton-rules.mjs", "find": "const slug = control && widths.length &&", "replace": "const slug = control &&", "why": "a mark with no box at any width counts as inside the control"},
-	{"file": "lib/skeleton-rules.mjs", "find": "( 'svg' === e.tag || hasSvg( e ) ) ) {\n\t\t\treturn null;", "replace": "false ) {\n\t\t\treturn null;", "why": "no element is a field's mark"}
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( fieldIconOf( e ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the mark inside a field is no longer removed"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "icon && has( 'leadingIcon' ) && ( out.leadingIcon = icon.slug );",
+		"replace": "",
+		"why": "the field never gets its leading icon"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "widths.every( ( w ) => inside( e.box[ w ], control.box[ w ] ) )",
+		"replace": "true",
+		"why": "a mark outside the control's box counts as inside it"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "facts.attr?.( controlBlock( control ), 'leadingIcon' ) ? lucideNearest",
+		"replace": "true ? lucideNearest",
+		"why": "a field block with no leadingIcon setting loses its mark"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const control = 1 === controls.length ? controls[ 0 ] : null;",
+		"replace": "const control = controls[ 0 ] ?? null;",
+		"why": "a mark beside two controls is given to the first"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const slug = control && widths.length &&",
+		"replace": "const slug = control &&",
+		"why": "a mark with no box at any width counts as inside the control"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "( 'svg' === e.tag || hasSvg( e ) ) ) {\n\t\t\treturn null;",
+		"replace": "false ) {\n\t\t\treturn null;",
+		"why": "no element is a field's mark"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "\t\t\t\tif ( ! read.kept ) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}",
+		"replace": "\t\t\t\tif ( false ) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}",
+		"why": "an unwrap whose paint no reader takes is kept"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const inherited = x.kidsB.length ? painted.filter( ( l ) => INHERITED_LOOKS.includes( l ) ) : [];",
+		"replace": "const inherited = [];",
+		"why": "centred text is not read at the nodes inside"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "&& ! ( dest.band && BAND_LOOKS.includes( l ) ) );",
+		"replace": "&& ! BAND_LOOKS.includes( l ) );",
+		"why": "a cap no band finder reads is taken as read"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const setting = records.flatMap( ( r ) => ( 'setting' === r.kind ? r.looks : [] ) );",
+		"replace": "const setting = [];",
+		"why": "a setting record does not carry the label's cap"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "inherited.length && records.push( { kind: 'inherited', looks: inherited } );",
+		"replace": "",
+		"why": "the inherited look is not recorded"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band };",
+		"replace": "return { all: framed, band };",
+		"why": "a free calibrated host slot does not read the wrapper"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const cap = wrapperCapOf( e, block );\n\t\t\t\treturn v( 'formControl', { block, absorb: true, attributes: fieldContent( e, block ), ...( cap ? { decided: cap } : {} ) } );",
+		"replace": "return v( 'formControl', { block, absorb: true, attributes: fieldContent( e, block ) } );",
+		"why": "the field does not take the label's cap"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return widths.length && widths.every( ( w ) => Math.abs( p.box[ w ].x - e.box[ w ].x ) <= 1 && Math.abs( p.box[ w ].w - e.box[ w ].w ) <= 1 && Math.abs( p.box[ w ].h - e.box[ w ].h ) <= 1 ) && null !== lengthPx( length )",
+		"replace": "return widths.length && null !== lengthPx( length )",
+		"why": "a label that is not the control's box gives its cap"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( ! C || ! p || 'label' !== p.tag || all( p ) || ! facts.attr?.( block, C.setting ) ) {",
+		"replace": "if ( ! C || ! p || ! facts.attr?.( block, C.setting ) ) {",
+		"why": "a named label or another wrapper gives its cap"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "} else if ( 'remove' === x.action && x.handover?.detail ) {",
+		"replace": "} else if ( false ) {",
+		"why": "a removal that names its handover is not recorded"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ];",
+		"replace": "];",
+		"why": "the propose-time check is off"
+	},
+	{
+		"file": "lib/skeleton-write-record.mjs",
+		"find": " ...( r.conserve ? { conserve: r.conserve } : {} ),",
+		"replace": "",
+		"why": "the row does not carry the verdict's record"
+	}
 ]

@@ -14,6 +14,7 @@ import { deliveredKind } from './decoration-layers.mjs';
 import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { pxOf, everyWidth, someWidth } from './element-facts.mjs';
+import { paintsBox, lookOfProperty, BAND_LOOKS, INHERITED_LOOKS } from './skeleton-paint-conservation.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
@@ -134,6 +135,16 @@ export function onceOfLoop( list ) {
 	const half = list.length / 2;
 	return list.length >= 2 && Number.isInteger( half ) && list.slice( 0, half ).every( ( x, i ) => x === list[ half + i ] ) ? list.slice( 0, half ) : list;
 }
+
+// Where the looks of the elements a rule drops go when no node reads them (lib/skeleton-paint-conservation.mjs::RECORD_KINDS):
+// the propose-time check records it on each row the rule dropped (lib/skeleton-propose.mjs). A linked form's fields and a
+// commerce region's pieces are built and read on surfaces of their own; a surface the client built as a post follows that post.
+export const DISSOLVED_LOOKS = {
+	formLink: { kind: 'own-surface' },
+	commerceRegion: { kind: 'own-surface' },
+	filterRail: { kind: 'own-surface' },
+	clientBuiltSurface: { kind: 'site-decision' },
+};
 
 export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), view = recordView( null ), scope = null } ) {
 	// The draft's own tokens, so a value the draft writes as a token (`var(--radius-pill)`) is read as its value.
@@ -375,6 +386,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		return iconMemo.get( e.key );
 	};
+	// The cap the draft puts on the field itself: a <label> round the control that holds no words and renders as the control's own
+	// box (the control fills it at every width both render) is the field, so its declared max-width is the field block's cap
+	// (rules.formControl.wrapperCap), carried as the verdict's `decided` setting for the desktop tier (a style value cannot sit
+	// among the skeleton's attributes, R-47-10; Fill writes it). A label that names the field, or a box wider than the control
+	// (a gap below an inline control), is a wrapper that paints nothing the block caps.
+	const wrapperCapOf = ( e, block ) => {
+		const C = R.formControl?.wrapperCap;
+		const p = m.byKey[ e.parentKey ];
+		if ( ! C || ! p || 'label' !== p.tag || all( p ) || ! facts.attr?.( block, C.setting ) ) {
+			return null;
+		}
+		const widths = Object.keys( p.box || {} ).filter( ( w ) => p.box[ w ]?.w > 0 && e.box?.[ w ]?.w > 0 );
+		const length = declared( p, tokens )[ C.property ];
+		return widths.length && widths.every( ( w ) => Math.abs( p.box[ w ].x - e.box[ w ].x ) <= 1 && Math.abs( p.box[ w ].w - e.box[ w ].w ) <= 1 && Math.abs( p.box[ w ].h - e.box[ w ].h ) <= 1 ) && null !== lengthPx( length ) ? { [ C.setting ]: { desktop: length } } : null;
+	};
 	// A piece of text that belongs to a form field (its label, required marker, hint or character count): it sits in the
 	// field's wrapper beside the control, or in a <label> there (two levels up at most).
 	const fieldText = ( e ) => {
@@ -557,10 +583,14 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			const block = controlBlock( e );
 			if ( block ) {
-				return v( 'formControl', { block, absorb: true, attributes: fieldContent( e, block ) } );
+				const cap = wrapperCapOf( e, block );
+				return v( 'formControl', { block, absorb: true, attributes: fieldContent( e, block ), ...( cap ? { decided: cap } : {} ) } );
 			}
 			if ( R.formControl && 'label' === e.tag && m.blockKids( e ).some( ( k ) => controlBlock( k ) || groups.groupAt( k ) ) ) {
-				return v( 'formControl', { action: 'unwrap' } );
+				// The cap the label puts on its lone control is the field's own setting: the label's record names where it goes.
+				const control = m.blockKids( e ).find( ( k ) => controlBlock( k ) && wrapperCapOf( k, controlBlock( k ) ) );
+				const C = R.formControl.wrapperCap;
+				return v( 'formControl', { action: 'unwrap', ...( control ? { conserve: [ { kind: 'setting', node: control.key, setting: C.setting, looks: [ lookOfProperty( C.property ) ] } ] } : {} ) } );
 			}
 			return fieldText( e ) ? v( 'formControl', { action: 'remove', reason: R.formControl.fieldTextReason } ) : null;
 		},
@@ -1162,15 +1192,47 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const mine = new Set( desc( e ) );
 			const holdsContent = desc( heroEl ).filter( ( k ) => m.words( k ) && ! isMedia( k ) && ! underMedia( k ) ).every( ( k ) => mine.has( k ) );
 			const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) && holdsContent && R.heroInner?.contentSetting ? { hostSetting: R.heroInner.contentSetting } : {};
-			return ! m.words( e ) && kidsB.length && ! row ? v( 'heroInner', { action: 'unwrap', ...column } ) : null;
+			// A wrapper holding the hero's picture is the split's media side, which the hero lays out itself (`hostLays`).
+			const lays = desc( e ).some( isMedia ) ? { hostLays: hero.key } : {};
+			return ! m.words( e ) && kidsB.length && ! row ? v( 'heroInner', { action: 'unwrap', ...column, ...lays } ) : null;
 		},
 	];
+
+	// Paint conservation of an unwrap (Spec 48 section 3.4): a wrapper whose look (lib/skeleton-paint-conservation.mjs::paintsBox)
+	// reaches no reader once it is dissolved is not dissolved, and the next rule, or the scoring, makes it a node. Its readers:
+	// its destination (`hooks.unwrapReads( e, verdict )`: { all } when the element becomes the draft element of a calibrated
+	// slot of its host, { band } when a band finder reads its width cap, lib/fill-band.mjs; without the hook a declared
+	// `hostSetting` reads it all and a band reads its cap), a setting the verdict records (`conserve`), the host that lays its
+	// children out itself (`hostLays`), and the nodes inside it, which read an inherited look (centred text) from their own
+	// computed values. A kept unwrap's verdict records where each look it dissolves goes (`conserve`).
+	const unwrapRead = ( x, out ) => {
+		const painted = Object.keys( paintsBox( x.e, { declared: x.st, parent: m.byKey[ x.e.parentKey ] ?? null, children: m.kids( x.e ).length } ) );
+		const dest = hooks.unwrapReads?.( x.e, out ) ?? { all: !! ( out.hostSetting ?? R[ out.rule ]?.hostSetting ), band: true };
+		if ( ! painted.length || dest.all ) {
+			return { kept: true, conserve: out.conserve ?? [] };
+		}
+		const records = [ ...( out.conserve ?? [] ) ];
+		const setting = records.flatMap( ( r ) => ( 'setting' === r.kind ? r.looks : [] ) );
+		const inherited = x.kidsB.length ? painted.filter( ( l ) => INHERITED_LOOKS.includes( l ) ) : [];
+		const laid = out.hostLays && painted.includes( 'layout' ) ? [ 'layout' ] : [];
+		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! ( dest.band && BAND_LOOKS.includes( l ) ) );
+		inherited.length && records.push( { kind: 'inherited', looks: inherited } );
+		laid.length && records.push( { kind: 'host-layout', node: out.hostLays, looks: laid } );
+		return { kept: ! left.length, left, conserve: records };
+	};
 
 	// The verdict for one element, or null.
 	const ruleFor = ( e, parentBlock = null ) => {
 		const x = { e, st: declared( e, tokens ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
 		for ( const rule of [ ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
+			if ( out && 'unwrap' === out.action ) {
+				const read = unwrapRead( x, out );
+				if ( ! read.kept ) {
+					continue;
+				}
+				read.conserve.length ? ( out.conserve = read.conserve ) : delete out.conserve;
+			}
 			if ( out ) {
 				return out;
 			}

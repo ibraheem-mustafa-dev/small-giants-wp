@@ -355,13 +355,13 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "for ( const r of conservationRows( args ).rows.filter( ( x ) => 'unrecorded' === x.state ) ) {",
-		"replace": "for ( const r of conservationRows( args ).rows ) {",
+		"find": "rows.filter( ( x ) => 'unrecorded' === x.state || strict ) ) {",
+		"replace": "rows ) {",
 		"why": "a recorded row is a proposal problem"
 	},
 	{
 		"file": "tools/paint-conservation.mjs",
-		"find": "return argv.includes( '--check' ) && unrecorded ? 1 : 0;",
+		"find": "return argv.includes( '--check' ) && ( failing || ( strict && recorded ) ) ? 1 : 0;",
 		"replace": "return 0;",
 		"why": "--check never fails"
 	},

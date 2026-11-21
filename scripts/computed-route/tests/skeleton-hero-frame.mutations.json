@@ -19,8 +19,8 @@
 	},
 	{
 		"file": "lib/skeleton-classify.mjs",
-		"find": "...( r.mediaFrame ? { mediaFrame: r.mediaFrame } : {} ) };",
-		"replace": " };",
+		"find": "...( r.mediaFrame ? { mediaFrame: r.mediaFrame } : {} ), ...( r.conserve",
+		"replace": "...( r.conserve",
 		"why": "the classifier drops the frame from the verdict"
 	},
 	{

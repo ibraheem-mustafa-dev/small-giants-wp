@@ -644,7 +644,12 @@
 				"reason": "the mark drawn inside a text field's own box (a magnifier at the start of a search field) is the field block's leadingIcon setting, drawn after the Lucide icon it copies; the field block draws it, so the mark goes"
 			},
 			"inputPart": "field-input",
-			"inputPartHost": "sgs/form"
+			"inputPartHost": "sgs/form",
+			"wrapperCap": {
+				"setting": "maxWidth",
+				"property": "max-width",
+				"reason": "a <label> round a control that holds no words and renders as the control's own box is the field itself, so the cap the draft declares on it (a search box narrower than its row) is the field block's own maxWidth setting for the desktop tier; the control's computed max-width is none, so nothing else reads it"
+			}
 		},
 		"formLink": {
 			"block": "sgs/form",

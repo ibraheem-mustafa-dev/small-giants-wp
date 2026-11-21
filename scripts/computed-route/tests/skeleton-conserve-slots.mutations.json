@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {", "replace": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) ) {", "why": "a hover setting's slot is a part the draft element can be" },
+	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {", "replace": "if ( 'string' !== typeof slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {", "why": "the root is a part" },
+	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "cur = nth ? list[ Number( nth[ 1 ] ) - 1 ] : 1 === list.length ? list[ 0 ] : null;", "replace": "cur = nth ? list[ Number( nth[ 1 ] ) - 1 ] : list[ 0 ];", "why": "a lone step over several children takes the first" },
+	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "const hit = node.draftSlots?.[ slot ] || out.slots[ slot ] ? null : walkSlot( slot, host, kids );", "replace": "const hit = walkSlot( slot, host, kids );", "why": "a slot the node holds is taken again" },
+	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "&& a.looks.some( ( l ) => looks.has( l ) ) ) {", "replace": ") {", "why": "a slot that paints none of the element's looks reads it" },
+	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "( ! tags[ slot ] || String( tags[ slot ] ).toLowerCase() === a.element.tag )", "replace": "true", "why": "the slot's calibrated tag is not checked" },
+	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "const painted = calibratedLooks( settings );", "replace": "const painted = new Set( [ ...parts.values() ].flatMap( ( x ) => [ ...x ] ) );", "why": "no-part is decided over the at-rest parts only" },
+	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "if ( ! calibrated ) {", "replace": "if ( false ) {", "why": "a block with no calibration is recorded no-part" }
+]

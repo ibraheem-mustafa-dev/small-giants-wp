@@ -47,7 +47,7 @@ function inventory( root ) {
 	walk( root, null, 0 );
 	return { checks: {}, source: 'fixture', root: root.tag, generated: 'fixture', elements };
 }
-const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db, factRecord: o.factRecord } );
+const run = ( root, o = {} ) => proposeSkeleton( { inventory: inventory( root ), facts: o.facts || facts(), surface: 'fixture', surfaceKind: o.kind || 'page', surfaceName: o.name || 'Fixture', built: o.built || null, motion: o.motion || new Set(), db, factRecord: o.factRecord, ...( o.calSettings ? { calSettings: o.calSettings } : {} ) } );
 const row = ( r, pred ) => r.proposal.rows.find( pred );
 const byWords = ( r, w ) => row( r, ( x ) => x.words === w );
 const byTag = ( r, t ) => row( r, ( x ) => x.tag === t );
@@ -127,12 +127,16 @@ test( 'mediaElement and logoGrid: <image-slot> is media; links each holding one 
 
 test( 'widthWrapper: a centred block wrapper under a footer goes and its rows take its place; a centred grid there is the row; MUST FAIL without the rule', () => {
 	const rowEl = ( w ) => E( 'div', { display: 'grid' }, [ E( 'p', { words: w } ), E( 'p', { words: `${ w } 2` } ) ] );
-	const tree = E( 'footer', {}, [ E( 'div', { style: 'position:relative;max-width:1240px;margin:0 auto' }, [ rowEl( 'One' ), rowEl( 'Two' ) ] ) ] );
-	const r = run( tree, { kind: 'footer' } );
+	const tree = E( 'footer', {}, [ E( 'div', { style: 'position:relative;max-width:1240px;margin:0 auto;padding:0 24px' }, [ rowEl( 'One' ), rowEl( 'Two' ) ] ) ] );
+	// The host's calibrated content-width slot reads the wrapper (rules.widthWrapper.hostSetting); with no calibration nothing
+	// reads its cap, so the paint conservation of an unwrap keeps it (the last assertion).
+	const inner = { calSettings: () => ( { contentWidth: { slot: '.sgs-inner', property: 'max-width' } } ) };
+	const r = run( tree, { kind: 'footer', ...inner } );
 	assert.deepEqual( settled( r.proposal.rows[ 1 ] ), { block: null, action: 'unwrap', rule: 'widthWrapper' } );
 	assert.deepEqual( r.skeleton[ 0 ].innerBlocks.map( ( n ) => n.attributes.rowSlot ), [ 'top', 'columns', 'bottom' ], 'the footer holds its three rows (rules.footerSlots); the wrapper is not one of them' );
 	assert.equal( r.skeleton[ 0 ].innerBlocks[ 1 ].innerBlocks.length, 4, 'the unwrapped wrapper two rows give their four paragraphs to the columns row' );
-	assert.notEqual( run( tree, { kind: 'footer', facts: facts( 'widthWrapper' ) } ).proposal.rows[ 1 ].action, 'unwrap' );
+	assert.notEqual( run( tree, { kind: 'footer', facts: facts( 'widthWrapper' ), ...inner } ).proposal.rows[ 1 ].action, 'unwrap' );
+	assert.notEqual( run( tree, { kind: 'footer' } ).proposal.rows[ 1 ].action, 'unwrap', 'no slot reads the cap: the wrapper stays' );
 	const grid = E( 'footer', {}, [ E( 'div', { style: 'max-width:1440px;margin:0 auto;display:grid', display: 'grid' }, [ E( 'div', {}, [ E( 'p', { words: 'A' } ) ] ), E( 'div', {}, [ E( 'p', { words: 'B' } ) ] ) ] ) ] );
 	assert.notEqual( run( grid, { kind: 'footer' } ).proposal.rows[ 1 ].action, 'unwrap', 'a centred grid under the footer is its row' );
 } );
@@ -412,7 +416,7 @@ test( 'marqueeFrame: the frame that clips and fades a logo marquee goes; MUST FA
 } );
 
 test( 'alignWrapper: a wrapper that only aligns or pads its content goes; one that paints stays; MUST FAIL without the rule', () => {
-	const tree = section( [ E( 'div', { style: 'text-align:center;padding:0 40px' }, [ E( 'h2', { words: 'Our Brands' } ), E( 'p', { words: 'Trusted names' } ) ] ), E( 'div', { style: 'text-align:center;background:#0A7EA8' }, [ E( 'h2', { words: 'Band' } ) ] ) ] );
+	const tree = section( [ E( 'div', { style: 'text-align:center' }, [ E( 'h2', { words: 'Our Brands' } ), E( 'p', { words: 'Trusted names' } ) ] ), E( 'div', { style: 'text-align:center;background:#0A7EA8' }, [ E( 'h2', { words: 'Band' } ) ] ) ] );
 	const r = run( tree );
 	assert.deepEqual( settled( r.proposal.rows[ 1 ] ), { block: null, action: 'unwrap', rule: 'alignWrapper' } );
 	assert.notEqual( row( r, ( x ) => 'div' === x.tag && x.order > 1 && x.depth === 1 )?.action, 'unwrap', 'a wrapper with a background stays' );
@@ -855,4 +859,65 @@ test( 'dotMarker never takes a control and needs text beside it; cardHeading rea
 	assert.notEqual( byTag( run( section( [ swatch ] ) ), 'span' ).rule, 'dotMarker' );
 	const card = ( y ) => E( 'div', { y }, [ E( 'div', { words: `Wholesale ${ y }`, style: 'font-weight:bold;font-size:1.25rem' } ), E( 'div', { words: 'Pallet volumes for cash and carries.', style: 'font-size:1rem' } ) ] );
 	assert.equal( byWords( run( section( [ E( 'div', { display: 'grid' }, [ card( 0 ), card( 1 ) ] ) ] ) ), 'Wholesale 0' ).rule, 'cardHeading' );
+} );
+
+// Paint conservation of an unwrap (lib/skeleton-rules.mjs::ruleFor): a wrapper whose look no reader takes is not dissolved.
+test( 'an unwrap whose wrapper paints a look no reader takes is refused and the wrapper stays a node: a card in the hero, a padded align wrapper; a plain or centring wrapper still goes and records where its look goes; MUST FAIL without the guard', () => {
+	const card = 'background:#FFFAF0;border:2px solid #3A2A22;border-radius:26px;padding:20px;box-shadow:6px 6px 0 #3A2A22';
+	const page = ( style ) => E( 'main', {}, [ E( 'section', {}, [ E( 'div', { display: 'grid' }, [
+		E( 'div', {}, [ E( 'h1', { words: 'Gifts she will eat', y: 0 } ), E( 'p', { words: 'Baked fresh.', y: 40 } ),
+			E( 'div', { style, y: 80 }, [ E( 'div', { words: 'What is the moment?', y: 90 } ), E( 'a', { words: 'Show 4 gifts', attrs: { href: '#results' }, y: 130 } ) ] ) ] ),
+		E( 'div', {}, [ E( 'image-slot' ) ] ),
+	] ) ] ), E( 'section', {}, [ E( 'h2', { words: 'More' } ) ] ) ] );
+	// The panel is the sixth element in document order (main, section, grid, column, h1, p, panel).
+	const panelOf = ( r ) => r.proposal.rows.find( ( x ) => 'Root/7#0' === x.key );
+	const r = run( page( card ) );
+	assert.notEqual( panelOf( r ).action, 'unwrap', 'the painted card is not dissolved' );
+	assert.ok( panelOf( r ).block, 'the card is a block node' );
+	const plain = panelOf( run( page( 'margin-top:12px' ) ) );
+	assert.deepEqual( [ plain.rule, plain.action ], [ 'heroInner', 'unwrap' ], 'negative control: the same wrapper with no paint unwraps' );
+	// Centred text is read at the nodes inside (inherited); padding beside it is read by nothing, so that wrapper stays.
+	const centred = run( section( [ E( 'div', { style: 'text-align:center' }, [ E( 'h2', { words: 'Our Brands' } ), E( 'p', { words: 'Trusted names' } ) ] ) ] ) );
+	assert.deepEqual( settled( centred.proposal.rows[ 1 ] ), { block: null, action: 'unwrap', rule: 'alignWrapper' } );
+	assert.deepEqual( centred.proposal.rows[ 1 ].conserve, [ { kind: 'inherited', looks: [ 'text-centre' ] } ] );
+	const padded = run( section( [ E( 'div', { style: 'text-align:center;padding:0 40px' }, [ E( 'h2', { words: 'Our Brands' } ), E( 'p', { words: 'Trusted names' } ) ] ) ] ) );
+	assert.notEqual( padded.proposal.rows[ 1 ].action, 'unwrap', 'a wrapper whose side padding nothing reads stays' );
+} );
+
+test( 'the propose-time check: a painted element a rule removes with no record is a proposal problem; a removal that names its handover is listed, not a problem; MUST FAIL without the check', () => {
+	const glare = run( section( [ E( 'h2', { words: 'Title' } ), E( 'span', { style: 'position:absolute;inset:0;background:radial-gradient(circle at var(--gx) var(--gy),#fff,transparent)', attrs: { 'aria-hidden': 'true' } } ) ] ) );
+	const layer = glare.proposal.rows.find( ( x ) => 'span' === x.tag );
+	assert.deepEqual( [ layer.action, layer.rule, layer.conserve?.[ 0 ]?.kind ], [ 'remove', 'decorationDelivered', 'handover' ] );
+	assert.ok( ! glare.problems.some( ( p ) => /paint conservation/.test( p ) ), glare.problems.join( '\n' ) );
+	const dot = run( section( [ E( 'div', { display: 'flex' }, [ E( 'span', { style: 'width:8px;height:8px;border-radius:50%;background:#E85D75', box: { x: 0, y: 6, w: 8, h: 8 } } ), E( 'p', { words: 'Vegan friendly', box: { x: 16, y: 0, w: 90, h: 20 } } ) ] ) ] ) );
+	const marker = dot.proposal.rows.find( ( x ) => 'span' === x.tag );
+	assert.deepEqual( [ marker.action, marker.rule, marker.conserve ], [ 'remove', 'dotMarker', undefined ] );
+	assert.ok( dot.problems.some( ( p ) => /^paint conservation: 1 painted element removed \(rule dotMarker\)/.test( p ) ), dot.problems.join( '\n' ) );
+} );
+
+test( 'formControl wrapperCap: the max-width a label declares round a lone control that renders as the control\'s own box is the field\'s maxWidth, and the label\'s row records it; a named label, a wider box or no cap writes none; MUST FAIL without the rule', () => {
+	const field = ( { words = '', style = 'width:100%;max-width:640px;position:relative;display:block', box = { x: 400, y: 321, w: 640, h: 62 }, tag = 'input', wrap = 'label' } = {} ) => E( wrap, { words, style, box }, [
+		E( tag, { attrs: { type: 'text', 'aria-label': 'Search FAQs' }, box: { x: 400, y: 321, w: 640, h: 62 } } ) ] );
+	const fieldOf = ( r ) => {
+		let hit = null;
+		const go = ( n ) => ( /^sgs\/form-field-/.test( n.name ) ? ( hit = n ) : ( n.innerBlocks || [] ).forEach( go ) );
+		r.skeleton.forEach( go );
+		return hit;
+	};
+	const capOf = ( r ) => fieldOf( r ).decided?.maxWidth;
+	const main = run( section( [ field() ] ) );
+	assert.deepEqual( capOf( main ), { desktop: '640px' }, 'the label\'s cap is the field\'s' );
+	assert.equal( fieldOf( main ).attributes.maxWidth, undefined, 'a style value is never a skeleton attribute (R-47-10): it travels as decided' );
+	assert.deepEqual( main.problems, [], 'the skeleton lints clean and the label\'s cap is recorded where it goes' );
+	assert.deepEqual( main.proposal.rows[ 1 ].conserve, [ { kind: 'setting', node: 'Root/3#0', setting: 'maxWidth', looks: [ 'max-width' ] } ] );
+	assert.equal( capOf( run( section( [ field( { style: 'position:relative;display:block' } ) ] ) ) ), undefined, 'a label with no cap writes none' );
+	assert.equal( capOf( run( section( [ field( { box: { x: 400, y: 321, w: 640, h: 70 } } ) ] ) ) ), undefined, 'a label taller than the control is not its box' );
+	assert.equal( capOf( run( section( [ field( { box: { x: 380, y: 321, w: 680, h: 62 } } ) ] ) ) ), undefined, 'a label wider than the control is not its box' );
+	assert.equal( capOf( run( section( [ field( { box: { x: 380, y: 321, w: 640, h: 62 } } ) ] ) ) ), undefined, 'a label that starts earlier than the control is not its box' );
+	assert.equal( capOf( run( section( [ field( { tag: 'select' } ) ] ) ) ), undefined, 'a field block with no maxWidth setting is given none' );
+	assert.equal( capOf( run( section( [ field( { words: 'Search' } ) ] ) ) ), undefined, 'a label that names the field is a label, not the field' );
+	assert.equal( capOf( run( section( [ field( { style: 'max-width:50%' } ) ] ) ) ), undefined, 'a cap that is no length is not written' );
+	const off = facts();
+	delete off.decisions.rules.formControl.wrapperCap;
+	assert.equal( capOf( run( section( [ field() ] ), { facts: off } ) ), undefined, 'the rule\'s entry off writes none' );
 } );
