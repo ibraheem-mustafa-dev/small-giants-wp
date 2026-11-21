@@ -383,6 +383,15 @@
 			],
 			"description": "Horizontal tabs below 768px: 'stack' turns the tab row into full-width stacked buttons; 'row' keeps the tab row (wrapping if needed), as on larger screens."
 		},
+		"scrollbarStyle": {
+			"type": "string",
+			"enum": [
+				"default",
+				"thin",
+				"hidden"
+			],
+			"description": "The scrollbar of a vertical tab list, which becomes a sideways-scrolling row below 768px: default (the site's bar), thin, or hidden. Unset, it is hidden (its starting value). Printed by includes/helpers-scrollbar.php."
+		},
 		"contentWidth": {
 			"type": "object",
 			"default": {}

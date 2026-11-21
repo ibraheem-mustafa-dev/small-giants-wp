@@ -40,6 +40,7 @@ import { useEffect } from '@wordpress/element';
 import ChromePanel from './ChromePanel';
 import chromeColourRows from './chrome-colour-rows';
 import ChromePreview from './ChromePreview';
+import { scrollbarCss, scrollbarStyle } from '../../utils/scrollbar-style';
 import { shellBorderStyle, closeBorderStyle, closeFillStyle } from './chrome-preview-style';
 import { useSelect } from '@wordpress/data';
 import BackgroundLayers from '../../components/media/BackgroundLayers';
@@ -428,13 +429,18 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		};
 	} )();
 
+	// The drawer's scrollbar choice on the editor shell, which is what scrolls in the canvas (render.php prints the same
+	// rules on the dialog through includes/helpers-scrollbar.php).
+	const scrollbarScope = 'sgs-nav-drawer-ed-' + clientId.slice( 0, 8 );
+	const scrollbarPreviewCss = scrollbarCss( `.${ scrollbarScope }`, scrollbarStyle( attributes.scrollbarStyle, 'thin' ) );
+
 	const blockProps = useBlockProps( {
 		// sgs-nav-drawer--close-{style} mirrors render.php's own modifier class --
 		// without it, the text-swap/burger-morph CSS (style.css, scoped under that
 		// modifier class) never applies. Keyed to the ACTIVE EDITOR DEVICE's
 		// resolved style (§4.9) so switching the device toggle shows what that
 		// tier actually ships, not just the desktop value.
-		className: `sgs-nav-drawer sgs-nav-drawer__editor sgs-nav-drawer--close-${ closeStyleRenderActive }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }${ toneClass ? ` ${ toneClass }` : '' }${ bgPreview.className ? ` ${ bgPreview.className }` : '' }`,
+		className: `sgs-nav-drawer sgs-nav-drawer__editor ${ scrollbarScope } sgs-nav-drawer--close-${ closeStyleRenderActive }${ previewOpen ? '' : ' sgs-nav-drawer__editor--collapsed' }${ toneClass ? ` ${ toneClass }` : '' }${ bgPreview.className ? ` ${ bgPreview.className }` : '' }`,
 		style: { ...shellStyle, ...bgPreview.style },
 	} );
 
@@ -448,6 +454,7 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 
 	return (
 		<>
+			{ scrollbarPreviewCss && <style>{ scrollbarPreviewCss }</style> }
 			{ /* Grouped, SGS-owned colour panel, rendered FIRST so it sits at the
 			   top of the inspector (Styles tab). Holds every drawer colour
 			   (Background, Text, Close icon colour, and the top row's rows from

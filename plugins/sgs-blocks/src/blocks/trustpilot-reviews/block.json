@@ -348,6 +348,15 @@
 			"type": "boolean",
 			"default": false
 		},
+		"scrollbarStyle": {
+			"type": "string",
+			"enum": [
+				"default",
+				"thin",
+				"hidden"
+			],
+			"description": "The carousel track's scrollbar: default (the site's bar), thin, or hidden. Unset, the track's scrollbar is hidden (its starting value). Printed by includes/helpers-scrollbar.php."
+		},
 		"dragMomentum": {
 			"type": "boolean",
 			"default": true

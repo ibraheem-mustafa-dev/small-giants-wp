@@ -31,6 +31,9 @@ import { colourVar, textPaintPreview, borderPaintPreview, containerWrapperPrevie
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import { spacingAxesFor } from '../../utils/spacing-axes';
 import { tabsIndicatorGradientCss, tabButtonStyle } from './preview-style';
+import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
+import { scrollbarCss, scrollbarStyle as scrollbarChoice } from '../../utils/scrollbar-style';
+import { QUERY_MOBILE } from '../../utils/breakpoints';
 
 const TEMPLATE = [
 	[ 'sgs/tab', { label: __( 'Tab 1', 'sgs-blocks' ) } ],
@@ -197,7 +200,11 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 	// indicator gradients render.php scopes to this instance.
 	const wrapperPreview = containerWrapperPreview( attributes, previewTier, colourPalette );
 	const editorScope = `sgs-tabs-ed-${ clientId }`;
-	const indicatorCss = tabsIndicatorGradientCss( attributes, editorScope );
+	const indicatorCss =
+		tabsIndicatorGradientCss( attributes, editorScope ) +
+		( 'vertical' === orientation
+			? scrollbarCss( `.${ editorScope } .sgs-tabs__nav`, scrollbarChoice( attributes.scrollbarStyle, 'hidden' ), QUERY_MOBILE )
+			: '' );
 	const blockProps = useBlockProps( {
 		className: [ wrapperClassName, wrapperPreview.className, editorScope ].filter( Boolean ).join( ' ' ),
 		style: { ...wrapperPreview.style, ...cssVars },
@@ -471,6 +478,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
+					{ 'vertical' === orientation && (
+						<ScrollbarStyleControl
+							label={ __( 'Tab row scrollbar on phones', 'sgs-blocks' ) }
+							value={ attributes.scrollbarStyle }
+							start="hidden"
+							onChange={ ( val ) => setAttributes( { scrollbarStyle: val } ) }
+						/>
+					) }
 				</PanelBody>
 
 				<PanelBody

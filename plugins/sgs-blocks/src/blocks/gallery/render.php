@@ -734,6 +734,18 @@ if ( $enable_lightbox ) {
 $sgs_wrapper_attributes  = sgs_gallery_wrapper_attributes( $attributes );
 $gallery_responsive_css .= sgs_gallery_grid_layout_css( $root_sel . ' .sgs-gallery__grid', $attributes );
 // A device tier whose layout differs from the desktop one (and the swipe row's card width and edge padding).
+// The image grid's scrollbar wherever it scrolls (includes/helpers-scrollbar.php): hidden unless the block chooses
+// otherwise. A swipe row or carousel on desktop takes the whole choice here (a narrower tier that stops scrolling
+// resets the width in its layout rule below); a grid that scrolls only on a narrower tier takes its width in that
+// tier's rule (sgs_gallery_layout_declarations) and the rest of the choice here.
+if ( $sgs_gal_tiers['carousel'] || $sgs_gal_tiers['scroll'] ) {
+	$gallery_responsive_css .= sgs_scrollbar_css(
+		$root_sel . ' .sgs-gallery__grid',
+		sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'hidden' ),
+		'',
+		in_array( $layout, array( 'carousel', 'scroll' ), true )
+	);
+}
 $gallery_responsive_css .= sgs_gallery_layout_css( $root_sel . ' .sgs-gallery__grid', $attributes );
 $gallery_responsive_css .= sgs_gallery_scroll_css( $root_sel . ' .sgs-gallery__grid', $attributes );
 // The carousel's arrows, pause button and dots (the button kit, prefix `arrow`; the carousel dots kit, prefix `dot`): rules only for a look setting that is set.

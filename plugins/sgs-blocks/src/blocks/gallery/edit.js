@@ -69,6 +69,7 @@ import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 import CarouselDotsPanel from '../../components/CarouselDotsPanel';
 import mediaPreview from '../../components/media/mediaPreview';
 import metadata from './block.json';
+import { scrollbarCss, scrollbarStyle } from '../../utils/scrollbar-style';
 
 const ITEM_ENTRY = metadata.supports.sgs.mediaElements.find( ( entry ) => 'item' === entry.prefix );
 const ITEM_SLOT = { prefix: 'item', kinds: ITEM_ENTRY.kinds, context: ITEM_ENTRY.context };
@@ -273,10 +274,18 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const itemMediaUid = 'sgs-gallery-media-' + clientId.slice( 0, 8 );
 	const itemMedia = mediaPreview( ITEM_SLOT, blockLevelAttributes, itemMediaUid );
 
+	// The image grid's scrollbar choice wherever the previewed layout scrolls (the live page prints the same rules
+	// through includes/helpers-scrollbar.php).
+	const scrollbarScope = 'sgs-gallery-ed-' + clientId.slice( 0, 8 );
+	const scrollbarPreviewCss =
+		'scroll' === canvasLayout || 'carousel' === canvasLayout
+			? scrollbarCss( `.${ scrollbarScope } .sgs-gallery__grid`, scrollbarStyle( attributes.scrollbarStyle, 'hidden' ) )
+			: '';
+
 	const blockProps = useBlockProps( {
 		className: `sgs-gallery sgs-gallery--${ layoutTiers.desktop }${
 			isTileMode( attributes ) ? ' sgs-gallery--tile' : ''
-		}`,
+		} ${ scrollbarScope }`,
 		style: inlineStyles,
 	} );
 
@@ -522,6 +531,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				prefix="dot"
 			/>
 
+			{ scrollbarPreviewCss && <style>{ scrollbarPreviewCss }</style> }
 			<GalleryCanvas
 				attributes={ { ...attributes, layout: canvasLayout } }
 				blockProps={ blockProps }

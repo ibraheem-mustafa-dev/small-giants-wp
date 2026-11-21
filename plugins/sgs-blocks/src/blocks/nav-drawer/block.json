@@ -538,6 +538,15 @@
 			"default": true,
 			"description": "Reserve the scrollbar's width on the drawer's scrolling surface (CSS scrollbar-gutter: stable), so the content keeps its width when a section opens and the drawer first overflows. Off: the scrollbar takes width only while it shows, so the content is as wide as the drawer allows. Applies where the shared overlay scrollbar has not mounted (no script, or a classic bar); the overlay scrollbar reserves nothing either way."
 		},
+		"scrollbarStyle": {
+			"type": "string",
+			"enum": [
+				"default",
+				"thin",
+				"hidden"
+			],
+			"description": "The drawer's scrollbar: default (the site's bar), thin, or hidden. Unset, the dialog's bar is thin (its starting value) and, with the top row kept in place (chromeSticky), the body's bar is the site's. Printed by includes/helpers-scrollbar.php."
+		},
 		"chromeRowBg": {
 			"type": "string",
 			"default": "",

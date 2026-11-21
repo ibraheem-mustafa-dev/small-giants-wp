@@ -17,6 +17,7 @@ declare( strict_types=1 );
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/BlockHarnessRenderTrait.php';
+require_once dirname( __DIR__, 2 ) . '/includes/helpers-scrollbar.php';
 require_once dirname( __DIR__, 2 ) . '/includes/helpers-gallery-grid-css.php';
 
 final class GalleryLayoutTiersTest extends TestCase {

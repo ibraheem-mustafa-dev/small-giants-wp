@@ -13,6 +13,7 @@ import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelIte
 import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl } from '../../components';
 import { Toggle, Choice, TextField } from './extraControls';
 import { patchTier } from '../../utils';
+import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
 
 const DEFAULT_MENU_ICONS = {
 	dashboard: 'layout-dashboard',
@@ -62,6 +63,7 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 			resetAll={ () =>
 				setAttributes( {
 					navLayout: undefined,
+					scrollbarStyle: undefined,
 					showMenuIcons: undefined,
 					navIcons: undefined,
 					menuActiveIndicatorWidth: undefined,
@@ -120,6 +122,19 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 				/>
 			</ToolsPanelItem>
 
+			<ToolsPanelItem
+				label={ __( 'Tab row scrollbar', 'sgs-blocks' ) }
+				hasValue={ () => undefined !== attributes.scrollbarStyle }
+				onDeselect={ () => setAttributes( { scrollbarStyle: undefined } ) }
+			>
+				<ScrollbarStyleControl
+					label={ __( 'Tab row scrollbar', 'sgs-blocks' ) }
+					help={ __( 'Where the menu is a row of tabs (tablets and phones), the row scrolls sideways.', 'sgs-blocks' ) }
+					value={ attributes.scrollbarStyle }
+					start="hidden"
+					onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
+				/>
+			</ToolsPanelItem>
 			<ToolsPanelItem
 				label={ __( 'Active item bar width', 'sgs-blocks' ) }
 				hasValue={ () => !! attributes.menuActiveIndicatorWidth && Object.keys( attributes.menuActiveIndicatorWidth ).length > 0 }

@@ -23,6 +23,16 @@
             "min-height:44px",
             "min-width:44px",
             "width:44px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     },
     "b_equal_sides": {
@@ -52,6 +62,16 @@
             "min-height:44px",
             "min-width:44px",
             "width:44px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     },
     "c_unequal_dashed_raw": {
@@ -81,6 +101,16 @@
             "min-height:44px",
             "min-width:44px",
             "width:44px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     },
     "d_style_none": {
@@ -109,6 +139,16 @@
             "min-height:44px",
             "min-width:44px",
             "width:44px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     },
     "e_widths_no_colour": {
@@ -137,6 +177,16 @@
             "min-height:44px",
             "min-width:44px",
             "width:44px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     },
     "f_colour_no_widths": {
@@ -164,6 +214,16 @@
             "min-height:44px",
             "min-width:44px",
             "width:44px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     },
     "g_gradient": {
@@ -196,6 +256,10 @@
             "min-width:44px",
             "width:44px"
         ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
         " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::before": [
             "-webkit-mask-composite:xor",
             "-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0)",
@@ -208,6 +272,12 @@
             "padding:3px",
             "pointer-events:none",
             "position:absolute"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     },
     "j_radius_uniform": {
@@ -235,6 +305,16 @@
             "min-height:44px",
             "min-width:44px",
             "width:44px"
+        ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     },
     "k_radius_tiers": {
@@ -266,12 +346,22 @@
             "min-width:44px",
             "width:44px"
         ],
+        " || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer::-webkit-scrollbar": [
+            "height:var(--wp--custom--scrollbar--thin-width,10px)",
+            "width:var(--wp--custom--scrollbar--thin-width,10px)"
+        ],
         "@media(max-width:1023.98px) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
             "border-top-left-radius:6px"
         ],
         "@media(max-width:767.98px) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
             "border-top-left-radius:2px",
             "border-top-right-radius:3px"
+        ],
+        "@supports not selector(::-webkit-scrollbar) || :where(.sgs-nav-drawer-UID.wp-block-sgs-nav-drawer)": [
+            "scrollbar-width:thin"
+        ],
+        "@supports selector(::-webkit-scrollbar) || .sgs-nav-drawer-UID.wp-block-sgs-nav-drawer": [
+            "scrollbar-color:auto"
         ]
     }
 }

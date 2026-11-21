@@ -5708,6 +5708,78 @@
 			}
 		},
 		{
+			"slug": "sgs/trustpilot-reviews",
+			"attr": "scrollbarStyle",
+			"fields": {
+				"role": "behaviour",
+				"derived_selector": ".sgs-trustpilot-reviews__track",
+				"css_property": "scrollbar-width",
+				"css_element": null,
+				"css_layer": "OUTER",
+				"_reason": "2026-11-21 (shared scrollbar choice, Spec 02 FR-2-35). The scrollbar of the carousel track: default, thin or hidden, printed by includes/helpers-scrollbar.php (no block.json default; an unset value renders the area's starting value). The vocabulary has no scrollbar member, so css_property/css_element/derived_selector are named here, as for sgs/google-reviews::scrollbarStyle: a draft's scrollbar-width (none or thin) or ::-webkit-scrollbar (display:none, or a width) on that element routes here."
+			}
+		},
+		{
+			"slug": "sgs/post-grid",
+			"attr": "scrollbarStyle",
+			"fields": {
+				"role": "behaviour",
+				"derived_selector": ".sgs-post-grid__inner",
+				"css_property": "scrollbar-width",
+				"css_element": "inner",
+				"css_layer": "OUTER",
+				"_reason": "2026-11-21 (shared scrollbar choice, Spec 02 FR-2-35). The scrollbar of the carousel row: default, thin or hidden, printed by includes/helpers-scrollbar.php (no block.json default; an unset value renders the area's starting value). The vocabulary has no scrollbar member, so css_property/css_element/derived_selector are named here, as for sgs/google-reviews::scrollbarStyle: a draft's scrollbar-width (none or thin) or ::-webkit-scrollbar (display:none, or a width) on that element routes here."
+			}
+		},
+		{
+			"slug": "sgs/tabs",
+			"attr": "scrollbarStyle",
+			"fields": {
+				"role": "behaviour",
+				"derived_selector": ".sgs-tabs__nav",
+				"css_property": "scrollbar-width",
+				"css_element": null,
+				"css_layer": "OUTER",
+				"_reason": "2026-11-21 (shared scrollbar choice, Spec 02 FR-2-35). The scrollbar of the vertical tab list, a sideways row below 768px: default, thin or hidden, printed by includes/helpers-scrollbar.php (no block.json default; an unset value renders the area's starting value). The vocabulary has no scrollbar member, so css_property/css_element/derived_selector are named here, as for sgs/google-reviews::scrollbarStyle: a draft's scrollbar-width (none or thin) or ::-webkit-scrollbar (display:none, or a width) on that element routes here."
+			}
+		},
+		{
+			"slug": "sgs/gallery",
+			"attr": "scrollbarStyle",
+			"fields": {
+				"role": "behaviour",
+				"derived_selector": ".sgs-gallery__grid",
+				"css_property": "scrollbar-width",
+				"css_element": "grid",
+				"css_layer": "OUTER",
+				"_reason": "2026-11-21 (shared scrollbar choice, Spec 02 FR-2-35). The scrollbar of the image grid wherever it scrolls (carousel or swipe row): default, thin or hidden, printed by includes/helpers-scrollbar.php (no block.json default; an unset value renders the area's starting value). The vocabulary has no scrollbar member, so css_property/css_element/derived_selector are named here, as for sgs/google-reviews::scrollbarStyle: a draft's scrollbar-width (none or thin) or ::-webkit-scrollbar (display:none, or a width) on that element routes here."
+			}
+		},
+		{
+			"slug": "sgs/account",
+			"attr": "scrollbarStyle",
+			"fields": {
+				"role": "behaviour",
+				"derived_selector": "nav.woocommerce-MyAccount-navigation ul",
+				"css_property": "scrollbar-width",
+				"css_element": "menuList",
+				"css_layer": "OUTER",
+				"_reason": "2026-11-21 (shared scrollbar choice, Spec 02 FR-2-35). The scrollbar of the menu where it is a row of tabs: default, thin or hidden, printed by includes/helpers-scrollbar.php (no block.json default; an unset value renders the area's starting value). The vocabulary has no scrollbar member, so css_property/css_element/derived_selector are named here, as for sgs/google-reviews::scrollbarStyle: a draft's scrollbar-width (none or thin) or ::-webkit-scrollbar (display:none, or a width) on that element routes here."
+			}
+		},
+		{
+			"slug": "sgs/nav-drawer",
+			"attr": "scrollbarStyle",
+			"fields": {
+				"role": "behaviour",
+				"derived_selector": ".wp-block-sgs-nav-drawer, .sgs-nav-drawer__body",
+				"css_property": "scrollbar-width",
+				"css_element": "dialog",
+				"css_layer": "OUTER",
+				"_reason": "2026-11-21 (shared scrollbar choice, Spec 02 FR-2-35). The scrollbar of the drawer dialog, or its body under a sticky top row: default, thin or hidden, printed by includes/helpers-scrollbar.php (no block.json default; an unset value renders the area's starting value). The vocabulary has no scrollbar member, so css_property/css_element/derived_selector are named here, as for sgs/google-reviews::scrollbarStyle: a draft's scrollbar-width (none or thin) or ::-webkit-scrollbar (display:none, or a width) on that element routes here."
+			}
+		},
+		{
 			"slug": "sgs/google-reviews",
 			"attr": "starEmptyColour",
 			"fields": {

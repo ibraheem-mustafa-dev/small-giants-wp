@@ -110,6 +110,11 @@ if ( '' !== $post_grid_preset_bg_slug ) {
 // documents, so the two cannot drift apart.
 $responsive_css .= $root_sel . ' .sgs-post-grid__card{' . \SGS\Blocks\Post_Grid_REST::card_vars_decls( $card_params ) . '}';
 
+// The carousel row's scrollbar (includes/helpers-scrollbar.php): hidden unless the block chooses otherwise.
+if ( 'carousel' === $layout ) {
+	$responsive_css .= sgs_scrollbar_css( $root_sel . ' .sgs-post-grid__inner', sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'hidden' ) );
+}
+
 // cardRadius: the one custom property every card, card image and list-card corner reads (style.css
 // declares the 8px default on the block root). A descendant-free rule on the root, so the later
 // AJAX-injected cards pick it up too. Unset prints nothing.

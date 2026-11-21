@@ -7,6 +7,7 @@ import ResponsiveOverride from '../../../components/ResponsiveOverride';
 import ResponsiveLengthControl from '../../../components/ResponsiveLengthControl';
 import { galleryLayoutTiers } from '../layout-tiers';
 import { LAYOUT_OPTIONS } from './gallery-options';
+import ScrollbarStyleControl from '../../../components/ScrollbarStyleControl';
 
 export default function LayoutSettingsPanel( { attributes, setAttributes, set } ) {
 	const { layout, columns, visibleItems, scrollItemWidth, scrollInset } = attributes;
@@ -71,6 +72,18 @@ export default function LayoutSettingsPanel( { attributes, setAttributes, set } 
 								onChange={ ( obj ) => setAttributes( { scrollInset: obj } ) }
 							/>
 						</>
+					) }
+					{ ( layoutTiers.scroll || layoutTiers.carousel ) && (
+						<ScrollbarStyleControl
+							label={ __( 'Scrollbar of the scrolling row', 'sgs-blocks' ) }
+							value={ attributes.scrollbarStyle }
+							start="hidden"
+							onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
+							hasOtherWay={
+								layoutTiers.carousel &&
+								( attributes.carouselShowArrows !== false || attributes.carouselShowDots !== false || !! attributes.dragToScroll )
+							}
+						/>
 					) }
 					{ /*
 						  columns is a TIER OBJECT — ONE attr holding

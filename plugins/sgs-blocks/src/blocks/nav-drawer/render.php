@@ -381,6 +381,14 @@ if ( '' !== $drawer_text_effective_hover ) {
 	$css .= sgs_text_colour_gradient_fallback_rule( $body_sel . ':hover', $drawer_text_effective_hover );
 }
 
+// The drawer's scrollbar (includes/helpers-scrollbar.php). The dialog is the scroll container, thin unless the block
+// chooses otherwise; with the top row kept in place (chromeSticky) the body scrolls instead and keeps the site's bar
+// unless the block chooses otherwise.
+$css .= sgs_scrollbar_css( $root_sel, sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'thin' ) );
+if ( ! empty( $attributes['chromeSticky'] ) ) {
+	$css .= sgs_scrollbar_css( $body_sel, sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'default' ) );
+}
+
 // The dialog is the scroll container. Its scrollbar thumb (style.css) reads
 // --sgs-scrollbar-thumb, which the drawer's own text colour sets here (the text
 // colour is painted on the body, not the root, so the root's currentColor would

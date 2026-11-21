@@ -17,6 +17,7 @@ import { ResponsiveOverride, SgsColourPanel, fillRow, textRow,
 } from '../../components';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import ServerSideRender from '../../components/ServerSideRender';
+import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
 import {
 	PanelBody,
 	SelectControl,
@@ -115,6 +116,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		dragToScroll,
 		dragMomentum,
 		loopCarousel,
+		scrollbarStyle,
 		backgroundColour,
 		backgroundColourGradient,
 	} = attributes;
@@ -523,6 +525,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								dragToScroll: false,
 								dragMomentum: true,
 								loopCarousel: false,
+								scrollbarStyle: undefined,
 							} )
 						}
 					>
@@ -617,6 +620,19 @@ export default function Edit( { attributes, setAttributes } ) {
 									'Lets visitors click and drag with a mouse to scroll the reviews, on top of the usual arrows, dots, swipe and scrollbar.',
 									'sgs-blocks'
 								) }
+							/>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Scrollbar', 'sgs-blocks' ) }
+							hasValue={ () => undefined !== scrollbarStyle }
+							onDeselect={ () => setAttributes( { scrollbarStyle: undefined } ) }
+							isShownByDefault
+						>
+							<ScrollbarStyleControl
+								value={ scrollbarStyle }
+								start="hidden"
+								onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
+								hasOtherWay={ showArrows || showDots || dragToScroll }
 							/>
 						</ToolsPanelItem>
 						{ dragToScroll && (

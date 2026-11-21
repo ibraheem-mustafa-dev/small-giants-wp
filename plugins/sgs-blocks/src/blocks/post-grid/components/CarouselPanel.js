@@ -5,6 +5,7 @@
 import { __ } from '@wordpress/i18n';
 import { RangeControl, ToggleControl } from '@wordpress/components';
 import { ToolsPanel, ToolsPanelItem } from '../../../components/primitives';
+import ScrollbarStyleControl from '../../../components/ScrollbarStyleControl';
 
 export default function CarouselPanel( { attributes, setAttributes, set } ) {
 	const {
@@ -16,6 +17,7 @@ export default function CarouselPanel( { attributes, setAttributes, set } ) {
 		dragToScroll,
 		dragMomentum,
 		loopCarousel,
+		scrollbarStyle,
 	} = attributes;
 
 	return (
@@ -31,6 +33,7 @@ export default function CarouselPanel( { attributes, setAttributes, set } ) {
 								dragToScroll: false,
 								dragMomentum: true,
 								loopCarousel: false,
+								scrollbarStyle: undefined,
 							} )
 						}
 					>
@@ -105,6 +108,19 @@ export default function CarouselPanel( { attributes, setAttributes, set } ) {
 								/>
 							</ToolsPanelItem>
 						) }
+						<ToolsPanelItem
+							label={ __( 'Scrollbar', 'sgs-blocks' ) }
+							hasValue={ () => undefined !== scrollbarStyle }
+							onDeselect={ () => setAttributes( { scrollbarStyle: undefined } ) }
+							isShownByDefault
+						>
+							<ScrollbarStyleControl
+								value={ scrollbarStyle }
+								start="hidden"
+								onChange={ set( 'scrollbarStyle' ) }
+								hasOtherWay={ carouselShowArrows || carouselShowDots || dragToScroll }
+							/>
+						</ToolsPanelItem>
 						{ /*
 						 * Draggable + Inertia opt-in (Spec 38 FR-38-13),
 						 * mirroring sgs/gallery. Desktop-only click-and-drag

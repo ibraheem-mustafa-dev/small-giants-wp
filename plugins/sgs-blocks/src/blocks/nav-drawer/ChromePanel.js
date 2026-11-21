@@ -10,6 +10,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl } from '@wordpress/components';
+import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
 import { MediaElementPanel, ResponsiveBoxControl, ResponsiveLengthControl, SvgPartsControls } from '../../components';
 import { hasLogoFile } from '../../utils/logo-source';
 import metadata from './block.json';
@@ -143,6 +144,13 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 				checked={ false !== drawerScrollbarGutter }
 				onChange={ ( value ) => setAttributes( { drawerScrollbarGutter: value } ) }
 				__nextHasNoMarginBottom
+			/>
+
+			<ScrollbarStyleControl
+				label={ __( 'Drawer scrollbar', 'sgs-blocks' ) }
+				value={ attributes.scrollbarStyle }
+				start="thin"
+				onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
 			/>
 
 			<ChromeRowBorderControls attributes={ attributes } setAttributes={ setAttributes } />

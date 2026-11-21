@@ -559,6 +559,15 @@
 			"type": "boolean",
 			"default": false
 		},
+		"scrollbarStyle": {
+			"type": "string",
+			"enum": [
+				"default",
+				"thin",
+				"hidden"
+			],
+			"description": "The image grid's scrollbar wherever it scrolls (the carousel, or a swipe row at any device): default (the site's bar), thin, or hidden. Unset, it is hidden (its starting value). Printed by includes/helpers-scrollbar.php."
+		},
 		"dragMomentum": {
 			"type": "boolean",
 			"default": true

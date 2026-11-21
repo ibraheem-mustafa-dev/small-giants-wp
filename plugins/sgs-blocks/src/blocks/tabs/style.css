@@ -321,14 +321,8 @@
 		flex-direction: row;
 		border-right: none;
 		border-bottom: 2px solid var( --sgs-panel-border );
+		/* Its scrollbar is the block's scrollbarStyle (render.php, includes/helpers-scrollbar.php). */
 		overflow-x: auto;
-		/* Hide scrollbar while keeping functionality */
-		-ms-overflow-style: none;
-		scrollbar-width: none;
-	}
-
-	.sgs-tabs--vertical .sgs-tabs__nav::-webkit-scrollbar {
-		display: none;
 	}
 
 	.sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__tab[aria-selected="true"],

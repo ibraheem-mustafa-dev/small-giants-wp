@@ -207,6 +207,12 @@ if ( '' !== $tabs_preset_bg_slug ) {
 // grid stay the wrapper's own scoped mechanism (not duplicated here).
 $tabs_responsive_css = '';
 
+// A vertical tab list becomes a sideways-scrolling row on phones; its scrollbar (includes/helpers-scrollbar.php) is
+// hidden unless the block chooses otherwise.
+if ( 'vertical' === $orientation ) {
+	$tabs_responsive_css .= sgs_scrollbar_css( "{$root_sel} .sgs-tabs__nav", sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'hidden' ), \SGS_Breakpoints::query_fractional( 'mobile' ) );
+}
+
 $tabs_style_engine_args = array();
 
 $tabs_color_args = array();

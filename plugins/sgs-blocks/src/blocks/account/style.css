@@ -127,13 +127,9 @@
 		flex-direction: row;
 		overflow-x: auto;
 		scroll-snap-type: x proximity;
-		/* Room for the focus ring inside the scroller, which clips overflow. */
+		/* Room for the focus ring inside the scroller, which clips overflow. Its scrollbar is the block's
+		   scrollbarStyle (render.php, includes/helpers-scrollbar.php). */
 		padding: 0.25rem;
-		scrollbar-width: none;
-	}
-	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation ul::-webkit-scrollbar,
-	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation ul::-webkit-scrollbar {
-		display: none;
 	}
 	.sgs-account--tablet-tabs nav.woocommerce-MyAccount-navigation li,
 	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation li {
@@ -168,10 +164,6 @@
 		scroll-snap-type: x proximity;
 		/* Room for the focus ring inside the scroller, which clips overflow. */
 		padding: 0.25rem;
-		scrollbar-width: none;
-	}
-	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation ul::-webkit-scrollbar {
-		display: none;
 	}
 	.sgs-account--mobile-tabs nav.woocommerce-MyAccount-navigation li {
 		flex: 0 0 auto;

@@ -180,17 +180,21 @@ if ( ! function_exists( 'sgs_gallery_layout_declarations' ) ) {
 	 * gallery that is a grid on desktop and a swipe row on phones does not clip tilted tiles, and a swipe row on desktop
 	 * that is a grid on phones does not keep the padding.
 	 *
-	 * @param string $tier `tablet` or `mobile`.
+	 * The swipe row's own scrollbar width is the block's scrollbar choice (`scrollbarStyle`, hidden when unset:
+	 * includes/helpers-scrollbar.php::sgs_scrollbar_width_declaration); render.php prints the choice's other rules.
+	 *
+	 * @param string $tier      `tablet` or `mobile`.
+	 * @param string $scrollbar The image grid's scrollbar choice (default, thin or hidden).
 	 * @return array<string,string> Layout => declarations for `.sgs-gallery__grid`.
 	 */
-	function sgs_gallery_layout_declarations( string $tier ): array {
+	function sgs_gallery_layout_declarations( string $tier, string $scrollbar = 'hidden' ): array {
 		$cols   = 'tablet' === $tier ? 'var(--sgs-columns-tablet,2)' : 'var(--sgs-columns-mobile,1)';
 		$column = 'calc((100% - (' . $cols . ' - 1) * var(--sgs-gap)) / ' . $cols . ')';
 		$reset  = 'column-count:auto;column-gap:var(--sgs-gap);scrollbar-width:auto;';
 		return array(
 			'grid'    => 'display:grid;grid-template-columns:repeat(' . $cols . ',1fr);grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;scroll-snap-type:none;' . $reset . sgs_gallery_scroll_bleed_declarations( false ),
 			'masonry' => 'display:block;column-count:' . $cols . ';column-gap:var(--sgs-gap);grid-template-columns:none;grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;scroll-snap-type:none;scrollbar-width:auto;' . sgs_gallery_scroll_bleed_declarations( false ),
-			'scroll'  => 'display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:var(--sgs-scroll-item-width,' . $column . ');overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;column-count:auto;column-gap:var(--sgs-gap);' . sgs_gallery_scroll_bleed_declarations( true ),
+			'scroll'  => 'display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:var(--sgs-scroll-item-width,' . $column . ');overflow-x:auto;scroll-snap-type:x mandatory;' . sgs_scrollbar_width_declaration( $scrollbar ) . 'column-count:auto;column-gap:var(--sgs-gap);' . sgs_gallery_scroll_bleed_declarations( true ),
 		);
 	}
 }
@@ -226,7 +230,7 @@ if ( ! function_exists( 'sgs_gallery_layout_css' ) ) {
 		$grid_css = array( 'base' => '' );
 		$item_css = array( 'base' => '' );
 		foreach ( array( 'tablet', 'mobile' ) as $tier ) {
-			foreach ( sgs_gallery_layout_declarations( $tier ) as $layout => $decls ) {
+			foreach ( sgs_gallery_layout_declarations( $tier, sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'hidden' ) ) as $layout => $decls ) {
 				$grid_css[ $layout . ':' . $tier ] = $decls;
 				$item_css[ $layout . ':' . $tier ] = 'masonry' === $layout ? 'break-inside:avoid;margin-bottom:var(--sgs-gap);' : 'break-inside:auto;margin-bottom:0;';
 			}

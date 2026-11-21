@@ -53,15 +53,12 @@
    the panel's rounded corners. render.php publishes the drawer text colour as
    --sgs-scrollbar-thumb when the drawer sets one.
    Chrome and Safari draw it through the ::-webkit-scrollbar parts, the only
-   route that removes the arrow buttons and insets the track (Chrome keeps its
-   arrows under the standard properties and ignores these parts once
-   scrollbar-width or scrollbar-color is set, so the theme's scrollbar-color is
-   reset to auto here where the parts exist; Firefox draws no arrows and keeps
-   the theme's colour with scrollbar-width: thin). */
+   route that removes the arrow buttons and insets the track. Its thickness and
+   whether it shows are the block's scrollbarStyle (render.php,
+   includes/helpers-scrollbar.php: thin when unset, which keeps these parts in
+   Chrome and Safari and thins Firefox's bar); this file styles the parts. */
 .wp-block-sgs-nav-drawer::-webkit-scrollbar {
 	background: transparent;
-	height: 10px;
-	width: 10px;
 }
 
 .wp-block-sgs-nav-drawer::-webkit-scrollbar-button {
@@ -93,18 +90,6 @@
    scrollbars reserve nothing. */
 :where(.wp-block-sgs-nav-drawer) {
 	scrollbar-gutter: stable;
-}
-
-@supports selector(::-webkit-scrollbar) {
-	.wp-block-sgs-nav-drawer {
-		scrollbar-color: auto;
-	}
-}
-
-@supports not selector(::-webkit-scrollbar) {
-	:where(.wp-block-sgs-nav-drawer) {
-		scrollbar-width: thin;
-	}
 }
 
 /* Height defaults live in :where() (specificity 0) so the `panelSize`

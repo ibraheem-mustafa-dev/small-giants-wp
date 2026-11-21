@@ -1515,6 +1515,15 @@
 			"type": "object",
 			"default": {}
 		},
+		"scrollbarStyle": {
+			"type": "string",
+			"enum": [
+				"default",
+				"thin",
+				"hidden"
+			],
+			"description": "The scrollbar of the menu where it is a sideways-scrolling row of tabs (navLayout tabs, below 1024px): default (the site's bar), thin, or hidden. Unset, it is hidden (its starting value). Printed by includes/helpers-scrollbar.php."
+		},
 		"showMenuIcons": {
 			"type": "boolean",
 			"default": true

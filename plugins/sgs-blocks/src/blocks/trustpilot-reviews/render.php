@@ -427,6 +427,11 @@ $sgs_tp_drag_momentum  = (bool) ( $attributes['dragMomentum'] ?? true );
 // fx-carousel-loop.js` reads this; it never touches `gsap/fx-draggable.js`.
 $sgs_tp_loop_carousel = (bool) ( $attributes['loopCarousel'] ?? false );
 
+// The carousel track's scrollbar (includes/helpers-scrollbar.php): hidden unless the block chooses otherwise.
+if ( $is_carousel ) {
+	$tp_responsive_css .= sgs_scrollbar_css( $tp_root_sel . ' .sgs-trustpilot-reviews__track', sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'hidden' ) );
+}
+
 $sgs_tp_track_fx_attr = '';
 if ( $is_carousel && $sgs_tp_drag_to_scroll ) {
 	$sgs_tp_track_fx_attr = ' data-sgs-fx="draggable"';

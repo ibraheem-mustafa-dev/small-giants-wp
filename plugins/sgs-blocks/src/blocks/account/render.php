@@ -137,6 +137,24 @@ if ( $use_tabs ) {
 	$scoped_css[] = sgs_account_auth_tabs_css( $attributes, $root_sel );
 }
 
+// The menu becomes a sideways-scrolling row where its layout is tabs (below 1024px, and in a box narrower than 480px for
+// the Mobile tier, as style.css lays it out); its scrollbar (includes/helpers-scrollbar.php) is hidden unless the block
+// chooses otherwise.
+$sgs_account_menu_bar = sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'hidden' );
+$sgs_account_menu_ul  = ' nav.woocommerce-MyAccount-navigation ul';
+$sgs_account_tab_rows = array();
+foreach ( array( 'tablet', 'mobile' ) as $sgs_account_tier ) {
+	if ( 'tabs' === $menu_layout[ $sgs_account_tier ] ) {
+		$sgs_account_tab_rows[] = $root_sel . '.sgs-account--' . $sgs_account_tier . '-tabs' . $sgs_account_menu_ul;
+	}
+}
+if ( array() !== $sgs_account_tab_rows ) {
+	$scoped_css[] = sgs_scrollbar_css( implode( ',', $sgs_account_tab_rows ), $sgs_account_menu_bar, \SGS_Breakpoints::query_fractional( 'tablet' ) );
+}
+if ( 'tabs' === $menu_layout['mobile'] ) {
+	$scoped_css[] = sgs_scrollbar_css( $root_sel . '.sgs-account--mobile-tabs' . $sgs_account_menu_ul, $sgs_account_menu_bar, '@container sgs-account (max-width:479.98px)' );
+}
+
 $logged_out = ! is_user_logged_in();
 
 // Optional page header for the view being shown (nothing prints while its settings are empty).
