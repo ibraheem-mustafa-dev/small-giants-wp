@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 import { buildLook, READ_PROPS } from '../lib/fill-part-look.mjs';
-import { applyBuiltinButtons, declaredButtons, presetReads, HOVER_PROPS } from '../lib/fill-builtin-button.mjs';
+import { applyBuiltinButtons, declaredButtons, presetReads, kitValueShapes, HOVER_PROPS } from '../lib/fill-builtin-button.mjs';
 import { presetMisses } from '../lib/fill-preset.mjs';
 
 const PART = 'flow-opener';
@@ -150,4 +150,34 @@ test( 'presetMisses names what each variant holds against the draft, and leaves 
 	const miss = presetMisses( { presets: { ink: INK, primary: EYE_CARE.primary }, reads, id: PART, snapshot: SNAPSHOT } );
 	assert.equal( miss.ink, undefined );
 	assert.match( miss.primary[ 0 ], /^padding: the preset holds 0px 28px 0px 28px, the draft 0px 22px 0px 22px at 375px$/ );
+} );
+
+// The kit registry's `value_shape` (the database's tier_shape box_only cannot tell a flat box from a per-device one): a kit button's
+// Padding is { desktop, tablet, mobile } of sides and its BorderRadius of corners, BorderWidth one box of sides.
+test( 'MUST FAIL: the registry names the value shape of each kit attribute, by prefix', () => {
+	const shapes = kitValueShapes( 'flowOpener' );
+	assert.equal( shapes.flowOpenerPadding, 'device_sides' );
+	assert.equal( shapes.flowOpenerBorderRadius, 'device_corners' );
+	assert.equal( shapes.flowOpenerBorderWidth, 'sides' );
+	assert.equal( shapes.flowOpenerColourText, undefined );
+} );
+
+test( 'MUST FAIL: a kit attribute whose registry shape is per device is written per device: the 1440 value, then a narrower one only where it differs', () => {
+	const rows = [ ...rowsOf(), { ...rowsOf().find( ( r ) => 'flowOpenerBorderWidth' === r.attr_name ), attr_name: 'flowOpenerBorderRadius', css_property: 'border-radius' } ];
+	const names = new Set( [ ...NAMES, 'flowOpenerBorderRadius' ] );
+	const reads = readsOf();
+	reads[ PART ][ 375 ] = [ instance( styles( { 'padding-left': '14px', 'padding-right': '14px', 'border-top-left-radius': '4px', 'border-top-right-radius': '4px', 'border-bottom-right-radius': '4px', 'border-bottom-left-radius': '4px' } ), hovered() ) ];
+	const build = buildLook( { block: BLOCK, rows, names, locators: { anchors: {}, parts: { [ PART ]: {} } }, reads, snapshot: null } );
+	assert.deepEqual( build.writes.find( ( w ) => 'flowOpenerPadding' === w.attr ).value, { top: '0px', right: '22px', bottom: '0px', left: '22px' }, 'part-look alone writes a flat box' );
+	applyBuiltinButtons( { block: BLOCK, build, rows, names, db, reads, presets: {}, snapshot: SNAPSHOT, buttons: [ { prefix: 'flowOpener', part: PART } ], schemaOf: () => null } );
+	const pad = build.writes.find( ( w ) => 'flowOpenerPadding' === w.attr ).value;
+	assert.deepEqual( pad, { desktop: { top: '0px', right: '22px', bottom: '0px', left: '22px' }, mobile: { top: '0px', right: '14px', bottom: '0px', left: '14px' } } );
+	const radius = build.writes.find( ( w ) => 'flowOpenerBorderRadius' === w.attr ).value;
+	assert.deepEqual( radius, { desktop: { topLeft: '0px', topRight: '0px', bottomRight: '0px', bottomLeft: '0px' }, mobile: { topLeft: '4px', topRight: '4px', bottomRight: '4px', bottomLeft: '4px' } } );
+	assert.deepEqual( build.writes.find( ( w ) => 'flowOpenerBorderWidth' === w.attr ).value.top, '0px', 'a sides box stays flat' );
+} );
+
+test( 'a per-device kit write the draft holds at one value for every width has only a desktop entry (negative control)', () => {
+	const { value } = run( { presets: {} } );
+	assert.deepEqual( value( 'flowOpenerPadding' ), { desktop: { top: '0px', right: '22px', bottom: '0px', left: '22px' } } );
 } );

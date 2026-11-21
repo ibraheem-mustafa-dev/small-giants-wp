@@ -31,6 +31,33 @@ const PAINTS = {
 const HOVER_COLOUR = [ 'background-color', 'color', 'border-color' ];
 const PRESET_PROPS = [ ...new Set( PRESET_KEYS.filter( ( [ , , state ] ) => ! state ).flatMap( ( [ , props ] ) => props ) ) ];
 
+const REGISTRY = path.resolve( BLOCKS_DIR, '..', 'components', 'button-kit', 'registry.json' );
+
+// The value shape the button kit's registry gives each of a button's attributes that has one: { <prefix><Base>: 'sides' | 'device_sides' |
+// 'device_corners' }. The framework database labels every box `box_only`, a flat box and a per-device one alike, so the shape the editor
+// stores and the PHP reads is the registry's `value_shape`, never the database's tier_shape. `registry` is the parsed file (a test passes its own).
+export function kitValueShapes( prefix, registry = JSON.parse( fs.readFileSync( REGISTRY, 'utf8' ) ) ) {
+	return Object.fromEntries( Object.values( registry.groups || {} ).flat().filter( ( a ) => a.value_shape ).map( ( a ) => [ `${ prefix }${ a.base }`, a.value_shape ] ) );
+}
+
+// A part-look write of a box setting that the registry stores per device, as { desktop, tablet?, mobile? }: the draft's 1440 value, a
+// narrower one only where it differs from the width above it (part-look's own rule for a per-device setting). The write is returned
+// as it was when the draft holds no 1440 value or a value has no setting shape.
+function perDeviceWrite( write, row, ctx ) {
+	const [ d, t, m ] = [ write.draft?.[ 1440 ], write.draft?.[ 768 ], write.draft?.[ 375 ] ];
+	if ( undefined === d || null === d || ! row ) {
+		return write;
+	}
+	const tiers = { desktop: d };
+	undefined !== t && null !== t && ! samePrimitive( t, d ) && ( tiers.tablet = t );
+	undefined !== m && null !== m && ! samePrimitive( m, tiers.tablet ?? d ) && ( tiers.mobile = m );
+	const shaped = Object.entries( tiers ).map( ( [ k, v ] ) => [ k, toSetting( row, v, ctx ) ] );
+	if ( shaped.some( ( [ , x ] ) => x.why ) ) {
+		return write;
+	}
+	return { ...write, value: Object.fromEntries( shaped.map( ( [ k, x ] ) => [ k, x.value ] ) ), widthVaries: undefined };
+}
+
 let declaredIndex = null;
 // The built-in buttons a block declares in its block.json: [ { prefix, part, label } ], empty for a block that declares none.
 export function declaredButtons( block ) {
@@ -104,6 +131,9 @@ export function applyBuiltinButtons( { block, build, rows, names, db, reads, pre
 		const choice = choices.find( ( c ) => c.attr === `${ prefix }Style` && c.part === part );
 		const entry = { prefix, part, preset: null, dropped: [], hover: [], misses: {} };
 		out.buttons.push( entry );
+		// A box the registry stores per device is written per device (a flat box prints nothing there).
+		const shapes = kitValueShapes( prefix );
+		build.writes = build.writes.map( ( w ) => ( w.part === part && ! w.mode && ! w.companionOf && /^device_/.test( shapes[ w.attr ] || '' ) ? perDeviceWrite( w, rows.find( ( r ) => r.attr_name === w.attr ), { names, snapshot, log: [] } ) : w ) );
 		const id = part;
 		const pr = presetReads( instances, id );
 		const held = Object.fromEntries( Object.entries( presets || {} ).filter( ( [ v ] ) => choice?.variants.includes( v ) ) );

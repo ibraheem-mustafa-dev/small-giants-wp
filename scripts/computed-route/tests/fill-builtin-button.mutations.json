@@ -64,5 +64,29 @@
 		"find": "if ( ! WIDTHS.some( ( w ) => ( instances[ w ] || [] ).length ) ) {",
 		"replace": "if ( false ) {",
 		"why": "a button the draft does not draw is processed"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "/^device_/.test( shapes[ w.attr ] || '' )",
+		"replace": "false",
+		"why": "a per-device box is written flat"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "undefined !== t && null !== t && ! samePrimitive( t, d ) && ( tiers.tablet = t );",
+		"replace": "( tiers.tablet = t );",
+		"why": "a tablet entry is always written"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": ".filter( ( a ) => a.value_shape )",
+		"replace": ".filter( () => false )",
+		"why": "the registry's value shapes are not read"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "undefined !== m && null !== m && ! samePrimitive( m, tiers.tablet ?? d ) && ( tiers.mobile = m );",
+		"replace": "undefined !== m && null !== m && ( tiers.mobile = m );",
+		"why": "a mobile entry is written even where it equals the width above"
 	}
 ]
