@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sgs-setting-record.schema.json",
+  "title": "SGS setting record: what each setting of one block changes",
+  "description": "One block's record. An entry is one place a setting paints: the part, the CSS longhands, the state and the media conditions it holds under. check.py compares the record with a run of the block's code both ways; the key of an entry is (setting, part, props, state, tiers).",
+  "type": "object",
+  "required": [
+    "block",
+    "schemaVersion",
+    "parts",
+    "entries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "block": {
+      "type": "string",
+      "pattern": "^sgs/[a-z0-9-]+$"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "parts": {
+      "description": "The block's own part classes (sgs-<block>__<part>) the default render prints, in markup order.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^sgs-[a-z0-9-]+__[a-z0-9-]+$"
+      },
+      "uniqueItems": true
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "setting",
+          "part",
+          "props",
+          "state",
+          "tiers"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "setting": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The block attribute (a fooUnit companion is folded into foo)."
+          },
+          "part": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ROOT for the block root, else the part class (sgs-x__y), a bare tag under its classed ancestor (sgs-x__y svg), with ::before / ::after when the paint is on a pseudo-element. Classes of other blocks and shared helpers keep their own names."
+          },
+          "props": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "CSS longhands, sorted; a shorthand stands for all of its longhands."
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "null at rest, else hover, focus, current, open, disabled, active, checked, or the selector token naming another state."
+          },
+          "tiers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The at-rules the paint holds under (screen widths, forced colours, reduced motion); empty means always."
+          },
+          "kind": {
+            "enum": [
+              "value",
+              "switched-on"
+            ],
+            "description": "value: the property takes the setting's value. switched-on: moving the setting off its default switches the declaration on, but its value is not the setting's. Required on every entry the check can see; an entry marked runner has none until the runner can see it."
+          },
+          "runner": {
+            "type": "string",
+            "description": "Set when the offline runner cannot see this paint yet (a render_block filter, wp_footer): the check lists the entry as skipped, never passes it silently. The value names the cause."
+          },
+          "selector": {
+            "type": "string",
+            "description": "The rule's selector, for people reading the record; never compared."
+          },
+          "unproved": {
+            "enum": [
+              "script-built-part",
+              "part-not-rendered",
+              "part-printed-nowhere",
+              "theme-value",
+              "same-value-here",
+              "rule-needs-absent-markup",
+              "state-not-holdable",
+              "container-query",
+              "other"
+            ],
+            "description": "Set when the proof could not see what decides the entry, naming why. The entry is kept, but its kind is a reading, not a proof (switched-on for a true/false setting, else value): a reader that acts on kind must treat it as unproven."
+          }
+        },
+        "if": {
+          "not": {
+            "required": [
+              "runner"
+            ]
+          }
+        },
+        "then": {
+          "required": [
+            "kind"
+          ]
+        }
+      }
+    }
+  }
+}

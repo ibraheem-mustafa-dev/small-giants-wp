@@ -1,0 +1,291 @@
+"""The setting-record check: run a block's real render code offline for every setting and compare what changes with the
+block's written record, both ways.
+
+  add      the code changes this, the record does not have it
+  remove   the record has this, the code no longer changes it
+  change   the same setting, part and properties, but the record names other states or media conditions
+  skipped  record entries marked `runner` (a paint the offline runner cannot see yet), listed, never passed silently
+Parts: every part block.json (supports.sgs.elements) declares must be printed by the default render or built by the
+block's front-end script; every sgs-<block>__ part the default render prints must be declared; the record's `parts`
+must equal the printed parts in markup order.
+
+Usage:
+  python check.py sgs/button --record button.json                 compare (exit 1 on any finding)
+  python check.py sgs/button --write button.json                  write the record from the code
+  python check.py sgs/button sgs/cart --record-dir DIR            several blocks at once, one process each (--write-dir DIR to write)
+  python check.py --self-test                                     prove the check fails on planted faults
+Options: --plugin P (a plugin copy; default this repo's), --fixtures F, --instances PLAN.json | --instances-dir DIR
+(replay a saved instance plan instead of generating one from block.json), --no-proof, --out DIR (reports).
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import diff as D  # noqa: E402
+import render as RN  # noqa: E402
+import vocab as V  # noqa: E402
+
+FIXTURES = HERE / 'fixtures.json'
+SCHEMA = HERE / 'record.schema.json'
+
+
+def key(e: dict) -> tuple:
+    return (e['setting'], e['part'], tuple(e['props']), e['state'], tuple(e['tiers']))
+
+
+def place(e: dict) -> tuple:
+    return (e['setting'], e['part'], tuple(e['props']))
+
+
+# ---------------------------------------------------------------- running the code
+def load_plan(short: str, plugin: Path, fixtures: dict, instances: Path | None) -> dict:
+    """The instance plan: a saved one (replay) or one generated from block.json."""
+    if instances:
+        pl = json.loads(instances.read_text(encoding='utf-8'))
+        fx = dict(fixtures.get(f'sgs/{short}') or {})
+        fx.update(pl.get('fixture') or {})
+        pl['fixture'] = fx
+        return pl
+    import instances as I
+    pl = I.plan(short, plugin, fixtures)
+    pl['fixture'] = {**(fixtures.get(f'sgs/{short}') or {}), **(pl.get('fixture') or {})}
+    return pl
+
+
+def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, instances: Path | None = None) -> dict:
+    """Every setting's placements, with the renders behind each, the default render and timing."""
+    t0 = time.time()
+    pl = load_plan(short, plugin, fixtures, instances)
+    fixture = pl['fixture'] or {}
+    rn = RN.Renderer(plugin, fixture, fixtures_dir, short)
+    slug = f'sgs/{short}'
+    content, inner = rn.render_inner(fixture.get('inner'))
+    children = sorted(set(re.findall(r'"name": "sgs/([a-z0-9-]+)"', json.dumps(fixture.get('inner') or []))))
+    sheets = D.static_rules(plugin, short, children)
+    insts = [i for i in pl['instances'] if not i.get('discover')]
+    jobs = {}
+    for i in insts:
+        a = RN.with_defaults(plugin, short, RN.fill(i['attrs']))
+        i['_key'] = RN.hashlib.md5(json.dumps(a, sort_keys=True).encode()).hexdigest()
+        jobs[i['_key']] = a
+    t1 = time.time()
+    results = rn.render_many(slug, jobs, content, inner)
+    t2 = time.time()
+    defaults = {i['variant']: i for i in insts if i['isDefault']}
+    bases = {i['baseKey']: i for i in insts if i['isBase']}
+    reads = {k: D.read(r, short) if r.get('ok') else None for k, r in results.items()}
+    settings, sources, log = {}, {}, []
+    for i in insts:
+        if not i['attr'] or i['isDefault'] or i['isBase'] or i.get('paintState'):
+            continue
+        base = bases.get(i['baseKey']) if i['baseKey'] else defaults.get(i['variant'])
+        rb, rm = reads.get(base['_key']) if base else None, reads.get(i['_key'])
+        entry = {'key': i['key'], 'attr': i['attr'], 'base': base['key'] if base else None}
+        if rb is None or rm is None:
+            entry['error'] = ((results[i['_key']].get('error') or (results[base['_key']].get('error') if base else '')) or 'no base')[:300]
+            log.append(entry)
+            continue
+        pls, info = D.diff_placements(rb, rm, short, sheets)
+        entry.update(info, n=len(pls))
+        log.append(entry)
+        for p in pls:
+            p['_pair'] = (base['_key'], i['_key'])
+        settings.setdefault(i['attr'], []).extend(pls)
+    d0 = results.get(defaults.get(0, {}).get('_key')) or {}
+    first = re.search(r'<(?!style)[a-z][^>]*>', re.sub(r'<style.*?</style>', '', d0.get('html', ''), flags=re.S))
+    rc = re.search(r'class="([^"]*)"', first.group(0)) if first else None
+    aliases = sorted({c for c in (rc.group(1).split() if rc else []) if c.startswith('sgs-') and '__' not in c and '--' not in c
+                      and not D.UID_RE.fullmatch(c) and c != f'sgs-{short}'})
+    attrs = RN.block_json(plugin, short).get('attributes', {})
+    entries, pairs, sels, unnamed = {}, {}, {}, []
+    for a, placements in V.fold_units(attrs, settings).items():
+        its, _twins = V.fold_prefixed(V.items(placements, f'sgs-{short}', tuple(aliases)))
+        for it in its:
+            e = {'setting': a, 'part': it['part'], 'props': it['props'], 'state': it['state'], 'tiers': it['tiers'], 'selector': it.get('selector')}
+            if e['part'] is None:
+                # the scanner's selector reader could not name the part (block-source-scan/selector_eval.py::analyse_selector)
+                unnamed.append(e)
+                continue
+            entries[key(e)] = e
+        # every render pair behind a (setting, part, props, state, tiers), for the proof
+        for p in placements:
+            for it in V.items([p], f'sgs-{short}', tuple(aliases)):
+                k = (a, it['part'], tuple(it['props']), it['state'], tuple(it['tiers']))
+                pairs.setdefault(k, set()).add(p['_pair'])
+                if p.get('selector'):
+                    sels.setdefault(k, set()).add(p['selector'])
+    errors = sorted({(results[k].get('error') or '')[:200] for k in results if not results[k].get('ok')})
+    stats = {'block': slug, 'instances': len(insts), 'renders': len(jobs), 'failed': sum(1 for r in results.values() if not r.get('ok')),
+             'errors': errors[:10], 'secondsRendering': round(t2 - t1, 1), 'secondsRun': round(time.time() - t0, 1)}
+    return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'selectors': sels, 'results': results, 'children': children, 'plugin': plugin, 'jobs': jobs, 'defaultHtml': d0.get('html', ''), 'stats': stats,
+            'log': log, 'aliases': aliases, 'sheets': sheets, 'renderer': rn, 'plan': pl, 'slug': slug, 'content': content, 'inner': inner}
+
+
+# ---------------------------------------------------------------- comparing
+def compare(record: list, run: dict) -> dict:
+    checked = [e for e in record if not e.get('runner')]
+    skipped = [e for e in record if e.get('runner')]
+    rec = {key(e): e for e in checked}
+    add = [run[k] for k in run if k not in rec]
+    remove = [rec[k] for k in rec if k not in run]
+    add_places, rem_places = {}, {}
+    for e in add:
+        add_places.setdefault(place(e), []).append(e)
+    for e in remove:
+        rem_places.setdefault(place(e), []).append(e)
+    change = []
+    for pl in sorted(set(add_places) & set(rem_places), key=str):
+        change.append({'setting': pl[0], 'part': pl[1], 'props': list(pl[2]),
+                       'record': [[e['state'], e['tiers']] for e in rem_places[pl]], 'code': [[e['state'], e['tiers']] for e in add_places[pl]]})
+    changed = {(c['setting'], c['part'], tuple(c['props'])) for c in change}
+    add = [e for e in add if place(e) not in changed]
+    remove = [e for e in remove if place(e) not in changed]
+    return {'add': add, 'remove': remove, 'change': change, 'skipped': skipped,
+            'confirmed': len(checked) - len(remove) - sum(len(rem_places[p]) for p in changed)}
+
+
+def parts_check(short: str, plugin: Path, html: str) -> dict:
+    """Declared parts against the default render (and the block's scripts, for parts only a script builds)."""
+    from bs4 import BeautifulSoup
+    import soupsieve as sv
+    bdir = plugin / 'src' / 'blocks' / short
+    bj = json.loads((bdir / 'block.json').read_text(encoding='utf-8'))
+    elements = ((bj.get('supports') or {}).get('sgs') or {}).get('elements') or {}
+    scripts = ' '.join(f.read_text(encoding='utf-8', errors='ignore') for f in bdir.glob('*.js')
+                       if f.name not in ('edit.js', 'index.js', 'save.js') and not f.name[0].isupper())
+    printed = []
+    for m in re.finditer(r'class="([^"]*)"', html):
+        for c in m.group(1).split():
+            if re.fullmatch(rf'sgs-{re.escape(short)}__[a-z0-9]+(?:-[a-z0-9]+)*', c) and c not in printed:
+                printed.append(c)
+    declared, not_printed, script_only = {}, [], []
+    soup = BeautifulSoup(html, 'html.parser')
+    for name, el in elements.items():
+        sel = el.get('selector') if isinstance(el, dict) else None
+        if not sel:
+            continue
+        for c in re.findall(r'\.(sgs-[a-z0-9_-]+)', sel):
+            declared[re.sub(r'--[a-z0-9-]+$', '', c)] = name
+        try:
+            found = bool(sv.select(re.sub(r':(hover|focus-visible|focus|active)\b', '', sel), soup))
+        except Exception:
+            found = False
+        if found:
+            continue
+        classes = [re.sub(r'--[a-z0-9-]+$', '', c) for c in re.findall(r'\.(sgs-[a-z0-9_-]+)', sel)]
+        (script_only if classes and classes[-1] in scripts else not_printed).append({'part': name, 'selector': sel})
+    undeclared = [c for c in printed if c not in declared]
+    return {'order': printed, 'declaredNotPrinted': not_printed, 'declaredScriptBuilt': script_only, 'printedNotDeclared': undeclared}
+
+
+def schema_errors(doc: dict, need_kind: bool) -> list:
+    import jsonschema
+    schema = json.loads(SCHEMA.read_text(encoding='utf-8'))
+    if not need_kind:
+        schema['properties']['entries']['items'].pop('then', None)
+    return [f'{"/".join(str(p) for p in e.absolute_path)}: {e.message}' for e in jsonschema.Draft202012Validator(schema).iter_errors(doc)][:20]
+
+
+# ---------------------------------------------------------------- one block
+def check_block(args, block: str) -> int:
+    t0 = time.time()
+    short = block.split('/', 1)[-1]
+    fixtures = json.loads(args.fixtures.read_text(encoding='utf-8')) if args.fixtures.is_file() else {}
+    instances = args.instances or (args.instances_dir / f'plan-{short}.json' if args.instances_dir else None)
+    run = run_block(short, args.plugin, fixtures, args.fixtures.parent, instances)
+    entries = run['entries']
+    proof = None
+    if not args.no_proof:
+        import proof as PR
+        tp = time.time()
+        entries, proof = PR.prove(short, run)
+        proof['seconds'] = round(time.time() - tp, 1)
+    parts = parts_check(short, args.plugin, run['defaultHtml'])
+    record_file = args.record or (args.record_dir / f'{short}.json' if args.record_dir else None)
+    out = args.out
+    out.mkdir(parents=True, exist_ok=True)
+    report = {'block': f'sgs/{short}', **run['stats'], 'secondsTotal': None, 'partNotNamed': run['unnamed']}
+    bad = False
+    write = args.write or (args.write_dir / f'{short}.json' if args.write_dir else None)
+    if write:
+        kept = []
+        if write.is_file():
+            kept = [e for e in json.loads(write.read_text(encoding='utf-8')).get('entries', []) if e.get('runner')]
+        doc = {'block': f'sgs/{short}', 'schemaVersion': 1, 'parts': parts['order'],
+               'entries': sorted(kept + [{k: v for k, v in e.items() if v is not None or k == 'state'} for e in entries.values()], key=lambda e: json.dumps(key(e)))}
+        errs = schema_errors(doc, need_kind=not args.no_proof)
+        write.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
+        report.update(written=str(write), entries=len(doc['entries']), schemaErrors=errs)
+        bad = bool(errs)
+    if record_file:
+        doc = json.loads(record_file.read_text(encoding='utf-8'))
+        res = compare(doc['entries'], entries)
+        if doc.get('parts') != parts['order']:
+            parts['orderChanged'] = {'record': doc.get('parts'), 'code': parts['order']}
+        errs = schema_errors(doc, need_kind=not args.no_proof)
+        report.update(recordEntries=len(doc['entries']), confirmed=res['confirmed'], add=res['add'], remove=res['remove'], change=res['change'],
+                      skippedRunnerCannotSee=[{k: e[k] for k in ('setting', 'part', 'props', 'runner')} for e in res['skipped']], schemaErrors=errs)
+        bad = bool(res['add'] or res['remove'] or res['change'] or parts.get('orderChanged') or errs)
+        # A part block.json declares but nothing prints, or one printed but never declared, is a fault in the block, not
+        # in its record: reported always, failing only with --strict-parts (until every block's declarations are whole).
+        bad = bad or (args.strict_parts and bool(parts['declaredNotPrinted'] or parts['printedNotDeclared']))
+    report['parts'] = parts
+    if proof is not None:
+        report['proof'] = proof
+    report['secondsTotal'] = round(time.time() - t0, 1)
+    (out / f'{short}.check.json').write_text(json.dumps(report, indent=1, default=list), encoding='utf-8')
+    summary = {k: (len(v) if isinstance(v, list) else v) for k, v in report.items() if k not in ('parts', 'proof', 'errors')}
+    summary['parts'] = {k: (v if k in ('order', 'orderChanged') else len(v)) for k, v in parts.items()}
+    if proof is not None:
+        summary['proof'] = proof.get('counts')
+    print(json.dumps(summary))
+    return 1 if bad else 0
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
+    ap.add_argument('blocks', nargs='*')
+    ap.add_argument('--record', type=Path)
+    ap.add_argument('--record-dir', type=Path)
+    ap.add_argument('--write', type=Path)
+    ap.add_argument('--write-dir', type=Path)
+    ap.add_argument('--plugin', type=Path, default=RN.DEFAULT_PLUGIN)
+    ap.add_argument('--fixtures', type=Path, default=FIXTURES)
+    ap.add_argument('--instances', type=Path)
+    ap.add_argument('--instances-dir', type=Path)
+    ap.add_argument('--no-proof', action='store_true')
+    ap.add_argument('--strict-parts', action='store_true', help='also fail on parts block.json declares but nothing prints, or prints but never declares')
+    ap.add_argument('--out', type=Path, default=RN.CACHE_ROOT / 'reports')
+    ap.add_argument('--self-test', action='store_true')
+    args = ap.parse_args(argv)
+    if args.self_test:
+        import selftest
+        return selftest.main(args)
+    if not args.blocks:
+        ap.error('name a block, or --self-test')
+    if len(args.blocks) == 1:
+        return check_block(args, args.blocks[0])
+    # several blocks: one process each, at once
+    base = [a for a in (argv if argv is not None else sys.argv[1:]) if a not in args.blocks]
+    import os
+    env = dict(os.environ, SGS_SETTING_RECORD_WORKERS=str(max(2, (os.cpu_count() or 8) // len(args.blocks))))
+    procs = {b: subprocess.Popen([sys.executable, str(Path(__file__).resolve()), b, *base], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', env=env)
+             for b in args.blocks}
+    worst = 0
+    for b, p in procs.items():
+        o, e = p.communicate()
+        print(o.strip() or e.strip()[-2000:])
+        worst = max(worst, p.returncode)
+    return worst
+
+
+if __name__ == '__main__':
+    sys.exit(main())
