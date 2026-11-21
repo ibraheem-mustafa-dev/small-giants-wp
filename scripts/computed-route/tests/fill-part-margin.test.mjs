@@ -104,13 +104,42 @@ test( 'MUST FAIL: a root element that is exactly the margin box of the part is t
 	assert.equal( w.flat[ 0 ].attributes.margin.tablet.left, '-8px' );
 } );
 
-test( 'negative control: a root element wider than the margin box of the part holds more than the part, so the part is not alone and the row stays', () => {
+// The same nav is a grid item in the draft (1fr auto 1fr): its track is wider than the burger's margin box (73px at 375, 272px at
+// 768, from the real draft read), but it starts where the margin box starts, so nothing precedes the burger and the nav's own
+// margin shifts the burger and all that follows exactly as the burger's does.
+test( 'MUST FAIL: a root element stretched wider than the part’s margin box (a grid track) that starts where the margin box starts is the same box, so the burger is still alone', () => {
 	const w = world( { root: [ 375, 768 ], bar: [ 375, 768 ] } );
+	const real = { 375: { burger: { x: 16, y: 50.8, w: 38, h: 44 }, root: { x: 24, y: 50.8, w: 73, h: 44 } }, 768: { burger: { x: 16, y: 50.8, w: 83.5, h: 44 }, root: { x: 24, y: 50.8, w: 272, h: 44 } } };
 	W.slice( 0, 2 ).forEach( ( x ) => {
-		w.reads.widths[ x ][ '0:burger' ] = { ...SHOWN, rect: { x: 8, y: 20, w: 63, h: 44 } };
-		w.reads.widths[ x ][ '0:' ] = { ...SHOWN, rect: { x: 16, y: 20, w: 300, h: 44 } };
-		w.reads.widths[ x ][ '0:bar' ] = { ...SHOWN, rect: { x: 16, y: 20, w: 300, h: 44 } };
+		w.reads.widths[ x ][ '0:burger' ] = { ...SHOWN, rect: real[ x ].burger };
+		w.reads.widths[ x ][ '0:' ] = { ...SHOWN, rect: real[ x ].root };
+		w.reads.widths[ x ][ '0:bar' ] = { ...SHOWN, rect: real[ x ].root };
 	} );
-	assert.deepEqual( soleWidths( w, w.nodes[ 0 ], w.nodes[ 0 ].targets[ 2 ], { side: 'margin-left', px: { 375: -8, 768: -8, 1440: 0 } } ), [] );
-	assert.equal( run( w, [ row() ] ).unmapped.length, 1 );
+	const margin = { side: 'margin-left', px: { 375: -8, 768: -8, 1440: 0 } };
+	assert.deepEqual( soleWidths( w, w.nodes[ 0 ], w.nodes[ 0 ].targets[ 2 ], margin ), [ 375, 768 ] );
+	const r = run( w, [ row() ] );
+	assert.deepEqual( r.unmapped, [] );
+	assert.equal( w.flat[ 0 ].attributes.margin.tablet.left, '-8px' );
+} );
+
+test( 'negative controls: a root that does not start where the part’s margin box starts (something precedes the part), does not hold it, or is shifted across it keeps the row', () => {
+	const make = ( root ) => {
+		const w = world( { root: [ 375, 768 ], bar: [ 375, 768 ] } );
+		W.slice( 0, 2 ).forEach( ( x ) => {
+			w.reads.widths[ x ][ '0:burger' ] = { ...SHOWN, rect: { x: 8, y: 20, w: 63, h: 44 } };
+			w.reads.widths[ x ][ '0:' ] = { ...SHOWN, rect: root };
+			w.reads.widths[ x ][ '0:bar' ] = { ...SHOWN, rect: root };
+		} );
+		return w;
+	};
+	const margin = { side: 'margin-left', px: { 375: -8, 768: -8, 1440: 0 } };
+	// The margin box is x 16 to 71 (the burger's x 8 less its -8px margin to its right edge 71).
+	for ( const [ why, root ] of [ [ 'starts before the margin box: another element precedes the part', { x: 0, y: 20, w: 300, h: 44 } ], [ 'ends inside the part', { x: 16, y: 20, w: 30, h: 44 } ], [ 'sits above the part', { x: 16, y: 0, w: 300, h: 10 } ] ] ) {
+		const w = make( root );
+		assert.deepEqual( soleWidths( w, w.nodes[ 0 ], w.nodes[ 0 ].targets[ 2 ], margin ), [], why );
+		assert.equal( run( w, [ row() ] ).unmapped.length, 1, why );
+	}
+	// A margin on the trailing side is held by a root that ends where the margin box ends, not by one that starts there.
+	const w = make( { x: 16, y: 20, w: 300, h: 44 } );
+	assert.deepEqual( soleWidths( w, w.nodes[ 0 ], w.nodes[ 0 ].targets[ 2 ], { side: 'margin-right', px: { 375: -8, 768: -8, 1440: 0 } } ), [], 'a leading-edge root does not hold a trailing margin' );
 } );
