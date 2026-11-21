@@ -19,6 +19,6 @@
 	{ "file": "solve.mjs", "find": "allow: allowMissingPaintArg( argv ) } );", "replace": "} );", "why": "Solve ignores its allowance" },
 	{ "file": "apply.mjs", "find": "allow: allowMissingPaintArg( process.argv ) } );", "replace": "} );", "why": "the applier ignores its allowance" },
 	{ "file": "site-run.mjs", "find": "'--site', site, '--write', ...allowMissingPaintArgs( allowMissingPaint ) ]", "replace": "'--site', site, '--write' ]", "why": "site-run does not pass the allowance to apply" },
-	{ "file": "site-run.mjs", "find": "'--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ]", "replace": "'--out', path.relative( REPO, out ) ]", "why": "site-run does not pass the allowance to fill" },
-	{ "file": "site-run.mjs", "find": "proposeSurface( { client, surface: key, allowMissingPaint, site } )", "replace": "proposeSurface( { client, surface: key, site } )", "why": "site-run does not pass the allowance to propose" }
+	{ "file": "site-run.mjs", "find": "'--out', path.relative( REPO, out ), '--run-ledger', ledger.file, ...allowMissingPaintArgs( allowMissingPaint ) ]", "replace": "'--out', path.relative( REPO, out ), '--run-ledger', ledger.file ]", "why": "site-run does not pass the allowance to fill" },
+	{ "file": "site-run.mjs", "find": "proposeSurface( { client, surface: key, allowMissingPaint, site, runLedger: ledger } )", "replace": "proposeSurface( { client, surface: key, site, runLedger: ledger } )", "why": "site-run does not pass the allowance to propose" }
 ]

@@ -1,3 +1,3 @@
 [
-	{ "file": "skeleton.mjs", "find": "const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ) } );", "replace": "const r = proposeSurface( { client, surface, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ) } );", "why": "propose would read and write the default repo" }
+	{ "file": "skeleton.mjs", "find": "const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ), runLedger: openRunLedger( flag( '--run-ledger' ) ) } );", "replace": "const r = proposeSurface( { client, surface, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ), runLedger: openRunLedger( flag( '--run-ledger' ) ) } );", "why": "propose would read and write the default repo" }
 ]

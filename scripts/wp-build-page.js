@@ -38,6 +38,8 @@
  *   --no-reload           skip the reload that checks the saved blocks parse back (a page only read on the front end)
  *   --editor-timeout <ms> how long a page load, the editor boot and a save may each take (default 60000); a large
  *   calibration page on a slow host needs longer.
+ *   --save-built <file>   write { id, built, saved } there: the markup built and the markup the editor holds after its last
+ *   reload (the saved post), each block keyed by its cr-ref class (the run ledger's build rows, site-run.mjs).
  *   SGS_MAX_RENDERS (environment, default 6): how many of the editor's server-render requests (block-renderer) run
  *   at once, so a surface with many server-rendered blocks stays under the host's concurrent-process limit.
  *
@@ -77,6 +79,7 @@ function parseArgs( argv ) {
 		else if ( a === '--template' ) args.template = argv[ ++i ];
 		else if ( a === '--dry-run' ) args.dryRun = true;
 		else if ( a === '--no-reload' ) args.noReload = true;
+		else if ( a === '--save-built' ) args.saveBuilt = argv[ ++i ];
 		else if ( a === '--editor-timeout' ) args.editorTimeout = Math.max( 1, Number( argv[ ++i ] ) || 60000 );
 	}
 	return args;
@@ -591,8 +594,11 @@ async function main() {
 		if ( saved.error ) fail( 5, `save error: ${ saved.error }` );
 		const lost = await verifySavedPost( page, saved.id, builtNames );
 		if ( lost ) fail( 5, lost );
+		// --save-built <file>: what the build saved, keyed by each block's cr-ref class (the run ledger's build rows read it).
+		const saveBuilt = ( savedContent ) => args.saveBuilt && fs.writeFileSync( args.saveBuilt, JSON.stringify( { id: saved.id, built: built.serialised, saved: savedContent } ) );
 		// A page read on the front end, not edited (calibration): what the saved content renders is the check.
 		if ( args.noReload ) {
+			saveBuilt( built.serialised );
 			console.log( JSON.stringify( { ok: true, id: saved.id, link: saved.link, invalid: [], stages } ) );
 			return;
 		}
@@ -618,6 +624,7 @@ async function main() {
 			check = await reload( saved.id );
 			stages.settleMs = Date.now() - stageStart.settle;
 		}
+		saveBuilt( check.serialised );
 		const changed = check.serialised.trim() !== expected.trim();
 		const result = { ok: ! check.invalid.length && ! changed, id: saved.id, link: saved.link, invalid: check.invalid, normalisedOnFirstLoad: normalised, changedOnReload: changed, stages };
 		if ( changed || normalised ) {

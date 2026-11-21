@@ -175,7 +175,7 @@ test( 'solve, apply, check-approved and site-run read the allowance and pass it 
 	holds( 'solve.mjs', 'allow: allowMissingPaintArg( argv ) } );' );
 	holds( 'apply.mjs', 'allow: allowMissingPaintArg( process.argv ) } );' );
 	holds( 'check-approved.mjs', 'allowMissingPaint: allowMissingPaintArg( flags ) } );' );
-	holds( 'site-run.mjs', 'const allowMissingPaint = allowMissingPaintArg( argv );', 'proposeSurface( { client, surface: key, allowMissingPaint, site } )', "'--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ]", "'--site', site, '--write', ...allowMissingPaintArgs( allowMissingPaint ) ]" );
+	holds( 'site-run.mjs', 'const allowMissingPaint = allowMissingPaintArg( argv );', 'proposeSurface( { client, surface: key, allowMissingPaint, site, runLedger: ledger } )', "'--out', path.relative( REPO, out ), '--run-ledger', ledger.file, ...allowMissingPaintArgs( allowMissingPaint ) ]", "'--site', site, '--write', ...allowMissingPaintArgs( allowMissingPaint ) ]" );
 	holds( 'lib/intake-run.mjs', 'allowMissingPaint: o.allowMissingPaint } ).intake;' );
 	holds( 'lib/intake-run-finalise.mjs', 'allowMissingPaint: o.allowMissingPaint || [] } );' );
 } );

@@ -17,7 +17,7 @@ test( 'the paint gate names the site it is given in its advice', () => {
 } );
 
 test( 'MUST FAIL: site-run passes its own --site to the propose stage and to Fill', () => {
-	assert.match( src( 'site-run.mjs' ), /proposeSurface\( \{ client, surface: key, allowMissingPaint, site \} \)/ );
+	assert.match( src( 'site-run.mjs' ), /proposeSurface\( \{ client, surface: key, allowMissingPaint, site, runLedger: ledger \} \)/ );
 	assert.match( src( 'site-run.mjs' ), /'--site', site, '--allow-external'/ );
 } );
 

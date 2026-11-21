@@ -18,7 +18,7 @@
 // A built header, footer or drawer (a page-map layout row) becomes its area's active layout, whatever the pointer named
 // before (lib/site-run-layout.mjs, FR-48-55); a run whose `--only` leaves it out changes no pointer.
 //   node scripts/computed-route/site-run.mjs <client> --site <target> [--only a,b]
-//        [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
+//        [--stages inventory,propose,fill,build,apply,walk[,verify]] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content]
 //        [--no-copies] [--strict]
 // --site is the only site the run reads or writes (prepareSite): every surfaces.json entry moves onto it, its address is the live
 // address (--live-base overrides it), and a protected site, a site with other post ids than the surfaces' and a scratch copy
@@ -35,6 +35,10 @@
 // mirror (a page or post surface only: a template copy and a Hostinger target are skipped with a note). Its failure stops the
 // surface like any stage; the stage result names the ops written and any no-setting row naming a setting the block has
 // (apply-gate's `unresolved`, which the applier's own exit code fails only on a whole run).
+// The run ledger (lib/run-ledger.mjs): every surface's stages append what they did with each draft look to
+// sites/<client>/build/qa/ledger/<surface>/<Fill stamp>/run.jsonl (the skeleton's drops, Fill's records and silent drops, the
+// build's saved markup against Fill's writes in built.json beside it, the applier's plan); --stages ...,verify adds the verify
+// stage after apply, tools/clone-ledger.mjs on the built page with that file, writing ledger.json and LEDGER.md beside it.
 // Output: sites/<client>/build/qa/site-run/<stamp>/status.json (rewritten after every stage) and <surface>.<stage>.log.
 // Fill and walks run <jobs> at a time; builds run one at a time (they write the site's database).
 import fs from 'fs';
@@ -66,12 +70,19 @@ import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 import { inventoryRootFor, partsOf, writePart } from './lib/template-frame.mjs';
+import { openRunLedger, runLedgerFileOfFill } from './lib/run-ledger.mjs';
+import { applyRunRows, buildRunRows } from './lib/run-ledger-build.mjs';
+import { ledgerTargets } from './lib/ledger-pairs.mjs';
+import { blockSchema } from './lib/resolve.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const ALL_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'apply', 'walk' ];
+// The stages a run takes only when --stages names them: verify (tools/clone-ledger.mjs reads the built page against the draft
+// and the run ledger file, after apply).
+const ASKED_STAGES = [ 'verify' ];
 
 // The names in a --stages list that are not stages: a misspelt one would otherwise leave its stage out without a word.
-export const unknownStages = ( stages ) => stages.filter( ( s ) => ! ALL_STAGES.includes( s ) );
+export const unknownStages = ( stages ) => stages.filter( ( s ) => ! ALL_STAGES.includes( s ) && ! ASKED_STAGES.includes( s ) );
 
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
 const stamp = () => new Date().toISOString().replace( /\.\d+Z$/, '' ).replace( /:/g, '-' );
@@ -355,7 +366,7 @@ export async function main( argv ) {
 	const flag = ( n, d = null ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : d );
 	const site = flag( '--site' );
 	if ( ! client || ! site ) {
-		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content] [--no-copies] [--strict] [--allow-missing-paint sgs/a,sgs/b]' );
+		throw new Error( 'usage: site-run.mjs <client> --site <target> [--only a,b] [--stages inventory,propose,fill,build,apply,walk[,verify]] [--jobs 3] [--widths 1440,768,375] [--live-base <url>] [--with-content] [--no-copies] [--strict] [--allow-missing-paint sgs/a,sgs/b]' );
 	}
 	const stages = ( flag( '--stages' ) || ALL_STAGES.join( ',' ) ).split( ',' );
 	if ( unknownStages( stages ).length ) {
@@ -441,6 +452,11 @@ export async function main( argv ) {
 			return note( key, 'inventory', false, 0, 'no intake surface: no handoff record matched' );
 		}
 		const p = skeletonPaths( { client, surface: key } );
+		// The run ledger file (lib/run-ledger.mjs): one per surface and Fill stamp, the Fill folder this run writes or, with fill
+		// left out of --stages, the newest Fill the later stages read. Each stage appends what it did with each draft look.
+		const fillRoot = path.join( build, 'qa', 'fill', key );
+		const out = fillOutDir( { fillRoot, fills: stages.includes( 'fill' ), fresh: stamp() } ) ?? path.join( fillRoot, stamp() );
+		const ledger = openRunLedger( runLedgerFileOfFill( out ) );
 		const saved = path.join( build, 'intake', 'inventories', `${ entry.intakeSurface }.json` );
 		// A state-driven surface and a form (read on its page, with no root selector of its own) take the inventory intake saved.
 		const stateOnly = !! skel.root?.viaState;
@@ -471,17 +487,15 @@ export async function main( argv ) {
 			return void await endWooPage( step );
 		}
 		if ( ! await step( 'propose', async () => {
-			const r = proposeSurface( { client, surface: key, allowMissingPaint, site } );
+			const r = proposeSurface( { client, surface: key, allowMissingPaint, site, runLedger: ledger } );
 			return proposeDetail( r, { strict } );
 		} ) ) {
 			return;
 		}
-		const fillRoot = path.join( build, 'qa', 'fill', key );
-		const out = fillOutDir( { fillRoot, fills: stages.includes( 'fill' ), fresh: stamp() } ) ?? path.join( fillRoot, stamp() );
 		let walkUrl = draftUrl;
 		if ( ! await step( 'fill', async () => {
 			const tail = await exec( 'fill', 'node', [ 'scripts/computed-route/fill.mjs', '--client', client, '--surface', key,
-				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, ...( livePrime ? [ '--live-prime', JSON.stringify( livePrime ) ] : [] ), '--site', site, '--allow-external', '--out', path.relative( REPO, out ), ...allowMissingPaintArgs( allowMissingPaint ) ] );
+				'--skeleton', path.relative( REPO, p.skeleton ), '--draft-url', draftUrl, '--live-url', liveUrl, ...( livePrime ? [ '--live-prime', JSON.stringify( livePrime ) ] : [] ), '--site', site, '--allow-external', '--out', path.relative( REPO, out ), '--run-ledger', ledger.file, ...allowMissingPaintArgs( allowMissingPaint ) ] );
 			// A state that never rendered is an opener failure, not a Fill that happened to run.
 			const opened = path.join( out, 'opener.json' );
 			const o = fs.existsSync( opened ) ? readJson( opened ) : null;
@@ -503,7 +517,7 @@ export async function main( argv ) {
 			}
 		}
 		const filledFile = path.join( out, 'filled.tree.json' );
-		return { key, entry, row, wooPage, step, exec, out, walkUrl, address, filled: fs.existsSync( filledFile ) ? readJson( filledFile ) : null };
+		return { key, entry, row, wooPage, step, exec, out, walkUrl, address, ledger, skeletonFile: p.skeleton, filled: fs.existsSync( filledFile ) ? readJson( filledFile ) : null };
 	}
 
 	// Pass 2: the build (one at a time: builds write the site's database) and the walk. A template copy builds the tree made
@@ -549,7 +563,12 @@ export async function main( argv ) {
 			for ( const part of slug ? partsOf( ctx.filled ) : [] ) {
 				await exec( 'build', 'node', [ ...builder.slice( 0, 5 ), '--tree', path.relative( REPO, writePart( build, part ) ), '--template-part', part.slug ] );
 			}
+			// A surface's own tree saves what it built for the run ledger's build rows (a template copy's tree is no surface's).
+			const builtFile = ! slug && ctx.ledger ? path.join( path.dirname( ctx.ledger.file ), 'built.json' ) : null;
+			builtFile && fs.mkdirSync( path.dirname( builtFile ), { recursive: true } );
+			builtFile && builder.push( '--save-built', builtFile );
 			const said = await exec( 'build', 'node', builder );
+			builtFile && fs.existsSync( builtFile ) && ctx.ledger.append( buildLedgerRows( { key, ctx, tree: readJson( path.join( REPO, tree ) ), builtFile } ) );
 			// Recorded as the site build records its own copies, so a later site build sees it as built from this tree.
 			slug && recordTemplate( slug, treeHash( readJson( path.join( REPO, tree ) ) ) );
 			// A choice flow's built tree is kept for the site build (lib/site-run-flow-tree.mjs::writeFlowTree).
@@ -564,6 +583,10 @@ export async function main( argv ) {
 		}
 		// The applier: set what Fill and the build cannot, from the draft's runtime. It stops the surface like a failed build.
 		if ( ! await applyStage( { ctx, entry, key, slug, step, exec } ) ) {
+			return;
+		}
+		// The verify stage (asked for with --stages ...,verify): the live page against the draft, joined to the run ledger file.
+		if ( stages.includes( 'verify' ) && ! await verifyStage( { ctx, key, slug, step } ) ) {
 			return;
 		}
 		if ( [ 'pages', 'page' ].includes( entry.copy?.from ) || ( slug && entry.copy && null === ctx.address ) ) {
@@ -595,8 +618,29 @@ export async function main( argv ) {
 		return step( 'apply', () => exclusive( async () => {
 			const origin = new URL( ( await serverFor( entry ) ).url ).origin;
 			const said = await exec( 'apply', 'node', [ 'scripts/computed-route/apply.mjs', client, '--surfaces', key, '--draft', origin, '--site', site, '--write', ...allowMissingPaintArgs( allowMissingPaint ) ] );
+			// The applier's plan, as the run ledger's apply rows.
+			const planFile = path.join( build, 'qa', 'apply', `${ key }.plan.json` );
+			ctx.ledger && fs.existsSync( planFile ) && ctx.ledger.append( applyRunRows( { plan: readJson( planFile ), planFile: path.relative( build, planFile ).split( path.sep ).join( '/' ) } ) );
 			return applyDetail( path.join( dir, `${ key }.apply.log` ), said );
 		} ) );
+	}
+
+	// The build rows of one surface (lib/run-ledger-build.mjs): each Fill write against what the build saved.
+	function buildLedgerRows( { key, ctx, tree, builtFile } ) {
+		const report = readJson( path.join( ctx.out, 'fill-report.json' ) );
+		const keys = new Map( ledgerTargets( readJson( ctx.skeletonFile ), key ).map( ( t ) => [ `${ t.ref }|${ t.slot }`, t.draftKey ] ) );
+		return buildRunRows( { surface: key, writes: report.writes, filled: tree, saved: readJson( builtFile ).saved, savedFile: path.relative( build, builtFile ).split( path.sep ).join( '/' ), draftKeyOf: ( node, slot ) => keys.get( `${ node }|${ slot || '' }` ) ?? keys.get( `${ node }|` ) ?? null, schemaOf: blockSchema } );
+	}
+
+	// The verify stage of one surface: tools/clone-ledger.mjs on the built page, reading the run ledger file. A template copy
+	// and a surface whose run wrote no run file are skipped with a note.
+	async function verifyStage( { ctx, key, slug, step } ) {
+		if ( slug || ! ctx.ledger?.file || ! fs.existsSync( ctx.ledger.file ) ) {
+			note( key, 'verify', true, 0, null, slug ? 'a template copy is verified through its pages' : 'no run ledger file for this surface', !! slug );
+			return true;
+		}
+		const exec = ctx.exec || execFor( key );
+		return step( 'verify', async () => exec( 'verify', 'node', [ 'scripts/computed-route/tools/clone-ledger.mjs', client, '--surface', key, '--site', site, '--records', build, '--fill', ctx.out, '--run', ctx.ledger.file, '--out', path.dirname( ctx.ledger.file ) ] ) );
 	}
 
 	// The site's wp-cli for recording template copies and setting the active layouts (a local mirror's runs in WSL,

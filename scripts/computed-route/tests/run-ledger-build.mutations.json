@@ -1,0 +1,10 @@
+[
+	{"file": "lib/run-ledger-build.mjs", "find": "\t\tif ( ! w.attr || seen.has( id ) ) {", "replace": "\t\tif ( seen.has( id ) ) {", "why": "a write with no setting is no build row"},
+	{"file": "lib/run-ledger-build.mjs", "find": "\t\tconst kept = attrs && canon( has ) === canon( want );", "replace": "\t\tconst kept = !! attrs;", "why": "a rewritten value is dropped"},
+	{"file": "lib/run-ledger-build.mjs", "find": "const has = attrs ? ( undefined === attrs[ w.attr ] ? fallback : attrs[ w.attr ] ) : undefined;", "replace": "const has = attrs ? attrs[ w.attr ] : undefined;", "why": "a setting left out at its default is held"},
+	{"file": "lib/run-ledger-build.mjs", "find": "\t\tconst want = fill.get( w.node )?.attributes?.[ w.attr ];", "replace": "\t\tconst want = w.after;", "why": "the Filled tree's value is what the build took"},
+	{"file": "lib/run-ledger-build.mjs", "find": "const APPLY_OUTCOME = { written: 'written', equal: 'judged-equal', ledger: 'judged-equal' };", "replace": "const APPLY_OUTCOME = { written: 'written' };", "why": "an equal apply row is judged equal"},
+	{"file": "lib/run-ledger-build.mjs", "find": "\treturn ( plan?.rows || [] ).filter( ( r ) => r.tpl || r.ref ).map(", "replace": "\treturn ( plan?.rows || [] ).map(", "why": "a plan row naming no element is no row"},
+	{"file": "lib/run-ledger-build.mjs", "find": "state: r.state || 'rest', widths: [], stage: 'apply'", "replace": "state: 'rest', widths: [], stage: 'apply'", "why": "an apply row keeps its state"},
+	{"file": "site-run.mjs", "find": "! ALL_STAGES.includes( s ) && ! ASKED_STAGES.includes( s )", "replace": "! ALL_STAGES.includes( s )", "why": "verify is a stage --stages may name"}
+]

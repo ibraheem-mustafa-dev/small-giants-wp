@@ -13,7 +13,7 @@
 	},
 	{
 		"file": "site-run.mjs",
-		"find": "export const unknownStages = ( stages ) => stages.filter( ( s ) => ! ALL_STAGES.includes( s ) );",
+		"find": "export const unknownStages = ( stages ) => stages.filter( ( s ) => ! ALL_STAGES.includes( s ) && ! ASKED_STAGES.includes( s ) );",
 		"replace": "export const unknownStages = ( stages ) => [];",
 		"why": "a misspelt stage is accepted"
 	},
