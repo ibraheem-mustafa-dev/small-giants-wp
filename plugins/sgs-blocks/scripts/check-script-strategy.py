@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """check-script-strategy.py - no SGS front-end script blocks the page.
 
-THE RULE (plan 2026-11-19-css-delivery Open 3; release cd9718b2a): a classic script SGS enqueues or registers for the
+THE RULE (plan plans/archive/2026-11-19-css-delivery.md Open 3; release cd9718b2a): a classic script SGS enqueues or registers for the
 front end (`wp_enqueue_script` / `wp_register_script` with a file) carries a loading `strategy` (`defer` or `async`) in
 its fifth argument. A bare `true` / `false` fifth argument, or none, prints a plain `<script src>` that stops the
 browser parsing the page until it has downloaded and run.
