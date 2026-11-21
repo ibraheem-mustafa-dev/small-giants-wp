@@ -69,6 +69,33 @@ test( 'MUST FAIL: an endless animation is an effect, one the draft\'s own state 
 	assert.equal( elementEffects( [ MARQUEE ], { mdb, loops: { 1440: measuredMarquee( 1700 ) } } ).effects[ 0 ].effect, 'marquee', 'control: shown running, it is written' );
 } );
 
+// A CSS ticker the draft's media query runs on narrow screens only: the code states its keyframes and time.
+const TICKER = rec( 'T', { mechanism: 'css-animation', trigger: { type: 'media-query' }, easing: 'linear', direction: 'normal', duration_ms: 30000, properties: [ { property: 'animation-name', from: null, to: 'ticker' }, { property: 'transform', from: 'translateX(0px)', to: 'translateX(-50%)' } ] } );
+const cssLoop = ( name, box ) => ( { loops: [ { css: true, name, duration: 30000, delay: 0, direction: 'normal', easing: 'linear', frames: [ { offset: 0, transform: 'translateX(0px)' }, { offset: 1, transform: 'translateX(-50%)' } ] } ], box, marquee: null, smil: [] } );
+const still = ( box ) => ( { loops: [], box, marquee: null, smil: [] } );
+
+test( 'MUST FAIL: a loop the render shows running only below a width is built from the widest width it runs at and limited to the widths below', () => {
+	const phone = elementEffects( [ TICKER ], { mdb, loops: { 1440: still( { width: 1440, height: 20 } ), 768: still( { width: 768, height: 20 } ), 375: cssLoop( 'ticker', { width: 2000, height: 20 } ) } } );
+	assert.deepEqual( phone.unmapped, [] );
+	assert.equal( phone.effects[ 0 ].effect, 'marquee' );
+	assert.deepEqual( phone.effects[ 0 ].values, { speed: 33.3, direction: 'left', belowBreakpoint: 'mobile' }, 'the speed is the 375 track\'s half over 30s' );
+	const tablet = elementEffects( [ TICKER ], { mdb, loops: { 1440: still( { width: 1440, height: 20 } ), 768: cssLoop( 'ticker', { width: 3000, height: 20 } ), 375: cssLoop( 'ticker', { width: 2000, height: 20 } ) } } );
+	assert.deepEqual( tablet.effects[ 0 ].values, { speed: 50, direction: 'left', belowBreakpoint: 'tablet' } );
+	assert.deepEqual( tablet.effects[ 0 ].devices, { mobile: { speed: 33.3 } } );
+	// Negative controls: running at 1440 is every width (no range); running nowhere is still refused.
+	const wide = elementEffects( [ TICKER ], { mdb, loops: { 1440: cssLoop( 'ticker', { width: 2000, height: 20 } ), 768: cssLoop( 'ticker', { width: 2000, height: 20 } ), 375: cssLoop( 'ticker', { width: 2000, height: 20 } ) } } );
+	assert.deepEqual( wide.effects[ 0 ].values, { speed: 33.3, direction: 'left' } );
+	const none = elementEffects( [ TICKER ], { mdb, loops: { 1440: still( { width: 1440, height: 20 } ), 768: still( { width: 768, height: 20 } ), 375: still( { width: 375, height: 20 } ) } } );
+	assert.deepEqual( none.effects, [] );
+	assert.match( none.unmapped[ 0 ].reason, /not running on an untouched page/ );
+	// An effect with no width range cannot be limited, so a narrow-only float is refused, not written for every width.
+	const drift = rec( 'D', { mechanism: 'css-animation', trigger: { type: 'media-query' }, duration_ms: 4000, direction: 'alternate', easing: 'ease-in-out', properties: [ { property: 'animation-name', from: null, to: 'drift' }, { property: 'transform', from: 'translateY(0px)', to: 'translateY(-12px)' } ] } );
+	const driftLoop = { loops: [ { css: true, name: 'drift', duration: 4000, delay: 0, direction: 'alternate', easing: 'ease-in-out', frames: [] } ], box: { width: 300, height: 300 }, marquee: null, smil: [] };
+	const narrowFloat = elementEffects( [ drift ], { mdb, loops: { 1440: still( { width: 300, height: 300 } ), 768: still( { width: 300, height: 300 } ), 375: driftLoop } } );
+	assert.deepEqual( narrowFloat.effects, [] );
+	assert.match( narrowFloat.unmapped[ 0 ].reason, /running only at 375px and below.*no width range/ );
+} );
+
 test( 'MUST FAIL: a marquee is its travel over its loop time in px/s, read from the animation the code made when the code computes them', () => {
 	const e = loopEffect( MARQUEE, { 1440: measuredMarquee( 1700 ) }, { mdb } );
 	assert.equal( e.effect, 'marquee' );

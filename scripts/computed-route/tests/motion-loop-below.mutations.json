@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const anchor = wide && runs.length && ! runs.includes( 1440 ) ? runs[ 0 ] : 1440;",
+		"replace": "const anchor = 1440;",
+		"why": "a loop running only on narrow screens would be read at 1440, where it does not run"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const anchor = wide && runs.length && ! runs.includes( 1440 ) ? runs[ 0 ] : 1440;",
+		"replace": "const anchor = wide && runs.length && ! runs.includes( 1440 ) ? runs[ runs.length - 1 ] : 1440;",
+		"why": "the narrowest width would anchor the values instead of the widest it runs at"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "if ( classify( r, cls ).confirm && ! runs.length ) {",
+		"replace": "if ( classify( r, cls ).confirm && ! runs.includes( 1440 ) ) {",
+		"why": "a loop running only on narrow screens would be refused as not running"
+	},
+	{
+		"file": "lib/fill-motion-element.mjs",
+		"find": "const e = 1440 === anchor || built.unmapped ? built : limitedBelow( built, anchor, { mdb } );",
+		"replace": "const e = built;",
+		"why": "a narrow-only loop would be written for every width"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "if ( ! mdb.field( 'effects', BELOW.path, e.effect ) ) {",
+		"replace": "if ( false ) {",
+		"why": "an effect with no width range would be given one it cannot hold"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const narrow = [ [ 768, 'tablet' ], [ 375, 'mobile' ] ].filter( ( [ w ] ) => w < anchor )",
+		"replace": "const narrow = [ [ 768, 'tablet' ] ].filter( ( [ w ] ) => w < anchor )",
+		"why": "a loop anchored at 768 would lose its narrower phone override"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const BELOW = { path: 'values.belowBreakpoint', 768: 'tablet', 375: 'mobile' };",
+		"replace": "const BELOW = { path: 'values.belowBreakpoint', 768: 'mobile', 375: 'tablet' };",
+		"why": "the range would not match the widest width the loop runs at"
+	},
+	{
+		"file": "lib/motion-loops.mjs",
+		"find": "const wide = at( anchor );",
+		"replace": "const wide = at( 1440 );",
+		"why": "the values would be read where the loop does not run"
+	}
+]

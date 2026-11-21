@@ -5,7 +5,7 @@
 import { hoverDevices } from './fill-state-motion.mjs';
 import { classify, entranceLayer, stateTransitionLayer, hoverLayer, matchByPose } from './motion-layers.mjs';
 import { snapToken, presetFor, intensityPresetFor, tokenises, easingOf } from './motion-tokens.mjs';
-import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf } from './motion-loops.mjs';
+import { loopEffect, loopCheck, chooseEffect, runtimeLoopsFor, smilLoop, marqueeTag, measuredLoopOf, limitedBelow } from './motion-loops.mjs';
 import { loopKeyframesCss, loopName, isLoopRecord } from './motion-loop-css.mjs';
 import { entranceCheck } from './motion-check.mjs';
 import { stateTrigger } from './motion-states.mjs';
@@ -225,12 +225,18 @@ export function elementEffects( records, { mdb, loops = null, runtimeLoops = [],
 	const keep = ( record, e ) => ( e.unmapped ? out.unmapped.push( { record, reason: e.unmapped } ) : out.effects.push( { record, ...e } ) );
 	for ( const r of own ) {
 		const t = r.trigger?.type;
-		if ( classify( r, cls ).confirm && ! measuredLoopOf( r, wide ) ) {
+		// The sampled widths the render shows the loop running at, widest first. A loop read at 1440 and not running there,
+		// but running narrower (a media query starting it on small screens), takes its values from the widest width it runs
+		// at and is limited to the widths below.
+		const runs = [ 1440, 768, 375 ].filter( ( w ) => measuredLoopOf( r, loops?.[ w ] ) );
+		if ( classify( r, cls ).confirm && ! runs.length ) {
 			keep( r.id, { unmapped: `the draft's code starts this loop on ${ t }, and the render showed it not running on an untouched page, so nothing is written` } );
 			continue;
 		}
-		const e = loopEffect( r, loops, { mdb } );
-		const boxed = e.unmapped && isLoopRecord( r ) ? loopKeyframesCss( r, loopName( r ) ) : null;
+		const anchor = wide && runs.length && ! runs.includes( 1440 ) ? runs[ 0 ] : 1440;
+		const built = loopEffect( r, loops, { mdb, anchor } );
+		const e = 1440 === anchor || built.unmapped ? built : limitedBelow( built, anchor, { mdb } );
+		const boxed = e.unmapped && 1440 === anchor && isLoopRecord( r ) ? loopKeyframesCss( r, loopName( r ) ) : null;
 		if ( boxed?.css ) {
 			out.css.push( { record: r, css: boxed.css } );
 			out.notes.push( `${ r.id }: no motion effect draws this loop (${ e.unmapped }), so it is written to the Additional CSS box: ${ boxed.stops } stops sampled from the ${ r.easing } curve, linear between them` );

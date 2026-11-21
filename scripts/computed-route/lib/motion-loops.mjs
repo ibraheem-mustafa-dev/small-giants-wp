@@ -261,10 +261,11 @@ export function chooseEffect( loop, narrow, { mdb } ) {
 
 // A draft's endless animation record as an effect (chooseEffect), its values from the code or, where the code
 // computes them, from the animation measured at each width (`measuredByWidth`: { 375, 768, 1440: { loops, box } }
-// from lib/fill-entrance.mjs::sampleMotion).
-export function loopEffect( record, measuredByWidth, { mdb } ) {
+// from lib/fill-entrance.mjs::sampleMotion). `anchor` is the width the values are read at (the widest width the loop
+// runs at); only the narrower widths override them.
+export function loopEffect( record, measuredByWidth, { mdb, anchor = 1440 } ) {
 	const at = ( w ) => resolvedLoop( record, measuredByWidth?.[ w ] || null );
-	const wide = at( 1440 );
+	const wide = at( anchor );
 	if ( wide.unmapped ) {
 		return wide;
 	}
@@ -277,7 +278,21 @@ export function loopEffect( record, measuredByWidth, { mdb } ) {
 		const e = chooseEffect( drift, null, { mdb } );
 		return e.unmapped ? e : { ...e, notes: [ `the draft randomises this loop per element; the values sampled on this element are stored (${ Object.entries( e.values ).map( ( [ k, v ] ) => `${ k } ${ v }` ).join( ', ' ) })`, ...( lost.length ? [ `the draft's moving ${ lost.join( ', ' ) } is not held by ${ e.effect } (a Spec 38 gap)` ] : [] ), ...e.notes ] };
 	}
-	return chooseEffect( wide.loop, { tablet: at( 768 ).loop || null, mobile: at( 375 ).loop || null }, { mdb } );
+	const narrow = [ [ 768, 'tablet' ], [ 375, 'mobile' ] ].filter( ( [ w ] ) => w < anchor ).map( ( [ w, tier ] ) => [ tier, at( w ).loop || null ] );
+	return chooseEffect( wide.loop, Object.fromEntries( narrow ), { mdb } );
+}
+
+// The effect field that limits an effect to the widths below a breakpoint, and its value for the widest sampled width a
+// loop runs at (768: tablet and below, 375: mobile only).
+const BELOW = { path: 'values.belowBreakpoint', 768: 'tablet', 375: 'mobile' };
+
+// An effect for a loop the render shows running only at `anchor` and narrower: limited to those widths through the
+// effect's own range field, or { unmapped } when the effect has none (written as it is, it would run at every width).
+export function limitedBelow( e, anchor, { mdb } ) {
+	if ( ! mdb.field( 'effects', BELOW.path, e.effect ) ) {
+		return { unmapped: `the render shows this loop running only at ${ anchor }px and below, and ${ e.effect } has no width range to hold it to those widths: a Spec 38 gap` };
+	}
+	return { ...e, values: { ...e.values, [ BELOW.path.split( '.' ).pop() ]: BELOW[ anchor ] }, notes: [ ...e.notes, `the render shows this loop running at ${ anchor }px and below only, so it is limited to ${ BELOW[ anchor ] } widths` ] };
 }
 
 // The render check of a loop the code states in full: the endless animation measured on the element at each width
