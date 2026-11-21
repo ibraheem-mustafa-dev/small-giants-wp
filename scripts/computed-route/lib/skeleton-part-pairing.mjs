@@ -6,14 +6,19 @@
 // where it gives up.
 //
 // Everything block-specific comes from the block's calibration: its default paint (`elements`: each part's selector path with
-// `_tag` and `_position` per width), its settings (the slot each is calibrated at) and its text fields (`text`). Both sides are
-// described by signals each carries:
+// `_tag` and `_position` per width), its parts' own words and boxes inside the block where the paint file records them
+// (`parts`, lib/calibrate-read.mjs::readPartsInPage), its settings (the slot each is calibrated at) and its text fields
+// (`text`). Both sides are described by signals each carries:
 // - kind: a control, a picture, a glyph, a mark (a box with no words), words, or a box holding other boxes;
 // - repetition: a part whose path counts `:nth-of-type` steps repeats once per item, and so does a draft element with loop
 //   copies or same-shaped sibling controls; the counts must be equal;
 // - out of flow: an absolutely or fixed placed draft element is only an out-of-flow part;
 // - containment: an element inside a paired element pairs only inside that pair's part, preferring that part's direct
-//   children, and an ambiguous wrapper keeps only the parts that hold its paired children.
+//   children, and an ambiguous wrapper keeps only the parts that hold its paired children;
+// - words: where several parts fit, a worded element keeps the parts printing the same words, else the parts printing the
+//   same kind of words (a number, a price, other words);
+// - place: where several parts still fit, the part whose box centre inside the block lies nearest the element's centre inside
+//   its host, both as shares of the block's size, when it is near (PLACE_NEAR) and every other part at least twice as far.
 // A part and its sole visible child of the same width are one visible box (a label drawn round a pill). A pairing is used only
 // when exactly one part fits; two different draft elements in one item claiming the same part are both left unpaired. Nothing
 // here names a block, a part or a class.
@@ -34,6 +39,10 @@ const PICTURE_TAGS = new Set( [ 'img', 'picture', 'video' ] );
 const GLYPH_TAGS = new Set( [ 'svg', 'path', 'g', 'circle', 'rect', 'polygon', 'use', 'line', 'ellipse' ] );
 const NO_PAINT = /^(?:|transparent|rgba\(\s*0,\s*0,\s*0,\s*0\s*\))$/;
 const ALNUM = /[\p{L}\p{N}]/u;
+// The largest distance, as a share of the block's width and height, at which a part's place decides, and how much nearer it
+// must be than the next part.
+export const PLACE_NEAR = 0.12;
+const PLACE_MARGIN = 2;
 // The second candidate of an element whose part another element of the same item also claims.
 const SHARED = Object.freeze( { head: '(another element of the same item claims this part)', shared: true, inside: new Set() } );
 
@@ -54,8 +63,14 @@ export const glyphy = ( s ) => {
 
 // The block's measured parts, one per template (a path with every `:nth-of-type(k)` as `(n)`), merged into visible boxes.
 // elements: the calibration's default paint ({ path: { width: values } }); textPaths: the paths the block prints its text
-// fields at. Returns { parts: Map( template -> part ), groups: Map( head -> group ), headOf: Map( template -> head ) }.
-export function partModel( elements = {}, textPaths = [] ) {
+// fields at; recorded: the paint file's `parts` ({ path: { words?, box: { width: [ x, y, w, h ] } } }), where a part's words
+// and box come from (a template's first instance). Returns { parts: Map( template -> part ), groups: Map( head -> group ),
+// headOf: Map( template -> head ), rootBox }.
+export function partModel( elements = {}, textPaths = [], recorded = {} ) {
+	const seen = new Map();
+	for ( const [ path, r ] of Object.entries( recorded || {} ) ) {
+		seen.has( templateOf( path ) ) || seen.set( templateOf( path ), r );
+	}
 	const parts = new Map();
 	for ( const [ path, byWidth ] of Object.entries( elements || {} ) ) {
 		const pseudo = PSEUDO.test( path );
@@ -72,6 +87,7 @@ export function partModel( elements = {}, textPaths = [] ) {
 		parts.set( t, {
 			template: t, tag: String( v._tag ?? '' ).toLowerCase(), pseudo, oof, level: levelOf( path ), parent: '' === t ? null : parentOf( t ), width,
 			hidden: oof && null !== width && width <= 1.5,
+			words: seen.get( t )?.words ?? null, box: seen.get( t )?.box?.[ WIDTH ] ?? null,
 			painted: ! NO_PAINT.test( String( v[ 'background-color' ] ?? '' ).trim() ) || ( px( v[ 'border-top-width' ] ) ?? 0 ) > 0,
 		} );
 	}
@@ -86,6 +102,7 @@ export function partModel( elements = {}, textPaths = [] ) {
 				: PICTURE_TAGS.has( p.tag ) ? 'picture'
 					: GLYPH_TAGS.has( p.tag ) ? 'glyph'
 						: p.shown.length ? 'box'
+							: p.words && ALNUM.test( p.words ) ? ( glyphy( p.words ) ? 'glyph' : 'words' )
 							: ! texts.has( p.template ) && p.painted ? 'mark' : 'words';
 	}
 	// A part and its sole visible child at the same repetition and width are one visible box.
@@ -108,12 +125,60 @@ export function partModel( elements = {}, textPaths = [] ) {
 			kind: ms.map( ( p ) => p.kind ).sort( ( a, b ) => KINDS.indexOf( a ) - KINDS.indexOf( b ) )[ 0 ],
 			level: head.level, oof: ms.some( ( p ) => p.oof ), hidden: ms.every( ( p ) => p.hidden ), pseudo: head.pseudo, root: g.members.includes( '' ),
 			parentHead: null === head.parent ? null : headOf.get( head.parent ) ?? null,
+			words: ms.map( ( p ) => p.words ).find( Boolean ) ?? null, box: head.box,
 		} );
 	}
 	for ( const g of groups.values() ) {
 		g.inside = new Set( [ ...parts.keys() ].filter( ( t ) => ! g.members.includes( t ) && g.members.some( ( m ) => ( '' === m ? '' !== t : t.startsWith( `${ m } > ` ) || t.startsWith( `${ m }::` ) ) ) ).map( ( t ) => headOf.get( t ) ) );
 	}
-	return { parts, groups, headOf };
+	return { parts, groups, headOf, rootBox: parts.get( '' )?.box ?? null };
+}
+
+// What kind of words a text is: a number, a price, other words, or null for none.
+export const wordsClass = ( s ) => {
+	const t = String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
+	if ( '' === t ) {
+		return null;
+	}
+	if ( /^[+-]?\d+$/.test( t ) ) {
+		return 'number';
+	}
+	return /^[^\p{L}\d]{0,3}\d[\d,.]*[^\p{L}\d]{0,3}$/u.test( t ) ? 'price' : 'words';
+};
+const sameWords = ( a, b ) => String( a ?? '' ).replace( /\s+/g, ' ' ).trim().toLowerCase() === String( b ?? '' ).replace( /\s+/g, ' ' ).trim().toLowerCase();
+
+// The parts among cands that print what draft element e prints: the same words, else the same kind of words where that
+// leaves fewer; cands as they are when e prints none or no part prints the like.
+export function byWords( cands, e ) {
+	const k = wordsClass( e.words );
+	if ( ! k ) {
+		return cands;
+	}
+	const same = cands.filter( ( g ) => g.words && sameWords( g.words, e.words ) );
+	if ( same.length ) {
+		return same;
+	}
+	const kind = cands.filter( ( g ) => g.words && wordsClass( g.words ) === k );
+	return kind.length && kind.length < cands.length ? kind : cands;
+}
+
+// The part among cands whose place inside the block decides for draft element e inside host: the nearest by box centre, both
+// as shares of the block's size at the widest width, when it lies within PLACE_NEAR and every other part with a box at least
+// PLACE_MARGIN times as far; else cands as they are. rootBox: the block root's recorded box.
+export function byPlace( cands, e, host, rootBox ) {
+	const b = boxOf( e );
+	const h = boxOf( host );
+	if ( ! rootBox || ! ( rootBox[ 2 ] > 0 && rootBox[ 3 ] > 0 && h.w > 0 && h.h > 0 ) || ! Number.isFinite( b.x ) || ! Number.isFinite( b.w ) ) {
+		return cands;
+	}
+	const at = [ ( b.x - h.x + ( b.w / 2 ) ) / h.w, ( b.y - h.y + ( b.h / 2 ) ) / h.h ];
+	const placed = cands.filter( ( g ) => Array.isArray( g.box ) )
+		.map( ( g ) => ( { g, d: Math.hypot( ( ( g.box[ 0 ] + ( g.box[ 2 ] / 2 ) ) / rootBox[ 2 ] ) - at[ 0 ], ( ( g.box[ 1 ] + ( g.box[ 3 ] / 2 ) ) / rootBox[ 3 ] ) - at[ 1 ] ) } ) )
+		.sort( ( x, y ) => x.d - y.d );
+	if ( ! placed.length || placed[ 0 ].d > PLACE_NEAR || ( placed[ 1 ] && placed[ 1 ].d < PLACE_MARGIN * placed[ 0 ].d ) ) {
+		return cands;
+	}
+	return [ placed[ 0 ].g ];
 }
 
 const visible = ( e ) => ! e.visible || Object.values( e.visible ).some( Boolean );
@@ -152,7 +217,7 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 	if ( ! host || ! absorbed.length || ! Object.keys( elements ).length ) {
 		return out;
 	}
-	const model = partModel( elements, Object.values( calibration.text || {} ).map( ( x ) => x?.path ).filter( Boolean ) );
+	const model = partModel( elements, Object.values( calibration.text || {} ).map( ( x ) => x?.path ).filter( Boolean ), calibration.parts );
 	const groups = [ ...model.groups.values() ].filter( ( g ) => ! g.root && ! g.hidden );
 	// The host's subtree in document order, stopping at the elements other nodes read.
 	const parent = new Map();
@@ -205,6 +270,8 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 				const kept = cands.filter( tier );
 				kept.length && ( cands = kept );
 			}
+			cands.length > 1 && ( cands = byWords( cands, e ) );
+			cands.length > 1 && ( cands = byPlace( cands, e, host, model.rootBox ) );
 			result.set( e, banned.has( e ) ? [ banned.get( e ), SHARED ] : forced.has( e ) ? [ forced.get( e ) ] : cands );
 		}
 		let changed = false;

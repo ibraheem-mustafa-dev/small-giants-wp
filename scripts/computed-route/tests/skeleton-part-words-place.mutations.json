@@ -1,0 +1,12 @@
+[
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\t\t\tcands.length > 1 && ( cands = byWords( cands, e ) );","replace":"","why":"the words signal is not used"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\t\t\tcands.length > 1 && ( cands = byPlace( cands, e, host, model.rootBox ) );","replace":"","why":"the place signal is not used"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\tconst same = cands.filter( ( g ) => g.words && sameWords( g.words, e.words ) );","replace":"\tconst same = cands.filter( ( g ) => g.words );","why":"any worded part counts as the same words"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\tif ( ! placed.length || placed[ 0 ].d > PLACE_NEAR || ( placed[ 1 ] && placed[ 1 ].d < PLACE_MARGIN * placed[ 0 ].d ) ) {","replace":"\tif ( ! placed.length ) {","why":"the nearest part decides however far it is and however close the next"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\tif ( ! placed.length || placed[ 0 ].d > PLACE_NEAR || ( placed[ 1 ] && placed[ 1 ].d < PLACE_MARGIN * placed[ 0 ].d ) ) {","replace":"\tif ( ! placed.length || ( placed[ 1 ] && placed[ 1 ].d < PLACE_MARGIN * placed[ 0 ].d ) ) {","why":"a part far from the element still decides"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\tconst at = [ ( b.x - h.x + ( b.w / 2 ) ) / h.w, ( b.y - h.y + ( b.h / 2 ) ) / h.h ];","replace":"\tconst at = [ ( b.x + ( b.w / 2 ) ) / h.w, ( b.y + ( b.h / 2 ) ) / h.h ];","why":"the element's place is read from the page, not its host"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\tif ( ! rootBox || ! ( rootBox[ 2 ] > 0 && rootBox[ 3 ] > 0 && h.w > 0 && h.h > 0 ) || ! Number.isFinite( b.x ) || ! Number.isFinite( b.w ) ) {","replace":"\tif ( ! Number.isFinite( b.x ) || ! Number.isFinite( b.w ) ) {","why":"no recorded root box still lets place decide"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\t\t\t\t\t\t\t: p.words && ALNUM.test( p.words ) ? ( glyphy( p.words ) ? 'glyph' : 'words' )\n","replace":"","why":"a part's recorded words do not decide its kind"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\t\tseen.has( templateOf( path ) ) || seen.set( templateOf( path ), r );","replace":"\t\tseen.set( path, r );","why":"the recorded parts are keyed by path, not template"},
+	{"file":"lib/skeleton-part-pairing.mjs","find":"\treturn /^[^\\p{L}\\d]{0,3}\\d[\\d,.]*[^\\p{L}\\d]{0,3}$/u.test( t ) ? 'price' : 'words';","replace":"\treturn 'words';","why":"a price is read as words"}
+]

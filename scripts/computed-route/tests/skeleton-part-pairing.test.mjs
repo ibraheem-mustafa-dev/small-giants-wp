@@ -4,7 +4,7 @@
 // settings (cache/form-field-tiles.json, cache/mamas-test/form-field-tiles.paint.json), whose markup the draft does not share.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { partModel, draftKind, pairAbsorbed, pairingNotes, glyphy } from '../lib/skeleton-part-pairing.mjs';
+import { partModel, draftKind, pairAbsorbed, pairingNotes, glyphy, wordsClass } from '../lib/skeleton-part-pairing.mjs';
 import { absorbedSlots } from '../lib/skeleton-conserve-slots.mjs';
 import { calPartsFor } from '../lib/skeleton-context.mjs';
 import fs from 'fs';
@@ -212,4 +212,55 @@ test( 'an ambiguous wrapper keeps the one part that holds its paired children', 
 	const panel = el( 'Root/2#0', 'div', [ btn, el( 'Root/4#0', 'i', [] ) ] );
 	const made = pairAbsorbed( { host: el( 'Root/1#0', 'div', [ panel ] ), absorbed: [ { element: panel, looks: [ 'background' ] } ], kids, calibration: PANELS, finder } );
 	assert.deepEqual( made.slots, { '.a': { tpl: 'Root/2#0' } }, 'the panel holding the button is .a, not .b' );
+} );
+
+// Round 3 piece 2: the parts' own words and boxes the paint file records (`parts`, lib/calibrate-read.mjs::readPartsInPage).
+const node = ( key, tag, kids2 = [], { words = '', box = null } = {} ) => ( { key, tag, kids: kids2, visible: { 1440: true }, box: { 1440: box ?? { x: 0, y: 0, w: 100, h: 40 } }, position: { 1440: 'static' }, words, attrs: {} } );
+const flat = ( tag, extra = {} ) => ( { 1440: { _tag: tag, _position: 'static', width: '100px', 'background-color': 'rgba(0, 0, 0, 0)', 'border-top-width': '0px', ...extra } } );
+const BUTTONS = {
+	elements: { '': flat( 'div' ), '.foot': flat( 'div' ), '.foot > .next': flat( 'button' ), '.foot > .back': flat( 'button' ) },
+	settings: { nextBg: { slot: '.foot > .next', property: 'background-color' }, backBg: { slot: '.foot > .back', property: 'background-color' } },
+};
+const BUTTON_WORDS = { '': { box: { 1440: [ 0, 0, 800, 100 ] } }, '.foot > .next': { words: 'Continue', box: { 1440: [ 600, 20, 150, 40 ] } }, '.foot > .back': { words: 'Back', box: { 1440: [ 20, 20, 150, 40 ] } } };
+
+test( 'MUST FAIL (no words signal): a worded control pairs with the part printing the same words; other words stay ambiguous (negative control)', () => {
+	const run = ( words, parts ) => {
+		const go = node( 'Root/3#0', 'button', [], { words } );
+		const foot = node( 'Root/2#0', 'div', [ go ] );
+		return pairAbsorbed( { host: node( 'Root/1#0', 'div', [ foot ] ), absorbed: [ { element: go, looks: [ 'background' ] } ], kids, calibration: { ...BUTTONS, parts }, finder } );
+	};
+	assert.deepEqual( run( 'Continue', BUTTON_WORDS ).slots, { '.foot > .next': { tpl: 'Root/3#0' } } );
+	assert.equal( run( 'Continue', {} ).ambiguous.length, 1, 'no recorded words: ambiguous as before' );
+	assert.equal( run( 'Next step', BUTTON_WORDS ).ambiguous.length, 1, 'words neither part prints: not guessed' );
+} );
+
+test( 'MUST FAIL (a count read as a glyph only): a one-digit count pairs with the part printing a number, not the icon beside it', () => {
+	const CART = {
+		elements: { '': flat( 'button' ), '.icon': flat( 'svg' ), '.badge': flat( 'span', { 'background-color': 'rgb(200, 0, 0)' } ) },
+		settings: { iconColour: { slot: '.icon', property: 'color' }, badgeBg: { slot: '.badge', property: 'background-color' } },
+	};
+	const run = ( parts ) => {
+		const count = node( 'Root/3#0', 'span', [], { words: '0' } );
+		return pairAbsorbed( { host: node( 'Root/1#0', 'button', [ node( 'Root/2#0', 'svg' ), count ] ), absorbed: [ { element: count, looks: [ 'background' ] } ], kids, calibration: { ...CART, parts }, finder } );
+	};
+	assert.equal( run( {} ).ambiguous.length, 1 );
+	assert.deepEqual( run( { '.badge': { words: '0', box: { 1440: [ 30, 0, 18, 18 ] } } } ).slots, { '.badge': { tpl: 'Root/3#0' } } );
+	const repeated = partModel( { '': flat( 'ul' ), '.i:nth-of-type(1)': flat( 'li' ), '.i:nth-of-type(2)': flat( 'li' ) }, [], { '.i:nth-of-type(1)': { words: 'One', box: { 1440: [ 0, 0, 9, 9 ] } } } );
+	assert.equal( repeated.parts.get( '.i:nth-of-type(n)' ).words, 'One', 'a repeated part takes its first recorded instance' );
+	assert.deepEqual( [ wordsClass( '12' ), wordsClass( '£19' ), wordsClass( '£19.50' ), wordsClass( 'Close' ), wordsClass( ' ' ) ], [ 'number', 'price', 'price', 'words', null ] );
+} );
+
+test( 'MUST FAIL (no place signal): a wordless panel pairs with the part whose box sits at the same place in the block; a place between two parts stays ambiguous (negative control)', () => {
+	const PANELS2 = {
+		elements: { '': flat( 'div' ), '.main': flat( 'div' ), '.main > p': flat( 'p', { width: '50px' } ), '.side': flat( 'aside' ), '.side > p': flat( 'p', { width: '50px' } ) },
+		settings: { mainBg: { slot: '.main', property: 'background-color' }, sideBg: { slot: '.side', property: 'background-color' } },
+		parts: { '': { box: { 1440: [ 0, 0, 1000, 500 ] } }, '.main': { box: { 1440: [ 0, 0, 700, 500 ] } }, '.side': { box: { 1440: [ 700, 0, 300, 500 ] } } },
+	};
+	const run = ( x, w, calibration = PANELS2 ) => {
+		const panel = node( 'Root/2#0', 'div', [ node( 'Root/3#0', 'p', [], { words: 'Summary text' } ) ], { box: { x, y: 100, w, h: 600 } } );
+		return pairAbsorbed( { host: node( 'Root/1#0', 'section', [ panel ], { box: { x: 0, y: 100, w: 1200, h: 600 } } ), absorbed: [ { element: panel, looks: [ 'background' ] } ], kids, calibration, finder } );
+	};
+	assert.deepEqual( run( 840, 360 ).slots, { '.side': { tpl: 'Root/2#0' } }, 'the right-hand column is the side part' );
+	assert.equal( run( 420, 360 ).ambiguous.length, 1, 'a box between the two parts decides nothing' );
+	assert.equal( run( 840, 360, { ...PANELS2, parts: {} } ).ambiguous.length, 1, 'no recorded boxes: ambiguous as before' );
 } );
