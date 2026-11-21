@@ -160,5 +160,10 @@
 		"find": "build.settings[ attr ] = { status: 'written', reason: null, part, code: 'ContentAlign' === base ? 'contentAlign' : 'hoverLift' };",
 		"replace": "build.settings[ attr ] = { status: 'not-written', reason: null, part, code: 'ContentAlign' === base ? 'contentAlign' : 'hoverLift' };",
 		"why": "a written content alignment or lift is reported as not written"
-	}
+	},
+	{"file": "lib/fill-builtin-button.mjs", "find": "\tif ( ! Object.keys( tiers ).length && explicit ) {\n\t\ttiers.desktop = 'center';\n\t}\n", "replace": "", "why": "a follower centred beside a spread Add to Cart takes Add to Cart's spread"},
+	{"file": "lib/fill-builtin-button.mjs", "find": "\tif ( up < 1 && explicit ) {", "replace": "\tif ( false ) {", "why": "a still follower beside a lifting Add to Cart lifts"},
+	{"file": "lib/fill-builtin-button.mjs", "find": "|| ! build.writes.some( ( w ) => w.attr === `${ follows }${ base }` ) ) {", "replace": ") {", "why": "a follower writes its centre and 0px even where the followed button writes nothing"},
+	{"file": "lib/fill-builtin-button.mjs", "find": "label: b.label ?? null, follows: b.follows ?? null } ) );", "replace": "label: b.label ?? null } ) );", "why": "the block's follows declaration is never read"},
+	{"file": "lib/fill-builtin-button.mjs", "find": "for ( const { prefix, part, follows } of buttons.filter( ( b ) => b.follows ) ) {", "replace": "for ( const { prefix, part, follows } of buttons.filter( ( b ) => b.follows && false ) ) {", "why": "the second pass never runs"}
 ]

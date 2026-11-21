@@ -31,6 +31,9 @@ const ROWS = [
 	// The kit's two newest groups (src/components/button-kit/registry.json: contentAlign, hoverLift). The framework database holds no row for them until its next reseed; the tests use fixture rows.
 	row( 'flowOpenerContentAlign', { attr_type: 'object', role: 'layout', css_property: 'justify-content', tier_shape: 'tier_object' } ),
 	row( 'flowOpenerHoverLiftDistance', { role: 'styling', css_property: 'transform', css_state: 'hover' } ),
+	// Add to Cart's two, for the opener that follows it (sgs/buybox declares the opener `follows: 'addToCart'`).
+	row( 'addToCartContentAlign', { attr_type: 'object', role: 'layout', css_property: 'justify-content', tier_shape: 'tier_object', css_element: 'add-to-cart' } ),
+	row( 'addToCartHoverLiftDistance', { role: 'styling', css_property: 'transform', css_state: 'hover', css_element: 'add-to-cart' } ),
 ];
 const db = openDb( fixtureDb( { blocks: [ { slug: BLOCK, title: 'Buy box', category: 'sgs', type: 'dynamic' } ], block_attributes: ROWS } ) );
 const rowsOf = () => ROWS.map( ( r ) => ( { css_property: null, css_state: null, css_tier: null, is_responsive: 0, tier_shape: null, enum_values: null, ...r } ) );
@@ -287,3 +290,34 @@ test( 'before the framework database holds the two attributes (until its reseed)
 	assert.ok( ! attrs.some( ( a ) => /ContentAlign|HoverLiftDistance/.test( a ) ) );
 	assert.equal( build.settings.flowOpenerContentAlign, undefined );
 } );
+
+// A button that follows another (sgs/buybox's flow opener wears Add to Cart's class, so every setting the opener leaves unset
+// follows Add to Cart's: includes/buybox-linked-flow.php, `follows: 'addToCart'` in its block.json declaration). Where the followed
+// button gets a content alignment or lift and the follower's draft differs, the follower's own value is written even when it is the
+// block's own centre or no movement, or it would take Add to Cart's.
+const FOLLOWS = [ { prefix: 'flowOpener', part: PART, follows: 'addToCart' }, { prefix: 'addToCart', part: 'add-to-cart' } ];
+const pairReads = ( opener, add ) => ( { [ PART ]: readsOf( ...opener )[ PART ], 'add-to-cart': readsOf( ...add )[ PART ] } );
+
+test( 'MUST FAIL: a centred, still opener beside a spread, lifting Add to Cart writes its own centre and 0px', () => {
+	const r = run( { reads: pairReads( [ styles(), hovered( { transform: 'none' } ) ], [ spread(), hovered() ] ), buttons: FOLLOWS } );
+	assert.deepEqual( r.value( 'addToCartContentAlign' ), { desktop: 'space-between' } );
+	assert.equal( r.value( 'addToCartHoverLiftDistance' ), '2px' );
+	assert.deepEqual( r.value( 'flowOpenerContentAlign' ), { desktop: 'center' }, 'the opener keeps its own centre' );
+	assert.equal( r.value( 'flowOpenerHoverLiftDistance' ), '0px', 'the opener stays still' );
+} );
+
+test( 'negative control: an opener that matches Add to Cart, or a pair with nothing written, writes no extra value', () => {
+	const same = run( { reads: pairReads( [ spread(), hovered() ], [ spread(), hovered() ] ), buttons: FOLLOWS } );
+	assert.deepEqual( same.value( 'flowOpenerContentAlign' ), { desktop: 'space-between' }, 'its own spread, as before' );
+	assert.equal( same.value( 'flowOpenerHoverLiftDistance' ), '2px' );
+	const plain = run( { reads: pairReads( [ styles(), hovered( { transform: 'none' } ) ], [ styles(), hovered( { transform: 'none' } ) ] ), buttons: FOLLOWS } );
+	assert.equal( plain.value( 'flowOpenerContentAlign' ), undefined, 'Add to Cart centred: nothing to override' );
+	assert.equal( plain.value( 'flowOpenerHoverLiftDistance' ), undefined, 'Add to Cart still: nothing to override' );
+	const unlinked = run( { reads: pairReads( [ styles(), hovered( { transform: 'none' } ) ], [ spread(), hovered() ] ), buttons: FOLLOWS.map( ( { follows, ...b } ) => ( void follows, b ) ) } );
+	assert.equal( unlinked.value( 'flowOpenerContentAlign' ), undefined, 'a button that follows no other keeps the default rule' );
+} );
+
+test( 'MUST FAIL: the buy box declares that its flow opener follows Add to Cart', () => {
+	assert.equal( declaredButtons( 'sgs/buybox' ).find( ( b ) => 'flowOpener' === b.prefix )?.follows, 'addToCart' );
+} );
+

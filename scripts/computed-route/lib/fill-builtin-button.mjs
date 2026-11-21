@@ -80,7 +80,7 @@ export function translateY( transform ) {
 
 // The `<prefix>ContentAlign` write of a part: the draft's computed justify-content at each width, as { desktop, tablet?, mobile? } where a
 // narrower width differs from the one above it (part-look's rule for a per-device setting), the block's own centre dropped. { write } or { skip }.
-export function contentAlignWrite( { attr, part, instances } ) {
+export function contentAlignWrite( { attr, part, instances, explicit = false } ) {
 	const draft = {};
 	for ( const width of WIDTHS ) {
 		const seen = [ ...new Set( ( instances[ width ] || [] ).map( ( i ) => String( i.styles?.[ 'justify-content' ] ?? '' ).trim() ) ) ];
@@ -103,11 +103,15 @@ export function contentAlignWrite( { attr, part, instances } ) {
 		v !== above && ( tiers[ tier ] = v );
 		above = v;
 	}
+	// `explicit`: the button follows another whose alignment is written, so its own centre is written too (it would follow the other's).
+	if ( ! Object.keys( tiers ).length && explicit ) {
+		tiers.desktop = 'center';
+	}
 	return Object.keys( tiers ).length ? { write: { attr, value: tiers, part, property: 'justify-content', draft, defaultNotRead: true } } : { skip: `the draft centres the button's content, which is the block's own` };
 }
 
 // The `<prefix>HoverLiftDistance` write of a part: whole px the hovered button moves up from its resting place at 1440. { write } or { skip }.
-export function hoverLiftWrite( { attr, part, instance } ) {
+export function hoverLiftWrite( { attr, part, instance, explicit = false } ) {
 	if ( ! instance?.hover ) {
 		return { skip: `the draft's hovered look was not read at 1440` };
 	}
@@ -116,6 +120,10 @@ export function hoverLiftWrite( { attr, part, instance } ) {
 		return { skip: 'the hovered transform is not a translation the route reads' };
 	}
 	const up = Math.round( rest - hover );
+	// `explicit`: the button follows another whose lift is written, so a button that does not move up writes 0px (stays still).
+	if ( up < 1 && explicit ) {
+		return { write: { attr, value: '0px', part, property: 'transform (hover)', draft: { 1440: '0px' }, defaultNotRead: true } };
+	}
 	return up >= 1 ? { write: { attr, value: `${ Math.min( up, 24 ) }px`, part, property: 'transform (hover)', draft: { 1440: `${ up }px` }, defaultNotRead: true } } : { skip: `the draft's button does not move up on hover` };
 }
 
@@ -128,7 +136,7 @@ export function declaredButtons( block ) {
 			const file = path.join( BLOCKS_DIR, dir, 'block.json' );
 			if ( fs.existsSync( file ) ) {
 				const json = JSON.parse( fs.readFileSync( file, 'utf8' ) );
-				declaredIndex[ json.name ] = ( json.supports?.sgs?.builtinButtons || [] ).map( ( b ) => ( { prefix: b.prefix, part: b.part, label: b.label ?? null } ) );
+				declaredIndex[ json.name ] = ( json.supports?.sgs?.builtinButtons || [] ).map( ( b ) => ( { prefix: b.prefix, part: b.part, label: b.label ?? null, follows: b.follows ?? null } ) );
 			}
 		}
 	}
@@ -265,5 +273,25 @@ export function applyBuiltinButtons( { block, build, rows, names, db, reads, pre
 		written: build.writes.filter( ( w ) => ! w.companionOf ).length,
 		companions: build.writes.filter( ( w ) => w.companionOf ).length,
 	} );
+	// A button that follows another (`follows` in its block.json declaration: every setting it leaves unset takes the other's, as the
+	// buy box's flow opener takes Add to Cart's through the class it wears) gets its own content alignment and lift written where the
+	// followed button got one and this button's draft does not match it: its centre or 0px, or it would show the other's.
+	for ( const { prefix, part, follows } of buttons.filter( ( b ) => b.follows ) ) {
+		const instances = reads[ part ] || {};
+		if ( ! WIDTHS.some( ( w ) => instances[ w ]?.length ) ) {
+			continue;
+		}
+		for ( const [ base, made ] of [ [ 'ContentAlign', () => contentAlignWrite( { attr: `${ prefix }ContentAlign`, part, instances, explicit: true } ) ], [ 'HoverLiftDistance', () => hoverLiftWrite( { attr: `${ prefix }HoverLiftDistance`, part, instance: ( instances[ 1440 ] || [] )[ 0 ], explicit: true } ) ] ] ) {
+			const attr = `${ prefix }${ base }`;
+			if ( ! names.has( attr ) || build.writes.some( ( w ) => w.attr === attr ) || ! build.writes.some( ( w ) => w.attr === `${ follows }${ base }` ) ) {
+				continue;
+			}
+			const own = made();
+			if ( own.write ) {
+				build.writes.push( own.write );
+				build.settings[ attr ] = { status: 'written', reason: `it follows ${ follows }, whose ${ base } is written`, part, code: 'ContentAlign' === base ? 'contentAlign' : 'hoverLift' };
+			}
+		}
+	}
 	return out;
 }
