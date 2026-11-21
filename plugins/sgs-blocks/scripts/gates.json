@@ -2438,5 +2438,23 @@
     "added_commit": null,
     "budget_ms": 3500,
     "order": 276
+  },
+  {
+    "id": "check-scrollbar-mechanism",
+    "cmd": "python scripts/check-scrollbar-mechanism.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 277
+  },
+  {
+    "id": "check-scrollbar-mechanism-self-test",
+    "cmd": "python scripts/check-scrollbar-mechanism.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 278
   }
 ]
