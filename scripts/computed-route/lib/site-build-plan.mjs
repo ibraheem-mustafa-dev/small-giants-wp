@@ -75,6 +75,13 @@ function wooRoles( rows ) {
 
 export function planBuild( { rows, state, repo, client, frontRoute = 'home', linkText = {}, menuLinks, flowProducts = {} } ) {
 	const problems = [];
+	// Each problem sorted by the step it stops: `map` (a row's post or the rows' order, which every step reads), `menus`,
+	// `posts` (a post, layout surface or template copy) and `site` (the site options and active pointers).
+	const problemsByStep = { map: [], menus: [], posts: [], site: [] };
+	const stop = ( step, say ) => {
+		problems.push( say );
+		problemsByStep[ step ].push( say );
+	};
 	const notes = [];
 	const actions = [];
 	const options = [];
@@ -84,7 +91,7 @@ export function planBuild( { rows, state, repo, client, frontRoute = 'home', lin
 	try {
 		ordered = orderRows( rows );
 	} catch ( e ) {
-		problems.push( e.message );
+		stop( 'map', e.message );
 	}
 	// Two rows that make one WordPress type and slug under one parent claim one slug (a `shop` row is a page).
 	const claims = {};
@@ -95,7 +102,7 @@ ${ row.slug }
 ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	}
 	for ( const list of Object.values( claims ).filter( ( l ) => l.length > 1 ) ) {
-		problems.push( `${ list.map( rowKey ).join( ' and ' ) } both make a ${ wpType( list[ 0 ] ) } with slug "${ list[ 0 ].slug }"; WordPress would rename the second, so give one a different slug` );
+		stop( 'map', `${ list.map( rowKey ).join( ' and ' ) } both make a ${ wpType( list[ 0 ] ) } with slug "${ list[ 0 ].slug }"; WordPress would rename the second, so give one a different slug` );
 	}
 	const ids = {};
 	for ( const row of ordered ) {
@@ -107,19 +114,19 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		if ( Number.isInteger( row.id ) ) {
 			const p = state.posts[ String( row.id ) ];
 			if ( ! p || p.type !== wpType( row ) || 'trash' === p.status ) {
-				problems.push( `${ key }: its stored id ${ row.id } ${ p && p.type !== wpType( row ) ? `is a ${ p.type }, not a ${ wpType( row ) }` : 'no longer exists on the site' }; restore the post or clear the row's id` );
+				stop( 'map', `${ key }: its stored id ${ row.id } ${ p && p.type !== wpType( row ) ? `is a ${ p.type }, not a ${ wpType( row ) }` : 'no longer exists on the site' }; restore the post or clear the row's id` );
 			} else if ( ! p.rowKey && ! p.treeHash && p.slug === row.slug ) {
 				// The post this row's slug names, saved by a run that stopped before it marked the post (it has no tree hash either): marked and rebuilt.
 				actions.push( { phase: 'posts', type: 'adopt', key, id: row.id, mark: true, say: `${ key }: post ${ row.id } was saved by a run that stopped before marking it; mark it with this row's key and rebuild it` } );
 			} else if ( p.rowKey !== key ) {
-				problems.push( `${ key }: its stored id ${ row.id } is a post the site build did not make for this row (${ p.rowKey ? `it carries ${ p.rowKey }` : 'it carries no row key' }); correct the id, or mark the post with "wp post meta update ${ row.id } ${ ROW_META } ${ key }"` );
+				stop( 'map', `${ key }: its stored id ${ row.id } is a post the site build did not make for this row (${ p.rowKey ? `it carries ${ p.rowKey }` : 'it carries no row key' }); correct the id, or mark the post with "wp post meta update ${ row.id } ${ ROW_META } ${ key }"` );
 			}
 			ids[ key ] = row.id;
 			continue;
 		}
 		const marked = state.marked[ key ] || [];
 		if ( marked.length > 1 ) {
-			problems.push( `${ key }: posts ${ marked.join( ', ' ) } all carry this row's key; delete the extras` );
+			stop( 'map', `${ key }: posts ${ marked.join( ', ' ) } all carry this row's key; delete the extras` );
 		} else if ( 1 === marked.length ) {
 			ids[ key ] = marked[ 0 ];
 			actions.push( { phase: 'posts', type: 'adopt', key, id: marked[ 0 ], say: `${ key }: the page map's id is empty; adopt post ${ marked[ 0 ] }, which carries this row's key` } );
@@ -132,25 +139,25 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 					ids[ key ] = held[ 0 ];
 					actions.push( { phase: 'posts', type: 'adopt', key, id: held[ 0 ], mark: true, say: `${ key }: take over post ${ held[ 0 ] }, WooCommerce's own page named by ${ wooOption }, and mark it with this row's key` } );
 				} else {
-					problems.push( `${ key }: post ${ held[ 0 ] } is the page WooCommerce names in ${ wooOption }, but its content is no longer WooCommerce's default content, so taking it over would rebuild someone's edit; restore its default content, or mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }" to let the site build rebuild it` );
+					stop( 'map', `${ key }: post ${ held[ 0 ] } is the page WooCommerce names in ${ wooOption }, but its content is no longer WooCommerce's default content, so taking it over would rebuild someone's edit; restore its default content, or mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }" to let the site build rebuild it` );
 				}
 			} else if ( held.length ) {
-				problems.push( `${ key }: post ${ held.join( ', ' ) } already holds this ${ wpType( row ) } slug and carries no site-build row key; if an interrupted run made it, mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }", otherwise rename or delete it` );
+				stop( 'map', `${ key }: post ${ held.join( ', ' ) } already holds this ${ wpType( row ) } slug and carries no site-build row key; if an interrupted run made it, mark it with "wp post meta update ${ held[ 0 ] } ${ ROW_META } ${ key }", otherwise rename or delete it` );
 			}
 			ids[ key ] ??= null;
 		}
 	}
 	const wanted = desiredMenus( rows, linkText, readSurfaces( repo, client ), menuLinks );
-	problems.push( ...wanted.problems );
+	wanted.problems.forEach( ( say ) => stop( 'menus', say ) );
 	notes.push( ...wanted.notes );
 	if ( problems.length ) {
-		return { actions: [], problems, notes, options };
+		return { actions: [], problems, problemsByStep, notes, options };
 	}
 	const idOf = ( key ) => ( ids[ key ] ? ids[ key ] : { ref: `post:${ key }` } );
 	const menuOf = ( name ) => state.menus.find( ( m ) => m.slug === name ) || null;
-	Object.keys( wanted.menus ).filter( ( n ) => menuOf( n ) && menuOf( n ).owner !== n ).forEach( ( n ) => problems.push( `menu "${ n }" (${ menuOf( n ).id }) exists but the site build did not make it; rename it, or mark it with "wp term meta update ${ menuOf( n ).id } ${ MENU_META } ${ n }"` ) );
+	Object.keys( wanted.menus ).filter( ( n ) => menuOf( n ) && menuOf( n ).owner !== n ).forEach( ( n ) => stop( 'menus', `menu "${ n }" (${ menuOf( n ).id }) exists but the site build did not make it; rename it, or mark it with "wp term meta update ${ menuOf( n ).id } ${ MENU_META } ${ n }"` ) );
 	if ( problems.length ) {
-		return { actions: [], problems, notes, options };
+		return { actions: [], problems, problemsByStep, notes, options };
 	}
 	const menuIds = Object.fromEntries( Object.keys( wanted.menus ).map( ( n ) => [ n, menuOf( n )?.id || 0 ] ) );
 
@@ -163,14 +170,14 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const phase = LAYOUT_TYPES[ row.postType ] ? 'layout' : 'posts';
 		const parent = parentRow( rows, row );
 		if ( row.parent && ! parent ) {
-			problems.push( `${ key }: its parent "${ row.parent }" is no ${ row.postType } row of the page map` );
+			stop( 'posts', `${ key }: its parent "${ row.parent }" is no ${ row.postType } row of the page map` );
 			continue;
 		}
 		// A shop row's `template` is the template its tree builds (below), not a page template its page takes; a template
 		// the hierarchy reaches (page, front-page, home, single, page-<slug>) is never a page template either.
 		const pageTemplate = 'shop' === row.postType ? '' : pageTemplateOf( row );
 		if ( pageTemplate && ! ( state.templates?.[ row.postType ] || [] ).includes( pageTemplate ) ) {
-			problems.push( `${ key }: template "${ row.template }" is not one the theme registers for a ${ row.postType }` );
+			stop( 'posts', `${ key }: template "${ row.template }" is not one the theme registers for a ${ row.postType }` );
 			continue;
 		}
 		// A choice flow's tree holds the catalogue product it adds (lib/site-build-flow-product.mjs).
@@ -178,7 +185,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		// The account page's tree holds WooCommerce's account piece, never a static imitation of its forms (FR-48-87).
 		const noRegion = 'placeholder' !== source && commerceRefusal( { role: rowCommerceRole( row ), tree: built, roles: commerceRoles(), what: key } );
 		if ( noRegion ) {
-			problems.push( `${ key }: ${ noRegion }` );
+			stop( 'posts', `${ key }: ${ noRegion }` );
 			continue;
 		}
 		const tree = withFlowProduct( built, row, flowProducts );
@@ -197,7 +204,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const wooContent = keepsWooContent( row ) && woo.some( ( [ option, , list ] ) => 'woocommerce_shop_page_id' !== option && list[ 0 ] === row );
 		if ( p.treeHash !== hash && ! wooContent ) {
 			if ( p.builtContentHash && p.contentHash !== p.builtContentHash ) {
-				problems.push( `${ key }: post ${ p.id } was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or let the rebuild win with "wp post meta delete ${ p.id } ${ CONTENT_META }"` );
+				stop( 'posts', `${ key }: post ${ p.id } was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or let the rebuild win with "wp post meta delete ${ p.id } ${ CONTENT_META }"` );
 			} else {
 				actions.push( { phase, type: 'build', key, id: p.id, tree, hash, say: `${ key }: rebuild post ${ p.id } from the ${ source } tree (it was built from another tree)` } );
 			}
@@ -261,7 +268,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		// A shop, cart or checkout copy holds WooCommerce's piece, never a static imitation of it (FR-48-87).
 		const noRegion = commerceRefusal( { role: COMMERCE_ROLES[ slug ], tree: pick.tree, roles: commerceRoles(), what: `the ${ slug } template (${ pick.source })` } );
 		if ( noRegion ) {
-			problems.push( `${ pick.row ? rowKey( pick.row ) : `template:${ slug }` }: ${ noRegion }` );
+			stop( 'posts', `${ pick.row ? rowKey( pick.row ) : `template:${ slug }` }: ${ noRegion }` );
 			continue;
 		}
 		// The site's own parts the copy prints (lib/template-frame.mjs::ownParts) are built with it, and a changed part rebuilds it.
@@ -273,11 +280,11 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			continue;
 		}
 		if ( ! hashes[ slug ] && ( state.customTemplates || [] ).includes( slug ) ) {
-			problems.push( `${ pick.row ? rowKey( pick.row ) : 'template' }: the site already holds its own saved copy of the ${ slug } template that the site build did not make; clear it in Site Editor > Templates ("Clear customisations") so the site build can take it over` );
+			stop( 'posts', `${ pick.row ? rowKey( pick.row ) : 'template' }: the site already holds its own saved copy of the ${ slug } template that the site build did not make; clear it in Site Editor > Templates ("Clear customisations") so the site build can take it over` );
 			continue;
 		}
 		if ( hashes[ slug ] && saved && state.templateSaved?.[ slug ] && state.templateContent?.[ slug ] !== state.templateSaved[ slug ] ) {
-			problems.push( `${ pick.row ? rowKey( pick.row ) : 'template' }: the site's ${ slug } template was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or clear it in Site Editor > Templates ("Clear customisations") to let the site build rebuild it` );
+			stop( 'posts', `${ pick.row ? rowKey( pick.row ) : 'template' }: the site's ${ slug } template was edited after the site build saved it, so a rebuild from the changed tree would overwrite the edit; copy the edit into the tree, or clear it in Site Editor > Templates ("Clear customisations") to let the site build rebuild it` );
 			continue;
 		}
 		options.push( { name: `${ TEMPLATE_OPTION }[${ slug }]`, before: hashes[ slug ] ? hashes[ slug ].slice( 0, 12 ) : '(none)', after: hash.slice( 0, 12 ) } );
@@ -395,7 +402,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 				continue;
 			}
 			if ( list.length > 1 ) {
-				problems.push( `${ list.map( rowKey ).join( ' and ' ) } could both be the ${ role } page; ${ name } takes one page, so keep one row for that role` );
+				stop( 'site', `${ list.map( rowKey ).join( ' and ' ) } could both be the ${ role } page; ${ name } takes one page, so keep one row for that role` );
 				continue;
 			}
 			const was = String( state.options[ name ] ?? '' );
@@ -425,7 +432,7 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 			continue;
 		}
 		if ( mine.length > 1 ) {
-			problems.push( `${ mine.length } ${ area } rows (${ mine.map( rowKey ).join( ', ' ) }); a page map holds one site-wide ${ area }, so the proposal that made the others is wrong (re-run the page map, or remove the rows that belong to a page or a block)` );
+			stop( 'site', `${ mine.length } ${ area } rows (${ mine.map( rowKey ).join( ', ' ) }); a page map holds one site-wide ${ area }, so the proposal that made the others is wrong (re-run the page map, or remove the rows that belong to a page or a block)` );
 			continue;
 		}
 		const row = mine[ 0 ];
@@ -438,7 +445,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		options.push( { name: `sgs_active_${ area }_cpt_id`, before: String( current ), after: shown( id ) } );
 		actions.push( { phase: 'site', type: 'pointer', area, id, say: `active ${ area }: ${ current || 'none' } -> ${ shown( id ) }` } );
 	}
-	return problems.length ? { actions: [], problems, notes, options: [], uncopied } : { actions, problems, notes, options, uncopied };
+	// With a problem the whole build runs nothing; `planned` keeps the actions and options planned around it, for a run of
+	// one step whose own problems are none (lib/site-build-menus-step.mjs::runMenus).
+	return problems.length ? { actions: [], problems, problemsByStep, notes, options: [], uncopied, planned: { actions, options } } : { actions, problems, problemsByStep, notes, options, uncopied };
 }
 
 // The plan's counts: posts, menus and items it creates; everything else it changes (a saved template it removes is a

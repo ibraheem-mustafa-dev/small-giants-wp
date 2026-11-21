@@ -1,8 +1,13 @@
 // Spec 48 FR-48-55 part 3: `site-build.mjs --menus` brings the page map's menus and mega bindings to a built site and
-// writes nothing else (lib/site-build-menus-step.mjs). Rows and site state are inline fixtures.
+// writes nothing else (lib/site-build-menus-step.mjs), and stops only on a problem that concerns menus. Rows and site state
+// are inline fixtures.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { menusStep, runMenus, supersededItems } from '../lib/site-build-menus-step.mjs';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { menuProblems, menusStep, runMenus, supersededItems } from '../lib/site-build-menus-step.mjs';
+import { planBuild } from '../lib/site-build-plan.mjs';
 
 const row = ( o ) => ( { parent: null, template: null, menus: [], collection: 'static', flags: [], ...o } );
 const slot = ( position ) => [ { menu: 'header', position, parentItem: null } ];
@@ -100,4 +105,72 @@ test( 'MUST FAIL: a re-read that still plans a step, a plan problem, or an unres
 	assert.equal( unresolved.code( true ), 1 );
 	assert.deepEqual( unresolved.calls, [] );
 	assert.match( unresolved.errors[ 0 ], /page:new: no post on this site yet/ );
+} );
+
+// A plan stopped by another step's problem, as lib/site-build-plan.mjs::planBuild returns it: no actions of its own, the
+// problem sorted by its step, and the actions planned around it.
+const BLOCKED = ( step, say = 'the single-product template was edited' ) => ( { ...PLAN(), actions: [], options: [], problems: [ say ], problemsByStep: { map: [], menus: [], posts: [], site: [], [ step ]: [ say ] }, planned: { actions: PLAN().actions, options: PLAN().options } } );
+
+test( 'MUST FAIL: a problem of another step (a template copy, a post, a site option) does not stop the menus step', () => {
+	for ( const step of [ 'posts', 'site' ] ) {
+		const dry = harness( [ { plan: BLOCKED( step ), superseded: [ DELETE ] } ] );
+		assert.equal( dry.code( false ), 0, `a ${ step } problem` );
+		assert.deepEqual( dry.errors, [] );
+		assert.ok( dry.logs.includes( 'left to the whole build (not a menu problem): the single-product template was edited' ) );
+		assert.ok( dry.logs.includes( '3 menu step(s) to run (dry run: re-run with --apply)' ), 'the steps planned around the problem' );
+		assert.ok( dry.logs.includes( 'nav_menu_locations[primary] | 1 | 30' ) );
+	}
+	const h = harness( [ { plan: BLOCKED( 'posts' ), superseded: [ DELETE ] }, { ...EMPTY, plan: { ...BLOCKED( 'posts' ), planned: { actions: [], options: [] } } } ] );
+	assert.equal( h.code( true ), 0, 'a re-read that still holds the template problem and plans no menu step passes' );
+	assert.deepEqual( h.calls, [ 'posts: section lenses', 'wp menu item delete 133', 'menus: add frames' ] );
+} );
+
+test( 'negative control: a menu problem, or one about the posts a menu item opens, still stops it before any write', () => {
+	for ( const step of [ 'menus', 'map' ] ) {
+		const h = harness( [ { plan: BLOCKED( step, 'menu "header" (30) exists but the site build did not make it' ), superseded: [ DELETE ] } ] );
+		assert.equal( h.code( true ), 1, `a ${ step } problem` );
+		assert.deepEqual( h.calls, [] );
+		assert.deepEqual( h.errors, [ 'STOP menu "header" (30) exists but the site build did not make it', 'FAILED: 1 problem(s); nothing was written' ] );
+	}
+	const late = harness( [ { plan: PLAN(), superseded: [] }, { ...EMPTY, plan: { ...BLOCKED( 'menus', 'later' ), planned: { actions: [], options: [] } } } ] );
+	assert.equal( late.code( true ), 1, 'a re-read with a menu problem fails' );
+} );
+
+test( 'MUST FAIL: the planner sorts each problem by its step and keeps the menu actions planned around a template problem', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'menus-step-' ) );
+	const put = ( rel, body ) => {
+		fs.mkdirSync( path.dirname( path.join( repo, rel ) ), { recursive: true } );
+		fs.writeFileSync( path.join( repo, rel ), JSON.stringify( body ) );
+	};
+	put( 'sites/c/build/surfaces.json', { 'template-page': { target: { template: 'page' } } } );
+	put( 'sites/c/build/trees/template/page.json', [ { name: 'sgs/container', attributes: {}, innerBlocks: [ { name: 'core/post-content' } ] } ] );
+	const rows = [ row( { slug: 'about', route: 'about', postType: 'page', template: 'page', id: 3, menus: slot( 1 ) } ) ];
+	const state = ( o ) => ( {
+		holders: {}, marked: {}, menus: [], locations: {}, registeredLocations: [ 'primary' ], templates: { page: [] },
+		options: { show_on_front: 'posts', page_on_front: '0', page_for_posts: '0', permalink_structure: '/%postname%/' },
+		pointers: { header: 0, footer: 0, drawer: 0 }, pointerKeys: {}, templateContent: {}, templateSaved: {}, wooDefaults: {},
+		posts: { 3: { id: 3, type: 'page', status: 'publish', rowKey: 'page:about', slug: 'about', title: 'About', parent: 0, template: '' } },
+		customTemplates: [ 'page' ], templateHashes: { page: 'old' }, ...o,
+	} );
+	const edited = planBuild( { rows, state: state( { templateSaved: { page: 'a' }, templateContent: { page: 'b' } } ), repo, client: 'c' } );
+	assert.equal( edited.problems.length, 1 );
+	assert.deepEqual( edited.problemsByStep.posts, edited.problems, 'the edited template copy is a posts problem' );
+	assert.deepEqual( menuProblems( edited ), [] );
+	assert.deepEqual( edited.actions, [], 'the whole build still runs nothing' );
+	assert.deepEqual( menusStep( { ...edited, ...edited.planned } ).actions.map( ( a ) => a.type ), [ 'menu', 'item-add', 'location' ] );
+	const foreign = planBuild( { rows, state: state( { menus: [ { id: 30, slug: 'header', name: 'header', owner: '', items: [] } ] } ), repo, client: 'c' } );
+	assert.deepEqual( menuProblems( foreign ), foreign.problems, 'negative control: a menu the site build did not make is a menu problem' );
+	assert.match( foreign.problems[ 0 ], /menu "header" \(30\) exists but the site build did not make it/ );
+	const gone = planBuild( { rows: [ { ...rows[ 0 ], id: 99 } ], state: state(), repo, client: 'c' } );
+	assert.deepEqual( gone.problemsByStep.map, gone.problems, 'negative control: a stored id the site no longer holds is a map problem' );
+	assert.equal( 1, gone.problems.length );
+	const shared = planBuild( { rows: [ rows[ 0 ], row( { slug: 'contact', route: 'contact', postType: 'page', template: 'page', id: 4, menus: slot( 1 ) } ) ], state: state( { posts: { ...state().posts, 4: { id: 4, type: 'page', status: 'publish', rowKey: 'page:contact', slug: 'contact', title: 'Contact', parent: 0, template: '' } } } ), repo, client: 'c' } );
+	assert.deepEqual( shared.problemsByStep.menus, shared.problems, 'negative control: two rows on one menu slot is a menu problem' );
+	assert.equal( 1, shared.problems.length );
+} );
+
+test( 'MUST FAIL: a re-read that still holds another step\'s problem and still plans a menu step fails', () => {
+	const h = harness( [ { plan: BLOCKED( 'posts' ), superseded: [] }, { plan: BLOCKED( 'posts' ), superseded: [] } ] );
+	assert.equal( h.code( true ), 1 );
+	assert.match( h.errors[ 0 ], /a fresh read still plans 2 menu step\(s\)/ );
 } );

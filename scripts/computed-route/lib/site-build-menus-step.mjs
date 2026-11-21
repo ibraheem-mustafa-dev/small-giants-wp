@@ -45,19 +45,32 @@ export function menusStep( plan, superseded = [] ) {
 	return { actions, options: plan.options.filter( ( o ) => o.name.startsWith( 'nav_menu_locations[' ) ), unresolved };
 }
 
+// The problems that stop the menus step: a plan's `map` and `menus` problems (lib/site-build-plan.mjs::planBuild sorts each
+// problem by the step it stops); a problem of another step (a post, a template copy, a site option) is left to the whole
+// build. A plan whose problems carry no step stops on every one.
+export function menuProblems( plan ) {
+	return plan.problemsByStep ? [ ...plan.problemsByStep.map, ...plan.problemsByStep.menus ] : plan.problems;
+}
+
+// The plan the menus step reads: the whole plan, or with another step's problem the actions and options planned around it.
+const menuPlan = ( plan ) => ( plan.problems.length && plan.planned ? { ...plan, ...plan.planned } : plan );
+
 // Runs the step. `planFor()` returns { plan, superseded } read fresh from the site; `applyPhase` is
-// lib/site-build-apply.mjs::applyPhase and `wp` the site's wp-cli runner. Without `apply` it prints the step and writes
+// lib/site-build-apply.mjs::applyPhase and `wp` the site's wp-cli runner. A menu problem (`menuProblems`) stops it before
+// any write; another step's problem is printed as left to the whole build. Without `apply` it prints the step and writes
 // nothing. With it, it runs the section pages, the removals and the menus phase, then reads the site again and fails
 // unless that read plans none of them. Returns the exit code.
 export function runMenus( { planFor, apply, wp, applyPhase, log = console.log, error = console.error } ) {
 	const first = planFor();
 	first.plan.notes.forEach( ( n ) => log( `note: ${ n }` ) );
-	if ( first.plan.problems.length ) {
-		first.plan.problems.forEach( ( p ) => error( `STOP ${ p }` ) );
-		error( `FAILED: ${ first.plan.problems.length } problem(s); nothing was written` );
+	const stops = menuProblems( first.plan );
+	if ( stops.length ) {
+		stops.forEach( ( p ) => error( `STOP ${ p }` ) );
+		error( `FAILED: ${ stops.length } problem(s); nothing was written` );
 		return 1;
 	}
-	const step = menusStep( first.plan, first.superseded );
+	first.plan.problems.forEach( ( p ) => log( `left to the whole build (not a menu problem): ${ p }` ) );
+	const step = menusStep( menuPlan( first.plan ), first.superseded );
 	log( 'menus:' );
 	step.actions.forEach( ( a ) => log( `  ${ a.say }` ) );
 	if ( step.options.length ) {
@@ -84,8 +97,8 @@ export function runMenus( { planFor, apply, wp, applyPhase, log = console.log, e
 	} );
 	applyPhase( step.actions.filter( ( a ) => 'menus' === a.phase && 'item-delete' !== a.type ), 'menus', { wp, build: noPost, onId: noPost, log, refs } );
 	const again = planFor();
-	const left = menusStep( again.plan, again.superseded );
-	if ( again.plan.problems.length || left.actions.length ) {
+	const left = menusStep( menuPlan( again.plan ), again.superseded );
+	if ( menuProblems( again.plan ).length || left.actions.length ) {
 		error( `FAILED: a fresh read still plans ${ left.actions.length } menu step(s): ${ left.actions.map( ( a ) => a.say ).join( '; ' ) }` );
 		return 1;
 	}
