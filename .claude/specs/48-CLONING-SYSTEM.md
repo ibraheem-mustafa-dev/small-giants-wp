@@ -267,6 +267,8 @@ The skeleton writer produces the agent lane's proposal from the draft's own elem
 
 Block-choice faults are fixed in the skeleton before Fill runs; Solve never swaps a block (§2).
 
+**Paint conservation (Bean's rule of 2026-11-21: read or fail).** Every draft element that paints something (a background, border, shadow, glyph, text decoration, layout, size or transparent border, read at each width) is read by a skeleton node or is named as dropped; a proposal that silently dissolves a painted element is a fault. A look whose host block has no part for it is recorded as `no-part` and never counted as conserved. Status: the detector is built and on `main` (`scripts/computed-route/lib/skeleton-paint-conservation.mjs`, `tools/paint-conservation.mjs`; it lists each unread painted element once, by class `unwrapped`, `band-only`, `host-unread`, `removed`, `kept-unnamed` or `no-row`, from a surface's saved inventory, proposal and skeleton, and the inventory records each box's paint per width in `lib/skeleton-inventory.mjs`); the propose-time rule that fails a proposal is not on `main` (fix round 1 is measured, not judged: plan `.claude/plans/2026-11-19-general-cloning-work.md`, "Where it stands"), and the part-level gap (a look calibrated on a part no slot names) is open in the detector.
+
 Each node's `draftRef` is a `tpl` finder (`{ tpl: "<importPath>/<n>#<copy>" }`, resolved by `scripts/parity/lib/collect.mjs::resolveFinder`). `check-refs.mjs` resolves every finder of a skeleton on the draft and fails on a miss or an ambiguous match. Fill keeps each node's draft identity beside the tree (`<surface>.origin.json`, `cr-ref` to `tpl` key and fingerprint) so the walker pairs by identity (§3.6 item 19).
 
 **Steps:**
