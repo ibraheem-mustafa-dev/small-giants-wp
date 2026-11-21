@@ -5297,6 +5297,14 @@
     },
     {
       "slug": "sgs/button",
+      "attr": "minWidth",
+      "fields": {
+        "css_property": "min-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/button",
       "attr": "padding",
       "fields": {
         "css_property": "padding",
@@ -9435,10 +9443,29 @@
     },
     {
       "slug": "sgs/choice-flow",
+      "attr": "progressTrackColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "progress-track"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
       "attr": "stageNoteBorderColour",
       "fields": {
         "css_property": "border-color",
         "css_element": "summary-note"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "stageNoteIconCircleSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "CONTENT",
+        "css_element": "note-icon"
       }
     },
     {
@@ -9455,6 +9482,15 @@
       "fields": {
         "css_property": "color",
         "css_element": "stepper-circle"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "summaryDividerColour",
+      "fields": {
+        "css_property": "border-top-color",
+        "css_layer": "CONTENT",
+        "css_element": "summary-divider"
       }
     },
     {
@@ -9476,11 +9512,134 @@
     },
     {
       "slug": "sgs/choice-flow-question",
+      "attr": "optionBadgePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "option-badge"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionBadgeRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "option-badge"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
       "attr": "optionBadgeTextColour",
       "fields": {
         "css_property": "color",
         "role": "color",
         "css_element": "option-badge"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_layer": "CONTENT",
+        "css_element": "option-card"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_layer": "CONTENT",
+        "css_element": "option-card"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_layer": "CONTENT",
+        "css_element": "option-card"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "option-card"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardSelectedBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCheckInset",
+      "fields": {
+        "css_property": "top",
+        "css_layer": "CONTENT",
+        "css_element": "option-check"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCheckSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_layer": "CONTENT",
+        "css_element": "option-check"
       }
     },
     {
@@ -9597,6 +9756,16 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "option-description"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionMediaBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-media"
       }
     },
     {
@@ -17346,15 +17515,6 @@
     },
     {
       "slug": "sgs/google-reviews",
-      "attr": "scrollbarStyle",
-      "fields": {
-        "css_property": "scrollbar-width",
-        "css_layer": "OUTER",
-        "css_element": "list"
-      }
-    },
-    {
-      "slug": "sgs/google-reviews",
       "attr": "seeAllBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -19032,7 +19192,7 @@
       "slug": "sgs/icon",
       "attr": "shapeSize",
       "fields": {
-        "css_property": "width",
+        "css_property": "height,width",
         "css_element": "shape"
       }
     },
@@ -22444,7 +22604,8 @@
       "slug": "sgs/nav-drawer",
       "attr": "backgroundOverlayBlend",
       "fields": {
-        "css_property": "mix-blend-mode"
+        "css_property": "mix-blend-mode",
+        "css_element": "overlay"
       }
     },
     {
@@ -22452,8 +22613,7 @@
       "attr": "backgroundOverlayOpacity",
       "fields": {
         "css_property": "opacity",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "overlay"
       }
     },
     {
@@ -27388,7 +27548,7 @@
       "fields": {
         "css_property": "justify-content",
         "css_layer": "GRID",
-        "css_element": "cta"
+        "css_element": "cta2"
       }
     },
     {
@@ -38668,6 +38828,14 @@
       }
     },
     {
+      "slug": "sgs/button",
+      "attr": "iconSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "icon"
+      }
+    },
+    {
       "slug": "sgs/buybox",
       "attr": "addToCartColourBackground",
       "fields": {
@@ -39997,6 +40165,64 @@
     },
     {
       "slug": "sgs/choice-flow",
+      "attr": "footerBandBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "footer-band"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "footerBandBorder",
+      "fields": {
+        "css_property": "border-top-color,border-top-style,border-top-width",
+        "role": "styling",
+        "css_layer": "CONTENT",
+        "css_element": "footer-band"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "footerBandPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "footer-band"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "headerBandBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "header-band"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "headerBandBorder",
+      "fields": {
+        "css_property": "border-bottom-color,border-bottom-style,border-bottom-width",
+        "role": "styling",
+        "css_layer": "CONTENT",
+        "css_element": "header-band"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "headerBandPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "header-band"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
       "attr": "infoToggleBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -40035,12 +40261,158 @@
       }
     },
     {
+      "slug": "sgs/choice-flow",
+      "attr": "stageNoteIconColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "note-icon"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "stageNoteIconColourGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_layer": "CONTENT",
+        "css_element": "note-icon"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "summaryBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "summary-box"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "summaryBorder",
+      "fields": {
+        "css_property": "border-color,border-style,border-width",
+        "role": "styling",
+        "css_layer": "CONTENT",
+        "css_element": "summary-box"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "summaryPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "summary-box"
+      }
+    },
+    {
       "slug": "sgs/choice-flow-question",
       "attr": "introWidth",
       "fields": {
         "css_property": "max-width",
         "css_layer": "CONTENT",
         "css_element": "intro"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionBadgeBorder",
+      "fields": {
+        "css_property": "border-color,border-style,border-width",
+        "role": "styling",
+        "css_element": "option-badge"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardHoverShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "CONTENT",
+        "css_element": "option-card",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardHoverShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardSelectedBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardSelectedShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "CONTENT",
+        "css_element": "option-card",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardSelectedShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card",
+        "css_state": "current"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "CONTENT",
+        "css_element": "option-card"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCardShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
+        "css_layer": "CONTENT",
+        "css_element": "option-card"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCheckBackgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-check"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow-question",
+      "attr": "optionCheckColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "option-check"
       }
     },
     {
@@ -40093,6 +40465,58 @@
         "role": "color",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundOverlayBlend",
+      "fields": {
+        "css_property": "mix-blend-mode",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundOverlayColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundOverlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "backgroundOverlayOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "overlay"
       }
     },
     {
@@ -40554,6 +40978,33 @@
         "css_property": "box-shadow-color",
         "css_element": "wrapper",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerFit",
+      "fields": {
+        "css_property": "object-fit",
+        "css_layer": "CONTENT",
+        "css_element": "picture"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerFocal",
+      "fields": {
+        "css_property": "object-position",
+        "css_layer": "CONTENT",
+        "css_element": "picture"
+      }
+    },
+    {
+      "slug": "sgs/decorative-image",
+      "attr": "layerPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "picture"
       }
     },
     {
@@ -43524,6 +43975,58 @@
     },
     {
       "slug": "sgs/hero",
+      "attr": "backgroundOverlayBlend",
+      "fields": {
+        "css_property": "mix-blend-mode",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/hero",
+      "attr": "backgroundOverlayOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/hero",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -45249,6 +45752,58 @@
     },
     {
       "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayBlend",
+      "fields": {
+        "css_property": "mix-blend-mode",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
+      "attr": "backgroundOverlayOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/multi-button",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -46288,6 +46843,42 @@
         "css_property": "top",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "backgroundOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "backgroundOverlayColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "backgroundOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
+      "attr": "backgroundOverlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay",
+        "css_state": "hover"
       }
     },
     {
@@ -48070,6 +48661,58 @@
     },
     {
       "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayBlend",
+      "fields": {
+        "css_property": "mix-blend-mode",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
+      "attr": "backgroundOverlayOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/physics-canvas",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -49572,6 +50215,58 @@
     },
     {
       "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayBlend",
+      "fields": {
+        "css_property": "mix-blend-mode",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
+      "attr": "backgroundOverlayOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/site-footer",
       "attr": "borderColour",
       "fields": {
         "css_property": "border-color",
@@ -49682,6 +50377,58 @@
         "css_layer": "OUTER",
         "css_element": "wrapper",
         "css_state": "scrolled"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayBlend",
+      "fields": {
+        "css_property": "mix-blend-mode",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayGradient",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/site-header",
+      "attr": "backgroundOverlayOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "overlay"
       }
     },
     {
@@ -51770,11 +52517,54 @@
     },
     {
       "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayBlend",
+      "fields": {
+        "css_property": "mix-blend-mode",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
       "attr": "backgroundOverlayColour",
       "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayColourHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayGradient",
+      "fields": {
         "css_property": "background-image",
-        "css_layer": "OUTER",
-        "css_element": "wrapper"
+        "css_element": "overlay"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayGradientHover",
+      "fields": {
+        "css_property": "background-image",
+        "css_element": "overlay",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/trust-bar",
+      "attr": "backgroundOverlayOpacity",
+      "fields": {
+        "css_property": "opacity",
+        "css_element": "overlay"
       }
     },
     {
