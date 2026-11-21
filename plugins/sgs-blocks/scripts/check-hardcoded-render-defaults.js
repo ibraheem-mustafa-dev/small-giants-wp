@@ -2043,6 +2043,40 @@ function buildPhpVarResolver( files ) {
 	return resolveVar;
 }
 
+/**
+ * The literals a parameter takes: when `expr` is a bare `$var` naming a parameter of the function declared last before
+ * `pos` in `src`, the literal value every call of that function in `files` passes at that position. Null when `expr` is
+ * not such a parameter, the function has no call, or any call passes something other than a quoted word.
+ */
+function paramLiteralArgs( files, src, pos, expr ) {
+	const v = /^\s*\$(\w+)\s*$/.exec( expr );
+	if ( ! v ) {
+		return null;
+	}
+	let fn = null;
+	for ( const m of src.slice( 0, pos ).matchAll( /\bfunction\s+(\w+)\s*\(([^)]*)\)/g ) ) {
+		fn = m;
+	}
+	if ( ! fn ) {
+		return null;
+	}
+	const index = splitTopLevel( fn[ 2 ], ',' ).findIndex( ( p ) => new RegExp( `\\$${ v[ 1 ] }\\b` ).test( p ) );
+	if ( index < 0 ) {
+		return null;
+	}
+	const out = new Set();
+	for ( const g of files ) {
+		for ( const region of captureCallRegions( g.src, fn[ 1 ], [] ) ) {
+			const lit = /^\s*(['"])(\w*)\1\s*$/.exec( splitTopLevel( region, ',' )[ index ] || '' );
+			if ( ! lit ) {
+				return null;
+			}
+			out.add( lit[ 2 ] );
+		}
+	}
+	return out.size ? [ ...out ] : null;
+}
+
 /** Argument regions of every call to `fnName` (quote- and bracket-aware; skips the definition). */
 function captureCallRegions( src, fnName, starts ) {
 	const regions = [];
@@ -2341,15 +2375,24 @@ function collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSel
 				ELEMENT_MODEL_STATS.helperCalls++;
 				const scoped = resolveVar.scopedAt ? resolveVar.scopedAt( fileIdx, starts[ ri ] ) : resolveVar;
 				const args   = splitTopLevel( region, ',' );
-				const prefix = args[ spec.prefixArg ] !== undefined ? resolvePhpExpr( args[ spec.prefixArg ], scoped ) : UNK;
-				const selRaw = args[ spec.selectorArg ] !== undefined ? resolvePhpExpr( args[ spec.selectorArg ], scoped ) : UNK;
-				if ( prefix.includes( UNK ) || prefix.includes( INST_CLASS ) ) {
-					ELEMENT_MODEL_STATS.prefixUnresolved++;
-					for ( const s of spec.suffixes ) {
-						wildcardProps.add( s.prop );
+				const resolved = args[ spec.prefixArg ] !== undefined ? resolvePhpExpr( args[ spec.prefixArg ], scoped ) : UNK;
+				const selRaw   = args[ spec.selectorArg ] !== undefined ? resolvePhpExpr( args[ spec.selectorArg ], scoped ) : UNK;
+				let prefixes   = [ resolved ];
+				if ( resolved.includes( UNK ) || resolved.includes( INST_CLASS ) ) {
+					// A prefix that is a parameter of the enclosing function whose every caller passes a literal names one
+					// control per literal (choice-flow's sgs_choice_flow_button_kit_css( $attributes, $prefix, … ) called
+					// with 'skip', 'continue', …).
+					const fromCallers = args[ spec.prefixArg ] !== undefined ? paramLiteralArgs( files, f.src, starts[ ri ], args[ spec.prefixArg ] ) : null;
+					if ( ! fromCallers ) {
+						ELEMENT_MODEL_STATS.prefixUnresolved++;
+						for ( const s of spec.suffixes ) {
+							wildcardProps.add( s.prop );
+						}
+						continue;
 					}
-					continue;
+					prefixes = fromCallers;
 				}
+				for ( const prefix of prefixes ) {
 				let callControl = null;
 				for ( const s of spec.suffixes ) {
 					const attrs = s.variants
@@ -2364,6 +2407,7 @@ function collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSel
 				}
 				if ( callControl ) {
 					ELEMENT_MODEL_STATS[ callControl.members ? 'selectorResolved' : 'selectorUnresolved' ]++;
+				}
 				}
 			}
 		}
