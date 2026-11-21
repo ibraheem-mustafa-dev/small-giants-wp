@@ -21,8 +21,8 @@ Each changed file is one of:
 
 Exit 0: no visitor's page can change (nothing to check). 1: only pages holding the named blocks can change; with
 --mirrors, each mirror's line is either "no saved post holds these blocks" or the render-check command for the pages
-that do (a block in a template, header, footer or other site-wide post means the whole mirror). 2: any page can change:
-run the render check on every mirror. 3: a checkout has no build.
+that do (a block in a template, header, footer or other site-wide post means the whole mirror). 2: a shared file differs:
+narrow it with --used-by; whatever still reaches every page gets one run, on the mirror that carries the change. 3: a checkout has no build.
 """
 from __future__ import annotations
 
@@ -227,7 +227,7 @@ def main() -> int:
     if got["exit"] == 0:
         print("render-scope: no file a visitor's page loads differs in a way that renders: nothing to check")
     elif got["exit"] == 2:
-        print(f"render-scope: {len(got['shared'])} shared file(s) differ: any page can change, run the render check on every mirror")
+        print(f"render-scope: {len(got['shared'])} shared file(s) differ: name each one's real loaders with --used-by to narrow the pages; whatever still reaches every page gets one run, on the mirror that carries the change (README, 'What to do with the answer')")
     else:
         print("render-scope: only pages holding " + ", ".join(got["blocks"]) + " can change")
         for mirror in [m.strip() for m in args.mirrors.split(",") if m.strip()]:

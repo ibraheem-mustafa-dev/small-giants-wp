@@ -20,13 +20,19 @@ A shared file whose only loaders are known blocks can be named with `--used-by <
 
 ## What to do with the answer
 
-The render check runs only when a change's risk and reach warrant it (Bean, 2026-11-19): this script gives the reach, and the session judges the risk. A block-scoped change that is provably additive (new settings that are off by default, with a test showing an unset block renders byte for byte as before) needs no slow check; say in the commit message which level was chosen and why. One mirror's clean result can stand for the same mechanism on the others.
+Run the shortest check that answers the question, sized to what the change can reach and what a miss would cost (Bean, 2026-11-19 and 2026-11-21). This script gives the reach; the session judges the value of each run before starting it:
+
+- **Narrow `shared` first.** For each shared file, name its real loaders with `--used-by` (say in the commit message how you know). A change that is only additive (a new function, a new class prefix, a CSS fallback equal to the old value, new settings off by default with a test showing an unset block renders byte for byte as before) reaches nothing that renders today. Only a file every page draws through in a changed way (the theme's global styles, the focus system, a default every page uses) leaves the reach at every page.
+- **Once per mechanism.** The code is the same on every site, so run on the one mirror that carries most of the affected blocks (Mama's when the live shop's basket, checkout or account is reached). Add another site only for a block, page or saved setting that site alone shows, and then only those states.
+- **Only the states that hold the change** (`--only`), unless a template, header, footer or other site-wide post holds it.
+- **Read a difference before re-running.** Look at its pair and read both copies; a flip the unchanged copy also shows is an existing fault: record it and move on.
+- **Say what ran** in the commit message: which states, on which mirror, and why that was enough.
 
 | Exit | Meaning | Before the change reaches `main` |
 |---|---|---|
 | 0 | no visitor's page can change | nothing more |
 | 1 | only pages holding the named blocks can change | where the change is not provably additive, per mirror, the line the script prints: nothing where no saved post holds them; `render-check.py --only <pages>` where only pages do; the whole check where a template, header, footer, pattern or other site-wide post does |
-| 2 | any page can change | the render check, on the live shop's mirror at least and on every mirror for a change to how existing settings render |
+| 2 | a shared file differs | narrow it with `--used-by`; whatever still reaches every page gets one run, on the mirror that carries the change, plus another site only for what that site alone shows |
 | 3 | a checkout has no build | build it |
 
 With `--mirrors`, each mirror is asked read only (`posts-holding.php`, wp-cli in WSL) which published or private posts hold the blocks. The front page is the render check's `home` state and any other page `page-<slug>`.
