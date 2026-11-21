@@ -118,10 +118,12 @@
                         "layout"
                     ],
                     "attrMap": {
-                        "css:padding": "layerPadding"
+                        "css:padding": "layerPadding",
+                        "css:object-fit": "layerFit",
+                        "css:object-position": "layerFocal"
                     },
                     "motion": false,
-                    "_note": "The picture the media renderer prints: the layer root itself when the layer is only a picture, the picture inside the box when the layer holds blocks or paints a box (Sgs_Motion_Targets::resolve reads a one-class selector the root carries as the root). layerPadding is the shared media-padding atom: it pads the picture, so the layer's fill shows round it as a mat."
+                    "_note": "The picture the media renderer prints: the layer root itself when the layer is only a picture, the picture inside the box when the layer holds blocks or paints a box (Sgs_Motion_Targets::resolve reads a one-class selector the root carries as the root). layerPadding is the shared media-padding atom: it pads the picture, so the layer's fill shows round it as a mat. layerFit and layerFocal are the object-fit and focal-point atoms, which the renderer prints as object-fit and object-position on this picture."
                 }
             }
         }
