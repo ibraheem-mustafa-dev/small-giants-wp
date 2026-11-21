@@ -89,6 +89,47 @@
 					},
 					"_note": "The small tag on an option card (a solid tag on picture cards, a soft tag on text cards; render.php prints it only when the option has a badge); scoped CSS from helpers-description-style.php. Empty keeps the stylesheet's own paint for each card kind."
 				},
+				"option-card": {
+					"selector": ".sgs-choice-flow-question__option-button",
+					"label": "Option card",
+					"layer": "CONTENT",
+					"order": 3,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "optionCard",
+					"attrMap": {
+						"css:background-color": "optionCardColourBackground",
+						"css:border-color": "optionCardColourBorder",
+						"css:border-width": "optionCardBorderWidth",
+						"css:border-style": "optionCardBorderStyle",
+						"css:border-radius": "optionCardBorderRadius",
+						"css:padding": "optionCardPadding",
+						"css:box-shadow": "optionCardShadow",
+						"css:box-shadow-color": "optionCardShadowColour"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "optionCardColourBackgroundHover",
+								"css:border-color": "optionCardColourBorderHover",
+								"css:box-shadow": "optionCardHoverShadow",
+								"css:box-shadow-color": "optionCardHoverShadowColour"
+							}
+						},
+						"current": {
+							"attrMap": {
+								"css:background-color": "optionCardSelectedBackgroundColour",
+								"css:border-color": "optionCardSelectedBorderColour",
+								"css:box-shadow": "optionCardSelectedShadow",
+								"css:box-shadow-color": "optionCardSelectedShadowColour"
+							}
+						}
+					},
+					"motion": false,
+					"_note": "Each option's button, the card a shopper clicks (render.php, both option paths); scoped CSS from helpers-option-card-style.php. Border width, style, corners and padding apply to every card; the fill, border colour and shadow at rest and on hover apply to the cards that are not chosen; the current state is the chosen card (.sgs-choice-flow-question__option-button--selected, set by sgs/choice-flow's view script; names shaped like sgs/form-field-tiles' tileSelected*). Empty keeps the stylesheet's card. The hover lift belongs to the option's motion hover state (the option element)."
+				},
 				"question": {
 					"selector": ".sgs-choice-flow-question__title",
 					"text": true,
@@ -480,6 +521,71 @@
 			"type": "string",
 			"default": "",
 			"description": "Text colour of the option badge tag, a palette slug or hex. Empty keeps the stylesheet's paint: inherited on a picture card, accent-text on a text card."
+		},
+		"optionCardColourBackground": {
+			"type": "string",
+			"description": "Fill of each option card that is not chosen, a palette slug or any colour. Empty keeps the stylesheet's: white on a compact card, the surface colour in the showcase layout."
+		},
+		"optionCardColourBackgroundHover": {
+			"type": "string",
+			"description": "Fill of an option card that is not chosen while the pointer is over it or it has keyboard focus. Empty keeps the resting fill."
+		},
+		"optionCardColourBorder": {
+			"type": "string",
+			"description": "Border colour of each option card that is not chosen. Empty keeps the stylesheet's border colour (and its darker hover border)."
+		},
+		"optionCardColourBorderHover": {
+			"type": "string",
+			"description": "Border colour of an option card that is not chosen while the pointer is over it or it has keyboard focus. Empty keeps the resting border colour once one is set, else the stylesheet's hover border."
+		},
+		"optionCardBorderWidth": {
+			"type": "object",
+			"description": "Border width of every option card, a {top,right,bottom,left} box of lengths. Empty keeps the stylesheet's 2px."
+		},
+		"optionCardBorderStyle": {
+			"type": "string",
+			"enum": [ "solid", "dashed", "dotted", "none" ],
+			"description": "Border style of every option card; printed beside a border width. Empty with a width set paints solid."
+		},
+		"optionCardBorderRadius": {
+			"type": "object",
+			"description": "Corner radius of every option card, a {topLeft,topRight,bottomRight,bottomLeft} box of lengths. An unset corner keeps the stylesheet's (8px compact, square in the showcase layout)."
+		},
+		"optionCardPadding": {
+			"type": "object",
+			"description": "Padding inside every option card, a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Empty keeps the stylesheet's."
+		},
+		"optionCardShadow": {
+			"type": "string",
+			"description": "Shadow of each option card that is not chosen, at rest (the shared layered shadow control). Empty = no shadow."
+		},
+		"optionCardShadowColour": {
+			"type": "string",
+			"description": "Colour of the resting option card shadow. Empty = the shadow's own colour."
+		},
+		"optionCardHoverShadow": {
+			"type": "string",
+			"description": "Shadow of an option card that is not chosen while the pointer is over it or it has keyboard focus. Empty keeps the stylesheet's hover shadow, or the resting shadow once one is set."
+		},
+		"optionCardHoverShadowColour": {
+			"type": "string",
+			"description": "Colour of the option card hover shadow. Empty = the shadow's own colour."
+		},
+		"optionCardSelectedBackgroundColour": {
+			"type": "string",
+			"description": "Fill of the chosen option card. Empty keeps the stylesheet's chosen look (the stage colour in the showcase layout)."
+		},
+		"optionCardSelectedBorderColour": {
+			"type": "string",
+			"description": "Border colour of the chosen option card. Empty keeps the stylesheet's (primary compact, the text colour in the showcase layout)."
+		},
+		"optionCardSelectedShadow": {
+			"type": "string",
+			"description": "Shadow of the chosen option card (the shared layered shadow control). Empty keeps the stylesheet's (a 1px primary ring compact, none in the showcase layout)."
+		},
+		"optionCardSelectedShadowColour": {
+			"type": "string",
+			"description": "Colour of the chosen option card's shadow. Empty = the shadow's own colour."
 		},
 		"optionLoading": {"type":"string","_generated":"media-atoms"},
 		"optionFit": {"type":"object","_generated":"media-atoms"},

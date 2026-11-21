@@ -165,7 +165,7 @@
 	align-items: flex-start;
 	width: 100%;
 	min-height: 44px; /* WCAG 2.2 touch target */
-	padding: 14px 16px;
+	padding: var( --sgs-cfq-option-padding, 14px 16px ); /* optionCardPadding prints its own padding over this */
 	border: 2px solid var( --wp--preset--color--border, #d4dbe5 );
 	border-radius: var( --wp--custom--border-radius--medium, 8px );
 	font-family: inherit;
@@ -378,8 +378,10 @@
 .sgs-choice-flow--layout-showcase .sgs-choice-flow-question__option-media {
 	grid-column: 1 / -1;
 	grid-row: 1;
-	width: calc( 100% + 36px );
-	margin: -16px -18px 11px;
+	/* The band runs to the card's edges: it reaches back over the card's padding (16px 18px, or the card padding the
+	   optionCardPadding setting gives as --sgs-cfq-card-pad-*). */
+	width: calc( 100% + var( --sgs-cfq-card-pad-left, 18px ) + var( --sgs-cfq-card-pad-right, 18px ) );
+	margin: calc( -1 * var( --sgs-cfq-card-pad-top, 16px ) ) calc( -1 * var( --sgs-cfq-card-pad-right, 18px ) ) 11px calc( -1 * var( --sgs-cfq-card-pad-left, 18px ) );
 	border-radius: 0;
 	background-color: var( --sgs-choice-flow-stage, var( --wp--preset--color--surface-alt, #F1F0EC ) );
 	background-image: var( --sgs-choice-flow-stage-gradient, none );
@@ -488,9 +490,9 @@
 	display: block;
 	grid-column: 1 / -1;
 	grid-row: 1;
-	width: calc( 100% + 36px );
+	width: calc( 100% + var( --sgs-cfq-card-pad-left, 18px ) + var( --sgs-cfq-card-pad-right, 18px ) );
 	aspect-ratio: 16 / 9;
-	margin: -16px -18px 11px;
+	margin: calc( -1 * var( --sgs-cfq-card-pad-top, 16px ) ) calc( -1 * var( --sgs-cfq-card-pad-right, 18px ) ) 11px calc( -1 * var( --sgs-cfq-card-pad-left, 18px ) );
 	background-color: var( --wp--preset--color--surface-alt, #F3F0EC );
 }
 

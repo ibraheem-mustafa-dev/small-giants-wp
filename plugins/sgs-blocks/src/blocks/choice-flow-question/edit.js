@@ -25,6 +25,7 @@ import TitlePanel from './TitlePanel';
 import VariationCoverageNotice from './VariationCoverageNotice';
 import OptionPolishFields, { OptionDescriptionPanel, optionDescriptionColourRows, optionBadgeColourRows } from './OptionPolishFields';
 import { SgsColourPanel } from '../../components';
+import { OptionCardPanel, OptionCardStyle, optionCardColourRows } from './OptionCardPanels';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
@@ -164,6 +165,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				rows={ [
 					...optionDescriptionColourRows( { attributes, setAttributes } ),
 					...optionBadgeColourRows( { attributes, setAttributes } ),
+					...optionCardColourRows( { attributes, setAttributes } ),
 				] }
 			/>
 			<InspectorControls group="settings">
@@ -349,12 +351,14 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				<TitlePanel attributes={ attributes } setAttributes={ setAttributes } />
 				<OptionCardsPanel attributes={ attributes } setAttributes={ setAttributes } title={ __( 'Option pictures', 'sgs-blocks' ) } />
 				<OptionDescriptionPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<OptionCardPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>
 				<VariationCoverageNotice attributes={ attributes } clientId={ clientId } context={ context } />
 				<QuestionPreview attributes={ attributes } />
 				<OptionDescriptionStyle attributes={ attributes } clientId={ clientId } />
+				<OptionCardStyle attributes={ attributes } clientId={ clientId } />
 				<SgsFreeTextField type="rich" noLink
 					label={ __( 'Question', 'sgs-blocks' ) }
 					value={ question }
@@ -366,7 +370,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 					className={ `sgs-choice-flow-question__options-preview sgs-choice-flow-question__options-preview--${ layout || 'grid' }` }
 				>
 					{ options.map( ( option, index ) => (
-						<li key={ index } className="sgs-choice-flow-question__option-preview">
+						<li key={ index } className={ `sgs-choice-flow-question__option-preview${ option.isDefault ? ' sgs-choice-flow-question__option-preview--selected' : '' }` }>
 							{ /* The option's own picture, ahead of the label as render.php prints it. */ }
 							{ [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( option.source?.[ device ] ) ) && (
 								<span className="sgs-choice-flow-question__option-media">
