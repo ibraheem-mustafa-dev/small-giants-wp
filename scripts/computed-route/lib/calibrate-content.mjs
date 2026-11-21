@@ -150,8 +150,17 @@ export function planContentInstances( block, { contentRows, variant, schema = {}
 		}
 		return baseKey;
 	};
+	// A presence flip is the opposite of the setting's default. When the fixture's own attributes already hold that
+	// opposite (a fixture that switches a part off for its other readings), the flip changes nothing against the plain
+	// default instance, so the marker is read against a baseline holding the setting at its default: the reading is
+	// then what moving off the default shows and hides, which is what Fill's presence decisions assume.
+	const resting = ( row, kind, marker, extra ) => {
+		const a = row.attr_name;
+		const flipped = 'presence' === kind && undefined === extra.value && Object.prototype.hasOwnProperty.call( base, a ) && JSON.stringify( base[ a ] ) === JSON.stringify( marker.attrs[ a ] );
+		return flipped ? { [ a ]: defaultOf( row, schema ) } : {};
+	};
 	const add = ( row, kind, marker, extra = {} ) => {
-		const pre = preconditionsFor( row, schema, base, ctx );
+		const pre = { ...preconditionsFor( row, schema, base, ctx ), ...resting( row, kind, marker, extra ) };
 		instances.push( {
 			key: `content-${ kind }-${ row.attr_name }${ extra.value ? `-${ extra.value }` : '' }`,
 			content: { attr: row.attr_name, kind, needle: marker.needle, ...( undefined === extra.value ? {} : { value: extra.value } ) },

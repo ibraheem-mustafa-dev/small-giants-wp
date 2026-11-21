@@ -60,6 +60,23 @@ test( 'a presence row is planned with its variant precondition and its gating to
 	assert.ok( ! instances.some( ( i ) => 'layout' === i.content?.attr && 'standard' === i.content?.value ), 'the default value is the baseline, never a marker' );
 } );
 
+test( 'MUST FAIL (2026-11-21: sgs/nav-bar-menu submenuCaret had no presence reading): a flip the fixture already holds is read against a baseline at the default', () => {
+	// The fixture switches the caret off for its other readings; the flip (the opposite of the default) is that same value,
+	// so against the plain default instance it would show and hide nothing and calibration would record no reading.
+	const schema = { submenuCaret: { type: 'boolean', default: true }, showBurger: { type: 'boolean', default: true } };
+	const contentRows = { presence: [ 'submenuCaret', 'showBurger' ].map( ( a ) => ( { attr_name: a, attr_type: 'boolean', default_value: 'true', css_property: null, role: 'presence-boolean' } ) ), text: [], link: [] };
+	const { instances } = planContentInstances( 'sgs/nav-bar-menu', { contentRows, variant: { variantAttr: null, variantSlots: [] }, schema, fixture: { attributes: { submenuCaret: false } }, ctx: {} } );
+	const caret = instances.find( ( i ) => 'submenuCaret' === i.content?.attr );
+	assert.equal( caret.attrs.submenuCaret, false, 'the marked instance is the flip' );
+	assert.ok( caret.baseKey, 'it names a baseline of its own' );
+	const base = instances.find( ( i ) => i.isBase && i.baseKey === caret.baseKey );
+	assert.equal( base?.attrs.submenuCaret, true, 'the baseline holds the setting at its default' );
+	// Negative control: a flip the fixture does not hold is read against the plain default instance, as before.
+	const burger = instances.find( ( i ) => 'showBurger' === i.content?.attr );
+	assert.deepEqual( [ burger.attrs.showBurger, burger.baseKey ], [ false, null ] );
+	assert.equal( instances.filter( ( i ) => i.isBase ).length, 1, 'one baseline, for the flip the fixture holds' );
+} );
+
 test( 'a link row is planned with a URL marker and every needle is collected once', () => {
 	const contentRows = { presence: [], text: [], link: [ { attr_name: 'ctaUrl', attr_type: 'string', css_property: null, role: 'link-href' } ] };
 	const { instances } = planContentInstances( 'sgs/card', { contentRows, variant: { variantAttr: null, variantSlots: [] }, schema: { ctaUrl: { type: 'string' } }, fixture: {}, ctx: {} } );

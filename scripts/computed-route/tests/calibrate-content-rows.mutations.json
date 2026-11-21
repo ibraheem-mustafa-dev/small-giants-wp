@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "const pre = { ...preconditionsFor( row, schema, base, ctx ), ...resting( row, kind, marker, extra ) };",
+		"replace": "const pre = preconditionsFor( row, schema, base, ctx );",
+		"why": "a flip the fixture already holds would be read against the plain default instance and record nothing"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "return flipped ? { [ a ]: defaultOf( row, schema ) } : {};",
+		"replace": "return flipped ? { [ a ]: marker.attrs[ a ] } : {};",
+		"why": "the baseline would hold the flip itself, so the reading would still be empty"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "const flipped = 'presence' === kind && undefined === extra.value && Object.prototype.hasOwnProperty.call( base, a ) && JSON.stringify( base[ a ] ) === JSON.stringify( marker.attrs[ a ] );",
+		"replace": "const flipped = 'presence' === kind && undefined === extra.value;",
+		"why": "every presence flip would get a baseline of its own, even one the fixture does not hold (the negative control)"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "const flipped = 'presence' === kind && undefined === extra.value && Object.prototype.hasOwnProperty.call( base, a ) && JSON.stringify( base[ a ] ) === JSON.stringify( marker.attrs[ a ] );",
+		"replace": "const flipped = 'presence' === kind && undefined === extra.value && Object.prototype.hasOwnProperty.call( base, a ) && JSON.stringify( base[ a ] ) !== JSON.stringify( marker.attrs[ a ] );",
+		"why": "the baseline would be added for the wrong flips"
+	}
+]
