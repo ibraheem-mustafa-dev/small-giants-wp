@@ -296,6 +296,34 @@ function shop_load_more_client_settings(): array {
 }
 
 /**
+ * The preset the Load more button wears, as CSS: the whole look of the preset a site names in the theme snapshot token
+ * `settings.custom.shopButtonPreset` (resolved as the shop's other buttons do, `sgs_commerce_look_button_css()`: only on a site
+ * that opted in to named presets, and never for `primary`, which `shop-load-more.css` already paints). '' leaves the stylesheet's
+ * primary look untouched, so a site that names no preset renders as before. The button-preset helpers live in the blocks plugin;
+ * without it the button keeps the primary look.
+ *
+ * @return string CSS text.
+ */
+function shop_load_more_preset_css(): string {
+	foreach ( array( 'sgs_button_presets_open', 'sgs_button_preset_resolve', 'sgs_button_preset_css', 'sgs_global_custom_setting' ) as $helper ) {
+		if ( ! function_exists( $helper ) ) {
+			return '';
+		}
+	}
+	$named = \sgs_button_presets_open() ? \sgs_button_preset_resolve( (string) \sgs_global_custom_setting( 'shopButtonPreset' ) ) : '';
+	if ( '' === $named || 'primary' === $named ) {
+		return '';
+	}
+	// Scoped by the box class so the preset's resting rule out-ranks the stylesheet's `.sgs-shop-load-more__button:hover` (0,2,0).
+	$selector = '.sgs-shop-load-more .sgs-shop-load-more__button';
+	// The preset helper prints colour, border, type and motion; the button's size reads the preset's tokens in the stylesheet, so
+	// the named preset's size tokens replace the primary preset's (the same fallbacks the stylesheet carries).
+	$token = '--wp--custom--button-presets--' . $named . '--';
+	$size  = $selector . '{min-height:max(44px,var(' . $token . 'min-height,44px));padding:var(' . $token . 'padding,0.5em 1.75em);font-size:var(' . $token . 'font-size,0.9375rem);}';
+	return \sgs_button_preset_css( $selector, $named, true, true, true, true ) . $size;
+}
+
+/**
  * On a shop or category archive in Load more mode, register and enqueue the client module (once its file exists) and
  * print its settings as a JSON data block it reads.
  *
@@ -331,6 +359,10 @@ function enqueue_shop_load_more(): void {
 		array(),
 		asset_version( 'assets/css/shop-load-more.css', wp_get_theme()->get( 'Version' ) )
 	);
+	$preset_css = shop_load_more_preset_css();
+	if ( '' !== $preset_css ) {
+		wp_add_inline_style( 'sgs-shop-load-more', $preset_css );
+	}
 	add_action( 'wp_footer', __NAMESPACE__ . '\print_shop_load_more_settings', 5 );
 }
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\enqueue_shop_load_more', 22 );

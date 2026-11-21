@@ -131,4 +131,56 @@ final class ShopLoadMoreButtonTest extends TestCase {
 		$pins = json_decode( (string) file_get_contents( self::PINS ), true, 512, JSON_THROW_ON_ERROR );
 		$this->assertSame( $pins, $current );
 	}
+
+	/** What `shop_load_more_preset_css()` returns for a site's theme settings, run in a clean process. */
+	private static function preset_css( array $custom, bool $plugin = true ): string {
+		$file = tempnam( sys_get_temp_dir(), 'sgslm' );
+		file_put_contents( $file, json_encode( array( 'plugin' => $plugin, 'settings' => array( 'custom' => (object) $custom ) ), JSON_THROW_ON_ERROR ) );
+		try {
+			$out = (string) shell_exec( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( __DIR__ . '/run-shop-load-more-preset-standalone.php' ) . ' ' . escapeshellarg( $file ) . ' 2>&1' );
+		} finally {
+			unlink( $file );
+		}
+		$start   = strpos( $out, '{"css"' );
+		$decoded = false === $start ? null : json_decode( substr( $out, $start ), true );
+		if ( ! is_array( $decoded ) ) {
+			throw new RuntimeException( 'runner failed: ' . $out );
+		}
+		return $decoded['css'];
+	}
+
+	private const BRAND = array(
+		'background'       => '#0a0',
+		'text'             => '#fff',
+		'border'           => '#0a0',
+		'hover-background' => '#050',
+		'hover-text'       => '#fff',
+		'hover-border'     => '#050',
+	);
+
+	public function test_no_named_preset_leaves_the_stylesheet_as_it_is(): void {
+		$brand = array( 'namedButtonPresets' => true, 'buttonPresets' => array( 'brand' => self::BRAND ) );
+		$this->assertSame( '', self::preset_css( array() ), 'a site naming no preset' );
+		$this->assertSame( '', self::preset_css( array( 'shopButtonPreset' => '' ) + $brand ), 'an empty name' );
+		$this->assertSame( '', self::preset_css( array( 'shopButtonPreset' => 'primary' ) + $brand ), 'primary is what the stylesheet paints' );
+		$this->assertSame( '', self::preset_css( array( 'shopButtonPreset' => 'no-such-preset' ) + $brand ), 'an unknown name' );
+		$this->assertSame( '', self::preset_css( array( 'shopButtonPreset' => 'brand', 'buttonPresets' => array( 'brand' => self::BRAND ) ) ), 'a site that has not opted in to named presets' );
+		$this->assertSame( '', self::preset_css( array( 'shopButtonPreset' => 'brand' ) + $brand, false ), 'without the blocks plugin' );
+	}
+
+	public function test_a_named_preset_paints_the_button_with_its_hover_and_size(): void {
+		$css = self::preset_css( array( 'namedButtonPresets' => true, 'shopButtonPreset' => 'brand', 'buttonPresets' => array( 'brand' => self::BRAND ) ) );
+		$sel = '.sgs-shop-load-more .sgs-shop-load-more__button';
+		$this->assertMatchesRegularExpression( '/' . preg_quote( $sel, '/' ) . '\{background:var\(--wp--custom--button-presets--brand--background\);color:var\(--wp--custom--button-presets--brand--text\)/', $css, 'the resting fill and text' );
+		$this->assertMatchesRegularExpression( '/' . preg_quote( $sel, '/' ) . ':hover\{background:var\(--wp--custom--button-presets--brand--hover-background[^}]*color:var\(--wp--custom--button-presets--brand--hover-text/', $css, 'hover colours print together' );
+		$this->assertStringContainsString( $sel . ':focus-visible{background:var(--wp--custom--button-presets--brand--hover-background', $css, 'keyboard focus shows the hover look' );
+		$this->assertStringContainsString( $sel . '{min-height:max(44px,var(--wp--custom--button-presets--brand--min-height,44px));padding:var(--wp--custom--button-presets--brand--padding,0.5em 1.75em);font-size:var(--wp--custom--button-presets--brand--font-size,0.9375rem);}', $css, 'the size reads the named preset' );
+		$this->assertStringNotContainsString( 'presets--primary--', $css );
+		$this->assertStringNotContainsString( 'style="', $css );
+	}
+
+	public function test_the_stylesheet_carries_no_client_colour(): void {
+		$css = (string) file_get_contents( self::ROOT . '/theme/sgs-theme/assets/css/shop-load-more.css' );
+		$this->assertDoesNotMatchRegularExpression( '/#E68A95|#fffaf5/i', $css, 'a client colour in framework code' );
+	}
 }
