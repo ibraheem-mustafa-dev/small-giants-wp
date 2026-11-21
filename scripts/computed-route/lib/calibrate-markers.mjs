@@ -289,7 +289,8 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 	const def = defOf( row, schema );
 	const t = types( def );
 	// A modifier row (`grid-template-columns:count`) is marked as the property it modifies (lib/db.mjs::modifierOf).
-	const listed = row.css_property.split( ',' )[ 0 ].trim();
+	const listedAll = row.css_property.split( ',' ).map( ( p ) => p.trim() );
+	const listed = listedAll[ 0 ];
 	const prop = modifierOf( listed ) || listed;
 	const unitAttr = schema[ `${ row.attr_name }Unit` ] ? `${ row.attr_name }Unit` : null;
 	const withUnit = ( attrs ) => ( unitAttr ? { ...attrs, [ unitAttr ]: 'px' } : attrs );
@@ -390,6 +391,22 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 		if ( 'backdrop-filter' === prop ) {
 			return [ { label: 'tiers-blur', attrs: set( { desktop: '37px', tablet: '23px', mobile: '7px' } ), expect: Object.fromEntries( WIDTHS.map( ( w ) => [ w, `blur(${ TIER_PX[ WIDTH_TIER[ w ] ] }px)` ] ) ) } ];
 		}
+		// A per-device rotation, scale or offset held as one number per tier (a layer's rotation, { desktop: 0 }): a
+		// different number per tier, so a dead tier shows. A tier holding { x, y } pairs took tiers-xy above.
+		if ( TRANSFORM.test( prop ) && tierHoldsNumbers( def ) ) {
+			const ns = /scale/i.test( row.attr_name ) || 'scale' === prop ? [ 1.1, 1.2, 1.3 ] : /rotat/i.test( row.attr_name ) || 'rotate' === prop ? [ 37, 23, 7 ] : [ 7, 11, 13 ];
+			return [ { label: 'tiers-transform', attrs: set( Object.fromEntries( TIERS.map( ( tier, i ) => [ tier, ns[ i ] ] ) ) ), expect: null } ];
+		}
+		// A per-device border held whole, listed as all three border properties: each tier one { width, style, colour }
+		// (includes/helpers-tiered-border.php::sgs_tiered_border_specs), its width different per tier.
+		if ( t.includes( 'object' ) && BORDER_TRIO.every( ( p ) => listedAll.includes( p ) ) ) {
+			return [ { label: 'tiers-border', attrs: set( Object.fromEntries( TIERS.map( ( tier, i ) => [ tier, { width: `${ [ 3, 5, 7 ][ i ] }px`, style: 'dashed', colour: MARKER_HEX } ] ) ) ), expect: null } ];
+		}
+		// A per-device on/off switch (the framework's tri-state control, stored { desktop: 'on' | 'off', tablet and mobile
+		// 'inherit' | 'on' | 'off' }; its control type is the database's inspector_control_type): on at every tier.
+		if ( TRI_STATE === ctx.controls?.[ row.attr_name ] ) {
+			return [ { label: 'tiers-on', attrs: set( { desktop: 'on', tablet: 'on', mobile: 'on' } ), expect: null } ];
+		}
 		if ( ! LENGTH.test( prop ) && 'line-height' !== prop ) {
 			return [];
 		}
@@ -426,5 +443,35 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 	if ( ( t.includes( 'number' ) || t.includes( 'integer' ) ) && COUNT.test( prop ) ) {
 		return [ { label: 'count', attrs: set( 3 === Number( def.default ) ? 2 : 3 ), expect: null } ];
 	}
+	// An angle in degrees (a sweep's direction): a quarter turn from the default, so an axis-aligned angle stays one.
+	if ( ( t.includes( 'number' ) || t.includes( 'integer' ) ) && ANGLE_NAME.test( row.attr_name ) ) {
+		return [ { label: 'angle', attrs: set( ( ( Number( def.default ) || 0 ) + 90 ) % 360 ), expect: null } ];
+	}
+	// A string whose block.json lists no choices while its row stores them (a grid's justifyItems): each stored choice
+	// but the default, as an enum marker.
+	const stored = t.includes( 'string' ) ? storedChoices( row ) : [];
+	if ( stored.length ) {
+		return stored.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, enumValue: v, attrs: set( v ), expect: null } ) );
+	}
 	return [];
 }
+
+const TRANSFORM = /^(transform|rotate|scale|translate)$/;
+const BORDER_TRIO = [ 'border-color', 'border-style', 'border-width' ];
+const TRI_STATE = 'ResponsiveTriStateControl';
+const ANGLE_NAME = /Angle$/;
+
+// Whether a per-device default holds a number at each tier it sets (and sets one).
+const tierHoldsNumbers = ( def ) => {
+	const d = def.default && 'object' === typeof def.default ? Object.values( def.default ) : [];
+	return d.length > 0 && d.every( ( v ) => 'number' === typeof v );
+};
+
+// The string choices the row stores (enum_values), or none.
+const storedChoices = ( row ) => {
+	try {
+		return [].concat( JSON.parse( row.enum_values || '[]' ) ).filter( ( v ) => 'string' === typeof v );
+	} catch {
+		return [];
+	}
+};

@@ -85,6 +85,12 @@ export function attrsFor( db, block ) {
 	return db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND css_property IS NOT NULL` ).all( block ).map( plain );
 }
 
+// A block's routed settings' editor control types, { attr_name: inspector_control_type }, for a marker whose stored
+// shape only its control states (lib/calibrate-markers.mjs: the tri-state on/off switch).
+export function controlsOf( db, block ) {
+	return Object.fromEntries( db.prepare( `SELECT attr_name, inspector_control_type FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND css_property IS NOT NULL AND inspector_control_type IS NOT NULL` ).all( block ).map( ( r ) => [ r.attr_name, r.inspector_control_type ] ) );
+}
+
 // A block's enum settings with no css_property (a layout mode, say): calibration discovers what each value changes.
 export function enumSettings( db, block ) {
 	return db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND css_property IS NULL AND enum_values IS NOT NULL` ).all( block ).map( plain );

@@ -3115,6 +3115,15 @@
     "preconditions": {
       "submenuCaretTurnEasingCustom": {
         "submenuCaretTurnEasing": "custom"
+      },
+      "sweepAngle": {
+        "itemBorderHoverTreatment": "sweep",
+        "itemBorderWidth": {
+          "top": "0px",
+          "right": "0px",
+          "bottom": "3px",
+          "left": "0px"
+        }
       }
     }
   },

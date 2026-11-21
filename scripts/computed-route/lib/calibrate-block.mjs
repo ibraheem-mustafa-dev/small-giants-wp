@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { createRequire } from 'module';
-import { attrsFor, enumSettings, variantInfo } from './db.mjs';
+import { attrsFor, controlsOf, enumSettings, variantInfo } from './db.mjs';
 import { blockSchema } from './resolve.mjs';
 import { instancesDue, splitCalibration, writeSlotMap, writePaint, readSlotMap, readPaint, slotMapWriteDecision, refusedFile } from './cache.mjs';
 import { isContainerQueryBlock, renderedNothingReason } from './calibrate-container.mjs';
@@ -163,7 +163,7 @@ export async function calibrateBlock( block, { site, target, env, shared, fixtur
 	const extraProps = unreadProps( rows );
 	// Preconditions come from the framework's own data: the block's variant slots and a media object on the site.
 	const variant = variantInfo( db, block );
-	const ctx = instanceCtx( variant, image, fixture );
+	const ctx = { ...instanceCtx( variant, image, fixture ), controls: controlsOf( db, block ) };
 	const plan = planInstances( block, { rows, enumRows: enumSettings( db, block ), schema, snapshot, fixture, ctx } );
 	// Text, presence and link settings paint no CSS property, so attrsFor never returns them: they are queried by role
 	// and planned apart (lib/calibrate-content.mjs), then read for existence, text and link attributes.

@@ -1,0 +1,16 @@
+[
+	{"file": "lib/calibrate-markers.mjs", "find": "if ( TRANSFORM.test( prop ) && tierHoldsNumbers( def ) ) {", "replace": "if ( false ) {", "why": "a per-device rotation gets no marker"},
+	{"file": "lib/calibrate-markers.mjs", "find": "/rotat/i.test( row.attr_name ) || 'rotate' === prop ? [ 37, 23, 7 ]", "replace": "/rotat/i.test( row.attr_name ) || 'rotate' === prop ? [ 37, 37, 37 ]", "why": "every tier holds the same rotation, so a dead tier cannot show"},
+	{"file": "lib/calibrate-markers.mjs", "find": "\treturn d.length > 0 && d.every( ( v ) => 'number' === typeof v );", "replace": "\treturn d.length > 0;", "why": "a per-device { x, y } or string offset is taken as numbers"},
+	{"file": "lib/calibrate-markers.mjs", "find": "if ( t.includes( 'object' ) && BORDER_TRIO.every( ( p ) => listedAll.includes( p ) ) ) {", "replace": "if ( false ) {", "why": "a per-device whole border gets no marker"},
+	{"file": "lib/calibrate-markers.mjs", "find": "{ width: `${ [ 3, 5, 7 ][ i ] }px`, style: 'dashed', colour: MARKER_HEX }", "replace": "{ width: '3px', style: 'dashed', colour: MARKER_HEX }", "why": "every tier holds the same border width"},
+	{"file": "lib/calibrate-markers.mjs", "find": "{ width: `${ [ 3, 5, 7 ][ i ] }px`, style: 'dashed', colour: MARKER_HEX }", "replace": "{ width: `${ [ 3, 5, 7 ][ i ] }px`, colour: MARKER_HEX }", "why": "the border has no style, so it never paints"},
+	{"file": "lib/calibrate-markers.mjs", "find": "if ( TRI_STATE === ctx.controls?.[ row.attr_name ] ) {", "replace": "if ( 'tier_object' === row.tier_shape && 'overflow-x' === prop ) {", "why": "the switch is recognised by its property, not its control"},
+	{"file": "lib/calibrate-markers.mjs", "find": "attrs: set( { desktop: 'on', tablet: 'on', mobile: 'on' } )", "replace": "attrs: set( { desktop: true, tablet: true, mobile: true } )", "why": "the switch is written as booleans, a shape its emitter ignores"},
+	{"file": "lib/calibrate-markers.mjs", "find": "if ( ( t.includes( 'number' ) || t.includes( 'integer' ) ) && ANGLE_NAME.test( row.attr_name ) ) {", "replace": "if ( false ) {", "why": "an angle gets no marker"},
+	{"file": "lib/calibrate-markers.mjs", "find": "( ( Number( def.default ) || 0 ) + 90 ) % 360", "replace": "Number( def.default ) || 0", "why": "the angle marker equals its default"},
+	{"file": "lib/calibrate-markers.mjs", "find": "\tconst stored = t.includes( 'string' ) ? storedChoices( row ) : [];", "replace": "\tconst stored = [];", "why": "stored choices are never used"},
+	{"file": "lib/calibrate-markers.mjs", "find": "return stored.filter( ( v ) => '' !== v && v !== def.default ).map(", "replace": "return stored.filter( ( v ) => v !== def.default ).map(", "why": "the empty choice becomes a marker"},
+	{"file": "lib/calibrate-markers.mjs", "find": "( { label: `enum-${ v }`, enumValue: v, attrs: set( v ), expect: null } )", "replace": "( { label: `enum-${ v }`, attrs: set( v ), expect: null } )", "why": "a stored choice is not read as an enum value"},
+	{"file": "lib/db.mjs", "find": "AND css_property IS NOT NULL AND inspector_control_type IS NOT NULL` ).all( block ).map( ( r ) => [ r.attr_name, r.inspector_control_type ] ) );", "replace": "AND css_property IS NOT NULL AND inspector_control_type IS NOT NULL` ).all( block ).map( ( r ) => [ r.attr_name, r.role ] ) );", "why": "the controls map holds the wrong column"}
+]
