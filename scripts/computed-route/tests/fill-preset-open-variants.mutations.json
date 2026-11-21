@@ -19,13 +19,13 @@
 	},
 	{
 		"file": "lib/fill-preset.mjs",
-		"find": "rows.filter( ( r ) => 'string' === ( defOf( r )?.type ?? r.attr_type ) )",
-		"replace": "rows.filter( ( r ) => 'string' === r.attr_type )",
+		"find": "rows.filter( ( x ) => 'string' === ( defOf( x )?.type ?? x.attr_type ) )",
+		"replace": "rows.filter( ( x ) => 'string' === x.attr_type )",
 		"why": "block.json's type is not the authority for a string setting"
 	},
 	{
 		"file": "lib/fill-preset.mjs",
-		"find": "rows.filter( ( r ) => 'string' === ( defOf( r )?.type ?? r.attr_type ) )",
+		"find": "rows.filter( ( x ) => 'string' === ( defOf( x )?.type ?? x.attr_type ) )",
 		"replace": "rows.filter( () => true )",
 		"why": "a boolean inheritStyle becomes a preset block"
 	},

@@ -18,8 +18,8 @@ fs.writeFileSync( path.join( folder, 'Card.dc.html' ), `<x-dc><div>x</div></x-dc
 const defaults = versionDefaults( folder );
 
 const db = new DatabaseSync( ':memory:' );
-db.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT)' );
-db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)' ).run( 'sgs/button', 'inheritStyle', 'string', '"primary"', null );
+db.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT, role TEXT, css_element TEXT)' );
+db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?, ?, ?)' ).run( 'sgs/button', 'inheritStyle', 'string', '"primary"', null, 'button-preset', null );
 
 const el = ( tag, template = {} ) => ( { template: { tag, parentChain: [], attrs: {}, ...template } } );
 const mount = ( name, attrs ) => el( 'dc-import', { own: { name, props: Object.keys( attrs ) }, attrs: { name, ...attrs } } );

@@ -9,15 +9,16 @@ import { presetVariants, presetBlocks, presetWrites } from '../lib/fill-preset.m
 
 function dbWith( rows ) {
 	const db = new DatabaseSync( ':memory:' );
-	db.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT)' );
-	const add = db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)' );
+	db.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT, role TEXT, css_element TEXT)' );
+	const add = db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?, ?, ?)' );
 	rows.forEach( ( r ) => add.run( ...r ) );
 	return db;
 }
-const BUTTON_OPEN = [ 'sgs/button', 'inheritStyle', 'string', '"primary"', null ];
-const BUTTON_ENUM = [ 'sgs/button', 'inheritStyle', 'string', '"primary"', '["primary", "secondary", "outline", "link", "custom"]' ];
-const HEADING = [ 'sgs/heading', 'inheritStyle', 'boolean', 'false', null ];
-const BUTTON_SOURCE_LIST = [ 'sgs/button', 'inheritStyle', 'string', '"primary"', '["link", "custom", "primary"]' ];
+const BUTTON_OPEN = [ 'sgs/button', 'inheritStyle', 'string', '"primary"', null, 'button-preset', null ];
+const BUTTON_ENUM = [ 'sgs/button', 'inheritStyle', 'string', '"primary"', '["primary", "secondary", "outline", "link", "custom"]', 'button-preset', null ];
+// A boolean `inheritStyle` that carries the preset role by mistake: the type test still keeps it out.
+const HEADING = [ 'sgs/heading', 'inheritStyle', 'boolean', 'false', null, 'button-preset', null ];
+const BUTTON_SOURCE_LIST = [ 'sgs/button', 'inheritStyle', 'string', '"primary"', '["link", "custom", "primary"]', 'button-preset', null ];
 const NAMES = { primary: {}, gold: {}, ghost: {}, default: {}, link: {}, custom: {} };
 // block.json as it stands (no enum on inheritStyle), and a block.json that declares one.
 const OPEN_SCHEMA = () => ( { inheritStyle: { type: 'string', default: 'primary' } } );
@@ -70,7 +71,7 @@ test( 'MUST FAIL: block.json\'s own enum is the list, whatever the DB list says'
 } );
 
 test( 'MUST FAIL: a setting block.json declares as boolean is never a preset block, whatever list the DB holds', () => {
-	const boolDb = dbWith( [ [ 'sgs/heading', 'inheritStyle', 'string', 'false', '["secondary"]' ] ] );
+	const boolDb = dbWith( [ [ 'sgs/heading', 'inheritStyle', 'string', 'false', '["secondary"]', 'button-preset', null ] ] );
 	const v = presetVariants( boolDb, NAMES, () => ( { inheritStyle: { type: 'boolean' } } ) );
 	assert.equal( v[ 'sgs/heading' ], undefined );
 } );

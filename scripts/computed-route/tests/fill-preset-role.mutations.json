@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "WHERE role = 'button-preset' AND ( enum_values IS NOT NULL OR attr_type = 'string' )",
+		"replace": "WHERE attr_name = 'inheritStyle' AND ( enum_values IS NOT NULL OR attr_type = 'string' )",
+		"why": "a preset choice is found by the name inheritStyle again"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "root: null === r.css_element && ! siblings( r ).length,",
+		"replace": "root: true,",
+		"why": "every preset choice counts as the block's own element's"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "root: null === r.css_element && ! siblings( r ).length,",
+		"replace": "root: null === r.css_element,",
+		"why": "a legacy part choice with no css_element (addToCartStyle, ctaStyle) counts as the block's own"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "root: null === r.css_element && ! siblings( r ).length,",
+		"replace": "root: false,",
+		"why": "no choice is the block's own element's"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "attr: r.attr_name, part: r.css_element ?? null,",
+		"replace": "attr: r.attr_name, part: null,",
+		"why": "a choice does not name the part it styles"
+	},
+	{
+		"file": "lib/fill-preset.mjs",
+		"find": "const root = list.find( ( c ) => c.root );",
+		"replace": "const root = list[ 0 ];",
+		"why": "the first preset choice of a block stands for its own element"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "export const STRUCTURE_ROLES = [ 'layout', 'select-from-enum' ];",
+		"replace": "export const STRUCTURE_ROLES = [ 'layout', 'select-from-enum', 'button-preset' ];",
+		"why": "a preset choice becomes a structure setting calibration reads presence for"
+	},
+	{
+		"file": "lib/fill-content-selector.mjs",
+		"find": "AND role = 'select-from-enum' AND css_property IS NULL",
+		"replace": "AND role IN ( 'select-from-enum', 'button-preset' ) AND css_property IS NULL",
+		"why": "a preset choice becomes a content selector"
+	}
+]

@@ -1,7 +1,7 @@
 // The route sets the preset (Spec 48 FR-48-51, the route half of Spec 32 FR-32-8): a draft button whose base and hover looks all
 // equal one `buttonPresets` variant of the client's theme snapshot (settings.custom.buttonPresets.<variant>: background, text,
 // border, border-width, border-radius, padding, font-size, font-weight, min-height and the hover-* looks) is written as that
-// variant (`inheritStyle: <variant>`) and none of the per-instance values the resolver wrote for those properties stay.
+// variant (`inheritStyle: <variant>`, found by the database role `button-preset`) and none of the per-instance values the resolver wrote for those properties stay.
 // A button paints the hover transform of its variant (the one written, or the block's default `primary` when none matches), so
 // where that equals the draft's hover transform the preset is the one writer of the lift: the instance's `sgsMotion` hover state
 // drops its transform channels (lib/fill-preset.mjs::dropPresetMotion, run after the motion writer), because both would paint
@@ -41,21 +41,25 @@ const LIFT_KEY = PRESET_KEYS.find( ( [ , props, state ] ) => state && props.some
 // plain link look and the preset-less look.
 export const RESERVED_STYLES = [ 'default', 'link', 'custom' ];
 
-// The preset variants each block can hold, by framework-DB query: { block: { attr, variants } } for every block with an
-// `inheritStyle` setting. A setting with an enum holds the snapshot's preset names (Object.keys of buttonPresets) that enum
-// includes. A string setting with no enum is open (a site names its own presets, `namedButtonPresets`): it holds every
+// The preset-choice settings of every block, by framework-DB query: { block: [ { attr, part, root, variants } ] } for every
+// setting the database gives the role `button-preset` (a setting that picks one of a site's button presets), so a block holding
+// several built-in buttons (a buy box's Add to Cart and its flow opener) lists each. `part` is the setting's `css_element`, the
+// button it styles, else null. `root` is true when the setting styles the block's own element: it has no part and no other setting
+// of the block starts with its name's prefix (`inheritStyle` of `sgs/button`; `ctaStyle` has `ctaFontSize` beside it, so it
+// styles a part of its block's). A setting with an enum holds the snapshot's preset names (Object.keys of buttonPresets) that
+// enum includes. A string setting with no enum is open (a site names its own presets, `namedButtonPresets`): it holds every
 // snapshot preset name except RESERVED_STYLES. Whether a setting is open is block.json's to say: one whose block.json declares
 // no `enum` is open whatever list the framework DB holds, because the reseed fills a string setting's list from what its source
 // compares it with (sgs/button's render.php tests `link` and `custom`), which names the reserved styles and never a site's
 // presets; a block.json enum is the list itself, and the DB list stands only for a block with no block.json here. A setting
-// that is not a string (a heading's boolean `inheritStyle`) is never a preset block. A string block whose values hold none of
-// the names is still listed: it paints its default variant's hover lift.
+// that is not a string is never a preset choice. A string block whose values hold none of the names is still listed: it paints
+// its default variant's hover lift.
 // schemaOf: a block's block.json attributes (lib/resolve.mjs::blockSchema; a test passes its own).
-export function presetVariants( db, presets, schemaOf = blockSchema ) {
-	const rows = db.prepare( "SELECT block_slug, attr_name, attr_type, enum_values FROM block_attributes WHERE attr_name = 'inheritStyle' AND ( enum_values IS NOT NULL OR attr_type = 'string' )" ).all();
+export function presetChoices( db, presets, schemaOf = blockSchema ) {
+	const rows = db.prepare( "SELECT block_slug, attr_name, attr_type, enum_values, css_element FROM block_attributes WHERE role = 'button-preset' AND ( enum_values IS NOT NULL OR attr_type = 'string' )" ).all();
 	const names = Object.keys( presets || {} );
 	// The names a row's setting allows: block.json's own enum where block.json declares the setting (no enum is open: null), the
-	// DB list only for a block with no block.json here. Only a string setting (by block.json, else the DB) is a preset block.
+	// DB list only for a block with no block.json here. Only a string setting (by block.json, else the DB) is a preset choice.
 	const defOf = ( r ) => schemaOf( r.block_slug )?.[ r.attr_name ];
 	const allowedOf = ( r ) => {
 		const def = defOf( r );
@@ -64,9 +68,32 @@ export function presetVariants( db, presets, schemaOf = blockSchema ) {
 		}
 		return null === r.enum_values ? null : new Set( JSON.parse( r.enum_values ) );
 	};
-	return Object.fromEntries( rows.filter( ( r ) => 'string' === ( defOf( r )?.type ?? r.attr_type ) ).map( ( r ) => {
+	const attrsOf = new Map();
+	const siblings = ( r ) => {
+		if ( ! attrsOf.has( r.block_slug ) ) {
+			attrsOf.set( r.block_slug, db.prepare( 'SELECT attr_name FROM block_attributes WHERE block_slug = ?' ).all( r.block_slug ).map( ( x ) => x.attr_name ) );
+		}
+		const prefix = r.attr_name.replace( /(Style|Preset)$/, '' );
+		return attrsOf.get( r.block_slug ).filter( ( a ) => a !== r.attr_name && a.startsWith( prefix ) );
+	};
+	const out = {};
+	for ( const r of rows.filter( ( x ) => 'string' === ( defOf( x )?.type ?? x.attr_type ) ) ) {
 		const allowed = allowedOf( r );
-		return [ r.block_slug, { attr: r.attr_name, variants: names.filter( ( v ) => ( allowed ? allowed.has( v ) : ! RESERVED_STYLES.includes( v ) ) ) } ];
+		( out[ r.block_slug ] ??= [] ).push( {
+			attr: r.attr_name, part: r.css_element ?? null, root: null === r.css_element && ! siblings( r ).length,
+			variants: names.filter( ( v ) => ( allowed ? allowed.has( v ) : ! RESERVED_STYLES.includes( v ) ) ),
+		} );
+	}
+	return out;
+}
+
+// The preset variants each block's own element can hold: { block: { attr, variants } } for every block with a root preset
+// choice (presetChoices): sgs/button's `inheritStyle`. A preset choice that styles a part of its block (a product card's
+// button, a buy box's opener) is not the block's own element's and is not listed: lib/fill-builtin-button.mjs reads those.
+export function presetVariants( db, presets, schemaOf = blockSchema ) {
+	return Object.fromEntries( Object.entries( presetChoices( db, presets, schemaOf ) ).flatMap( ( [ block, list ] ) => {
+		const root = list.find( ( c ) => c.root );
+		return root ? [ [ block, { attr: root.attr, variants: root.variants } ] ] : [];
 	} ) );
 }
 
@@ -133,6 +160,32 @@ export function matchPreset( { presets, reads, id, snapshot } ) {
 	return null;
 }
 
+// Why each variant of `presets` does not match a target: { variant: [ "<key>: the preset holds X, the draft Y at <width>px" ] },
+// one line per key that differs at the first width where any does (a value the read did not return is "not read"). A variant
+// with no keys is left out. For a report: matchPreset decides, this only says what it measured.
+export function presetMisses( { presets, reads, id, snapshot } ) {
+	const out = {};
+	for ( const [ variant, preset ] of Object.entries( presets || {} ) ) {
+		const keys = PRESET_KEYS.filter( ( [ key ] ) => undefined !== preset[ key ] );
+		for ( const width of READ_WIDTHS ) {
+			const fontPx = parseFloat( reads.widths?.[ width ]?.[ id ]?.styles?.[ 'font-size' ] ) || 16;
+			const lines = keys.flatMap( ( [ key, props, state ] ) => {
+				const want = plain( preset[ key ], snapshot );
+				const got = drawn( { reads, width, id, key, props, state } );
+				if ( null === want || undefined === got ) {
+					return [ `${ key }: ${ null === want ? 'the preset colour is not in the palette' : 'not read' } at ${ width }px` ];
+				}
+				return equal( key, want, got, fontPx ) ? [] : [ `${ key }: the preset holds ${ want }, the draft ${ got } at ${ width }px` ];
+			} );
+			if ( lines.length ) {
+				out[ variant ] = lines;
+				break;
+			}
+		}
+	}
+	return out;
+}
+
 // The preset a mount names, matched key by key: { variant, props, hoverProps, hover } where `props` are the CSS properties of
 // the resting keys whose value equals the draft's at every read width and `hoverProps` those of the hover keys. A key that
 // differs (or that the read did not return) is not in either list, so the button keeps its own value for it.
@@ -150,7 +203,7 @@ export function matchNamed( { preset, variant, reads, id, snapshot } ) {
 	return { variant, props: [ ...rest ], hoverProps: [ ...hover ], hover: hover.size > 0 };
 }
 
-// The default variant of a preset block: its `inheritStyle` setting's default, by framework-DB query.
+// The default variant of a preset block: its preset setting's default, by framework-DB query.
 function presetDefault( db, block, attr ) {
 	const row = db.prepare( 'SELECT default_value FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
 	try {

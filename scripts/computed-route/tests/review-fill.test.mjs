@@ -46,7 +46,7 @@ test( 'MUST FAIL: the form read-back is run on every field block\'s writes and i
 } );
 
 test( 'MUST FAIL: several writes to one attribute are restored last to first, so the node ends on the value the skeleton held', () => {
-	const db = openDb( fixtureDb( { blocks: blocks( 'sgs/button' ), block_attributes: [ attr( 'sgs/button', 'inheritStyle', 'string', { enum_values: '["primary","secondary","outline"]' } ) ] } ) );
+	const db = openDb( fixtureDb( { blocks: blocks( 'sgs/button' ), block_attributes: [ attr( 'sgs/button', 'inheritStyle', 'string', { enum_values: '["primary","secondary","outline"]', role: 'button-preset' } ) ] } ) );
 	const PRESETS = { primary: { background: '#0a7ea8', text: '#ffffff' } };
 	const styles = { 'background-color': 'rgb(10, 126, 168)', color: 'rgb(255, 255, 255)', 'font-size': '16px' };
 	const reads = { widths: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, { '0:': { styles } } ] ) ), states: {} };

@@ -8,9 +8,9 @@ import { presetWrites, presetVariants } from '../lib/fill-preset.mjs';
 import { DatabaseSync } from 'node:sqlite';
 
 const db = new DatabaseSync( ':memory:' );
-db.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT)' );
-db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)' ).run( 'sgs/button', 'inheritStyle', 'string', '"primary"', '["primary", "secondary", "outline", "link", "custom"]' );
-db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?)' ).run( 'sgs/heading', 'inheritStyle', 'boolean', 'false', null );
+db.exec( 'CREATE TABLE block_attributes (block_slug TEXT, attr_name TEXT, attr_type TEXT, default_value TEXT, enum_values TEXT, role TEXT, css_element TEXT)' );
+db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?, ?, ?)' ).run( 'sgs/button', 'inheritStyle', 'string', '"primary"', '["primary", "secondary", "outline", "link", "custom"]', 'button-preset', null );
+db.prepare( 'INSERT INTO block_attributes VALUES (?, ?, ?, ?, ?, ?, ?)' ).run( 'sgs/heading', 'inheritStyle', 'boolean', 'false', null, 'button-preset', null );
 // The block.json this test models: the button's inheritStyle declares the enum the DB row lists.
 const schemaOf = ( block ) => ( 'sgs/button' === block ? { inheritStyle: { type: 'string', enum: [ 'primary', 'secondary', 'outline', 'link', 'custom' ] } } : { inheritStyle: { type: 'boolean' } } );
 const enumOf = ( block ) => JSON.parse( db.prepare( "SELECT enum_values FROM block_attributes WHERE block_slug = ? AND attr_name = 'inheritStyle'" ).get( block ).enum_values );
