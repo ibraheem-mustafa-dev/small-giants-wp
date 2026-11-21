@@ -1,9 +1,39 @@
 [
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "\t\t\tif ( inner.some( paintsPicture ) ) {\n\t\t\t\treturn null;\n\t\t\t}\n",
+		"find": "\t\t\tif ( paintsPicture( e ) || inner.some( paintsPicture ) ) {\n\t\t\t\treturn null;\n\t\t\t}\n",
 		"replace": "",
 		"why": "a tile holding a photo is read as a pill again and absorbs its photo"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( paintsPicture( e ) || inner.some( paintsPicture ) ) {",
+		"replace": "if ( inner.some( paintsPicture ) ) {",
+		"why": "a button painting its own picture is a pill again and absorbs its badge"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "\t\t\tif ( 'a' === e.tag && paintsPicture( e ) ) {\n\t\t\t\treturn v( 'wholeCardLink', { block: R.wholeCardLink?.block, ...linkAttrs( e, lk ) } );\n\t\t\t}\n",
+		"replace": "",
+		"why": "a link painting its own picture loses its link (or is a pill again)"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( 'a' === e.tag && paintsPicture( e ) ) {",
+		"replace": "if ( paintsPicture( e ) ) {",
+		"why": "a button painting its own picture is a whole-card link"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( 'a' === e.tag && paintsPicture( e ) ) {",
+		"replace": "if ( 'a' === e.tag ) {",
+		"why": "a plain link with one label is a whole-card link, never a pill"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return v( 'wholeCardLink', { block: R.wholeCardLink?.block, ...linkAttrs( e, lk ) } );\n\t\t\t}\n\t\t\tif ( paintsPicture",
+		"replace": "return v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } );\n\t\t\t}\n\t\t\tif ( paintsPicture",
+		"why": "the picture tile drops its link"
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",

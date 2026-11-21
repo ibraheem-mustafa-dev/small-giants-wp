@@ -483,7 +483,7 @@
 		},
 		"wholeCardLink": {
 			"block": "sgs/container",
-			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction)"
+			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction); a link that paints a picture itself and holds one label is a picture tile, a container whose whole box is the link, with the label a badge block inside it"
 		},
 		"siteInfoLink": {
 			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",

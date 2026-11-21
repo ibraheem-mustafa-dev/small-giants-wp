@@ -87,6 +87,29 @@ test( 'MUST FAIL: an empty role="img" element painting a url() is a media block'
 	assert.deepEqual( run( section( [ cardPhoto() ] ), { facts: facts( 'backgroundPicture' ) } ).proposal.rows.find( ( x ) => 'div' === x.tag && x.depth === 1 ).rule === 'backgroundPicture', false, 'MUST FAIL without its decisions entry' );
 } );
 
+// A product card's picture link: the link paints the photo as its own background and holds one absolutely placed badge.
+const BADGE = 'position:absolute;top:10px;left:10px;background:#F9CF6E;border:2px solid #3A2A22;padding:4px 10px;border-radius:999px';
+const pictureLink = ( tag = 'a', style = 'position:relative;display:block;aspect-ratio:1 / 1;background-color:#F3E6CC;background-image:url(https://images.example/card.jpg);background-size:cover' ) =>
+	E( tag, { attrs: 'a' === tag ? { href: '/shop/', 'aria-label': 'Taster Trio' } : {}, style }, [ E( 'span', { words: 'New? Start here', style: BADGE } ) ] );
+
+test( 'MUST FAIL: a link painting its own photo and holding one badge is a picture tile whose whole box is the link, and the badge stays a block', () => {
+	const r = run( section( [ pictureLink() ] ) );
+	const link = byTag( r, 'a' );
+	assert.deepEqual( [ link.block, link.rule ], [ 'sgs/container', 'wholeCardLink' ], 'the picture link is no pill' );
+	assert.ok( link.attributes?.sgsBlockLink, 'the tile keeps the link' );
+	const badge = byWords( r, 'New? Start here' );
+	assert.notEqual( badge.action, 'absorbed', 'the badge is not absorbed into the link as its label' );
+	assert.ok( badge.block, 'the badge is a block of its own' );
+} );
+
+test( 'negative control: a link holding one label and painting no picture is still a pill; a button painting its own picture is no pill and no link', () => {
+	const plain = run( section( [ pictureLink( 'a', 'display:inline-block;background:#F9CF6E' ) ] ) );
+	assert.deepEqual( settled( byTag( plain, 'a' ) ), { block: 'sgs/button', action: null, rule: 'pillButton' } );
+	const button = byTag( run( section( [ pictureLink( 'button' ) ] ) ), 'button' );
+	assert.notEqual( button.rule, 'pillButton' );
+	assert.notEqual( button.rule, 'wholeCardLink' );
+} );
+
 test( 'negative control: a role="img" element that paints no url() is not a background picture', () => {
 	const r = run( section( [ plainRole() ] ) );
 	assert.notEqual( r.proposal.rows.find( ( x ) => 'div' === x.tag && x.depth === 1 ).rule, 'backgroundPicture' );

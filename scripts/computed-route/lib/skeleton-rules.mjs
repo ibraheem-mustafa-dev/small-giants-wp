@@ -739,8 +739,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( 1 !== texts.length || disclosure( e ) ) {
 				return null;
 			}
-			// A link or button that holds a picture is a tile, never a pill: absorbing it would drop the picture.
-			if ( inner.some( paintsPicture ) ) {
+			// A link or button that paints a picture, itself or inside it, is a tile, never a pill: absorbing it would drop the
+			// picture. A link that paints the picture itself is a picture tile whose whole box is the link, and its one label is a
+			// badge laid on the picture, kept as a block of its own.
+			if ( 'a' === e.tag && paintsPicture( e ) ) {
+				return v( 'wholeCardLink', { block: R.wholeCardLink?.block, ...linkAttrs( e, lk ) } );
+			}
+			if ( paintsPicture( e ) || inner.some( paintsPicture ) ) {
 				return null;
 			}
 			return v( 'pillButton', { block: R.pillButton?.block, absorb: true, attributes: { label: text, ...( lk ? { linkSource: lk.source } : {} ), ...( lk && wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...wordBound( lk ) } );
