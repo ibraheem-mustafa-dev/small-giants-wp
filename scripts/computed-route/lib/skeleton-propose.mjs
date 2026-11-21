@@ -210,7 +210,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
 		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
 		const own = r.rule && ( drawn || top.attributes?.displayType );
-		const { a, handover } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
+		const { a, handover, formats = [] } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
 		// A navigation block's collapse point is the width the draft shows its navigation at.
 		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
 		const collapse = collapseAttr ? collapsePoint( { e, states, thresholds } ) : null;
@@ -325,6 +325,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			const notes = [ ...cs.notes, ...( collapse?.note ? [ collapse.note ] : [] ) ];
 			notes.length && ( row.slotNotes = notes );
 			absorbSubtree( e, { block, key: e.key, wordBound: top.wordBound }, drawn, r.rule || 'drawsChildren', node, parentBlock );
+			// A phrasing child the rich text holds in the format its style draws (a struck-through price) is read by that format.
+			formats.forEach( ( f ) => rowOf[ f.key ] && ! rowOf[ f.key ].conserve && ( rowOf[ f.key ].conserve = [ { kind: 'format', node: e.key, format: f.format, looks: [ 'text-decoration' ] } ] ) );
 			// A slider draws its slides as its one child block, one per slide: each child reads its card's look at its own
 			// draft slide, and Fill writes each child's words from the loop (lib/fill-list-content.mjs::listDecisions).
 			const slideBlock = r.slides ? composition[ block ]?.accepts?.[ 0 ] : null;

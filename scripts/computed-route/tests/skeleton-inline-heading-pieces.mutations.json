@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/skeleton-write-content.mjs",
-		"find": "handover: [ ...pieceRows( e, IH, plain( html ) ), ...handover ] };",
-		"replace": "handover };",
+		"find": "handover: [ ...pieceRows( e, IH, plain( html ) ), ...handover ], formats };",
+		"replace": "handover, formats };",
 		"why": "a separate piece is merged with no handover"
 	},
 	{

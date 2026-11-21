@@ -1,0 +1,44 @@
+[
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "const tag = FORMAT[ kid.tag ] ?? styleFormat( kid );",
+		"replace": "const tag = FORMAT[ kid.tag ];",
+		"why": "a span struck through by its style is the text's strikethrough"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "'a' !== kid.tag && /\\bline-through\\b/i",
+		"replace": "/\\bline-through\\b/i",
+		"why": "a struck-through link keeps its address"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "String( declared( kid )[ 'text-decoration-line' ] ?? declared( kid )[ 'text-decoration' ] ?? '' )",
+		"replace": "String( declared( kid )[ 'text-decoration' ] ?? '' )",
+		"why": "the text-decoration-line longhand strikes through too"
+	},
+	{
+		"file": "lib/skeleton-write-content.mjs",
+		"find": "FORMAT[ kid.tag ] || formats.push( { key: kid.key, format: tag } );",
+		"replace": "",
+		"why": "the struck child's row records the format"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "( rowOf[ f.key ].conserve = [ { kind: 'format', node: e.key, format: f.format, looks: [ 'text-decoration' ] } ] )",
+		"replace": "( rowOf[ f.key ].conserve = undefined )",
+		"why": "the record lands on the child's row"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'format' === rec.kind ? !! node && Object.values( node.attributes || {} ).some( ( v ) => 'string' === typeof v && v.includes( `<${ rec.format }>` ) )",
+		"replace": "'format' === rec.kind ? !! node",
+		"why": "a format record is verified against the node's rich text"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\tformat: { needs: [ 'node', 'format', 'looks' ], delivers: true },\n",
+		"replace": "",
+		"why": "format is a record kind"
+	}
+]

@@ -180,6 +180,9 @@ export function makeContent( ctx ) {
 	// The rich-text format a phrasing child keeps (the body formats every SGS text and heading offers: bold, italic,
 	// strikethrough, link); any other phrasing child is its words alone.
 	const FORMAT = { b: 'strong', strong: 'strong', i: 'em', em: 'em', s: 's', del: 's' };
+	// The format a phrasing child's declared style draws where its tag names none (never a link's, whose address it keeps): a
+	// line through its words is strikethrough.
+	const styleFormat = ( kid ) => ( 'a' !== kid.tag && /\bline-through\b/i.test( String( declared( kid )[ 'text-decoration-line' ] ?? declared( kid )[ 'text-decoration' ] ?? '' ) ) ? 's' : null );
 	const insideControl = ( k ) => {
 		for ( let p = m.byKey[ k.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
 			if ( 'a' === p.tag || 'button' === p.tag ) {
@@ -208,6 +211,8 @@ export function makeContent( ctx ) {
 		const words = String( e.allText ?? m.words( e ) ).replace( /\s+/g, ' ' ).trim();
 		const handover = [];
 		const filled = [];
+		// The phrasing children written in a format their style draws: [ { key, format } ] (the row records it, kind `format`).
+		const formats = [];
 		const photoOf = ( img ) => {
 			const hit = carried?.logo( img, view ) ?? null;
 			if ( hit?.id && hit.url ) {
@@ -265,8 +270,10 @@ export function makeContent( ctx ) {
 		// A bold, italic or struck child keeps its format; a link child its site address (lib/draft-link.mjs), unless it sits
 		// inside a link or button already (a link in a link is invalid) or its address does not resolve (a handover row).
 		function format( kid, inner ) {
-			if ( FORMAT[ kid.tag ] ) {
-				return `<${ FORMAT[ kid.tag ] }>${ inner }</${ FORMAT[ kid.tag ] }>`;
+			const tag = FORMAT[ kid.tag ] ?? styleFormat( kid );
+			if ( tag ) {
+				FORMAT[ kid.tag ] || formats.push( { key: kid.key, format: tag } );
+				return `<${ tag }>${ inner }</${ tag }>`;
 			}
 			const href = 'a' === kid.tag ? kid.attrs?.href : null;
 			if ( ! href || ! siteLink || insideControl( kid ) ) {
@@ -285,7 +292,7 @@ export function makeContent( ctx ) {
 		const capped = words.length >= ALL_TEXT_CAP;
 		if ( null !== html && ( capped ? bare( plain( html ) ).startsWith( bare( words ) ) : bare( plain( html ) ) === bare( words ) ) ) {
 			filled.length && handover.unshift( { owner: 'content-page', kind: 'text', detail: `the ${ noun( e ) } "${ words }" holds words the draft's code fills (${ filled.join( ', ' ) }): its rendered words are written` } );
-			return { html: html.replace( /\s+/g, ' ' ).trim(), handover: [ ...pieceRows( e, IH, plain( html ) ), ...handover ] };
+			return { html: html.replace( /\s+/g, ' ' ).trim(), handover: [ ...pieceRows( e, IH, plain( html ) ), ...handover ], formats };
 		}
 		const imgs = [];
 		const walk = ( x ) => m.kids( x ).forEach( ( k ) => ( 'img' === k.tag ? imgs.push( k ) : walk( k ) ) );
@@ -312,7 +319,7 @@ export function makeContent( ctx ) {
 			const { text: textAttr } = skeletonSettings( facts, block );
 			const r = inlineContent( e );
 			textAttr && ( a[ textAttr ] = r.html );
-			return { a: { ...a, ...( top.attributes || {} ) }, handover: r.handover };
+			return { a: { ...a, ...( top.attributes || {} ) }, handover: r.handover, formats: r.formats ?? [] };
 		}
 		if ( facts.wrapperShells.includes( block ) ) {
 			a.tagName = ( enumOf( block, 'tagName' ) || [] ).includes( e.tag ) ? e.tag : 'div';
