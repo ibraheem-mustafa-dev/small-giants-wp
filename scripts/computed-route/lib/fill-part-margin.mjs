@@ -18,12 +18,28 @@ const shown = ( reads, target, w ) => {
 	return !! r && ! r.missing && !! r.rect && r.rect.w > 0 && r.rect.h > 0 && false !== r.inFlow;
 };
 
+// Whether another element of the block is the part's own margin box at a width: the part sits inside it with no room of its own
+// beside it (the block's root element, a nav holding only its toggle). `px` is the part's margin on `side` at that width.
+// side: [ leading edge key (x or y; none for a trailing side), length key ].
+const SIDES = { 'margin-left': [ 'x', 'w' ], 'margin-right': [ null, 'w' ], 'margin-top': [ 'y', 'h' ], 'margin-bottom': [ null, 'h' ] };
+const sameBox = ( reads, part, other, w, side, px ) => {
+	const a = reads.widths?.[ w ]?.[ part.id ]?.rect;
+	const b = reads.widths?.[ w ]?.[ other.id ]?.rect;
+	const [ lead, len ] = SIDES[ side ] ?? [];
+	if ( ! a || ! b || ! len ) {
+		return false;
+	}
+	const box = { ...a, [ len ]: a[ len ] + px, ...( lead ? { [ lead ]: a[ lead ] - px } : {} ) };
+	return [ 'x', 'y', 'w', 'h' ].every( ( k ) => Math.abs( box[ k ] - b[ k ] ) <= 1 );
+};
+
 // The widths at which `target` is the only visible in-flow element of the node's block: shown itself, no other element of
-// the node outside its own subtree shown (a pseudo layer belongs to its element), and no child block shown.
-export function soleWidths( { nodes, reads }, rec, target ) {
+// the node outside its own subtree shown unless it is the part's own margin box (a pseudo layer belongs to its element), and no
+// child block shown. `margin` is { side, px: { width: pixels } } of the row.
+export function soleWidths( { nodes, reads }, rec, target, margin = null ) {
 	const own = target.slot ?? '';
 	const others = rec.targets.filter( ( t ) => t.id !== target.id && ! ( t.slot ?? '' ).includes( '::' ) && ! ( t.slot ?? '' ).startsWith( `${ own } >` ) && ! ( t.slot ?? '' ).startsWith( `${ own }::` ) );
-	return WIDTHS.filter( ( w ) => shown( reads, target, w ) && ! others.some( ( t ) => shown( reads, t, w ) ) && ! visibleChildren( { nodes, reads }, rec, w ) );
+	return WIDTHS.filter( ( w ) => shown( reads, target, w ) && ! others.some( ( t ) => shown( reads, t, w ) && ! ( margin && sameBox( reads, target, t, w, margin.side, margin.px[ w ] ?? 0 ) ) ) && ! visibleChildren( { nodes, reads }, rec, w ) );
 }
 
 export function partMarginWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, resolver } ) {
@@ -39,13 +55,13 @@ export function partMarginWrites( { nodes, flat, refOf, reads, db, unmapped, cal
 			continue;
 		}
 		const { rec, target } = hit;
-		const sole = soleWidths( { nodes, reads }, rec, target );
+		const all = rowValues( row, reads, target );
+		const sole = soleWidths( { nodes, reads }, rec, target, { side: row.property, px: Object.fromEntries( widths.map( ( w ) => [ w, parseFloat( all[ w ] ) || 0 ] ) ) } );
 		const apart = widths.filter( ( w ) => ! sole.includes( w ) );
 		if ( apart.length ) {
 			out.unmapped.push( row );
 			continue;
 		}
-		const all = rowValues( row, reads, target );
 		const draft = Object.fromEntries( widths.filter( ( w ) => undefined !== all[ w ] ).map( ( w ) => [ w, all[ w ] ] ) );
 		if ( Object.keys( draft ).length !== widths.length ) {
 			out.unmapped.push( row );

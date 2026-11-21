@@ -87,3 +87,29 @@ test( 'a block with no margin setting of its own leaves the row, saying why', ()
 	assert.match( r.unmapped[ 0 ].reason, /part-margin: the part is the block's only visible element at 375, 768/ );
 	assert.deepEqual( r.writes, [] );
 } );
+
+// In the draft the block's root element (a nav) holds the burger and hides its links on the phone: it is shown, and is exactly the
+// burger's margin box (the burger sits 8px left of it by its -8px margin). A root that shows more than the burger is not.
+test( 'MUST FAIL: a root element that is exactly the margin box of the part is the same box, not another visible element, so the burger inside it is still alone', () => {
+	const w = world( { root: [ 375, 768 ], bar: [ 375, 768 ] } );
+	W.slice( 0, 2 ).forEach( ( x ) => {
+		w.reads.widths[ x ][ '0:burger' ] = { ...SHOWN, rect: { x: 8, y: 20, w: 63, h: 44 } };
+		w.reads.widths[ x ][ '0:' ] = { ...SHOWN, rect: { x: 16, y: 20, w: 55, h: 44 } };
+		w.reads.widths[ x ][ '0:bar' ] = { ...SHOWN, rect: { x: 16, y: 20, w: 55, h: 44 } };
+	} );
+	assert.deepEqual( soleWidths( w, w.nodes[ 0 ], w.nodes[ 0 ].targets[ 2 ], { side: 'margin-left', px: { 375: -8, 768: -8, 1440: 0 } } ), [ 375, 768 ] );
+	const r = run( w, [ row() ] );
+	assert.deepEqual( r.unmapped, [] );
+	assert.equal( w.flat[ 0 ].attributes.margin.tablet.left, '-8px' );
+} );
+
+test( 'negative control: a root element wider than the margin box of the part holds more than the part, so the part is not alone and the row stays', () => {
+	const w = world( { root: [ 375, 768 ], bar: [ 375, 768 ] } );
+	W.slice( 0, 2 ).forEach( ( x ) => {
+		w.reads.widths[ x ][ '0:burger' ] = { ...SHOWN, rect: { x: 8, y: 20, w: 63, h: 44 } };
+		w.reads.widths[ x ][ '0:' ] = { ...SHOWN, rect: { x: 16, y: 20, w: 300, h: 44 } };
+		w.reads.widths[ x ][ '0:bar' ] = { ...SHOWN, rect: { x: 16, y: 20, w: 300, h: 44 } };
+	} );
+	assert.deepEqual( soleWidths( w, w.nodes[ 0 ], w.nodes[ 0 ].targets[ 2 ], { side: 'margin-left', px: { 375: -8, 768: -8, 1440: 0 } } ), [] );
+	assert.equal( run( w, [ row() ] ).unmapped.length, 1 );
+} );
