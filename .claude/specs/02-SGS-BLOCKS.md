@@ -409,7 +409,7 @@ Attributes: `/wp-blocks schema sgs/testimonial-slider`. `slidesVisible` is a `{d
 
 ### Brand Strip (`sgs/brand-strip`)
 
-**Purpose:** Horizontal logo carousel/strip. Attributes: `/wp-blocks schema sgs/brand-strip`. The hover colour paints the hovered tile only, and a marquee set is no longer padded to 50vw (the gap equals the item gap at any width). A brand that shows as text is a plain label unless `brandTextTile` is on, which draws it as a tile (FR-2-28).
+**Purpose:** Horizontal logo carousel/strip. Attributes: `/wp-blocks schema sgs/brand-strip`. The hover colour paints the hovered tile only, and a marquee set is no longer padded to 50vw (the gap equals the item gap at any width). A brand that shows as text is a plain label unless `brandTextTile` is on, which draws it as a tile (FR-2-28). With the product-brands source and `brandHideEmpty` on, a brand is listed only when the shop lists a product carrying it (a published product that is not `exclude-from-catalog`, and not `outofstock` when `woocommerce_hide_out_of_stock_items` is `yes`, as `WC_Query::get_tax_query` decides), and `brandMaxItems` caps the list after that filter (`src/blocks/brand-strip/product-brands-source.php::sgs_brand_strip_brand_ids_with_visible_products`; tests `tests/php/BrandStripProductBrandsVisibilityTest.php`); with it off the maximum goes straight to the term query as before.
 
 **Render:** **Dynamic** (`render.php`); scrolling is the shared marquee effect layer.
 

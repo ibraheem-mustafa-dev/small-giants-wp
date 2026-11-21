@@ -66,10 +66,76 @@ if ( ! function_exists( 'sgs_brand_strip_media_source' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_brand_strip_brand_ids_with_visible_products' ) ) {
+	/**
+	 * Which of these brands carry at least one product the shop lists.
+	 *
+	 * "Lists" is WooCommerce's own shop query (`WC_Query::get_tax_query`): a published
+	 * product without the `exclude-from-catalog` visibility term, and without
+	 * `outofstock` when the option `woocommerce_hide_out_of_stock_items` is `yes`.
+	 * One product query finds the visible products of these brands; one term query
+	 * reads the brands those products carry.
+	 *
+	 * @param int[] $brand_ids Candidate `product_brand` term ids.
+	 * @return array<int,true> The qualifying brand ids as keys.
+	 */
+	function sgs_brand_strip_brand_ids_with_visible_products( array $brand_ids ) {
+		$brand_ids = array_values( array_unique( array_map( 'absint', $brand_ids ) ) );
+		if ( empty( $brand_ids ) ) {
+			return array();
+		}
+
+		$hidden = array( 'exclude-from-catalog' );
+		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
+			$hidden[] = 'outofstock';
+		}
+
+		$product_ids = get_posts(
+			array(
+				'post_type'              => 'product',
+				'post_status'            => 'publish',
+				'fields'                 => 'ids',
+				'posts_per_page'         => -1,
+				'no_found_rows'          => true,
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+				'tax_query'              => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the shop's own visibility rule, one bounded query.
+					'relation' => 'AND',
+					array(
+						'taxonomy' => 'product_brand',
+						'field'    => 'term_id',
+						'terms'    => $brand_ids,
+						'operator' => 'IN',
+					),
+					array(
+						'taxonomy' => 'product_visibility',
+						'field'    => 'slug',
+						'terms'    => $hidden,
+						'operator' => 'NOT IN',
+					),
+				),
+			)
+		);
+		if ( empty( $product_ids ) ) {
+			return array();
+		}
+
+		$carried = wp_get_object_terms( $product_ids, 'product_brand', array( 'fields' => 'ids' ) );
+		if ( is_wp_error( $carried ) ) {
+			return array();
+		}
+		return array_fill_keys( array_map( 'intval', $carried ), true );
+	}
+}
+
 if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 	/**
 	 * Query `product_brand` terms per the block's brand* attributes and
 	 * return an ordered list of logo-shaped entries.
+	 *
+	 * With "hide empty brands" on, a brand is listed only when the shop lists at
+	 * least one product carrying it (see `sgs_brand_strip_brand_ids_with_visible_products`),
+	 * and `brandMaxItems` caps the list after that filter.
 	 *
 	 * @param array $attributes Block attributes (render.php's $attributes).
 	 * @return array Logo-shaped entries (source/alt/name/linkUrl/linkTarget/
@@ -99,6 +165,15 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 			'hide_empty' => $hide_empty,
 			'number'     => $max_items,
 		);
+		// Hide empty brands counts a brand by what the shop shows, not by WordPress's plain
+		// term count (which includes products the catalogue hides). The shop decides
+		// visibility after the term query, so the maximum is applied after that filter:
+		// the query returns every candidate brand, in the order below, and the first
+		// $max_items that pass are listed.
+		$filter_by_visibility = $hide_empty && taxonomy_exists( 'product_visibility' );
+		if ( $filter_by_visibility ) {
+			$query['number'] = 0;
+		}
 		// "Taxonomy order" is WooCommerce's own brand order: the drag-and-drop position
 		// it stores as term meta `order` (Products > Brands; `menu_order` over its REST
 		// API). Core's `term_order` orderby only means anything alongside object_ids,
@@ -129,6 +204,20 @@ if ( ! function_exists( 'sgs_brand_strip_get_product_brand_logos' ) ) {
 
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
 			return array();
+		}
+
+		if ( $filter_by_visibility ) {
+			$visible_ids = sgs_brand_strip_brand_ids_with_visible_products( wp_list_pluck( $terms, 'term_id' ) );
+			$terms       = array_slice(
+				array_filter(
+					$terms,
+					static function ( $term ) use ( $visible_ids ) {
+						return isset( $visible_ids[ (int) $term->term_id ] );
+					}
+				),
+				0,
+				$max_items
+			);
 		}
 
 		$logos = array();

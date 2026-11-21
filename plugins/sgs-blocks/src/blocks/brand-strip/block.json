@@ -391,7 +391,7 @@
 		"brandHideEmpty": {
 			"type": "boolean",
 			"default": true,
-			"description": "Product-brands source only. Hide a brand with zero published products."
+			"description": "Product-brands source only. List a brand only when the shop lists at least one product carrying it: a published product that is not hidden from the catalogue, and not out of stock when the shop hides out-of-stock products. The maximum applies after this filter."
 		},
 		"brandMaxItems": {
 			"type": "number",
