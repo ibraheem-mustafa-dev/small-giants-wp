@@ -17,12 +17,13 @@ import { deviceModes, valueAtTier, modeKeys, modeGroups, notInForce } from '../l
 import { calibrationForNode } from '../lib/paint-state.mjs';
 import { resolveProperty, defaultPaint } from '../lib/fill-prop.mjs';
 import { classifyRow, modeSpans } from '../lib/fill-residual-css.mjs';
-import { rowValues } from '../lib/fill-regap.mjs';
-import { isLadderRow } from '../lib/fill-width-ladder.mjs';
+import { rowValues, reresolve } from '../lib/fill-regap.mjs';
+import { isLadderRow, widthLadderWrites } from '../lib/fill-width-ladder.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
 import { openDb } from '../lib/db.mjs';
 import { unpairedPart } from '../lib/fill-part-pairing.mjs';
 import { coveredBySetting } from '../lib/fill-held.mjs';
+import { nodeCalFor } from '../lib/fill-resolve.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIXTURES = JSON.parse( fs.readFileSync( path.join( HERE, '..', 'calibration-fixtures.json' ), 'utf8' ) );
@@ -137,4 +138,74 @@ test( 'MUST FAIL: a phone-only row is never settled by a setting not in force th
 	const writes = [ { attr: 'pillBorderWidth', how: 'single', after: { top: '1px', right: '1px', bottom: '1px', left: '1px' } } ];
 	assert.equal( coveredBySetting( row, { 375: '1px' }, writes, CAL ), null );
 	assert.match( String( coveredBySetting( { ...row, notInForce: undefined }, { 1440: '1px' }, writes, CAL ) ), /pillBorderWidth was written/, 'negative control: in force, the write covers the row' );
+} );
+
+// A pass that asks the resolver again (lib/fill-regap.mjs::reresolve, run by the width ladder, the size pass and the inline-box
+// pass) judges the node through its own calibration view, never the block's raw calibration: on the real Eye Care records the
+// phone capsule's border style and colour went through the ladder's first rung, which read the pill's settings as in force at
+// every width, so `pillBorderStyle` was written once for all three widths while the phone's icon trigger needs its own border.
+const BORDER_STYLE = { ...CAL, settings: { ...CAL.settings, pillBorderStyle: set( 'border-style', [ 1 ] ) } };
+const nodeCal = ( flat ) => nodeCalFor( { raw: () => BORDER_STYLE, flatOf: () => flat, fixtures: FIXTURES } );
+const REC = { index: 0, name: BLOCK };
+const askAgain = ( node, calFor, prop, value ) => reresolve( {
+	rec: REC, node, target: { id: 't' }, slot: T, prop, draft: Object.fromEntries( W.map( ( w ) => [ w, value ] ) ),
+	ctx: { db, snapshot: null, calFor, reads: { widths: Object.fromEntries( W.map( ( w ) => [ w, { t: { styles: {} } } ] ) ) } },
+} );
+
+test( 'MUST FAIL: the ladder\'s resolver call takes the node\'s per-width view, so a border style the draft states at every width is the pill\'s above the phone and a row of the phone\'s own width', () => {
+	const flat = [ PHONE_ICON ];
+	const r = askAgain( PHONE_ICON, nodeCal( flat ), 'border-top-style', 'dashed' );
+	assert.equal( r.status, 'written' );
+	assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'pillBorderStyle' ] );
+	assert.equal( r.included[ 375 ], undefined, 'no pill setting is written for the phone, where the icon trigger is drawn' );
+	assert.deepEqual( r.modeGaps?.map( ( g ) => g.widths ), [ [ 375 ] ] );
+	assert.deepEqual( r.modeGaps[ 0 ].draft, { 375: 'dashed' } );
+} );
+
+test( 'negative control: the same border style on a node drawn as a pill at every width is written once, with no row left over', () => {
+	const r = askAgain( PILL_ONLY, nodeCal( [ PILL_ONLY ] ), 'border-top-style', 'dashed' );
+	assert.equal( r.status, 'written' );
+	assert.deepEqual( r.writes.map( ( w ) => w.attr ), [ 'pillBorderStyle' ] );
+	assert.equal( r.modeGaps, undefined );
+	assert.equal( JSON.stringify( r.writes ), JSON.stringify( [ { attr: 'pillBorderStyle', value: 'dashed', merge: 'replace' } ] ) );
+} );
+
+test( 'nodeCalFor: the view of a node is its per-width calibration, the block\'s own paint without a node, and a block with no fixture is judged as before', () => {
+	const calFor = nodeCal( [ PHONE_ICON ] );
+	assert.deepEqual( calFor( BLOCK, REC ).modeAt, { 375: [ 0, 2, 3 ], 768: [ 1 ], 1440: [ 1 ] } );
+	assert.equal( calFor( BLOCK ).modeAt, undefined );
+	assert.equal( calFor( BLOCK ).elements[ T ][ 375 ][ 'border-radius' ], '4px', 'no node: the default (icon) paint' );
+	const bare = nodeCalFor( { raw: () => BORDER_STYLE, flatOf: () => [ PHONE_ICON ], fixtures: null } );
+	assert.equal( bare( BLOCK, REC ).modeAt, undefined );
+	assert.equal( bare( BLOCK, REC ).elements[ T ][ 375 ][ 'border-radius' ], '999px', 'without a fixture the node is the pill state at every width' );
+	assert.equal( nodeCalFor( { raw: () => null, flatOf: () => [], fixtures: FIXTURES } )( BLOCK, REC ), null, 'an uncalibrated block has no view' );
+} );
+
+// The width ladder's first rung writes the pill's border style as one value, and the phone, drawn as the icon trigger, keeps its
+// own row (the mode's widths, the settings not in force there) for the residual pass, as the main pass raises it; the pill's
+// setting is never said to answer the phone.
+const ladderRun = ( node ) => {
+	const flat = [ { ...node, ref: 'n0' } ];
+	const rec = { index: 0, name: BLOCK, parent: null, children: [], node: flat[ 0 ], targets: [ { id: '0:', index: 0, slot: '', finder: 'r' }, { id: '0:t', index: 0, slot: T, finder: 't' } ] };
+	const widths = Object.fromEntries( W.map( ( w ) => [ w, { '0:': { rect: { x: 0, y: 0, w: 60, h: 40 }, layoutDisplay: 'flex', styles: {} }, '0:t': { rect: { x: 0, y: 0, w: 44, h: 44 }, layoutDisplay: 'flex', styles: { 'border-top-style': 'solid' } } } ] ) );
+	const row = { node: 'n0', block: BLOCK, slot: T, property: 'border-top-style', value: 'solid', state: null, reason: `no-setting: no border-top-style setting on ${ BLOCK } paints "${ T }" (candidates: pillBorderStyle)` };
+	const r = widthLadderWrites( { nodes: [ rec ], flat, refOf: ( n ) => n.ref, reads: { widths }, db, unmapped: [ row ], calFor: nodeCal( flat ), snapshot: null, scope: 'header' } );
+	return { r, node: flat[ 0 ] };
+};
+
+test( 'MUST FAIL: a ladder write of the pill\'s border style leaves the phone\'s widths as a row of their own, never answered by the pill\'s setting', () => {
+	const { r, node } = ladderRun( PHONE_ICON );
+	assert.equal( node.attributes.pillBorderStyle, 'solid' );
+	assert.deepEqual( r.answered.map( ( a ) => a.widths ), [ [ 768, 1440 ] ] );
+	assert.equal( r.unmapped.length, 1 );
+	assert.deepEqual( r.unmapped[ 0 ].modeWidths, [ 375 ] );
+	assert.ok( r.unmapped[ 0 ].notInForce.includes( 'pillBorderStyle' ) );
+	assert.deepEqual( JSON.parse( r.unmapped[ 0 ].value ), { 375: 'solid' } );
+} );
+
+test( 'negative control: the same ladder write on a node drawn as a pill at every width answers every width and leaves no row', () => {
+	const { r, node } = ladderRun( PILL_ONLY );
+	assert.equal( node.attributes.pillBorderStyle, 'solid' );
+	assert.deepEqual( r.answered.map( ( a ) => a.widths ), [ [ 375, 768, 1440 ] ] );
+	assert.deepEqual( r.unmapped, [] );
 } );

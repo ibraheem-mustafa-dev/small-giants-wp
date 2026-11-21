@@ -40,7 +40,7 @@ export function inlineBox( { row, hit, nodes, flat, ctx, out, resolver } ) {
 	if ( ! widths.length ) {
 		return null;
 	}
-	const cal = ctx.calFor( rec.name );
+	const cal = ctx.calFor( rec.name, rec );
 	const paint = defaultPaint( cal, '', 'display' );
 	const blockLevel = widths.filter( ( w ) => BLOCK_LEVEL.test( String( paint[ w ] ?? '' ).trim() ) );
 	if ( blockLevel.length !== widths.length ) {

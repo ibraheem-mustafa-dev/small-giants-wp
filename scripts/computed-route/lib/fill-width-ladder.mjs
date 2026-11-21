@@ -24,6 +24,7 @@ import { ONE_VALUE_EVERY_WIDTH, LOOSE, ownElementSetting } from './resolve.mjs';
 import { siblings, candidates } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
+import { notInForce } from './fill-device-mode.mjs';
 import { WIDTHS, TIER_OF, rowTarget, rowValues, reresolve, commit, perNode, regroup, answer } from './fill-regap.mjs';
 import { layoutHome } from './fill-same-box.mjs';
 import { defaultPaint } from './fill-prop.mjs';
@@ -79,7 +80,7 @@ const keywordOf = ( effect ) => KEYWORD[ effect ] ?? effect;
 const STANDS_FOR = { start: [ 'flex-start', 'start', '' ], end: [ 'flex-end', 'end' ], stretch: [ 'stretch', '' ] };
 
 // The visible in-flow children of a skeleton node at a width, from the children's own reads; null when it has none.
-function visibleChildren( { nodes, reads }, rec, w ) {
+export function visibleChildren( { nodes, reads }, rec, w ) {
 	if ( ! rec.children.length ) {
 		return null;
 	}
@@ -236,7 +237,7 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	const node = flat[ rec.index ];
 	const prop = row.property;
 	const state = row.state ?? null;
-	const cal = ctx.calFor( rec.name );
+	const cal = ctx.calFor( rec.name, rec );
 	// The element a setting of the block paints for this property: the row's own element, or the block's content band when
 	// calibration measured it as the same box (the draft's one element is both).
 	const slot = layoutHome( { db, block: rec.name, cal, prop, state, slot: row.slot ?? '' } );
@@ -250,10 +251,15 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	const effs = Object.fromEntries( widths.map( ( w ) => [ w, effectOf( prop, raw[ w ], env( w ) ) ] ) );
 	const varies = new Set( Object.values( effs ) ).size > 1;
 	const ask = ( draft, p = prop ) => reresolve( { rec, node, target: home, fallback: target, slot, prop: p, draft, ctx, state, resolver } );
+	// The widths of a mode no setting answers (lib/fill-prop.mjs::byMode: the node draws another mode there) are a row of their
+	// own, as the main pass raises them (lib/fill-resolve-element.mjs::fillElement), so the residual pass writes those widths'
+	// look in the mode drawn there; a value held for the other mode's settings never answers them.
 	const took = ( res, how, note ) => {
 		commit( out, { rec, node, row, prop, res, how, note } );
 		out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }${ state ? ` ${ state }` : '' }: ${ note }` );
-		return widths;
+		const apart = ( res.modeGaps || [] ).flatMap( ( g ) => g.widths );
+		( res.modeGaps || [] ).forEach( ( g ) => out.unmapped.push( { ...row, value: JSON.stringify( g.draft ), reason: `${ g.gap }: ${ g.detail }`, ...( g.code ? { code: g.code } : {} ), modeWidths: g.widths, notInForce: notInForce( cal, g.widths ) } ) );
+		return widths.filter( ( w ) => ! apart.includes( w ) );
 	};
 	// Rung 1: one value that does at every width what the draft does.
 	const pool = [ ...new Set( [ ...[ ...widths ].reverse().map( ( w ) => raw[ w ] ), ...widths.flatMap( ( w ) => STANDS_FOR[ effs[ w ] ] ?? [] ), ...Object.values( effs ) ] ) ];

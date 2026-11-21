@@ -300,3 +300,15 @@ test( 'MUST FAIL: a padding side read on a target whose finder names the same dr
 	assert.deepEqual( valuesAt( row, reads, root, { ...part, finder: { tpl: 'Root/45#0' } } ), { 375: '22px', 1440: '28px' }, 'negative control: two draft elements still sum' );
 	assert.deepEqual( valuesAt( row, reads, ROOT, INNER ), { 375: '22px', 1440: '28px' }, 'negative control: targets with no finder still sum' );
 } );
+
+test( 'MUST FAIL: the ladder asks for each node\'s calibration with the node\'s own record, so a per-width view (its default paint and the resolver\'s) is the node\'s', () => {
+	const w = world( { kids: [ [ 375, 768, 1440 ], [ 768, 1440 ] ] } );
+	const asked = [];
+	const calFor = ( block, rec = null ) => {
+		asked.push( { block, index: rec?.index } );
+		return null;
+	};
+	run( w, [ rowOf( { property: 'justify-content', value: '{"375":"normal","768":"space-between","1440":"space-between"}', code: ONE_VALUE_EVERY_WIDTH, reason: 'shape: x' } ) ], { calFor } );
+	assert.ok( asked.length > 0 );
+	assert.ok( asked.every( ( a ) => 'sgs/box' === a.block && 0 === a.index ), JSON.stringify( asked ) );
+} );

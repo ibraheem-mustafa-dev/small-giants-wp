@@ -174,7 +174,7 @@ function handle( { row, size, hit, nodes, flat, ctx, out, scope, entries, date, 
 	const node = flat[ rec.index ];
 	const prop = physical( row.property );
 	const slot = row.slot ?? '';
-	const cal = ctx.calFor( rec.name );
+	const cal = ctx.calFor( rec.name, rec );
 	const given = rowValues( row, reads, target );
 	const declaredAt = ( w ) => reads.declared?.[ w ]?.[ target.id ]?.[ prop ];
 	const rendered = Object.fromEntries( WIDTHS.map( ( w ) => [ w, rectAt( reads, target, w )?.[ size.axis ] ] ).filter( ( [ , v ] ) => Number.isFinite( v ) ) );
@@ -327,7 +327,7 @@ function fixedSizing( { row, nodes, flat, refOf, reads, db, calFor, out } ) {
 	if ( ! sizing || ! attrRow( db, rec.name, SIZING_WIDTH ) || ! String( sizing.enum_values ?? '' ).includes( '"fixed"' ) ) {
 		return { raise: `${ rec.name } has no fixed child sizing (${ SIZING } with ${ SIZING_WIDTH }) to keep it from shrinking; a framework setting is needed` };
 	}
-	const paint = defaultPaint( calFor( rec.name ), '', 'flex-shrink' );
+	const paint = defaultPaint( calFor( rec.name, rec ), '', 'flex-shrink' );
 	const unknown = fixedAt.filter( ( w ) => undefined === paint[ w ] );
 	if ( unknown.length ) {
 		return { raise: `whether ${ rec.name }'s root shrinks is unknown at ${ unknown.join( ', ' ) } (no calibrated flex-shrink)` };

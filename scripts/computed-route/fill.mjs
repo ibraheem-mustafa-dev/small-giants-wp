@@ -29,7 +29,7 @@ import { stateOpener, readUrlOf, refusalRows, openedAt, describeWays } from './l
 import { widthStateKeys } from './lib/state-reach.mjs';
 import { openerRefusals } from './lib/fill-opener-refusals.mjs';
 import { inputHashes, readSetFile } from './lib/census-reads.mjs';
-import { fillTree } from './lib/fill-resolve.mjs';
+import { fillTree, nodeCalFor } from './lib/fill-resolve.mjs';
 import { openRunLedger } from './lib/run-ledger.mjs';
 import { fillRunRows } from './lib/run-ledger-fill.mjs';
 import { fillStates } from './lib/fill-state.mjs';
@@ -239,6 +239,7 @@ export async function fillSurface( o ) {
 		stackOverlayLayers( reads, nodes ).forEach( ( line ) => log( `overlay stack: ${ line }` ) );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
+		const fixtures = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
 			// The skeleton inventory: each draft element's parent, for a part a draft element lays out (lib/fill-part-pairing.mjs::draftParents).
@@ -252,7 +253,7 @@ export async function fillSurface( o ) {
 			snapshot, rawSnapshot, facts, rootComponent: intakeParts.rootComponent,
 			// The draft's token files, for the token references (lib/fill-token-ref.mjs).
 			draftFolder: path.join( repo, 'sites', o.client, 'handoff' ),
-			fixtures: JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) ),
+			fixtures,
 			ledger: loadLedger( ledgerFile ),
 			ledgerStates: Object.entries( entry.states || {} ).filter( ( [ , v ] ) => null === v ).map( ( [ k ] ) => k ),
 		} );
@@ -283,9 +284,11 @@ export async function fillSurface( o ) {
 		result.unmapped = logos.unmapped;
 		result.notes.push( ...logos.notes );
 		// A per-width difference no single setting holds, then a block's built-in size against the draft's (lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs); their divergence-ledger entries are added to the client's ledger.
-		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		// The passes that ask the resolver again judge each node against its own per-width view (lib/fill-resolve.mjs::nodeCalFor), as the main pass does.
+		const nodeCal = nodeCalFor( { raw: calFor, flatOf: () => flat, fixtures } );
+		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor: nodeCal, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, ladder.ledger );
-		const dims = dimensionWrites( { nodes, flat, refOf, reads, db, unmapped: ladder.unmapped, calFor, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		const dims = dimensionWrites( { nodes, flat, refOf, reads, db, unmapped: ladder.unmapped, calFor: nodeCal, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, dims.ledger );
 		result.writes.push( ...ladder.writes, ...dims.writes );
 		result.settled.push( ...passSettled( result.unmapped, ladder.unmapped, 'width-ladder', ladder.answered ), ...passSettled( ladder.unmapped, dims.unmapped, 'dimension', dims.answered ) );

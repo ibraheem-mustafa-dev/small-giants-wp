@@ -58,7 +58,7 @@ const clipOf = ( ctx, target ) => {
 // against is `target`'s, else `fallback`'s (the row's own element, when `target` is the written element and has no font-size
 // read). Returns its result.
 export function reresolve( { rec, node, target, fallback = null, slot, prop, draft, ctx, state = null, resolver = resolveProperty } ) {
-	const calibration = ctx.calFor?.( rec.name ) ?? null;
+	const calibration = ctx.calFor?.( rec.name, rec ) ?? null;
 	const fontOf = ( t ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, parseFloat( ctx.reads.widths?.[ w ]?.[ t.id ]?.styles?.[ 'font-size' ] ) ] ).filter( ( [ , v ] ) => v ) );
 	const own = fontOf( target );
 	const fontPx = Object.keys( own ).length || ! fallback ? own : fontOf( fallback );
