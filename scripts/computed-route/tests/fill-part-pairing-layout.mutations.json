@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "if ( laysOutItems( { readSlot, home, prop, targets, readAt, parentOf } ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the item rule is never asked"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "if ( ! parentOf || ! self?.finder || DISTRIBUTION.includes( prop ) ) {",
+		"replace": "if ( ! self?.finder || DISTRIBUTION.includes( prop ) ) {",
+		"why": "no draft parents still pairs"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "if ( ! parentOf || ! self?.finder || DISTRIBUTION.includes( prop ) ) {",
+		"replace": "if ( ! parentOf || ! self?.finder ) {",
+		"why": "a distributing property read from a box with other children pairs"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "if ( items.size < 2 || children.some( ( t ) => ! under( t ) ) ) {",
+		"replace": "if ( items.size < 1 || children.some( ( t ) => ! under( t ) ) ) {",
+		"why": "one item is enough"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "if ( items.size < 2 || children.some( ( t ) => ! under( t ) ) ) {",
+		"replace": "if ( items.size < 2 ) {",
+		"why": "a child of the read element outside the part is ignored"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": ".every( ( r ) => inside( r.rect, readAt( self.id, w ).rect ) ) );",
+		"replace": ".length >= 0 );",
+		"why": "a child outside the read element's box pairs"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "const children = targets.filter( ( t ) => t !== self && t.finder && parentOf( t.finder ) === own );",
+		"replace": "const children = targets.filter( ( t ) => t !== self && t.finder );",
+		"why": "any target counts as the read element's child"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "return ( finder ) => parent.get( finder?.tpl ?? finder );",
+		"replace": "return ( finder ) => parent.get( finder );",
+		"why": "a { tpl } finder is never looked up"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "const DISTRIBUTION = [ 'justify-content', 'align-content' ];",
+		"replace": "const DISTRIBUTION = [ 'align-content' ];",
+		"why": "justify-content is not a distributing property"
+	}
+]

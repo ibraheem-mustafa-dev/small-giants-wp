@@ -35,14 +35,52 @@ export const exactHome = ( db, block, cal, element ) => partHome( db, block, cal
 // draft and the block draw it.
 const CHILD_LAYOUT = [ 'align-items', 'align-content', 'justify-content', 'justify-items', 'flex-direction', 'flex-wrap', 'gap', 'row-gap', 'column-gap' ];
 
+// The draft parent of a target's element, from the surface's skeleton inventory: ( finder ) => the parent's key, or
+// undefined. A finder is a skeleton draftRef or draftSlots value ({ tpl: 'Root/47#1' }) or the key itself.
+export function draftParents( inventory ) {
+	const parent = new Map( ( inventory?.elements ?? [] ).map( ( e ) => [ e.key, e.parentKey ] ) );
+	return ( finder ) => parent.get( finder?.tpl ?? finder );
+}
+
+// The properties that distribute every laid-out child of a box along its axis: read from a box that may lay out more than
+// the part's children, they are not the part's.
+const DISTRIBUTION = [ 'justify-content', 'align-content' ];
+
+// Whether the read element lays out the part's items when the draft draws each item as one element and the block wraps it
+// (the draft's <nav> lays out its links, where the block puts each link in an item inside its bar): the draft has no
+// element of its own at `home` (laysOutPart asks); the targets whose element is a child of the read element's sit under `home` in two or more
+// of its items (each its own first step below `home`), each box inside the read element's box at every width read; and no
+// target outside `home` is a child of the read element. parentOf: lib/fill-part-pairing.mjs::draftParents.
+function laysOutItems( { readSlot, home, prop, targets, readAt, parentOf } ) {
+	const self = targets.find( ( t ) => ( t.slot ?? '' ) === readSlot );
+	if ( ! parentOf || ! self?.finder || DISTRIBUTION.includes( prop ) ) {
+		return false;
+	}
+	const own = self.finder.tpl ?? self.finder;
+	const children = targets.filter( ( t ) => t !== self && t.finder && parentOf( t.finder ) === own );
+	const under = ( t ) => LOOSE( t.slot ?? '' ).startsWith( `${ home } > ` );
+	const depth = home.split( ' > ' ).length;
+	const items = new Set( children.filter( under ).map( ( t ) => String( t.slot ).split( ' > ' ).slice( 0, depth + 1 ).join( ' > ' ) ) );
+	if ( items.size < 2 || children.some( ( t ) => ! under( t ) ) ) {
+		return false;
+	}
+	const inside = ( a, b ) => a.x >= b.x - 1 && a.y >= b.y - 1 && a.x + a.w <= b.x + b.w + 1 && a.y + a.h <= b.y + b.h + 1;
+	const checked = WIDTHS.filter( ( w ) => readAt( self.id, w )?.rect && ! readAt( self.id, w ).missing );
+	return checked.length > 0 && checked.every( ( w ) => children.map( ( t ) => readAt( t.id, w ) ).filter( ( r ) => r && ! r.missing && r.rect && ( r.rect.w > 0 || r.rect.h > 0 ) ).every( ( r ) => inside( r.rect, readAt( self.id, w ).rect ) ) );
+}
+
 // Whether the draft element read at `readSlot` lays out the children the block draws inside the part at `home`: the part
 // sits inside the read element, the draft has no element of its own for it (no target at `home`), and the node's targets
 // directly under `home` are the read element's laid-out children at every width it is read (as many as its
-// `layoutChildren`, each box inside its box). targets: the node's skeleton targets; readAt( id, width ): a target's read.
-export function laysOutPart( { readSlot, home, targets = [], readAt = () => null } ) {
+// `layoutChildren`, each box inside its box), or, given the draft's parents (`parentOf`), the read element's children are
+// the part's items (laysOutItems). targets: the node's skeleton targets; readAt( id, width ): a target's read.
+export function laysOutPart( { readSlot, home, prop = null, targets = [], readAt = () => null, parentOf = null } ) {
 	const own = LOOSE( readSlot );
 	if ( ! String( home ).startsWith( `${ own ? `${ own } > ` : '' }` ) || home === own || targets.some( ( t ) => LOOSE( t.slot ?? '' ) === home ) ) {
 		return false;
+	}
+	if ( laysOutItems( { readSlot, home, prop, targets, readAt, parentOf } ) ) {
+		return true;
 	}
 	const kids = targets.filter( ( t ) => {
 		const rest = LOOSE( t.slot ?? '' ).slice( home.length );
@@ -67,7 +105,7 @@ export function laysOutPart( { readSlot, home, targets = [], readAt = () => null
 // Why a write of `attr` read from the element at `readSlot` does not belong to the part the setting paints, or null when
 // it does. prop: the property written; value: the written text (named in the reason); targets and readAt: the node's
 // targets and their reads, for a property that places children (laysOutPart).
-export function unpairedPart( { db, block, cal, attr, readSlot, prop, value, targets = [], readAt = () => null } ) {
+export function unpairedPart( { db, block, cal, attr, readSlot, prop, value, targets = [], readAt = () => null, parentOf = null } ) {
 	const row = attrsFor( db, block ).find( ( r ) => r.attr_name === attr );
 	const element = row?.css_element;
 	if ( ! element || 'wrapper' === element ) {
@@ -91,7 +129,7 @@ export function unpairedPart( { db, block, cal, attr, readSlot, prop, value, tar
 		return null;
 	}
 	// A property placing children, read from the draft element that lays out the children the part holds.
-	if ( CHILD_LAYOUT.includes( prop ) && laysOutPart( { readSlot, home, targets, readAt } ) ) {
+	if ( CHILD_LAYOUT.includes( prop ) && laysOutPart( { readSlot, home, prop, targets, readAt, parentOf } ) ) {
 		return null;
 	}
 	// The draft's one element is the block's root and this part at once.

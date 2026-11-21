@@ -8,7 +8,7 @@ import { PROPS, READ_WIDTHS, TIE_PROPS } from './fill-read.mjs';
 import { extraProps, usedValueDrafts, USED_VALUE } from './fill-declared.mjs';
 import { FLUID_WIDTHS } from './fill-values.mjs';
 import { INHERITED, resolveProperty, notPainted, gapPaintsNothing, flexOnlyPaintsNothing, calibratedContext } from './fill-prop.mjs';
-import { unpairedPart } from './fill-part-pairing.mjs';
+import { draftParents, unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor, carriedFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
 import { compareDR } from './fill-confirm.mjs';
@@ -329,7 +329,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 				draft = Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => ! g.widths.includes( Number( w ) ) ) );
 			}
 			// A setting of a part is written only from the element paired to that part (lib/fill-part-pairing.mjs).
-			const unpaired = target.paired ? [] : res.writes.map( ( w ) => ( { w, why: unpairedPart( { db: st.db, block: rec.name, cal, attr: w.attr, readSlot: target.slot, prop, value: valueText( draft ), targets: rec.targets, readAt: ( id, x ) => st.reads.widths?.[ x ]?.[ id ] } ) } ) ).filter( ( x ) => x.why );
+			const unpaired = target.paired ? [] : res.writes.map( ( w ) => ( { w, why: unpairedPart( { db: st.db, block: rec.name, cal, attr: w.attr, readSlot: target.slot, prop, value: valueText( draft ), targets: rec.targets, readAt: ( id, x ) => st.reads.widths?.[ x ]?.[ id ], parentOf: st.inventory ? ( st.parentOf ??= draftParents( st.inventory ) ) : null } ) } ) ).filter( ( x ) => x.why );
 			if ( unpaired.length ) {
 				unpaired.forEach( ( x ) => unmapped( st, rec, ref, { slot, property: prop, value: valueText( draft ), reason: x.why } ) );
 				res.writes = res.writes.filter( ( w ) => ! unpaired.some( ( x ) => x.w === w ) );

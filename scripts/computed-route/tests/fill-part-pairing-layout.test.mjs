@@ -39,3 +39,29 @@ test( 'negative control: a box property, other children, a draft element at the 
 	const beside = [ { id: 'b', slot: '.sgs-nav-bar-menu__bar' }, ...targets.slice( 2 ) ];
 	assert.notEqual( pairing.laysOutPart?.( { readSlot: '.sgs-nav-bar-menu__bar', home: ICON, targets: beside, readAt: at( reads() ) } ), true, 'the part is not inside the read element' );
 } );
+
+// A menu whose draft <nav> lays out its links itself: the block wraps each link in an item inside its bar, and the
+// skeleton names only some links (one per item it needs), so the nav's laid-out children outnumber the targets.
+const BAR = '.sgs-nav-bar-menu__bar';
+const link = ( n ) => `${ BAR } > .sgs-nav-bar-menu__item:nth-of-type(${ n }) > .sgs-nav-bar-menu__link`;
+const navCal = { settings: { gap: { slot: BAR, slots: [ BAR ], property: 'gap' }, flexWrap: { slot: BAR, slots: [ BAR ], property: 'flex-wrap' }, burgerBarAlign: { slot: ICON, slots: [ ICON ], property: 'align-items' } } };
+const navTargets = [ { id: 'nav', slot: '', finder: { tpl: 'Root/45#0' } }, { id: 'l3', slot: link( 3 ), finder: { tpl: 'Root/47#1' } }, { id: 'l7', slot: link( 7 ), finder: { tpl: 'Root/47#0' } }, { id: 'burger', slot: BURGER, finder: { tpl: 'Root/59#0' } } ];
+const navInventory = { elements: [ { key: 'Root/45#0', parentKey: 'Root/40#0' }, { key: 'Root/47#0', parentKey: 'Root/45#0' }, { key: 'Root/47#1', parentKey: 'Root/45#0' }, { key: 'Root/59#0', parentKey: 'Root/56#0' } ] };
+const navReads = ( over = {} ) => ( { nav: { rect: { x: 300, y: 20, w: 700, h: 40 }, layoutChildren: 6 }, l3: { rect: { x: 420, y: 28, w: 90, h: 24 } }, l7: { rect: { x: 900, y: 28, w: 80, h: 24 } }, ...over } );
+const navAsk = ( o = {} ) => unpairedPart( { db, block: 'sgs/nav-bar-menu', cal: navCal, attr: 'gap', readSlot: '', prop: 'column-gap', value: '2px', targets: navTargets, readAt: ( id, w ) => ( 1440 === w ? navReads()[ id ] : null ), parentOf: pairing.draftParents?.( navInventory ), ...o } );
+
+test( 'MUST FAIL: a gap read from the draft nav that lays out its links is paired to the bar the block puts the items in', () => {
+	assert.equal( navAsk(), null );
+	assert.equal( pairing.draftParents?.( navInventory )?.( { tpl: 'Root/47#1' } ), 'Root/45#0' );
+} );
+
+test( 'negative control: no draft parents, a distributing property, one item, a child outside the bar or outside the box stays unpaired', () => {
+	assert.match( navAsk( { parentOf: null } ) ?? '', /^unpaired-part/, 'nothing says the links are the nav\'s children' );
+	assert.match( navAsk( { attr: 'flexWrap', prop: 'justify-content', value: 'space-between' } ) ?? '', /^unpaired-part/, 'justify-content spreads every child of the nav, not only the items' );
+	assert.match( navAsk( { targets: navTargets.filter( ( t ) => 'l7' !== t.id ) } ) ?? '', /^unpaired-part/, 'one item shows no gap between items' );
+	const burgerInNav = { elements: navInventory.elements.map( ( e ) => ( 'Root/59#0' === e.key ? { ...e, parentKey: 'Root/45#0' } : e ) ) };
+	assert.match( navAsk( { parentOf: pairing.draftParents( burgerInNav ) } ) ?? '', /^unpaired-part/, 'the nav also lays out the burger, which the bar does not hold' );
+	assert.match( navAsk( { readAt: ( id, w ) => ( 1440 === w ? navReads( { l7: { rect: { x: 1100, y: 28, w: 80, h: 24 } } } )[ id ] : null ) } ) ?? '', /^unpaired-part/, 'a link outside the nav\'s box' );
+	const nested = { elements: navInventory.elements.map( ( e ) => ( 'Root/47#0' === e.key ? { ...e, parentKey: 'Root/46#0' } : e ) ) };
+	assert.match( navAsk( { parentOf: pairing.draftParents( nested ) } ) ?? '', /^unpaired-part/, 'a link inside another element of the nav is not the nav\'s item' );
+} );

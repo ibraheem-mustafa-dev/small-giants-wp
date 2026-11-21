@@ -241,6 +241,8 @@ export async function fillSurface( o ) {
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
+			// The skeleton inventory: each draft element's parent, for a part a draft element lays out (lib/fill-part-pairing.mjs::draftParents).
+			inventory,
 			// FR-48-30: the confirmed page map (a draft's #/route link is written as that page's permalink); null before intake.
 			pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null,
 			// A link to another page of the draft (`Contact.dc.html`) resolved to its site address through the page map, as the skeleton resolves one (lib/draft-link.mjs).
