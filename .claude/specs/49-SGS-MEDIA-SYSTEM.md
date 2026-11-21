@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 49
-spec_version: "1.0"
+spec_version: "1.1"
 title: SGS Media System
 project: small-giants-wp
 status: approved
@@ -72,7 +72,7 @@ Non-goals: image editing or generation; replacing the WordPress media library; h
 | No legacy render fallbacks or `deprecated.js`; one batch migration | FP-14 | Yes |
 | Every customisable property has an inspector control | CLAUDE.md | Yes |
 | DB-first; a setting prints a real CSS property and is claimed | FP-1, FP-8 | Yes |
-| Per-device border width stays off | Bean | Yes |
+| A border that differs by device goes through the shared `TierBorderControl` (Spec 35 §14), never a slot's own per-device border | Bean (the earlier "off" ruling overturned; recorded 2026-11-21) | Yes |
 | No client names in code | CLAUDE.md | Yes |
 | A draft's values and font sizes are copied exactly | Bean 2026-11-09 | Yes |
 | Existing atoms and shared files are used and extended from the start, each change behind an unchanged-output check; new parts stay unadopted until one scripted release switches every block | Bean 2026-11-09, clarified 2026-11-10 | Yes |

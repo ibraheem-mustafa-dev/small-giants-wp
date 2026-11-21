@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 35
-spec_version: "3.2"
+spec_version: "3.3"
 title: SGS Block Inspector UX, Control-Completeness & Capability Standard
 project: small-giants-wp
 status: active
@@ -569,7 +569,7 @@ Every shape below is live and fits none of contracts 1–12. **A rule may not si
 > 2. **Style renders INSIDE the colour popover**, so one swatch opens colour and style together — matching core's grouped border-box layout visually. The STORAGE stays SGS's own typed attrs: core's `__experimentalBorderBoxControl` works in a `{color, style, width}` OBJECT while the attribute stores a CSS shorthand STRING, so adopting it would force a stored-content migration for no user-visible gain.
 > 3. **Width IS a 4-side box object**, on `ResponsiveBoxControl` with the device switcher OFF.
 >
-> ⛔ **There is no per-device border width.** It was specified, built, and dropped as having no real use case: supporting it would cost `borderWidth{Tablet,Mobile}` attrs plus `@media` emission in every block for a control nobody would reach for. Do not build it. The switcher is off precisely so no block offers a tier it cannot store (a dead control).
+> **A border that differs by device is one tiered setting, through the shared control** (Bean overturned the earlier "no per-device border" ruling; recorded 2026-11-21). The attribute holds `{desktop|tablet|mobile: {width, style, colour}}`; the editor control is `TierBorderControl` (`plugins/sgs-blocks/src/components/TierBorderControl.js`: one `ResponsiveOverride` device strip with the inherited cue and the reset, a member left empty on a device taking the device above's); the render side is `includes/helpers-tiered-border.php::sgs_tiered_border_specs`. Never hand-roll a per-device border in one block, and never add `borderWidth{Tablet,Mobile}` sibling attributes. `SgsBorderControl` stays the control for a border that is the same on every device: its width box keeps the device switcher off, because those attributes hold no tiers and a tier they cannot store would be a dead control.
 >
 > ⚠ **`linked` is load-bearing on any border colour row** — `GradientCapableColourControl` reads it to choose between storing the palette token SLUG and a baked hex. Hand migrations and the codemod must not drop it. Single-state callers use the `colourLinked` prop.
 >

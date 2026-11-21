@@ -16,7 +16,7 @@ The control is a PAIR: border width (box object) + colour, with border STYLE ins
 
 `linked` is load-bearing; keep it when wiring a colour row. `GradientCapableColourControl` reads it to decide whether a picked colour is stored as the palette token slug or a baked hex; without it the client's colour is frozen against every future re-skin.
 
-Per-device border width is Bean-locked OFF (a decision, not a missing feature): do not build it.
+A border that differs by device is one tiered attribute (`{desktop|tablet|mobile: {width, style, colour}}`) edited with the shared `TierBorderControl` and printed by `includes/helpers-tiered-border.php::sgs_tiered_border_specs` (Bean overturned the earlier "per-device border off" ruling; Spec 35 §14). Never hand-roll one in a block or add `borderWidth{Tablet,Mobile}` siblings; `SgsBorderControl` stays the control for a border that is the same on every device.
 
 **A width paints solid.** The style picker writes '' when nothing is picked or the active option is deselected (as WP core's does); a width with '' paints `solid`, an explicit style (dashed, dotted, `none` …) wins, and no width paints nothing. Resolve the style through `includes/helpers-border-style.php::sgs_border_style_keyword` / `::sgs_border_box_decls` in PHP and `src/utils/border-style.js::resolveBorderStyle` / `::borderBoxPreview` in the canvas — never a hand-rolled `in_array(…) ? $raw : 'none'` or `borderStyle && borderStyle !== 'none'`, which disagree with the solid default on one surface. Gate: `scripts/check-border-width-without-style.py` (the inverse of `check-border-style-without-width.py`).
 
