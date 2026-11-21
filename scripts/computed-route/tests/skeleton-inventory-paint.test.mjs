@@ -6,6 +6,8 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { readInventory, RESOLVED, PAINT_INITIAL, PAINT_CURRENT_COLOUR, NOT_DRAFT_DATA } from '../lib/skeleton-inventory.mjs';
 import { paintsBox } from '../lib/skeleton-paint-conservation.mjs';
+import { pxOf } from '../lib/element-facts.mjs';
+import { inventoryModel } from '../lib/skeleton-model.mjs';
 
 const HTML = `<!doctype html><html><head><style>
 body { margin: 0 }
@@ -17,6 +19,9 @@ body { margin: 0 }
 .ghost { border: 2px solid transparent }
 .dash { border-top: 3px dashed rgb(9, 9, 9) }
 .own { color: rgb(20, 30, 40); border: 1px solid }
+.padded { padding-left: 24px }
+.btn { padding: 12px 20px }
+dl { padding: 2px }
 @media ( max-width: 480px ) { .row { display: block } }
 </style></head><body>
 <div class="sc-host" data-sc-name="Root" data-dc-tpl="">
@@ -28,6 +33,11 @@ body { margin: 0 }
 		<div data-dc-tpl="11" class="ghost">Ghost</div>
 		<div data-dc-tpl="12" class="dash">Dashed</div>
 		<div data-dc-tpl="13" class="own">Own colour</div>
+		<ul data-dc-tpl="14"><li data-dc-tpl="15">Plain list</li></ul>
+		<ul data-dc-tpl="16" class="padded"><li data-dc-tpl="17">Padded list</li></ul>
+		<button data-dc-tpl="18">Plain button</button>
+		<dl data-dc-tpl="20"><dt data-dc-tpl="21">Term</dt></dl>
+		<button data-dc-tpl="19" class="btn">Padded button</button>
 		<div data-dc-tpl="7" class="row"><span data-dc-tpl="8">One</span><span data-dc-tpl="10">Two</span></div>
 	</main></div>
 </div></body></html>`;
@@ -116,4 +126,23 @@ test( 'each drawn border side records its style and, where it is not the text co
 	assert.ok( 'border-top-style' in own && ! ( 'border-top-color' in own ) );
 	assert.deepEqual( Object.keys( paintsBox( el( 13 ) ) ), [ 'border' ] );
 	assert.ok( [ ...Object.keys( PAINT_INITIAL ), ...PAINT_CURRENT_COLOUR ].every( ( n ) => ! ( n in el( 3 ).resolved[ 1440 ] ) ) );
+} );
+
+test( 'the browser\'s own padding of a tag is measured once per read, and computed padding counts only where it differs from it (MUST FAIL where any computed padding is a look)', () => {
+	assert.equal( inv.uaPadding.ul[ 'padding-left' ], '40px', 'an unstyled list\'s indent, measured in the browser' );
+	assert.ok( pxOf( inv.uaPadding.button[ 'padding-left' ] ) > 0, 'an unstyled button\'s padding' );
+	// The padding look alone: an unstyled button also shows the browser's own background, border and centring.
+	const looks = ( tpl, uaPadding ) => Object.keys( paintsBox( el( tpl ), { uaPadding } ) ).filter( ( l ) => 'padding' === l );
+	assert.deepEqual( looks( 14, inv.uaPadding ), [], 'a plain list\'s indent is the browser\'s' );
+	assert.deepEqual( looks( 18, inv.uaPadding ), [], 'a plain button\'s padding is the browser\'s' );
+	assert.deepEqual( looks( 16, inv.uaPadding ), [ 'padding' ] );
+	assert.deepEqual( looks( 19, inv.uaPadding ), [ 'padding' ] );
+	// A rule the draft gives a tag is the draft's look, not the browser's: the unstyled element is measured where no draft rule reaches.
+	assert.equal( inv.uaPadding.dl[ 'padding-top' ], '0px' );
+	assert.deepEqual( looks( 20, inv.uaPadding ), [ 'padding' ] );
+	assert.equal( inventoryModel( inv ).uaPadding, inv.uaPadding, 'the skeleton rules read the same measurement' );
+	// A saved inventory without the measurement counts padding only where declared: a class rule's padding is not counted.
+	assert.deepEqual( looks( 16, null ), [] );
+	// Negative control: a caller that passes no measurement keeps reading any computed padding (the skeleton rules on a saved inventory).
+	assert.deepEqual( looks( 14 ), [ 'padding' ] );
 } );

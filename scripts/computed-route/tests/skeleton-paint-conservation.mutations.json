@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "SIDES.some( ( s ) => ( pxOf( v( `padding-${ s }` ) ) ?? 0 ) > 0 ) && looks.add( 'padding' );",
-		"replace": "SIDES.some( ( s ) => undefined !== v( `padding-${ s }` ) ) && looks.add( 'padding' );",
+		"find": "SIDES.some( ( s ) => ( pxOf( v( `padding-${ s }` ) ) ?? 0 ) > 0 && ( undefined === paddingBase",
+		"replace": "SIDES.some( ( s ) => undefined !== v( `padding-${ s }` ) && ( undefined === paddingBase",
 		"why": "a computed padding of 0px counts as padding"
 	},
 	{
@@ -241,8 +241,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "parent: parentOf( e ), children: childrenOf( e ) } );",
-		"replace": "parent: parentOf( e ) } );",
+		"find": "parent: parentOf( e ), children: childrenOf( e ), uaPadding:",
+		"replace": "parent: parentOf( e ), uaPadding:",
 		"why": "the lister never counts an element's children"
 	},
 	{
@@ -658,5 +658,35 @@
 		"find": "! [ ...NONE, 'hidden' ].includes(",
 		"replace": "! [ ...NONE ].includes(",
 		"why": "a hidden border side paints"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": " && ( undefined === paddingBase || v( `padding-${ s }` ) !== paddingBase[ `padding-${ s }` ] ) ) && looks.add( 'padding' );",
+		"replace": " ) && looks.add( 'padding' );",
+		"why": "computed padding equal to the browser's own counts"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\tnull !== paddingBase && SIDES.some(",
+		"replace": "\tSIDES.some(",
+		"why": "an inventory without the measurement counts computed padding"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "children: childrenOf( e ), uaPadding: inventory?.uaPadding ?? null } );",
+		"replace": "children: childrenOf( e ) } );",
+		"why": "conservationRows passes no measurement"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const paddingBase = undefined === uaPadding ? undefined : uaPadding?.[ uaKeyOf( element ) ] ?? null;",
+		"replace": "const paddingBase = undefined;",
+		"why": "paintsBox ignores the measurement"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "export const uaKeyOf = ( e ) => ( 'input' === e?.tag && e.attrs?.type ? `input[type=${ low( e.attrs.type ) }]` : String( e?.tag ?? '' ) );",
+		"replace": "export const uaKeyOf = ( e ) => String( e?.tag ?? '' );",
+		"why": "an input's type is not in its key"
 	}
 ]

@@ -110,17 +110,23 @@ export function declaredLooks( st, tag = '' ) {
 	return looks;
 }
 
+// The key the browser's own padding of an element is measured under (lib/skeleton-inventory.mjs::uaPaddingOf): its tag, and
+// an input's type, which changes the padding the browser gives it.
+export const uaKeyOf = ( e ) => ( 'input' === e?.tag && e.attrs?.type ? `input[type=${ low( e.attrs.type ) }]` : String( e?.tag ?? '' ) );
+
 // The looks an element's computed values show at one width (the inventory's `resolved` read). A value the read does not
 // record says nothing. `text-align` is inherited, so it counts only where it differs from the parent's at that width. A border
 // side counts where its width is drawn, its style (where recorded) draws, and its colour (where recorded) is not transparent.
-export function computedLooks( values, parentValues = null ) {
+// `paddingBase` is the browser's own padding of the element's tag ({ 'padding-top': '1px', ... }): computed padding counts
+// where a side is above zero and differs from it; null counts no computed padding; undefined counts any side above zero.
+export function computedLooks( values, parentValues = null, paddingBase = undefined ) {
 	const looks = new Set();
 	const v = ( n ) => values?.[ n ];
 	( ( undefined !== v( 'background-color' ) && ! NO_COLOUR.has( low( v( 'background-color' ) ) ) ) || ( undefined !== v( 'background-image' ) && ! NONE.has( low( v( 'background-image' ) ) ) ) ) && looks.add( 'background' );
 	SIDES.some( ( s ) => ( pxOf( v( `border-${ s }-width` ) ) ?? 0 ) > 0 && ! [ ...NONE, 'hidden' ].includes( low( v( `border-${ s }-style` ) ?? 'solid' ) ) && ! TRANSPARENT.test( low( v( `border-${ s }-color` ) ) ) ) && looks.add( 'border' );
 	undefined !== v( 'box-shadow' ) && ! NONE.has( low( v( 'box-shadow' ) ) ) && looks.add( 'shadow' );
 	CORNERS.some( ( n ) => undefined !== v( n ) && ! zero( v( n ) ) ) && looks.add( 'radius' );
-	SIDES.some( ( s ) => ( pxOf( v( `padding-${ s }` ) ) ?? 0 ) > 0 ) && looks.add( 'padding' );
+	null !== paddingBase && SIDES.some( ( s ) => ( pxOf( v( `padding-${ s }` ) ) ?? 0 ) > 0 && ( undefined === paddingBase || v( `padding-${ s }` ) !== paddingBase[ `padding-${ s }` ] ) ) && looks.add( 'padding' );
 	undefined !== v( 'max-width' ) && ! FILLS.has( low( v( 'max-width' ) ) ) && looks.add( 'max-width' );
 	'center' === low( v( 'text-align' ) ) && 'center' !== low( parentValues?.[ 'text-align' ] ) && looks.add( 'text-centre' );
 	return looks;
@@ -132,7 +138,11 @@ export function computedLooks( values, parentValues = null ) {
 // `children` is how many elements it directly holds: a flex or grid box holding two or more lays them out, and dissolving it
 // loses their grouping (`layout`), at the widths where its display (the inventory's `displayAt`) is flex or grid; an inventory
 // without `displayAt` has its one `display` stand for every width.
-export function paintsBox( element, { declared = {}, parent = null, children = 0 } = {} ) {
+// `uaPadding` is the inventory's measurement of the browser's own padding per tag (its `uaPadding`): computed padding counts
+// only where it differs from the element's tag's; null (a saved inventory read before the measurement, or a tag it lacks) counts
+// padding only where declared; undefined (a caller that passes none: the skeleton rules on a saved inventory) counts any
+// computed padding.
+export function paintsBox( element, { declared = {}, parent = null, children = 0, uaPadding = undefined } = {} ) {
 	const widths = renderedWidths( element );
 	const out = {};
 	const add = ( look, w ) => {
@@ -147,8 +157,9 @@ export function paintsBox( element, { declared = {}, parent = null, children = 0
 		stated.forEach( ( look ) => add( look, w ) );
 		children >= 2 && LAYS_OUT.has( low( displayAt( w ) ) ) && add( 'layout', w );
 	}
+	const paddingBase = undefined === uaPadding ? undefined : uaPadding?.[ uaKeyOf( element ) ] ?? null;
 	for ( const w of resolvedWidths( element ) ) {
-		computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ).forEach( ( look ) => add( look, w ) );
+		computedLooks( element.resolved[ w ], parent?.resolved?.[ w ], paddingBase ).forEach( ( look ) => add( look, w ) );
 	}
 	return out;
 }
@@ -483,7 +494,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	};
 	// One element: counted as read, or a row. `shownIn`: the state that shows it, for an element of `revealed`.
 	const check = ( e, shownIn = null ) => {
-		const painted = paintsBox( e, { declared: view?.declared?.( e ) ?? {}, parent: parentOf( e ), children: childrenOf( e ) } );
+		const painted = paintsBox( e, { declared: view?.declared?.( e ) ?? {}, parent: parentOf( e ), children: childrenOf( e ), uaPadding: inventory?.uaPadding ?? null } );
 		if ( ! Object.keys( painted ).length ) {
 			return;
 		}

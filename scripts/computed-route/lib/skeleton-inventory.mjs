@@ -12,6 +12,7 @@ import { discoverReveals, readReveals } from './skeleton-reveal.mjs';
 import { addDataBranches } from './skeleton-data-branches.mjs';
 import { recId } from './reveal-merge.mjs';
 import { ALL_TEXT_CAP } from './skeleton-model.mjs';
+import { uaKeyOf } from './skeleton-paint-conservation.mjs';
 
 export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // The attributes kept per element: what a block needs to know (link, name, label, image source) and the style attribute
@@ -249,6 +250,36 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 
 const safe = ( k ) => k.replace( /[^A-Za-z0-9]+/g, '_' ).replace( /^_|_$/g, '' );
 
+// In-page. The padding the browser itself gives each tag key (lib/skeleton-paint-conservation.mjs::uaKeyOf: a tag, or
+// `input[type=…]`): one unstyled element per key inside a shadow root of the draft's document, which no author rule reaches.
+// Returns { key: { 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' } }.
+export function uaPaddingOf( keys ) {
+	const host = document.createElement( 'div' );
+	host.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden';
+	document.body.appendChild( host );
+	const shadow = host.attachShadow( { mode: 'open' } );
+	const out = {};
+	for ( const key of keys ) {
+		const m = /^([a-z][a-z0-9-]*)(?:\[type=(.+)\])?$/.exec( key );
+		if ( ! m ) {
+			continue;
+		}
+		const e = document.createElement( m[ 1 ] );
+		m[ 2 ] && e.setAttribute( 'type', m[ 2 ] );
+		shadow.appendChild( e );
+		const cs = getComputedStyle( e );
+		out[ key ] = Object.fromEntries( [ 'top', 'right', 'bottom', 'left' ].map( ( s ) => [ `padding-${ s }`, cs.getPropertyValue( `padding-${ s }` ) ] ) );
+	}
+	host.remove();
+	return out;
+}
+
+// Measures, once per read, the browser's own padding of each tag key one width's records hold that `into` lacks.
+async function measureUaPadding( page, records, into ) {
+	const keys = [ ...new Set( records.map( uaKeyOf ) ) ].filter( ( k ) => k && ! into[ k ] );
+	keys.length && Object.assign( into, await page.evaluate( uaPaddingOf, keys ) );
+}
+
 // Scrolls the whole page so scroll-triggered entrances fire, then rests on the root.
 async function settle( page, rootSelector ) {
 	await page.waitForTimeout( 2500 );
@@ -374,6 +405,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 	const runs = {};
 	const shots = {};
 	const skipped = [];
+	const uaPadding = {};
 	shotsDir && fs.mkdirSync( shotsDir, { recursive: true } );
 	const height = page.viewportSize()?.height ?? 900;
 	for ( const w of INVENTORY_WIDTHS ) {
@@ -390,8 +422,9 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );
 		await addReveals( { page, res, args, reveal, w, log } );
 		await addDataBranches( { page, res, collect, args, branches, w, log } );
+		await measureUaPadding( page, res.records, uaPadding );
 	}
-	return summarise( { runs, shots, skipped, url: url ?? page.url(), root } );
+	return summarise( { runs, shots, skipped, url: url ?? page.url(), root, uaPadding } );
 }
 
 // Reads the draft at every width and returns { generated, source, root, keyFormat, checks, elements }. Screenshots go to
@@ -412,6 +445,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 	const runs = {};
 	const shots = {};
 	const skipped = [];
+	const uaPadding = {};
 	fs.mkdirSync( shotsDir, { recursive: true } );
 	try {
 		for ( const w of INVENTORY_WIDTHS ) {
@@ -430,12 +464,13 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );
 			await addReveals( { page, res, args, reveal, w, log } );
 			await addDataBranches( { page, res, collect, args, branches, w, log } );
+			await measureUaPadding( page, res.records, uaPadding );
 			await ctx.close();
 		}
 	} finally {
 		await browser.close();
 	}
-	return summarise( { runs, shots, skipped, url, root } );
+	return summarise( { runs, shots, skipped, url, root, uaPadding } );
 }
 
 // The 1440 records plus the elements that render only at another width (an sc-if on a width, a branch shown only on a phone
@@ -460,8 +495,9 @@ export function withWidthOnly( runs ) {
 }
 
 // The inventory from the per-width reads ({ width: collect result }). Each element keeps its 1440 `display` and its computed
-// display at every width in `displayAt` (null where that width's read has no such element).
-export function summarise( { runs, shots, skipped, url, root } ) {
+// display at every width in `displayAt` (null where that width's read has no such element). `uaPadding`, the browser's own
+// padding per tag key (uaPaddingOf), is kept as the inventory's `uaPadding` when given.
+export function summarise( { runs, shots, skipped, url, root, uaPadding = null } ) {
 	const base = runs[ 1440 ];
 	const at = ( w, id ) => runs[ w ].records.find( ( x ) => recId( x ) === id );
 	const records = withWidthOnly( runs ).map( ( r ) => {
@@ -478,5 +514,5 @@ export function summarise( { runs, shots, skipped, url, root } ) {
 		perWidthCounts: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, runs[ w ].records.filter( ( r ) => ! r.reveal ).length ] ) ), tagAgree: elements.filter( tagOk ).length, tagDisagree: elements.filter( ( r ) => ! tagOk( r ) ).map( ( r ) => [ r.key, r.srcTag, r.tag ] ),
 		keysMissingAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, records.filter( ( r ) => ! at( w, recId( r ) ) ).map( recId ) ] ) ), screenshotSkips: skipped,
 	};
-	return { generated: new Date().toISOString(), source: url, root, ...( base.beside?.length ? { beside: base.beside } : {} ), keyFormat: 'importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)', checks, elements, ...( revealed.length ? { revealed } : {} ) };
+	return { generated: new Date().toISOString(), source: url, root, ...( base.beside?.length ? { beside: base.beside } : {} ), keyFormat: 'importChain/tplNumber#copyIndex (parity/lib/collect.mjs::tplKeyOf)', checks, ...( uaPadding ? { uaPadding } : {} ), elements, ...( revealed.length ? { revealed } : {} ) };
 }

@@ -608,7 +608,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// A removed field text that lays out its own pieces (a label over its hint) is laid out by the field block, which draws
 			// its label and help text in that order: its row records the field's node (lib/skeleton-paint-conservation.mjs host-layout).
 			const field = fieldIn( fieldScope( e ) );
-			const lays = field && Object.keys( paintsBox( e, { declared: declared( e, tokens ), parent: m.byKey[ e.parentKey ] ?? null, children: m.kids( e ).length } ) ).includes( 'layout' );
+			const lays = field && Object.keys( paintsBox( e, { declared: declared( e, tokens ), parent: m.byKey[ e.parentKey ] ?? null, children: m.kids( e ).length, uaPadding: m.uaPadding } ) ).includes( 'layout' );
 			return v( 'formControl', { action: 'remove', reason: R.formControl.fieldTextReason, ...( lays ? { conserve: [ { kind: 'host-layout', node: field.key, looks: [ 'layout' ] } ] } : {} ) } );
 		},
 		// The wrappers a mounted component adds (Spec 48A FR-48A-17: a button or field built once and mounted through
@@ -1223,7 +1223,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// children out itself (`hostLays`), and the nodes inside it, which read an inherited look (centred text) from their own
 	// computed values. A kept unwrap's verdict records where each look it dissolves goes (`conserve`).
 	const unwrapRead = ( x, out ) => {
-		const painted = Object.keys( paintsBox( x.e, { declared: x.st, parent: m.byKey[ x.e.parentKey ] ?? null, children: m.kids( x.e ).length } ) );
+		const painted = Object.keys( paintsBox( x.e, { declared: x.st, parent: m.byKey[ x.e.parentKey ] ?? null, children: m.kids( x.e ).length, uaPadding: m.uaPadding } ) );
 		const dest = hooks.unwrapReads?.( x.e, out ) ?? { all: !! ( out.hostSetting ?? R[ out.rule ]?.hostSetting ), band: true };
 		if ( ! painted.length || dest.all ) {
 			return { kept: true, conserve: out.conserve ?? [] };

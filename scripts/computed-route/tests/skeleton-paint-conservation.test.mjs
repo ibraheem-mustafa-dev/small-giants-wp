@@ -4,7 +4,7 @@
 // a loop whose first copy a slot names, a form's field listed once under the form's own surface, a per-site removal.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { RECORD_KINDS, RECORDED_CLASSES, INHERITED_LOOKS, lookOfProperty, checkRecords, unreadList, recordsOf, nodesByRef, paintProblems, styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, namedReads, BAND_LOOKS, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
+import { uaKeyOf, RECORD_KINDS, RECORDED_CLASSES, INHERITED_LOOKS, lookOfProperty, checkRecords, unreadList, recordsOf, nodesByRef, paintProblems, styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, namedReads, BAND_LOOKS, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
 import { listAll, loadClient, markdown, main, factRecordOf } from '../tools/paint-conservation.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -615,4 +615,18 @@ test( 'an element only a state shows is checked like the others: read through a 
 	const t = surface();
 	t.inventory.revealed = [ el( 'Root/20#0', 'background: ivory', { parentKey: 'Root/1#0', reveal: open } ) ];
 	assert.ok( paintProblems( t ).some( ( p ) => /state-only/.test( p ) && /Root\/20#0/.test( p ) ) );
+} );
+
+test( 'conservationRows counts computed padding against the inventory\'s measurement of the browser\'s own, and only declared padding without one (MUST FAIL where any computed padding is a look)', () => {
+	const pad = ( left ) => ( { 375: { 'padding-left': left }, 768: { 'padding-left': left }, 1440: { 'padding-left': left } } );
+	const elements = [ el( 'Root/1#0', null, { tag: 'ul', resolved: pad( '40px' ) } ), el( 'Root/2#0', null, { tag: 'ul', resolved: pad( '24px' ) } ), el( 'Root/3#0', 'padding-left: 24px', { tag: 'ul', resolved: pad( '24px' ) } ) ];
+	const rowsOf = ( inventory ) => conservationRows( { inventory, proposal: { rows: [] }, skeleton: [] } ).rows.map( ( r ) => r.key );
+	const uaPadding = { ul: { 'padding-top': '0px', 'padding-right': '0px', 'padding-bottom': '0px', 'padding-left': '40px' } };
+	assert.deepEqual( rowsOf( { elements, uaPadding } ), [ 'Root/2#0', 'Root/3#0' ], 'a list indented as the browser indents it paints no padding' );
+	// Negative control: a saved inventory read before the measurement counts the declared padding only.
+	assert.deepEqual( rowsOf( { elements } ), [ 'Root/3#0' ] );
+	// The key of an input carries its type.
+	assert.equal( uaKeyOf( { tag: 'input', attrs: { type: 'Checkbox' } } ), 'input[type=checkbox]' );
+	assert.equal( uaKeyOf( { tag: 'input', attrs: {} } ), 'input' );
+	assert.equal( uaKeyOf( { tag: 'td' } ), 'td' );
 } );

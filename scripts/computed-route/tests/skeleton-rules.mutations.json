@@ -133,8 +133,8 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "children: m.kids( e ).length } ) ).includes( 'layout' );",
-		"replace": "children: 0 } ) ).includes( 'layout' );",
+		"find": "children: m.kids( e ).length, uaPadding: m.uaPadding } ) ).includes( 'layout' );",
+		"replace": "children: 0, uaPadding: m.uaPadding } ) ).includes( 'layout' );",
 		"why": "a removed field text's own column is never seen as layout"
 	}
 ]

@@ -13,8 +13,8 @@
 	},
 	{
 		"file": "lib/skeleton-inventory.mjs",
-		"find": "codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t}",
-		"replace": "codeItemsOf.toString(), RESOLVED, {}, null, [] ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t}",
+		"find": "codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t\tawait measureUaPadding( page, res.records, uaPadding );\n\t}",
+		"replace": "codeItemsOf.toString(), RESOLVED, {}, null, [] ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t\tawait measureUaPadding( page, res.records, uaPadding );\n\t}",
 		"why": "the reader on a prepared page is not given the paint list or the data filter"
 	},
 	{
@@ -70,5 +70,29 @@
 		"find": "'border-top-style': 'none', 'border-right-style': 'none', 'border-bottom-style': 'none', 'border-left-style': 'none', ",
 		"replace": "",
 		"why": "no border style is recorded"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "\t\tawait measureUaPadding( page, res.records, uaPadding );\n\t}\n\treturn summarise( { runs, shots, skipped, url: url ?? page.url(), root, uaPadding } );",
+		"replace": "\t}\n\treturn summarise( { runs, shots, skipped, url: url ?? page.url(), root, uaPadding } );",
+		"why": "the reader on a prepared page measures nothing"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "\tconst shadow = host.attachShadow( { mode: 'open' } );",
+		"replace": "\tconst shadow = host;",
+		"why": "the unstyled element is measured where the draft's rules reach it"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "...( uaPadding ? { uaPadding } : {} ), elements,",
+		"replace": "elements,",
+		"why": "the measurement is not kept in the inventory"
+	},
+	{
+		"file": "lib/skeleton-model.mjs",
+		"find": "\treturn { uaPadding: inventory.uaPadding, els, byKey, kids, isPart,",
+		"replace": "\treturn { els, byKey, kids, isPart,",
+		"why": "the skeleton rules get no measurement"
 	}
 ]
