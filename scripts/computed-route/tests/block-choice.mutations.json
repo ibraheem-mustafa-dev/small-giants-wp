@@ -1,0 +1,158 @@
+[
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( m[ 0 ].length >= 2 && ! STOP.has( m[ 0 ] ) ) {",
+		"replace": "if ( m[ 0 ].length >= 2 ) {",
+		"why": "function words would count as shared words"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "const tiny = a.size <= 2 && b.size <= 2 && a.size === b.size && shared === a.size && shared > 0;",
+		"replace": "const tiny = false;",
+		"why": "a one-word label would never align with its one-word counterpart"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "return { shared, score, aligned: tiny || ( shared >= ALIGN.minShared && score >= ALIGN.overlap ) };",
+		"replace": "return { shared, score, aligned: tiny || shared >= 1 };",
+		"why": "one shared word would align any two blocks"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "! ( nested && SLUG.test( value ) )",
+		"replace": "! SLUG.test( value )",
+		"why": "a content attribute's one lower-case word (an icon list's heading of shop) would be dropped"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "\t\t\twordsIn( v, k, out, true );",
+		"replace": "\t\t\twordsIn( v, k, out, false );",
+		"why": "a setting slug inside an item (fillStyle filled) would count as printed words"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( ( ! content || content.has( k ) ) && ! /alt$/i.test( k ) ) {",
+		"replace": "if ( ! /alt$/i.test( k ) ) {",
+		"why": "every attribute of a block the database lists would count as words, a layout value included"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "subtreeTokens( k ).forEach( ( t ) => mine.delete( t ) );",
+		"replace": "",
+		"why": "a container would print its children's words and become a block of its own"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "const kids = linked( n.attributes ?? {} ) ?? ( n.innerBlocks ?? [] ).map( conv );",
+		"replace": "const kids = ( n.innerBlocks ?? [] ).map( conv );",
+		"why": "a flow linked by id would stay empty, so the cookie builder has no words to align"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "return node.kids.length > 0 && 'sgs-layout' === facts.category( node.name );",
+		"replace": "return node.kids.length > 0;",
+		"why": "a slider holding testimonials would be a wrapper, so its testimonials would be compared one by one"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "const frameOf = ( ancestors ) => ancestors.map( ( a ) => a.name ).filter( ( n ) => n !== LAYOUT_GENERIC );",
+		"replace": "const frameOf = () => [];",
+		"why": "a hero on one side only would not be reported"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "solo: !! parent && 1 === parent.kids.length,",
+		"replace": "solo: false,",
+		"why": "a wrapper of its own on one side only would not be reported"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( JSON.stringify( rv ) !== JSON.stringify( ov ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a different mode would read as the same block"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "const ov = o.attrs[ attr ] ?? def ?? null;",
+		"replace": "const ov = o.attrs[ attr ] ?? null;",
+		"why": "an unset mode would not read as its default"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "written &&= !! os[ i ].node.ref;",
+		"replace": "written &&= true;",
+		"why": "a block without the route class would read as route-written"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( held / words.size < ALIGN.overlap ) {\n\t\t\t\treturn { cls: 'owner-addition' };",
+		"replace": "if ( false ) {\n\t\t\t\treturn { cls: 'owner-addition' };",
+		"why": "an addition of the hand-built page would read as unaligned"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "\tif ( routeUnits.length > ownerUnits.length ) {\n\t\treturn { cls: 'several-to-one' };",
+		"replace": "\tif ( false ) {\n\t\treturn { cls: 'several-to-one' };",
+		"why": "several route blocks against one would not be reported"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "\tif ( routeUnits.length < ownerUnits.length ) {\n\t\treturn { cls: 'one-to-several' };",
+		"replace": "\tif ( false ) {\n\t\treturn { cls: 'one-to-several' };",
+		"why": "one route block against several would not be reported"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( best || [ ...mutual ].some( ( m ) => m.startsWith( `${ r.section }:` ) ) ) {",
+		"replace": "if ( best ) {",
+		"why": "a tile title would link to a card grid in another section"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "const inSection = ! ownerLinked( o.section ) || mutual.has( `${ r.section }:${ o.section }` );",
+		"replace": "const inSection = true;",
+		"why": "a hand-built card grid would take a route block from another section"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( s.aligned && inSection && c.score >= ALIGN.overlap && better( c, best ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a flow would never be matched with the heading and text the hand-built page splits it into"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( 1 === roots.size ) {\n\t\t\t\t\tjoin( i, [ ...roots ][ 0 ] );",
+		"replace": "if ( false ) {\n\t\t\t\t\tjoin( i, [ ...roots ][ 0 ] );",
+		"why": "a tile's brand tag and price would not join the tile's group"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( how.has( i ) || ( i >= ru.length && added( all[ i ] ) ) ) {",
+		"replace": "if ( how.has( i ) ) {",
+		"why": "an addition of the hand-built page would be swallowed by its neighbour's group"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "const core = pr.length && po.length && sameCounts( countNames( pr ), countNames( po ) ) && ( pr.length < g.route.length || po.length < g.owner.length );",
+		"replace": "const core = false;",
+		"why": "a neighbour that joined as a sibling would change the class of a matched pair"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "sum.conserve += c.conserve ?? 0;",
+		"replace": "",
+		"why": "the swallowed-paint list would not count"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "if ( flat.length === names.length && flat.every( ( n, i ) => n.name === names[ i ] ) ) {",
+		"replace": "if ( flat.length === names.length ) {",
+		"why": "a run whose blocks differ would be mapped as exact"
+	},
+	{
+		"file": "lib/block-choice.mjs",
+		"find": "keys[ i++ ] = flat[ j++ ].draftRef?.tpl ?? null;",
+		"replace": "keys[ i++ ] = flat[ j ].draftRef?.tpl ?? null;",
+		"why": "the sequence map would stop advancing on the skeleton"
+	}
+]
