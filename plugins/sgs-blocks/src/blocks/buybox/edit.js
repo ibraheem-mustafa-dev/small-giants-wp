@@ -22,6 +22,7 @@ import NotePanel from './NotePanel';
 import ConfiguratorPanel, { configuratorColourRows } from './ConfiguratorPanel';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 // Curated extras for below the add-to-cart form (any block can still be inserted from the list view).
 const BUYBOX_EXTRAS_ALLOWED_BLOCKS = [ 'sgs/button', 'sgs/whatsapp-cta', 'sgs/icon-list', 'sgs/gift-order' ];
 
@@ -459,6 +460,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
+
+			{ /* The flow's opener button (Spec 43 FR-43-25): the built-in button kit's one panel, which mounts its own Styles
+			     group. A flow is linked per product, which the editor cannot see, so the panel always shows. */ }
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/buybox"
+				prefix="flowOpener"
+			/>
 
 			<style>{ buyboxMockCss( attributes, mockScope, palette, previewTier ) }</style>
 			<div { ...blockProps }>

@@ -28,6 +28,13 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"builtinButtons": [
+				{
+					"prefix": "flowOpener",
+					"part": "flow-opener",
+					"label": "Flow opener button"
+				}
+			],
 			"spacingDefaults": {
 				"pickerLabelLinkPadding": {
 					"bottom": "1px"
@@ -3942,7 +3949,35 @@
 		"previewBorderStyle": {"type":"string","_generated":"media-atoms"},
 		"previewBorderColourHover": {"type":"string","_generated":"media-atoms"},
 		"previewBorderColourGradient": {"type":"string","_generated":"media-atoms"},
-		"previewBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"}
+		"previewBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
+		"flowOpenerStyle": {"type":"string","_generated":"button-kit"},
+		"flowOpenerColourBackground": {"type":"string","_generated":"button-kit"},
+		"flowOpenerColourText": {"type":"string","_generated":"button-kit"},
+		"flowOpenerColourBorder": {"type":"string","_generated":"button-kit"},
+		"flowOpenerColourBackgroundHover": {"type":"string","_generated":"button-kit"},
+		"flowOpenerColourTextHover": {"type":"string","_generated":"button-kit"},
+		"flowOpenerColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"flowOpenerBorderStyle": {"type":"string","_generated":"button-kit"},
+		"flowOpenerBorderWidth": {"type":"object","_generated":"button-kit"},
+		"flowOpenerBorderRadius": {"type":"object","_generated":"button-kit"},
+		"flowOpenerPadding": {"type":"object","_generated":"button-kit"},
+		"flowOpenerWidthType": {"type":"string","_generated":"button-kit"},
+		"flowOpenerMinHeight": {"type":"object","_generated":"button-kit"},
+		"flowOpenerShadow": {"type":"string","_generated":"button-kit"},
+		"flowOpenerShadowColour": {"type":"string","_generated":"button-kit"},
+		"flowOpenerShadowHover": {"type":"string","_generated":"button-kit"},
+		"flowOpenerShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"flowOpenerFontFamily": {"type":"string","_generated":"button-kit"},
+		"flowOpenerFontWeight": {"type":"string","_generated":"button-kit"},
+		"flowOpenerFontStyle": {"type":"string","_generated":"button-kit"},
+		"flowOpenerTextTransform": {"type":"string","_generated":"button-kit"},
+		"flowOpenerTextDecoration": {"type":"string","_generated":"button-kit"},
+		"flowOpenerFontSize": {"type":"object","_generated":"button-kit"},
+		"flowOpenerLineHeight": {"type":"object","_generated":"button-kit"},
+		"flowOpenerLetterSpacing": {"type":"object","_generated":"button-kit"},
+		"flowOpenerFontSizeUnit": {"type":"string","_generated":"button-kit"},
+		"flowOpenerLineHeightUnit": {"type":"string","_generated":"button-kit"},
+		"flowOpenerLetterSpacingUnit": {"type":"string","_generated":"button-kit"}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

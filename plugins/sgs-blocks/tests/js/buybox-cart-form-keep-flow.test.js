@@ -40,4 +40,15 @@ describe( 'cartFormMock keeps the opener under the same conditions as render.php
 		expect( keepsFlowOpener( { keepAddToCartWithFlow: true, addToCartAction: 'Modal', addToCartModalId: ' <b>pop</b> ' } ) ).toBe( false );
 		expect( keepsFlowOpener( { keepAddToCartWithFlow: true, addToCartAction: 'bogus', addToCartModalId: 'pop' } ) ).toBe( true );
 	} );
+
+	it( 'draws the opener in the preset its own style names, else the secondary look', () => {
+		const openerClass = ( attributes ) => {
+			const opener = cartFormMock( { attributes: { keepAddToCartWithFlow: true, ...attributes }, cartVariant: '', cartStyle: {} } ).props.children[ 1 ];
+			return opener.props.children.props.className;
+		};
+		expect( openerClass( {} ) ).toContain( 'buybox__add-to-cart--secondary' );
+		expect( openerClass( { flowOpenerStyle: 'primary', addToCartStyle: 'outline' } ) ).not.toContain( 'buybox__add-to-cart--secondary' );
+		expect( openerClass( { flowOpenerStyle: 'primary' } ) ).toContain( 'buybox__add-to-cart--primary' );
+		expect( openerClass( { flowOpenerStyle: 'nonsense' } ) ).toContain( 'buybox__add-to-cart--secondary' );
+	} );
 } );

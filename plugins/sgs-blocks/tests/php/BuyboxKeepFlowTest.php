@@ -141,6 +141,50 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertStringNotContainsString( '<style', $linked_simple, 'the simple linked path prints no style tag while nothing is set' );
 	}
 
+	/** The opener button's class attribute and the CSS rules (the `<style>` text) in a render. */
+	private static function opener_class( string $html ): string {
+		preg_match( '#<button type="button" class="([^"]*buybox__add-to-cart--flow-opener[^"]*)"#', $html, $m );
+		return $m[1] ?? '';
+	}
+
+	private static function css( string $html ): string {
+		preg_match_all( '#<style[^>]*>(.*?)</style>#s', $html, $m );
+		return implode( '', $m[1] );
+	}
+
+	public function test_a_named_opener_preset_drops_the_secondary_modifier_and_prints_that_preset_on_the_openers_selector(): void {
+		$html  = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartStyle' => 'outline', 'flowOpenerStyle' => 'primary' ) );
+		$class = self::opener_class( $html );
+		$this->assertNotSame( '', $class, 'the opener still prints' );
+		$this->assertStringNotContainsString( 'buybox__add-to-cart--secondary', $class, 'the "secondary unless" modifier is gone once the opener names a preset' );
+		$this->assertMatchesRegularExpression( '#\.sgs-bb-X\.wp-block-sgs-buybox \.buybox__add-to-cart\.buybox__add-to-cart--flow-opener\{[^}]*background[^}]*\}#', self::css( $html ), 'the primary preset prints on the opener\'s own selector' );
+		$this->assertStringContainsString( 'buybox__add-to-cart--outline', $html, 'Add to Cart keeps its own preset' );
+	}
+
+	public function test_a_colour_set_on_the_opener_prints_on_its_own_selector_after_add_to_carts(): void {
+		$html = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartBackgroundColour' => 'surface', 'flowOpenerColourBackground' => 'accent' ) );
+		$css  = self::css( $html );
+		$sel  = '.buybox__add-to-cart.buybox__add-to-cart--flow-opener{';
+		$this->assertMatchesRegularExpression( '#\.wp-block-sgs-buybox ' . preg_quote( $sel, '#' ) . '(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css );
+		$this->assertGreaterThan( (int) strrpos( $css, '.buybox__add-to-cart{background-color:var(--wp--preset--color--surface)' ), (int) strrpos( $css, $sel ), 'printed after Add to Cart\'s colour so a tie in weight goes to the opener' );
+		$this->assertStringContainsString( 'buybox__add-to-cart--secondary', self::opener_class( $html ), 'no preset named: the secondary modifier stays' );
+	}
+
+	public function test_a_simple_products_opener_gets_its_kit_css_in_a_style_tag_beside_it(): void {
+		foreach ( array( true, false ) as $keep ) {
+			$html  = self::render( array( 'keepAddToCartWithFlow' => $keep, 'flowOpenerColourBackground' => 'accent', 'flowOpenerStyle' => 'primary' ), true, self::SIMPLE );
+			$label = $keep ? 'keep path' : 'linked path';
+			preg_match( '#<button type="button" class="([^"]*)"[^>]*data-sgs-modal-open#', $html, $m );
+			$this->assertMatchesRegularExpression( '#sgs-bb-fo-[0-9a-f]{8}#', $m[1] ?? '', "$label: the opener carries a scope class" );
+			preg_match( '#sgs-bb-fo-[0-9a-f]{8}#', $m[1], $scope );
+			$css = self::css( $html );
+			$this->assertStringContainsString( '.' . $scope[0] . '.buybox__add-to-cart.buybox__add-to-cart--flow-opener{', $css, "$label: the kit prints on the scoped selector" );
+			$this->assertMatchesRegularExpression( '#\.' . $scope[0] . '\.buybox__add-to-cart\.buybox__add-to-cart--flow-opener\{(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css, "$label: the colour prints" );
+			$this->assertStringNotContainsString( 'buybox__add-to-cart--secondary', $m[1], "$label: a named preset drops the secondary modifier" );
+			$this->assertStringNotContainsString( ' style="', $html, "$label: no inline style" );
+		}
+	}
+
 	public function test_a_simple_product_follows_the_variable_products_precedence_an_explicit_popup_wins(): void {
 		$off = self::render( array(), true, self::SIMPLE );
 		$on  = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartAction' => 'modal', 'addToCartModalId' => 'my-popup' ), true, self::SIMPLE );

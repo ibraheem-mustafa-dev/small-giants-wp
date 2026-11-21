@@ -6,6 +6,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import AuthoredText from '../../components/AuthoredText';
+import { presetNames } from '../button/preset-names';
 
 /**
  * Whether the flow's opener shows beside Add to Cart: the same conditions as
@@ -51,8 +52,11 @@ export function cartFormMock( { attributes, cartVariant, cartStyle } ) {
 	if ( ! keepsFlowOpener( attributes ) ) {
 		return form;
 	}
-	// As sgs_buybox_flow_opener_html(): the secondary look, or the plain base look when Add to Cart is already secondary.
-	const openerLook = 'secondary' === attributes.addToCartStyle ? '' : ' buybox__add-to-cart--secondary';
+	// As sgs_buybox_flow_opener_html(): the preset the opener's own style names, else the secondary look, or the plain base
+	// look when Add to Cart is already secondary.
+	const openerLook = presetNames().includes( attributes.flowOpenerStyle )
+		? ` buybox__add-to-cart--${ attributes.flowOpenerStyle }`
+		: ( 'secondary' === attributes.addToCartStyle ? '' : ' buybox__add-to-cart--secondary' );
 	return (
 		<div className="sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow">
 			{ form }

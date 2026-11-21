@@ -504,6 +504,15 @@ def declared_parts(corpus, slug):
     return {i.get('part') for i in items if isinstance(i, dict) and i.get('part')}
 
 
+def declared_prefixes(corpus, slug):
+    """The kit prefixes a block declares in supports.sgs.builtinButtons (`flowOpener`)."""
+    bj = corpus.block_json(slug) if slug else None
+    if not bj:
+        return set()
+    items = (((bj.get('supports') or {}).get('sgs') or {}).get('builtinButtons')) or []
+    return {i.get('prefix') for i in items if isinstance(i, dict) and i.get('prefix')}
+
+
 def rule_matches(rule, site):
     files = rule.get('files') or ([rule['file']] if 'file' in rule else [])
     if files and not any(fnmatch.fnmatchcase(site['file'], g) for g in files):
@@ -527,6 +536,9 @@ def classify(site, corpus, cfg):
         return 'on-kit', 'declared in supports.sgs.builtinButtons of sgs/%s' % slug, ''
     for rule in cfg['targets']:
         if rule_matches(rule, site):
+            # The rule's block has declared the rule's button: the site is the kit's now, whatever its class names.
+            if rule.get('prefix') in declared_prefixes(corpus, str(rule.get('block', '')).split('/')[-1]):
+                return 'on-kit', 'declared in supports.sgs.builtinButtons of %s (prefix %s)' % (rule['block'], rule['prefix']), rule['id']
             return 'target', 'design note section 7: %s %s (%s)' % (rule['block'], rule['prefix'], rule['phase']), rule['id']
     for rule in cfg['exemptions']:
         if rule_matches(rule, site):
@@ -1863,6 +1875,13 @@ def self_test():
     kit = Corpus(dict(base_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': json.dumps(kit_bj)}))
     ksites = [s for s in run_survey(kit, cfg) if s['kind'] == 'button']
     check('definition: a declared builtinButtons part is on-kit', ksites and ksites[0]['category'] == 'on-kit')
+
+    # definition: a target rule's block declaring the rule's prefix makes the site on-kit although the class names a different element.
+    kit_bj2 = json.loads(FX_BLOCKJSON)
+    kit_bj2['supports'] = {'sgs': {'builtinButtons': [{'prefix': 'flowOpener', 'part': 'other-part', 'label': 'x'}]}}
+    kit2 = Corpus(dict(base_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': json.dumps(kit_bj2)}))
+    k2sites = [s for s in run_survey(kit2, cfg) if s['kind'] == 'button']
+    check('definition: a target rule whose block declares its prefix is on-kit', k2sites and k2sites[0]['category'] == 'on-kit')
 
     # edge: a legitimate exemption, and an exemption that matches nothing is stale.
     cfg_ex = {'exemptions': [{'id': 'fx-ex', 'files': ['plugins/sgs-blocks/src/blocks/fx/*.php'], 'class': 'flow-opener',

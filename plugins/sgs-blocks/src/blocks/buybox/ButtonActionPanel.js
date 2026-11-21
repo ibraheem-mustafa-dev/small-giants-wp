@@ -51,7 +51,7 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 					checked={ !! keepAddToCartWithFlow }
 					onChange={ ( val ) => setAttributes( { keepAddToCartWithFlow: val } ) }
 					help={ __(
-						'For a product linked to a choice flow that some buyers skip. Off: the flow button replaces Add to Cart. On: Add to Cart (and the express Buy now buttons) stay, and the flow button shows beside them. Does nothing on a product with no flow, in the guided layout, or when the button above opens a popup. A product that cannot be bought shows no flow button.',
+						'For a product linked to a choice flow that some buyers skip. Off: the flow button replaces Add to Cart. On: Add to Cart (and the express Buy now buttons) stay, and the flow button shows beside them. Does nothing on a product with no flow, in the guided layout, or when the button above opens a popup. A product that cannot be bought shows no flow button. The look of the flow button is set in Styles, Flow opener button; a setting left empty follows Add to Cart.',
 						'sgs-blocks'
 					) }
 					__nextHasNoMarginBottom

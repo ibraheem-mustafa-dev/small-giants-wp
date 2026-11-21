@@ -118,8 +118,8 @@ if ( ! $product->is_type( 'variable' ) ) {
 	// keepAddToCartWithFlow (off by default) keeps core's Add to Cart and puts the flow's opener beside it instead, unless an
 	// explicit popup or the guided layout wins (sgs_buybox_keep_setting_applies(), the precedence the variable path applies).
 	$buybox_simple_flow = sgs_buybox_keep_setting_applies( $attributes )
-		? sgs_buybox_simple_keep_flow_html( $buybox_post_id, $product )
-		: sgs_buybox_simple_linked_flow_html( $buybox_post_id, (string) ( $attributes['addToCartLabel'] ?? '' ) );
+		? sgs_buybox_simple_keep_flow_html( $buybox_post_id, $product, $attributes )
+		: sgs_buybox_simple_linked_flow_html( $buybox_post_id, (string) ( $attributes['addToCartLabel'] ?? '' ), $attributes );
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo '' !== $buybox_simple_flow ? $buybox_simple_flow : do_blocks( $buybox_core_fallback );
 	return;
@@ -1118,6 +1118,14 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 	$sgs_bb_gallery_rules = $sgs_bb_gallery_decls ? $root_sel . '{' . implode( ';', $sgs_bb_gallery_decls ) . ';}' : '';
 	$scoped_css[]         = $sgs_bb_gallery_media . '{' . $sgs_bb_gallery_rules . $sgs_bb_gallery_gap_tiers . '}';
 }
+// The flow opener beside a kept Add to Cart (FR-43-25): its own look settings, printed last so that where its selector ties with
+// an Add to Cart rule in weight (a hover or pressed state) the opener wins; a setting left unset follows Add to Cart.
+if ( $buybox_keep_flow ) {
+	$sgs_bb_flow_opener_css = sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( $root_sel . ' ' ) );
+	if ( '' !== $sgs_bb_flow_opener_css ) {
+		$scoped_css[] = $sgs_bb_flow_opener_css;
+	}
+}
 ?>
 <?php if ( $scoped_css ) : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
@@ -1687,7 +1695,7 @@ if ( $buybox_side_cart ) {
 	</form>
 <?php // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect -- flush left: indentation before a tag prints.
 		if ( $buybox_keep_flow ) {
-			echo sgs_buybox_flow_opener_html( $buybox_linked_flow_post, $add_to_cart_style_class ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+			echo sgs_buybox_flow_opener_html( $buybox_linked_flow_post, $add_to_cart_style_class, $attributes ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
 		}
 		$buybox_express_on_interaction = 'interaction' === ( $attributes['expressLoad'] ?? 'page' );
 		sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal, $buybox_express_on_interaction );

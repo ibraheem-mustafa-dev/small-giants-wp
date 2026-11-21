@@ -3,7 +3,7 @@
   "passes": {
     "buttons": {
       "_comment": "Every target and unrecognised button site, keyed file::symbol::stem.",
-      "ceiling": 114,
+      "ceiling": 109,
       "entries": {
         "plugins/sgs-blocks/includes/account/helpers-account-address-editor.php::sgs_account_address_card_html::sgs-account__addr-save": 1,
         "plugins/sgs-blocks/includes/account/helpers-account-button-icon.php::sgs_account_button_icons::woocommerce-form-login__submit": 1,
@@ -12,11 +12,6 @@
         "plugins/sgs-blocks/includes/account/helpers-account-signed-out.php::sgs_account_signed_out_html::preset:primary": 1,
         "plugins/sgs-blocks/includes/account/helpers-account-signed-out.php::sgs_account_signed_out_html::preset:secondary": 1,
         "plugins/sgs-blocks/includes/account/templates/form-reset-password.php::(file)::button": 1,
-        "plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_flow_opener_html::buybox__add-to-cart--flow-opener": 1,
-        "plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_flow_opener_html::buybox__add-to-cart--secondary": 1,
-        "plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_flow_opener_html::preset:secondary": 1,
-        "plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_flow_opener_html::wp-element-button": 1,
-        "plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_simple_linked_flow_html::wp-element-button": 1,
         "plugins/sgs-blocks/includes/buybox-modal-cta.php::sgs_buybox_modal_cta_html::%1$s": 1,
         "plugins/sgs-blocks/includes/choice-flow-chrome.php::sgs_choice_flow_chrome_header_html::sgs-choice-flow__chrome-close": 1,
         "plugins/sgs-blocks/includes/choice-flow-footer.php::sgs_choice_flow_footer_html::sgs-choice-flow__add-to-basket": 1,
