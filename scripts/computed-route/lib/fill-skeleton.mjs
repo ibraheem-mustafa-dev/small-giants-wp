@@ -28,6 +28,9 @@ export const ROW_GLYPH_SLOT = '.sgs-icon__shape > .sgs-icon__svg';
 // The slot-name prefix of a node's dissolved wrappers (`draftBandWrappers`): the draft elements between the node's own element
 // and its children that the block does not draw, whose width the content band carries. No setting is calibrated at such a slot.
 export const BAND_WRAPPER_SLOT = '>band-wrapper:';
+// The slot name of a lower layer of a block's overlay stack (`draftOverlay`, lib/fill-overlay-stack.mjs): read as a target of
+// its own and folded into the overlay slot's read before anything is resolved.
+export const OVERLAY_LAYER_SLOT = '>overlay-layer:';
 
 // The attribute Fill puts on a node's draft element while its slots resolve (scopeSelector names it).
 export const SCOPE_ATTR = 'data-fill-scope';
@@ -133,6 +136,9 @@ export function skeletonNodes( tree ) {
 			// The wrappers the block dissolved (`draftBandWrappers`): read only as evidence of the content band's width
 			// (lib/fill-band.mjs), at a slot name no setting is calibrated at.
 			( Array.isArray( node.draftBandWrappers ) ? node.draftBandWrappers : [] ).forEach( ( finder, i ) => rec.targets.push( { id: `${ index }:${ BAND_WRAPPER_SLOT }${ i }`, index, slot: `${ BAND_WRAPPER_SLOT }${ i }`, finder, scoped: true, state: null } ) );
+			// The lower layers of the block's overlay stack (`draftOverlay.layers` but the last, which is the overlay slot's own
+			// draft element): read at a slot name no setting is calibrated at, then stacked (lib/fill-overlay-stack.mjs).
+			( Array.isArray( node.draftOverlay?.layers ) ? node.draftOverlay.layers.slice( 0, -1 ) : [] ).forEach( ( finder, i ) => rec.targets.push( { id: `${ index }:${ OVERLAY_LAYER_SLOT }${ i }`, index, slot: `${ OVERLAY_LAYER_SLOT }${ i }`, finder, scoped: true, state: null } ) );
 		}
 		go( node.innerBlocks || [], index );
 	} );
@@ -217,6 +223,11 @@ export function skeletonProblems( tree ) {
 		if ( undefined !== node.draftAbsorbed && ( ! Array.isArray( node.draftAbsorbed ) || node.draftAbsorbed.some( ( s ) => ! node.draftSlots?.[ s ] ) ) ) {
 			problems.push( `${ label } draftAbsorbed must be a list of draftSlots paths` );
 		}
+		// `draftOverlay`: the layers the block took in as its overlay (lib/skeleton-overlay-layer.mjs), in drawing order, the
+		// last of them the draft element of the overlay's slot.
+		if ( undefined !== node.draftOverlay && ( ! node.draftOverlay?.slot || ! node.draftOverlay.setting || ! Array.isArray( node.draftOverlay.layers ) || ! node.draftOverlay.layers.length || JSON.stringify( node.draftOverlay.layers.at( -1 ) ) !== JSON.stringify( node.draftSlots?.[ node.draftOverlay.slot ] ) ) ) {
+			problems.push( `${ label } draftOverlay must name its slot and setting and list its layers, the last the slot's draft element` );
+		}
 		if ( undefined !== node.widthAlternatives && ( ! Array.isArray( node.widthAlternatives ) || undefined === node.draftRef || node.widthAlternatives.some( ( a ) => ! parseTplKey( a?.key ) || ! Array.isArray( a.shown ) || ! a.shown.length ) ) ) {
 			problems.push( `${ label } widthAlternatives must be a list of { key, shown } (a draft element key and the widths it is drawn at) on a node with a draftRef` );
 		}
@@ -235,7 +246,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftFingerprint', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftFingerprint', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

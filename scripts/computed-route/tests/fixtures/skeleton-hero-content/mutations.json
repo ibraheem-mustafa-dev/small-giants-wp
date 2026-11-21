@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/skeleton-write-slots.mjs",
-		"find": "const setting = r.hostSetting ?? R[ r.rule ]?.hostSetting;\n\t\tconst host = hosts.at( -1 );\n\t\tconst slot = r.absorbedBy",
-		"replace": "const setting = R[ r.rule ]?.hostSetting;\n\t\tconst host = hosts.at( -1 );\n\t\tconst slot = r.absorbedBy",
+		"find": "const setting = r.hostSetting ?? R[ r.rule ]?.hostSetting;\n\t\tconst host = hosts.at( -1 );\n\t\t// A layer the host takes in",
+		"replace": "const setting = R[ r.rule ]?.hostSetting;\n\t\tconst host = hosts.at( -1 );\n\t\t// A layer the host takes in",
 		"why": "a verdict naming a host setting would give no slot"
 	},
 	{

@@ -342,6 +342,13 @@
 			"sectionAnchorBlocks": [ "sgs/hero" ],
 			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
 		},
+		"overlayLayer": {
+			"coverSlots": [ ".sgs-bg-overlay" ],
+			"coverSlotsReason": "the calibrated slots that cover their block's whole box: the shared background renderer (plugins/sgs-blocks/includes/media/render-background.php, includes/media/background-css.php::sgs_bg_overlay_css) prints the overlay as a direct child of the block's root, placed at inset 0, painted by `.uid > .sgs-bg-overlay`",
+			"roles": { "gradient": "colour-gradient", "colour": "color" },
+			"layerProps": [ "position", "inset", "top", "right", "bottom", "left", "width", "height", "background", "background-image", "background-color", "opacity", "z-index", "mix-blend-mode", "pointer-events" ],
+			"reason": "a bare layer that paints only a gradient or a fill and covers its host block's whole box, above the host's background and below its content, is the host's own overlay when the host block has one: its look is absorbed by its parent, never made a block of its own (Bean, 2026-11-21); several such layers stack into the one setting with the layer drawn last on top"
+		},
 		"backgroundPicture": {
 			"block": "sgs/media",
 			"reason": "an empty element marked role=\"img\" that paints a picture as its background is a media block: the picture and its alt are read from it, never dropped as an unplaced element"

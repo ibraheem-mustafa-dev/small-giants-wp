@@ -1393,6 +1393,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return clash( { looks, parentLooks, parentLays } ).length ? null : { ...hit, looks };
 	};
 
+	// The verdict for a layer its host takes in as its overlay: an unwrap (no node, nothing inside) naming the host's overlay
+	// (`overlay`, which the writer records on the host's node as draftOverlay) and the record the paint check verifies there.
+	// `o`: { node, slot, setting, property, others, widthVaries } (lib/skeleton-overlay-layer.mjs::overlayOf).
+	const overlayVerdict = ( e, o ) => v( 'overlayLayer', {
+		action: 'unwrap',
+		overlay: { node: o.node, slot: o.slot, setting: o.setting, property: o.property },
+		reason: `${ R.overlayLayer.reason }: it covers its host's whole box and is read at the host's overlay "${ o.slot }" (${ o.setting })${ o.widthVaries ? '; the stack differs by width, so the widths the one-value setting cannot hold are written by Fill\'s width ladder as scoped custom CSS on the host\'s overlay' : '' }`,
+		conserve: [ { kind: 'overlay', node: o.node, slot: o.slot, setting: o.setting, settings: [ o.setting, ...o.others ], layer: e.key, looks: [ 'background' ] } ],
+	} );
+
 	// The verdict for one element, or null. An unwrap whose look no reader takes, or that holds space only its parent can carry
 	// (`onlyIfAbsorbed`), goes only where the parent absorbs it: the verdict then names the parent (`absorbedBy`) and records
 	// the looks the parent's settings carry (`conserve` kind absorbed); otherwise the next rule decides.
@@ -1400,6 +1410,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const x = { e, st: declared( e, tokens ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
 		for ( const rule of [ ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
+			// A decoration layer that covers its host block's whole box is the host's own overlay where the host has one
+			// (`hooks.overlayInto`, lib/skeleton-overlay-layer.mjs): it makes no node and the host reads it at the overlay.
+			const overlay = out && 'decorationLayer' === out.rule && out.block && R.overlayLayer ? hooks.overlayInto?.( e ) ?? null : null;
+			if ( overlay ) {
+				return overlayVerdict( e, overlay );
+			}
 			if ( out && 'unwrap' === out.action ) {
 				const read = unwrapRead( x, out );
 				const only = !! out.onlyIfAbsorbed;

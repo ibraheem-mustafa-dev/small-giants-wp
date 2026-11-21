@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/skeleton-classify.mjs",
-		"find": "formLinkOf, siteLink, unwrapReads, absorbInto, topBlock:",
-		"replace": "formLinkOf, unwrapReads, absorbInto, topBlock:",
+		"find": "formLinkOf, siteLink, unwrapReads, absorbInto, overlayInto, topBlock:",
+		"replace": "formLinkOf, unwrapReads, absorbInto, overlayInto, topBlock:",
 		"why": "the rules never receive the draft-link resolver"
 	},
 	{

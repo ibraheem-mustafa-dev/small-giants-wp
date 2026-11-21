@@ -49,6 +49,7 @@ import { currentItemGroups } from './lib/fill-current-item.mjs';
 import { widthGateWrites, maskHiddenVariants } from './lib/fill-width-gate.mjs';
 import { pictureBoxReads } from './lib/fill-picture-box.mjs';
 import { sumAbsorbedPadding } from './lib/fill-absorbed.mjs';
+import { stackOverlayLayers } from './lib/fill-overlay-stack.mjs';
 import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
@@ -231,6 +232,8 @@ export async function fillSurface( o ) {
 		pictureBoxReads( reads, nodes, calFor ).forEach( ( c ) => log( `picture box: node ${ c.index } read at ${ c.slot } (fit ${ JSON.stringify( c.fits ) })` ) );
 		// A wrapper the block absorbed pads inside the block's own element: the part it stands for reads the two paddings summed.
 		sumAbsorbedPadding( reads, nodes ).forEach( ( line ) => log( `absorbed wrapper: ${ line }` ) );
+		// The layers a block took in as its overlay are one stack at the overlay's slot, the top layer first.
+		stackOverlayLayers( reads, nodes ).forEach( ( line ) => log( `overlay stack: ${ line }` ) );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {

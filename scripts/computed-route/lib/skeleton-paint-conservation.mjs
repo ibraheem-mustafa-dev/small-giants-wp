@@ -313,6 +313,9 @@ export const INHERITED_LOOKS = [ 'text-centre' ];
 //   link-slot     the block at `node` draws the dissolved element as its own part at `slot`, which reads `looks` (a logo's
 //                 link part: lib/skeleton-wrapper-link-slot.mjs). Verified when that node is in the skeleton and its
 //                 draftSlots names a finder at `slot`.
+//   overlay       the block at `node` took the element in as its overlay (lib/skeleton-overlay-layer.mjs): the element is one of
+//                 the layers of that node's `draftOverlay` at `slot`, whose `setting` carries `looks` (with `settings`, the
+//                 overlay's others). Verified when that node is in the skeleton and its draftOverlay at `slot` lists `layer`.
 //   no-part      the host block `block` draws the element as a part with a fixed look: a missing block setting. The check
 //                 verifies it against the block's calibration (`calibration( block )`, the slot map `cache/<block>.json`
 //                 named in `checked`): no setting at any slot paints any of `looks`, or the record is refused.
@@ -326,6 +329,7 @@ export const RECORD_KINDS = {
 	'host-layout': { needs: [ 'node', 'looks' ], delivers: true },
 	absorbed: { needs: [ 'node', 'slot', 'settings', 'looks' ], delivers: true },
 	'link-slot': { needs: [ 'node', 'slot', 'looks' ], delivers: true },
+	overlay: { needs: [ 'node', 'slot', 'setting', 'layer', 'looks' ], delivers: true },
 	'no-part': { needs: [ 'block', 'looks', 'checked' ], delivers: false },
 	'not-calibrated': { needs: [ 'block' ], delivers: false },
 	handover: { needs: [ 'delivers' ], delivers: false },
@@ -383,7 +387,7 @@ export function checkRecords( records, { looks, nodes, below = false, calibratio
 		}
 		const named = [].concat( rec.looks ).filter( ( l ) => looks.includes( l ) );
 		const node = rec.node ? nodes.get( rec.node ) : null;
-		const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] ) : 'absorbed' === rec.kind || 'link-slot' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] : 'inherited' === rec.kind ? below && named.every( ( l ) => INHERITED_LOOKS.includes( l ) ) : !! node && named.every( ( l ) => 'layout' === l );
+		const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] ) : 'absorbed' === rec.kind || 'link-slot' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] : 'overlay' === rec.kind ? rec.slot === node?.draftOverlay?.slot && !! node.draftSlots?.[ rec.slot ] && ( node.draftOverlay.layers || [] ).some( ( f ) => rec.layer === f?.tpl ) : 'inherited' === rec.kind ? below && named.every( ( l ) => INHERITED_LOOKS.includes( l ) ) : !! node && named.every( ( l ) => 'layout' === l );
 		ok ? out.delivered.push( ...named ) : out.bad.push( `${ rec.kind } ${ rec.node ?? '' } ${ rec.setting ?? '' } cannot be verified` );
 	}
 	return out;

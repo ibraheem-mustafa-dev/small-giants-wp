@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/skeleton-propose.mjs",
-		"find": "\t\t\tbandWrapper( e );\n",
+		"find": "\t\t\tr.overlay || bandWrapper( e );\n",
 		"replace": "",
 		"why": "an unwrapped wrapper is never recorded as band evidence"
 	},

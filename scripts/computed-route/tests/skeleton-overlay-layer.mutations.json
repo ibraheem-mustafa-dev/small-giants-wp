@@ -1,0 +1,92 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const overlay = out && 'decorationLayer' === out.rule && out.block && R.overlayLayer ? hooks.overlayInto?.( e ) ?? null : null;",
+		"replace": "const overlay = null;",
+		"why": "no layer is ever the host's overlay: every full-cover gradient stays a decorative image"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "host.node.draftOverlay = { ...o, layers: [ ...o.layers, finder( e ) ] };",
+		"replace": "host.node.draftOverlay = { ...o, layers: [ finder( e ) ] };",
+		"why": "only the top layer is kept: the lower gradient is lost from the stack"
+	},
+	{
+		"file": "lib/fill-overlay-stack.mjs",
+		"find": "export const stackOf = ( values ) => [ ...values ].reverse().filter( painted )",
+		"replace": "export const stackOf = ( values ) => [ ...values ].filter( painted )",
+		"why": "the stack is written bottom first, so the layer drawn first paints on top"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": "return ! a || ! b || [ 'x', 'y', 'w', 'h' ].some( ( k ) => Math.abs( ( a[ k ] ?? 0 ) - ( b[ k ] ?? 0 ) ) > 1 );",
+		"replace": "return ! a || ! b;",
+		"why": "a layer inset from its host's edges is taken as covering it"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": "const extra = Object.keys( st ).filter( ( p ) => ! layerProps.includes( p ) );",
+		"replace": "const extra = [];",
+		"why": "a layer with a transform or an animation is absorbed and its motion lost"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": "if ( undefined !== radius ) {",
+		"replace": "if ( false ) {",
+		"why": "a rounded layer is absorbed and its radius lost"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": "const above = why ? null : kids.slice( 0, at ).find( ( k ) => ws( k.allText ?? k.words ) );",
+		"replace": "const above = null;",
+		"why": "a layer drawn over the content becomes an overlay beneath it"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": "if ( kinds.size > 1 ) {",
+		"replace": "if ( false ) {",
+		"why": "a flat colour beside a gradient is put in one setting that cannot hold both"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": "const property = 'gradient' === kind ? 'background-image' : 'background-color';",
+		"replace": "const property = 'background-image';",
+		"why": "a flat colour layer is written into the gradient setting"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": "if ( ! at.some( ( [ , c ] ) => 'opacity' === c.property ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a host with no overlay opacity setting shows the gradient at its default strength"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": ".map( ( [ name, c ] ) => ( { name, slot: [ c.slot, ...( c.slots || [] ) ].find( ( s ) => coverSlots.includes( s ) ) } ) )",
+		"replace": ".map( ( [ name, c ] ) => ( { name, slot: c.slot } ) )",
+		"why": "a setting painting a part that does not cover the host is taken as its overlay"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'overlay' === rec.kind ? rec.slot === node?.draftOverlay?.slot && !! node.draftSlots?.[ rec.slot ] && ( node.draftOverlay.layers || [] ).some( ( f ) => rec.layer === f?.tpl ) :",
+		"replace": "'overlay' === rec.kind ? !! node :",
+		"why": "an overlay record is taken as delivered by a host that never lists the layer"
+	},
+	{
+		"file": "lib/fill-overlay-stack.mjs",
+		"find": "declared && [ prop, ...( SHORTHAND[ prop ] || [] ) ].forEach( ( n ) => delete declared[ n ] );",
+		"replace": "",
+		"why": "the top layer's declared gradient stays and is written over the stack"
+	},
+	{
+		"file": "lib/fill-overlay-stack.mjs",
+		"find": "rec.targets = rec.targets.filter( ( t ) => ! t.slot.startsWith( OVERLAY_LAYER_SLOT ) );",
+		"replace": "",
+		"why": "a lower layer stays a target the resolver tries to map"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "( Array.isArray( node.draftOverlay?.layers ) ? node.draftOverlay.layers.slice( 0, -1 ) : [] ).forEach(",
+		"replace": "( [] ).forEach(",
+		"why": "the lower layers are never read, so the stack holds the top layer only"
+	}
+]

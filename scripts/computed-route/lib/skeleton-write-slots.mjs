@@ -7,6 +7,7 @@
 import { specHit } from './skeleton-facts.mjs';
 import { bandSetting } from './fill-band.mjs';
 import { absorbSlot, onlyContent } from './skeleton-absorb-wrapper.mjs';
+import { overlayOf } from './skeleton-overlay-layer.mjs';
 import { linkSlotLooks } from './skeleton-wrapper-link-slot.mjs';
 import { styleOf } from './skeleton-paint-conservation.mjs';
 import { renderedWidths } from './element-facts.mjs';
@@ -137,6 +138,17 @@ export function makeSlotRows( ctx ) {
 	function hostSlot( e, r ) {
 		const setting = r.hostSetting ?? R[ r.rule ]?.hostSetting;
 		const host = hosts.at( -1 );
+		// A layer the host takes in as its overlay (`overlay`, lib/skeleton-overlay-layer.mjs): every layer joins the host's
+		// draftOverlay in drawing order, and the last one drawn (the top of the stack) is the overlay slot's draft element.
+		if ( r.overlay ) {
+			if ( host?.e?.key === r.overlay.node ) {
+				const o = host.node.draftOverlay ?? { slot: r.overlay.slot, setting: r.overlay.setting, property: r.overlay.property, layers: [] };
+				host.node.draftOverlay = { ...o, layers: [ ...o.layers, finder( e ) ] };
+				host.node.draftSlots = { ...host.node.draftSlots, [ r.overlay.slot ]: finder( e ) };
+				host.row.slots = { ...host.row.slots, [ r.overlay.slot ]: finder( e ) };
+			}
+			return;
+		}
 		const slot = r.absorbedBy && host?.e?.key === r.absorbedBy.node ? r.absorbedBy.slot : setting && host ? calSettings( host.block )?.[ setting ]?.slot : null;
 		if ( ! slot || host.node.draftSlots?.[ slot ] ) {
 			return;
@@ -155,6 +167,34 @@ export function makeSlotRows( ctx ) {
 		}
 		const at = absorbSlot( { looks, settings: calSettings( host.block ) } );
 		return at && ! host.node.draftSlots?.[ at.slot ] ? { node: host.e.key, block: host.block, ...at } : null;
+	}
+	// The host's overlay a decoration layer is (lib/skeleton-overlay-layer.mjs::overlayOf): { node, slot, setting, property,
+	// others, widthVaries } when the layer is a direct child of the block being built's own draft element and one of the layers
+	// overlayOf absorbs there, null otherwise. The layers beside it are the host element's children the rules make decoration
+	// layers (classified with this hook off, so the question is not asked again while it is being answered); each host
+	// element is judged once.
+	// A layer's style is read as the draft renders it inline (a value its script binds included: a bound transform is still a
+	// transform), never only as the template declares it.
+	const inlineStyle = ( k ) => Object.fromEntries( String( k.attrs?.style || '' ).split( ';' ).map( ( p ) => [ p.slice( 0, p.indexOf( ':' ) ).trim().toLowerCase(), p.slice( p.indexOf( ':' ) + 1 ).trim() ] ).filter( ( [ n, v ] ) => n && v ) );
+	const overlays = new Map();
+	let judging = false;
+	function overlayInto( e ) {
+		const host = hosts.at( -1 );
+		if ( judging || ! host?.e || ! host.node.draftRef || e.parentKey !== host.e.key ) {
+			return null;
+		}
+		if ( ! overlays.has( host.e.key ) ) {
+			judging = true;
+			try {
+				const candidates = m.kids( host.e ).filter( ( k ) => 'decorationLayer' === cls.classify( k, host.block ).rule );
+				const roleOf = ( attr ) => ctx.db?.prepare( 'SELECT role FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( host.block, attr )?.role ?? null;
+				overlays.set( host.e.key, overlayOf( { host: host.e, candidates, m, declaredOf: inlineStyle, settings: calSettings( host.block ) || {}, roleOf, R: R.overlayLayer } ) );
+			} finally {
+				judging = false;
+			}
+		}
+		const o = overlays.get( host.e.key );
+		return o.layers?.includes( e.key ) ? { node: host.e.key, slot: o.slot, setting: o.setting, property: o.property, others: o.others, widthVaries: o.widthVaries } : null;
 	}
 	// An element a rule unwraps that is a direct child of the block's own draft element and holds the block's children: the
 	// block does not draw it, so Fill reads it as evidence of the content band's width (draftBandWrappers,
@@ -201,5 +241,5 @@ export function makeSlotRows( ctx ) {
 		const looks = linkSlotLooks( { slot: s.slot, settings, paint: ctx.calParts?.( s.block )?.elements ?? null, declared: { ...styleOf( e.attrs?.style ), ...declared }, widths: renderedWidths( e ) } );
 		return { node: kids[ 0 ].key, slot: s.slot, looks };
 	}
-	return { buildHeaderRows, buildFooterRows, hostSlot, bandWrapper, unwrapReads, absorbInto };
+	return { buildHeaderRows, buildFooterRows, hostSlot, bandWrapper, unwrapReads, absorbInto, overlayInto };
 }
