@@ -24,11 +24,20 @@ const MediaPanels = lazy( () => import( /* webpackChunkName: "media-panels" */ '
  * @return {string[]} The allowed kinds.
  */
 export function declaredKinds( blockName, prefix ) {
-	const entries = getBlockType( blockName )?.supports?.sgs?.mediaElements;
-	const entry = Array.isArray( entries )
-		? entries.find( ( e ) => ( e.prefix || '' ) === prefix )
-		: null;
+	const entry = declaredEntry( blockName, prefix );
 	return entry && Array.isArray( entry.kinds ) ? entry.kinds : [];
+}
+
+/**
+ * The block's `supports.sgs.mediaElements` entry for one slot, or null.
+ *
+ * @param {string} blockName Block name.
+ * @param {string} prefix    Slot prefix.
+ * @return {Object|null} The entry.
+ */
+function declaredEntry( blockName, prefix ) {
+	const entries = blockName ? getBlockType( blockName )?.supports?.sgs?.mediaElements : null;
+	return Array.isArray( entries ) ? entries.find( ( e ) => ( e.prefix || '' ) === prefix ) || null : null;
 }
 
 /**
@@ -41,7 +50,7 @@ export function declaredKinds( blockName, prefix ) {
  * @param {string}   [props.blockSlug]   Block slug, for stored-name resolution.
  * @param {string[]} [props.atoms]       Atom ids; omitted means every adopted atom.
  * @param {string[]} [props.kinds]       The slot's allowed kinds; a non-empty list selects the panel path.
- * @param {string}   [props.blockName]   Block name, to read `kinds` from its slot entry.
+ * @param {string}   [props.blockName]   Block name, to read `kinds` and `blockOwns` from its slot entry.
  * @param {string}   [props.context]     'element' | 'background' (panel path).
  * @param {boolean}  [props.parallax]    Parallax is on for this background (panel path).
  * @param {Object}   [props.panelContent] Panel id to caller content (panel path).
@@ -62,6 +71,8 @@ export default function MediaElementPanel( {
 	label = '',
 } ) {
 	const slotKinds = Array.isArray( kinds ) && kinds.length ? kinds : declaredKinds( blockName, prefix );
+	// A setting the block edits with its own control (the slot entry's `blockOwns` bases) is not shown twice.
+	const owns = declaredEntry( blockName, prefix )?.blockOwns;
 	if ( slotKinds.length ) {
 		return (
 			<Suspense fallback={ null }>
@@ -76,6 +87,7 @@ export default function MediaElementPanel( {
 					parallax={ parallax }
 					panelContent={ panelContent }
 					label={ label }
+					blockOwns={ Array.isArray( owns ) ? owns : [] }
 				/>
 			</Suspense>
 		);

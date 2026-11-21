@@ -53,6 +53,7 @@ function useActiveDevice() {
  * @param {Object}   [props.panelContent] Panel id to caller-supplied content.
  * @param {string}   [props.device]       Overrides the editor's active device.
  * @param {string}   [props.label]        Names the slot in each panel title ("Before: Media") when a block mounts more than one.
+ * @param {string[]} [props.blockOwns]    Bases the block edits with its own control; their rows are left out.
  * @return {JSX.Element} The panels.
  */
 export default function MediaPanels( {
@@ -67,6 +68,7 @@ export default function MediaPanels( {
 	panelContent = {},
 	device: deviceOverride,
 	label = '',
+	blockOwns = [],
 } ) {
 	const activeDevice = useActiveDevice();
 	const device = deviceOverride || activeDevice;
@@ -75,7 +77,7 @@ export default function MediaPanels( {
 	// block (§10.3). A caller that already knows passes `parallax`; otherwise the block's stored motion says.
 	const blockers = 'background' === context ? pinnedBlockers( attributes?.sgsMotion, getBlockType( name )?.supports?.sgs?.elements ) : {};
 	const parallax = undefined === parallaxProp ? !! blockers.parallax : parallaxProp;
-	const opts = { blockSlug, kinds, context, parallax, transformMotion: !! blockers.transformMotion, adopted: true };
+	const opts = { blockSlug, kinds, context, parallax, transformMotion: !! blockers.transformMotion, adopted: true, blockOwns };
 	const kind = createContext( attributes, device, prefix, opts ).kind;
 	// A background's notes and motion line (§9.6): why Pinned is not offered, then what moves the background. The motion
 	// line shows only on a block that has the Effects panel; a caller's own `panelContent.background` comes first.

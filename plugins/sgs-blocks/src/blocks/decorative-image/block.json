@@ -31,7 +31,7 @@
         },
         "sgs": {
             "motion": true,
-            "_comment_mediaElements": "Spec 49 slot `layer` (kinds image and svg; the video branch is gone). The slot's atoms are narrowed to §10.4's Settings column for this block (Source, Fit, Focal, Width, Max width, Height, Ratio, Opacity, Shape, Blend, Radius, Border, Shadow); the layer's own position, rotation, anchor, stacking, flip, fade on scroll and overflow stay block attributes. `layerBackground`, `layerBorderColourGradient` and `backgroundColourGradient` are the layer's own box paint, not media atoms.",
+            "_comment_mediaElements": "Spec 49 slot `layer` (kinds image and svg; the video branch is gone). The slot's atoms are narrowed to §10.4's Settings column for this block (Source, Fit, Focal, Width, Max width, Height, Ratio, Opacity, Shape, Blend, Radius, Border, Shadow); the layer's own position, rotation, anchor, stacking, flip, fade on scroll and overflow stay block attributes. `layerBackground`, `layerBorderColourGradient` and `backgroundColourGradient` are the layer's own box paint, not media atoms. `blockOwns` lists Background: the media-padding atom's Background colour row would edit `layerBackground`, which the block's own Fill row (LayerBoxPanels) already edits, so the media panel leaves that row out.",
             "mediaElements": [
                 {
                     "prefix": "layer",
@@ -50,6 +50,9 @@
                         "shape",
                         "shadow",
                         "media-padding"
+                    ],
+                    "blockOwns": [
+                        "Background"
                     ]
                 }
             ],

@@ -112,7 +112,9 @@ const PANEL_INDEX = Object.fromEntries( PANELS.map( ( p, i ) => [ p.id, i ] ) );
  * @param {Object}   args.attrs     Block attributes.
  * @param {string}   args.device    'desktop' | 'tablet' | 'mobile'.
  * @param {string}   [args.prefix]  Surface prefix.
- * @param {Object}   [args.opts]    `{ blockSlug, kinds, context, parallax }`.
+ * @param {Object}   [args.opts]    `{ blockSlug, kinds, context, parallax, blockOwns }`. `blockOwns` lists the
+ *                                  bases whose setting the block edits with its own control (the slot entry's
+ *                                  `blockOwns`): their rows are left out, so one setting has one control.
  * @param {boolean}  [args.adopted] Build from the §8 rows of an adopted slot (`kinds` declared).
  * @param {string[]} [args.extraPanelIds] Panels the caller fills itself
  *                                  (typography, hover, effects...).
@@ -121,6 +123,7 @@ const PANEL_INDEX = Object.fromEntries( PANELS.map( ( p, i ) => [ p.id, i ] ) );
  */
 export function buildPanelModel( { atomIds, attrs, device, prefix = '', opts = {}, extraPanelIds = [], adopted = false } ) {
 	const rows = [];
+	const blockOwns = Array.isArray( opts?.blockOwns ) ? opts.blockOwns : [];
 	const ids = adopted && atomIds.length ? adoptedAtomsForElement( { atoms: atomIds } ) : atomIds;
 	ids.forEach( ( id, atomIndex ) => {
 		const atom = adopted ? { settings: ADOPTED_SETTINGS[ id ] } : MEDIA_ATOMS[ id ];
@@ -132,7 +135,7 @@ export function buildPanelModel( { atomIds, attrs, device, prefix = '', opts = {
 		}
 		const states = disclose( attrs, device, prefix, opts );
 		atom.settings.forEach( ( setting ) => {
-			if ( ! setting.control ) {
+			if ( ! setting.control || blockOwns.includes( setting.base ) ) {
 				return;
 			}
 			const state = states[ setting.base ] || { state: 'shown', hiddenReason: null };
