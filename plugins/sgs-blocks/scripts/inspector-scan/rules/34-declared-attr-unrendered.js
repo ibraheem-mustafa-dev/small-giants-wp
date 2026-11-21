@@ -80,6 +80,7 @@ const path = require( 'path' );
 const { execFileSync } = require( 'child_process' );
 const { makeFinding } = require( '../core/finding' );
 const { mediaSystemOwns } = require( '../core/media-facts' );
+const { kitRenders } = require( '../core/kit-facts' );
 
 // The blocking gate this rule now consumes. Resolved relative to this file so
 // it is correct regardless of cwd — one level up from rules/ (inspector-scan/),
@@ -295,7 +296,9 @@ module.exports = {
 		// An attribute the shared media system controls and reads (its panels offer a control for the slot, its renderer
 		// reads the base by a computed key) is named by no block file; see core/media-facts.js.
 		const attrNames = Object.keys( blockJson.data.attributes || {} ).filter(
-			( name ) => ! mediaSystemOwns( ctx.blocksDir, blockJson.data.name, name )
+			( name ) => ! mediaSystemOwns( ctx.blocksDir, blockJson.data.name, name ) &&
+				// A kit's printer (sgs_button_kit_css, sgs_carousel_dots_css) reads it by a prefix the block's render path passes; see core/kit-facts.js.
+				! kitRenders( ctx.blocksDir, blockJson.data.name, name )
 		);
 
 		let rows;

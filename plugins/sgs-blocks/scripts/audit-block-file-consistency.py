@@ -1002,6 +1002,25 @@ def load_media_owned_attrs():
     return owned
 
 
+def load_kit_owned_attrs():
+    """{block slug: set of attributes the built-in button kit or the carousel dots kit wires end to end}.
+
+    A kit builds a block's attribute names from a prefix, so no block file names them; scripts/wiring-fingerprint/
+    kit_wiring.py credits them by the wiring gate's own rules: the block's editor mounts the kit's panel for the prefix
+    (a control) and its render path calls the kit's printer with that prefix (a reader). A prefix the block never mounts
+    or never prints gets no credit.
+    """
+    sys.path.insert(0, str(SCRIPT_DIR / 'wiring-fingerprint'))
+    try:
+        from kit_wiring import kit_wiring
+    finally:
+        sys.path.pop(0)
+    owned = {}
+    for name, attrs in kit_wiring().items():
+        owned[name.split('/', 1)[-1]] = {attr for attr, links in attrs.items() if 'L2' in links and 'L4' in links}
+    return owned
+
+
 def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_attrs, pattern_corpus_by_slug, media_owned=frozenset()):
     findings = []
     controlled = collect_controlled_attrs(block.edit_js)
@@ -1026,7 +1045,7 @@ def check_orphan_attrs(block, shared_php_corpus, shared_js_corpus, extension_att
         if attr in context_values:
             continue
         if attr in media_owned:
-            continue  # the shared media panels control it and the shared renderer reads it by a computed key
+            continue  # a shared panel (media, button kit, carousel dots kit) controls it and a shared printer reads it by a computed key
         if attr in prefixed_consumed:
             continue
         if attr_in_pattern_corpus(attr, pattern_corpus):
@@ -1379,6 +1398,8 @@ def main():
 
     pattern_corpus_by_slug = load_pattern_attr_corpus_by_slug()
     media_owned_by_slug = load_media_owned_attrs()
+    for slug_tail, attrs in load_kit_owned_attrs().items():
+        media_owned_by_slug[slug_tail] = set(media_owned_by_slug.get(slug_tail, set())) | attrs
 
     per_block_findings = {}
     all_findings = []

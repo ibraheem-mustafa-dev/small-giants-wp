@@ -67,6 +67,7 @@ const path = require( 'path' );
 const { makeFinding } = require( '../core/finding' );
 const { resolveComponentFiles } = require( '../core/components' );
 const { mediaSystemOwns } = require( '../core/media-facts' );
+const { kitControls } = require( '../core/kit-facts' );
 
 // Attribute keys that are documentation, not attributes. House convention,
 // mirrored from check-dead-controls.js:342-352 (WordPress would register these
@@ -1073,6 +1074,7 @@ module.exports = {
 		for ( const attr of Object.keys( blockJson.data.attributes || {} ) ) {
 			if ( DOC_ATTR_RE.test( attr ) ) continue;
 			if ( mediaSystemOwns( ctx.blocksDir, blockJson.data.name, attr ) ) continue; // the shared media panels control it and the shared renderer reads it by a computed key
+			if ( kitControls( ctx.blocksDir, blockJson.data.name, attr ) ) continue; // a kit's panel (BuiltinButtonPanel, CarouselDotsPanel) mounted for its prefix controls it; see core/kit-facts.js
 			if ( extensionOwned.has( attr ) ) continue; // extension surface — structurally invisible here
 			if ( coreControlled.has( attr ) ) continue; // WordPress core surface — likewise invisible here
 			if ( helperControlled.has( attr ) ) continue; // resolved via a name-derivation helper call site
