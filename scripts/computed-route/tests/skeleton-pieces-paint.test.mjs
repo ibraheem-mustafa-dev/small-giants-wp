@@ -74,3 +74,52 @@ test( 'negative control: a surface that builds no template keeps the proposal\'s
 		f.done();
 	}
 } );
+
+test( 'MUST FAIL: the filter rail the rules placed is a replaced run: its unread paint is the missing features of the rail, not a problem; paint outside it stays', () => {
+	const f = productRepo();
+	try {
+		// The tree's container at Root/15#0 stands for the draft's rail; the buy box's run and the rail do not overlap.
+		const propose = ( rail ) => () => ( { skeleton: TREE(), proposal: { counts: {}, rows: [], problems: [ STALE ], ...( rail ? { filterRail: rail } : {} ) }, problems: [ STALE ] } );
+		const without = proposeSurface( { client: CLIENT, surface: 'product', repo: f.repo, db, propose: propose( null ) } );
+		assert.match( without.problems.join( '\n' ), /^paint conservation: .*Root\/18#0 background/m, 'with no rail run the painted box in the section is a problem' );
+		const r = proposeSurface( { client: CLIENT, surface: 'product', repo: f.repo, db, propose: propose( { key: 'Root/15#0', groups: [] } ) } );
+		const rows = r.proposal.templatePieces.missingFeatures.filter( ( m ) => 'filter-rail' === m.piece );
+		assert.deepEqual( rows.map( ( m ) => [ m.block, m.key ] ), [ [ 'sgs/container', 'Root/18#0' ], [ 'sgs/container', 'Root/19#1' ] ] );
+		assert.doesNotMatch( r.problems.join( '\n' ), /Root\/18#0/ );
+		assert.match( r.proposal.templatePieces.notes.join( '\n' ), /inside sgs\/container's draft elements \(Root\/15#0\) the draft paints 2 elements .*Root\/18#0 background/ );
+		// Negative controls: a rail that is no node of the tree claims nothing, and the buy box keeps its own missing rows.
+		const gone = proposeSurface( { client: CLIENT, surface: 'product', repo: f.repo, db, propose: propose( { key: 'Root/99#0' } ) } );
+		assert.deepEqual( gone.proposal.templatePieces.missingFeatures.filter( ( m ) => 'filter-rail' === m.piece ), [] );
+		assert.match( gone.problems.join( '\n' ), /Root\/18#0 background/ );
+		const box = ( x ) => x.proposal.templatePieces.missingFeatures.filter( ( m ) => 'buy-box' === m.piece ).map( ( m ) => m.key );
+		// The badge drawn in the buy box and again in the section is owned once both copies sit inside runs: the buy box's own row stays, and its copy joins.
+		assert.deepEqual( box( r ), [ ...box( without ), 'Root/19#0' ] );
+	} finally {
+		f.done();
+	}
+} );
+
+test( 'MUST FAIL: propose leaves the draft\'s filter button out of the tree and records its paint as the rail\'s missing feature; the proposal names the button', () => {
+	const f = productRepo();
+	try {
+		const button = { key: 'Root/40#0', parentKey: 'Root/5#0', tag: 'button', template: 'Root', tpl: 40, srcOwnText: 'Filter', words: 'Filter', snippet: '<button sc-camel-on-click="{{ toggleFilters }}">Filter</button>', attrs: { style: 'background-color: rgb(250, 200, 0)' }, visible: { 375: true, 768: true, 1440: false }, membership: [], position: { 1440: 'static' } };
+		const close = { ...button, key: 'Root/41#0', parentKey: 'Root/15#0', tpl: 41, attrs: {}, words: 'x', visible: { 375: true, 768: false, 1440: false } };
+		const inventory = { elements: [ ...INVENTORY.elements, button ], revealed: [ close ] };
+		fs.writeFileSync( path.join( f.repo, 'sites', CLIENT, 'build', 'skeleton', 'product.inventory.json' ), JSON.stringify( inventory ) );
+		const tree = TREE();
+		tree[ 0 ].innerBlocks[ 0 ].innerBlocks.push( { name: 'sgs/button', attributes: { label: 'Filter' }, innerBlocks: [], draftRef: { tpl: 'Root/40#0' } } );
+		const proposal = { counts: { skeletonNodes: 9, expandedNodes: 9, removed: 0 }, rows: [ { key: 'Root/40#0', block: 'sgs/button', action: null } ], problems: [ STALE ], filterRail: { key: 'Root/15#0', groups: [], notes: [] } };
+		const r = proposeSurface( { client: CLIENT, surface: 'product', repo: f.repo, db, propose: () => ( { skeleton: tree, proposal, problems: [ STALE ] } ) } );
+		assert.doesNotMatch( JSON.stringify( r.skeleton ), /Root\/40#0/, 'the draft\'s filter button is not in the tree' );
+		assert.equal( r.proposal.filterRail.toggle, 'Root/40#0' );
+		assert.deepEqual( [ r.proposal.rows[ 0 ].action, r.proposal.rows[ 0 ].rule, r.proposal.counts.skeletonNodes, r.proposal.counts.removed ], [ 'remove', 'filterRail', 8, 1 ] );
+		assert.deepEqual( r.proposal.templatePieces.missingFeatures.filter( ( m ) => 'Root/40#0' === m.key ).map( ( m ) => [ m.piece, m.block, m.looks.join( '/' ) ] ), [ [ 'filter-rail', 'sgs/container', 'background' ] ] );
+		assert.doesNotMatch( r.problems.join( '\n' ), /Root\/40#0/ );
+		// Negative control: a proposal that placed no rail keeps the button as the rules built it and its paint a problem.
+		const kept = proposeSurface( { client: CLIENT, surface: 'product', repo: f.repo, db, propose: () => ( { skeleton: ( () => { const t = TREE(); t[ 0 ].innerBlocks[ 0 ].innerBlocks.push( { name: 'sgs/button', attributes: {}, innerBlocks: [], draftRef: { tpl: 'Root/40#0' } } ); return t; } )(), proposal: { counts: {}, rows: [], problems: [ STALE ] }, problems: [ STALE ] } ) } );
+		assert.match( JSON.stringify( kept.skeleton ), /Root\/40#0/ );
+		assert.equal( kept.proposal.filterRail, undefined );
+	} finally {
+		f.done();
+	}
+} );

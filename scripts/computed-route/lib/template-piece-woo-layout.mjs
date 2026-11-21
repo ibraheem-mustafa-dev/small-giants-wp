@@ -224,7 +224,9 @@ export function place( ctx, piece ) {
 	const insert = ( list ) => ( list || [] ).flatMap( ( n ) => ( n === block ? [ ...nodes, n ] : [ n.innerBlocks?.length ? { ...n, innerBlocks: insert( n.innerBlocks ) } : n ] ) );
 	return {
 		tree: nodes.length ? insert( pruned ) : pruned,
-		placed: [ { id: piece.id, block: 'core/post-content', at: region } ],
+		// `run`: the region's element, which the block stands for (its form and order summary are the block's own drawing), whose paint no
+		// node reads any more (lib/template-pieces-context.mjs::piecesPaint); the head kept above the block is read at its own nodes.
+		placed: [ { id: piece.id, block: 'core/post-content', at: region, run: [ region ] } ],
 		notes: [
 			...final.map( ( c ) => `${ ctx.key }: ${ c.key } is the ${ c.kind } WooCommerce's block draws (${ c.why })` ),
 			...head.filter( ( h ) => ! kept.includes( h ) ).map( ( h ) => `${ ctx.key }: ${ h.t.key } at the head of the form column is ${ 'express payment' === h.kind ? 'an express-payment group, drawn by the block\'s express payment' : 'divider' === h.kind ? 'the divider between express payment and the fields, drawn by the block' : `${ h.kind }, drawn by the block (it follows the column's own head)` }` ),

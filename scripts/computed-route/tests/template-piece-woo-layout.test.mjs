@@ -116,7 +116,9 @@ test( 'MUST FAIL: the checkout block stands in for the element laying out the fo
 	assert.deepEqual( eyebrow.attributes, { text: 'almost there' } );
 	assert.deepEqual( heading.attributes, { content: 'Pay', level: 'h1' } );
 	assert.equal( heading.draftFingerprint.tag, 'h1' );
-	assert.deepEqual( got.placed.find( ( p ) => 'layout' === p.id ), { id: 'layout', block: 'core/post-content', at: 'Root/5#0' } );
+	assert.deepEqual( got.placed.find( ( p ) => 'layout' === p.id ), { id: 'layout', block: 'core/post-content', at: 'Root/5#0', run: [ 'Root/5#0' ] } );
+	// The run is the region the block stands for, not the heading and eyebrow kept above it (their nodes read their own elements).
+	assert.ok( ! got.placed.find( ( p ) => 'layout' === p.id ).run.some( ( k ) => [ 'Root/16#0', 'Root/17#0' ].includes( k ) ) );
 	assert.deepEqual( checkPieces( { key: 'checkout', tree: got.tree, data: DATA } ), [] );
 } );
 

@@ -49,6 +49,7 @@ import { commerceOf } from './lib/skeleton-commerce-region.mjs';
 import { loadCatalogue } from './lib/catalogue-read.mjs';
 import { tileProducts } from './lib/skeleton-product-tile.mjs';
 import { piecesPass } from './lib/template-pieces-context.mjs';
+import { railPass } from './lib/skeleton-filter-rail.mjs';
 
 const FINALISER_PROMPT = 'scripts/computed-route/prompts/skeleton-finaliser.md';
 
@@ -160,7 +161,12 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	// A template's working pieces (the buy box, the bound title, the shop's sorting) replace the draft's imitation of them (data/template-pieces.json).
 	// Paint conservation is then checked again on the tree with the pieces in it, its lines replacing the proposal's; the paint
 	// inside a piece's replaced draft elements that no located part reads is the piece's missing features (lib/template-pieces-context.mjs::piecesPaint).
-	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory, paint: { problems: r.problems, rows: r.proposal.rows, facts, rootComponent: served ? ctx.rootComponent : null, calibration: calSettingsFor( site, cache ) } } );
+	// The shop's filter rail, placed by the rules, is a replaced run too, and the draft's own filter button leaves the tree for the theme's
+	// trigger (lib/skeleton-filter-rail.mjs::railPass).
+	const railed = railPass( { inventory, proposal: r.proposal, skeleton: r.skeleton } );
+	Object.assign( r.proposal, railed.proposal );
+	r.skeleton = railed.skeleton;
+	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory, paint: { runs: [ railed.run ].filter( Boolean ), problems: r.problems, rows: r.proposal.rows, facts, rootComponent: served ? ctx.rootComponent : null, calibration: calSettingsFor( site, cache ) } } );
 	const paint = pieces.paint;
 	paint && Object.assign( r.proposal, { problems: paint.problems, paintUnread: paint.unread } );
 	Object.assign( r, { skeleton: pieces.tree, problems: [ ...( paint?.problems ?? r.problems ), ...pieces.problems ] } );

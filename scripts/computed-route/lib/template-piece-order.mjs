@@ -160,7 +160,10 @@ function placeLines( ctx, piece, r ) {
 	const notes = [ at( `${ piece.block } stands for the order lines ${ order.lines.key }${ order.rows.length ? ` and the totals row${ order.rows.length > 1 ? 's' : '' } ${ order.rows.map( ( x ) => x.el ).join( ', ' ) }` : '' }; the look of its rows (thumbnail size and shape, item name and price type, row spacing) is not read from the draft, so the block shows its own until a look is set` ) ];
 	// Every block with blocks inside is a rebuilt copy (replaceNodes, or the clone above), so the cards' rule never reaches the caller's tree.
 	const cards = ruleOrderCards( { tree, r, rootComponent: ctx.rootComponent, piece } );
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: order.lines.key, attributes }, ...cards.placed ], notes: [ ...notes, ...cards.notes.map( at ) ] };
+	// `run`: the draft elements of the nodes the block replaced (none when the block went into an empty loop's container and no node was
+	// dropped), whose paint no node reads any more (lib/template-pieces-context.mjs::piecesPaint).
+	const run = [ ...drop ].map( ( n ) => n.draftRef.tpl );
+	return { tree, placed: [ { id: piece.id, block: piece.block, at: order.lines.key, attributes, ...( run.length ? { run } : {} ) }, ...cards.placed ], notes: [ ...notes, ...cards.notes.map( at ) ] };
 }
 
 // The order values piece: bindings on the blocks holding the order's values, Show-to rules on its branches.

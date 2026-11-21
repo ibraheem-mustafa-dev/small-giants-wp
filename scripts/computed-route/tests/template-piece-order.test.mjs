@@ -687,3 +687,17 @@ test( 'MUST FAIL: a second fact in one sentence is a token on every block holdin
 	const single = place( { ...factCtx( planted ), tree: factTree( record ) }, { id: 'order-number', find: 'order-values' } );
 	assert.equal( bindingsOf( single.tree ).filter( ( b ) => bakeLine === b.slice( 1 ).join() ).length, 1 );
 } );
+
+test( 'MUST FAIL: the order lines piece reports the draft elements of the nodes it replaced; a card rule row and a tree where no node was dropped report none', () => {
+	const planted = plant();
+	const got = runBoth( planted, plantedTree( planted.record ) );
+	const row = got.placed.find( ( p ) => 'sgs/order-items' === p.block );
+	assert.deepEqual( row.run, [ 'Root/14#0', 'Root/19#0' ] );
+	// Negative controls: the rule row of the card around the lines owns no run; with the lines' nodes already absent (nothing dropped) no run is reported.
+	assert.ok( got.placed.filter( ( p ) => 'sgs/order-items' !== p.block ).every( ( p ) => undefined === p.run ) );
+	const strip = ( list ) => list.filter( ( n ) => ! row.run.includes( n.draftRef?.tpl ) ).map( ( n ) => ( { ...n, innerBlocks: strip( n.innerBlocks || [] ) } ) );
+	const empty = runBoth( planted, strip( plantedTree( planted.record ) ) );
+	const none = empty.placed.find( ( p ) => 'sgs/order-items' === p.block );
+	assert.ok( none, 'the block is still placed, in the loop container' );
+	assert.equal( none.run, undefined );
+} );

@@ -21,5 +21,7 @@
 	{"file":"data/template-pieces.json","find":"{ \"id\": \"checkout\", \"block\": \"core/post-content\", \"required\": true, \"kind\": \"rule\", \"by\": \"commerceRegion\" },\n\t\t\t\t{ \"id\": \"layout\", \"block\": \"core/post-content\", \"required\": false, \"kind\": \"woo-layout\" },","replace":"{ \"id\": \"checkout\", \"block\": \"core/post-content\", \"required\": true, \"kind\": \"rule\", \"by\": \"commerceRegion\" },","why":"the checkout template has no layout piece"},
 	{"file":"lib/template-pieces-context.mjs","find":"order, 'woo-layout': wooLayout, frame, account };","replace":"order, frame, account };","why":"the layout piece has no builder"},
 	{"file":"lib/template-pieces-context.mjs","find":"export const FACT_KINDS = [ 'order', 'woo-layout', 'frame' ];","replace":"export const FACT_KINDS = [ 'order' ];","why":"the layout builder is handed no fact record"},
-	{"file":"lib/template-pieces-context.mjs","find":"commerce: commerceOf( entry, pageRows ),","replace":"commerce: null,","why":"the layout builder is handed no commerce role, so it finds no region"}
+	{"file":"lib/template-pieces-context.mjs","find":"commerce: commerceOf( entry, pageRows ),","replace":"commerce: null,","why":"the layout builder is handed no commerce role, so it finds no region"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "at: region, run: [ region ] } ],", "replace": "at: region } ],", "why": "the layout piece reports no replaced region, so its unread paint stays a problem"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "at: region, run: [ region ] } ],", "replace": "at: region, run: [ region, ...kept.map( ( h ) => h.t.key ) ] } ],", "why": "the kept heading and eyebrow are claimed as replaced"}
 ]

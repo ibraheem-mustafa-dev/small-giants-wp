@@ -133,7 +133,8 @@ export function placedLint( before, after, db ) {
 // rule's or the theme's is not checked here: a theme piece arrives only when the template copy is made
 // (lib/template-copies.mjs::themeContent), so a skeleton never holds it. Whatever a builder placed that the skeleton
 // lint refuses is a problem (placedLint), so Fill never meets it; `db` is the framework database (opened when not given).
-// `paint`: { problems, rows, facts, rootComponent, calibration }, the proposal's problems and rows, the skeleton facts
+// `paint`: { runs, problems, rows, facts, rootComponent, calibration }, `runs` the placed rows of runs the rules placed outside the
+// pieces (the shop's filter rail, lib/skeleton-filter-rail.mjs::railRun), checked as a piece's run is, and the proposal's problems and rows, the skeleton facts
 // (lib/skeleton-facts.mjs::loadFacts, whose fact record gives the declared styles), the component the served inventory calls
 // `Root` and the calibrated settings by block; the result then carries `paint` (piecesPaint's), null when the tree is unchanged.
 export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS, facts = null, db = null, paint = null } ) {
@@ -148,7 +149,7 @@ export function piecesPass( { repo, client, entry, tree, inventory, data = loadP
 	const lint = placedLint( tree, got.tree, db || openDb() ).map( ( m ) => `${ key }: a placed piece breaks the skeleton lint: ${ m }` );
 	const record = paint ? recordFor( paint.facts ) : null;
 	const view = paint ? recordView( record, { openers: record ? openersFor( paint.facts ) : {}, rootComponent: paint.rootComponent ?? null } ) : null;
-	return { ...got, problems: [ ...got.problems, ...lint ], template, paint: paint ? piecesPaint( { key, inventory, rows: paint.rows, tree: got.tree, placed: got.placed, problems: paint.problems, view, calibration: paint.calibration } ) : null };
+	return { ...got, problems: [ ...got.problems, ...lint ], template, paint: paint ? piecesPaint( { key, inventory, rows: paint.rows, tree: got.tree, placed: [ ...got.placed, ...( paint.runs || [] ) ], problems: paint.problems, view, calibration: paint.calibration } ) : null };
 }
 
 // The proposal problem lines paint conservation writes (lib/skeleton-paint-conservation.mjs::paintProblems), told from the

@@ -8,6 +8,7 @@ import { place } from '../lib/template-piece-shop-sort.mjs';
 import { countBlocks } from '../lib/template-pieces.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { openDb } from '../lib/db.mjs';
+import { piecesPaint } from '../lib/template-pieces-context.mjs';
 
 const ORDERS = { default: 'menu_order', priceAsc: 'price', priceDesc: 'price-desc' };
 const SORT = { id: 'sorting', block: 'woocommerce/catalog-sorting', required: false, kind: 'shop-sort', find: { surface: 'filter', contains: 'wp:woocommerce/catalog-sorting', labelBlock: { wrapper: 'sgs/container', text: 'sgs/text', words: 'text' }, orders: ORDERS } };
@@ -108,4 +109,46 @@ test( 'MUST FAIL: a sort record that disagrees with the inventory, or no collect
 	const two = TREE();
 	two[ 0 ].innerBlocks[ 1 ].innerBlocks.push( structuredClone( two[ 0 ].innerBlocks[ 1 ].innerBlocks[ 1 ] ) );
 	assert.match( place( ctx( { tree: two } ), SORT ).problems[ 0 ], /the tree holds 2 woocommerce\/product-collection/ );
+} );
+
+// Paint conservation after the pieces (lib/template-pieces-context.mjs::piecesPaint): the sorting and the count each name the
+// draft element they replaced (`run`), so the paint of that element is the piece's missing feature, not a problem. The draft's
+// select (Root/17#0) and count (Root/27#0) are painted, and so are a select no piece replaces (Root/22#0, built as a form field
+// that reads it) and a box with no node at all (Root/40#0).
+const PAINT = { attrs: { style: 'background-color: rgb(250, 200, 0)' } };
+const PAINTED = () => ( { elements: [ ...INVENTORY.elements.map( ( e ) => ( [ 17, 27 ].includes( e.tpl ) ? { ...e, ...PAINT } : e ) ), { ...el( 40, 26, 'div' ), ...PAINT } ] } );
+const KEPT_LINE = /paint conservation: .*Root\/40#0/;
+
+test( 'MUST FAIL: the sorting and the results count report the draft elements they replaced', () => {
+	const sorted = place( ctx( { inventory: PAINTED() } ), SORT );
+	assert.deepEqual( sorted.placed[ 0 ].run, [ 'Root/17#0' ] );
+	assert.deepEqual( place( ctx( { tree: sorted.tree, inventory: PAINTED() } ), COUNT ).placed[ 0 ].run, [ 'Root/27#0' ] );
+	// Negative controls: a piece that places nothing (the tree already holds the block, or the draft shows no sort control) reports no placed row.
+	assert.equal( place( ctx( { tree: sorted.tree } ), SORT ).placed, undefined );
+	assert.equal( place( ctx( { shopParts: { surfaces: [] } } ), SORT ).placed, undefined );
+} );
+
+test( 'MUST FAIL: the paint of the element the sorting replaced is its missing feature, not a problem; paint outside the run stays', () => {
+	const inventory = PAINTED();
+	const sorted = place( ctx( { inventory } ), SORT );
+	const both = place( ctx( { tree: sorted.tree, inventory } ), COUNT );
+	const placed = [ ...sorted.placed, ...both.placed ];
+	const before = piecesPaint( { key: 'archive-product', inventory, rows: [], tree: both.tree, placed: placed.map( ( { run, ...p } ) => p ), problems: [] } );
+	assert.match( before.problems.join( '\n' ), /Root\/17#0/, 'with no run the select is a problem' );
+	const out = piecesPaint( { key: 'archive-product', inventory, rows: [], tree: both.tree, placed, problems: [] } );
+	assert.deepEqual( out.missing.map( ( m ) => [ m.piece, m.block, m.key ] ), [ [ 'sorting', 'woocommerce/catalog-sorting', 'Root/17#0' ], [ 'results-count', 'woocommerce/product-results-count', 'Root/27#0' ] ] );
+	assert.doesNotMatch( out.problems.join( '\n' ), /Root\/17#0|Root\/27#0/ );
+	assert.match( out.notes.join( '\n' ), /inside woocommerce\/catalog-sorting's draft elements \(Root\/17#0\)/ );
+	// Negative control: the box no node reads, outside both runs, stays a problem.
+	assert.match( out.problems.join( '\n' ), /Root\/40#0/ );
+	assert.match( out.problems.find( ( x ) => KEPT_LINE.test( x ) ), /Root\/40#0 background/ );
+} );
+
+test( 'MUST FAIL: when the node that stood for the select was built from the label holding it, the label is the draft\'s own wrapper again and the select alone is the run', () => {
+	const tree = TREE();
+	tree[ 0 ].innerBlocks[ 0 ].innerBlocks.splice( 1, 1, n( 'sgs/form-field-select', 15, { label: 'Sort' } ) );
+	const got = place( ctx( { tree, inventory: PAINTED() } ), SORT );
+	assert.equal( got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 1 ].draftRef.tpl, 'Root/15#0' );
+	assert.deepEqual( got.placed[ 0 ].run, [ 'Root/17#0' ] );
+	assert.match( got.placed[ 0 ].at, /in place of Root\/15#0 \(sgs\/form-field-select\), inside the draft's label Root\/15#0/ );
 } );

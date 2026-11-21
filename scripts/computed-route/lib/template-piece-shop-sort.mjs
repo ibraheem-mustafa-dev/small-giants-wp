@@ -145,7 +145,10 @@ function placeSorting( ctx, piece, index ) {
 	at.list.splice( where, 1, put );
 	const holder = treeNodes( tree ).find( ( r ) => r.node.innerBlocks === at.list )?.node;
 	const inside = put === sorting ? '' : `, inside the draft's label ${ label.key } beside its words ${ absorbed.map( ( e ) => e.key ).join( ', ' ) }`;
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ holder ? refKey( holder ) || holder.name : 'the top' }, position ${ where }, in place of ${ refKey( at.node ) } (${ at.node.name })${ inside }` } ], notes };
+	// `run`: the draft element the sorting replaced (the select, not the label that became the draft's own wrapper again), whose paint no
+	// node reads any more (lib/template-pieces-context.mjs::piecesPaint). WooCommerce's sorting has no part-look locator, so none of it is read.
+	const run = [ put !== sorting && label.key === refKey( at.node ) ? select.key : refKey( at.node ) ];
+	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ holder ? refKey( holder ) || holder.name : 'the top' }, position ${ where }, in place of ${ refKey( at.node ) } (${ at.node.name })${ inside }`, run } ], notes };
 }
 
 // Whether a hole's values are the length of the list `list` (the listing's loop list) plus any words.
@@ -178,7 +181,8 @@ function placeCount( ctx, piece, index, listing ) {
 	const where = at.list.indexOf( at.node );
 	at.list.splice( where, 1, { name: piece.block, attributes: {}, innerBlocks: [] } );
 	const holder = treeNodes( tree ).find( ( r ) => r.node.innerBlocks === at.list )?.node;
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ holder ? refKey( holder ) || holder.name : 'the top' }, position ${ where }, in place of ${ e.key } (${ at.node.name })` } ], notes: [ `${ key }: piece "${ piece.id }": WooCommerce words the count its own way; the draft's reads "${ String( e.srcOwnText ).trim() }" ("${ e.words }")` ] };
+	// `run`: the draft element the count replaced, whose paint no node reads any more (lib/template-pieces-context.mjs::piecesPaint).
+	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ holder ? refKey( holder ) || holder.name : 'the top' }, position ${ where }, in place of ${ e.key } (${ at.node.name })`, run: [ e.key ] } ], notes: [ `${ key }: piece "${ piece.id }": WooCommerce words the count its own way; the draft's reads "${ String( e.srcOwnText ).trim() }" ("${ e.words }")` ] };
 }
 
 export function place( ctx, piece ) {
