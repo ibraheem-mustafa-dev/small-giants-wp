@@ -76,5 +76,17 @@
 		"find": "failures.length && lines.push( '## Verify failed',",
 		"replace": "false && lines.push( '## Verify failed',",
 		"why": "the report hides a failed verify"
+	},
+	{
+		"file": "data/part-live-selectors.json",
+		"find": "\"box\": \".product-card\",\n\t\t\t",
+		"replace": "",
+		"why": "the product card's root, a wrapper element whose block.json element declares no selector, is no longer named by the route data"
+	},
+	{
+		"file": "data/part-live-selectors.json",
+		"find": ",\n\t\t\t\"wishlist\": \".sgs-product-card__wishlist\"",
+		"replace": "",
+		"why": "the product card's wishlist heart, which declares no block.json selector so that its base transition stays, is no longer named by the route data"
 	}
 ]

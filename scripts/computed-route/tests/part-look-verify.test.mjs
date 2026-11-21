@@ -356,3 +356,78 @@ test( 'the report names a failed verify, and says nothing when none failed', () 
 	assert.match( reportMarkdown( { ...args, failures: [ 'header: the draft located 2 parts and the live read compared no pair' ] } ), /## Verify failed\n\n- header: the draft located 2 parts/ );
 	assert.doesNotMatch( reportMarkdown( { ...args, failures: [] } ), /Verify failed/ );
 } );
+
+// ---- sgs/account and sgs/product-card: every element declares the class its render code prints -------------------------------
+
+// Every .php and .js file under the given plugin folders, as one text (the block's own folder, its includes, the blocks it prints markup of).
+const printedBy = ( ...dirs ) => {
+	const root = new URL( '../../../plugins/sgs-blocks/', import.meta.url );
+	const walk = ( dir ) => fs.readdirSync( new URL( `${ dir }/`, root ), { withFileTypes: true } ).flatMap( ( e ) => ( e.isDirectory()
+		? walk( `${ dir }/${ e.name }` )
+		: ( /\.(php|js)$/.test( e.name ) && ! /\.min\.js$/.test( e.name ) ? [ fs.readFileSync( new URL( `${ dir }/${ e.name }`, root ), 'utf8' ) ] : [] ) ) );
+	return dirs.flatMap( walk ).join( '\n' );
+};
+const ACCOUNT_SOURCES = printedBy( 'src/blocks/account', 'includes/account' );
+const PRODUCT_CARD_SOURCES = ( () => {
+	const fs2 = ( f ) => fs.readFileSync( new URL( `../../../plugins/sgs-blocks/includes/${ f }`, import.meta.url ), 'utf8' );
+	const includes = fs.readdirSync( new URL( '../../../plugins/sgs-blocks/includes/', import.meta.url ) ).filter( ( f ) => /^product-card.*\.php$/.test( f ) ).map( fs2 );
+	// the option-picker pill the card holds is printed by the sgs/option-picker block
+	return [ printedBy( 'src/blocks/product-card', 'src/blocks/option-picker' ), ...includes ].join( '\n' );
+} )();
+const printsClass = ( text, cls ) => new RegExp( `(?<![\\w-])${ cls }(?![\\w-])` ).test( text );
+// A class a helper builds from the root class it is handed: includes/helpers-value-ladder.php::sgs_value_ladder_markup prints the class made of the root and '__saving',
+// and the card passes `product-card__value-ladder` (render.php).
+const printsBuilt = ( cls ) => 'product-card__value-ladder__saving' === cls
+	&& printsClass( PRODUCT_CARD_SOURCES, 'product-card__value-ladder' )
+	&& /\$wrapper_class \) \. '__saving"/.test( fs.readFileSync( new URL( '../../../plugins/sgs-blocks/includes/helpers-value-ladder.php', import.meta.url ), 'utf8' ) );
+const classesOf = ( selector ) => ( selector.match( /\.[A-Za-z][\w-]*/g ) || [] ).map( ( c ) => c.slice( 1 ) );
+const liveFor = ( block, short ) => {
+	const elements = blockElementsOf( REPO, short );
+	return { elements, ...liveSelectorsFor( { parts: Object.keys( elements ), blockKey: null, table: TABLE, map: LIVE_MAP, elements, short, block } ) };
+};
+
+// The parts this change declares in block.json (sgs/account) and the classes its render code prints for each; the rest of the block's selectors
+// name WooCommerce's own classes, which no SGS code prints.
+const ACCOUNT_ADDED = { heading: '.sgs-account__heading', chip: '.sgs-account__chip', trackDone: '.sgs-account__progress-step--done' };
+
+test( 'MUST FAIL: every element of sgs/account has a live selector, except the active-item bar that is a pseudo-element', () => {
+	const r = liveFor( 'sgs/account', 'account' );
+	assert.ok( Object.keys( r.elements ).length > 80, 'the account block declares its elements' );
+	assert.deepEqual( Object.keys( r.none ), [ 'menuIndicator' ], 'only the bar, which is ::after of the active menu link and carries no class, has no selector' );
+	assert.match( ACCOUNT_SOURCES, /is-active > a::after/, 'the bar is printed as a pseudo-element of the active link (includes/account/helpers-account-look-css.php)' );
+	assert.equal( r.selectors.menuActive, LIVE_MAP.blocks[ 'sgs/account' ].menuActive, 'the active item is named by the route data: the nav shows only when signed in' );
+} );
+
+test( 'MUST FAIL: the sgs/account elements declared here name classes the account code prints', () => {
+	const r = liveFor( 'sgs/account', 'account' );
+	for ( const [ part, selector ] of Object.entries( ACCOUNT_ADDED ) ) {
+		assert.equal( r.elements[ part ]?.selector, selector, `${ part } declares ${ selector } in block.json` );
+		for ( const c of classesOf( selector ) ) {
+			assert.ok( printsClass( ACCOUNT_SOURCES, c ), `${ part }: the class ${ c } is not printed by the account block` );
+		}
+	}
+} );
+
+test( 'MUST FAIL: every element of sgs/product-card has a live selector and each class in it is one the card prints', () => {
+	const r = liveFor( 'sgs/product-card', 'product-card' );
+	assert.ok( Object.keys( r.elements ).length > 30, 'the product card declares its elements' );
+	assert.deepEqual( r.none, {}, 'no element of sgs/product-card is left without a selector' );
+	assert.equal( r.selectors.box, LIVE_MAP.blocks[ 'sgs/product-card' ].box, 'the card root is a wrapper element: the route data names it' );
+	assert.equal( r.selectors.wishlist, LIVE_MAP.blocks[ 'sgs/product-card' ].wishlist, 'the wishlist heart is named by the route data: a block.json selector would drop its base transition (generate-motion-base-transitions.py)' );
+	assert.equal( r.elements.wishlist.selector, undefined, 'the wishlist element declares no block.json selector' );
+	for ( const [ part, selector ] of Object.entries( r.selectors ) ) {
+		const classes = classesOf( selector );
+		assert.ok( classes.length, `${ part }: ${ selector } names a class` );
+		for ( const c of classes ) {
+			assert.ok( printsClass( PRODUCT_CARD_SOURCES, c ) || printsBuilt( c ), `${ part }: the class ${ c } is not printed by the product card` );
+		}
+	}
+} );
+
+test( 'negative control: the class check refuses a class the account and card code never print', () => {
+	assert.equal( printsClass( ACCOUNT_SOURCES, 'sgs-account__progress-step--done' ), true );
+	assert.equal( printsClass( ACCOUNT_SOURCES, 'sgs-account__trackDone' ), false );
+	assert.equal( printsClass( PRODUCT_CARD_SOURCES, 'sgs-product-card__title' ), true );
+	assert.equal( printsClass( PRODUCT_CARD_SOURCES, 'sgs-product-card__priceNote' ), false );
+	assert.equal( printsClass( PRODUCT_CARD_SOURCES, 'sgs-option-picker__pill' ), true );
+} );
