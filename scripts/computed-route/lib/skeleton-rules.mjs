@@ -500,6 +500,24 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// included; the declared height for an element read before the values were recorded).
 	const thin = ( e, st ) => everyWidth( e, ( r ) => ( pxOf( r.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ), () => ( px( st.height ) ?? 99 ) <= ( R.readingProgress?.maxHeightPx ?? 6 ) );
 	const markerShape = ( e ) => isMarker( e, m, R.dotMarker, view );
+	// A dot that leads a line of words: the element's only child, a marker (rules.dotMarker) as wide as it is tall at every width
+	// it renders, painting a fill of its own, written before the element's words in the draft's code (its markup opens the
+	// element's content). The words are the element's own.
+	const leadingDot = ( e ) => {
+		const kids = m.kids( e );
+		const k = kids[ 0 ];
+		if ( 1 !== kids.length || ! m.words( e ) || ! markerShape( k ) ) {
+			return false;
+		}
+		const both = Object.keys( k.visible || {} ).filter( ( w ) => k.visible[ w ] && e.visible?.[ w ] && k.box?.[ w ] && e.box?.[ w ] );
+		const fill = Object.entries( declared( k, tokens ) ).some( ( [ p, val ] ) => FILL.test( p ) && ! /^(?:none|transparent|rgba\(0,\s*0,\s*0,\s*0\))$/.test( String( val ).trim() ) );
+		const first = /^\s*</.test( String( e.snippet ?? '' ).replace( /^<[^>]*>/, '' ) );
+		return fill && first && both.length > 0 && both.every( ( w ) => Math.abs( k.box[ w ].w - k.box[ w ].h ) <= 0.5 );
+	};
+	// A line of words led by a dot, on one line at every width it renders (shorter than two lines of its type). Rows of a dot and
+	// words stacked or set in a grid's columns are one list (Bean, 2026-10-19): the list writer takes them before any rule
+	// (lib/skeleton-write-units.mjs), so a dot line the rules see stands alone.
+	const dotLine = ( e ) => leadingDot( e ) && everyWidth( e, ( r ) => null != pxOf( r.height ) && null != pxOf( r[ 'font-size' ] ) && pxOf( r.height ) < 2 * pxOf( r[ 'font-size' ] ), () => false );
 	// The first piece of text in a card that is not a bare number, set bold and larger than the next piece of text: the
 	// card's title. The card is the nearest ancestor (two levels up at most) holding two or more pieces of text.
 	const headsCard = ( e, st ) => {
@@ -798,8 +816,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
 		// pill it is a kicker. A control the visitor operates and a bare number are neither.
 		( { e, st, kidsB } ) => {
-			// Its only children may be bare decorations (a marker dot), which the label, a leaf, absorbs.
-			if ( kidsB.some( ( k ) => ! bare( k ) ) || ! m.words( e ) || HEADING.test( e.tag ) || 'a' === e.tag || interactive( e ) || numberOnly( e ) || m.words( e ).split( ' ' ).length > ( R.label?.maxWords ?? 4 ) ) {
+			// Its only children may be bare decorations (a marker dot), which the label, a leaf, absorbs. A line led by a dot
+			// (dotLine) is a label whatever its length or case: the dot is the label's own (rules.label.leadingDot).
+			const line = !! R.label?.leadingDot && dotLine( e );
+			if ( kidsB.some( ( k ) => ! bare( k ) ) || ! m.words( e ) || HEADING.test( e.tag ) || 'a' === e.tag || interactive( e ) || numberOnly( e ) || ( ! line && m.words( e ).split( ' ' ).length > ( R.label?.maxWords ?? 4 ) ) ) {
 				return null;
 			}
 			const heading = headsRowColumn( e ) && v( 'columnHeading', { block: R.columnHeading?.block } );
@@ -812,7 +832,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const minTrack = R.label?.minTrackingEm ?? 0.06;
 			const caps = everyWidth( e, ( r ) => 'uppercase' === r[ 'text-transform' ] || ( pxOf( r[ 'font-size' ] ) ? ( pxOf( r[ 'letter-spacing' ] ) ?? 0 ) / pxOf( r[ 'font-size' ] ) : 0 ) >= minTrack, () => 'uppercase' === st[ 'text-transform' ] || ( em( st[ 'letter-spacing' ] ) ?? 0 ) >= minTrack );
 			const pill = everyWidth( e, ( r ) => CORNERS.every( ( c ) => ( pxOf( r[ c ] ) ?? 0 ) >= 99 ) && SIDES.some( ( c ) => ( pxOf( r[ c ] ) ?? 0 ) > 0 ), () => ( px( st[ 'border-radius' ] ) ?? 0 ) >= 99 && !! st.padding );
-			const label = ( caps || pill ) && ! hooks.isColumnLabel( e ) && v( 'label', { block: R.label?.block } );
+			// A label whose words a dot leads draws that dot as its own (the dot setting on): the absorbed dot is read at the label's
+			// dot layer (lib/skeleton-conserve-slots.mjs::absorbedSlots).
+			const dotted = R.label?.leadingDot && leadingDot( e ) ? { attributes: structuredClone( R.label.leadingDot.attributes ), wordsOwn: true } : {};
+			const label = ( caps || pill || line ) && ! hooks.isColumnLabel( e ) && v( 'label', { block: R.label?.block, ...dotted } );
 			if ( label ) {
 				return label;
 			}

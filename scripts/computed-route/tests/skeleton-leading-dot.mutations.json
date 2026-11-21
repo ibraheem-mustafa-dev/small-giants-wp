@@ -1,0 +1,110 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const label = ( caps || pill || line ) && ! hooks.isColumnLabel( e )",
+		"replace": "const label = ( caps || pill ) && ! hooks.isColumnLabel( e )",
+		"why": "a line led by a dot is no label: it stays a text that drops its dot"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "( ! line && m.words( e ).split( ' ' ).length > ( R.label?.maxWords ?? 4 ) )",
+		"replace": "( m.words( e ).split( ' ' ).length > ( R.label?.maxWords ?? 4 ) )",
+		"why": "a dot line longer than a kicker is refused by the kicker's word cap"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "pxOf( r.height ) < 2 * pxOf( r[ 'font-size' ] )",
+		"replace": "true",
+		"why": "a line that wraps is taken as a dot label"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return fill && first && both.length > 0",
+		"replace": "return fill && both.length > 0",
+		"why": "a dot after the words is taken as leading them"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "const lead = leading ? leadingLooks( settings ) : new Set();",
+		"replace": "const lead = leadingLooks( settings );",
+		"why": "a host whose verdict draws no leading layer reads its mark there anyway"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": ", leading: !! rowOf[ hostKey ]?.wordsOwn } );",
+		"replace": " } );",
+		"why": "the propose step never tells the slot path the label draws its dot"
+	},
+	{
+		"file": "lib/skeleton-write-record.mjs",
+		"find": " ...( r.wordsOwn ? { wordsOwn: true } : {} ),\n",
+		"replace": "\n",
+		"why": "the row forgets the verdict draws its leading layer"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "{ attributes: structuredClone( R.label.leadingDot.attributes ), wordsOwn: true }",
+		"replace": "{ wordsOwn: true }",
+		"why": "the label absorbs its dot but never draws it"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "{ attributes: structuredClone( R.label.leadingDot.attributes ), wordsOwn: true }",
+		"replace": "{ attributes: structuredClone( R.label.leadingDot.attributes ) }",
+		"why": "the label loses its own words to the dot it draws"
+	},
+	{
+		"file": "lib/skeleton-propose.mjs",
+		"find": "const own = r.rule && ! r.wordsOwn && ( drawn || top.attributes?.displayType );",
+		"replace": "const own = r.rule && ( drawn || top.attributes?.displayType );",
+		"why": "the propose step drops the label's words beside its dot"
+	},
+	{
+		"file": "lib/skeleton-classify.mjs",
+		"find": ", ...( r.wordsOwn ? { wordsOwn: true } : {} ) };",
+		"replace": " };",
+		"why": "the verdict's wordsOwn never reaches the row"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "\tif ( marked && marked.looks.some( ( l ) => lead.has( l ) ) ) {",
+		"replace": "\tif ( false ) {",
+		"why": "the absorbed dot is read by nothing (a conservation problem)"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "\tif ( ! at.some( ( s ) => SIZE.test( String( s.property ) ) ) ) {\n\t\treturn new Set();\n\t}\n",
+		"replace": "",
+		"why": "the gradient border every block paints on its ::before takes a leading child as its part"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "if ( ! k || String( k.words ?? '' ).trim() || kids( k ).length ) {",
+		"replace": "if ( ! k || kids( k ).length ) {",
+		"why": "a child with words is taken as the leading mark"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "const inFlow = both.every( ( w ) => ! [ 'absolute', 'fixed' ].includes( k.position?.[ w ] ) );",
+		"replace": "const inFlow = true;",
+		"why": "an out-of-flow child is taken as the leading mark"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "both.every( ( w ) => k.box[ w ].w < host.box[ w ].w && k.box[ w ].h < host.box[ w ].h ) ? k : null",
+		"replace": "k",
+		"why": "a child as big as its host is taken as the leading mark"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "&& ( slot !== LEADING_LAYER || JSON.stringify( finder ) === JSON.stringify( node.draftRef ) )",
+		"replace": "",
+		"why": "the lint refuses the leading layer naming the dot's element"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "( slot !== LEADING_LAYER || JSON.stringify( finder ) === JSON.stringify( node.draftRef ) )",
+		"replace": "( slot !== LEADING_LAYER )",
+		"why": "the lint lets the leading layer name the node's own element"
+	}
+]

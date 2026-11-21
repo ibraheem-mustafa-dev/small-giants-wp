@@ -531,7 +531,11 @@
 		"label": {
 			"maxWords": 4,
 			"minTrackingEm": 0.06,
-			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
+			"leadingDot": {
+				"attributes": { "dot": true },
+				"reason": "a dot that leads a label's words (its only child, a round marker with a fill of its own at the start of its content) is the label's own dot, so the dot setting is on and the dot's look is read at the label's dot layer; a line of words led by such a dot, on one line and alone among its siblings, is a label whatever its length or case (stacked rows of a dot and words stay one list, Bean 2026-10-19)"
+			},
+			"reason": "a short run of words set in capitals, wide tracking or a pill is a kicker, eyebrow or pill, and a single line led by a dot is a status label: sgs/label; never a control the visitor operates (a button, a click handler, a pressed or expanded state) and never a bare number",
 			"block": "sgs/label"
 		},
 		"clientBuiltSurface": {

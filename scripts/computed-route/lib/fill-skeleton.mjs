@@ -11,6 +11,7 @@
 import { handoverProblems } from './fill-handover.mjs';
 import { brandRegistry } from './brand-registry.mjs';
 import { parseInstanceKey, instanceKey } from './fact-key.mjs';
+import { LEADING_LAYER } from './skeleton-conserve-slots.mjs';
 
 const isStr = ( v ) => 'string' === typeof v && '' !== v.trim();
 
@@ -211,7 +212,9 @@ export function skeletonProblems( tree ) {
 		for ( const [ slot, finder ] of Object.entries( node.draftSlots || {} ) ) {
 			if ( '' === slot ) {
 				problems.push( `${ label } draftSlots has an empty slot key (the block root is the draftRef)` );
-			} else if ( /::(before|after)$/.test( slot ) ) {
+			} else if ( /::(before|after)$/.test( slot ) && ( slot !== LEADING_LAYER || JSON.stringify( finder ) === JSON.stringify( node.draftRef ) ) ) {
+				// A layer the draft paints is read from its element. The block's leading layer may name a draft element of its
+				// own: a mark set before the block's words that the block draws as that layer (lib/skeleton-conserve-slots.mjs).
 				problems.push( `${ label } slot "${ slot }" names a pseudo layer: a layer is read from its element, name the element` );
 			} else if ( finderProblem( finder ) ) {
 				problems.push( `${ label } slot "${ slot }": ${ finderProblem( finder ) }` );

@@ -208,8 +208,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const block = top.block;
 		// A rule's attributes are the block's settings; a block that draws its children takes no words from them.
 		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
-		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute.
-		const own = r.rule && ( drawn || top.attributes?.displayType );
+		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute. A
+		// verdict whose words are the element's own beside a child the block draws (a label's leading dot: `wordsOwn`) keeps them.
+		const own = r.rule && ! r.wordsOwn && ( drawn || top.attributes?.displayType );
 		const { a, handover, formats = [] } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
 		// A navigation block's collapse point is the width the draft shows its navigation at.
 		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
@@ -555,7 +556,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		const absorbed = unread.filter( ( x ) => x.host === hostKey ).map( ( x ) => ( { element: m.byKey[ x.key ], looks: Object.keys( x.looks ) } ) ).filter( ( a ) => a.element );
 		const kidsOf = ( x ) => m.kids( x ).filter( ( k ) => ! m.isPart( k ) );
-		const made = absorbedSlots( { host, node, absorbed, kids: kidsOf, finder, settings: calSettings( node.name ), tags: calTags( node.name ), block: node.name, checked: slotMapFile( 'cache', node.name ).split( '\\' ).join( '/' ) } );
+		const made = absorbedSlots( { host, node, absorbed, kids: kidsOf, finder, settings: calSettings( node.name ), tags: calTags( node.name ), block: node.name, checked: slotMapFile( 'cache', node.name ).split( '\\' ).join( '/' ), leading: !! rowOf[ hostKey ]?.wordsOwn } );
 		// Where no slot walk lands, the general pairing (lib/skeleton-part-pairing.mjs) decides which measured part each left
 		// element is, and reads it at that part's slots; an element with several fitting parts is a problem naming them.
 		const left = new Set( made.unmatched.map( ( u ) => u.key ) );

@@ -6,7 +6,9 @@
 // at any slot and in any state, paints any of its looks (the block draws it with a fixed look: a missing block setting,
 // mechanism F), and `not-calibrated` when the block has no calibration; one whose looks a setting paints but whose element no
 // slot reaches is left unrecorded, for a finder of that block (a proposal problem). Neither record makes the look show: the
-// proposal names those elements (lib/skeleton-paint-conservation.mjs::unreadList).
+// proposal names those elements (lib/skeleton-paint-conservation.mjs::unreadList). A block whose settings size and paint its
+// root's `::before` (the leading layer: a label's dot) draws there the mark the draft sets before its words, so the host's
+// leading mark is read at that layer (leadingLooks, leadingMark).
 import { lookOfProperty, calibratedLooks } from './skeleton-paint-conservation.mjs';
 
 const NTH = /:nth-of-type\((\d+)\)\s*$/;
@@ -24,6 +26,34 @@ export function partLooks( settings = {}, tags = {} ) {
 		look && ( out.get( slot ) ?? out.set( slot, new Set() ).get( slot ) ).add( look );
 	}
 	return out;
+}
+
+// The layer a block paints before its content: the `::before` pseudo-element of its root.
+export const LEADING_LAYER = '::before';
+
+// The looks the block's settings paint at its leading layer at rest (a calibrated setting whose slots include it), when a
+// setting sizes that layer (a width or height there): a layer drawn at a size of its own is a mark, where a layer the box
+// sizes (the gradient border every block paints on its `::before`) is no part a draft element can be. Empty otherwise.
+const SIZE = /^(?:min-|max-)?(?:width|height)$/;
+export function leadingLooks( settings = {} ) {
+	const at = Object.values( settings || {} ).filter( ( s ) => s && ! ( s.state && 'current' !== s.state ) && ( s.slots || [ s.slot ] ).includes( LEADING_LAYER ) );
+	if ( ! at.some( ( s ) => SIZE.test( String( s.property ) ) ) ) {
+		return new Set();
+	}
+	return new Set( at.map( ( s ) => lookOfProperty( s.property, '' ) ).filter( Boolean ) );
+}
+
+// The host's leading mark, or null: its first child, holding nothing (no words, no children), in the flow and drawn smaller
+// than the host both ways at every width both are drawn (a dot set before a label's words). It is what the block's leading
+// layer draws.
+export function leadingMark( host, kids ) {
+	const k = kids( host )[ 0 ];
+	if ( ! k || String( k.words ?? '' ).trim() || kids( k ).length ) {
+		return null;
+	}
+	const both = Object.keys( k.visible || {} ).filter( ( w ) => k.visible[ w ] && host.visible?.[ w ] && k.box?.[ w ] && host.box?.[ w ] );
+	const inFlow = both.every( ( w ) => ! [ 'absolute', 'fixed' ].includes( k.position?.[ w ] ) );
+	return both.length && inFlow && both.every( ( w ) => k.box[ w ].w < host.box[ w ].w && k.box[ w ].h < host.box[ w ].h ) ? k : null;
 }
 
 // The element type a slot step names (`a`, `svg`, `li.item`), or null for a step of classes or pseudo-classes only.
@@ -56,7 +86,7 @@ const LETTER = /\p{L}/u;
 // One host node's absorbed painted elements. host: the block's own draft element; node: its skeleton node; absorbed:
 // [ { element, looks: [ look ] } ]; settings, tags: the block's calibration settings and slot tags; checked: the calibration
 // file read. Returns { slots: { slot: finder }, records: Map( key -> record ), unmatched: [ { key, looks, parts } ] }.
-export function absorbedSlots( { host, node, absorbed = [], kids, finder, settings = {}, tags = {}, block, checked } ) {
+export function absorbedSlots( { host, node, absorbed = [], kids, finder, settings = {}, tags = {}, block, checked, leading = false } ) {
 	const out = { slots: {}, records: new Map(), unmatched: [] };
 	const parts = partLooks( settings, tags );
 	const glyphs = glyphHolders( settings );
@@ -70,6 +100,15 @@ export function absorbedSlots( { host, node, absorbed = [], kids, finder, settin
 			out.slots[ slot ] = finder( a.element );
 			placed.add( a.element.key );
 		}
+	}
+	// The host's leading mark is read at the block's leading layer when the host's verdict draws that layer (`leading`: the
+	// rule switched it on) and a setting paints one of the mark's looks there.
+	const lead = leading ? leadingLooks( settings ) : new Set();
+	const mark = lead.size && ! node.draftSlots?.[ LEADING_LAYER ] ? leadingMark( host, kids ) : null;
+	const marked = mark && ! placed.has( mark.key ) ? byKey.get( mark.key ) : null;
+	if ( marked && marked.looks.some( ( l ) => lead.has( l ) ) ) {
+		out.slots[ LEADING_LAYER ] = finder( marked.element );
+		placed.add( marked.element.key );
 	}
 	const calibrated = Object.keys( settings || {} ).length > 0;
 	const painted = calibratedLooks( settings );
