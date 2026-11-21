@@ -292,7 +292,28 @@ test( 'a band wrapper that paints nothing beyond its cap is read, a slot naming 
 	// A band finder on the first copy of a loop does not read the other copies' paint.
 	const inventory = { elements: [ el( 'Root/5#0', 'background: red' ), el( 'Root/5#1', 'background: red' ) ] };
 	const r = conservationRows( { inventory, proposal: { rows: [] }, skeleton: [ node( 'sgs/hero', 'Root/1#0', { draftBandWrappers: [ { tpl: 'Root/5#0' } ] } ) ] } );
-	assert.deepEqual( r.rows.map( ( x ) => [ x.key, x.class ] ), [ [ 'Root/5#0', 'band-only' ], [ 'Root/5#1', 'no-row' ] ] );
+	assert.deepEqual( r.rows.map( ( x ) => [ x.key, x.class ] ), [ [ 'Root/5#0', 'band-only' ], [ 'Root/5#1', 'band-only' ] ] );
+} );
+
+test( 'a copy of a band wrapper takes its representative\'s band read: its cap is read, its paint is a band-only row (MUST FAIL where copies resolve through full finders only)', () => {
+	const band = ( key ) => node( 'sgs/hero', 'Root/1#0', { draftBandWrappers: [ { tpl: key } ] } );
+	const rowsOf = ( elements, tree ) => conservationRows( { inventory: { elements }, proposal: { rows: [] }, skeleton: [ tree ] } );
+	// A loop copy: the cap alone is read, so the copy is read; a cap with paint is a band-only row holding the paint only.
+	const capOnly = rowsOf( [ el( 'Root/5#0', 'max-width: 640px; margin: 0 auto' ), el( 'Root/5#1', 'max-width: 640px; margin: 0 auto' ) ], band( 'Root/5#0' ) );
+	assert.deepEqual( [ capOnly.rows.length, capOnly.counts.exact, capOnly.counts.loopCopy ], [ 0, 1, 1 ] );
+	const painted = rowsOf( [ el( 'Root/5#0', 'max-width: 640px; background: red' ), el( 'Root/5#1', 'max-width: 640px; background: red' ) ], band( 'Root/5#0' ) );
+	assert.deepEqual( painted.rows.map( ( x ) => [ x.key, x.class, Object.keys( x.looks ) ] ), [ [ 'Root/5#0', 'band-only', [ 'background' ] ], [ 'Root/5#1', 'band-only', [ 'background' ] ] ] );
+	// A copy under another host instance, and a like sibling, resolve the same way.
+	const host = rowsOf( [ el( 'Root>Card@40#0/3#0', 'max-width: 640px' ), el( 'Root>Card@40#1/3#0', 'max-width: 640px' ) ], band( 'Root>Card@40#0/3#0' ) );
+	assert.deepEqual( [ host.rows.length, host.counts.instanceCopy ], [ 0, 1 ] );
+	const sibs = rowsOf( [ el( 'Root/1#0', null ), el( 'Root/2#0', 'max-width: 640px', { parentKey: 'Root/1#0' } ), el( 'Root/3#0', 'max-width: 640px', { parentKey: 'Root/1#0' } ) ], band( 'Root/2#0' ) );
+	assert.deepEqual( [ sibs.rows.length, sibs.counts.siblingCopy ], [ 0, 1 ] );
+	// Negative control: a full finder on the representative still reads every copy in full.
+	const full = rowsOf( [ el( 'Root/5#0', 'max-width: 640px; background: red' ), el( 'Root/5#1', 'max-width: 640px; background: red' ) ], node( 'sgs/hero', 'Root/5#0' ) );
+	assert.deepEqual( [ full.rows.length, full.counts.loopCopy ], [ 0, 1 ] );
+	// A copy of both a fully read and a band-read representative is read in full.
+	const both = rowsOf( [ 0, 1, 2 ].map( ( i ) => el( `Root/5#${ i }`, 'max-width: 640px; background: red' ) ), node( 'sgs/hero', 'Root/5#0', { draftBandWrappers: [ { tpl: 'Root/5#1' } ] } ) );
+	assert.deepEqual( both.rows.map( ( x ) => x.key ), [ 'Root/5#1' ] );
 } );
 
 test( 'a copy under another host instance is read through its template, and counted apart', () => {

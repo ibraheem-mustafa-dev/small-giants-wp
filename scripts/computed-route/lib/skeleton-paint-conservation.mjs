@@ -407,8 +407,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	const reads = namedReads( skeleton, elements );
 	const named = new Set( reads.keys() );
 	const full = [ ...named ].filter( ( k ) => 'full' === reads.get( k ) );
-	const loops = new Set( full.map( loopOf ) );
-	const templates = new Set( full.map( templateOf ) );
+	const banded = [ ...named ].filter( ( k ) => 'band' === reads.get( k ) );
 	const counts = { painted: 0, exact: 0, loopCopy: 0, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, recorded: 0, listedApart: 0, unread: 0 };
 	const nodes = nodesByRef( skeleton );
 	// The elements that hold an element a node reads in full.
@@ -437,7 +436,25 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	elements.forEach( ( e ) => kids.set( e.parentKey, ( kids.get( e.parentKey ) ?? 0 ) + 1 ) );
 	// A sibling's signature: its parent, tag and style attribute. An element with no style attribute has none.
 	const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.parentKey, e.tag, e.attrs.style ] ) : null );
-	const readSiblings = new Set( full.map( ( k ) => byKey.get( k ) ).filter( Boolean ).map( signature ).filter( Boolean ) );
+	// The copies a set of named keys represents: the loops, the templates and the like siblings they stand for.
+	const copiesOf = ( keys ) => ( { loopCopy: new Set( keys.map( loopOf ) ), instanceCopy: new Set( keys.map( templateOf ) ), siblingCopy: new Set( keys.map( ( k ) => byKey.get( k ) ).filter( Boolean ).map( signature ).filter( Boolean ) ) } );
+	const copyId = { loopCopy: ( e ) => loopOf( e.key ), instanceCopy: ( e ) => templateOf( e.key ), siblingCopy: signature };
+	const fullCopies = copiesOf( full );
+	const bandCopies = copiesOf( banded );
+	// How an element no node names is read through a copy: { via (the count it adds to), kind ('full' or 'band') }, or null. A
+	// copy takes its representative's read, a copy of a fully read element first; a band wrapper's copy has its cap read only.
+	const copyRead = ( e ) => {
+		for ( const [ kind, copies ] of [ [ 'full', fullCopies ], [ 'band', bandCopies ] ] ) {
+			const via = Object.keys( copyId ).find( ( k ) => {
+				const id = copyId[ k ]( e );
+				return null !== id && copies[ k ].has( id );
+			} );
+			if ( via ) {
+				return { via, kind };
+			}
+		}
+		return null;
+	};
 	const out = [];
 	const partOf = new Map( ( proposal?.rows || [] ).flatMap( ( r ) => ( r.parts || [] ).map( ( k ) => [ k, r ] ) ) );
 	const hostOf = ( row ) => {
@@ -468,16 +485,14 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 			counts.exact++;
 			continue;
 		}
-		if ( loops.has( loopOf( e.key ) ) ) {
-			counts.loopCopy++;
+		const copy = copyRead( e );
+		const copyLooks = 'band' === copy?.kind ? Object.fromEntries( Object.entries( painted ).filter( ( [ look ] ) => ! BAND_LOOKS.includes( look ) ) ) : {};
+		if ( copy && ! Object.keys( copyLooks ).length ) {
+			counts[ copy.via ]++;
 			continue;
 		}
-		if ( templates.has( templateOf( e.key ) ) ) {
-			counts.instanceCopy++;
-			continue;
-		}
-		if ( readSiblings.has( signature( e ) ) ) {
-			counts.siblingCopy++;
+		if ( copy ) {
+			listRow( e, copyLooks, 'band-only' );
 			continue;
 		}
 		const elsewhere = otherSurfaces.find( ( s ) => s.identities.has( identityOf( e, component ) ) );

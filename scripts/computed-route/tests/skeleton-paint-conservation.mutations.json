@@ -496,5 +496,35 @@
 		"find": "\tconst p = partsOf( value );",
 		"replace": "\tconst p = low( value ).split( /\\s+/ ).filter( Boolean );",
 		"why": "the shorthand splits at every space"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const banded = [ ...named ].filter( ( k ) => 'band' === reads.get( k ) );",
+		"replace": "const banded = [];",
+		"why": "a band wrapper's copies resolve to no representative"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "for ( const [ kind, copies ] of [ [ 'full', fullCopies ], [ 'band', bandCopies ] ] ) {",
+		"replace": "for ( const [ kind, copies ] of [ [ 'band', bandCopies ], [ 'full', fullCopies ] ] ) {",
+		"why": "a band representative wins over a full one"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const copyLooks = 'band' === copy?.kind ? Object.fromEntries( Object.entries( painted ).filter( ( [ look ] ) => ! BAND_LOOKS.includes( look ) ) ) : {};",
+		"replace": "const copyLooks = 'band' === copy?.kind ? painted : {};",
+		"why": "a band copy's cap is not taken off its looks"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "listRow( e, copyLooks, 'band-only' );",
+		"replace": "listRow( e, copyLooks, 'no-row' );",
+		"why": "a band copy's row is not class band-only"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "instanceCopy: ( e ) => templateOf( e.key ), siblingCopy: signature };",
+		"replace": "instanceCopy: ( e ) => templateOf( e.key ) };",
+		"why": "a like sibling is no copy"
 	}
 ]
