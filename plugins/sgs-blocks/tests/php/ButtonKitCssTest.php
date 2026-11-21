@@ -22,12 +22,13 @@ final class ButtonKitCssTest extends TestCase {
 	/**
 	 * Site settings: the starter presets with a pressed look, so the press rule exists.
 	 *
-	 * @param bool $open Whether the site opted in to named presets, with a `gold` one.
+	 * @param bool                $open    Whether the site opted in to named presets, with a `gold` one.
+	 * @param array<string,string> $primary Roles to set on the primary preset besides its pressed look.
 	 * @return array<string,mixed>
 	 */
-	private function settings( bool $open = false ): array {
+	private function settings( bool $open = false, array $primary = array() ): array {
 		$presets = array(
-			'primary' => array(
+			'primary' => $primary + array(
 				'active-transform' => 'scale(0.98)',
 				'active-shadow'    => 'none',
 			),
@@ -80,8 +81,18 @@ final class ButtonKitCssTest extends TestCase {
 	private function kit( array $attrs, string $selector = self::SEL, ?array $settings = null, array $opts = array() ): string {
 		return $this->run_php(
 			$settings ?? $this->settings(),
-			'echo sgs_button_kit_css( ' . var_export( $attrs, true ) . ", 'x', " . var_export( $selector, true ) . ', ' . var_export( $opts, true ) . ' );'
+			'echo sgs_button_kit_css( ' . var_export( $attrs, true ) . ", 'x', " . var_export( $selector, true ) . ', ' . var_export( $opts + array( 'element' => '.btn' ), true ) . ' );'
 		);
+	}
+
+	/** The minted class of the shared preset rule in a kit's CSS, or ''. */
+	private static function kit_class( string $css ): string {
+		return 1 === preg_match( '/sgs-btn-kit-[0-9a-f]{8}/', $css, $m ) ? $m[0] : '';
+	}
+
+	/** The fenced shared group that holds the preset rule (the text between the first fence pair). */
+	private static function preset_group( string $css ): string {
+		return 1 === preg_match( '#/\*sgs-shared\*/(.*?)/\*sgs-shared-end\*/#s', $css, $m ) ? $m[1] : '';
 	}
 
 	public function test_all_unset_prints_nothing(): void {
@@ -90,20 +101,104 @@ final class ButtonKitCssTest extends TestCase {
 		$this->assertSame( '', $this->kit( array( 'xColourText' => '#fff' ), '' ), 'an empty selector prints nothing' );
 	}
 
-	public function test_a_preset_alone_prints_the_preset_the_press_rule_and_the_focus_border(): void {
-		$css = $this->kit( array( 'xStyle' => 'primary' ) );
+	public function test_a_preset_alone_prints_the_preset_as_a_shared_rule_the_press_rule_and_the_focus_border(): void {
+		$css   = $this->kit( array( 'xStyle' => 'primary' ) );
+		$class = self::kit_class( $css );
+		$this->assertNotSame( '', $class, 'MUST FAIL: the preset gets a minted class' );
+		$this->assertStringContainsString( '/*sgs-shared*/.' . $class . '.' . $class . '.btn{background:var(--wp--custom--button-presets--primary--background);', $css, 'MUST FAIL: the whole preset prints, fenced, on the doubled minted class chained to the element' );
+		$this->assertStringNotContainsString( '.u .btn{background:var(--wp--custom--button-presets--primary', $css, 'the preset no longer prints under the instance selector' );
+		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input)) .' . $class . '.' . $class . '.btn:hover{background:var(--wp--custom--button-presets--primary--hover-background,', $css, 'MUST FAIL: the hover colours are behind the touch guard' );
+		$this->assertStringContainsString( '.' . $class . '.' . $class . '.btn:focus-visible{background:var(--wp--custom--button-presets--primary--hover-background,', $css, 'MUST FAIL: and have a keyboard-focus twin' );
+		preg_match( '/sgs-btn-press-[0-9a-f]{8}/', $css, $press );
+		$this->assertNotEmpty( $press, 'the pressed look is a shared rule of its own' );
+		$this->assertStringContainsString( '.' . $press[0] . '.' . $press[0] . '.' . $press[0] . '.btn:active{transform:var(--wp--custom--button-presets--primary--active-transform);', $css, 'MUST FAIL: the pressed look, the class tripled' );
+		$this->assertStringContainsString( '.' . $class . '.' . $class . '.btn{--sgs-focus-host-border:var(--wp--custom--button-presets--primary--border-width,1px);}', $css, 'MUST FAIL: the focus border falls back to the 1px the preset paints' );
+		$this->assertStringNotContainsString( 'font-size', $css, 'a role the site leaves unset prints nothing' );
+		$this->assertSame( ' ' . $class . ' ' . $press[0], $this->run_php( $this->settings(), 'echo sgs_button_kit_classes( ' . var_export( array( 'xStyle' => 'primary' ), true ) . ", 'x', '.btn' );" ), 'the classes the button carries are the ones the rules read' );
+		$this->assertSame( '', $this->run_php( $this->settings(), 'echo sgs_button_kit_classes( array(), "x", ".btn" );' ), 'no preset, no class' );
+	}
 
-		$this->assertStringContainsString( '.u .btn{background:var(--wp--custom--button-presets--primary--background);', $css, 'MUST FAIL: the whole preset prints' );
-		$this->assertStringContainsString( '.u .btn:hover{background:var(--wp--custom--button-presets--primary--hover-background,', $css );
-		$this->assertStringContainsString( '.u .btn:active{transform:var(--wp--custom--button-presets--primary--active-transform);', $css, 'MUST FAIL: the pressed look' );
-		$this->assertStringContainsString( '.u .btn{--sgs-focus-host-border:var(--wp--custom--button-presets--primary--border-width,2px);}', $css, 'MUST FAIL: the focus border' );
-		$this->assertStringNotContainsString( 'font-size', $css, 'nothing but the preset' );
+	public function test_the_preset_prints_once_however_many_buttons_wear_it(): void {
+		$one = $this->kit( array( 'xStyle' => 'primary' ), '.a .btn' );
+		$two = $this->kit( array( 'xStyle' => 'primary' ), '.b .btn' );
+		$this->assertSame( self::preset_group( $one ), self::preset_group( $two ), 'MUST FAIL: two instances with the same preset print the same shared text, so the collector keeps one copy' );
+		$this->assertNotSame( '', self::preset_group( $one ) );
+		$this->assertSame( self::kit_class( $one ), self::kit_class( $two ) );
+		$other = $this->kit( array( 'xStyle' => 'secondary' ), '.b .btn' );
+		$this->assertNotSame( self::kit_class( $one ), self::kit_class( $other ), 'another preset is another class' );
+		$this->assertStringNotContainsString( 'sgs-btn-kit', $this->kit( array( 'xColourText' => '#fff' ) ), 'a button with no preset prints no shared rule' );
+	}
+
+	public function test_a_preset_prints_the_roles_the_site_sets_and_nothing_for_the_rest(): void {
+		$css = $this->kit(
+			array( 'xStyle' => 'primary' ),
+			self::SEL,
+			$this->settings( false, array( 'padding' => '14px 24px', 'font-size' => '15px', 'min-height' => '48px', 'shadow' => '0 2px 4px #000', 'hover-shadow' => '0 4px 8px #000' ) )
+		);
+		$group = self::preset_group( $css );
+		$this->assertStringContainsString( 'padding:var(--wp--custom--button-presets--primary--padding);font-size:var(--wp--custom--button-presets--primary--font-size);min-height:var(--wp--custom--button-presets--primary--min-height);', $group, 'MUST FAIL: the padding, font size and min height of the preset print' );
+		$this->assertStringContainsString( 'box-shadow:var(--wp--custom--button-presets--primary--shadow);--sgs-focus-under:var(--wp--custom--button-presets--primary--shadow);', $group, 'MUST FAIL: the preset shadow is handed to the focus ring' );
+		$this->assertStringContainsString( 'box-shadow:var(--wp--custom--button-presets--primary--hover-shadow);--sgs-focus-under:var(--wp--custom--button-presets--primary--hover-shadow);', $group, 'and so is the hover shadow' );
+		$this->assertSame( 2, substr_count( $group, 'box-shadow:var(--wp--custom--button-presets--primary--hover-shadow)' ), 'MUST FAIL: the hover shadow has a keyboard-focus twin' );
+		$this->assertStringNotContainsString( 'padding:var(--wp--custom--button-presets--secondary', $group );
+	}
+
+	public function test_the_hover_lift_and_the_timing_fall_back_through_default_then_none(): void {
+		$group = self::preset_group( $this->kit( array( 'xStyle' => 'primary' ) ) );
+		$this->assertStringContainsString( 'transform:var(--wp--custom--button-presets--primary--hover-lift,var(--wp--custom--button-presets--default--hover-lift,none));', $group, 'MUST FAIL: variant, then default, then none' );
+		$this->assertStringContainsString( 'scale:var(--wp--custom--button-presets--primary--hover-scale,var(--wp--custom--button-presets--default--hover-scale,none));rotate:var(--wp--custom--button-presets--primary--hover-rotate,var(--wp--custom--button-presets--default--hover-rotate,none));', $group );
+		$this->assertStringNotContainsString( 'translateY(-3px)', $group, 'the fixed 3px lift is the WooCommerce callers\' default, not the kit\'s' );
+		$this->assertStringContainsString( '--sgs-btn-transition-duration:var(--wp--custom--button-presets--primary--hover-transition,var(--wp--custom--button-presets--default--hover-transition,0.18s));', $group, 'MUST FAIL: the duration' );
+		$this->assertStringContainsString( '--sgs-btn-transition-easing:var(--wp--custom--button-presets--primary--hover-easing,var(--wp--custom--button-presets--default--hover-easing,var(--wp--custom--easing--ease,ease)));', $group, 'MUST FAIL: the easing' );
+		$this->assertStringContainsString( '--sgs-btn-transition-easing-colour:var(--wp--custom--button-presets--primary--hover-easing-colour,var(--wp--custom--button-presets--default--hover-easing-colour,var(--sgs-btn-transition-easing)));', $group );
+		$this->assertStringContainsString( 'box-shadow var(--sgs-btn-transition-duration) var(--sgs-btn-transition-easing-shadow)', $group );
+		// The WooCommerce callers are not touched: they keep the 3px lift and 0.25s.
+		$woo = $this->run_php( $this->settings(), 'echo sgs_button_preset_css( ".x", "primary" );' );
+		$this->assertStringContainsString( 'translateY(-3px)', $woo );
+		$this->assertStringContainsString( 'hover-transition,0.25s', $woo );
+	}
+
+	public function test_the_pressed_look_prints_last_and_the_hover_shadow_has_a_focus_twin(): void {
+		$css = $this->kit( array( 'xStyle' => 'primary', 'xShadow' => '0 4px 12px 0', 'xShadowColour' => '#112233', 'xShadowHover' => '0 8px 20px 0', 'xShadowColourHover' => '#445566' ) );
+		$hover = strrpos( $css, 'box-shadow:0px 8px 20px 0px #445566' );
+		$this->assertNotFalse( $hover );
+		$this->assertGreaterThan( $hover, (int) strpos( $css, ':active{' ), 'MUST FAIL: the pressed rule comes after the hover shadow rule it ties with' );
+		$this->assertStringEndsWith( '/*sgs-shared-end*/', $css, 'the pressed look is the last thing printed' );
+		$this->assertStringContainsString( '.u .btn:focus-visible{box-shadow:0px 8px 20px 0px #445566;--sgs-focus-under:0px 8px 20px 0px #445566;}', $css, 'MUST FAIL: the hover shadow has a keyboard-focus twin' );
+		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input)) .u .btn:hover{box-shadow:0px 8px 20px 0px #445566;', $css, 'and the guarded hover' );
+	}
+
+	public function test_a_border_the_button_sets_re_anchors_the_focus_ring(): void {
+		$wide = $this->kit( array( 'xStyle' => 'primary', 'xBorderWidth' => array( 'top' => '3px', 'right' => '3px', 'bottom' => '3px', 'left' => '3px' ) ) );
+		$this->assertStringContainsString( '.u .btn{--sgs-focus-host-border:3px;}', $wide, 'the button\'s own width wins over the preset\'s token' );
+		$none = $this->kit( array( 'xStyle' => 'primary', 'xBorderStyle' => 'none' ) );
+		$this->assertStringContainsString( '.u .btn{--sgs-focus-host-border:0px;}', $none, 'a button that draws no border has nothing to anchor to' );
+		$plain = $this->kit( array( 'xStyle' => 'primary' ) );
+		$this->assertStringNotContainsString( '.u .btn{--sgs-focus-host-border', $plain, 'no border of its own: the shared rule\'s token stands' );
+		$this->assertStringNotContainsString( 'focus-host-border', $this->kit( array( 'xColourText' => '#fff' ) ), 'no preset and no border: nothing' );
+	}
+
+	public function test_width_fit_prints_fit_content_and_full_prints_full(): void {
+		$this->assertStringContainsString( '.u .btn{width:fit-content;}', $this->kit( array( 'xWidthType' => 'fit' ) ), 'MUST FAIL: "Fit to the text" prints, as fit-content (a block-level flex button stretches under auto)' );
+		$this->assertStringContainsString( 'width:100%;', $this->kit( array( 'xWidthType' => 'full' ) ) );
+		$this->assertSame( '', $this->kit( array( 'xWidthType' => '' ) ), 'negative control: unset prints nothing' );
+		$this->assertStringNotContainsString( 'width:', $this->run_php( $this->settings(), 'echo sgs_button_element_style_css( array( "xWidthType" => "fit" ), "x", ".u" );' ), 'the shared look emitter is untouched: it prints only `full`' );
+	}
+
+	public function test_the_editor_twin_fixture_prints_every_declaration(): void {
+		// tests/js/button-kit-style.test.js proves button-kit-style.js returns the same pairs for the same attributes.
+		$fixture = json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/fixtures/button-kit/preview-parity.json' ), true );
+		$css     = $this->kit( $fixture['attributes'] );
+		foreach ( $fixture['declarations'] as list( $property, $value ) ) {
+			$this->assertStringContainsString( $property . ':' . $value . ';', $css, 'MUST FAIL: ' . $property . ' prints as the editor twin expects' );
+		}
 	}
 
 	public function test_outline_prints_through_the_kit_only(): void {
-		$css = $this->kit( array( 'xStyle' => 'outline' ) );
-		$this->assertStringContainsString( '.u .btn{background:var(--wp--custom--button-presets--outline--background);', $css, 'MUST FAIL: the kit asks for outline' );
-		$this->assertStringContainsString( '.u .btn:hover{', $css );
+		$css   = $this->kit( array( 'xStyle' => 'outline' ) );
+		$class = self::kit_class( $css );
+		$this->assertStringContainsString( '.' . $class . '.' . $class . '.btn{background:var(--wp--custom--button-presets--outline--background);', $css, 'MUST FAIL: the kit asks for outline' );
+		$this->assertStringContainsString( '.' . $class . '.' . $class . '.btn:hover{', $css );
 
 		$this->assertSame( '', $this->run_php( $this->settings(), 'echo sgs_button_preset_css( ".x", "outline" );' ), 'the WooCommerce callers still get nothing for outline' );
 		$this->assertSame( '', $this->run_php( $this->settings( true ), 'echo sgs_button_preset_css( ".x", "outline" );' ), 'and on an opted-in site' );
@@ -143,7 +238,7 @@ final class ButtonKitCssTest extends TestCase {
 
 	public function test_a_name_the_site_opted_in_to_prints_its_preset(): void {
 		$on = $this->kit( array( 'xStyle' => 'Gold' ), self::SEL, $this->settings( true ) );
-		$this->assertStringContainsString( '.u .btn{background:var(--wp--custom--button-presets--gold--background);', $on );
+		$this->assertStringContainsString( '.btn{background:var(--wp--custom--button-presets--gold--background);', $on );
 		$this->assertSame( '', $this->kit( array( 'xStyle' => 'Gold' ) ), 'off: the name is refused' );
 	}
 
@@ -268,10 +363,15 @@ final class ButtonKitCssTest extends TestCase {
 				'xShadow'                => '0 4px 12px 0',
 				'xShadowColour'          => '#112233',
 			),
-			'.u .a, .u .b'
+			'.u .a, .u .b',
+			null,
+			array( 'element' => '.a, .b' )
 		);
-		$this->assertStringContainsString( '.u .a:active{', $css, 'MUST FAIL: the press rule on the first part' );
-		$this->assertStringContainsString( '.u .b:active{', $css, 'MUST FAIL: and on the last' );
+		$class = self::kit_class( $css );
+		preg_match( '/sgs-btn-press-[0-9a-f]{8}/', $css, $press );
+		$this->assertStringContainsString( '.' . $press[0] . '.' . $press[0] . '.' . $press[0] . '.a:active{', $css, 'MUST FAIL: the press rule on the first part' );
+		$this->assertStringContainsString( '.' . $press[0] . '.' . $press[0] . '.' . $press[0] . '.b:active{', $css, 'MUST FAIL: and on the last' );
+		$this->assertStringContainsString( '.' . $class . '.' . $class . '.a,.' . $class . '.' . $class . '.b{background:var(', $css, 'the preset rule names both parts' );
 		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input)) .u .a:hover,:where(:root:not(.sgs-touch-input)) .u .b:hover{background-color:#112233;}', $css );
 		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input)) .u .a:hover,:where(:root:not(.sgs-touch-input)) .u .b:hover{box-shadow:', $css, 'the hover shadow on both parts' );
 		$this->assertStringNotContainsString( ', .u .b:hover', $css, 'no state suffix on the last part alone' );

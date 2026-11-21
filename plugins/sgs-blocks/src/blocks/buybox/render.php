@@ -598,6 +598,12 @@ if ( $add_to_cart_show_price ) {
 if ( $add_to_cart_hover_lift ) {
 	$add_to_cart_button_classes .= ' buybox__add-to-cart--hover-lift';
 }
+// A linked flow without the keep setting turns Add to Cart itself into the flow's opener: the opener's own look settings
+// (`flowOpener*`) apply to it, as they do to the opener beside a kept Add to Cart (includes/buybox-linked-flow.php). With no
+// setting set the class list is as it always was.
+if ( $buybox_linked_flow_post instanceof \WP_Post && ! $buybox_keep_flow ) {
+	$add_to_cart_button_classes .= sgs_buybox_flow_opener_cta_classes( $attributes );
+}
 
 // ---------------------------------------------------------------------------
 // NO-INLINE (Spec 32): uid is a CLASS (mirrors sgs/label/sgs/heading/
@@ -1118,9 +1124,9 @@ if ( $sgs_bb_gallery_ratio > 0 || '' !== $sgs_bb_gallery_gap || '' !== $sgs_bb_g
 	$sgs_bb_gallery_rules = $sgs_bb_gallery_decls ? $root_sel . '{' . implode( ';', $sgs_bb_gallery_decls ) . ';}' : '';
 	$scoped_css[]         = $sgs_bb_gallery_media . '{' . $sgs_bb_gallery_rules . $sgs_bb_gallery_gap_tiers . '}';
 }
-// The flow opener beside a kept Add to Cart (FR-43-25): its own look settings, printed last so that where its selector ties with
-// an Add to Cart rule in weight (a hover or pressed state) the opener wins; a setting left unset follows Add to Cart.
-if ( $buybox_keep_flow ) {
+// The flow's opener (FR-43-25), beside a kept Add to Cart or in its place: its own look settings, printed last so that where its
+// selector ties with an Add to Cart rule in weight (a hover or pressed state) the opener wins; a setting left unset follows Add to Cart.
+if ( $buybox_linked_flow_post instanceof \WP_Post ) {
 	$sgs_bb_flow_opener_css = sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( $root_sel . ' ' ) );
 	if ( '' !== $sgs_bb_flow_opener_css ) {
 		$scoped_css[] = $sgs_bb_flow_opener_css;
@@ -1128,7 +1134,11 @@ if ( $buybox_keep_flow ) {
 }
 ?>
 <?php if ( $scoped_css ) : ?>
+<?php if ( false !== strpos( implode( '', $scoped_css ), SGS_SHARED_RULES_OPEN ) ) : // A shared group (the flow opener's preset) gets a tag of its own, so the collector keeps one copy a page. ?>
+<?php echo sgs_style_tags( wp_strip_all_tags( implode( '', $scoped_css ) ) ), "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?>
+<?php else : ?>
 <style><?php echo wp_strip_all_tags( implode( '', $scoped_css ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS pre-sanitised via sgs_css_length_value() / wp_style_engine_get_styles; wp_strip_all_tags guards </style> ?></style>
+<?php endif; ?>
 <?php endif; ?>
 <?php
 // Ask wp_footer for the one shared toast. It replaces this block's former

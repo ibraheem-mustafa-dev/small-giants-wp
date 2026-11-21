@@ -485,6 +485,14 @@ def element_of(stem):
     return re.split(r'--', stem.split('__', 1)[1])[0]
 
 
+def modifier_of(stem):
+    """`buybox__add-to-cart--flow-opener` -> `flow-opener`: a button that wears a shared element's class plus its own modifier
+    (the buy box's flow opener wears `buybox__add-to-cart`), named by that modifier. '' when the stem has none."""
+    if '__' not in stem or '--' not in stem.split('__', 1)[1]:
+        return ''
+    return stem.split('__', 1)[1].split('--', 1)[1]
+
+
 def owner_block(corpus, site):
     f = site['file']
     if f.startswith('plugins/sgs-blocks/src/blocks/'):
@@ -532,7 +540,7 @@ def classify(site, corpus, cfg):
     """Return (category, reason, rule_id). `unrecognised` is the default and is never silent."""
     slug = owner_block(corpus, site)
     parts = declared_parts(corpus, slug)
-    if parts and element_of(site['stem']) in parts and site['kind'] in ('button', 'a', 'createElement', 'class-string'):
+    if parts and (element_of(site['stem']) in parts or modifier_of(site['stem']) in parts) and site['kind'] in ('button', 'a', 'createElement', 'class-string'):
         return 'on-kit', 'declared in supports.sgs.builtinButtons of sgs/%s' % slug, ''
     for rule in cfg['targets']:
         if rule_matches(rule, site):
@@ -1883,6 +1891,13 @@ def self_test():
     kit = Corpus(dict(base_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': json.dumps(kit_bj)}))
     ksites = [s for s in run_survey(kit, cfg) if s['kind'] == 'button']
     check('definition: a declared builtinButtons part is on-kit', ksites and ksites[0]['category'] == 'on-kit')
+    mod_files = dict(base_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': json.dumps(kit_bj),
+                                    'plugins/sgs-blocks/includes/fx-opener.php': "<?php\nreturn ' fx__add-to-cart--flow-opener';\n"})
+    msites = [x for x in run_survey(Corpus(mod_files), cfg) if x['file'].endswith('fx-opener.php')]
+    check('definition: a class whose modifier names a declared part is on-kit', msites and msites[0]['category'] == 'on-kit')
+    mod_plain = dict(mod_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': FX_BLOCKJSON})
+    msites2 = [x for x in run_survey(Corpus(mod_plain), cfg) if x['file'].endswith('fx-opener.php')]
+    check('definition: the same class with no declaration is not on-kit (negative control)', msites2 and msites2[0]['category'] != 'on-kit')
 
     # definition: a target rule's block declaring the rule's prefix makes the site on-kit although the class names a different element.
     kit_bj2 = json.loads(FX_BLOCKJSON)

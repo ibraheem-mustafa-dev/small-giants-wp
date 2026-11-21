@@ -482,35 +482,127 @@ if ( ! function_exists( 'sgs_button_kit_look_bases' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_button_kit_shared' ) ) {
+
+	/**
+	 * The shared rules of one built-in button's preset: the preset itself, and its pressed look, each as a minted class and the
+	 * fenced rule that reads it (`sgs_shared_rules()`), so buttons that wear the same preset print one copy a page.
+	 *
+	 * The classes go on the button element itself. The preset rule is the class doubled and chained to `$element`
+	 * (`.c.c.buybox__add-to-cart`, so it out-ranks the block's own resting and hover rules for that element), and the pressed rule
+	 * the class tripled, so it out-ranks the element's hover and focus rules whatever the document order. Both are '' when
+	 * `{p}Style` names no preset.
+	 *
+	 * @param array  $attrs   Block attributes.
+	 * @param string $prefix  Attribute prefix of the button.
+	 * @param string $element The compound selector chained onto each minted class ('' for the class alone); a comma list gives one chain each.
+	 * @return array{preset_class: string, preset_css: string, press_class: string, press_css: string}
+	 */
+	function sgs_button_kit_shared( array $attrs, string $prefix, string $element = '' ): array {
+		$none = array(
+			'preset_class' => '',
+			'preset_css'   => '',
+			'press_class'  => '',
+			'press_css'    => '',
+		);
+		require_once __DIR__ . '/helpers-shared-rules.php';
+		require_once __DIR__ . '/helpers-border-style.php';
+		require_once __DIR__ . '/helpers-button-preset.php';
+		require_once __DIR__ . '/helpers-button-press.php';
+		require_once __DIR__ . '/helpers-button-focus.php';
+		$slug = sgs_button_preset_resolve( isset( $attrs[ $prefix . 'Style' ] ) && is_string( $attrs[ $prefix . 'Style' ] ) ? $attrs[ $prefix . 'Style' ] : '' );
+		if ( '' === $slug ) {
+			return $none;
+		}
+		$chains = array_values( array_filter( array_map( 'trim', explode( ',', $element ) ), 'strlen' ) );
+		$chains = array() === $chains ? array( '' ) : $chains;
+		$scoped = static function ( string $class, int $times ) use ( $chains ): string {
+			return implode( ',', array_map( static fn( string $chain ): string => str_repeat( '.' . $class, $times ) . $chain, $chains ) );
+		};
+		// The ring anchors to the preset's own border width, falling back to the 1px the preset's border paints.
+		$host   = sgs_button_focus_host_border( array( '', '', '', '' ), '', $slug, '1px' );
+		$preset = sgs_shared_rules(
+			'sgs-btn-kit',
+			static function ( string $class ) use ( $scoped, $slug, $host ): string {
+				$selector = $scoped( $class, 2 );
+				return sgs_button_preset_css( $selector, $slug, true, true, true, true ) . ( '' !== $host ? $selector . '{--sgs-focus-host-border:' . $host . ';}' : '' );
+			}
+		);
+		$press  = sgs_shared_rules(
+			'sgs-btn-press',
+			static function ( string $class ) use ( $chains, $slug ): string {
+				$css = '';
+				// A comma list needs each selector to carry its own state: `a, b:active` would press only the last.
+				foreach ( $chains as $chain ) {
+					$css .= sgs_button_press_rule_for( str_repeat( '.' . $class, 3 ) . $chain, $slug, '', true );
+				}
+				return $css;
+			}
+		);
+		return array(
+			'preset_class' => $preset['class'],
+			'preset_css'   => $preset['css'],
+			'press_class'  => $press['class'],
+			'press_css'    => $press['css'],
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_button_kit_classes' ) ) {
+
+	/**
+	 * The classes a built-in button carries so its shared preset rules apply: ' sgs-btn-kit-<hash>' and, where the preset sets a
+	 * pressed look, ' sgs-btn-press-<hash>' (a leading space each), or '' when `{p}Style` names no preset.
+	 *
+	 * @param array  $attrs   Block attributes.
+	 * @param string $prefix  Attribute prefix of the button.
+	 * @param string $element The `element` option `sgs_button_kit_css()` is given.
+	 * @return string
+	 */
+	function sgs_button_kit_classes( array $attrs, string $prefix, string $element = '' ): string {
+		$shared = sgs_button_kit_shared( $attrs, $prefix, $element );
+		return ( '' !== $shared['preset_class'] ? ' ' . $shared['preset_class'] : '' ) . ( '' !== $shared['press_class'] ? ' ' . $shared['press_class'] : '' );
+	}
+}
+
 if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 
 	/**
 	 * Scoped CSS for one built-in button (a button a block renders itself in PHP) from its prefixed look set: the preset
 	 * choice, colours and hover colours, border, padding, width, type, min height and shadow.
 	 *
-	 * It composes the shared emitters and writes none of its own CSS, in this order, all on `$selector`:
+	 * It composes the shared emitters and writes none of its own CSS, in this order:
 	 *   1. Preset: `{p}Style` names a preset (`sgs_button_preset_resolve()`: the starters primary, secondary and outline, and the
-	 *      names an opted-in site carries). `sgs_button_preset_css()` prints the whole preset (outline included), then
-	 *      `sgs_button_press_rule_for()` its pressed look and `sgs_button_focus_host_border()` the border width the
-	 *      focus ring anchors to (`--sgs-focus-host-border`). An empty or unknown name prints nothing: the block's own CSS stays.
-	 *   2. Look: `sgs_button_element_style_css()` on the colour, gradient, border style and width, and width type keys only;
-	 *      then the radius (`sgs_border_element_decls()`) and the padding (`sgs_emit_responsive_css()`), both stored per device.
+	 *      names an opted-in site carries). The whole preset prints as a shared rule (`sgs_button_kit_shared()`, one copy a page
+	 *      however many buttons wear it), so the button must carry `sgs_button_kit_classes()` on its element. An empty or unknown
+	 *      name prints nothing: the block's own CSS stays. The focus ring's host border (`--sgs-focus-host-border`) follows the
+	 *      preset's own border width unless this button sets a border width or no border, which prints here on `$selector`.
+	 *   2. Look, on `$selector`: `sgs_button_element_style_css()` on the colour, gradient, border style and width, and width type
+	 *      keys only (and `width:fit-content` for `fit`); then the radius (`sgs_border_element_decls()`) and the padding
+	 *      (`sgs_emit_responsive_css()`), both stored per device.
 	 *   3. Typography: `sgs_typography_css_rule()`, the font size, line height and letter spacing as `{desktop, tablet, mobile}` objects.
 	 *   4. Min height: `sgs_emit_responsive_css()` on `{p}MinHeight`.
 	 *   5. Shadow: `sgs_shadow_decls()` resting, handed to the focus ring as `--sgs-focus-under` (the focus ring replaces
-	 *      `box-shadow`), and the hover shadow behind the touch guard (`sgs_hover_guarded_rule()`).
+	 *      `box-shadow`), and the hover shadow behind the touch guard with its keyboard-focus twin (`sgs_hover_state_rules()`).
+	 *   6. The preset's pressed look, last, so it wins the tie with the hover shadow rule while the button is held.
 	 * Every attribute is unset by default and prints nothing, so a block that calls this with the kit unset renders as before.
 	 *
-	 * The hover lift comes from the preset's `hover-transform` token (the path sgs_button_preset_css already prints); a part
-	 * cannot carry its own motion record. The pressed rule uses `$selector` as given, so a caller that needs it to out-rank
-	 * the element's hover and focus rules passes the doubled instance class (`.uid.uid .element`).
+	 * The hover lift comes from the preset's `hover-lift` token, then `default`'s, then none (Spec 32 FR-32-19; the path
+	 * `sgs_button_preset_css( ..., $kit )` prints); a part cannot carry its own motion record.
+	 *
+	 * Weights: the shared preset rule is the minted class doubled plus the element (0,3,0 resting, 0,4,0 hover) and the pressed
+	 * rule the class tripled, so `$selector` should weigh at least 0,3,0 (resting) to out-rank the preset where both set a property;
+	 * a tie goes to the later rule, and this look prints after the preset.
 	 *
 	 * @param array  $attrs    Block attributes (the whole set; the kit reads only the `$prefix` keys).
 	 * @param string $prefix   Attribute prefix of the button (e.g. 'flowOpener').
 	 * @param string $selector Fully-formed, already-safe selector, uid-scoped by the caller; a comma-separated list is allowed.
-	 * @param array  $opts     { bg_layer?: bool, bg_layer_positioned?: bool, container?: bool }. The first two pass to the look step
-	 *                         (see sgs_button_element_style_css()); `container` also emits the tiers as container queries.
-	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
+	 * @param array  $opts     { element?: string, bg_layer?: bool, bg_layer_positioned?: bool, container?: bool }. `element` is the
+	 *                         compound selector the shared preset rule chains onto the minted class on the button itself
+	 *                         (`.buybox__add-to-cart`; '' for the class alone), the same one `sgs_button_kit_classes()` was given.
+	 *                         `bg_layer` and `bg_layer_positioned` pass to the look step (see sgs_button_element_style_css());
+	 *                         `container` also emits the tiers as container queries.
+	 * @return string CSS text (no <style> wrapper), the shared groups fenced for `sgs_style_tags()`; '' when nothing is set.
 	 */
 	function sgs_button_kit_css( array $attrs, string $prefix, string $selector, array $opts = array() ): string {
 		if ( '' === trim( $selector ) ) {
@@ -526,25 +618,23 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 		$parts      = array_values( array_filter( array_map( 'trim', explode( ',', $selector ) ), 'strlen' ) );
 		$responsive = array( 'container' => ! empty( $opts['container'] ) );
 
-		// 1. Preset: the whole preset, its pressed look and the focus host border.
-		$css    = '';
-		$name   = isset( $attrs[ $prefix . 'Style' ] ) && is_string( $attrs[ $prefix . 'Style' ] ) ? $attrs[ $prefix . 'Style' ] : '';
-		$slug   = sgs_button_preset_resolve( $name );
+		// 1. Preset: the whole preset as a shared rule (one copy a page: sgs_button_kit_shared()), and the focus host border
+		// where this button's own border differs from the preset's.
+		$shared = sgs_button_kit_shared( $attrs, $prefix, isset( $opts['element'] ) ? (string) $opts['element'] : '' );
+		$css    = $shared['preset_css'];
+		$slug   = sgs_button_preset_resolve( isset( $attrs[ $prefix . 'Style' ] ) && is_string( $attrs[ $prefix . 'Style' ] ) ? $attrs[ $prefix . 'Style' ] : '' );
+		$style  = sgs_border_style_keyword( $attrs[ $prefix . 'BorderStyle' ] ?? '' );
 		$widths = array();
 		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
 			$box      = $attrs[ $prefix . 'BorderWidth' ] ?? null;
 			$widths[] = is_array( $box ) && is_scalar( $box[ $side ] ?? null ) ? sgs_css_length_value( $box[ $side ] ) : '';
 		}
-		if ( '' !== $slug ) {
-			$css .= sgs_button_preset_css( $selector, $slug, true, true, true );
-			// A comma list needs each selector to carry its own state: `a, b:active` would press only the last.
-			foreach ( $parts as $part ) {
-				$css .= sgs_button_press_rule_for( $part, $slug, '', true );
-			}
-		}
-		$host_border = sgs_button_focus_host_border( $widths, sgs_border_style_keyword( $attrs[ $prefix . 'BorderStyle' ] ?? '' ), $slug );
-		if ( '' !== $host_border ) {
-			$css .= $selector . '{--sgs-focus-host-border:' . $host_border . ';}';
+		$host   = array() !== array_filter( $widths ) ? sgs_button_focus_host_border( $widths, $style, $slug, '1px' ) : '';
+		if ( '' !== $host ) {
+			$css .= $selector . '{--sgs-focus-host-border:' . $host . ';}';
+		} elseif ( '' !== $slug && in_array( $style, array( 'none', 'hidden' ), true ) ) {
+			// The preset's rule anchors the ring to its border width; this button draws none.
+			$css .= $selector . '{--sgs-focus-host-border:0px;}';
 		}
 
 		// 2. Look: colour, gradient, border style and width, and width type.
@@ -555,6 +645,11 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 			}
 		}
 		$css .= sgs_button_element_style_css( $look, $prefix, $selector, ! empty( $opts['bg_layer'] ), ! empty( $opts['bg_layer_positioned'] ) );
+		// "Fit to the text": sgs_button_element_style_css() prints only `full` (its callers' contract is pinned), so `fit` prints
+		// here. `fit-content`, not `auto`: a built-in button is a block-level flex box, which `width:auto` stretches to its column.
+		if ( 'fit' === ( $attrs[ $prefix . 'WidthType' ] ?? '' ) ) {
+			$css .= $selector . '{width:fit-content;}';
+		}
 
 		// 2b. Radius and padding, each stored per device (`{desktop, tablet, mobile}` of corners and of sides): the shared border
 		// resolver and responsive emitter print them, as sgs/account's sign-in button does. The resolver gets the radius alone, under
@@ -576,9 +671,10 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 				$selector,
 				array(
 					array(
-						'value' => $padding,
-						'css'   => 'padding',
-						'box'   => true,
+						'value'        => $padding,
+						'css'          => 'padding',
+						'box'          => true,
+						'unit_default' => 'px',
 					),
 				),
 				$responsive
@@ -621,10 +717,11 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 		}
 		$hover = sgs_focus_under_decls( $shadow['hover'] );
 		if ( array() !== $hover ) {
-			$hover_selector = implode( ',', array_map( static fn( string $part ): string => $part . ':hover', $parts ) );
-			$css           .= sgs_hover_guarded_rule( $hover_selector, implode( ';', $hover ) . ';' );
+			// Guarded `:hover` and the keyboard-focus twin, as every other hover look prints.
+			$css .= sgs_hover_state_rules( $selector, implode( ';', $hover ) . ';' );
 		}
 
-		return $css;
+		// 6. The pressed look, last: it ties in weight with the hover shadow rule above and must win while the button is held.
+		return $css . $shared['press_css'];
 	}
 }

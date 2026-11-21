@@ -24,15 +24,24 @@
  * ({@see sgs_buybox_flow_opener_html()}). The modal still renders once.
  *
  * The opener's own look is the built-in button kit's `flowOpener` button (`block.json` `supports.sgs.builtinButtons`; attributes
- * `flowOpener*`). Every `flowOpener*` setting is unset by default, and then the opener renders as it always has: the
- * secondary preset (the plain base look when Add to Cart is already secondary), wearing Add to Cart's rules through
+ * `flowOpener*`), and it applies to every opener the flow prints: the second button beside a kept Add to Cart, a simple
+ * product's opener, and the Add to Cart button itself where the flow replaces it (a variable product without the keep
+ * setting). Every `flowOpener*` setting is unset by default, and then the opener renders as it always has: the secondary
+ * preset (the plain base look when Add to Cart is already secondary), wearing Add to Cart's rules through
  * `buybox__add-to-cart`. A setting left unset keeps following Add to Cart's value; a set one prints through
- * {@see sgs_button_kit_css()} on the opener's own selector, which out-ranks Add to Cart's rules.
+ * {@see sgs_button_kit_css()} on the opener's own selector (the opener's class is `buybox__add-to-cart--flow-opener`, added
+ * only when a setting prints), and its preset's shared rules through the classes {@see sgs_buybox_flow_opener_kit_classes()}.
  *
  * @package SGS\Blocks
  */
 
 defined( 'ABSPATH' ) || exit;
+
+// sgs_style_tags(): render.php cuts the opener's shared preset groups out of its CSS into tags of their own.
+require_once __DIR__ . '/helpers-shared-rules.php';
+
+/** The opener's element as the kit's shared preset rule chains it onto the minted class: Add to Cart's own class, so the rule out-ranks the block's rules for it. */
+const SGS_BUYBOX_FLOW_OPENER_ELEMENT = '.buybox__add-to-cart';
 
 if ( ! function_exists( 'sgs_buybox_linked_flow_modal_anchor' ) ) {
 	/**
@@ -222,20 +231,34 @@ if ( ! function_exists( 'sgs_buybox_render_linked_flow_modal' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_flow_opener_attrs' ) ) {
 	/**
-	 * The `flowOpener*` attributes the author set. An absent key, an empty string and an empty array are unset, so a block that
-	 * sets none of them renders the opener exactly as before the built-in button kit.
+	 * The `flowOpener*` attributes the author set that print something. An absent key, an empty string, an empty array, an
+	 * object holding only empty values (`{desktop:{}}`) and a value the kit refuses (an unknown preset name) are unset, so a
+	 * block that sets none of them renders the opener exactly as before the built-in button kit, with no scope class.
 	 *
 	 * @param array<string,mixed> $attributes The buybox block attributes.
-	 * @return array<string,mixed> The set `flowOpener*` attributes (empty when none is set).
+	 * @return array<string,mixed> The set `flowOpener*` attributes (empty when none prints).
 	 */
 	function sgs_buybox_flow_opener_attrs( array $attributes ): array {
+		$prune = static function ( $value ) use ( &$prune ) {
+			if ( is_array( $value ) ) {
+				return array_filter( array_map( $prune, $value ), static fn( $one ): bool => null !== $one && '' !== $one && array() !== $one );
+			}
+			return $value;
+		};
 		$set = array();
 		foreach ( $attributes as $key => $value ) {
-			if ( 0 === strpos( (string) $key, 'flowOpener' ) && null !== $value && '' !== $value && array() !== $value ) {
-				$set[ (string) $key ] = $value;
+			if ( 0 === strpos( (string) $key, 'flowOpener' ) ) {
+				$value = $prune( $value );
+				if ( null !== $value && '' !== $value && array() !== $value ) {
+					$set[ (string) $key ] = $value;
+				}
 			}
 		}
-		return $set;
+		if ( array() === $set ) {
+			return array();
+		}
+		require_once __DIR__ . '/helpers-button-style.php';
+		return '' === sgs_button_kit_css( $set, 'flowOpener', '.x', array( 'element' => SGS_BUYBOX_FLOW_OPENER_ELEMENT ) ) ? array() : $set;
 	}
 }
 
@@ -259,16 +282,18 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_names_preset' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_flow_opener_selector' ) ) {
 	/**
-	 * The opener's selector for the kit's rules: Add to Cart's own class plus the opener's, under `$scope`. Two classes on the
-	 * button out-rank `<buy box> .buybox__add-to-cart` (Add to Cart's rules), and a rule printed after Add to Cart's wins a tie.
+	 * The opener's selector for the kit's rules: Add to Cart's own class, with the opener's class inside `:where()`, under `$scope`.
+	 * The opener's class adds no weight, so the opener's resting rule out-ranks Add to Cart's own resting rules by its place alone
+	 * and every hover and pressed rule of the block's stylesheet (`.buybox__add-to-cart--secondary:hover:not([disabled])`, which
+	 * keeps the text readable on the hover fill) out-ranks it. A rule printed after Add to Cart's wins a tie.
 	 *
 	 * @param string $scope A scope selector: the buy box root plus a descendant combinator (`.uid.wp-block-sgs-buybox `, with the
-	 *                      trailing space) on a variable product; the opener's own instance class (`.sgs-bb-fo-<hash>`) on a
-	 *                      simple product, where the classes sit on the one button.
+	 *                      trailing space) on a variable product; the opener's own instance class doubled (`.sgs-bb-fo-<hash>.sgs-bb-fo-<hash>`,
+	 *                      which weighs as much as the shared preset rule) on a simple product, where the classes sit on the one button.
 	 * @return string
 	 */
 	function sgs_buybox_flow_opener_selector( string $scope ): string {
-		return $scope . '.buybox__add-to-cart.buybox__add-to-cart--flow-opener';
+		return $scope . SGS_BUYBOX_FLOW_OPENER_ELEMENT . ':where(.buybox__add-to-cart--flow-opener)';
 	}
 }
 
@@ -287,7 +312,41 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_kit_css' ) ) {
 			return '';
 		}
 		require_once __DIR__ . '/helpers-button-style.php';
-		return sgs_button_kit_css( $set, 'flowOpener', $selector );
+		return sgs_button_kit_css( $set, 'flowOpener', $selector, array( 'element' => SGS_BUYBOX_FLOW_OPENER_ELEMENT ) );
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_flow_opener_kit_classes' ) ) {
+	/**
+	 * The minted classes of the opener's preset rules ({@see sgs_button_kit_classes()}), each with a leading space: the classes the
+	 * button carries so the kit's shared rules apply, beside `buybox__add-to-cart--flow-opener`, which the kit's selector names and
+	 * the caller adds. '' when no setting prints or no preset is chosen, so a button with no setting keeps its markup byte for byte.
+	 *
+	 * @param array<string,mixed> $attributes The buybox block attributes.
+	 * @return string
+	 */
+	function sgs_buybox_flow_opener_kit_classes( array $attributes ): string {
+		$set = sgs_buybox_flow_opener_attrs( $attributes );
+		if ( array() === $set ) {
+			return '';
+		}
+		require_once __DIR__ . '/helpers-button-style.php';
+		return sgs_button_kit_classes( $set, 'flowOpener', SGS_BUYBOX_FLOW_OPENER_ELEMENT );
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_flow_opener_cta_classes' ) ) {
+	/**
+	 * The classes Add to Cart carries where the flow replaces it (a variable product without `keepAddToCartWithFlow`), so the
+	 * opener's look settings reach it: the opener's own class, which the kit's selector names, and the preset's minted classes
+	 * ({@see sgs_buybox_flow_opener_kit_classes()}), each with a leading space. '' when no `flowOpener*` setting prints, so the
+	 * button's class list is as it always was.
+	 *
+	 * @param array<string,mixed> $attributes The buybox block attributes.
+	 * @return string
+	 */
+	function sgs_buybox_flow_opener_cta_classes( array $attributes ): string {
+		return array() === sgs_buybox_flow_opener_attrs( $attributes ) ? '' : ' buybox__add-to-cart--flow-opener' . sgs_buybox_flow_opener_kit_classes( $attributes );
 	}
 }
 
@@ -308,8 +367,9 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_scope_class' ) ) {
 
 if ( ! function_exists( 'sgs_buybox_flow_opener_style_tag' ) ) {
 	/**
-	 * A simple product's opener's kit CSS in a `<style>` tag, the channel render.php prints its `$scoped_css` through. '' when no
-	 * `flowOpener*` attribute is set.
+	 * A simple product's opener's kit CSS in `<style>` tags, the channel render.php prints its `$scoped_css` through: the shared
+	 * preset groups each in a tag of their own (`sgs_style_tags()`), so the collector keeps one copy of each a page. '' when no
+	 * `flowOpener*` attribute prints.
 	 *
 	 * @param array<string,mixed> $attributes The buybox block attributes.
 	 * @return string
@@ -319,8 +379,7 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_style_tag' ) ) {
 		if ( '' === $scope ) {
 			return '';
 		}
-		$css = sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( '.' . $scope ) );
-		return '' === $css ? '' : '<style>' . wp_strip_all_tags( $css ) . '</style>';
+		return sgs_style_tags( wp_strip_all_tags( sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( '.' . $scope . '.' . $scope ) ) ) );
 	}
 }
 
@@ -347,7 +406,7 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_html' ) ) {
 		}
 		$look  = 'secondary' === $add_to_cart_look || sgs_buybox_flow_opener_names_preset( $attributes ) ? '' : ' buybox__add-to-cart--secondary';
 		$scope = $own_scope ? sgs_buybox_flow_opener_scope_class( $attributes ) : '';
-		return sgs_buybox_modal_cta_html( $label, 'wp-element-button buybox__add-to-cart' . $look . ' buybox__add-to-cart--flow-opener' . ( '' !== $scope ? ' ' . $scope : '' ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), false );
+		return sgs_buybox_modal_cta_html( $label, 'wp-element-button buybox__add-to-cart' . $look . ' buybox__add-to-cart--flow-opener' . ( '' !== $scope ? ' ' . $scope : '' ) . sgs_buybox_flow_opener_kit_classes( $attributes ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), false );
 	}
 }
 
@@ -408,7 +467,7 @@ if ( ! function_exists( 'sgs_buybox_simple_linked_flow_html' ) ) {
 		}
 		$scope = sgs_buybox_flow_opener_scope_class( $attributes );
 		echo sgs_buybox_flow_opener_style_tag( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the CSS is built from sanitised values and stripped of tags.
-		echo sgs_buybox_modal_cta_html( '' !== $label ? $label : __( 'Add to Cart', 'sgs-blocks' ), 'wp-element-button buybox__add-to-cart' . ( '' !== $scope ? ' buybox__add-to-cart--flow-opener ' . $scope : '' ), false, '',sgs_buybox_linked_flow_modal_anchor( $flow->post_name ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+		echo sgs_buybox_modal_cta_html( '' !== $label ? $label : __( 'Add to Cart', 'sgs-blocks' ), 'wp-element-button buybox__add-to-cart' . sgs_buybox_flow_opener_cta_classes( $attributes ) . ( '' !== $scope ? ' ' . $scope : '' ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
 		sgs_buybox_render_linked_flow_modal( $flow );
 		return (string) ob_get_clean();
 	}

@@ -52,6 +52,7 @@ const SGS_MINTED_SCOPE_PREFIXES = array(
 	'sgs-state-colour',
 	'sgs-text-hover',
 	'sgs-btn-press',
+	'sgs-btn-kit',
 );
 
 /**

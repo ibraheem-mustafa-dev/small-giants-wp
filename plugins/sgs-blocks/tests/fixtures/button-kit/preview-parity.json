@@ -1,0 +1,40 @@
+{
+	"_doc": "One attribute set (prefix x) and the CSS declarations it paints at desktop, as [property, value] pairs. tests/php/ButtonKitCssTest.php::test_the_editor_twin_fixture_prints_every_declaration proves sgs_button_kit_css prints each pair; tests/js/button-kit-style.test.js proves buttonKitStyle() (src/components/button-kit/button-kit-style.js) returns each pair, so the canvas and the page paint the same look.",
+	"attributes": {
+		"xColourBackground": "#112233",
+		"xColourText": "#ffffff",
+		"xColourBorder": "#445566",
+		"xBorderStyle": "dashed",
+		"xBorderWidth": { "top": "2px", "right": "2px", "bottom": "2px", "left": "2px" },
+		"xBorderRadius": { "desktop": { "topLeft": "8px", "topRight": "8px", "bottomLeft": "8px", "bottomRight": "8px" } },
+		"xPadding": { "desktop": { "top": "10px", "right": "20px", "bottom": "10px", "left": "20px" } },
+		"xMinHeight": { "desktop": "48px" },
+		"xFontWeight": "700",
+		"xTextTransform": "uppercase",
+		"xFontSize": { "desktop": 18 },
+		"xLineHeight": { "desktop": 1.4 },
+		"xShadow": "0 4px 12px 0",
+		"xShadowColour": "#112233",
+		"xWidthType": "full"
+	},
+	"declarations": [
+		[ "background-color", "#112233" ],
+		[ "color", "#ffffff" ],
+		[ "border-color", "#445566" ],
+		[ "border-style", "dashed" ],
+		[ "border-width", "2px 2px 2px 2px" ],
+		[ "border-top-left-radius", "8px" ],
+		[ "border-bottom-right-radius", "8px" ],
+		[ "padding-top", "10px" ],
+		[ "padding-right", "20px" ],
+		[ "padding-bottom", "10px" ],
+		[ "padding-left", "20px" ],
+		[ "min-height", "48px" ],
+		[ "font-weight", "700" ],
+		[ "text-transform", "uppercase" ],
+		[ "font-size", "18px" ],
+		[ "line-height", "1.4" ],
+		[ "box-shadow", "0px 4px 12px 0px #112233" ],
+		[ "width", "100%" ]
+	]
+}

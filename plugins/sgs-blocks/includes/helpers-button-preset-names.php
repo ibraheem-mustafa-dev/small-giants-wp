@@ -122,6 +122,29 @@ if ( ! function_exists( 'sgs_button_preset_has_role' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_button_preset_sets' ) ) {
+	/**
+	 * Whether the site's `buttonPresets` sets one role of one preset to a non-empty string, whether or not the site opted in
+	 * to named presets (the starters' tokens come from the framework or the client snapshot alike). The built-in button kit
+	 * prints a preset's padding, font size and the like only where the token exists, so a button keeps its own value when the
+	 * preset leaves one unset. `sgs_button_preset_has_role()` is the stricter reading the WooCommerce callers use.
+	 *
+	 * @param string $slug Preset slug.
+	 * @param string $role Role key (`padding`, `font-size`, `min-height`, `shadow`, ...).
+	 * @return bool
+	 */
+	function sgs_button_preset_sets( string $slug, string $role ): bool {
+		$all = sgs_global_custom_setting( 'buttonPresets' );
+		foreach ( is_array( $all ) ? $all : array() as $key => $roles ) {
+			if ( sgs_button_preset_slug( (string) $key ) === $slug && is_array( $roles ) ) {
+				$value = $roles[ $role ] ?? null;
+				return is_string( $value ) && '' !== trim( $value );
+			}
+		}
+		return false;
+	}
+}
+
 if ( ! function_exists( 'sgs_button_named_preset_css' ) ) {
 	/**
 	 * The CSS an opted-in site needs for its presets: a rule per name beyond the starters (the starters' own rules are in

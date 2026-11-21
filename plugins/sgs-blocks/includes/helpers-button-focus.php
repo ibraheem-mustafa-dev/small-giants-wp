@@ -120,9 +120,10 @@ if ( ! function_exists( 'sgs_button_focus_host_border' ) ) {
 	 * @param string[] $widths       Resolved side widths, top/right/bottom/left (`''` = unset), from sgs_css_length_value().
 	 * @param string   $border_style Resolved border style keyword (sgs_border_style_keyword()).
 	 * @param string   $preset       The button's style preset (`inheritStyle`).
+	 * @param string   $preset_fallback The border width a preset's rule paints when its `border-width` token is unset: 2px for `sgs/button`'s variant classes, 1px for the built-in button kit's preset rule (`sgs_button_preset_css( ..., $kit )`).
 	 * @return string
 	 */
-	function sgs_button_focus_host_border( array $widths, string $border_style, string $preset ): string {
+	function sgs_button_focus_host_border( array $widths, string $border_style, string $preset, string $preset_fallback = '2px' ): string {
 		if ( in_array( $border_style, array( 'none', 'hidden' ), true ) ) {
 			return '';
 		}
@@ -145,7 +146,7 @@ if ( ! function_exists( 'sgs_button_focus_host_border' ) ) {
 		}
 		// Every preset's stylesheet rule gives the button a border (style.css `.sgs-button--<preset>`, `sgs_button_named_preset_css`).
 		if ( in_array( $preset, sgs_button_preset_names(), true ) ) {
-			return "var(--wp--custom--button-presets--{$preset}--border-width,2px)";
+			return "var(--wp--custom--button-presets--{$preset}--border-width,{$preset_fallback})";
 		}
 		return '';
 	}

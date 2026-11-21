@@ -157,14 +157,16 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$class = self::opener_class( $html );
 		$this->assertNotSame( '', $class, 'the opener still prints' );
 		$this->assertStringNotContainsString( 'buybox__add-to-cart--secondary', $class, 'the "secondary unless" modifier is gone once the opener names a preset' );
-		$this->assertMatchesRegularExpression( '#\.sgs-bb-X\.wp-block-sgs-buybox \.buybox__add-to-cart\.buybox__add-to-cart--flow-opener\{[^}]*background[^}]*\}#', self::css( $html ), 'the primary preset prints on the opener\'s own selector' );
+		$this->assertMatchesRegularExpression( '#sgs-btn-kit-[0-9a-f]{8}#', $class, 'the opener carries the preset\'s shared class' );
+		preg_match( '#sgs-btn-kit-[0-9a-f]{8}#', $class, $kit );
+		$this->assertMatchesRegularExpression( '#\.' . $kit[0] . '\.' . $kit[0] . '\.buybox__add-to-cart\{background:var\(--wp--custom--button-presets--primary--background\)[^}]*\}#', self::css( $html ), 'the primary preset prints as the shared rule on the opener\'s own class' );
 		$this->assertStringContainsString( 'buybox__add-to-cart--outline', $html, 'Add to Cart keeps its own preset' );
 	}
 
 	public function test_a_colour_set_on_the_opener_prints_on_its_own_selector_after_add_to_carts(): void {
 		$html = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartBackgroundColour' => 'surface', 'flowOpenerColourBackground' => 'accent' ) );
 		$css  = self::css( $html );
-		$sel  = '.buybox__add-to-cart.buybox__add-to-cart--flow-opener{';
+		$sel  = '.buybox__add-to-cart:where(.buybox__add-to-cart--flow-opener){';
 		$this->assertMatchesRegularExpression( '#\.wp-block-sgs-buybox ' . preg_quote( $sel, '#' ) . '(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css );
 		$this->assertGreaterThan( (int) strrpos( $css, '.buybox__add-to-cart{background-color:var(--wp--preset--color--surface)' ), (int) strrpos( $css, $sel ), 'printed after Add to Cart\'s colour so a tie in weight goes to the opener' );
 		$this->assertStringContainsString( 'buybox__add-to-cart--secondary', self::opener_class( $html ), 'no preset named: the secondary modifier stays' );
@@ -176,13 +178,45 @@ final class BuyboxKeepFlowTest extends TestCase {
 			$label = $keep ? 'keep path' : 'linked path';
 			preg_match( '#<button type="button" class="([^"]*)"[^>]*data-sgs-modal-open#', $html, $m );
 			$this->assertMatchesRegularExpression( '#sgs-bb-fo-[0-9a-f]{8}#', $m[1] ?? '', "$label: the opener carries a scope class" );
+			$this->assertStringContainsString( 'buybox__add-to-cart--flow-opener', $m[1], "$label: and the opener class the kit's selector names" );
 			preg_match( '#sgs-bb-fo-[0-9a-f]{8}#', $m[1], $scope );
 			$css = self::css( $html );
-			$this->assertStringContainsString( '.' . $scope[0] . '.buybox__add-to-cart.buybox__add-to-cart--flow-opener{', $css, "$label: the kit prints on the scoped selector" );
-			$this->assertMatchesRegularExpression( '#\.' . $scope[0] . '\.buybox__add-to-cart\.buybox__add-to-cart--flow-opener\{(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css, "$label: the colour prints" );
+			$sel = '.' . $scope[0] . '.' . $scope[0] . '.buybox__add-to-cart:where(.buybox__add-to-cart--flow-opener){';
+			$this->assertStringContainsString( $sel, $css, "$label: the kit prints on the scoped selector, the scope class doubled so it weighs what the shared preset rule weighs" );
+			$this->assertMatchesRegularExpression( '#' . preg_quote( $sel, '#' ) . '(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css, "$label: the colour prints" );
+			$this->assertMatchesRegularExpression( '#sgs-btn-kit-[0-9a-f]{8}#', $m[1], "$label: the preset's shared class rides on the button" );
 			$this->assertStringNotContainsString( 'buybox__add-to-cart--secondary', $m[1], "$label: a named preset drops the secondary modifier" );
 			$this->assertStringNotContainsString( ' style="', $html, "$label: no inline style" );
 		}
+	}
+
+	/** Finding 8: the opener's settings apply to every opener the flow prints, the variable product's Add to Cart included. */
+	public function test_the_opener_settings_apply_where_the_flow_replaces_add_to_cart_on_a_variable_product(): void {
+		$html = self::render( array( 'flowOpenerColourBackground' => 'accent', 'flowOpenerStyle' => 'primary' ) );
+		preg_match( '#<button type="button" class="([^"]*)"[^>]*data-sgs-modal-open#', $html, $m );
+		$this->assertStringContainsString( 'buybox__add-to-cart--flow-opener', $m[1] ?? '', 'MUST FAIL: the button that opens the flow carries the opener class when a setting prints' );
+		$this->assertMatchesRegularExpression( '#sgs-btn-kit-[0-9a-f]{8}#', $m[1] ?? '', 'and the preset\'s shared class' );
+		$css = self::css( $html );
+		$this->assertMatchesRegularExpression( '#\.wp-block-sgs-buybox \.buybox__add-to-cart:where\(\.buybox__add-to-cart--flow-opener\)\{(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css, 'MUST FAIL: the colour prints on that button' );
+
+		// A button with the flow in place of Add to Cart and none of the settings set is the pinned `off-variable-linked` render.
+		$this->assertStringNotContainsString( 'buybox__add-to-cart--flow-opener', self::render( array() ), 'no setting, no opener class' );
+		// A variable product with no linked flow has no opener at all.
+		$unlinked = self::render( array( 'flowOpenerColourBackground' => 'accent' ), false );
+		$this->assertStringNotContainsString( 'flow-opener', $unlinked );
+		$this->assertStringNotContainsString( 'sgs-btn-kit-', $unlinked );
+	}
+
+	/** Nit: a value that prints nothing is not a setting, so it adds no class and no style. */
+	public function test_a_value_that_prints_nothing_adds_no_scope_class(): void {
+		$baseline = self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE );
+		foreach ( array( array( 'flowOpenerPadding' => array( 'desktop' => array() ) ), array( 'flowOpenerBorderRadius' => array( 'desktop' => array(), 'tablet' => array() ) ), array( 'flowOpenerStyle' => 'no-such-preset' ), array( 'flowOpenerMinHeight' => array( 'desktop' => '' ) ) ) as $unset ) {
+			$html = self::render( array( 'keepAddToCartWithFlow' => true ) + $unset, true, self::SIMPLE );
+			$this->assertStringNotContainsString( 'sgs-bb-fo-', $html, json_encode( $unset ) . ' prints nothing' );
+			$this->assertSame( $baseline, $html, json_encode( $unset ) . ' leaves the render byte for byte' );
+		}
+		$fit = self::render( array( 'keepAddToCartWithFlow' => true, 'flowOpenerWidthType' => 'fit' ), true, self::SIMPLE );
+		$this->assertStringContainsString( 'width:fit-content', self::css( $fit ), '"Fit to the text" prints, so it does count' );
 	}
 
 	public function test_a_simple_product_follows_the_variable_products_precedence_an_explicit_popup_wins(): void {
