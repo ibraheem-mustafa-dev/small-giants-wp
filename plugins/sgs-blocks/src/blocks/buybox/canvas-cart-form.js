@@ -31,9 +31,11 @@ export function keepsFlowOpener( attributes ) {
  * @param {Object} props.attributes  Block attributes.
  * @param {string} props.cartVariant The Add to Cart preset modifier (' buybox__add-to-cart--<slug>' or '').
  * @param {Object} props.cartStyle   The Add to Cart button's own canvas style.
+ * @param {Object} [props.openerStyle] The flow opener's own canvas style (`buttonKitStyle( attributes, 'flowOpener', ... )`): the
+ *                                     kit's look settings, as the page prints them.
  * @return {Element} The form, or the form and the flow opener in their wrapper.
  */
-export function cartFormMock( { attributes, cartVariant, cartStyle } ) {
+export function cartFormMock( { attributes, cartVariant, cartStyle, openerStyle } ) {
 	const form = (
 		<div className="buybox__cart-form">
 			<span
@@ -63,6 +65,7 @@ export function cartFormMock( { attributes, cartVariant, cartStyle } ) {
 			<div className="buybox__cart-form buybox__cart-form--modal">
 				<span
 					className={ `wp-element-button buybox__add-to-cart${ openerLook } buybox__add-to-cart--flow-opener` }
+					style={ openerStyle }
 				>
 					<span className="buybox__cart-label">
 						{ __( 'Flow button (from the linked flow)', 'sgs-blocks' ) }

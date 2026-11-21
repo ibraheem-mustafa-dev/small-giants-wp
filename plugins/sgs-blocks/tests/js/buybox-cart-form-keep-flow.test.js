@@ -5,6 +5,7 @@
  */
 
 import { cartFormMock, keepsFlowOpener } from '../../src/blocks/buybox/canvas-cart-form';
+import buttonKitStyle from '../../src/components/button-kit/button-kit-style';
 
 const WRAPPER = 'sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow';
 const shows = ( attributes ) =>
@@ -50,5 +51,15 @@ describe( 'cartFormMock keeps the opener under the same conditions as render.php
 		expect( openerClass( { flowOpenerStyle: 'primary', addToCartStyle: 'outline' } ) ).not.toContain( 'buybox__add-to-cart--secondary' );
 		expect( openerClass( { flowOpenerStyle: 'primary' } ) ).toContain( 'buybox__add-to-cart--primary' );
 		expect( openerClass( { flowOpenerStyle: 'nonsense' } ) ).toContain( 'buybox__add-to-cart--secondary' );
+	} );
+
+	it( 'draws the opener with the look settings the panel writes, not the preset alone', () => {
+		const attributes = { keepAddToCartWithFlow: true, flowOpenerColourBackground: '#112233', flowOpenerPadding: { desktop: { top: '10px' } }, flowOpenerWidthType: 'fit' };
+		const openerStyle = buttonKitStyle( attributes, 'flowOpener' );
+		const opener = cartFormMock( { attributes, cartVariant: '', cartStyle: {}, openerStyle } ).props.children[ 1 ].props.children;
+		expect( opener.props.style ).toEqual( { backgroundColor: '#112233', paddingTop: '10px', width: 'fit-content' } );
+		// Add to Cart keeps its own style: the opener's settings never reach it.
+		const addToCart = cartFormMock( { attributes, cartVariant: '', cartStyle: { minHeight: '60px' }, openerStyle } ).props.children[ 0 ].props.children;
+		expect( addToCart.props.style ).toEqual( { minHeight: '60px' } );
 	} );
 } );

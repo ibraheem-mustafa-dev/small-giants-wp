@@ -37,6 +37,7 @@ import { composeShadow } from '../../utils/shadow-layers';
 import { presetNames } from '../button/preset-names';
 import { galleryStickerPreviewCss, stickerCorner } from './gallery-sticker-preview';
 import { cartFormMock } from './canvas-cart-form';
+import buttonKitStyle from '../../components/button-kit/button-kit-style';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [
 	'top-right',
@@ -1243,7 +1244,9 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 		: '';
 	// Pick a set can move the add-to-basket button into the side column (pickSideButton), as render.php does.
 	const sideCart = 'configurator' === attributes.buyboxLayout && true === attributes.pickSideButton;
-	const cartForm = cartFormMock( { attributes, cartVariant, cartStyle } );
+	// The flow opener's own look (the built-in button kit), previewed at the device being edited.
+	const openerStyle = buttonKitStyle( attributes, 'flowOpener', { tier, palette } );
+	const cartForm = cartFormMock( { attributes, cartVariant, cartStyle, openerStyle } );
 	const stockAbove = 'above' === attributes.stockLinePosition;
 	const stockLine = (
 		<p className="buybox__stock buybox__stock--status buybox__stock--in-stock">
