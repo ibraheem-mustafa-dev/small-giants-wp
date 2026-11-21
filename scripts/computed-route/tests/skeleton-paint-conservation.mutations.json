@@ -241,8 +241,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "parent: byKey.get( e.parentKey ) ?? null, children: kids.get( e.key ) ?? 0 } );",
-		"replace": "parent: byKey.get( e.parentKey ) ?? null } );",
+		"find": "parent: parentOf( e ), children: childrenOf( e ) } );",
+		"replace": "parent: parentOf( e ) } );",
 		"why": "the lister never counts an element's children"
 	},
 	{
@@ -517,8 +517,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "listRow( e, copyLooks, 'band-only' );",
-		"replace": "listRow( e, copyLooks, 'no-row' );",
+		"find": "listRow( e, copyLooks, 'band-only', null, shownIn );",
+		"replace": "listRow( e, copyLooks, 'no-row', null, shownIn );",
 		"why": "a band copy's row is not class band-only"
 	},
 	{
@@ -589,8 +589,8 @@
 	},
 	{
 		"file": "tools/paint-conservation.mjs",
-		"find": ".map( ( k ) => total( client, k ) ).join( ' | ' ) } | ${ factless( client ).length } |` );",
-		"replace": ".map( ( k ) => total( client, k ) ).join( ' | ' ) } | 0 |` );",
+		"find": "} | ${ factless( client ).length } | ${ total( client, 'statePainted' ) } |` );",
+		"replace": "} | 0 | ${ total( client, 'statePainted' ) } |` );",
 		"why": "the table does not count the surfaces read without a record"
 	},
 	{
@@ -598,5 +598,47 @@
 		"find": "\tif ( ! fs.existsSync( factsFile( repo, client ) ) ) {\n\t\treturn { record: null, why: `no fact record (sites/${ client }/build/intake/facts.json)` };\n\t}",
 		"replace": "",
 		"why": "a client with no facts.json is not named"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tseen.has( id ) || ( seen.add( id ), check( e, e.reveal ?? {} ) );",
+		"replace": "",
+		"why": "elements only a state shows are never checked"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tseen.has( id ) || ( seen.add( id ), check( e, e.reveal ?? {} ) );",
+		"replace": "\t\tcheck( e, e.reveal ?? {} );",
+		"why": "an element several states show is checked once per state"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tif ( shownIn ) {\n\t\t\tlistRow( e, looks, 'state-only', null, shownIn );\n\t\t\treturn;\n\t\t}\n",
+		"replace": "",
+		"why": "a state element takes the proposal row of the opening element with its key"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tshownIn && counts.statePainted++;",
+		"replace": "",
+		"why": "the state's painted elements are not counted apart"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "hostSlots: host?.slots ? Object.keys( host.slots ).length : 0, ...( shownIn ? { shownIn } : {} ) } );",
+		"replace": "hostSlots: host?.slots ? Object.keys( host.slots ).length : 0 } );",
+		"why": "a state-only row does not name its state"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "} | ${ factless( client ).length } | ${ total( client, 'statePainted' ) } |` );",
+		"replace": "} | ${ factless( client ).length } | 0 |` );",
+		"why": "the table does not count the state's painted elements"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const childrenOf = ( e ) => ( e.reveal ? ( stateKids.get( inState( e, e.key ) ) ?? 0 ) + ( byKey.has( e.key ) ? 0 : kids.get( e.key ) ?? 0 ) : kids.get( e.key ) ?? 0 );",
+		"replace": "const childrenOf = ( e ) => kids.get( e.key ) ?? 0;",
+		"why": "a state element's children in its state are not counted"
 	}
 ]

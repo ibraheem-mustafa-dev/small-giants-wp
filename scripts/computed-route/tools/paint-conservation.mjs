@@ -118,14 +118,14 @@ const cell = ( v ) => String( v ?? '' ).replace( /\|/g, '\\|' ).replace( /\n/g, 
 
 // The groups as markdown: a totals line per client, then one table row per (class, dropped by, rule).
 export function markdown( { rows, counts, unlisted = {}, facts = {} }, title ) {
-	const total = ( client, k ) => Object.values( counts[ client ] ).reduce( ( n, c ) => n + c[ k ], 0 );
+	const total = ( client, k ) => Object.values( counts[ client ] ).reduce( ( n, c ) => n + ( c[ k ] ?? 0 ), 0 );
 	const sum = ( client, keys ) => keys.reduce( ( n, k ) => n + total( client, k ), 0 );
 	const READ = [ 'exact', 'loopCopy', 'instanceCopy', 'siblingCopy', 'otherSurface', 'ownedElsewhere', 'recorded' ];
 	const head = [ `# ${ title }`, '', '| Client | Painted | READ | RECORDED-UNREAD | FAILING |', '|---|---|---|---|---|', ...Object.keys( counts ).map( ( client ) => `| ${ client } | ${ total( client, 'painted' ) } | ${ sum( client, READ ) } | ${ total( client, 'listedApart' ) } | ${ total( client, 'unread' ) } |` ), '', 'READ: a block reads the look (a delivering record counts only where its destination is verified). RECORDED-UNREAD: a record says why no block reads it; the clone does not show these looks. FAILING: neither.', '' ];
-	const lines = [ ...head, '| Client | Surfaces | Painted | Read exactly | Read as a loop copy | Read under another host copy | Read through a like sibling | Read by another surface | Listed under a narrower surface | Delivered by a record | RECORDED-UNREAD | FAILING | Surfaces with no fact record |', '|---|---|---|---|---|---|---|---|---|---|---|---|---|' ];
+	const lines = [ ...head, '| Client | Surfaces | Painted | Read exactly | Read as a loop copy | Read under another host copy | Read through a like sibling | Read by another surface | Listed under a narrower surface | Delivered by a record | RECORDED-UNREAD | FAILING | Surfaces with no fact record | Painted only in a state |', '|---|---|---|---|---|---|---|---|---|---|---|---|---|---|' ];
 	const factless = ( client ) => Object.entries( facts[ client ] ?? {} ).filter( ( [ , why ] ) => why );
 	for ( const client of Object.keys( counts ) ) {
-		lines.push( `| ${ client } | ${ Object.keys( counts[ client ] ).length } | ${ [ 'painted', 'exact', 'loopCopy', 'instanceCopy', 'siblingCopy', 'otherSurface', 'ownedElsewhere', 'recorded', 'listedApart', 'unread' ].map( ( k ) => total( client, k ) ).join( ' | ' ) } | ${ factless( client ).length } |` );
+		lines.push( `| ${ client } | ${ Object.keys( counts[ client ] ).length } | ${ [ 'painted', 'exact', 'loopCopy', 'instanceCopy', 'siblingCopy', 'otherSurface', 'ownedElsewhere', 'recorded', 'listedApart', 'unread' ].map( ( k ) => total( client, k ) ).join( ' | ' ) } | ${ factless( client ).length } | ${ total( client, 'statePainted' ) } |` );
 	}
 	const noRecord = Object.keys( counts ).flatMap( ( client ) => factless( client ).map( ( [ s, why ] ) => `${ client }/${ s } (${ cell( why ) })` ) );
 	noRecord.length && lines.push( '', `Surfaces read with no fact record (the template's declared styles not read): ${ noRecord.join( ', ' ) }` );

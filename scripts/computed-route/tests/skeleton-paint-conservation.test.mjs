@@ -248,7 +248,7 @@ const surface = ( { chipSlot = false, wrapperNamed = false, wrapperBand = false 
 
 test( 'conservationRows lists each painted element no node reads, with its class, its rule and its host', () => {
 	const { rows, counts } = conservationRows( surface() );
-	assert.deepEqual( counts, { painted: 8, exact: 2, loopCopy: 1, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, recorded: 0, listedApart: 0, unread: 5 } );
+	assert.deepEqual( counts, { painted: 8, statePainted: 0, exact: 2, loopCopy: 1, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, recorded: 0, listedApart: 0, unread: 5 } );
 	assert.deepEqual( rows.map( ( r ) => [ r.key, r.class, r.by, r.rule ] ), [
 		[ 'Root/2#0', 'unwrapped', 'rule', 'heroInner' ],
 		[ 'Root/5#0', 'host-unread', 'rule', 'optionSetFilter' ],
@@ -405,7 +405,7 @@ test( 'the tool reads each surface\'s declared styles through the fact record vi
 	// Negative control: a client with no record reads the style attribute only, and the report names the surface.
 	const without = listAll( { repo, clients: [ 'demo' ], factRecord: () => ( { record: null, why: 'no facts.json' } ) } );
 	assert.ok( ! without.rows.some( ( r ) => 'Root/10#0' === r.key ) );
-	assert.match( markdown( without, 'T' ), /\| 5 \| 1 \|\n/, 'the table counts the surface read without a record' );
+	assert.match( markdown( without, 'T' ), /\| 5 \| 1 \| 0 \|\n/, 'the table counts the surface read without a record' );
 	assert.deepEqual( without.facts, { demo: { home: 'no facts.json' } } );
 	assert.match( markdown( without, 'T' ), /Surfaces read with no fact record \(the template's declared styles not read\): demo\/home \(no facts\.json\)/ );
 	// A record out of step with the inventory (its entry for the element is another tag: an inventory read from an older draft) is not read.
@@ -576,4 +576,40 @@ test( 'a drawn part a row lists in its parts is host-unread in that row\'s block
 	const skeleton = [ { name: 'sgs/container', draftRef: { tpl: 'Root/1#0' }, innerBlocks: [ { name: 'sgs/button', draftRef: { tpl: 'Root/2#0' } } ] } ];
 	const { rows } = conservationRows( { inventory, proposal, skeleton } );
 	assert.deepEqual( rows.map( ( r ) => [ r.key, r.class, r.host, r.hostBlock ] ), [ [ 'Root/3#0', 'host-unread', 'Root/2#0', 'sgs/button' ], [ 'Root/4#0', 'no-row', null, null ] ] );
+} );
+
+test( 'an element only a state shows is checked like the others: read through a node or a copy, else a state-only row naming the state (MUST FAIL where revealed records are never checked)', () => {
+	const open = { component: 'Root', keys: { faqOpen: { a: true } } };
+	const s = surface();
+	s.inventory.revealed = [
+		// An accordion answer with its own panel paint, which no node names.
+		el( 'Root/20#0', 'background: ivory; padding: 16px', { parentKey: 'Root/1#0', reveal: open } ),
+		// The same answer read again in a second state that also shows it: listed once.
+		el( 'Root/20#0', 'background: ivory; padding: 16px', { parentKey: 'Root/1#0', reveal: { component: 'Root', keys: { faqOpen: { a: true, b: true } } } } ),
+		// A chip copy the option picker's slot reads through its loop.
+		el( 'Root/7#2', 'background: white; box-shadow: 0 2px 0 black', { parentKey: 'Root/6#0', reveal: open } ),
+		// A text that paints nothing.
+		el( 'Root/21#0', 'color: red', { parentKey: 'Root/20#0', reveal: open } ),
+		// A flex row the state shows, laying out two children of its own state.
+		el( 'Root/22#0', 'gap: 8px', { parentKey: 'Root/1#0', display: 'flex', reveal: open } ),
+		el( 'Root/23#0', null, { parentKey: 'Root/22#0', reveal: open } ),
+		el( 'Root/23#1', null, { parentKey: 'Root/22#0', reveal: open } ),
+	];
+	const r = conservationRows( s );
+	assert.deepEqual( Object.keys( r.rows.find( ( x ) => 'Root/22#0' === x.key )?.looks ?? {} ), [ 'layout' ], 'its children are counted in its state' );
+	const row = r.rows.find( ( x ) => 'Root/20#0' === x.key );
+	assert.deepEqual( [ row?.class, row?.state, row?.shownIn ], [ 'state-only', 'unrecorded', open ] );
+	assert.deepEqual( Object.keys( row.looks ).sort(), [ 'background', 'padding' ] );
+	assert.equal( r.rows.filter( ( x ) => 'Root/20#0' === x.key ).length, 1, 'one element shown in two states is one row' );
+	assert.deepEqual( [ r.counts.painted, r.counts.statePainted, r.counts.loopCopy, r.counts.unread ], [ 11, 3, 2, 7 ] );
+	// Negative control: a node naming the answer reads it, and an inventory with no states has no state rows.
+	s.skeleton[ 0 ].innerBlocks.push( node( 'sgs/text', 'Root/20#0' ), node( 'sgs/container', 'Root/22#0' ) );
+	assert.ok( ! conservationRows( s ).rows.some( ( x ) => 'state-only' === x.class ) );
+	assert.equal( conservationRows( surface() ).counts.statePainted, 0 );
+	// The tool's table counts the state's painted elements.
+	assert.match( markdown( { rows: [], counts: { demo: { home: conservationRows( { ...s, skeleton: surface().skeleton } ).counts } } }, 'T' ), /\| 0 \| 3 \|\n/ );
+	// The propose-time check names it.
+	const t = surface();
+	t.inventory.revealed = [ el( 'Root/20#0', 'background: ivory', { parentKey: 'Root/1#0', reveal: open } ) ];
+	assert.ok( paintProblems( t ).some( ( p ) => /state-only/.test( p ) && /Root\/20#0/.test( p ) ) );
 } );

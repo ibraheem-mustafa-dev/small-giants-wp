@@ -7,6 +7,7 @@
 // absorbed into. Pure functions over the saved inventory, proposal and skeleton: no browser, no site, no database.
 import { resolvedWidths, renderedWidths, pxOf } from './element-facts.mjs';
 import { copylessKey, templateKey } from './fact-key.mjs';
+import { revealId } from './reveal-merge.mjs';
 
 // The looks a box can carry that a block must read to draw it as the draft does.
 export const LOOKS = [ 'background', 'border', 'shadow', 'radius', 'padding', 'width', 'max-width', 'margin-auto', 'text-centre', 'layout', 'glyph', 'height', 'text-decoration' ];
@@ -395,11 +396,14 @@ export function droppedBy( row, rows, depth = 0 ) {
 // { rows, counts } where counts holds the elements painted, read exactly, read through a loop copy, read through a copy under
 // another host instance, read through a sibling of the same tag and style that a node names (a static list whose first
 // link is the slot), read by another surface, and left to the narrower surface that holds them.
-// Row: { key, tag, words, looks, class, action, rule, by, into, host, hostBlock, hostSlots }.
+// The elements only a state shows (the inventory's `revealed`, each with the `reveal` state that shows it) are checked the same
+// way and counted in `painted` and in `statePainted`; one element read in several states is checked once. The proposal gives
+// them no rows, so one no node reads is class `state-only`, with the state in `shownIn`.
+// Row: { key, tag, words, looks, class, action, rule, by, into, host, hostBlock, hostSlots, shownIn? }.
 //   class: `unwrapped` (the wrapper went and nothing records where its look goes), `band-only` (the wrapper went and a band
 //   finder reads its width cap, so `looks` holds only the paint that finder does not read), `host-unread` (absorbed into a
 //   block that draws it, whose slots do not name it), `removed`, `unresolved` (no block fits it: a proposal problem of its own),
-//   `kept-unnamed` (the row kept a block but no node names the element) or `no-row` (the proposal holds no row for it, and no row lists it among its `parts`: a part a row lists is `host-unread` in the block of that row).
+//   `kept-unnamed` (the row kept a block but no node names the element), `no-row` (the proposal holds no row for it, and no row lists it among its `parts`: a part a row lists is `host-unread` in the block of that row) or `state-only` (only a state shows it).
 export function conservationRows( { inventory, proposal, skeleton, view = null, otherSurfaces = [], ownedElsewhere = new Set(), component = null, calibration = () => null } ) {
 	const elements = inventory?.elements || [];
 	const byKey = new Map( elements.map( ( e ) => [ e.key, e ] ) );
@@ -408,7 +412,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	const named = new Set( reads.keys() );
 	const full = [ ...named ].filter( ( k ) => 'full' === reads.get( k ) );
 	const banded = [ ...named ].filter( ( k ) => 'band' === reads.get( k ) );
-	const counts = { painted: 0, exact: 0, loopCopy: 0, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, recorded: 0, listedApart: 0, unread: 0 };
+	const counts = { painted: 0, statePainted: 0, exact: 0, loopCopy: 0, instanceCopy: 0, siblingCopy: 0, otherSurface: 0, ownedElsewhere: 0, recorded: 0, listedApart: 0, unread: 0 };
 	const nodes = nodesByRef( skeleton );
 	// The elements that hold an element a node reads in full.
 	const holdsRead = new Set();
@@ -419,8 +423,9 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	} );
 	// The row of an unread element, or nothing when its records deliver every look left: { ...row, state } where state is
 	// `recorded` (a record that delivers nothing, or a per-site decision: listed in the record's class) or `unrecorded`.
-	const listRow = ( e, looks, cls, host = null ) => {
-		const row = rows.get( e.key ) ?? null;
+	// `shownIn`: the state that shows the element, whose key names no proposal row of its own.
+	const listRow = ( e, looks, cls, host = null, shownIn = null ) => {
+		const row = shownIn ? null : rows.get( e.key ) ?? null;
 		const dropped = droppedBy( row, rows );
 		const rec = checkRecords( recordsOf( row, rows ), { looks: Object.keys( looks ), nodes, below: holdsRead.has( e.key ), calibration } );
 		const left = Object.fromEntries( Object.entries( looks ).filter( ( [ l ] ) => ! rec.delivered.includes( l ) ) );
@@ -430,10 +435,19 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 		}
 		const listed = rec.listed ?? ( 'site-decision' === dropped.by ? { kind: 'site-decision', source: row?.source ?? null } : null );
 		listed && ! rec.bad.length ? counts.listedApart++ : counts.unread++;
-		out.push( { key: e.key, tag: e.tag, words: String( e.words ?? '' ).slice( 0, 60 ), looks: left, class: rec.bad.length ? 'record-unverified' : listed ? listed.kind : cls, was: cls, state: listed && ! rec.bad.length ? 'recorded' : 'unrecorded', record: listed, ...( rec.bad.length ? { recordProblems: rec.bad } : {} ), action: row?.action ?? null, rule: dropped.rule, by: dropped.by, handover: row?.handover?.kind ?? null, into: row?.into ?? null, host: host?.key ?? null, hostBlock: host?.block ?? null, hostSlots: host?.slots ? Object.keys( host.slots ).length : 0 } );
+		out.push( { key: e.key, tag: e.tag, words: String( e.words ?? '' ).slice( 0, 60 ), looks: left, class: rec.bad.length ? 'record-unverified' : listed ? listed.kind : cls, was: cls, state: listed && ! rec.bad.length ? 'recorded' : 'unrecorded', record: listed, ...( rec.bad.length ? { recordProblems: rec.bad } : {} ), action: row?.action ?? null, rule: dropped.rule, by: dropped.by, handover: row?.handover?.kind ?? null, into: row?.into ?? null, host: host?.key ?? null, hostBlock: host?.block ?? null, hostSlots: host?.slots ? Object.keys( host.slots ).length : 0, ...( shownIn ? { shownIn } : {} ) } );
 	};
 	const kids = new Map();
 	elements.forEach( ( e ) => kids.set( e.parentKey, ( kids.get( e.parentKey ) ?? 0 ) + 1 ) );
+	// A state's elements by state and key, and how many each holds in that state: a state element's parent and children are
+	// first its own state's (a key an opening element also carries names another element there).
+	const revealed = inventory?.revealed || [];
+	const inState = ( e, key ) => `${ revealId( e.reveal ) }|${ key }`;
+	const stateRecs = new Map( revealed.map( ( e ) => [ inState( e, e.key ), e ] ) );
+	const stateKids = new Map();
+	revealed.forEach( ( e ) => stateKids.set( inState( e, e.parentKey ), ( stateKids.get( inState( e, e.parentKey ) ) ?? 0 ) + 1 ) );
+	const parentOf = ( e ) => ( e.reveal ? stateRecs.get( inState( e, e.parentKey ) ) : null ) ?? byKey.get( e.parentKey ) ?? null;
+	const childrenOf = ( e ) => ( e.reveal ? ( stateKids.get( inState( e, e.key ) ) ?? 0 ) + ( byKey.has( e.key ) ? 0 : kids.get( e.key ) ?? 0 ) : kids.get( e.key ) ?? 0 );
 	// A sibling's signature: its parent, tag and style attribute. An element with no style attribute has none.
 	const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.parentKey, e.tag, e.attrs.style ] ) : null );
 	// The copies a set of named keys represents: the loops, the templates and the like siblings they stand for.
@@ -464,55 +478,68 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 		}
 		return r && r !== row ? r : null;
 	};
-	for ( const e of elements ) {
-		const painted = paintsBox( e, { declared: view?.declared?.( e ) ?? {}, parent: byKey.get( e.parentKey ) ?? null, children: kids.get( e.key ) ?? 0 } );
+	// One element: counted as read, or a row. `shownIn`: the state that shows it, for an element of `revealed`.
+	const check = ( e, shownIn = null ) => {
+		const painted = paintsBox( e, { declared: view?.declared?.( e ) ?? {}, parent: parentOf( e ), children: childrenOf( e ) } );
 		if ( ! Object.keys( painted ).length ) {
-			continue;
+			return;
 		}
 		counts.painted++;
+		shownIn && counts.statePainted++;
 		// A band finder reads the width cap alone: the paint it leaves is still unread.
 		const band = 'band' === reads.get( e.key );
 		const looks = band ? Object.fromEntries( Object.entries( painted ).filter( ( [ look ] ) => ! BAND_LOOKS.includes( look ) ) ) : painted;
 		if ( named.has( e.key ) && ! Object.keys( looks ).length ) {
 			counts.exact++;
-			continue;
+			return;
 		}
 		if ( band ) {
-			listRow( e, looks, 'band-only' );
-			continue;
+			listRow( e, looks, 'band-only', null, shownIn );
+			return;
 		}
 		if ( named.has( e.key ) ) {
 			counts.exact++;
-			continue;
+			return;
 		}
 		const copy = copyRead( e );
 		const copyLooks = 'band' === copy?.kind ? Object.fromEntries( Object.entries( painted ).filter( ( [ look ] ) => ! BAND_LOOKS.includes( look ) ) ) : {};
 		if ( copy && ! Object.keys( copyLooks ).length ) {
 			counts[ copy.via ]++;
-			continue;
+			return;
 		}
 		if ( copy ) {
-			listRow( e, copyLooks, 'band-only' );
-			continue;
+			listRow( e, copyLooks, 'band-only', null, shownIn );
+			return;
 		}
 		const elsewhere = otherSurfaces.find( ( s ) => s.identities.has( identityOf( e, component ) ) );
 		if ( elsewhere ) {
 			counts.otherSurface++;
-			continue;
+			return;
 		}
 		if ( ownedElsewhere.has( identityOf( e, component ) ) ) {
 			counts.ownedElsewhere++;
-			continue;
+			return;
+		}
+		if ( shownIn ) {
+			listRow( e, looks, 'state-only', null, shownIn );
+			return;
 		}
 		const row = rows.get( e.key ) ?? null;
 		// A part (a drawn svg a row lists in its `parts`) has no row of its own: the block of the row that lists it draws it.
 		const owner = row ? null : partOf.get( e.key ) ?? null;
 		if ( owner ) {
 			listRow( e, looks, 'host-unread', named.has( owner.key ) ? owner : hostOf( owner ) );
-			continue;
+			return;
 		}
 		const cls = ! row ? 'no-row' : 'unwrap' === row.action ? 'unwrapped' : 'absorbed' === row.action ? 'host-unread' : 'remove' === row.action ? 'removed' : 'unresolved' === row.action ? 'unresolved' : 'kept-unnamed';
 		listRow( e, looks, cls, hostOf( row ) );
+	};
+	elements.forEach( ( e ) => check( e ) );
+	// An element several states show is one element: checked once, in the first state that shows it.
+	const seen = new Set();
+	for ( const e of revealed ) {
+		const id = JSON.stringify( [ e.key, e.tag, e.words ?? '', e.attrs?.style ?? '' ] );
+		seen.has( id ) || ( seen.add( id ), check( e, e.reveal ?? {} ) );
 	}
 	return { rows: out, counts };
 }
