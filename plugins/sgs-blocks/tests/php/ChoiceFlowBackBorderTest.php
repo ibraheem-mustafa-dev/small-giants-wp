@@ -32,7 +32,7 @@ final class ChoiceFlowBackBorderTest extends TestCase {
 			'left'   => '2px',
 		),
 		'backBorderStyle'       => 'dashed',
-		'backBorderRadius'      => array( 'topLeft' => '4px' ),
+		'backBorderRadius'      => array( 'desktop' => array( 'topLeft' => '4px' ) ),
 	);
 
 	/**

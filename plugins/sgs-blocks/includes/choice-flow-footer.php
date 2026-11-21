@@ -15,9 +15,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/choice-flow-buttons.php';
+
 if ( ! function_exists( 'sgs_choice_flow_footer_html' ) ) {
 	/**
-	 * The footer bar: Back, the optional skip link, then the step actions.
+	 * The footer bar: Back, the optional skip link, then the step actions. A button whose `{prefix}Style` names a preset carries the
+	 * preset's shared-rule classes (`choice-flow-buttons.php`).
 	 *
 	 * @param array $attributes Root block attributes.
 	 * @return string Escaped markup.
@@ -33,17 +36,17 @@ if ( ! function_exists( 'sgs_choice_flow_footer_html' ) ) {
 		if ( '' !== $skip_label ) {
 			$skip_html = '<p class="sgs-choice-flow__skip" hidden>'
 				. ( '' !== $skip_prompt ? sgs_rich_text_kses( $skip_prompt ) . ' ' : '' )
-				. '<button type="button" class="sgs-choice-flow__skip-button">' . sgs_rich_text_kses( $skip_label, false ) . '</button></p>';
+				. '<button type="button" class="sgs-choice-flow__skip-button' . sgs_choice_flow_button_classes( $attributes, 'skip' ) . '">' . sgs_rich_text_kses( $skip_label, false ) . '</button></p>';
 		}
 
 		return '<div class="sgs-choice-flow__footer"><div class="sgs-choice-flow__footer-row">'
-			. '<button type="button" class="sgs-choice-flow__nav-back" hidden aria-label="' . esc_attr__( 'Back', 'sgs-blocks' ) . '">'
+			. '<button type="button" class="sgs-choice-flow__nav-back' . sgs_choice_flow_button_classes( $attributes, 'back' ) . '" hidden aria-label="' . esc_attr__( 'Back', 'sgs-blocks' ) . '">'
 			. '<span aria-hidden="true">&larr;</span> ' . esc_html__( 'Back', 'sgs-blocks' ) . '</button>'
 			. $skip_html
 			. '<div class="sgs-choice-flow__footer-actions">'
-			. '<button type="button" class="sgs-choice-flow__continue is-muted" hidden aria-disabled="true">' . sgs_rich_text_kses( $continue_label, false ) . '</button>'
-			. '<button type="button" class="sgs-choice-flow__add-to-basket" hidden></button>'
-			. '<button type="button" class="sgs-choice-flow__buy-now" hidden></button>'
+			. '<button type="button" class="sgs-choice-flow__continue' . sgs_choice_flow_button_classes( $attributes, 'continue' ) . ' is-muted" hidden aria-disabled="true">' . sgs_rich_text_kses( $continue_label, false ) . '</button>'
+			. '<button type="button" class="sgs-choice-flow__add-to-basket' . sgs_choice_flow_button_classes( $attributes, 'addToBasket' ) . '" hidden></button>'
+			. '<button type="button" class="sgs-choice-flow__buy-now' . sgs_choice_flow_button_classes( $attributes, 'buyNow' ) . '" hidden></button>'
 			. '</div></div>'
 			. '<p class="sgs-choice-flow__continue-hint" role="status" aria-live="polite" data-message="' . esc_attr__( 'Choose an option to continue', 'sgs-blocks' ) . '"></p>'
 			. '</div>';

@@ -68,11 +68,13 @@
  * 2026-09-26 review added the right-hand row: Continue on a question step
  * (D1), or Add to basket/Buy now on an add-to-bag result step (D3) — never
  * both kinds at once (`navigation.js`'s `updateFooterActions()` decides).
- * Back's own colour/border are emitted by render.php's scoped `<style>` via
- * the shared sgs_button_element_style_css() helper; this file carries only
- * layout + the fixed small-caps text treatment every nav button in the same
- * real source uses (Back/Close/Continue) — not an operator control (matches
- * sgs/label's fixed-eyebrow-size precedent).
+ * Each button's own settings (a preset, colours, border, padding, type) are
+ * printed by render.php's scoped `<style>` from the built-in button kit
+ * (includes/choice-flow-buttons.php) and out-rank the rules here; with none
+ * set, this file is the look. It carries layout + the fixed small-caps text
+ * treatment every nav button in the same real source uses (Back/Close/
+ * Continue) — not an operator control (matches sgs/label's
+ * fixed-eyebrow-size precedent).
  */
 .sgs-choice-flow__footer {
 	margin-top: 16px;
@@ -204,8 +206,11 @@
 }
 
 /* A lone purchase button (Buy now switched off) is the step's primary
-   action, so it takes the primary preset, not the secondary one. */
-.sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden]) .sgs-choice-flow__add-to-basket {
+   action, so it takes the primary preset, not the secondary one. The
+   row's condition sits in :where() so the rule weighs what the button's
+   own rule weighs: a look set on Add to basket (the built-in button kit:
+   a preset or a colour, includes/choice-flow-buttons.php) out-ranks it. */
+:where(.sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden])) .sgs-choice-flow__add-to-basket {
 	border-color: var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #1F7A7A));
 	background-color: var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #1F7A7A));
 	color: var(--wp--custom--button-presets--primary--text, #fff);
@@ -233,7 +238,7 @@
 }
 
 .sgs-choice-flow__buy-now:hover,
-.sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden]) .sgs-choice-flow__add-to-basket:hover {
+:where(.sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden])) .sgs-choice-flow__add-to-basket:hover {
 	border-color: var(--wp--custom--button-presets--primary--hover-border, var(--wp--custom--button-presets--primary--border, var(--wp--preset--color--primary, #1F7A7A)));
 	background-color: var(--wp--custom--button-presets--primary--hover-background, var(--wp--custom--button-presets--primary--background, var(--wp--preset--color--primary, #1F7A7A)));
 	color: var(--wp--custom--button-presets--primary--hover-text, var(--wp--custom--button-presets--primary--text, #fff));

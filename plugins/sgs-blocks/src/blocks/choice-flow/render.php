@@ -71,6 +71,7 @@ require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-chrome.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-variation-seed.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-summary.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-footer.php';
+require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-buttons.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-showcase.php';
 require_once dirname( __DIR__, 3 ) . '/includes/choice-flow-colour.php';
 
@@ -192,14 +193,10 @@ if ( null !== $padding_mobile_val && ! $is_showcase ) {
 	$scoped_css[] = SGS_Breakpoints::media( 'mobile' ) . '{' . "{$root_sel}{{$padding_mobile_val};}}";
 }
 
-// Back button — shared button-style emitter (mirrors sgs/product-card's
-// built-in CTA). Uppercase + letter-spacing is a fixed styling constant
-// (not a control), matching the real reference's own small-caps nav-button
-// treatment — same status as sgs/label's fixed 12px eyebrow size.
-$back_css = sgs_button_element_style_css( $attributes, 'back', "{$root_sel} .sgs-choice-flow__nav-back" );
-if ( '' !== $back_css ) {
-	$scoped_css[] = $back_css;
-}
+// The six buttons' looks (Back, Skip, Continue, Add to basket, Buy now, Close) from the built-in button kit's prefixed
+// attributes (includes/choice-flow-buttons.php). Back's uppercase and letter-spacing are a fixed styling constant in
+// style.css, matching the real reference's small-caps nav-button treatment, not a control.
+$scoped_css[] = sgs_choice_flow_buttons_css( $attributes, $root_sel, sgs_choice_flow_attribute_defaults( $block ) );
 $scoped_css[] = sgs_choice_flow_chrome_progress_colour_css( $attributes, $root_sel );
 $scoped_css[] = sgs_choice_flow_showcase_css( $attributes, $root_sel );
 $scoped_css[] = sgs_choice_flow_colour_rules_css( $attributes, $root_sel );
@@ -245,7 +242,10 @@ if ( '' !== $flow_ref_slug ) {
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
 
 $scoped_css = array_filter( $scoped_css );
-if ( $scoped_css ) {
+if ( $scoped_css && false !== strpos( implode( '', $scoped_css ), SGS_SHARED_RULES_OPEN ) ) {
+	// A shared group (a button's preset) gets a tag of its own, so the collector keeps one copy a page.
+	echo sgs_style_tags( wp_strip_all_tags( implode( '', $scoped_css ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() blocks a </style> breakout; every value is pre-sanitised.
+} elseif ( $scoped_css ) {
 	echo '<style>' . wp_strip_all_tags( implode( '', $scoped_css ) ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() blocks a </style> breakout; every value above is pre-sanitised via sgs_css_length_value()/sgs_box_object_shorthand() (contract §D, matches sgs/quote + sgs/notice-banner).
 }
 

@@ -24,6 +24,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-logo-media.php';
+require_once __DIR__ . '/choice-flow-buttons.php';
 
 if ( ! function_exists( 'sgs_choice_flow_chrome_classes' ) ) {
 	/**
@@ -78,7 +79,8 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 	 * `.sgs-choice-flow__chrome-close--text`. Both variants keep an
 	 * accessible name: "icon" via the visually-hidden label span above,
 	 * "text" via its own visible label text (the decorative '×' glyph
-	 * carries `aria-hidden`).
+	 * carries `aria-hidden`). `closeButtonStyle` naming a preset puts that preset's shared-rule classes on the button
+	 * (`choice-flow-buttons.php`).
 	 *
 	 * FIXES item 2: the eyebrow's initial no-JS-yet text stays "Step N of M"
 	 * here regardless of layout — chrome.js's mirrorStepEyebrow() recomposes
@@ -133,7 +135,7 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 
 		$html .= '<span class="sgs-choice-flow__chrome-eyebrow" aria-live="polite">' . esc_html( $initial_eyebrow ) . '</span>';
 
-		$html .= '<button type="button" class="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--' . esc_attr( $close_style ) . '">';
+		$html .= '<button type="button" class="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--' . esc_attr( $close_style ) . sgs_choice_flow_button_classes( $attributes, 'closeButton' ) . '">';
 		if ( 'text' === $close_style ) {
 			$html .= '<span class="sgs-choice-flow__chrome-close-text">' . sgs_rich_text_kses( $close_label, false ) . '</span>';
 			$html .= '<span class="sgs-choice-flow__chrome-close-glyph" aria-hidden="true">&times;</span>';
