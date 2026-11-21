@@ -626,7 +626,6 @@ export default function Edit( { attributes, setAttributes } ) {
 							label={ __( 'Scrollbar', 'sgs-blocks' ) }
 							hasValue={ () => undefined !== scrollbarStyle }
 							onDeselect={ () => setAttributes( { scrollbarStyle: undefined } ) }
-							isShownByDefault
 						>
 							<ScrollbarStyleControl
 								value={ scrollbarStyle }
