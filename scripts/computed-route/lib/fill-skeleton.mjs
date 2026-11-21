@@ -228,6 +228,11 @@ export function skeletonProblems( tree ) {
 		if ( undefined !== node.draftOverlay && ( ! node.draftOverlay?.slot || ! node.draftOverlay.setting || ! Array.isArray( node.draftOverlay.layers ) || ! node.draftOverlay.layers.length || JSON.stringify( node.draftOverlay.layers.at( -1 ) ) !== JSON.stringify( node.draftSlots?.[ node.draftOverlay.slot ] ) ) ) {
 			problems.push( `${ label } draftOverlay must name its slot and setting and list its layers, the last the slot's draft element` );
 		}
+		// `draftPieceParts`: the draft elements a template piece's block takes over as its located parts ({ "<shop part id>": [ tpl
+		// finder ] }, lib/template-piece-buybox.mjs::place), named for the paint conservation check only: no target, never measured.
+		if ( undefined !== node.draftPieceParts && ( ! node.draftPieceParts || 'object' !== typeof node.draftPieceParts || Array.isArray( node.draftPieceParts ) || Object.values( node.draftPieceParts ).some( ( l ) => ! Array.isArray( l ) || ! l.length || l.some( ( f ) => 'tpl' !== finderKind( f ) || finderProblem( f ) ) ) ) ) {
+			problems.push( `${ label } draftPieceParts must be an object of part id to a list of tpl finders` );
+		}
 		if ( undefined !== node.widthAlternatives && ( ! Array.isArray( node.widthAlternatives ) || undefined === node.draftRef || node.widthAlternatives.some( ( a ) => ! parseTplKey( a?.key ) || ! Array.isArray( a.shown ) || ! a.shown.length ) ) ) {
 			problems.push( `${ label } widthAlternatives must be a list of { key, shown } (a draft element key and the widths it is drawn at) on a node with a draftRef` );
 		}
@@ -246,7 +251,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftFingerprint', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftPieceParts', 'draftFingerprint', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

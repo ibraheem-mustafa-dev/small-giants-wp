@@ -44,7 +44,7 @@ test( 'MUST FAIL: the buy box controls become one sgs/buybox at the first one\'s
 	const hero = got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks;
 	assert.deepEqual( names( hero ), [ 'sgs/media', 'sgs/heading', 'sgs/text', 'sgs/buybox', 'sgs/text' ] );
 	assert.equal( countBlocks( got.tree, 'sgs/buybox' ), 1 );
-	assert.deepEqual( got.placed, [ { id: 'buy-box', block: 'sgs/buybox', at: 'Root/2#0, position 3, in place of Root/9#0, Root/10#0, Root/13#0' } ] );
+	assert.deepEqual( got.placed, [ { id: 'buy-box', block: 'sgs/buybox', at: 'Root/2#0, position 3, in place of Root/9#0, Root/10#0, Root/13#0', run: [ 'Root/8#0', 'Root/12#0' ], missingParts: { 'buybox-gift-note:hint': [ 'Root/9#0' ] } } ] );
 	// Negative control: the option picker outside the buy box stays, and so do the title, description and assurance.
 	assert.equal( got.tree[ 0 ].innerBlocks[ 1 ].innerBlocks[ 0 ].name, 'sgs/option-picker' );
 	assert.equal( hero[ 4 ].attributes.text, 'Free delivery' );
@@ -74,7 +74,7 @@ test( 'MUST FAIL: a buy box drawn as one wrapper is that wrapper, climbing throu
 	tree[ 0 ].innerBlocks[ 0 ].innerBlocks.splice( 3, 1 );
 	const got = place( ctx( { tree, inventory: { elements } } ), PIECE );
 	const box = got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 3 ];
-	assert.deepEqual( box, { name: 'sgs/buybox', attributes: {}, innerBlocks: [], draftRef: { tpl: 'Root/8#0' } } );
+	assert.deepEqual( box, { name: 'sgs/buybox', attributes: {}, innerBlocks: [], draftRef: { tpl: 'Root/8#0' }, draftPieceParts: { 'buybox-option-picker': [ { tpl: 'Root/11#0' } ], 'buybox-add-to-basket': [ { tpl: 'Root/13#0' } ] } } );
 	assert.deepEqual( skeletonNodes( got.tree ).find( ( r ) => 'sgs/buybox' === r.name ).targets.map( ( t ) => t.finder ), [ { tpl: 'Root/8#0' } ] );
 } );
 

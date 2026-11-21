@@ -140,7 +140,8 @@ function placeGallery( ctx, piece, index, L ) {
 	}
 	return {
 		tree,
-		placed: [ { id: piece.id, block: piece.block, at: `the ${ piece.block }'s own gallery, in place of the draft's gallery ${ region.join( ', ' ) } (nodes ${ removed.join( ', ' ) })` } ],
+		// `run`: the draft elements the block's gallery replaces, whose paint no node reads any more (lib/template-pieces-context.mjs::piecesPaint).
+		placed: [ { id: piece.id, block: piece.block, at: `the ${ piece.block }'s own gallery, in place of the draft's gallery ${ region.join( ', ' ) } (nodes ${ removed.join( ', ' ) })`, run: region } ],
 		notes: worded.length ? [ `${ key }: piece "${ piece.id }": the words drawn on the draft's gallery go with it (${ worded.join( '; ' ) }); the ${ piece.block }'s gallery sticker and badge settings are where they belong` ] : [],
 	};
 }

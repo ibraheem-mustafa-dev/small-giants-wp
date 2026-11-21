@@ -24,6 +24,9 @@
 // element (lib/fill-resolve.mjs refuses a node whose root finder resolves nothing). The node gets the run's element as
 // its draftRef when the run is one element; a run of several elements has no one element that is the buy box's
 // wrapper, so the node has no draftRef and Fill reads no look for it, which the notes say.
+// What the paint conservation check needs: the node's `draftPieceParts` names each located part's draft elements (read by the
+// part-look reader through data/part-locators.json), and the placed row's `run` and `missingParts` let the check after the
+// pass list the run's other paint as the block's missing features (lib/template-pieces-context.mjs::piecesPaint).
 import { countBlocks } from './template-pieces.mjs';
 import { keepsAddToCart } from './template-piece-buybox-flow.mjs';
 import { dcOf, inventoryIndex, locatedKeys, locateParts, nodesWithin, recordSurface, refKey, underFixed } from './template-piece-draft.mjs';
@@ -90,7 +93,7 @@ export function locateRun( ctx, kind, block ) {
 	if ( h1.length || homedElsewhere.length ) {
 		return refuse( `the elements holding its controls (${ run.join( ', ' ) }) also hold ${ [ ...h1.map( ( k ) => `the page's h1 ${ k }` ), ...homedElsewhere.map( ( id ) => `part ${ id }, homed outside the buy box` ) ].join( ' and ' ) }, so two regions would become one` );
 	}
-	return { surface, index, run, notes, inRun };
+	return { surface, index, run, notes, inRun, parts: keys.map( ( k ) => ( { id: k.part.id, keys: k.keys.filter( ( x ) => located.includes( x ) ) } ) ).filter( ( k ) => k.keys.length ) };
 }
 
 export function place( ctx, piece ) {
@@ -119,6 +122,9 @@ export function place( ctx, piece ) {
 		return refuse( `skeleton nodes built from elements outside it stand between its nodes (${ between.map( ( n ) => refKey( n ) || n.name ).join( ', ' ) })` );
 	}
 	const box = { name: piece.block, attributes: {}, innerBlocks: [] };
+	// The draft elements the block takes over as its located parts (the part-look reader reads each one's look straight from the
+	// draft, data/part-locators.json), so the paint conservation check counts them as read; an element no part locates is not named.
+	found.parts.length && ( box.draftPieceParts = Object.fromEntries( found.parts.map( ( p ) => [ p.id, p.keys.map( ( k ) => ( { tpl: k } ) ) ] ) ) );
 	if ( 1 === run.length ) {
 		box.draftRef = { tpl: run[ 0 ] };
 	} else {
@@ -139,10 +145,13 @@ export function place( ctx, piece ) {
 			notes.push( `${ key }: the draft draws the flow's opener before its add-to-basket control, so ${ piece.block } puts the opener first (openerBeforeAddToCart)` );
 		}
 	}
-	const missing = surface.parts.filter( ( p ) => 'missing' === p.home?.type && locatedKeys( index, p.locators, dcOf( surface.file ) ).some( inRun ) ).map( ( p ) => p.id );
+	const missingParts = Object.fromEntries( surface.parts.filter( ( p ) => 'missing' === p.home?.type ).map( ( p ) => [ p.id, locatedKeys( index, p.locators, dcOf( surface.file ) ).filter( inRun ) ] ).filter( ( [ , keys ] ) => keys.length ) );
+	const missing = Object.keys( missingParts );
 	missing.length && notes.push( `${ key }: inside the buy box the draft draws what ${ piece.block } has no setting for (${ missing.join( ', ' ) }); each is a missing-features row of shop-parts.json` );
 	const parent = nodes[ 0 ].parent;
 	const removed = nodes.map( ( r ) => refKey( r.node ) );
 	list.splice( first, nodes.length, box );
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ parent ? refKey( parent ) || parent.name : 'the top' }, position ${ first }, in place of ${ removed.join( ', ' ) }` } ], notes };
+	// `run` and `missingParts` (each missing-features part of the record to the elements of the run it is located on) let the
+	// paint check after the pass (lib/template-pieces-context.mjs::piecesPaint) list the run's unread paint as missing features.
+	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ parent ? refKey( parent ) || parent.name : 'the top' }, position ${ first }, in place of ${ removed.join( ', ' ) }`, run, missingParts } ], notes };
 }

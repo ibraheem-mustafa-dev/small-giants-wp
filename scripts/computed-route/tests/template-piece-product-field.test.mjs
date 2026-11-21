@@ -109,6 +109,8 @@ test( 'MUST FAIL: the draft\'s gallery gives way to the buy box\'s own gallery, 
 	const got = place( ctx(), GALLERY );
 	assert.deepEqual( got.tree[ 0 ].innerBlocks[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'sgs/heading', 'sgs/text', 'sgs/text', 'sgs/text', 'sgs/text', 'sgs/buybox' ] );
 	assert.match( got.placed[ 0 ].at, /in place of the draft's gallery Root\/3#0 \(nodes Root\/4#0, Root\/5#0, Root\/21#0\)/ );
+	// The replaced draft elements, whose paint the check after the pieces lists as the buy box's missing features (MUST FAIL without `run`).
+	assert.deepEqual( got.placed[ 0 ].run, [ 'Root/3#0' ] );
 	assert.match( got.notes[ 0 ], /Root\/5#0 "baked with love"/ );
 } );
 

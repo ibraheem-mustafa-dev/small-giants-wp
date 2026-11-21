@@ -1,0 +1,17 @@
+[
+	{"file": "lib/template-piece-buybox.mjs", "find": "found.parts.length && ( box.draftPieceParts =", "replace": "false && ( box.draftPieceParts =", "why": "the buy box names none of its located parts, so their painted elements stay unread"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "k.keys.filter( ( x ) => located.includes( x ) )", "replace": "k.keys", "why": "a located element in the fixed bar is claimed as the buy box's"},
+	{"file": "lib/template-piece-buybox.mjs", "find": ".filter( ( k ) => k.keys.length ) };", "replace": " };", "why": "a part located only in the fixed bar is named with no element"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "locatedKeys( index, p.locators, dcOf( surface.file ) ).filter( inRun ) ]", "replace": "locatedKeys( index, p.locators, dcOf( surface.file ) ) ]", "why": "a missing-features part located outside the buy box names elements outside it"},
+	{"file": "lib/template-piece-buybox.mjs", "find": ".filter( ( [ , keys ] ) => keys.length ) );", "replace": " );", "why": "a missing-features part located outside the buy box is listed with no element"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "in place of ${ removed.join( ', ' ) }`, run, missingParts } ]", "replace": "in place of ${ removed.join( ', ' ) }`, missingParts } ]", "why": "the placed row names no replaced elements, so its unread paint stays a problem"},
+	{"file": "lib/template-pieces-context.mjs", "find": "const owned = new Set( [ ...inside ].filter( ( id ) => ! outside.has( id ) ) );", "replace": "const owned = new Set( inside );", "why": "an element whose copy is drawn outside the run is hidden as a missing feature"},
+	{"file": "lib/template-pieces-context.mjs", "find": "const checked = { ...args, ownedElsewhere: owned };", "replace": "const checked = { ...args };", "why": "the run's unread paint stays a problem"},
+	{"file": "lib/template-pieces-context.mjs", "find": "problems: [ ...problems.filter( ( x ) => ! PAINT_LINE.test( x ) ),", "replace": "problems: [ ...problems,", "why": "the paint line from the tree before the pieces stays"},
+	{"file": "lib/template-pieces-context.mjs", "find": "problems: [ ...problems.filter( ( x ) => ! PAINT_LINE.test( x ) ),", "replace": "problems: [", "why": "every problem that is not a paint line is dropped"},
+	{"file": "lib/template-pieces-context.mjs", "find": "const pieceOf = ( k ) => runs.find( ( p ) => chain( k ).some( ( x ) => p.run.includes( x ) ) ) ?? null;", "replace": "const pieceOf = ( k ) => runs.find( ( p ) => p.run.includes( k ) ) ?? null;", "why": "an element inside a replaced element is not the piece's"},
+	{"file": "lib/template-pieces-context.mjs", "find": "find( ( [ , keys ] ) => chain( r.key ).some( ( x ) => keys.includes( x ) ) )", "replace": "find( ( [ , keys ] ) => keys.includes( r.key ) )", "why": "an element inside a missing part's element is not that part's"},
+	{"file": "lib/template-pieces-context.mjs", "find": "const runs = placed.filter( ( p ) => Array.isArray( p.run ) && p.run.length );", "replace": "const runs = placed;", "why": "a placed row with no run is taken as owning paint"},
+	{"file": "lib/fill-skeleton.mjs", "find": "'draftOverlay', 'draftPieceParts', 'draftFingerprint'", "replace": "'draftOverlay', 'draftFingerprint'", "why": "the built tree carries the draft key"},
+	{"file": "lib/fill-skeleton.mjs", "find": "if ( undefined !== node.draftPieceParts && (", "replace": "if ( false && (", "why": "a malformed draftPieceParts passes Fill's skeleton check"}
+]

@@ -23,6 +23,8 @@
 // skeleton.mjs::proposeSurface); its problems join the proposal's, which fail the propose stage under --strict
 // (site-run.mjs::proposeDetail).
 // A surface whose entry builds no template, or a template the map names no builder's piece for, is returned unchanged.
+// Given `paint` (skeleton.mjs::proposeSurface hands it in), the pass also checks paint conservation again on the tree with the
+// pieces in it (piecesPaint), since the proposal's check ran on the tree before the pieces replaced the draft's imitation.
 import fs from 'node:fs';
 import path from 'node:path';
 import { loadShopParts } from './fill-shop-parts.mjs';
@@ -43,6 +45,8 @@ import { draftLinksFor } from './draft-link.mjs';
 import { commerceOf } from './skeleton-commerce-region.mjs';
 import { lintSkeleton } from '../lint.mjs';
 import { openDb } from './db.mjs';
+import { conservationRows, identityOf, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
+import { recordFor, openersFor, recordView } from './skeleton-record.mjs';
 
 // The builders the pass runs, by piece kind.
 export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };
@@ -129,15 +133,64 @@ export function placedLint( before, after, db ) {
 // rule's or the theme's is not checked here: a theme piece arrives only when the template copy is made
 // (lib/template-copies.mjs::themeContent), so a skeleton never holds it. Whatever a builder placed that the skeleton
 // lint refuses is a problem (placedLint), so Fill never meets it; `db` is the framework database (opened when not given).
-export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS, facts = null, db = null } ) {
+// `paint`: { problems, rows, facts, rootComponent, calibration }, the proposal's problems and rows, the skeleton facts
+// (lib/skeleton-facts.mjs::loadFacts, whose fact record gives the declared styles), the component the served inventory calls
+// `Root` and the calibrated settings by block; the result then carries `paint` (piecesPaint's), null when the tree is unchanged.
+export function piecesPass( { repo, client, entry, tree, inventory, data = loadPieces(), builders = BUILDERS, facts = null, db = null, paint = null } ) {
 	const template = entry?.target?.template || null;
 	const built = ( k ) => !! k && piecesFor( k, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) );
 	const role = built( template ) || ! entry?.target ? null : commerceOf( entry, readRows( path.join( repo, 'sites', client, 'build', 'page-map.json' ) ) )?.role;
 	const key = built( template ) ? template : role && data?.pages?.[ role ] && built( role ) ? role : null;
 	if ( ! key ) {
-		return { tree, placed: [], problems: [], notes: [], template };
+		return { tree, placed: [], problems: [], notes: [], template, paint: null };
 	}
 	const got = placePieces( { key, tree, data, ctx: pieceContext( { repo, client, entry, inventory, pieces: piecesFor( key, data ), facts } ), builders } );
 	const lint = placedLint( tree, got.tree, db || openDb() ).map( ( m ) => `${ key }: a placed piece breaks the skeleton lint: ${ m }` );
-	return { ...got, problems: [ ...got.problems, ...lint ], template };
+	const record = paint ? recordFor( paint.facts ) : null;
+	const view = paint ? recordView( record, { openers: record ? openersFor( paint.facts ) : {}, rootComponent: paint.rootComponent ?? null } ) : null;
+	return { ...got, problems: [ ...got.problems, ...lint ], template, paint: paint ? piecesPaint( { key, inventory, rows: paint.rows, tree: got.tree, placed: got.placed, problems: paint.problems, view, calibration: paint.calibration } ) : null };
+}
+
+// The proposal problem lines paint conservation writes (lib/skeleton-paint-conservation.mjs::paintProblems), told from the
+// others by their opening words.
+export const PAINT_LINE = /^paint conservation: /;
+
+// Paint conservation of a tree with its pieces placed (Spec 48 section 3.4). A placed row that names the draft elements its
+// piece replaced (`run`, lib/template-piece-buybox.mjs::place) owns the paint inside them: an element there that no node
+// reads (the piece's block names its located parts' elements in `draftPieceParts`, so those are read) is a missing feature
+// of the piece's block, never a proposal problem, as long as every element of its identity (its template's component and
+// number, every copy) sits inside the run; an identity drawn outside every run too stays with the check. Everything else is
+// checked as the proposal checks it. Returns { problems, unread, missing, notes }:
+//   problems  `problems` with every paint conservation line replaced by this tree's (every other line kept, in order);
+//   unread    the rows a record lists apart (lib/skeleton-paint-conservation.mjs::unreadList) on this tree;
+//   missing   one row per painted element a run owns that no node reads: { piece, block, key, tag, words, looks, class,
+//             state, part (the record's missing-features part located on it or on an element holding it, else null), shownIn? };
+//   notes     one line per piece with missing rows, naming each element and its looks.
+// `rows`: the proposal's rows; `view` and `calibration`: as the proposal's check takes them; `key`: the template, for the notes.
+export function piecesPaint( { key = '', inventory, rows = [], tree, placed = [], problems = [], view = null, calibration = () => null, strict = STRICT_DEFAULT } ) {
+	const all = [ ...( inventory?.elements || [] ), ...( inventory?.revealed || [] ) ];
+	const byKey = new Map();
+	all.forEach( ( e ) => byKey.has( e.key ) || byKey.set( e.key, e ) );
+	const chain = ( k ) => {
+		const out = [];
+		for ( let x = k; byKey.has( x ) && ! out.includes( x ); x = byKey.get( x ).parentKey ) {
+			out.push( x );
+		}
+		return out;
+	};
+	const runs = placed.filter( ( p ) => Array.isArray( p.run ) && p.run.length );
+	const pieceOf = ( k ) => runs.find( ( p ) => chain( k ).some( ( x ) => p.run.includes( x ) ) ) ?? null;
+	const inside = new Set();
+	const outside = new Set();
+	all.forEach( ( e ) => ( pieceOf( e.key ) ? inside : outside ).add( identityOf( e, null ) ) );
+	const owned = new Set( [ ...inside ].filter( ( id ) => ! outside.has( id ) ) );
+	const args = { inventory, proposal: { rows }, skeleton: tree, view, calibration: ( b ) => calibration( b ) ?? null };
+	const missing = conservationRows( args ).rows.filter( ( r ) => byKey.has( r.key ) && owned.has( identityOf( byKey.get( r.key ), null ) ) && pieceOf( r.key ) ).map( ( r ) => {
+		const p = pieceOf( r.key );
+		const part = Object.entries( p.missingParts || {} ).find( ( [ , keys ] ) => chain( r.key ).some( ( x ) => keys.includes( x ) ) )?.[ 0 ] ?? null;
+		return { piece: p.id, block: p.block, key: r.key, tag: r.tag, words: r.words, looks: Object.keys( r.looks ), class: r.class, state: r.state, part, ...( r.shownIn ? { shownIn: r.shownIn } : {} ) };
+	} );
+	const checked = { ...args, ownedElsewhere: owned };
+	const notes = runs.map( ( p ) => [ p, missing.filter( ( m ) => m.piece === p.id ) ] ).filter( ( [ , list ] ) => list.length ).map( ( [ p, list ] ) => `${ key }: inside ${ p.block }'s draft elements (${ p.run.join( ', ' ) }) the draft paints ${ list.length } element${ 1 === list.length ? '' : 's' } no located part of ${ p.block } reads, each a missing feature of ${ p.block } (proposal templatePieces.missingFeatures), not a paint conservation problem: ${ list.map( ( m ) => `${ m.key }${ m.shownIn ? ' (a state)' : '' } ${ m.looks.join( '/' ) }${ m.part ? ` (${ m.part })` : '' }` ).join( '; ' ) }` );
+	return { problems: [ ...problems.filter( ( x ) => ! PAINT_LINE.test( x ) ), ...paintProblems( { ...checked, strict } ) ], unread: unreadList( checked ), missing, notes };
 }
