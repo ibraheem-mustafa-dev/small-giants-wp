@@ -160,6 +160,94 @@
 						"css:background-image": "progressColourGradient"
 					}
 				},
+				"progress-track": {
+					"selector": ".sgs-choice-flow__progress",
+					"label": "Progress bar track",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"fill"
+					],
+					"attrMap": {
+						"css:background-color": "progressTrackColour"
+					},
+					"motion": false,
+					"_note": "The line behind the progress fill (render.php prints it unless the progress style is a badge); scoped CSS from includes/choice-flow-bands.php."
+				},
+				"header-band": {
+					"selector": ".sgs-choice-flow__chrome-header",
+					"label": "Header band",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"fill",
+						"border",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "headerBandBackground",
+						"css:border-bottom-width": "headerBandBorder",
+						"css:border-bottom-style": "headerBandBorder",
+						"css:border-bottom-color": "headerBandBorder",
+						"css:padding": "headerBandPadding"
+					},
+					"motion": false,
+					"_note": "The header row (logo, step name, Close), printed only while showHeader is on; its border is its bottom rule. Scoped CSS from includes/choice-flow-bands.php."
+				},
+				"footer-band": {
+					"selector": ".sgs-choice-flow__footer",
+					"label": "Footer band",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"fill",
+						"border",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "footerBandBackground",
+						"css:border-top-width": "footerBandBorder",
+						"css:border-top-style": "footerBandBorder",
+						"css:border-top-color": "footerBandBorder",
+						"css:padding": "footerBandPadding"
+					},
+					"motion": false,
+					"_note": "The footer row (Back and the step's action); its border is its top rule. Scoped CSS from includes/choice-flow-bands.php."
+				},
+				"summary-box": {
+					"selector": ".sgs-choice-flow__summary-body",
+					"label": "Summary box",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"fill",
+						"border",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "summaryBackground",
+						"css:border-width": "summaryBorder",
+						"css:border-style": "summaryBorder",
+						"css:border-color": "summaryBorder",
+						"css:padding": "summaryPadding"
+					},
+					"motion": false,
+					"_note": "The running total panel's body (printed while showPricePanel is on); summaryDividerColour colours the rules of .sgs-choice-flow__summary-lines and .sgs-choice-flow__summary-total inside it. Scoped CSS from includes/choice-flow-bands.php."
+				},
+				"summary-divider": {
+					"selector": ".sgs-choice-flow__summary-lines",
+					"label": "Summary dividers",
+					"layer": "CONTENT",
+					"order": 4,
+					"clusters": [
+						"border"
+					],
+					"attrMap": {
+						"css:border-top-color": "summaryDividerColour"
+					},
+					"motion": false,
+					"_note": "The rules between the summary's lines and above its total: summaryDividerColour paints the border colour of .sgs-choice-flow__summary-lines and .sgs-choice-flow__summary-total (includes/choice-flow-bands.php)."
+				},
 				"summary-photo": {
 					"absentIn": ["compact"],
 					"absentWhy": "The summary pane (its photo and its total) renders only in the showcase layout; the compact layout prints neither.",
@@ -329,6 +417,50 @@
 			"type": "object",
 			"default": {},
 			"description": "FR-43-24 (v1.8.0): the note's optional link, {url,text,source}. `source` is url (default, the typed url), phone, email or whatsapp (read live from Site Info, falling back to the typed url). Shown only when stageNote is also set and the link resolves to a non-empty url."
+		},
+		"progressTrackColour": {
+			"type": "string",
+			"description": "The progress bar's track (the unfilled line behind the fill), a palette slug or any colour. Empty keeps the stylesheet's border colour."
+		},
+		"headerBandBackground": {
+			"type": "string",
+			"description": "Fill of the header band (logo, step name and Close), a palette slug or any colour. Empty keeps the stylesheet's: none in the compact layout, the surface colour in the showcase layout."
+		},
+		"headerBandBorder": {
+			"type": "object",
+			"description": "The header band's bottom rule per device: {desktop|tablet|mobile: {width, style, colour}}. Width is a CSS length, style none, solid, dashed or dotted, colour a palette slug or any colour; a member a device leaves empty takes the device above's. Empty keeps the stylesheet's."
+		},
+		"headerBandPadding": {
+			"type": "object",
+			"description": "Padding inside the header band, a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Empty keeps the stylesheet's."
+		},
+		"footerBandBackground": {
+			"type": "string",
+			"description": "Fill of the footer band (Back and the step's action), a palette slug or any colour. Empty keeps the stylesheet's."
+		},
+		"footerBandBorder": {
+			"type": "object",
+			"description": "The footer band's top rule per device: {desktop|tablet|mobile: {width, style, colour}}, as headerBandBorder. Empty keeps the stylesheet's."
+		},
+		"footerBandPadding": {
+			"type": "object",
+			"description": "Padding inside the footer band, a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Empty keeps the stylesheet's (the showcase footer's bottom padding adds the phone's safe area)."
+		},
+		"summaryBackground": {
+			"type": "string",
+			"description": "Fill of the summary box (the running total panel's body), a palette slug or any colour. Empty keeps the stylesheet's."
+		},
+		"summaryBorder": {
+			"type": "object",
+			"description": "Border round the summary box per device: {desktop|tablet|mobile: {width, style, colour}}, as headerBandBorder. Empty draws none."
+		},
+		"summaryPadding": {
+			"type": "object",
+			"description": "Padding inside the summary box, a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Empty keeps the stylesheet's."
+		},
+		"summaryDividerColour": {
+			"type": "string",
+			"description": "Colour of the rules between the summary's lines and above its total, a palette slug or any colour. Empty keeps the stylesheet's border colour."
 		},
 		"progressColour": {
 			"type": "string",

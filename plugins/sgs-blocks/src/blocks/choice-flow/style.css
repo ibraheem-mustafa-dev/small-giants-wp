@@ -78,7 +78,7 @@
  */
 .sgs-choice-flow__footer {
 	margin-top: 16px;
-	padding-top: 16px;
+	padding-top: var(--sgs-cf-footer-pad-top, 16px);
 	border-top: 1px solid var(--wp--preset--color--border-light, #E5E7EB);
 }
 
@@ -305,7 +305,7 @@
 	display: flex;
 	justify-content: flex-start;
 	margin-top: 16px;
-	padding-top: 16px;
+	padding-top: var(--sgs-cf-footer-preview-pad-top, 16px);
 	border-top: 1px solid var(--wp--preset--color--border-light, #E5E7EB);
 }
 
@@ -793,7 +793,7 @@
 }
 
 .sgs-choice-flow__summary-toggle {
-	padding: 0 20px;
+	padding: var(--sgs-cf-summary-toggle-pad, 0 20px);
 	border: 1px solid var(--wp--preset--color--border, #d4dbe5);
 	border-radius: var(--wp--custom--border-radius--medium, 8px);
 	background-color: var(--wp--preset--color--surface-alt, #f8f7f4);
@@ -806,7 +806,7 @@
 	justify-content: space-between;
 	gap: 12px;
 	min-height: 44px;
-	padding: 10px 0;
+	padding: var(--sgs-cf-summary-head-pad, 10px 0);
 	list-style: none;
 	cursor: pointer;
 	font-weight: 600;
@@ -880,7 +880,7 @@
 }
 
 .sgs-choice-flow__summary-body {
-	padding: 4px 0 20px;
+	padding: var(--sgs-cf-summary-body-pad, 4px 0 20px);
 }
 
 /* FR-43-24's stage image — a square photo that swaps with the resolved
@@ -948,7 +948,7 @@
 	align-items: baseline;
 	justify-content: space-between;
 	gap: 12px;
-	padding: 6px 0;
+	padding: var(--sgs-cf-summary-row-pad, 6px 0);
 }
 
 .sgs-choice-flow__summary-lines {
@@ -960,7 +960,7 @@
 }
 
 .sgs-choice-flow__summary-total {
-	padding-top: 10px;
+	padding-top: var(--sgs-cf-summary-total-pad-top, 10px);
 	font-weight: 600;
 }
 

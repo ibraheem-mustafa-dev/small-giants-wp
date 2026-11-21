@@ -37,7 +37,7 @@ import { colourVar, resolveShadowPreviewComposed, sgsBorderPreview, tierBoxLongh
  * @param {Function} props.onChange Receives the next tier object.
  * @return {JSX.Element} The control.
  */
-function TierPadding( { label, value, onChange } ) {
+export function TierPadding( { label, value, onChange } ) {
 	return (
 		<ResponsiveOverride value={ value } onChange={ onChange }>
 			{ ( { ownValue, setOwnValue } ) => (
@@ -255,7 +255,7 @@ export function optionCardColourRows( { attributes, setAttributes } ) {
  * @param {Object} style Style object (camelCase keys, custom properties as-is).
  * @return {string} Declarations; '' when nothing is set.
  */
-function cssText( style ) {
+export function cssText( style ) {
 	return Object.entries( style )
 		.filter( ( [ , value ] ) => undefined !== value && null !== value && '' !== value )
 		.map( ( [ key, value ] ) => `${ key.startsWith( '--' ) ? key : key.replace( /[A-Z]/g, ( c ) => `-${ c.toLowerCase() }` ) }:${ value }` )
@@ -270,7 +270,7 @@ function cssText( style ) {
  * @param {string} tier   The previewed device.
  * @return {Object} Style object.
  */
-function tierBorderPreview( border, tier ) {
+export function tierBorderPreview( border, tier ) {
 	const source = border && 'object' === typeof border ? border : {};
 	const order = [ 'desktop', 'tablet', 'mobile' ].slice( 0, [ 'desktop', 'tablet', 'mobile' ].indexOf( tier ) + 1 );
 	const merged = {};
