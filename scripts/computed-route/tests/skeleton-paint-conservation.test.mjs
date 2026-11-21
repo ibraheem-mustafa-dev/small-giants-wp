@@ -465,3 +465,13 @@ test( 'a row no block fits is class unresolved, not kept-unnamed', () => {
 	s.proposal.rows.push( row( 'Root/9#0', { action: 'unresolved' } ) );
 	assert.equal( conservationRows( s ).rows.find( ( r ) => 'Root/9#0' === r.key ).class, 'unresolved' );
 } );
+
+test( 'a drawn part a row lists in its parts is host-unread in that row\'s block, not no-row; an element no row lists stays no-row; MUST FAIL without the parts lookup', () => {
+	const SHOWN = { 375: { x: 0, y: 0, w: 20, h: 20 }, 768: { x: 0, y: 0, w: 20, h: 20 }, 1440: { x: 0, y: 0, w: 20, h: 20 } };
+	const E = ( key, parentKey, tag, style ) => ( { key, parentKey, tag, template: 'Root', tpl: Number( /\/(\d+)#/.exec( key )[ 1 ] ), attrs: style ? { style } : {}, box: SHOWN, visible: { 375: true, 768: true, 1440: true }, display: 'block' } );
+	const inventory = { elements: [ E( 'Root/1#0', null, 'div' ), E( 'Root/2#0', 'Root/1#0', 'a' ), E( 'Root/3#0', 'Root/2#0', 'svg', 'stroke:#3A2A22' ), E( 'Root/4#0', 'Root/1#0', 'svg', 'stroke:#3A2A22' ) ] };
+	const proposal = { rows: [ { key: 'Root/1#0', block: 'sgs/container' }, { key: 'Root/2#0', block: 'sgs/button', parts: [ 'Root/3#0' ] } ] };
+	const skeleton = [ { name: 'sgs/container', draftRef: { tpl: 'Root/1#0' }, innerBlocks: [ { name: 'sgs/button', draftRef: { tpl: 'Root/2#0' } } ] } ];
+	const { rows } = conservationRows( { inventory, proposal, skeleton } );
+	assert.deepEqual( rows.map( ( r ) => [ r.key, r.class, r.host, r.hostBlock ] ), [ [ 'Root/3#0', 'host-unread', 'Root/2#0', 'sgs/button' ], [ 'Root/4#0', 'no-row', null, null ] ] );
+} );

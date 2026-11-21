@@ -377,7 +377,7 @@ export function droppedBy( row, rows, depth = 0 ) {
 //   class: `unwrapped` (the wrapper went and nothing records where its look goes), `band-only` (the wrapper went and a band
 //   finder reads its width cap, so `looks` holds only the paint that finder does not read), `host-unread` (absorbed into a
 //   block that draws it, whose slots do not name it), `removed`, `unresolved` (no block fits it: a proposal problem of its own),
-//   `kept-unnamed` (the row kept a block but no node names the element) or `no-row` (the proposal holds no row for it).
+//   `kept-unnamed` (the row kept a block but no node names the element) or `no-row` (the proposal holds no row for it, and no row lists it among its `parts`: a part a row lists is `host-unread` in the block of that row).
 export function conservationRows( { inventory, proposal, skeleton, view = null, otherSurfaces = [], ownedElsewhere = new Set(), component = null, calibration = () => null } ) {
 	const elements = inventory?.elements || [];
 	const byKey = new Map( elements.map( ( e ) => [ e.key, e ] ) );
@@ -417,6 +417,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	const signature = ( e ) => ( e.attrs?.style ? JSON.stringify( [ e.parentKey, e.tag, e.attrs.style ] ) : null );
 	const readSiblings = new Set( full.map( ( k ) => byKey.get( k ) ).filter( Boolean ).map( signature ).filter( Boolean ) );
 	const out = [];
+	const partOf = new Map( ( proposal?.rows || [] ).flatMap( ( r ) => ( r.parts || [] ).map( ( k ) => [ k, r ] ) ) );
 	const hostOf = ( row ) => {
 		let r = row;
 		for ( let i = 0; i < 8 && r?.into && ! named.has( r.key ); i++ ) {
@@ -467,6 +468,12 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 			continue;
 		}
 		const row = rows.get( e.key ) ?? null;
+		// A part (a drawn svg a row lists in its `parts`) has no row of its own: the block of the row that lists it draws it.
+		const owner = row ? null : partOf.get( e.key ) ?? null;
+		if ( owner ) {
+			listRow( e, looks, 'host-unread', named.has( owner.key ) ? owner : hostOf( owner ) );
+			continue;
+		}
 		const cls = ! row ? 'no-row' : 'unwrap' === row.action ? 'unwrapped' : 'absorbed' === row.action ? 'host-unread' : 'remove' === row.action ? 'removed' : 'unresolved' === row.action ? 'unresolved' : 'kept-unnamed';
 		listRow( e, looks, cls, hostOf( row ) );
 	}

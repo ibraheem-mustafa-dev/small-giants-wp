@@ -454,5 +454,23 @@
 		"find": "const reads = namedReads( skeleton, elements );",
 		"replace": "const reads = namedReads( skeleton );",
 		"why": "conservationRows never resolves selector finders"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const owner = row ? null : partOf.get( e.key ) ?? null;",
+		"replace": "const owner = null;",
+		"why": "a listed part is no-row"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "listRow( e, looks, 'host-unread', named.has( owner.key ) ? owner : hostOf( owner ) );",
+		"replace": "listRow( e, looks, 'host-unread', hostOf( owner ) );",
+		"why": "a part whose owner is a node takes no host"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "( r.parts || [] ).map( ( k ) => [ k, r ] )",
+		"replace": "( r.parts || [] ).slice( 1 ).map( ( k ) => [ k, r ] )",
+		"why": "a row's first part is not found"
 	}
 ]
