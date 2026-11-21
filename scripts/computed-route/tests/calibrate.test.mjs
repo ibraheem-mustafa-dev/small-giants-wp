@@ -257,10 +257,13 @@ test( 'MUST FAIL (state target: guessed class): a state marker hovers the elemen
 
 test( 'MUST FAIL (overlay and link hovers untested on blocks that print them through shared code): a shared element is found by its shared selector as well as the own class of the block', async () => {
 	const { stateTarget } = await import( '../lib/calibrate-instances.mjs' );
-	// The shared container wrapper prints .sgs-container__overlay in every block it wraps (trust-bar, site-header).
-	assert.equal( stateTarget( 'sgs/trust-bar', { css_element: 'overlay' } ), '.sgs-trust-bar__overlay, .sgs-container__overlay' );
-	// hero prints its own .sgs-hero__overlay: the block's own class comes first in the list, so it is still found.
-	assert.equal( stateTarget( 'sgs/hero', { css_element: 'overlay' } ), '.sgs-hero__overlay, .sgs-container__overlay' );
+	// The shared background renderer prints the overlay span .sgs-bg-overlay (includes/media/background-css.php::sgs_bg_overlay_css).
+	// A block that does not declare the element is still found by the shared selector, its own class first in the list.
+	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'overlay' } ), '.sgs-post-grid__overlay, .sgs-bg-overlay' );
+	// Every block holding the overlay settings declares the span as its overlay element (supports.sgs.elements.overlay),
+	// and a declared selector is taken alone.
+	assert.equal( stateTarget( 'sgs/trust-bar', { css_element: 'overlay' } ), '.sgs-bg-overlay' );
+	assert.equal( stateTarget( 'sgs/hero', { css_element: 'overlay' } ), '.sgs-bg-overlay' );
 	// sgs_link_underline_css() paints `{selector} a`: the link inside the block.
 	assert.equal( stateTarget( 'sgs/text', { css_element: 'text-link' } ), '.sgs-text__text-link, a' );
 	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'not-declared' } ), '.sgs-post-grid__not-declared', 'control: an element no shared code prints keeps its BEM name alone' );

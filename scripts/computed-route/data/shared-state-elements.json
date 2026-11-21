@@ -4,8 +4,8 @@
 		"add_when": "a state setting's rule is printed by a shared helper or the shared wrapper under a class that is not the block's own BEM name; cite the helper"
 	},
 	"overlay": {
-		"selector": ".sgs-container__overlay",
-		"source": "plugins/sgs-blocks/includes/class-sgs-container-wrapper.php: the shared wrapper prints .sgs-container__overlay and scopes backgroundOverlayColourHover / overlayGradientHover on `.{uid} .sgs-container__overlay`"
+		"selector": ".sgs-bg-overlay",
+		"source": "plugins/sgs-blocks/includes/media/background-css.php::sgs_bg_overlay_css: the shared background renderer prints the overlay span .sgs-bg-overlay and scopes backgroundOverlayColourHover / backgroundOverlayGradientHover on `.{uid} > .sgs-bg-overlay`; every block holding the overlay settings also declares it as supports.sgs.elements.overlay, which stateTarget takes first"
 	},
 	"text-link": {
 		"selector": "a",
