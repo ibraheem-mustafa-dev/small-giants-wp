@@ -1,0 +1,428 @@
+{
+	"_meta": {
+		"purpose": "Per-block fixtures for the offline setting check (instances.py): the attributes, variants, partner preconditions, children, parents and paint states each block renders with, plus `harness` (the render harness options: stubWoocommerce, renderFile, postFile, attachmentsFile; paths relative to this folder) and `post` (steps the renderer applies to the rendered markup, standing in for a view script). Seeded from scripts/computed-route/calibration-fixtures.json, with every part switched on (see each block's `notes`)."
+	},
+	"sgs/button": {
+		"attributes": {
+			"label": "Shop the range",
+			"url": "/shop/",
+			"icon": "arrow-right"
+		},
+		"variants": [
+			{},
+			{
+				"inheritStyle": "outline"
+			},
+			{
+				"inheritStyle": "custom"
+			}
+		],
+		"preconditions": {
+			"customWidth": {
+				"widthType": {
+					"desktop": "custom",
+					"tablet": "custom",
+					"mobile": "custom"
+				}
+			}
+		},
+		"familyPreconditions": {
+			"linkUnderline": {
+				"linkUnderline": "always"
+			}
+		},
+		"carries": [
+			"customWidth"
+		],
+		"harness": {
+			"attachmentsFile": "fixtures/attachments.json"
+		}
+	},
+	"sgs/cart": {
+		"attributes": {
+			"pillLabel": "Bag",
+			"freeDeliveryMessage": "Add %s more for free UK delivery",
+			"showZero": {
+				"desktop": true
+			},
+			"panelHeading": "Bag",
+			"panelShowCount": true,
+			"emptyCartMessage": "Nothing in here yet.",
+			"emptyCartCtaLabel": "Shop sunglasses",
+			"panelEmptyTextAlign": {
+				"desktop": "center"
+			},
+			"itemShowQty": false,
+			"itemShowSaveForLater": false,
+			"itemRemoveLabel": "Remove",
+			"panelTaxNote": "Prices include VAT",
+			"panelShowViewCart": true,
+			"freeDeliveryHideWhenEmpty": true,
+			"freeDeliveryThresholdOverride": "75",
+			"freeDeliverySuccessMessage": "Free UK delivery unlocked",
+			"panelInstalmentsNote": "Or 3 payments of %s with Klarna",
+			"panelInstalmentsCount": 3,
+			"panelSlideEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+			"displayMode": "flyout"
+		},
+		"variants": [
+			{},
+			{
+				"triggerStyle": "pill",
+				"pillCountStyle": "bubble"
+			},
+			{
+				"displayMode": "drawer"
+			},
+			{
+				"displayMode": "link"
+			}
+		],
+		"paintStates": [
+			{
+				"name": "pill",
+				"when": {
+					"equals": {
+						"triggerStyle": "pill"
+					}
+				},
+				"attributes": {
+					"triggerStyle": "pill",
+					"pillCountStyle": "bubble"
+				}
+			}
+		],
+		"harness": {
+			"attachmentsFile": "fixtures/attachments.json",
+			"stubWoocommerce": true,
+			"renderFile": "fixtures/cart-wc.php"
+		},
+		"notes": [
+			"panelTaxNote holds text and panelShowViewCart is true, so the tax note and the View basket link render (both off in calibration's fixture)."
+		]
+	},
+	"sgs/form": {
+		"attributes": {
+			"formId": "contact",
+			"submitLabel": "Send message",
+			"successMessage": "Thanks — I'll come back to you shortly."
+		},
+		"familyPreconditions": {
+			"stepCounter": {
+				"stepCounter": true
+			},
+			"statusRow": {
+				"stepCounter": true
+			},
+			"savedNotice": {
+				"savedProgress": true
+			},
+			"savedProgress": {
+				"savedProgress": true
+			},
+			"navIcon": {
+				"navIcon": "arrow-right"
+			},
+			"actionsSticky": {
+				"actionsSticky": {
+					"desktop": true,
+					"tablet": true,
+					"mobile": true
+				}
+			}
+		},
+		"inner": [
+			{
+				"name": "sgs/form-field-text",
+				"attributes": {
+					"fieldName": "your_name",
+					"label": "Your name",
+					"helpText": "As it appears on your records",
+					"placeholder": "Your name",
+					"required": true,
+					"width": "half"
+				}
+			},
+			{
+				"name": "sgs/form-field-text",
+				"attributes": {
+					"fieldName": "town",
+					"label": "Town",
+					"placeholder": "",
+					"required": false,
+					"width": "half",
+					"floatingLabelPosition": "inside"
+				}
+			},
+			{
+				"name": "sgs/form-field-email",
+				"attributes": {
+					"fieldName": "email",
+					"label": "",
+					"placeholder": "Email",
+					"required": true,
+					"width": "half"
+				}
+			},
+			{
+				"name": "sgs/form-field-select",
+				"attributes": {
+					"fieldName": "topic",
+					"label": "",
+					"placeholder": "What can I help with?",
+					"required": true,
+					"width": "half",
+					"options": [
+						{
+							"value": "choosing-a-frame",
+							"label": "Choosing a frame"
+						},
+						{
+							"value": "something-else",
+							"label": "Something else"
+						}
+					]
+				}
+			},
+			{
+				"name": "sgs/form-field-textarea",
+				"attributes": {
+					"fieldName": "message",
+					"label": "",
+					"placeholder": "Your message",
+					"required": true,
+					"width": "full"
+				}
+			},
+			{
+				"name": "sgs/form-field-number",
+				"attributes": {
+					"fieldName": "right_sph",
+					"label": "Right SPH",
+					"columnHeading": "SPH",
+					"rowHeading": "R",
+					"required": false,
+					"optionalTag": true,
+					"width": "half"
+				}
+			},
+			{
+				"name": "sgs/form-field-tiles",
+				"attributes": {
+					"fieldName": "service",
+					"label": "Service",
+					"required": false,
+					"width": "full",
+					"tiles": [
+						{
+							"value": "eye-test",
+							"label": "Eye test",
+							"icon": "eye",
+							"iconSource": "lucide"
+						},
+						{
+							"value": "frames",
+							"label": "Frames",
+							"icon": "glasses",
+							"iconSource": "lucide"
+						}
+					]
+				}
+			},
+			{
+				"name": "sgs/form-field-consent",
+				"attributes": {
+					"fieldName": "consent",
+					"consentText": "I agree to the Terms &amp; Conditions",
+					"required": false,
+					"width": "full"
+				}
+			},
+			{
+				"name": "sgs/form-field-file",
+				"attributes": {
+					"fieldName": "upload",
+					"label": "Upload",
+					"zoneStyle": "panel",
+					"zoneIcon": "upload",
+					"buttonLabel": "Choose file",
+					"helpText": "PDF or image",
+					"required": false,
+					"width": "full"
+				}
+			},
+			{
+				"name": "sgs/form-review",
+				"attributes": {
+					"heading": "Review your information",
+					"headingLevel": "h3"
+				}
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Step 1"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"fieldName": "step_1_name",
+							"label": "",
+							"placeholder": "Step 1 answer",
+							"required": false,
+							"width": "full"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Step 2"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/form-field-text",
+						"attributes": {
+							"fieldName": "step_2_name",
+							"label": "",
+							"placeholder": "Step 2 answer",
+							"required": false,
+							"width": "full"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "First paragraph of the form note."
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Second paragraph of the form note."
+				}
+			}
+		],
+		"harness": {
+			"attachmentsFile": "fixtures/attachments.json"
+		},
+		"notes": [
+			"A text field with floatingLabelPosition inside and no placeholder prints .sgs-form-field--label-inside with its label floated at rest (includes/forms/field-render-helpers.php::field_open; includes/forms/field-focus-css.php::floated_label_css reads labelFloatedFontSize, labelFloatedOffset, labelFloatedColour on it). The \"Your name\" field keeps the default floating label above.",
+			"Two adjacent sgs/text children give textIndent its part: src/blocks/form/render.php passes sgs_typography_css_rule the sibling selector `:is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)`."
+		]
+	},
+	"sgs/nav-bar-menu": {
+		"attributes": {
+			"ref": "{{menu}}",
+			"splitAfterItemId": "id:{{menuItem}}",
+			"disabledItemIds": [
+				"id:{{menuItem}}",
+				"id:9104>id:9106"
+			],
+			"submenuOpenOn": "hover",
+			"triggerMode": {
+				"desktop": "icon-and-text",
+				"mobile": "icon"
+			},
+			"submenuCaret": false,
+			"drawerRef": "{{drawer}}",
+			"megaAlign": {
+				"desktop": "full-width"
+			},
+			"featuredItemIds": [
+				"id:9104>id:9105"
+			]
+		},
+		"variants": [
+			{},
+			{
+				"disabledItemIds": [
+					"id:9104>id:9106"
+				],
+				"featuredItemIds": [
+					"id:{{menuItem}}",
+					"id:9104>id:9105"
+				]
+			},
+			{
+				"triggerDetach": {
+					"desktop": "on",
+					"tablet": "on",
+					"mobile": "on"
+				}
+			},
+			{
+				"submenuCaret": true
+			}
+		],
+		"preconditions": {
+			"featuredRadius": {
+				"featuredBg": "primary"
+			},
+			"itemBorderRadius": {
+				"itemBg": "primary"
+			},
+			"itemMotionEasing": {
+				"itemMotionDuration": 300
+			},
+			"submenuCaretTurnEasingCustom": {
+				"submenuCaretTurnEasing": "custom",
+				"submenuCaretTurnDuration": 300
+			},
+			"scrimFadeDuration": {
+				"scrimOpacity": {
+					"desktop": 0.5
+				}
+			},
+			"scrimFadeEasing": {
+				"scrimOpacity": {
+					"desktop": 0.5
+				}
+			}
+		},
+		"parents": [
+			{
+				"name": "sgs/site-header",
+				"attributes": {
+					"headerSticky": {
+						"desktop": "on"
+					},
+					"scrolledOffset": 40
+				}
+			},
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "middle",
+					"rowShrink": {
+						"desktop": "on"
+					},
+					"rowShrinkEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+				}
+			}
+		],
+		"companionClass": "is-detached",
+		"harness": {
+			"attachmentsFile": "fixtures/attachments.json",
+			"postFile": "fixtures/menu-post.json"
+		},
+		"post": [
+			{
+				"select": ".sgs-nav-bar-menu__sublink[data-sgs-nav-path=\"/shop/cases/\"]",
+				"set": {
+					"aria-current": "page"
+				},
+				"why": "src/blocks/nav-bar-menu/view.js::markCurrentPage"
+			}
+		],
+		"notes": [
+			"The menu post (fixtures/menu-post.json, ID 9101) holds the Shop submenu (9104) with three sub-links: Sunglasses 9105 featured, Frames 9106 disabled, Cases 9109 current. A child identifier is path-qualified, `id:<parent>>id:<child>` (src/blocks/nav-bar-menu/render.php::from_link, read by includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items).",
+			"Current is set in the browser by view.js::markCurrentPage (aria-current=\"page\" on the link whose data-sgs-nav-path matches the page), so `post` sets it on the Cases sub-link after render.",
+			"Variant 1 keeps calibration's featured top-level item (Home) beside the featured sub-link; Home stays disabled in the other variants, as in calibration."
+		]
+	}
+}
