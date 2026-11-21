@@ -79,7 +79,7 @@ export function mediaEntry( { map, site, repo, folder, file } ) {
 }
 
 // What the skeleton carries for one client and site: { logo( e, view ) -> { id, asset, url } | { reason } | null, menu( kind ) -> id | null,
-// attribute( slug ) -> { id } | { reason } | null (null when no site is named) }.
+// items( kind ) -> { label: identifier }, attribute( slug ) -> { id } | { reason } | null (null when no site is named) }.
 export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const folder = path.join( repo, 'sites', client, 'handoff' );
@@ -89,6 +89,7 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const menuSites = readJson( path.join( build, 'menu-map.json' ) )?.sites || {};
 	const menuRecords = ( site ? [ ...new Set( [ recordSite( site ), site ] ) ] : [] ).map( ( x ) => menuSites[ x ] || {} );
 	const menus = Object.assign( {}, ...menuRecords.map( ( r ) => r.menus || {} ) );
+	const items = Object.assign( {}, ...menuRecords.map( ( r ) => r.items || {} ) );
 	const sites = readJson( path.join( build, 'catalogue.json' ) )?.sites || {};
 	const records = site ? [ ...new Set( [ site, recordSite( site ) ] ) ].map( ( x ) => sites[ x ]?.attributes ).filter( Boolean ) : [];
 	let maps = null;
@@ -105,6 +106,9 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 			const id = menus[ boundMenu( kind, Object.keys( menus ) ) ];
 			return Number.isInteger( id ) && id > 0 ? id : null;
 		},
+		// The identifier the menu blocks read for each top-level item of the menu a surface of `kind` binds, by the label it
+		// shows ({} when the site recorded none).
+		items: ( kind ) => ( { ...items[ boundMenu( kind, Object.keys( menus ) ) ] } ),
 		attribute: ( slug ) => {
 			if ( ! site ) {
 				return null;

@@ -2,8 +2,9 @@
 // too. Intake reads it (lib/intake-pagemap-surfaces.mjs::plainLabel through readItems, in a header or drawer <nav> only),
 // the site build makes it a custom item whose Description is the chip words (lib/site-build-menu-links.mjs::menuLinksFor
 // `labels`, lib/site-build-menus.mjs::desiredMenus, lib/site-build-plan.mjs::planBuild, lib/site-build-apply.mjs::applyPhase),
-// and the skeleton writes the nav block's `disabledItemIds` as `label:<title>`
-// (lib/site-build-menus.mjs::disabledItemIds, lib/skeleton-write-content.mjs::carriedAttrs). An opener outside the header
+// and the skeleton writes the nav block's `disabledItemIds` as the identifier the site recorded for that item in menu-map.json
+// (lib/site-build-map.mjs::writeMenuMap `items`, itemIdentifier; lib/site-build-menus.mjs::disabledLabels;
+// lib/skeleton-carried.mjs::carriedIds `items`; lib/skeleton-write-content.mjs::carriedAttrs). An opener outside the header
 // nav (a Help link in the right cluster) is no item of the header's main menu: it makes a second header menu
 // (lib/intake-pagemap-mega-slots.mjs::megaSlots `inside`).
 // Fixtures: tests/fixtures/intake-pagemap/nav-labels (a header nav holding every shape a label might be mistaken for) and
@@ -12,6 +13,8 @@
 // (python E:\sgs-tmp\general-cloning\mutate_slow.py scripts\computed-route tests\intake-nav-labels.mutations.json tests/intake-nav-labels.test.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { proposePageMap, drawerRepeatsHeader } from '../lib/intake-pagemap.mjs';
@@ -25,6 +28,8 @@ import { fixtureDb } from './fixtures/framework-db.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { makeContent, skeletonSettings } from '../lib/skeleton-write-content.mjs';
+import { writeMenuMap, itemIdentifier } from '../lib/site-build-map.mjs';
+import { carriedIds } from '../lib/skeleton-carried.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIX = ( name ) => path.join( HERE, 'fixtures', 'intake-pagemap', name );
@@ -129,11 +134,34 @@ test( 'MUST FAIL: the draft\'s labels reach the menu the page map names, as cust
 	assert.deepEqual( siteMenus.desiredMenus( ROWS(), {}, {}, { links: {}, pending: [] } ).menus.header.map( ( it ) => it.label ), [ 'Home', 'About' ], 'no labels, no label items' );
 } );
 
-test( 'MUST FAIL: the skeleton\'s disabledItemIds are the bound menu\'s labels keyed by title', () => {
-	assert.deepEqual( siteMenus.disabledItemIds( MENUS, 'header' ), [ 'label:Glasses' ] );
-	assert.deepEqual( siteMenus.disabledItemIds( MENUS, 'drawer' ), [ 'label:Glasses' ], 'a drawer with no menu of its own binds the header menu, labels included' );
-	assert.deepEqual( siteMenus.disabledItemIds( [], 'header' ), [] );
-	assert.deepEqual( siteMenus.disabledItemIds( [ { menu: 'header', items: [ { label: 'A', targets: [ 'a' ], children: [ { label: 'Kid', disabled: true, children: [], parentItem: 'A', position: 1 } ], position: 1, parentItem: null } ] } ], 'header' ), [], 'a label under a parent is no top-level id' );
+test( 'MUST FAIL: the labels the skeleton disables are the bound menu\'s top-level labels', () => {
+	assert.deepEqual( siteMenus.disabledLabels( MENUS, 'header' ), [ 'Glasses' ] );
+	assert.deepEqual( siteMenus.disabledLabels( MENUS, 'drawer' ), [ 'Glasses' ], 'a drawer with no menu of its own binds the header menu, labels included' );
+	assert.deepEqual( siteMenus.disabledLabels( [], 'header' ), [] );
+	assert.deepEqual( siteMenus.disabledLabels( [ { menu: 'header', items: [ { label: 'A', targets: [ 'a' ], children: [ { label: 'Kid', disabled: true, children: [], parentItem: 'A', position: 1 } ], position: 1, parentItem: null } ] } ], 'header' ), [], 'a label under a parent is no top-level id' );
+} );
+
+// The menu blocks key a classic item `id:<object id>` whenever its object id is not 0 (sgs/nav-bar-menu render.php::from_link,
+// SGS_Nav_Menu_Source::classic_items_to_blocks passes the item's object_id), and WordPress gives a custom link its own item
+// id as object id: the identifier is a site's own fact, read from the site state after the site build ran.
+test( 'MUST FAIL: the menu map records each top-level item of a menu the site build made under the identifier the menu blocks read', () => {
+	const file = path.join( fs.mkdtempSync( path.join( os.tmpdir(), 'menu-items-' ) ), 'menu-map.json' );
+	const items = [ HOME, { ...GLASSES, id: 695, objectId: 695 }, { id: 60, title: '', shown: 'Kid', object: 'page', objectId: 12, type: 'post_type', parent: 49, order: 3 }, { id: 61, title: 'Sale', shown: 'Sale', object: 'product_cat', objectId: 44, type: 'taxonomy', parent: 0, order: 4 } ];
+	const map = writeMenuMap( file, 't', [ { id: 30, slug: 'header', owner: 'header', items: items.map( ( it ) => ( { shown: it.title || 'Home', ...it } ) ) }, { id: 9, slug: 'foreign', owner: '', items: [ HOME ] } ] );
+	assert.deepEqual( map.sites.t.items, { header: { Home: 'id:10', Glasses: 'id:695', Sale: 'id:44' } }, 'a custom item is its own id; a page or term item keeps its object\'s id; a child item and a menu the build did not make are not recorded' );
+	assert.deepEqual( map.sites.t.menus, { header: 30 } );
+	assert.equal( itemIdentifier( { objectId: 0, shown: 'Loose' } ), 'label:Loose', 'an item with no object id is keyed by its label, as the block does' );
+} );
+
+test( 'MUST FAIL: the skeleton writes disabledItemIds as the identifiers the site recorded, and reports a label the site has no item for', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'carried-items-' ) );
+	const file = path.join( repo, 'sites', 'c', 'build', 'menu-map.json' );
+	fs.mkdirSync( path.dirname( file ), { recursive: true } );
+	writeMenuMap( file, 't', [ { id: 30, slug: 'header', owner: 'header', items: [ { ...HOME, shown: 'Home' }, { ...GLASSES, id: 695, objectId: 695, shown: 'Glasses' } ] } ] );
+	const carried = carriedIds( { repo, client: 'c', site: 't' } );
+	assert.deepEqual( carried.items( 'header' ), { Home: 'id:10', Glasses: 'id:695' } );
+	assert.deepEqual( carried.items( 'drawer' ), { Home: 'id:10', Glasses: 'id:695' }, 'a drawer with no menu of its own binds the header menu' );
+	assert.deepEqual( carriedIds( { repo, client: 'c', site: 'other' } ).items( 'header' ), {} );
 } );
 
 const STATE = ( items = [] ) => ( {
@@ -183,14 +211,20 @@ test( 'MUST FAIL: the skeleton writes the nav block disabledItemIds from the dra
 	} ) );
 	const facts = loadFacts( { db, client: '' } );
 	const m = { words: () => '', textWithBreaks: () => '', blockKids: () => [] };
-	const carriedAttrs = ( draftLinks, surfaceKind = 'header', carried = { menu: () => 9 } ) => makeContent( { m, facts, view: 1440, carried, draftLinks, surfaceKind, siteLink: () => ( { kind: 'none' } ) } ).carriedAttrs;
+	const CARRIED = { menu: () => 9, items: ( kind ) => ( 'header' === kind ? { Home: 'id:10', Glasses: 'id:695' } : {} ) };
+	const carriedAttrs = ( draftLinks, surfaceKind = 'header', carried = CARRIED ) => makeContent( { m, facts, view: 1440, carried, draftLinks, surfaceKind, siteLink: () => ( { kind: 'none' } ) } ).carriedAttrs;
 	const nav = { key: 'k', tag: 'nav' };
 	const ctx = { menuItems: MENUS };
-	assert.deepEqual( carriedAttrs( ctx )( 'sgs/navlike', nav ).attrs, { ref: 9, disabledItemIds: [ 'label:Glasses' ] } );
-	assert.deepEqual( carriedAttrs( ctx, 'header', null )( 'sgs/navlike', nav ).attrs, { disabledItemIds: [ 'label:Glasses' ] }, 'the labels need no carried menu id' );
+	assert.deepEqual( carriedAttrs( ctx )( 'sgs/navlike', nav ), { attrs: { ref: 9, disabledItemIds: [ 'id:695' ] }, said: { ref: 'menu-map.json: the header menu', disabledItemIds: 'the draft\'s header nav draws 1 item(s) as plain words; menu-map.json: their item identifiers' }, missing: [] } );
+	const unrecorded = carriedAttrs( ctx, 'header', { menu: () => 9, items: () => ( { Home: 'id:10' } ) } )( 'sgs/navlike', nav );
+	assert.deepEqual( unrecorded.attrs, { ref: 9 }, 'a label the site holds no item for writes no identifier' );
+	assert.match( unrecorded.missing.join( '\n' ), /k: no item identifier is carried for "Glasses": menu-map\.json records no such item of the header menu/ );
+	assert.deepEqual( carriedAttrs( ctx, 'header', null )( 'sgs/navlike', nav ).attrs, {}, 'with no site there is no identifier to write' );
+	const drawerSite = { menu: () => 9, items: ( kind ) => ( 'drawer' === kind ? { Glasses: 'id:77' } : { Glasses: 'id:695' } ) };
+	assert.deepEqual( carriedAttrs( ctx, 'drawer', drawerSite )( 'sgs/navlike', nav ).attrs.disabledItemIds, [ 'id:77' ], 'a drawer nav reads the identifiers of the menu the drawer binds' );
 	assert.deepEqual( carriedAttrs( ctx )( 'sgs/plainnav', nav ).attrs, { ref: 9 }, 'a block with no such setting is not written one' );
 	assert.deepEqual( carriedAttrs( ctx )( 'sgs/navlike', { key: 'k', tag: 'div' } ).attrs, {}, 'only a nav element' );
-	assert.deepEqual( carriedAttrs( { menuItems: [] } )( 'sgs/navlike', nav ).attrs, { ref: 9 }, 'no label, no setting' );
+	assert.deepEqual( carriedAttrs( { menuItems: [] } )( 'sgs/navlike', nav ), { attrs: { ref: 9 }, said: { ref: 'menu-map.json: the header menu' }, missing: [] }, 'no label, no setting and nothing missing' );
 	assert.deepEqual( carriedAttrs( null )( 'sgs/navlike', nav ).attrs, { ref: 9 } );
 	assert.ok( skeletonSettings( facts, 'sgs/navlike' ).others.includes( 'disabledItemIds' ) );
 	assert.ok( ! skeletonSettings( facts, 'sgs/plainnav' ).others.includes( 'disabledItemIds' ) );

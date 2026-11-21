@@ -13,7 +13,7 @@ import { decodeEntities, loadDraft } from './intake-ast.mjs';
 import { declared as declaredRaw } from './skeleton-rules.mjs';
 import { draftTokenLookup, handoffOf } from './draft-tokens.mjs';
 import { ALL_TEXT_CAP } from './skeleton-model.mjs';
-import { disabledItemIds } from './site-build-menus.mjs';
+import { disabledLabels } from './site-build-menus.mjs';
 
 // The words a draft's copyright line prints before its © mark (sgs/business-info prints `{copyrightPrefix} © {year} {line}`):
 // "Copyright © 2026 Acme" gives "Copyright", "© 2026 Acme" gives "" (the block then omits the word). A line with no mark
@@ -374,14 +374,18 @@ export function makeContent( ctx ) {
 	// draws) and a menu block's `ref` (the menu site-build made for this surface). { attrs, said: { attr: where from } }.
 	function carriedAttrs( block, e, top = null ) {
 		const out = { attrs: {}, said: {}, missing: [] };
-		// The menu's link-less labels (a nav item drawn as plain words) are the block's disabled items: the site build made
-		// each a custom item, which the menu blocks key `label:<title>` (lib/site-build-menus.mjs::disabledItemIds).
-		if ( 'nav' === e.tag && attrExists( block, 'disabledItemIds' ) && surfaceKind && draftLinks?.menuItems ) {
-			const ids = disabledItemIds( draftLinks.menuItems, surfaceKind );
-			ids.length && Object.assign( out.attrs, { disabledItemIds: ids } ) && ( out.said.disabledItemIds = `the draft's ${ surfaceKind } nav draws ${ ids.length } item(s) as plain words` );
-		}
 		if ( ! carried ) {
 			return out;
+		}
+		// The menu's link-less labels (a nav item drawn as plain words) are the block's disabled items: the site build made
+		// each a custom item, whose identifier the site recorded in menu-map.json (lib/site-build-map.mjs::itemIdentifier). A
+		// label the site holds no item for writes nothing and is reported.
+		const labels = 'nav' === e.tag && attrExists( block, 'disabledItemIds' ) && surfaceKind && draftLinks?.menuItems ? disabledLabels( draftLinks.menuItems, surfaceKind ) : [];
+		if ( labels.length ) {
+			const known = carried.items?.( surfaceKind ) || {};
+			const ids = labels.filter( ( l ) => known[ l ] ).map( ( l ) => known[ l ] );
+			ids.length && Object.assign( out.attrs, { disabledItemIds: ids } ) && ( out.said.disabledItemIds = `the draft's ${ surfaceKind } nav draws ${ ids.length } item(s) as plain words; menu-map.json: their item identifiers` );
+			labels.filter( ( l ) => ! known[ l ] ).forEach( ( l ) => out.missing.push( `${ e.key }: no item identifier is carried for "${ l }": menu-map.json records no such item of the ${ surfaceKind } menu for this site (run site-build.mjs --menus --apply)` ) );
 		}
 		const [ logoAttr ] = facts.logoBlocks.includes( block ) ? logoSource( block ) : [];
 		if ( logoAttr ) {

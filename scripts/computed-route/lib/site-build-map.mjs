@@ -175,13 +175,24 @@ export const rowsForSite = ( rows, idsSite, site ) => ( idsSite && idsSite !== s
 
 export const treeHash = ( tree ) => crypto.createHash( 'sha256' ).update( JSON.stringify( tree ) ).digest( 'hex' );
 
-// The ids of the menus the site build made on a site, by menu name, kept in `sites/<client>/build/menu-map.json`
-// ({ sites: { <site>: { menus: { <name>: <id> } } } }) so a skeleton can carry a navigation block's `ref` (FR-48-58).
-// `menus` is the site state's menu list; only a menu carrying the site build's own mark (owner equal to its slug) counts.
+// The identifier the menu blocks give a classic menu item (sgs/nav-bar-menu and sgs/nav-drawer-menu render.php::from_link
+// over SGS_Nav_Menu_Source::classic_items_to_blocks, which passes the item's object id): `id:<object id>` whenever that id is
+// not 0, else `label:<label>`. WordPress gives a custom link its own item id as object id, so a custom item's identifier is
+// a fact of the site it was made on. `item` is a site state menu item ({ objectId, shown }).
+export const itemIdentifier = ( item ) => ( Number( item.objectId ) ? `id:${ Number( item.objectId ) }` : `label:${ item.shown ?? item.title }` );
+
+// The ids of the menus the site build made on a site, by menu name, and the identifier of each of their top-level items by
+// the label it shows, kept in `sites/<client>/build/menu-map.json` ({ sites: { <site>: { menus: { <name>: <id> }, items:
+// { <name>: { <label>: <identifier> } } } } }) so a skeleton can carry a navigation block's `ref` and its `disabledItemIds`
+// (FR-48-58). `menus` is the site state's menu list; only a menu carrying the site build's own mark (owner equal to its
+// slug) counts.
 export function writeMenuMap( file, site, menus ) {
 	const had = fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : { sites: {} };
-	const mine = Object.fromEntries( menus.filter( ( m ) => m.owner === m.slug ).map( ( m ) => [ m.slug, m.id ] ).sort( ( a, b ) => a[ 0 ].localeCompare( b[ 0 ] ) ) );
-	const next = { ...had, sites: { ...had.sites, [ site ]: { ...had.sites?.[ site ], menus: mine } } };
+	const owned = menus.filter( ( m ) => m.owner === m.slug ).sort( ( a, b ) => a.slug.localeCompare( b.slug ) );
+	const mine = Object.fromEntries( owned.map( ( m ) => [ m.slug, m.id ] ) );
+	const items = Object.fromEntries( owned.map( ( m ) => [ m.slug, Object.fromEntries( ( m.items || [] ).filter( ( it ) => ! Number( it.parent ) ).map( ( it ) => [ it.shown ?? it.title, itemIdentifier( it ) ] ) ) ] ).filter( ( [ , v ] ) => Object.keys( v ).length ) );
+	const { items: _stale, ...kept } = had.sites?.[ site ] || {};
+	const next = { ...had, sites: { ...had.sites, [ site ]: { ...kept, menus: mine, ...( Object.keys( items ).length ? { items } : {} ) } } };
 	fs.writeFileSync( file, `${ JSON.stringify( next, null, '	' ) }
 ` );
 	return next;
