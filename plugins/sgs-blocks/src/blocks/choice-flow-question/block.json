@@ -97,6 +97,7 @@
 					"_note": "The small tag on an option card (a solid tag on picture cards, a soft tag on text cards; render.php prints it only when the option has a badge); colours from helpers-description-style.php, the box (optionBadgeBorder per device as {width, style, colour}, optionBadgeRadius, optionBadgePadding per device) from helpers-option-card-style.php. Empty keeps the stylesheet's own paint and box for each card kind."
 				},
 				"option-card": {
+					"restingShadow": true,
 					"selector": ".sgs-choice-flow-question__option-button",
 					"label": "Option card",
 					"layer": "CONTENT",
