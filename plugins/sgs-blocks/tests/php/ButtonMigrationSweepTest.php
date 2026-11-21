@@ -1,0 +1,172 @@
+<?php
+/**
+ * Tests: the built-in button migration's rename and reshape (scripts/lib/builtin-button-sweep.php, which the WP-CLI sweep
+ * scripts/sweep-builtin-button-attrs.php runs over saved content).
+ *
+ * The cases run the real functions in a child process. They pin every row of scripts/data/builtin-button-renames.json for the three
+ * migrated blocks (the buy box's Add to Cart, the product card's CTAs, the account's sign-in and register buttons), the values Mama's saved,
+ * idempotence, that a block of another name carrying the same attribute names (sgs/pricing-table's `ctaFontSize`) is never touched,
+ * and that the bytes of a post outside a block delimiter's attributes stay as they were.
+ *
+ * Run with: php vendor/phpunit/phpunit/phpunit --filter ButtonMigrationSweepTest
+ *
+ * @package SGS\Blocks\Tests
+ */
+
+declare( strict_types=1 );
+
+// PHPUnit test, not shipped code.
+// phpcs:disable
+
+use PHPUnit\Framework\TestCase;
+
+final class ButtonMigrationSweepTest extends TestCase {
+
+	/** @param array<string, array<string, mixed>> $cases @return array<string, mixed> */
+	private static function run_cases( array $cases ): array {
+		$file = tempnam( sys_get_temp_dir(), 'sgsbm' );
+		file_put_contents( $file, json_encode( $cases, JSON_THROW_ON_ERROR ) );
+		try {
+			$out = (string) shell_exec( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( __DIR__ . '/run-button-migration-sweep-standalone.php' ) . ' ' . escapeshellarg( $file ) . ' 2>&1' );
+		} finally {
+			unlink( $file );
+		}
+		$start   = strpos( $out, '{' );
+		$decoded = false === $start ? null : json_decode( substr( $out, $start ), true );
+		if ( ! is_array( $decoded ) ) {
+			throw new RuntimeException( 'runner failed: ' . $out );
+		}
+		return $decoded;
+	}
+
+	/** @return array<string, mixed> The sweep of one block's attributes. */
+	private static function attrs( string $block, array $attrs ): array {
+		return self::run_cases( array( 'c' => array( 'fn' => 'attrs', 'block' => $block, 'attrs' => $attrs ) ) )['c'];
+	}
+
+	public function test_every_rename_moves_the_value_to_the_kit_name(): void {
+		$cases = array(
+			'sgs/buybox'  => array( 'addToCartBackgroundColour' => 'mm-yellow', 'addToCartBorderColour' => 'mm-cocoa' ),
+			'sgs/account' => array(
+				'loginButtonBackground'      => 'a',
+				'loginButtonText'            => 'b',
+				'loginButtonBackgroundHover' => 'c',
+				'loginButtonTextHover'       => 'd',
+				'loginButtonBorderColour'    => 'e',
+				'loginButtonPreset'          => 'primary',
+				'registerButtonPreset'       => 'secondary',
+			),
+		);
+		$this->assertSame( array( 'addToCartColourBackground' => 'mm-yellow', 'addToCartColourBorder' => 'mm-cocoa' ), self::attrs( 'sgs/buybox', $cases['sgs/buybox'] ) );
+		$this->assertSame(
+			array(
+				'loginButtonColourBackground'      => 'a',
+				'loginButtonColourText'            => 'b',
+				'loginButtonColourBackgroundHover' => 'c',
+				'loginButtonColourTextHover'       => 'd',
+				'loginButtonColourBorder'          => 'e',
+				'loginButtonStyle'                 => 'primary',
+				'registerButtonStyle'              => 'secondary',
+			),
+			self::attrs( 'sgs/account', $cases['sgs/account'] )
+		);
+	}
+
+	public function test_every_reshape_gives_the_kit_shape(): void {
+		$box = array( 'top' => '16px', 'right' => '0px', 'bottom' => '16px', 'left' => '0px' );
+		$this->assertSame( array( 'addToCartMinHeight' => array( 'desktop' => '64px' ) ), self::attrs( 'sgs/buybox', array( 'addToCartMinHeight' => '64px' ) ), 'a min height string becomes a desktop value' );
+		$this->assertSame( array( 'addToCartPadding' => array( 'desktop' => $box ) ), self::attrs( 'sgs/buybox', array( 'addToCartPadding' => $box ) ), 'a flat padding box becomes a desktop box' );
+		$card = self::attrs(
+			'sgs/product-card',
+			array(
+				'ctaFontSize'     => 15,
+				'ctaLineHeight'   => '1.6',
+				'ctaPadding'      => $box,
+				'ctaBorderRadius' => array( 'topLeft' => '999px', 'topRight' => '999px', 'bottomLeft' => '999px', 'bottomRight' => '999px' ),
+				'ctaWidthType'    => 'full',
+			)
+		);
+		$this->assertSame( array( 'desktop' => 15 ), $card['ctaFontSize'] );
+		$this->assertSame( array( 'desktop' => '1.6' ), $card['ctaLineHeight'] );
+		$this->assertSame( array( 'desktop' => $box ), $card['ctaPadding'] );
+		$this->assertSame( 'full', $card['ctaWidthType'], 'full stays' );
+		$this->assertSame( array( 'desktop' => array( 'topLeft' => '999px', 'topRight' => '999px', 'bottomLeft' => '999px', 'bottomRight' => '999px' ) ), $card['ctaBorderRadius'] );
+		$this->assertSame( array(), self::attrs( 'sgs/product-card', array( 'ctaWidthType' => 'fit' ) ), 'a saved fit is dropped: the kit prints fit as fit-content, and fit was the default that printed no width' );
+		$this->assertSame( array( 'loginButtonWidthType' => 'full' ), self::attrs( 'sgs/account', array( 'loginButtonFullWidth' => true ) ), 'true becomes full' );
+		$this->assertSame( array(), self::attrs( 'sgs/account', array( 'loginButtonFullWidth' => false ) ), 'false is unset' );
+	}
+
+	public function test_a_cleared_value_stays_cleared_as_an_empty_object(): void {
+		$out = self::run_cases(
+			array(
+				'c' => array(
+					'fn'      => 'content',
+					'blocks'  => array( 'sgs/product-card' ),
+					'content' => '<!-- wp:sgs/product-card {"ctaLineHeight":"","ctaFontSize":""} /-->',
+				),
+			)
+		)['c'];
+		$this->assertSame( '<!-- wp:sgs/product-card {"ctaLineHeight":{},"ctaFontSize":{}} /-->', $out['content'], 'an explicit empty overrides the 1.4 default, so it stays saved, as {} and not []' );
+	}
+
+	public function test_it_is_idempotent_and_a_value_already_swept_is_left_alone(): void {
+		$old = array( 'addToCartBackgroundColour' => 'x', 'addToCartMinHeight' => '64px', 'addToCartPadding' => array( 'top' => '1px' ), 'addToCartStyle' => 'primary' );
+		$one = self::attrs( 'sgs/buybox', $old );
+		$this->assertSame( $one, self::attrs( 'sgs/buybox', $one ), 'a second pass changes nothing' );
+		$both = self::attrs( 'sgs/buybox', array( 'addToCartBackgroundColour' => 'old', 'addToCartColourBackground' => 'new' ) );
+		$this->assertSame( array( 'addToCartColourBackground' => 'new' ), $both, 'when both names are saved the new one wins' );
+	}
+
+	public function test_a_block_of_another_name_with_the_same_attribute_names_is_never_touched(): void {
+		$pricing = array( 'ctaFontSize' => array( 'desktop' => 14 ), 'ctaLineHeight' => '1.2', 'ctaPadding' => array( 'top' => '4px' ) );
+		$this->assertSame( $pricing, self::attrs( 'sgs/pricing-table', $pricing ), 'MUST FAIL: sgs/pricing-table declares ctaFontSize, ctaLineHeight and ctaPadding of its own' );
+		$content = '<!-- wp:sgs/pricing-table {"ctaLineHeight":"1.2","ctaPadding":{"top":"4px"}} /-->';
+		$out     = self::run_cases( array( 'c' => array( 'fn' => 'content', 'blocks' => array( 'sgs/buybox', 'sgs/product-card', 'sgs/account' ), 'content' => $content ) ) )['c'];
+		$this->assertSame( $content, $out['content'] );
+		$this->assertSame( array(), $out['changed'] );
+	}
+
+	public function test_content_changes_only_the_delimiters_of_the_named_blocks_and_nothing_else(): void {
+		$content = "<!-- wp:group {\"className\":\"a--b\"} -->\n<div class=\"wp-block-group\"><!-- wp:sgs/buybox {\"addToCartBackgroundColour\":\"mm-yellow\",\"addToCartMinHeight\":\"64px\",\"productId\":5} /-->\n"
+			. "<!-- wp:sgs/product-card {\"ctaFontSize\":15,\"ctaPadding\":{\"top\":\"16px\"},\"ctaText\":\"A <b>--</b> & b\"} /-->\n"
+			. "<!-- wp:sgs/account {\"loginButtonFullWidth\":true,\"loginButtonScope\":\"all-forms\"} /-->\n"
+			. "<!-- wp:sgs/buybox /--><!-- wp:sgs/buybox {\"productId\":6} /--></div>\n<!-- /wp:group -->";
+		$out = self::run_cases( array( 'c' => array( 'fn' => 'content', 'blocks' => array( 'sgs/buybox', 'sgs/product-card', 'sgs/account' ), 'content' => $content ) ) )['c'];
+		$this->assertSame( array( 'sgs/buybox' => 1, 'sgs/product-card' => 1, 'sgs/account' => 1 ), $out['changed'], 'three delimiters change; a bare delimiter and one with no old name do not' );
+		$this->assertSame( 1, $out['attrs']['sgs/buybox::addToCartMinHeight'] );
+		$this->assertSame( 1, $out['attrs']['sgs/account::loginButtonFullWidth'] );
+		$this->assertStringContainsString( '"addToCartColourBackground":"mm-yellow"', $out['content'] );
+		$this->assertStringContainsString( '"addToCartMinHeight":{"desktop":"64px"}', $out['content'] );
+		$this->assertStringContainsString( '"ctaFontSize":{"desktop":15}', $out['content'] );
+		$this->assertStringContainsString( '"loginButtonWidthType":"full"', $out['content'] );
+		$esc = static fn( string $hex ): string => chr( 92 ) . 'u' . $hex;
+		$this->assertStringContainsString( '"ctaText":"A ' . $esc( '003c' ) . 'b' . $esc( '003e' ) . $esc( '002d' ) . $esc( '002d' ) . $esc( '003c' ) . '/b' . $esc( '003e' ) . ' ' . $esc( '0026' ) . ' b"', $out['content'], 'the other attributes are written the way WordPress writes them' );
+		$this->assertStringContainsString( '<!-- wp:group {"className":"a--b"} -->', $out['content'], 'another block is left byte for byte' );
+		$this->assertStringContainsString( '<!-- wp:sgs/buybox /--><!-- wp:sgs/buybox {"productId":6} /-->', $out['content'] );
+		$again = self::run_cases( array( 'c' => array( 'fn' => 'content', 'blocks' => array( 'sgs/buybox', 'sgs/product-card', 'sgs/account' ), 'content' => $out['content'] ) ) )['c'];
+		$this->assertSame( $out['content'], $again['content'], 'idempotent' );
+		$this->assertSame( array(), $again['changed'] );
+	}
+
+	public function test_with_no_map_rows_nothing_changes(): void {
+		$content = '<!-- wp:sgs/buybox {"addToCartBackgroundColour":"x"} /-->';
+		$out     = self::run_cases( array( 'c' => array( 'fn' => 'content', 'blocks' => array( 'sgs/buybox' ), 'content' => $content, 'map' => array( 'sgs/other' => array() ) ) ) )['c'];
+		$this->assertSame( $content, $out['content'], 'MUST FAIL if the sweep renames without a map row: the map is the only source' );
+	}
+
+	public function test_the_map_names_only_attributes_the_blocks_declare_after_the_migration(): void {
+		$map = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/scripts/data/builtin-button-renames.json' ), true, 512, JSON_THROW_ON_ERROR );
+		foreach ( array( 'sgs/buybox', 'sgs/product-card', 'sgs/account' ) as $block ) {
+			$json = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/blocks/' . substr( $block, 4 ) . '/block.json' ), true, 512, JSON_THROW_ON_ERROR );
+			foreach ( $map['renames'] as $row ) {
+				if ( $row['block'] !== $block ) {
+					continue;
+				}
+				$this->assertArrayHasKey( $row['new'], $json['attributes'], $block . ' declares ' . $row['new'] );
+				if ( $row['old'] !== $row['new'] ) {
+					$this->assertArrayNotHasKey( $row['old'], $json['attributes'], $block . ' no longer declares ' . $row['old'] );
+				}
+			}
+		}
+	}
+}
