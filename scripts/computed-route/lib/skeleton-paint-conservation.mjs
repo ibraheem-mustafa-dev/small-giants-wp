@@ -129,7 +129,8 @@ export function computedLooks( values, parentValues = null ) {
 // width. Computed values are read per width where the inventory holds them; the declared styles (`declared`, the fact
 // record's, lib/skeleton-record.mjs::recordView().declared) and the rendered style attribute hold at every rendered width.
 // `children` is how many elements it directly holds: a flex or grid box holding two or more lays them out, and dissolving it
-// loses their grouping (`layout`).
+// loses their grouping (`layout`), at the widths where its display (the inventory's `displayAt`) is flex or grid; an inventory
+// without `displayAt` has its one `display` stand for every width.
 export function paintsBox( element, { declared = {}, parent = null, children = 0 } = {} ) {
 	const widths = renderedWidths( element );
 	const out = {};
@@ -140,9 +141,10 @@ export function paintsBox( element, { declared = {}, parent = null, children = 0
 		return out;
 	}
 	const stated = new Set( [ ...declaredLooks( declared, element.tag ), ...declaredLooks( styleOf( element.attrs?.style ), element.tag ) ] );
-	children >= 2 && LAYS_OUT.has( low( element.display ) ) && stated.add( 'layout' );
+	const displayAt = ( w ) => ( element.displayAt ? element.displayAt[ w ] : element.display );
 	for ( const w of widths ) {
 		stated.forEach( ( look ) => add( look, w ) );
+		children >= 2 && LAYS_OUT.has( low( displayAt( w ) ) ) && add( 'layout', w );
 	}
 	for ( const w of resolvedWidths( element ) ) {
 		computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ).forEach( ( look ) => add( look, w ) );

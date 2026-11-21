@@ -34,5 +34,23 @@
 		"find": "...( Object.keys( data ).length ? { data } : {} ), box,",
 		"replace": "data, box,",
 		"why": "an element with no mark carries an empty data field"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "displayAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, at( w, id )?.display ?? null ] ) ), resolved:",
+		"replace": "displayAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, r.display ?? null ] ) ), resolved:",
+		"why": "the 1440 display is recorded at every width"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const displayAt = ( w ) => ( element.displayAt ? element.displayAt[ w ] : element.display );",
+		"replace": "const displayAt = () => element.display;",
+		"why": "the detector reads the one display at every width"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const displayAt = ( w ) => ( element.displayAt ? element.displayAt[ w ] : element.display );",
+		"replace": "const displayAt = ( w ) => element.displayAt?.[ w ];",
+		"why": "an inventory without per-width display paints no layout"
 	}
 ]

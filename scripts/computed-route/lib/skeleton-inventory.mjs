@@ -451,14 +451,15 @@ export function withWidthOnly( runs ) {
 	return out;
 }
 
-// The inventory from the per-width reads ({ width: collect result }).
+// The inventory from the per-width reads ({ width: collect result }). Each element keeps its 1440 `display` and its computed
+// display at every width in `displayAt` (null where that width's read has no such element).
 export function summarise( { runs, shots, skipped, url, root } ) {
 	const base = runs[ 1440 ];
 	const at = ( w, id ) => runs[ w ].records.find( ( x ) => recId( x ) === id );
 	const records = withWidthOnly( runs ).map( ( r ) => {
 		const { i, ...rest } = r;
 		const id = recId( r );
-		return { ...rest, box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, resolved: { 375: at( 375, id )?.resolved ?? null, 768: at( 768, id )?.resolved ?? null, 1440: r.resolved ?? null }, layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
+		return { ...rest, box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, displayAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, at( w, id )?.display ?? null ] ) ), resolved: { 375: at( 375, id )?.resolved ?? null, 768: at( 768, id )?.resolved ?? null, 1440: r.resolved ?? null }, layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
 	} );
 	// The opening state's elements stay a list of their own; what only a state shows is kept beside it (lib/reveal-merge.mjs).
 	const elements = records.filter( ( r ) => ! r.reveal );

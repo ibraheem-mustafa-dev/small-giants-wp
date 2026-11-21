@@ -229,14 +229,14 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "children >= 2 && LAYS_OUT.has( low( element.display ) ) && stated.add( 'layout' );",
-		"replace": "children >= 1 && LAYS_OUT.has( low( element.display ) ) && stated.add( 'layout' );",
+		"find": "children >= 2 && LAYS_OUT.has( low( displayAt( w ) ) ) && add( 'layout', w );",
+		"replace": "children >= 1 && LAYS_OUT.has( low( displayAt( w ) ) ) && add( 'layout', w );",
 		"why": "a flex box of one child is a layout"
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "children >= 2 && LAYS_OUT.has( low( element.display ) ) && stated.add( 'layout' );",
-		"replace": "children >= 2 && stated.add( 'layout' );",
+		"find": "children >= 2 && LAYS_OUT.has( low( displayAt( w ) ) ) && add( 'layout', w );",
+		"replace": "children >= 2 && add( 'layout', w );",
 		"why": "a block box of several children is a layout"
 	},
 	{

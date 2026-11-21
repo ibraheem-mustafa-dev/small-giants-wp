@@ -13,6 +13,8 @@ body { margin: 0 }
 .plain { color: rgb(1, 2, 3) }
 @media ( max-width: 480px ) { .phone { background-image: linear-gradient( red, blue ) } }
 .centre { text-align: center }
+.row { display: flex; gap: 8px }
+@media ( max-width: 480px ) { .row { display: block } }
 </style></head><body>
 <div class="sc-host" data-sc-name="Root" data-dc-tpl="">
 	<div data-dc-tpl="9"><main data-dc-tpl="1">
@@ -20,6 +22,7 @@ body { margin: 0 }
 		<div data-dc-tpl="3" class="plain">Plain</div>
 		<div data-dc-tpl="4" class="phone">Phone only</div>
 		<div data-dc-tpl="5" class="centre"><p data-dc-tpl="6">Centred words</p></div>
+		<div data-dc-tpl="7" class="row"><span data-dc-tpl="8">One</span><span data-dc-tpl="10">Two</span></div>
 	</main></div>
 </div></body></html>`;
 
@@ -82,4 +85,14 @@ test( 'the draft\'s own data marks are kept; the runtime\'s stamps and the route
 	assert.deepEqual( el( 2 ).data, { reveal: '', tilt: '6' } );
 	assert.equal( el( 3 ).data, undefined, 'an element with no mark of the draft\'s carries no data field' );
 	assert.ok( NOT_DRAFT_DATA.test( 'data-dc-tpl' ) && NOT_DRAFT_DATA.test( 'data-sc-name' ) && NOT_DRAFT_DATA.test( 'data-sgs-skeleton-root' ) && NOT_DRAFT_DATA.test( 'data-inv-i' ) && ! NOT_DRAFT_DATA.test( 'data-reveal' ) );
+} );
+
+test( 'display is recorded at each width, and a box lays its children out only where it is flex or grid (MUST FAIL where the 1440 display stands for every width)', () => {
+	const row = el( 7 );
+	assert.deepEqual( row.displayAt, { 375: 'block', 768: 'flex', 1440: 'flex' } );
+	assert.equal( row.display, 'flex', 'the 1440 display stays as it was for every other reader' );
+	assert.deepEqual( paintsBox( row, { children: 2 } ), { layout: [ 768, 1440 ] } );
+	// Negative control: a saved inventory without per-width display keeps the one display at every width.
+	const { displayAt, ...saved } = row;
+	assert.deepEqual( paintsBox( saved, { children: 2 } ), { layout: [ 375, 768, 1440 ] } );
 } );
