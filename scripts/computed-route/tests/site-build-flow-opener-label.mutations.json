@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "r ) => 'live' === r.collection && ! rowRefusal( r ) )",
+		"replace": "r ) => 'live' === r.collection )",
+		"why": "a row whose buy box does not open the flow is asked"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "r ) => 'live' === r.collection && ! rowRefusal( r ) )",
+		"replace": "r ) => ! rowRefusal( r ) )",
+		"why": "a static row is asked"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "if ( words.length > 1 ) {",
+		"replace": "if ( false ) {",
+		"why": "a buy box whose openers disagree takes its first opener's words"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "label: conflict || 1 !== distinct.length ? null : distinct[ 0 ] };",
+		"replace": "label: distinct[ 0 ] ?? null };",
+		"why": "rows that disagree take the first row's words"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "( pending ? notes : problems ).push(",
+		"replace": "notes.push(",
+		"why": "a flow post the site lacks is only a note"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "if ( now.label === flow.label ) {",
+		"replace": "if ( false ) {",
+		"why": "a flow already holding the words is planned again"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "if ( null === flow.label ) {",
+		"replace": "if ( false ) {",
+		"why": "a flow with no decided words is planned"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "if ( ! apply ) {",
+		"replace": "if ( false ) {",
+		"why": "a dry run writes"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "if ( done.wrong.length ) {",
+		"replace": "if ( false ) {",
+		"why": "a read-back that disagrees passes"
+	}
+]

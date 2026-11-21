@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/part-look-controls.mjs",
+		"find": "named.filter( ( key ) => ! named.some( ( other ) => other !== key && found.index.within( other, key ) ) ).map(",
+		"replace": "named.map(",
+		"why": "a wrapper of the opener counts as an opener"
+	},
+	{
+		"file": "lib/part-look-controls.mjs",
+		"find": "const own = String( index.byKey.get( key )?.words ?? '' ).trim();",
+		"replace": "const own = '';",
+		"why": "an element's own words are ignored"
+	},
+	{
+		"file": "lib/part-look-controls.mjs",
+		"find": "for ( const child of index.children( key ) ) {",
+		"replace": "for ( const child of [] ) {",
+		"why": "a button whose label sits in a span reads as empty"
+	},
+	{
+		"file": "lib/part-look-controls.mjs",
+		"find": "label: labelOf( wordsOf( found.index, key ) )",
+		"replace": "label: wordsOf( found.index, key )",
+		"why": "the amount stays in the label"
+	},
+	{
+		"file": "lib/part-look-controls.mjs",
+		"find": "dc: 'Root' === el?.template ? ctx.rootComponent : el?.template,",
+		"replace": "dc: el?.template,",
+		"why": "the served root component is named Root, which no page host carries"
+	},
+	{
+		"file": "lib/part-look-controls.mjs",
+		"find": "export const openerShopParts = ( controls ) => ( controls.openers.length ?",
+		"replace": "export const openerShopParts = ( controls ) => ( false ?",
+		"why": "the opener's shop part is never named"
+	}
+]

@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "matched = matchPreset( { presets: held, reads: pr, id, snapshot } );",
+		"replace": "matched = null;",
+		"why": "no preset is ever matched"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "const covered = new Set( [ ...matched.props ].flatMap( ( p ) => PAINTS[ p ] || [] ) );",
+		"replace": "const covered = new Set();",
+		"why": "a matched preset drops none of the look writes it gives"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "} else if ( ! pr.agree ) {",
+		"replace": "} else if ( false ) {",
+		"why": "instances that differ are matched anyway"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "} else if ( ! pr.hovered ) {",
+		"replace": "} else if ( false ) {",
+		"why": "an unread hover look is matched anyway"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "if ( samePrimitive( value, rest ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a hovered colour equal to the resting one is written"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "Object.entries( presets || {} ).filter( ( [ v ] ) => choice?.variants.includes( v ) )",
+		"replace": "Object.entries( presets || {} )",
+		"why": "a preset the choice does not allow is matched"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "first.hover || ( out.hovered = false );",
+		"replace": "void first;",
+		"why": "an instance with no hover read counts as hovered"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "out.agree = out.agree && list.every( ( i ) => sig( i ) === sig( list[ 0 ] ) );",
+		"replace": "out.agree = true;",
+		"why": "instances are always taken to agree"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "out.states[ width ] = { looks: { [ id ]: changed ? [ { states: [ 'hover' ], declared: {}, rendered: first.hover } ] : [] } };",
+		"replace": "out.states[ width ] = { looks: { [ id ]: [] } };",
+		"why": "the hovered look is never given to the matcher"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "entry.misses = presetMisses( { presets: held, reads: pr, id, snapshot } );",
+		"replace": "entry.misses = {};",
+		"why": "a refusal does not say why"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "if ( ! WIDTHS.some( ( w ) => ( instances[ w ] || [] ).length ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a button the draft does not draw is processed"
+	}
+]

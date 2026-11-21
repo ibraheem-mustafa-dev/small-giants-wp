@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/part-look-hover.mjs",
+		"find": "Number( i ) + 1 })",
+		"replace": "Number( i ) })",
+		"why": "an instance key selects the element before it"
+	},
+	{
+		"file": "lib/part-look-hover.mjs",
+		"find": "steps.length && steps.every( Boolean )",
+		"replace": "steps.length",
+		"why": "a key that is not tag:index steps throws instead of giving no selector"
+	},
+	{
+		"file": "lib/part-look-hover.mjs",
+		"find": "rest && ( instance.styles.transform = rest.transform );",
+		"replace": "void rest;",
+		"why": "the resting transform is not kept"
+	},
+	{
+		"file": "lib/part-look-hover.mjs",
+		"find": "hovered && ( instance.hover = hovered );",
+		"replace": "void hovered;",
+		"why": "the hovered look is not kept"
+	}
+]
