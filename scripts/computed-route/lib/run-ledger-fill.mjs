@@ -2,7 +2,8 @@
 // outputs from the run's own records. Pure.
 // From the records Fill already keeps (fill-report.json): each write (`written`, the setting and value; a pass's custom CSS as
 // one `custom-css` row per declaration of its rule), each unmapped row (`dropped`, its reason), each settled and already-held
-// row (`judged-equal`, the reason and detail that made it equal; a row a later pass answered is `written` by that pass) and
+// row (`judged-equal`, the reason and detail that made it equal; a row a later pass answered is `written` by that pass, or
+// `custom-css` when the residual CSS pass answered it) and
 // each handover (`passed-on` to its owner).
 // Rows no record held before (README "The run ledger", the drops table):
 //   unread     a property the inventory records the target's draft element painting that Fill's read does not hold at any
@@ -16,7 +17,7 @@ import { paintedProperties, runRow } from './run-ledger.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 
 // The pass names whose settled row means the pass answered the row with a write (lib/fill-report.mjs::passSettled).
-export const ANSWERING_PASSES = [ 'logo-size', 'width-ladder', 'dimension', 'motion', 'layer-rotation', 'residual-css' ];
+export const ANSWERING_PASSES = [ 'logo-size', 'width-ladder', 'dimension', 'motion', 'layer-rotation' ];
 // The record sections of the rows Fill's records did not hold before the run ledger.
 export const NEW_SECTIONS = [ 'unread', 'state-ledger', 'state-unrendered', 'box', 'content' ];
 
@@ -68,7 +69,7 @@ export function fillRunRows( { surface, run, nodes, flat, refOf, reads, report, 
 	}
 	for ( const s of report?.settled || [] ) {
 		const answered = ANSWERING_PASSES.includes( s.reason );
-		add( { node: s.node, part: s.slot, property: s.property, state: s.state || 'rest', widths: s.widths || [], draft: s.value ?? null, outcome: answered ? { kind: 'written', reason: `answered by the ${ s.reason } pass` } : { kind: 'judged-equal', baseline: s.detail ?? null, reason: s.reason ?? null } }, 'settled' );
+		add( { node: s.node, part: s.slot, property: s.property, state: s.state || 'rest', widths: s.widths || [], draft: s.value ?? null, outcome: 'residual-css' === s.reason ? { kind: 'custom-css', setting: 'sgsCustomCss', reason: 'answered by the residual-css pass' } : answered ? { kind: 'written', reason: `answered by the ${ s.reason } pass` } : { kind: 'judged-equal', baseline: s.detail ?? null, reason: s.reason ?? null } }, 'settled' );
 	}
 	for ( const h of report?.alreadyHeld || [] ) {
 		add( { node: h.node, part: h.slot, property: h.property, state: h.state || 'rest', widths: h.widths || [], draft: h.value ?? null, outcome: { kind: 'judged-equal', baseline: h.detail ?? null, reason: h.reason ?? null } }, 'alreadyHeld' );

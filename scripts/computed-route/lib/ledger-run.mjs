@@ -27,16 +27,25 @@ export function rowsForDiff( index, d ) {
 	const want = family( d.key );
 	const hit = ( r ) => [ ...family( r.property ) ].some( ( p ) => want.has( p ) );
 	const state = d.state || 'rest';
-	const own = ( index.byNode.get( `${ d.ref }|${ d.slot || '' }|${ state }` ) || [] ).filter( hit );
+	// The part the difference was read on (`paintedOn`, where the block paints the property) is the target's part for its rows.
+	const own = [ ...new Set( [ d.paintedOn, d.slot || '' ].filter( ( x ) => null != x ) ) ].flatMap( ( part ) => ( index.byNode.get( `${ d.ref }|${ part }|${ state }` ) || [] ).filter( hit ) );
 	const skel = ( index.byKey.get( `${ d.draftKey }|${ state }` ) || [] ).filter( ( r ) => 'skeleton' === r.stage && hit( r ) );
 	return [ ...skel, ...own ].sort( ( a, b ) => ORDER.indexOf( a.stage ) - ORDER.indexOf( b.stage ) );
 }
 
 // The ledger stage (lib/ledger-stage.mjs::STAGES) the run rows of a difference name, with the deciding row; null when the run
 // file holds no row that decides it (a box key, or no row at all).
-export function stageFromRun( rows, key ) {
-	if ( BOX.includes( key ) || ! rows.length ) {
+export function stageFromRun( all, key ) {
+	if ( BOX.includes( key ) || ! all.length ) {
 		return null;
+	}
+	// Rows of the difference's own property decide first; a shorthand difference judged by its longhands' rows is lost where
+	// any longhand was lost (a dropped or unread row decides before a written one).
+	const exact = all.filter( ( r ) => 'skeleton' === r.stage || bare( r.property ) === bare( key ) );
+	const rows = exact.some( ( r ) => 'skeleton' !== r.stage ) ? exact : all;
+	const lost = rows === all && rows.find( ( r ) => 'fill' === r.stage && [ 'dropped', 'unread' ].includes( r.outcome?.kind ) && bare( r.property ) !== bare( key ) );
+	if ( lost && ! rows.some( ( r ) => 'skeleton' === r.stage ) ) {
+		return { stage: 'dropped' === lost.outcome.kind ? 'unmapped' : 'not-read-by-fill', row: lost };
 	}
 	const of = ( stage, kinds ) => rows.find( ( r ) => r.stage === stage && kinds.includes( r.outcome?.kind ) );
 	const skel = of( 'skeleton', [ 'dropped', 'absorbed' ] );

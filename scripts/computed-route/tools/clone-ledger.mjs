@@ -245,7 +245,7 @@ for ( const w of widths ) {
 			const on = df.pseudo || df.state ? null : ( painted.paintedOn.get( df.key ) ?? ( painted.boxOn && [ 'w', 'h', 'x', 'y' ].includes( df.key ) ? painted.boxOn : null ) );
 			const liveAt = { selector: null === on ? liveSel( t ) : `${ t.liveRoot } ${ on }`, ...( null === on ? {} : { paintedOn: on } ), box: ( null === on ? l : live[ `${ n }@${ on }` ] )?.snap?.box || l?.box || null, value: df.live, ...( t.top ? { parent: l?.parent || null } : {} ) };
 			const derived = stageOf( { ...df, width: w }, t, { ...ctx, live: liveAt } );
-			const run = runIdx && ! df.pseudo ? stageFromRun( rowsForDiff( runIdx, { ref: t.ref, slot: t.slot, draftKey: t.draftKey, key: df.key, state: df.state } ), df.key ) : null;
+			const run = runIdx && ! df.pseudo ? stageFromRun( rowsForDiff( runIdx, { ref: t.ref, slot: t.slot, paintedOn: on, draftKey: t.draftKey, key: df.key, state: df.state } ), df.key ) : null;
 			const stage = run?.stage ?? derived.stage;
 			const proof = run ? runProof( run.row, liveAt ) : derived.proof;
 			raw.push( { id: t.id, index: t.index, ref: t.ref, block: t.block, slot: t.slot, draftKey: t.draftKey, kind: df.kind, key: df.key, ...( runIdx ? { derivedStage: derived.stage, runStage: run?.stage ?? null } : {} ), ...( df.pseudo ? { pseudo: df.pseudo } : {} ), ...( df.state ? { state: df.state } : {} ), ...( null === on ? {} : { paintedOn: on } ), ...( l?.byPart ? { byPart: true } : {} ), ...( outOfFlow ? { outOfFlow } : {} ), selector: liveAt.selector, ...( liveAt.box ? { box: liveAt.box } : {} ), width: w, draft: df.draft, live: df.live, stage, proof } );

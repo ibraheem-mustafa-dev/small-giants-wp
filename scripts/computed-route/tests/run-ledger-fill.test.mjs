@@ -21,7 +21,7 @@ const report = {
 	writes: [ { node: 'cr-ref-s-0', slot: '', prop: 'color', attr: 'itemColour', after: '#000', widths: [ 1440 ], how: 'single' }, { node: 'cr-ref-s-0', slot: '', prop: '(residual css)', attr: 'sgsCustomCss', how: 'residual-css' } ],
 	residualCss: { rules: [ { node: 'cr-ref-s-0', part: '', state: null, range: 'every width', declarations: [ 'overflow-x: hidden' ], css: '& { overflow-x: hidden; }', reason: 'no setting' } ] },
 	unmapped: [ { node: 'cr-ref-s-0', slot: '.x', property: 'border-top-color', value: 'red', reason: 'no setting', state: null }, { node: 'cr-ref-s-0', slot: '.xy', property: 'outline-color', value: 'red', reason: 'no setting', state: null } ],
-	settled: [ { node: 'cr-ref-s-0', slot: '', property: 'margin-top', value: '0px', widths: [ 375 ], reason: 'equal', detail: 'the default paint' }, { node: 'cr-ref-s-0', slot: '', property: 'width', widths: [ 1440 ], reason: 'width-ladder' } ],
+	settled: [ { node: 'cr-ref-s-0', slot: '', property: 'margin-top', value: '0px', widths: [ 375 ], reason: 'equal', detail: 'the default paint' }, { node: 'cr-ref-s-0', slot: '', property: 'width', widths: [ 1440 ], reason: 'width-ladder' }, { node: 'cr-ref-s-0', slot: '', property: 'overflow-y', widths: [ 1440 ], reason: 'residual-css' } ],
 	alreadyHeld: [ { node: 'cr-ref-s-0', slot: '', property: 'letter-spacing', value: 'normal', reason: 'inherited', detail: 'its parent renders it' } ],
 	handover: [ { owner: 'site-info', kind: 'text', node: 'cr-ref-s-0', slot: '', evidence: { key: 'text', draft: 'Menu', width: 1440 }, reason: 'Site Info' } ],
 };
@@ -37,6 +37,7 @@ test( 'the records Fill keeps become rows keyed by their draft element', () => {
 	assert.equal( find( rows, 'unmapped', 'outline-color' ).draftKey, 'Root/3#0', 'a slot is its own target before a slot it extends' );
 	assert.equal( find( rows, 'settled', 'margin-top' ).outcome.kind, 'judged-equal' );
 	assert.equal( find( rows, 'settled', 'width' ).outcome.kind, 'written', 'a pass that answered the row wrote it' );
+	assert.equal( find( rows, 'settled', 'overflow-y' ).outcome.kind, 'custom-css', 'the residual pass answers with custom CSS' );
 	assert.equal( find( rows, 'alreadyHeld', 'letter-spacing' ).outcome.baseline, 'its parent renders it' );
 	assert.equal( find( rows, 'handover', 'text' ).outcome.into, 'site-info' );
 	assert.ok( rows.every( ( r ) => 'fill' === r.stage && 'qa/fill/s/R/fill-report.json' === r.record.file ) );

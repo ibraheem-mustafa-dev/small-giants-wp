@@ -11,5 +11,6 @@
 	{"file": "lib/run-ledger-fill.mjs", "find": "\t\tadd( { node: h.node, part: h.slot, property: h.evidence?.key || h.kind || 'content',", "replace": "\t\tfalse && add( { node: h.node, part: h.slot, property: h.evidence?.key || h.kind || 'content',", "why": "handovers are rows"},
 	{"file": "lib/run-ledger-fill.mjs", "find": "const keyOf = ( index, node, slot ) => ( index.byPart.get( `${ node }|${ slot || '' }` ) ??", "replace": "const keyOf = ( index, node, slot ) => ( undefined ??", "why": "a record row's draft element is its target's"},
 	{"file": "lib/fill-state.mjs", "find": "\t\t\trec.targets.forEach( ( t ) => silent( rec, t, `${ rec.name } has no calibration, so no state setting is resolved` ) );", "replace": "", "why": "a block with no calibration names its dropped looks"},
-	{"file": "lib/fill-state.mjs", "find": "\t\t\t\tsilent( rec, target, `\"${ target.slot }\" is no calibrated path of ${ rec.name }, so its state looks are not resolved` );", "replace": "", "why": "an uncalibrated part names its dropped looks"}
+	{"file": "lib/fill-state.mjs", "find": "\t\t\t\tsilent( rec, target, `\"${ target.slot }\" is no calibrated path of ${ rec.name }, so its state looks are not resolved` );", "replace": "", "why": "an uncalibrated part names its dropped looks"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "outcome: 'residual-css' === s.reason ?", "replace": "outcome: false ?", "why": "the residual pass answers with custom CSS"}
 ]

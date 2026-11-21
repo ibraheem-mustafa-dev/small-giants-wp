@@ -1,11 +1,14 @@
 [
-	{"file": "lib/ledger-run.mjs", "find": "\tif ( BOX.includes( key ) || ! rows.length ) {", "replace": "\tif ( ! rows.length ) {", "why": "a box key is judged by the comparison"},
+	{"file": "lib/ledger-run.mjs", "find": "\tif ( BOX.includes( key ) || ! all.length ) {", "replace": "\tif ( ! all.length ) {", "why": "a box key is judged by the comparison"},
 	{"file": "lib/ledger-run.mjs", "find": "\t\treturn { stage: 'absorbed' === skel.outcome.kind ? 'other-block' : 'no-node', row: skel };", "replace": "\t\treturn { stage: 'no-node', row: skel };", "why": "an absorbed element is other-block"},
 	{"file": "lib/ledger-run.mjs", "find": "\t\tif ( lost ) {", "replace": "\t\tif ( false ) {", "why": "a build drop is written-not-built"},
 	{"file": "lib/ledger-run.mjs", "find": "\t\tif ( failed ) {", "replace": "\t\tif ( false ) {", "why": "an apply drop is apply-failed"},
 	{"file": "lib/ledger-run.mjs", "find": "[ 'dropped', 'unmapped' ], [ 'unread', 'not-read-by-fill' ]", "replace": "[ 'unread', 'not-read-by-fill' ]", "why": "a Fill drop is unmapped"},
 	{"file": "lib/ledger-run.mjs", "find": "const family = ( p ) => new Set( [ bare( p ), ...longhandsOf( bare( p ) ) ] );", "replace": "const family = ( p ) => new Set( [ bare( p ) ] );", "why": "a shorthand row matches its longhands"},
 	{"file": "lib/ledger-run.mjs", "find": "\tconst state = d.state || 'rest';", "replace": "\tconst state = 'rest';", "why": "a hover difference takes hover rows"},
-	{"file": "lib/ledger-run.mjs", "find": "\tconst own = ( index.byNode.get( `${ d.ref }|${ d.slot || '' }|${ state }` ) || [] ).filter( hit );", "replace": "\tconst own = ( index.byNode.get( `${ d.ref }|${ d.slot || '' }|${ state }` ) || [] );", "why": "only the difference's property matches"},
-	{"file": "lib/ledger-run.mjs", "find": "\t\t\tout.agree++;", "replace": "\t\t\tout.fromRun--;", "why": "agreements are counted"}
+	{"file": "lib/ledger-run.mjs", "find": "( index.byNode.get( `${ d.ref }|${ part }|${ state }` ) || [] ).filter( hit ) );", "replace": "( index.byNode.get( `${ d.ref }|${ part }|${ state }` ) || [] ) );", "why": "only the difference's property matches"},
+	{"file": "lib/ledger-run.mjs", "find": "\t\t\tout.agree++;", "replace": "\t\t\tout.fromRun--;", "why": "agreements are counted"},
+	{"file": "lib/ledger-run.mjs", "find": "\tif ( lost && ! rows.some( ( r ) => 'skeleton' === r.stage ) ) {", "replace": "\tif ( false ) {", "why": "a lost longhand decides a shorthand difference"},
+	{"file": "lib/ledger-run.mjs", "find": "\tconst rows = exact.some( ( r ) => 'skeleton' !== r.stage ) ? exact : all;", "replace": "\tconst rows = all;", "why": "the difference's own property decides first"},
+	{"file": "lib/ledger-run.mjs", "find": "[ ...new Set( [ d.paintedOn, d.slot || '' ].filter(", "replace": "[ ...new Set( [ d.slot || '' ].filter(", "why": "the painted part's rows are read"}
 ]

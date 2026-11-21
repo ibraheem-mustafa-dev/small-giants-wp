@@ -28,6 +28,12 @@ test( 'MUST FAIL: a shorthand row matches its longhand difference, and a hover r
 	assert.equal( judge( [ r( 'fill', 'dropped', { state: 'hover' } ) ], d( 'color', { state: 'hover' } ) ), 'unmapped' );
 } );
 
+test( 'MUST FAIL: a lost longhand decides a shorthand difference, its own property first, and the painted part is read', () => {
+	assert.equal( judge( [ r( 'fill', 'written', { property: 'transition-delay' } ), r( 'fill', 'dropped', { property: 'transition-property' } ) ], d( 'transition' ) ), 'unmapped' );
+	assert.equal( judge( [ r( 'fill', 'written', { property: 'transition' } ), r( 'fill', 'dropped', { property: 'transition-property' } ) ], d( 'transition' ) ), 'block-render', 'the own property row decides first' );
+	assert.equal( judge( [ r( 'fill', 'written', { part: '.icon' } ) ], d( 'color', { paintedOn: '.icon' } ) ), 'block-render' );
+} );
+
 test( 'negative control: a box key, another state, another part and no row decide nothing', () => {
 	assert.equal( judge( [ r( 'fill', 'passed-on', { property: 'w' } ) ], d( 'w' ) ), null );
 	assert.equal( judge( [ r( 'fill', 'dropped', { state: 'hover' } ) ], d( 'color' ) ), null );
