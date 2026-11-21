@@ -366,6 +366,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"openerNote": {
+			"type": "string",
+			"default": ""
+		},
 		"closeLabel": {
 			"type": "string",
 			"default": "Close",

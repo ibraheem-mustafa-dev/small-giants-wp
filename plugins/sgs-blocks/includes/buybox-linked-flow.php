@@ -43,6 +43,41 @@ require_once __DIR__ . '/helpers-shared-rules.php';
 /** The opener's element as the kit's shared preset rule chains it onto the minted class: Add to Cart's own class, so the rule out-ranks the block's rules for it. */
 const SGS_BUYBOX_FLOW_OPENER_ELEMENT = '.buybox__add-to-cart';
 
+/**
+ * The state guard both buy box buttons' kit rules carry: a hover or focus rule skips a disabled button. The opener wears Add to
+ * Cart's class, so Add to Cart's hover rules reach it too; the opener's own rules print after them with the same guard, so they
+ * weigh the same and the opener's own hover look wins on the opener.
+ */
+const SGS_BUYBOX_BUTTON_STATE_GUARD = ':not([disabled])';
+
+if ( ! function_exists( 'sgs_buybox_add_to_cart_kit_css' ) ) {
+	/**
+	 * Add to Cart's own look as CSS: the built-in button kit's `addToCart` button (block.json supports.sgs.builtinButtons) on
+	 * `$root_sel .buybox__add-to-cart`. Colours (and their hover colours), border, padding, "fit to the text" or full width, type,
+	 * minimum height and shadow each print only when set, so an unset button keeps the stylesheet's own look. The preset stays the
+	 * variant class on the element (`buybox__add-to-cart--{preset}`), so the kit prints the look alone (`preset` false). The hover
+	 * rules skip a disabled button, as the stylesheet's own do, and the shadow's automatic lift follows `addToCartShadowLiftOnHover`.
+	 *
+	 * @param array<string,mixed> $attributes The buybox block attributes.
+	 * @param string              $root_sel   The block instance's selector.
+	 * @return string CSS text ('' when nothing is set).
+	 */
+	function sgs_buybox_add_to_cart_kit_css( array $attributes, string $root_sel ): string {
+		require_once __DIR__ . '/helpers-button-style.php';
+		return sgs_button_kit_css(
+			$attributes,
+			'addToCart',
+			$root_sel . ' .buybox__add-to-cart',
+			array(
+				'preset'      => false,
+				'state_guard' => SGS_BUYBOX_BUTTON_STATE_GUARD,
+				'lift_prefix' => 'addToCart',
+				'block'       => 'sgs/buybox',
+			)
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_buybox_linked_flow_modal_anchor' ) ) {
 	/**
 	 * The HTML anchor the auto-wired full-screen modal is given, derived from
@@ -312,7 +347,15 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_kit_css' ) ) {
 			return '';
 		}
 		require_once __DIR__ . '/helpers-button-style.php';
-		return sgs_button_kit_css( $set, 'flowOpener', $selector, array( 'element' => SGS_BUYBOX_FLOW_OPENER_ELEMENT ) );
+		return sgs_button_kit_css(
+			$set,
+			'flowOpener',
+			$selector,
+			array(
+				'element'     => SGS_BUYBOX_FLOW_OPENER_ELEMENT,
+				'state_guard' => SGS_BUYBOX_BUTTON_STATE_GUARD,
+			)
+		);
 	}
 }
 
@@ -406,7 +449,7 @@ if ( ! function_exists( 'sgs_buybox_flow_opener_html' ) ) {
 		}
 		$look  = 'secondary' === $add_to_cart_look || sgs_buybox_flow_opener_names_preset( $attributes ) ? '' : ' buybox__add-to-cart--secondary';
 		$scope = $own_scope ? sgs_buybox_flow_opener_scope_class( $attributes ) : '';
-		return sgs_buybox_modal_cta_html( $label, 'wp-element-button buybox__add-to-cart' . $look . ' buybox__add-to-cart--flow-opener' . ( '' !== $scope ? ' ' . $scope : '' ) . sgs_buybox_flow_opener_kit_classes( $attributes ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), false );
+		return sgs_buybox_modal_cta_html( $label, 'wp-element-button buybox__add-to-cart' . $look . ' buybox__add-to-cart--flow-opener' . ( '' !== $scope ? ' ' . $scope : '' ) . sgs_buybox_flow_opener_kit_classes( $attributes ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), false, sgs_buybox_linked_flow_note( $flow ) );
 	}
 }
 
@@ -414,7 +457,7 @@ if ( ! function_exists( 'sgs_buybox_simple_keep_flow_html' ) ) {
 	/**
 	 * A simple (non-variable) product with a linked flow and `keepAddToCartWithFlow`
 	 * on: the core fallback exactly as without a flow, with the flow's opener
-	 * beside core's Add to Cart and the flow's modal after it. Returns '' when
+	 * beside core's Add to Cart (after it, or before it with `openerBeforeAddToCart`) and the flow's modal after them. Returns '' when
 	 * the product has no resolvable flow, or cannot be bought (not purchasable or
 	 * out of stock: core shows no Add to Cart then, and the opener's stock gate is
 	 * inert outside the Interactivity context), so the caller keeps its core fallback.
@@ -433,9 +476,13 @@ if ( ! function_exists( 'sgs_buybox_simple_keep_flow_html' ) ) {
 		ob_start();
 		echo do_blocks( $parts['head'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
 		echo sgs_buybox_flow_opener_style_tag( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the CSS is built from sanitised values and stripped of tags.
+		// openerBeforeAddToCart puts the opener before core's Add to Cart, in the markup as on screen.
+		$opener = sgs_buybox_flow_opener_html( $flow, '', $attributes, true );
+		$first  = ! empty( $attributes['openerBeforeAddToCart'] );
 		echo '<div class="sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow">';
+		echo $first ? $opener : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
 		echo do_blocks( $parts['cart'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core block output.
-		echo sgs_buybox_flow_opener_html( $flow, '', $attributes, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+		echo $first ? '' : $opener; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
 		echo '</div>';
 		sgs_buybox_render_linked_flow_modal( $flow );
 		return (string) ob_get_clean();
@@ -467,9 +514,27 @@ if ( ! function_exists( 'sgs_buybox_simple_linked_flow_html' ) ) {
 		}
 		$scope = sgs_buybox_flow_opener_scope_class( $attributes );
 		echo sgs_buybox_flow_opener_style_tag( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the CSS is built from sanitised values and stripped of tags.
-		echo sgs_buybox_modal_cta_html( '' !== $label ? $label : __( 'Add to Cart', 'sgs-blocks' ), 'wp-element-button buybox__add-to-cart' . sgs_buybox_flow_opener_cta_classes( $attributes ) . ( '' !== $scope ? ' ' . $scope : '' ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+		echo sgs_buybox_modal_cta_html( '' !== $label ? $label : __( 'Add to Cart', 'sgs-blocks' ), 'wp-element-button buybox__add-to-cart' . sgs_buybox_flow_opener_cta_classes( $attributes ) . ( '' !== $scope ? ' ' . $scope : '' ), false, '', sgs_buybox_linked_flow_modal_anchor( $flow->post_name ), true, sgs_buybox_linked_flow_note( $flow ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
 		sgs_buybox_render_linked_flow_modal( $flow );
 		return (string) ob_get_clean();
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_linked_flow_note' ) ) {
+	/**
+	 * The saved flow's own note for its opener (its root block's `openerNote`), a second line after the opener's words, e.g.
+	 * "from +£59"; '' when the flow sets none.
+	 *
+	 * @param \WP_Post $flow The linked `sgs_choice_flow` post.
+	 * @return string
+	 */
+	function sgs_buybox_linked_flow_note( \WP_Post $flow ): string {
+		foreach ( parse_blocks( $flow->post_content ) as $block ) {
+			if ( 'sgs/choice-flow' === ( $block['blockName'] ?? '' ) ) {
+				return sanitize_text_field( (string) ( $block['attrs']['openerNote'] ?? '' ) );
+			}
+		}
+		return '';
 	}
 }
 

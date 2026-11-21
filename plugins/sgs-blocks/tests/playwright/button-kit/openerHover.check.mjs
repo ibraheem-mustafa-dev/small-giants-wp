@@ -8,6 +8,8 @@
 //   2. A preset chosen: it paints at rest, its hover colours show on hover and on keyboard focus, and Add to Cart is untouched.
 //   3. "Fit to the text": the opener is narrower than the column; Add to Cart still fills it.
 //   4. A pressed opener takes the preset's pressed look, not Add to Cart's.
+//   5. Add to Cart and the opener each with their own hover fill (a draft's solid opener beside an outlined Add to Cart): each
+//      button shows its own on hover, though Add to Cart's hover rule also reaches the opener through the class it wears.
 //
 // Run: (from plugins/sgs-blocks)  node tests/playwright/button-kit/openerHover.check.mjs
 import { createRequire } from 'module';
@@ -112,6 +114,18 @@ try {
 	const pressed = await read(p, '#op');
 	await p.mouse.up();
 	check(pressed.transform !== 'none', `a pressed opener takes the preset's pressed look (${pressed.transform})`);
+
+	// 5. Both buttons with their own hover fills.
+	await p.emulateMedia({ reducedMotion: 'reduce' });
+	await p.mouse.move(0, 0);
+	await p.setContent(page(kit({ addToCartColourBackground: '#ffffff', addToCartColourBackgroundHover: '#f3f0eb', flowOpenerColourBackground: '#141414', flowOpenerColourBackgroundHover: '#2a2a2a', flowOpenerColourText: '#faf8f5', flowOpenerColourTextHover: '#faf8f5' }), ''));
+	await p.hover('#op');
+	const opHover = await read(p, '#op');
+	await p.mouse.move(0, 0);
+	await p.hover('#atc');
+	const atcHover = await read(p, '#atc');
+	check(opHover.bg === 'rgb(42, 42, 42)' && opHover.color === 'rgb(250, 248, 245)', `the opener shows its own hover fill, not Add to Cart's (${opHover.bg} / ${opHover.color})`);
+	check(atcHover.bg === 'rgb(243, 240, 235)', `Add to Cart shows its own hover fill (${atcHover.bg})`);
 } finally {
 	await browser.close();
 }

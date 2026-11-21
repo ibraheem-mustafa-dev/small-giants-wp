@@ -18,6 +18,14 @@ describe( 'cartFormMock keeps the opener under the same conditions as render.php
 		expect( shows( { keepAddToCartWithFlow: true, buyboxLayout: 'configurator' } ) ).toBe( true );
 	} );
 
+	it( 'draws the opener before Add to Cart when openerBeforeAddToCart is on, as render.php prints it', () => {
+		const order = ( attributes ) =>
+			cartFormMock( { attributes: { keepAddToCartWithFlow: true, ...attributes }, cartVariant: '', cartStyle: {} } ).props.children.map( ( c ) => c.props.className );
+		expect( order( { openerBeforeAddToCart: true } ) ).toEqual( [ 'buybox__cart-form buybox__cart-form--modal', 'buybox__cart-form' ] );
+		expect( order( {} ) ).toEqual( [ 'buybox__cart-form', 'buybox__cart-form buybox__cart-form--modal' ] );
+		expect( order( { openerBeforeAddToCart: false } ) ).toEqual( [ 'buybox__cart-form', 'buybox__cart-form buybox__cart-form--modal' ] );
+	} );
+
 	it( 'shows no opener when the setting is off or absent', () => {
 		expect( shows( {} ) ).toBe( false );
 		expect( shows( { keepAddToCartWithFlow: false } ) ).toBe( false );

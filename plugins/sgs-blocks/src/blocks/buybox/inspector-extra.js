@@ -379,6 +379,13 @@ export function getBuyboxExtraColourRows( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 		textRow( {
+			key: 'opener-note',
+			label: __( 'Flow button note', 'sgs-blocks' ),
+			attrs: { base: 'openerNoteColour' },
+			attributes,
+			setAttributes,
+		} ),
+		textRow( {
 			key: 'rrp-pill-text',
 			label: __( 'RRP pill text', 'sgs-blocks' ),
 			attrs: { base: 'rrpPillTextColour' },

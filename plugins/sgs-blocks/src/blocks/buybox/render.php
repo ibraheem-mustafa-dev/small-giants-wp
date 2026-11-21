@@ -571,6 +571,8 @@ $add_to_cart_opens_modal = $buybox_linked_flow_wire['opens_modal'];
 $buybox_linked_flow_post = $buybox_linked_flow_wire['flow'];
 $add_to_cart_label       = '' !== $buybox_linked_flow_wire['label'] ? $buybox_linked_flow_wire['label'] : $add_to_cart_label;
 $buybox_keep_flow        = $buybox_linked_flow_wire['keep'];
+// openerBeforeAddToCart: the kept wrapper prints the flow's opener before the form instead of after it.
+$buybox_opener_first     = $buybox_keep_flow && ! empty( $attributes['openerBeforeAddToCart'] );
 
 // Add-to-cart button style preset + optional price display.
 // sgs_buybox_add_to_cart_class() allowlists to '' (today's look) or
@@ -871,23 +873,13 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 // sgs_typography_css_rule() emits every set property for the given prefix
 // unconditionally, so line-height needed no separate call.
 
-// The Add to Cart button's look: the built-in button kit's `addToCart` button (block.json supports.sgs.builtinButtons), printed
-// through the one shared emitter. Colours (and their hover colours), border, padding, "fit to the text" or full width, type,
-// minimum height and shadow each print only when set, so an unset button keeps the stylesheet's own look. The preset stays
-// the variant class on the element (`buybox__add-to-cart--{preset}`, style.css and includes/helpers-button-preset-names.php), so
-// the kit prints the look alone (`preset` false). The hover rules skip a disabled button, as the stylesheet's own do, and the
-// shadow's automatic lift follows `addToCartShadowLiftOnHover`.
-$sgs_bb_add_to_cart_css = sgs_button_kit_css(
-	$attributes,
-	'addToCart',
-	$root_sel . ' .buybox__add-to-cart',
-	array(
-		'preset'      => false,
-		'state_guard' => ':not([disabled])',
-		'lift_prefix' => 'addToCart',
-		'block'       => 'sgs/buybox',
-	)
-);
+// The Add to Cart button's look: the built-in button kit's `addToCart` button (includes/buybox-linked-flow.php::sgs_buybox_add_to_cart_kit_css).
+$sgs_bb_add_to_cart_css = sgs_buybox_add_to_cart_kit_css( $attributes, $root_sel );
+// The flow opener's note colour (openerNoteColour); the note prints only where the linked flow sets one.
+$sgs_bb_opener_note_colour = sgs_colour_value( (string) ( $attributes['openerNoteColour'] ?? '' ) );
+if ( '' !== $sgs_bb_opener_note_colour ) {
+	$scoped_css[] = $root_sel . ' .buybox__add-to-cart-note{color:' . $sgs_bb_opener_note_colour . ';}';
+}
 if ( '' !== $sgs_bb_add_to_cart_css ) {
 	$scoped_css[] = $sgs_bb_add_to_cart_css;
 }
@@ -1610,7 +1602,10 @@ if ( $buybox_side_cart ) {
 			$add_to_cart_button_classes,
 			$add_to_cart_show_price,
 			$price_display,
-			$add_to_cart_modal_id
+			$add_to_cart_modal_id,
+			true,
+			// The flow's note where the flow replaces Add to Cart (its words already come from the flow, above); none in an explicit popup mode.
+			$buybox_linked_flow_post instanceof \WP_Post && ! $buybox_keep_flow ? sgs_buybox_linked_flow_note( $buybox_linked_flow_post ) : ''
 		);
 		?>
 	<?php else : ?>
@@ -1623,9 +1618,13 @@ if ( $buybox_side_cart ) {
 		// form/render.php:356,369,377, mirrors the notify-me wrapper 15 lines above,
 		// and leaves the notify-me form as the offered action instead of a dead
 		// control.
-		// keepAddToCartWithFlow: the form and the flow's opener sit in one wrapper, the opener after the form.
+		// keepAddToCartWithFlow: the form and the flow's opener sit in one wrapper, the opener after the form, or before it with
+		// openerBeforeAddToCart.
 		if ( $buybox_keep_flow ) {
 			echo '<div class="sgs-buybox__cart-actions sgs-buybox__cart-actions--with-flow">';
+			if ( $buybox_opener_first ) {
+				echo sgs_buybox_flow_opener_html( $buybox_linked_flow_post, $add_to_cart_style_class, $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+			}
 		}
 		?>
 	<form
@@ -1674,7 +1673,7 @@ if ( $buybox_side_cart ) {
 	</form>
 <?php // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect -- flush left: indentation before a tag prints.
 		if ( $buybox_keep_flow ) {
-			echo sgs_buybox_flow_opener_html( $buybox_linked_flow_post, $add_to_cart_style_class, $attributes ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+			echo ( $buybox_opener_first ? '' : sgs_buybox_flow_opener_html( $buybox_linked_flow_post, $add_to_cart_style_class, $attributes ) ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
 		}
 		$buybox_express_on_interaction = 'interaction' === ( $attributes['expressLoad'] ?? 'page' );
 		sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal, $buybox_express_on_interaction );

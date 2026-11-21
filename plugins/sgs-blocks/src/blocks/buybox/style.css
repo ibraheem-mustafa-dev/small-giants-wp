@@ -231,6 +231,14 @@
 	flex-shrink: 0;
 }
 
+/* The flow opener's note (the linked flow's openerNote, e.g. "from +£59"), after its words, as sgs/button's note: the button's
+   colour unless openerNoteColour sets one, no capitals and no extra letter spacing. A simple product's opener sits outside
+   .sgs-buybox, so the rule is not scoped to it. */
+.buybox__add-to-cart-note {
+	letter-spacing: 0;
+	text-transform: none;
+}
+
 /* ── Add-to-cart style presets (addToCartStyle) ─────────
    Self-contained: reads the SAME --wp--custom--button-presets--{style}--*
    design tokens sgs/button's own .sgs-button--{style} rules do (Spec 32

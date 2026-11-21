@@ -1295,6 +1295,16 @@
 			"default": false,
 			"description": "Off (default): a product with a linked choice flow gets the flow's opener in place of Add to Cart. On: Add to Cart (and the express Buy now buttons) stay as they are and the flow's opener shows beside them as a second button, for a flow some buyers skip. Has no effect without a linked flow, in the guided layout, or when the button action is set to open a popup (Spec 43 FR-43-25)."
 		},
+		"openerNoteColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the flow opener's note (the linked flow's openerNote, e.g. \"from +£59\"). Empty: the note takes the opener's own text colour."
+		},
+		"openerBeforeAddToCart": {
+			"type": "boolean",
+			"default": false,
+			"description": "With keepAddToCartWithFlow on: the flow's opener comes before Add to Cart instead of after it, in the page's markup as well as on screen, so keyboard and reading order match what is seen. Off (default): the opener follows Add to Cart. Does nothing where the keep setting does nothing (Spec 43 FR-43-25)."
+		},
 		"buyboxProductId": {
 			"type": "integer",
 			"default": 0,

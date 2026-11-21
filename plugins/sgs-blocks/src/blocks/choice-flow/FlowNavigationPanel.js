@@ -24,7 +24,7 @@ import SgsFreeTextField from '../../components/SgsFreeTextField';
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function FlowNavigationPanel( { attributes, setAttributes } ) {
-	const { advanceMode, continueLabel, openerLabel, flexWrap } = attributes;
+	const { advanceMode, continueLabel, openerLabel, openerNote, flexWrap } = attributes;
 
 	return (
 		<InspectorControls>
@@ -57,6 +57,14 @@ export default function FlowNavigationPanel( { attributes, setAttributes } ) {
 					value={ openerLabel }
 					onChange={ ( val ) => setAttributes( { openerLabel: val } ) }
 					help={ __( 'Shown on the product page button when a product links this flow, e.g. "Choose your flavours". Empty uses the buybox label.', 'sgs-blocks' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+				<TextControl
+					label={ __( 'Product page button note', 'sgs-blocks' ) }
+					value={ openerNote }
+					onChange={ ( val ) => setAttributes( { openerNote: val } ) }
+					help={ __( 'A second line on the product page button, after its label, e.g. "from +£59". Empty shows none. Its colour is set on the buy box.', 'sgs-blocks' ) }
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
 				/>

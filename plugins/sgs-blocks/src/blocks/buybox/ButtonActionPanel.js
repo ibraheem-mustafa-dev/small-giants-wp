@@ -13,7 +13,12 @@ import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/p
  * it in with one import + one JSX line (see the buybox report).
  */
 export default function ButtonActionPanel( { attributes, setAttributes } ) {
-	const { addToCartAction, addToCartModalId, keepAddToCartWithFlow } = attributes;
+	const {
+		addToCartAction,
+		addToCartModalId,
+		keepAddToCartWithFlow,
+		openerBeforeAddToCart,
+	} = attributes;
 
 	return (
 		<InspectorControls>
@@ -56,6 +61,20 @@ export default function ButtonActionPanel( { attributes, setAttributes } ) {
 					) }
 					__nextHasNoMarginBottom
 				/>
+				{ keepAddToCartWithFlow && (
+					<ToggleControl
+						label={ __( 'Flow button first', 'sgs-blocks' ) }
+						checked={ !! openerBeforeAddToCart }
+						onChange={ ( val ) =>
+							setAttributes( { openerBeforeAddToCart: val } )
+						}
+						help={ __(
+							'Off: the flow button follows Add to Cart. On: it comes before Add to Cart, for screen readers and keyboards too.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+					/>
+				) }
 			</PanelBody>
 		</InspectorControls>
 	);

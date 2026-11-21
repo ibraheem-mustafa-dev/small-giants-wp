@@ -1,8 +1,8 @@
 <?php
 /**
- * Prints the CSS the buy box prints for its flow opener's kit settings, for the browser check (button-kit/openerHover.check.mjs).
+ * Prints the CSS the buy box prints for Add to Cart's and its flow opener's kit settings, for the browser check (button-kit/openerHover.check.mjs).
  *
- * Usage: php button-kit-opener-css.php '<flowOpener* attributes json>' '<global custom settings json>'
+ * Usage: php button-kit-opener-css.php '<addToCart* and flowOpener* attributes json>' '<global custom settings json>'
  * Output: {"css": "...", "classes": "..."} where `classes` is what the opener carries beside `buybox__add-to-cart--flow-opener`.
  */
 
@@ -20,7 +20,8 @@ $attributes                        = json_decode( $argv[1] ?? '{}', true );
 
 echo wp_json_encode( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	array(
-		'css'     => sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( '.sgs-bb-X.wp-block-sgs-buybox ' ) ),
+		// Add to Cart's rules, then the opener's: the order render.php prints them in.
+		'css'     => sgs_buybox_add_to_cart_kit_css( $attributes, '.sgs-bb-X.wp-block-sgs-buybox' ) . sgs_buybox_flow_opener_kit_css( $attributes, sgs_buybox_flow_opener_selector( '.sgs-bb-X.wp-block-sgs-buybox ' ) ),
 		'classes' => sgs_buybox_flow_opener_kit_classes( $attributes ),
 	)
 );

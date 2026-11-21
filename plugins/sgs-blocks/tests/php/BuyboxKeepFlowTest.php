@@ -82,6 +82,22 @@ final class BuyboxKeepFlowTest extends TestCase {
 		$this->assertStringNotContainsString( ' style="', substr( $html, (int) strpos( $html, 'sgs-buybox__cart-actions--with-flow' ), $close - (int) strpos( $html, 'sgs-buybox__cart-actions--with-flow' ) ), 'no inline style in the new markup' );
 	}
 
+	public function test_opener_first_puts_the_opener_before_add_to_cart_in_the_markup_on_a_variable_product(): void {
+		$html   = self::render( array( 'keepAddToCartWithFlow' => true, 'openerBeforeAddToCart' => true ) );
+		$form   = strpos( $html, 'data-wp-on--submit="actions.addToCart"' );
+		$opener = strpos( $html, 'data-sgs-modal-open="sgs-flow-lens-flow"' );
+		$this->assertNotFalse( $form );
+		$this->assertTrue( $opener < $form, 'the opener comes first, so keyboard and reading order match what is seen' );
+		$this->assertSame( 1, substr_count( $html, 'data-sgs-modal-open="sgs-flow-lens-flow"' ), 'one opener' );
+		$this->assertMatchesRegularExpression( '#sgs-buybox__cart-actions--with-flow">\s*<div class="buybox__cart-form buybox__cart-form--modal"[^>]*><button type="button" class="wp-element-button buybox__add-to-cart buybox__add-to-cart--secondary buybox__add-to-cart--flow-opener"[^>]*>.*?</button></div>\s*<form.*</form>\s*</div>#s', $html );
+	}
+
+	public function test_opener_first_does_nothing_without_the_keep_setting_and_off_is_byte_identical(): void {
+		$this->assertSame( self::render( array() ), self::render( array( 'openerBeforeAddToCart' => true ) ), 'no kept Add to Cart: nothing to order' );
+		$this->assertSame( self::render( array( 'keepAddToCartWithFlow' => true ) ), self::render( array( 'keepAddToCartWithFlow' => true, 'openerBeforeAddToCart' => false ) ) );
+		$this->assertSame( self::render( array( 'keepAddToCartWithFlow' => true ), true, self::SIMPLE ), self::render( array( 'keepAddToCartWithFlow' => true, 'openerBeforeAddToCart' => false ), true, self::SIMPLE ) );
+	}
+
 	public function test_on_without_a_linked_flow_renders_as_without_the_setting(): void {
 		$this->assertSame( self::render( array(), false ), self::render( array( 'keepAddToCartWithFlow' => true ), false ) );
 	}

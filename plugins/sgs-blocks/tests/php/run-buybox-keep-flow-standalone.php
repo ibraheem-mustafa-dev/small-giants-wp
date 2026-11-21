@@ -77,9 +77,13 @@ namespace {
 		return '<div class="sgs-modal" id="' . $b['attrs']['anchor'] . '"></div>';
 	}
 	function parse_blocks( $content ) {
-		return preg_match( '/openerLabel="([^"]*)"/', (string) $content, $m )
-			? array( array( 'blockName' => 'sgs/choice-flow', 'attrs' => array( 'openerLabel' => $m[1] ) ) )
-			: array( array( 'blockName' => 'sgs/choice-flow', 'attrs' => array() ) );
+		$attrs = array();
+		foreach ( array( 'openerLabel', 'openerNote' ) as $key ) {
+			if ( preg_match( '/' . $key . '="([^"]*)"/', (string) $content, $m ) ) {
+				$attrs[ $key ] = $m[1];
+			}
+		}
+		return array( array( 'blockName' => 'sgs/choice-flow', 'attrs' => $attrs ) );
 	}
 
 	require dirname( __DIR__, 2 ) . '/includes/buybox-modal-cta.php';
@@ -135,6 +139,20 @@ namespace {
 	$ok( str_contains( sgs_buybox_flow_opener_html( $plain, '' ), '>Choose your options</span>' ), 'no openerLabel: the translatable default wording' );
 	$ok( str_contains( sgs_buybox_flow_opener_html( $flow, 'secondary' ), 'class="wp-element-button buybox__add-to-cart buybox__add-to-cart--flow-opener"' ), 'Add to Cart already secondary: the opener takes the plain base look' );
 
+	// 5b. The flow's openerNote: a second line inside the opener, after its words, only where the flow sets one.
+	$noted               = new WP_Post();
+	$noted->post_name    = 'lens-flow';
+	$noted->post_content = 'openerLabel="Add my prescription" openerNote="from +£59"';
+	$with_note           = sgs_buybox_flow_opener_html( $noted, '' );
+	$ok( str_contains( $with_note, '<span class="buybox__cart-label">Add my prescription</span><span class="buybox__add-to-cart-note">from +£59</span></button>' ), 'opener with a flow note: the note follows the words inside the button' );
+	$ok( 'from +£59' === sgs_buybox_linked_flow_note( $noted ) && '' === sgs_buybox_linked_flow_note( $flow ), 'the note is the flow root\'s openerNote, else empty' );
+	$ok( ! str_contains( $html, 'buybox__add-to-cart-note' ), 'no note on the flow: the opener is exactly as before' );
+	$ok( sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm', false ) === sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm', false, '' ), 'an empty note prints nothing' );
+	$evil = sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm', false, '<b>x</b>"' );
+	$ok( str_contains( $evil, '&lt;b&gt;x&lt;/b&gt;&quot;' ) && ! str_contains( $evil, '<b>' ), 'the note is escaped as text' );
+	$priced = sgs_buybox_modal_cta_html( 'Go', 'a b', true, '£10', 'm', false, 'n' );
+	$ok( str_contains( $priced, '<span class="buybox__cart-label">Go</span><span class="buybox__add-to-cart-note">n</span></span><span class="buybox__cart-price"' ), 'with the price shown, the note sits after the words and before the price' );
+
 	// 6. The modal helper with its default is unchanged (icon on).
 	$default = sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm' );
 	$ok( str_contains( $default, '<svg class="buybox__cart-icon"' ) && str_contains( sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm', true ), '<svg' ) && ! str_contains( sgs_buybox_modal_cta_html( 'Go', 'a b', false, '', 'm', false ), '<svg' ), 'modal helper: icon on by default, off only when asked' );
@@ -148,6 +166,11 @@ namespace {
 	$ok( '' === sgs_buybox_simple_keep_flow_html( 99, $buyable ), 'simple + on + no flow: empty, the caller keeps its core fallback' );
 	$off = sgs_buybox_simple_linked_flow_html( 52, 'Add to Cart' );
 	$ok( ! str_contains( $off, 'CORE ADD TO CART' ) && ! str_contains( $off, 'with-flow' ) && str_contains( $off, 'Add prescription lenses' ), 'simple + off: the core button is replaced by the opener (unchanged)' );
+
+	// The modal prints once a page (sgs_buybox_render_linked_flow_modal's guard), so these later calls carry none.
+	$first = sgs_buybox_simple_keep_flow_html( 52, $buyable, array( 'openerBeforeAddToCart' => true ) );
+	$ok( false !== strpos( $first, 'data-sgs-modal-open' ) && strpos( $first, 'data-sgs-modal-open' ) < strpos( $first, 'CORE ADD TO CART' ) && 1 === substr_count( $first, 'CORE ADD TO CART' ) && 1 === substr_count( $first, 'data-sgs-modal-open="sgs-flow-lens-flow"' ) && str_contains( $first, 'sgs-buybox__cart-actions--with-flow' ), 'simple + on + openerBeforeAddToCart: the opener before the core button in the wrapper, each once' );
+	$ok( sgs_buybox_simple_keep_flow_html( 52, $buyable ) === sgs_buybox_simple_keep_flow_html( 52, $buyable, array( 'openerBeforeAddToCart' => false ) ), 'simple + on + openerBeforeAddToCart false: byte-identical to the setting absent' );
 
 	// 7b. The keep path's output and the core blocks it asks for are exactly what they were before the markup moved to one place.
 	$head_markup = '<!-- wp:woocommerce/product-image-gallery /--><!-- wp:woocommerce/product-price {"isDescendentOfSingleProductBlock":true} /-->';
