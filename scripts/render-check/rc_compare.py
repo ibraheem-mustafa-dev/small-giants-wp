@@ -176,13 +176,16 @@ def validate_accepted(data: dict) -> list[str]:
 
 
 def accepted_by(d: dict, state: str, width: int, entries: list[dict]) -> dict | None:
-    """The first entry that covers one difference: its state pattern, and its width and element when it names them."""
+    """The first entry that covers one difference: its state pattern, and its width, element and where (a part of the
+    difference's `rest`, `hover on ...` or `focus on ...`) when it names them."""
     for e in entries:
         if not fnmatch.fnmatch(state, e["state"]):
             continue
         if "width" in e and int(e["width"]) != width:
             continue
         if e.get("element") and e["element"] not in d["el"]:
+            continue
+        if e.get("where") and e["where"] not in str(d.get("where", "")):
             continue
         return e
     return None

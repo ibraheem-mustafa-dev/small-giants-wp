@@ -27,7 +27,7 @@ Exit codes: 0 every state reached and none differs; 1 a difference nobody accept
 { "entries": [ { "state": "account-saved-items", "width": 1440, "element": "sgs-wishlist-panel", "commit": "abc1234", "pair": "E:/sgs-tmp/render-check/runs/.../pairs/account-saved-items@1440-0.png", "note": "Bean saw the pair on 2026-11-19" } ] }
 ```
 
-`state` is a pattern (`account-*`); `width` and `element` (a substring of the element key) narrow it. `commit` and `pair` are required: an entry names the change and the pair Bean saw.
+`state` is a pattern (`account-*`); `width`, `element` (a substring of the element key) and `where` (a substring of the difference's state: `rest`, `hover on ...`, `focus on ...`, so `focus` accepts a focus look without accepting the same element at rest) narrow it. `commit` and `pair` are required: an entry names the change and the pair Bean saw.
 
 ## Limits
 

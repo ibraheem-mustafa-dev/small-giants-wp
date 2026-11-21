@@ -1,0 +1,20 @@
+{
+	"entries": [
+		{
+			"state": "*",
+			"element": "buybox__add-to-cart",
+			"where": "focus",
+			"commit": "f28138a61",
+			"pair": "E:/sgs-tmp/render-check/runs/buttons-mamas-repro/pairs/add-to-cart-focus@375-pair.png",
+			"note": "Bean saw the pair on 2026-11-21 and accepted it: the buy box's Add to Cart keeps a shadow under keyboard focus (it lost its resting shadow there before the button kit), the focus system's contract under Mama's ringOnly token"
+		},
+		{
+			"state": "*",
+			"element": "woocommerce-form-login__submit",
+			"where": "focus",
+			"commit": "f28138a61",
+			"pair": "E:/sgs-tmp/render-check/runs/buttons-mamas-repro/pairs/sign-in-focus@375-pair.png",
+			"note": "Bean saw the pair on 2026-11-21 and accepted it: the account's sign-in button keeps its resting shadow under keyboard focus, as Mama's other buttons do"
+		}
+	]
+}

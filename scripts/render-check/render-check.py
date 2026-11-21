@@ -16,7 +16,7 @@ Passes. Hash: every state (states.php, plus `states` in sites/<client>/render-ch
 whose responses all hash the same passes as identical bytes. DOM: each other state at 375, 768, 1440 and the first
 width of every stylesheet band those miss, at rest and under forced hover and focus. A difference counts only when a
 second DOM round, after another restore, shows it again. A counted difference fails unless an entry in
-sites/<client>/render-accepted.<target>.json covers it ({"entries": [{"state", "commit", "pair", optional "width",
+sites/<client>/render-accepted.<target>.json covers it ({"entries": [{"state", "commit", "pair", optional "width", "where",
 "element", "note"}]}).
 
 Exit 0: every state reached, no unaccepted difference. 1: an unaccepted difference. 2: a state not reached on either
