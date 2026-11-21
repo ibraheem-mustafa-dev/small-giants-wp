@@ -6,7 +6,8 @@
  * core's own WP_Styles::do_items(), then checks:
  *   - print order is resolved from dependencies and the real `to_do` list is left untouched;
  *   - a run keeps every handle's file content and inline additions in print order, in one block;
- *   - a stylesheet for some media joins the run inside `@media`, its inline additions outside it;
+ *   - a stylesheet for some screen media joins the run inside `@media`, its inline additions outside it; a print sheet
+ *     stays a link;
  *   - a media value with `{`, an `@import`, another origin, a missing file and a `</style` sequence each end the run
  *     and print as WordPress would;
  *   - relative `url()` references are rewritten from the file's own folder;
@@ -50,6 +51,7 @@ $files = array(
 	'b.css' => '.b{color:blue}',
 	'm.css' => '.m{color:green}',
 	'n.css' => '.n{color:olive}',
+	'q.css' => '.q{color:gray}',
 	'c.css' => '@import url(x.css);.c{color:teal}',
 	'f.css' => '@charset "UTF-8";.f{color:navy}',
 	'h.css' => '.h{content:"</style>"}',
@@ -72,12 +74,13 @@ $build = static function () use ( $url ): WP_Styles {
 	$s->add( 'm', $url . '/m.css', array(), '1', '(max-width:600px)' );
 	$s->add_data( 'm', 'after', array( '.m-after{}' ) );
 	$s->add( 'n', $url . '/n.css', array(), '1', 'screen{' );
+	$s->add( 'q', $url . '/q.css', array(), '1', 'print' );
 	$s->add( 'c', $url . '/c.css', array(), '1' );
 	$s->add( 'f', wp_make_link_relative( $url . '/f.css' ), array(), '1' );
 	$s->add( 'e', 'https://example.com/e.css', array(), '1' );
 	$s->add( 'g', $url . '/missing.css', array(), '1' );
 	$s->add( 'h', $url . '/h.css', array(), '1' );
-	foreach ( array( 'z', 'i', 'b', 'm', 'n', 'c', 'f', 'e', 'g', 'h' ) as $h ) {
+	foreach ( array( 'z', 'i', 'b', 'm', 'n', 'q', 'c', 'f', 'e', 'g', 'h' ) as $h ) {
 		$s->enqueue( $h );
 	}
 	return $s;
@@ -91,7 +94,7 @@ $print = static function ( WP_Styles $s ): string {
 // Order.
 $s     = $build();
 $order = Css_Delivery::print_order( $s );
-$check( 'print order follows dependencies', array( 'a', 'z', 'i', 'b', 'm', 'n', 'c', 'f', 'e', 'g', 'h' ) === $order, implode( ',', $order ) );
+$check( 'print order follows dependencies', array( 'a', 'z', 'i', 'b', 'm', 'n', 'q', 'c', 'f', 'e', 'g', 'h' ) === $order, implode( ',', $order ) );
 $check( 'real to_do untouched', array() === $s->to_do );
 
 // Runs.
@@ -112,6 +115,8 @@ $check( 'media sheet folded inside its @media, inline additions outside', false 
 .m-after{}" ) && false === strpos( $out, 'm-css' ), $out );
 $check( 'media sheet after b in the run, before f', strpos( $out, '.m{color:green}' ) > $pb && strpos( $out, '.m{color:green}' ) < strpos( $out, '.f{' ) );
 $check( 'unsafe media value stays a link', false !== strpos( $out, 'n-css' ) && false !== strpos( $out, 'n.css' ) );
+$check( 'print sheet stays a link', false !== strpos( $out, 'q.css' ) && false === strpos( $out, '.q{color:gray}' ) );
+$check( 'screen media test', Css_Delivery::screen_media( 'only screen and (max-width: 768px)' ) && Css_Delivery::screen_media( '(max-width:600px)' ) && Css_Delivery::screen_media( 'all and (min-width:1px), screen' ) && ! Css_Delivery::screen_media( 'print' ) && ! Css_Delivery::screen_media( 'screen, print' ) && ! Css_Delivery::screen_media( 'not screen' ) && ! Css_Delivery::screen_media( 'speech' ) );
 $check( '@import sheet stays a link', false !== strpos( $out, 'c-css' ) );
 $check( 'other origin stays a link', false !== strpos( $out, 'example.com/e.css' ) );
 $check( 'missing file stays a link', false !== strpos( $out, 'missing.css' ) );

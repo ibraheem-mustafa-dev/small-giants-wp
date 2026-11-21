@@ -19,8 +19,10 @@
  * inline CSS. A handle for some media only (WooCommerce's `woocommerce-smallscreen`, `only screen and (max-width: 768px)`)
  * joins the run with its file's rules inside `@media <its media>{…}`; its inline additions stay outside, because WordPress
  * prints them for every medium. Such a link sits after the head's inline CSS, so the browser found it late and waited for
- * it before the first paint (Mama's Shop on a throttled phone: requested 1.0 s in, 0.6 s queued, 2026-11-20). A media
- * value holding `{`, `}`, `;`, `<` or `>`, `conditional`, `alt` or `title` data, an RTL variant on an RTL site, an
+ * it before the first paint (Mama's Shop on a throttled phone: requested 1.0 s in, 0.6 s queued, 2026-11-20). Only media a
+ * screen can match joins (`screen`, `all`, or a bare feature query such as `(max-width: 768px)`, `only` allowed): a `print`
+ * or other non-screen sheet, or a `not` query, stays a link, which never holds up the first paint. A media value holding
+ * `{`, `}`, `;`, `<` or `>`, `conditional`, `alt` or `title` data, an RTL variant on an RTL site, an
  * `@import`, a `</style` sequence or a file that cannot be read ends the run, and that handle prints exactly as
  * WordPress would.
  *
@@ -209,7 +211,7 @@ final class Css_Delivery {
 		}
 		$media = \is_string( $obj->args ) ? \trim( $obj->args ) : '';
 		$wrap  = '' !== $media && 'all' !== \strtolower( $media );
-		if ( $wrap && 1 === \preg_match( '/[{};<>]/', $media ) ) {
+		if ( $wrap && ( 1 === \preg_match( '/[{};<>]/', $media ) || ! self::screen_media( $media ) ) ) {
 			return null;
 		}
 		$extra = (array) $obj->extra;
@@ -248,6 +250,26 @@ final class Css_Delivery {
 			'css'  => $css,
 			'file' => $file,
 		);
+	}
+
+	/**
+	 * Whether every query in a stylesheet's media list is one a screen can match: `screen` or `all` (optionally after
+	 * `only`), or a bare feature query such as `(max-width: 768px)`. A `print` or other media type, or a `not` query, is not.
+	 *
+	 * @param string $media The handle's media value.
+	 * @return bool
+	 */
+	public static function screen_media( string $media ): bool {
+		foreach ( \explode( ',', \strtolower( $media ) ) as $query ) {
+			$query = (string) \preg_replace( '/^only\s+/', '', \trim( $query ) );
+			if ( '' === $query || \str_starts_with( $query, '(' ) ) {
+				continue;
+			}
+			if ( 1 !== \preg_match( '/^(screen|all)(\s+and\s|$)/', $query ) ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

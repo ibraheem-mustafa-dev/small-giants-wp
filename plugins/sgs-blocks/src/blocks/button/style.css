@@ -73,7 +73,7 @@
 	white-space: normal;
 	/* Every property a hover or press state paints must be listed. render.php
 	   writes the hover shadow through sgs_shadow_decls() and the pressed
-	   transform and shadow through sgs_button_press_rule(); a list that omits
+	   transform and shadow through sgs_button_press_shared(); a list that omits
 	   one leaves that effect snapping while the rest ease. The duration and
 	   easing come from the preset class (its hover-transition / hover-easing
 	   tokens), then the site-wide `default` variant, then 0.18s and the site

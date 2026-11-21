@@ -29,11 +29,13 @@ final class Sgs_Media_Modernise {
 	 */
 	public static function needs_subsizes( array $meta ): bool {
 		foreach ( (array) ( $meta['sizes'] ?? array() ) as $size ) {
-			// A copy `Sgs_Media_Formats::discard_oversized` kept in the source format (the modern one was larger) is done.
-			if ( ! empty( $size['sgs_source_kept'] ) ) {
+			// A copy `Sgs_Media_Formats::discard_oversized` kept in the source format (the modern one was larger) is done, and
+			// an entry with no MIME type (another plugin's) is not one of WordPress's resized copies.
+			$mime = (string) ( $size['mime-type'] ?? '' );
+			if ( '' === $mime || ! empty( $size['sgs_source_kept'] ) ) {
 				continue;
 			}
-			if ( ! in_array( (string) ( $size['mime-type'] ?? '' ), array( 'image/avif', 'image/webp' ), true ) ) {
+			if ( ! in_array( $mime, array( 'image/avif', 'image/webp' ), true ) ) {
 				return true;
 			}
 		}
@@ -51,7 +53,10 @@ final class Sgs_Media_Modernise {
 		if ( '' === $base ) {
 			return false;
 		}
-		return ( $meta['sizes'][ Sgs_Media_Formats::FULL_COPY ]['source'] ?? '' ) !== $base
+		if ( isset( $meta['sizes'][ Sgs_Media_Formats::FULL_COPY ] ) ) {
+			return true; // Recorded in the size list (before 2026-11-21): moves to its own key.
+		}
+		return ( $meta[ Sgs_Media_Formats::FULL_COPY ]['source'] ?? '' ) !== $base
 			&& ( $meta['sgs_full_copy_checked'] ?? '' ) !== $base;
 	}
 
@@ -143,6 +148,10 @@ final class Sgs_Media_Modernise {
 	 * @return array<string, mixed>|WP_Error The sizes now in the metadata: name => array( mime, bytes ).
 	 */
 	public static function full_copy( int $id ) {
+		$file = get_attached_file( $id );
+		if ( ! is_string( $file ) || ! file_exists( $file ) ) {
+			return new WP_Error( 'sgs_media_missing_file', 'The attached file is missing on disk.' );
+		}
 		$meta = wp_get_attachment_metadata( $id );
 		if ( ! is_array( $meta ) ) {
 			return new WP_Error( 'sgs_media_no_meta', 'The attachment has no image metadata.' );
@@ -198,6 +207,10 @@ final class Sgs_Media_Modernise {
 				$out['empty'][]   = $path;
 				$out['missing'][] = (string) $name;
 			}
+		}
+		$copy = $meta[ Sgs_Media_Formats::FULL_COPY ] ?? null;
+		if ( is_array( $copy ) && ( empty( $copy['file'] ) || ! file_exists( $dir . wp_basename( (string) $copy['file'] ) ) ) ) {
+			$out['missing'][] = Sgs_Media_Formats::FULL_COPY;
 		}
 		// The glob also finds another upload's copies when its name starts with this one's ("photo-2-300x200.jpg" for
 		// "photo.jpg"), so a file counts only when nothing but "<width>x<height>.<ext>" follows the name.

@@ -7,10 +7,11 @@
  * filters. The original upload, the attachment's main (full-size) file and the big-image `-scaled` copy keep their format, because
  * social previews, email clients and outside tools do not accept AVIF, and every address saved outside the site keeps working.
  *
- * The main file also gets a copy in the modern format at its own size (`add_full_copy`), held in the metadata as the size
- * `sgs-full-modern` with the name of the file it was made from, and kept only when it is smaller. Core's srcset ends with the
- * main file at its own width, so `srcset_full_copy` points that entry at the copy: a phone that wants the widest candidate
- * downloads the AVIF, not the JPEG. The copy is a size, so deleting the attachment deletes it. A converted copy that is larger than
+ * The main file also gets a copy in the modern format at its own size (`add_full_copy`), held under its own metadata key
+ * `sgs-full-modern` with the name of the file it was made from, and kept only when it is smaller. It is not in `sizes`, so
+ * no size lookup (`image_get_intermediate_size`, used by social-preview and email plugins) is handed the AVIF. Core's srcset
+ * ends with the main file at its own width, so `srcset_full_copy` points that entry at the copy: a phone that wants the
+ * widest candidate downloads the AVIF, not the JPEG. `delete_full_copy` deletes it with the attachment. A converted copy that is larger than
  * its source is replaced by a copy in the source format: a JPEG source is compared with the original file's bytes; a PNG
  * source is compared with the same size encoded as PNG (growth is common for flat graphics).
  *
@@ -36,7 +37,7 @@ final class Sgs_Media_Formats {
 	private const WEBP_QUALITY = 82;
 	private const SOURCES      = array( 'image/jpeg', 'image/png' );
 
-	/** The metadata size that holds the main file's copy in the modern format. */
+	/** The metadata key that holds the main file's copy in the modern format (outside `sizes`, so no size lookup returns it). */
 	public const FULL_COPY = 'sgs-full-modern';
 
 	/**
@@ -62,6 +63,7 @@ final class Sgs_Media_Formats {
 		add_filter( 'wp_generate_attachment_metadata', array( self::class, 'discard_oversized' ), 20, 2 );
 		add_filter( 'wp_generate_attachment_metadata', array( self::class, 'add_full_copy' ), 30, 2 );
 		add_filter( 'wp_calculate_image_srcset', array( self::class, 'srcset_full_copy' ), 10, 5 );
+		add_action( 'delete_attachment', array( self::class, 'delete_full_copy' ) );
 		add_filter( 'wp_image_editors', array( self::class, 'editors' ), 99 );
 	}
 
@@ -285,31 +287,42 @@ final class Sgs_Media_Formats {
 			return $metadata;
 		}
 		$base = wp_basename( $main );
-		if ( ( $metadata['sizes'][ self::FULL_COPY ]['source'] ?? '' ) === $base ) {
-			return $metadata;
+		$dir  = trailingslashit( dirname( $main ) );
+		// A copy recorded in the size list (before 2026-11-21) moves to its own key.
+		if ( isset( $metadata['sizes'][ self::FULL_COPY ] ) ) {
+			$metadata[ self::FULL_COPY ] = $metadata[ self::FULL_COPY ] ?? $metadata['sizes'][ self::FULL_COPY ];
+			unset( $metadata['sizes'][ self::FULL_COPY ] );
 		}
-		unset( $metadata['sizes'][ self::FULL_COPY ] );
-		$metadata['sgs_full_copy_checked'] = $base;
+		$copy = $metadata[ self::FULL_COPY ] ?? null;
+		if ( is_array( $copy ) && ! empty( $copy['file'] ) ) {
+			if ( ( $copy['source'] ?? '' ) === $base && file_exists( $dir . wp_basename( (string) $copy['file'] ) ) ) {
+				return $metadata;
+			}
+			// A copy of an older main file (the image was edited since): nothing points at it once replaced.
+			if ( ( $copy['source'] ?? '' ) !== $base ) {
+				wp_delete_file( $dir . wp_basename( (string) $copy['file'] ) );
+			}
+		}
+		unset( $metadata[ self::FULL_COPY ] );
 
 		$editor = wp_get_image_editor( $main );
 		if ( is_wp_error( $editor ) ) {
-			return $metadata;
+			return $metadata; // Not marked as checked: the next modernise run tries again.
 		}
 		$saved = $editor->save( null, $target );
 		if ( self::save_failed( $saved ) ) {
 			self::remove_empty( $saved );
 			return $metadata;
 		}
-		$path  = (string) $saved['path'];
-		$mime  = (string) ( $saved['mime-type'] ?? '' );
-		$bytes = (int) wp_filesize( $path );
+		$path                              = (string) $saved['path'];
+		$mime                              = (string) ( $saved['mime-type'] ?? '' );
+		$bytes                             = (int) wp_filesize( $path );
+		$metadata['sgs_full_copy_checked'] = $base;
 		if ( ! in_array( $mime, array( 'image/avif', 'image/webp' ), true ) || $bytes >= (int) wp_filesize( $main ) ) {
 			wp_delete_file( $path );
 			return $metadata;
 		}
-		$metadata['sizes'] = (array) ( $metadata['sizes'] ?? array() );
-
-		$metadata['sizes'][ self::FULL_COPY ] = array(
+		$metadata[ self::FULL_COPY ] = array(
 			'file'      => wp_basename( $path ),
 			'width'     => (int) ( $saved['width'] ?? 0 ),
 			'height'    => (int) ( $saved['height'] ?? 0 ),
@@ -318,6 +331,22 @@ final class Sgs_Media_Formats {
 			'source'    => $base,
 		);
 		return $metadata;
+	}
+
+	/**
+	 * `delete_attachment`: delete the main file's modern-format copy with the attachment (it is not a registered size, so
+	 * core does not know it).
+	 *
+	 * @param mixed $post_id Attachment ID.
+	 */
+	public static function delete_full_copy( $post_id ): void {
+		$meta = wp_get_attachment_metadata( (int) $post_id );
+		$copy = is_array( $meta ) ? ( $meta[ self::FULL_COPY ] ?? ( $meta['sizes'][ self::FULL_COPY ] ?? null ) ) : null;
+		$main = (string) get_attached_file( (int) $post_id );
+		if ( ! is_array( $copy ) || empty( $copy['file'] ) || '' === $main ) {
+			return;
+		}
+		wp_delete_file( trailingslashit( dirname( $main ) ) . wp_basename( (string) $copy['file'] ) );
 	}
 
 	/**
@@ -338,7 +367,7 @@ final class Sgs_Media_Formats {
 		if ( ! is_array( $sources ) || ! is_array( $image_meta ) || empty( $image_meta['file'] ) || ! self::enabled() ) {
 			return $sources;
 		}
-		$copy = $image_meta['sizes'][ self::FULL_COPY ] ?? null;
+		$copy = $image_meta[ self::FULL_COPY ] ?? null;
 		$base = wp_basename( (string) $image_meta['file'] );
 		if ( ! is_array( $copy ) || empty( $copy['file'] ) || ( $copy['source'] ?? '' ) !== $base ) {
 			return $sources;

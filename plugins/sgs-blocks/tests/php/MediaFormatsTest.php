@@ -146,6 +146,7 @@ final class MediaFormatsTest extends TestCase {
 		function get_post_mime_type( $id ) { return $GLOBALS['sgs_fc']['mime']; }
 		function get_attached_file( $id ) { return $GLOBALS['sgs_fc']['dir'] . '/photo.jpg'; }
 		function wp_basename( $p ) { return basename( (string) $p ); }
+		function trailingslashit( $p ) { return rtrim( $p, '/' ) . '/'; }
 		function wp_filesize( $p ) { clearstatcache(); return file_exists( $p ) ? (int) filesize( $p ) : 0; }
 		function wp_delete_file( $p ) { $GLOBALS['sgs_fc']['deleted'][] = basename( $p ); @unlink( $p ); }
 		function is_wp_error( $v ): bool { return false; }
@@ -153,10 +154,13 @@ final class MediaFormatsTest extends TestCase {
 			return new class() {
 				public function save( $name, $mime ) {
 					$w    = $GLOBALS['sgs_fc'];
+					$GLOBALS['sgs_fc']['asked'] = array( $name, $mime );
+					if ( 'fail' === $w['out'] ) {
+						return array();
+					}
 					$ext  = array( 'image/avif' => 'avif', 'image/webp' => 'webp', 'image/jpeg' => 'jpg' )[ $w['out'] ];
 					$path = $w['dir'] . '/photo-438x694.' . $ext;
 					file_put_contents( $path, str_repeat( 'a', $w['bytes'] ) );
-					$GLOBALS['sgs_fc']['asked'] = array( $name, $mime );
 					return array( 'path' => $path, 'file' => basename( $path ), 'width' => 438, 'height' => 694, 'mime-type' => $w['out'] );
 				}
 			};
@@ -174,7 +178,7 @@ final class MediaFormatsTest extends TestCase {
 		$this->assertSame( array( null, 'image/avif' ), $GLOBALS['sgs_fc']['asked'], 'saved like a resized copy, in the modern format' );
 		$this->assertSame(
 			array( 'file' => 'photo-438x694.avif', 'width' => 438, 'height' => 694, 'mime-type' => 'image/avif', 'filesize' => 15000, 'source' => 'photo.jpg' ),
-			$out['sizes'][ Sgs_Media_Formats::FULL_COPY ]
+			$out[ Sgs_Media_Formats::FULL_COPY ]
 		);
 		$this->assertSame( 'image/avif', $out['sizes']['medium']['mime-type'], 'the other sizes are untouched' );
 		$this->assertSame( array(), $GLOBALS['sgs_fc']['deleted'] );
@@ -183,7 +187,7 @@ final class MediaFormatsTest extends TestCase {
 	public function test_a_copy_that_is_not_smaller_is_deleted_and_the_check_is_recorded(): void {
 		$this->full_copy_world( 'image/jpeg', 50000, 50000, 'image/avif' );
 		$out = Sgs_Media_Formats::add_full_copy( $this->meta(), 7 );
-		$this->assertArrayNotHasKey( Sgs_Media_Formats::FULL_COPY, $out['sizes'] );
+		$this->assertArrayNotHasKey( Sgs_Media_Formats::FULL_COPY, $out );
 		$this->assertSame( array( 'photo-438x694.avif' ), $GLOBALS['sgs_fc']['deleted'] );
 		$this->assertSame( 'photo.jpg', $out['sgs_full_copy_checked'] );
 	}
@@ -191,14 +195,14 @@ final class MediaFormatsTest extends TestCase {
 	public function test_a_copy_that_fell_back_to_the_source_format_is_deleted(): void {
 		$this->full_copy_world( 'image/jpeg', 50000, 20000, 'image/jpeg' );
 		$out = Sgs_Media_Formats::add_full_copy( $this->meta(), 7 );
-		$this->assertArrayNotHasKey( Sgs_Media_Formats::FULL_COPY, $out['sizes'] );
+		$this->assertArrayNotHasKey( Sgs_Media_Formats::FULL_COPY, $out );
 		$this->assertSame( array( 'photo-438x694.jpg' ), $GLOBALS['sgs_fc']['deleted'] );
 	}
 
 	public function test_a_webp_fallback_copy_is_kept(): void {
 		$this->full_copy_world( 'image/png', 90000, 30000, 'image/webp' );
 		$out = Sgs_Media_Formats::add_full_copy( $this->meta(), 7 );
-		$this->assertSame( 'image/webp', $out['sizes'][ Sgs_Media_Formats::FULL_COPY ]['mime-type'] );
+		$this->assertSame( 'image/webp', $out[ Sgs_Media_Formats::FULL_COPY ]['mime-type'] );
 	}
 
 	public function test_other_types_and_the_switch_off_get_no_copy(): void {
@@ -228,13 +232,13 @@ final class MediaFormatsTest extends TestCase {
 	public function test_the_main_file_entry_in_the_srcset_points_at_its_copy(): void {
 		function wp_basename( $p ) { return basename( (string) $p ); }
 		$meta                                           = $this->meta();
-		$meta['sizes'][ Sgs_Media_Formats::FULL_COPY ] = array( 'file' => 'photo-438x694.avif', 'width' => 438, 'height' => 694, 'source' => 'photo.jpg' );
+		$meta[ Sgs_Media_Formats::FULL_COPY ] = array( 'file' => 'photo-438x694.avif', 'width' => 438, 'height' => 694, 'source' => 'photo.jpg' );
 		$out = Sgs_Media_Formats::srcset_full_copy( self::sources(), array( 438, 694 ), 'https://x.test/up/2026/10/photo.jpg', $meta, 7 );
 		$this->assertSame( 'https://x.test/up/2026/10/photo-438x694.avif', $out[438]['url'] );
 		$this->assertSame( self::sources()[189], $out[189], 'any other candidate is unchanged' );
 		$this->assertSame( array( 438, 189 ), array_keys( $out ), 'order kept (the src first)' );
 
-		$meta['sizes'][ Sgs_Media_Formats::FULL_COPY ]['source'] = 'photo-e1700000000000.jpg';
+		$meta[ Sgs_Media_Formats::FULL_COPY ]['source'] = 'photo-e1700000000000.jpg';
 		$this->assertSame( self::sources(), Sgs_Media_Formats::srcset_full_copy( self::sources(), array(), '', $meta, 7 ), 'a copy of an older main file is not used' );
 		$this->assertSame( self::sources(), Sgs_Media_Formats::srcset_full_copy( self::sources(), array(), '', $this->meta(), 7 ), 'no copy, no change' );
 	}
@@ -248,7 +252,7 @@ final class MediaFormatsTest extends TestCase {
 		$modern['sgs_full_copy_checked'] = 'photo.jpg';
 		$this->assertFalse( Sgs_Media_Modernise::needs_full_copy( $modern ), 'checked, copy not kept: skipped' );
 		$modern['sgs_full_copy_checked']                 = '';
-		$modern['sizes'][ Sgs_Media_Formats::FULL_COPY ] = array( 'source' => 'photo.jpg' );
+		$modern[ Sgs_Media_Formats::FULL_COPY ]          = array( 'source' => 'photo.jpg' );
 		$this->assertFalse( Sgs_Media_Modernise::needs_full_copy( $modern ), 'copy present' );
 		$modern['file'] = '2026/10/photo-e1700000000000.jpg';
 		$this->assertTrue( Sgs_Media_Modernise::needs_full_copy( $modern ), 'edited since: a new copy is due' );
@@ -285,5 +289,44 @@ final class MediaFormatsTest extends TestCase {
 		$this->assertFalse( Sgs_Media_Modernise::needs_subsizes( $out ), 'a copy kept on purpose is not converted again' );
 		unset( $out['sizes']['thumbnail']['sgs_source_kept'] );
 		$this->assertTrue( Sgs_Media_Modernise::needs_subsizes( $out ), 'an unmarked PNG copy is still due' );
+	}
+
+	public function test_a_failed_save_is_not_marked_so_the_next_run_tries_again(): void {
+		$this->full_copy_world( 'image/jpeg', 50000, 15000, 'fail' );
+		$out = Sgs_Media_Formats::add_full_copy( $this->meta(), 7 );
+		$this->assertArrayNotHasKey( Sgs_Media_Formats::FULL_COPY, $out );
+		$this->assertArrayNotHasKey( 'sgs_full_copy_checked', $out, 'MUST FAIL if a failure counts as checked' );
+	}
+
+	public function test_a_copy_recorded_in_the_size_list_moves_to_its_own_key_without_a_new_encode(): void {
+		$dir = $this->full_copy_world( 'image/jpeg', 50000, 15000, 'image/avif' );
+		file_put_contents( $dir . '/photo-438x694.avif', 'a' );
+		$meta                    = $this->meta();
+		$meta['sizes']['sgs-full-modern'] = array( 'file' => 'photo-438x694.avif', 'width' => 438, 'height' => 694, 'mime-type' => 'image/avif', 'source' => 'photo.jpg' );
+		require_once dirname( __DIR__, 2 ) . '/includes/media/class-sgs-media-modernise.php';
+		$this->assertTrue( Sgs_Media_Modernise::needs_full_copy( $meta ), 'an entry in the size list is selected to move' );
+		$out = Sgs_Media_Formats::add_full_copy( $meta, 7 );
+		$this->assertArrayNotHasKey( 'sgs-full-modern', $out['sizes'], 'no size lookup can return the AVIF' );
+		$this->assertSame( 'photo-438x694.avif', $out[ Sgs_Media_Formats::FULL_COPY ]['file'] );
+		$this->assertArrayNotHasKey( 'asked', $GLOBALS['sgs_fc'], 'moved, not encoded again' );
+		$this->assertFalse( Sgs_Media_Modernise::needs_full_copy( $out ) );
+	}
+
+	public function test_a_copy_of_an_older_main_file_is_deleted_when_replaced(): void {
+		$dir = $this->full_copy_world( 'image/jpeg', 50000, 15000, 'image/avif' );
+		file_put_contents( $dir . '/photo-old-438x694.avif', 'a' );
+		$meta                                   = $this->meta();
+		$meta[ Sgs_Media_Formats::FULL_COPY ] = array( 'file' => 'photo-old-438x694.avif', 'source' => 'photo-old.jpg' );
+		$out = Sgs_Media_Formats::add_full_copy( $meta, 7 );
+		$this->assertContains( 'photo-old-438x694.avif', $GLOBALS['sgs_fc']['deleted'] );
+		$this->assertSame( 'photo.jpg', $out[ Sgs_Media_Formats::FULL_COPY ]['source'] );
+	}
+
+	public function test_an_entry_with_no_mime_type_does_not_count_as_unconverted(): void {
+		function wp_basename( $p ) { return basename( (string) $p ); }
+		require_once dirname( __DIR__, 2 ) . '/includes/media/class-sgs-media-modernise.php';
+		$meta                          = $this->meta();
+		$meta['sizes']['plugin-thing'] = array( 'file' => 'photo-plugin.jpg' );
+		$this->assertFalse( Sgs_Media_Modernise::needs_subsizes( $meta ) );
 	}
 }
