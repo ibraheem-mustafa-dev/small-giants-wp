@@ -1368,6 +1368,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// wrapper: it stays, and the scoring proposes it (the multi-button for buttons, a container for labels).
 			// The row that holds the hero's image is the hero's own split (content beside media), which the hero lays out.
 			const row = kidsB.length > 1 && ! m.stacked( kidsB ) && ! desc( e ).some( isMedia );
+			// An item of such a row inside the hero (the column of a grid or flex row that is no split: its other cell holds no
+			// picture, a tilted card pile) is that row's cell: unwrapping it would hand its items to the row as cells of their own.
+			const rowOf = ( x ) => {
+				const items = m.blockKids( x );
+				return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isMedia );
+			};
+			const cell = m.byKey[ e.parentKey ] && m.byKey[ e.parentKey ].key !== hero.key && rowOf( m.byKey[ e.parentKey ] );
+			if ( cell ) {
+				return null;
+			}
 			// The wrapper stacking two or more of the hero's items with no picture inside, holding every worded element of the hero
 			// outside its media (its heading among them), is the hero's content column: it is the draft element of the calibrated
 			// slot of the rule's `contentSetting` (lib/skeleton-write-slots.mjs::hostSlot), so Fill reads the column's gap, padding

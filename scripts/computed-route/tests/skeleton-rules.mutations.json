@@ -136,5 +136,23 @@
 		"find": "children: m.kids( e ).length, uaPadding: m.uaPadding } ) ).includes( 'layout' );",
 		"replace": "children: 0, uaPadding: m.uaPadding } ) ).includes( 'layout' );",
 		"why": "a removed field text's own column is never seen as layout"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "\t\t\tif ( cell ) {\n\t\t\t\treturn null;\n\t\t\t}",
+		"replace": "\t\t\tif ( false ) {\n\t\t\t\treturn null;\n\t\t\t}",
+		"why": "the column of a side-by-side row in a hero is unwrapped and its items become cells of the row"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isMedia );",
+		"replace": "return items.length > 1 && ! desc( x ).some( isMedia );",
+		"why": "a stacked list of items counts as a row, so a plain column's wrapper stays"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isMedia );",
+		"replace": "return items.length > 1 && ! m.stacked( items );",
+		"why": "the hero's own split row (with the picture) counts as a row, so its column stays"
 	}
 ]

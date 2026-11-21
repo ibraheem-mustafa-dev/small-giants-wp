@@ -404,6 +404,20 @@ test( 'hero and heroInner: a page\'s first section holding its h1 is the split h
 	assert.notEqual( byTag( run( page, { kind: 'header' } ), 'section' ).rule, 'hero', 'a hero is a page section' );
 } );
 
+test( 'heroInner cell: the column of a side-by-side row inside a hero whose other cell holds no picture stays a container (its items must not become cells of the row); with a picture in the row it still unwraps; MUST FAIL without the cell check', () => {
+	const at = ( x, y, w = 500 ) => ( { box: { x, y, w, h: 40 } } );
+	const page = ( art ) => E( 'main', {}, [ E( 'section', {}, [ E( 'div', { display: 'grid', style: 'display:grid;grid-template-columns:1fr 1fr' }, [
+		E( 'div', { style: 'display:flex;flex-direction:column;gap:18px', ...at( 0, 0 ) }, [ E( 'h1', { words: 'Gifts she will eat', ...at( 0, 0 ) } ), E( 'p', { words: 'Baked fresh.', ...at( 0, 80 ) } ) ] ),
+		E( 'div', { ...at( 600, 0 ) }, art ),
+	] ) ] ), E( 'section', {}, [ E( 'h2', { words: 'More' } ) ] ) ] );
+	const column = ( r ) => r.proposal.rows[ byWords( r, 'Gifts she will eat' ).order - 1 ];
+	const noPicture = run( page( [ E( 'p', { words: 'A note card', ...at( 600, 0 ) } ), E( 'p', { words: 'Dear Aisha', ...at( 600, 90 ) } ) ] ) );
+	assert.notEqual( column( noPicture ).action, 'unwrap', 'the column of a row with no picture stays' );
+	assert.ok( 'sgs/container' === column( noPicture ).block || null === column( noPicture ).action );
+	const withPicture = run( page( [ E( 'image-slot', at( 600, 0 ) ) ] ) );
+	assert.equal( column( withPicture ).action, 'unwrap', 'negative control: the column of the hero split with a picture still unwraps' );
+} );
+
 test( 'drawsChildren: an array attribute whose fields are all behaviour or technical (sgs/hero bgSvgParts) is no item list, so the block still holds inner blocks; a block with a content array draws its own items; MUST FAIL without the role filter', () => {
 	const rules = ( f ) => makeRules( { m: { els: [], byKey: {}, blockKids: () => [] }, facts: f, surface: { kind: 'page' }, hooks: {} } );
 	assert.equal( rules( facts() ).drawsChildren( 'sgs/hero' ), null, 'the hero holds its content as inner blocks' );
