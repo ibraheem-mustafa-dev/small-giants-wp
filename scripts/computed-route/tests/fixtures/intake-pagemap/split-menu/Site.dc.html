@@ -1,0 +1,74 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Opticians</title></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "shop", "label": "Shop", "kind": "content page", "wp": { "slug": "shop-all", "parent": null, "type": "page" } },
+  { "id": "sale", "label": "Sale", "kind": "content page", "wp": { "slug": "sale", "parent": null, "type": "page" } },
+  { "id": "story", "label": "Our story", "kind": "content page", "wp": { "slug": "our-story", "parent": null, "type": "page" } },
+  { "id": "help", "label": "Help", "kind": "content page", "wp": { "slug": "help", "parent": null, "type": "page" } },
+  { "id": "account", "label": "Account", "kind": "content page", "wp": { "slug": "account", "parent": null, "type": "page" } },
+  { "id": "basket", "label": "Basket", "kind": "content page", "wp": { "slug": "basket", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header onMouseLeave="{{ closeMega }}">
+  <div class="utility">
+    <a href="#" onClick="{{ toStory }}">Visit us</a>
+  </div>
+  <div class="bar">
+    <nav>
+      <a href="#" onClick="{{ toShop }}">Shop</a>
+      <a href="#" onClick="{{ noop }}" onMouseEnter="{{ openFrames }}" onFocus="{{ openFrames }}">Frames</a>
+    </nav>
+    <a href="#" onClick="{{ toSale }}">Sale</a>
+    <a href="#" onClick="{{ toHome }}" aria-label="Opticians home"><img src="assets/logo.png" alt="Opticians"></a>
+    <div class="right">
+      <a href="{{ phoneHref }}" aria-label="Call us"><svg width="15" height="15" viewBox="0 0 24 24"><path d="M6 3h3"></path></svg>{{ phone }}</a>
+      <a href="mailto:hello@example.com">Email us</a>
+      <a href="#" onClick="{{ toStory }}">Our story</a>
+      <a href="#" onClick="{{ noop }}" onMouseEnter="{{ openHelp }}" onFocus="{{ openHelp }}">Help</a>
+      <a href="#" onClick="{{ toAccount }}">Sign in</a>
+      <a href="#" onClick="{{ toAccount }}" aria-label="Account"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle></svg></a>
+      <a href="#" onClick="{{ toBasket }}">Basket <span>{{ count }}</span></a>
+      <a href="#" onClick="{{ toSale }}" aria-label="Offers"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle></svg></a>
+      <button onClick="{{ toStory }}">Book a visit</button>
+      <button onClick="{{ openBag }}">Bag</button>
+    </div>
+    <sc-if value="{{ megaAny }}">
+    <div class="sgs-mega-menu" style="position:absolute;left:0;right:0;top:100%">
+      <sc-if value="{{ megaFrames }}"><div><a href="#" onClick="{{ toShop }}">All frames</a></div></sc-if>
+      <sc-if value="{{ megaHelp }}"><div><a href="#" onClick="{{ toHelp }}">Delivery and returns</a></div></sc-if>
+    </div>
+    </sc-if>
+  </div>
+</header>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isShop }}"><main><h1>Shop</h1></main></sc-if>
+<sc-if value="{{ isSale }}"><main><h1>Sale</h1></main></sc-if>
+<sc-if value="{{ isStory }}"><main><h1>Our story</h1></main></sc-if>
+<sc-if value="{{ isHelp }}"><main><h1>Help</h1></main></sc-if>
+<sc-if value="{{ isAccount }}"><main><h1>Sign in</h1><form><input type="email"><input type="password"></form></main></sc-if>
+<sc-if value="{{ isBasket }}"><main><h1>Basket</h1></main></sc-if>
+<footer><nav><a href="#" onClick="{{ toStory }}">Our story</a><a href="#" onClick="{{ toHelp }}">Help</a></nav></footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home', mega: null };
+  go(p) { this.setState({ page: p, mega: null }); }
+  renderVals() {
+    const S = this.state;
+    return {
+      isHome: S.page === 'home', isShop: S.page === 'shop', isSale: S.page === 'sale', isStory: S.page === 'story',
+      isHelp: S.page === 'help', isAccount: S.page === 'account', isBasket: S.page === 'basket',
+      megaAny: !!S.mega, megaFrames: S.mega === 'frames', megaHelp: S.mega === 'help',
+      openFrames: () => this.setState({ mega: 'frames' }), openHelp: () => this.setState({ mega: 'help' }),
+      closeMega: () => this.setState({ mega: null }), noop: () => {},
+      phone: '0121 000 0000', phoneHref: 'tel:01210000000', count: 2,
+      toHome: () => this.go('home'), toShop: () => this.go('shop'), toSale: () => this.go('sale'), toStory: () => this.go('story'),
+      toHelp: () => this.go('help'), toAccount: () => this.go('account'), toBasket: () => this.go('basket'), openBag: () => {},
+    };
+  }
+}
+</script>
+</body></html>

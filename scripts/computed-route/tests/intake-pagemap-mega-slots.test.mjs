@@ -3,8 +3,10 @@
 // lib/intake-pagemap-surfaces.mjs::codeSurfaces), so lib/site-build-menus.mjs::desiredMenus makes each panel a header
 // item and the page on the same slot its section page.
 // Fixtures: mega-openers (an embedded manifest; a header nav of two mega-only items and one with a page, and a Help
-// opener in another cluster of the header bar beside a plain About link) and mega-openers-no-nav (openers as buttons
-// with no nav, out of panel order, and one panel opened by two controls).
+// opener in another cluster of the header bar beside a plain About link: the menu's second half,
+// lib/intake-pagemap-split.mjs), mega-openers-other-row (a Help opener in a row of the header above its bar: a second
+// header menu) and mega-openers-no-nav (openers as buttons with no nav, out of panel order, and one panel opened by two
+// controls).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'path';
@@ -27,13 +29,16 @@ test( 'MUST FAIL: each mega row takes the header slot of the nav item that opens
 	assert.deepEqual( menusOf( map, 'prescription-lenses' ), header( 3 ), 'the page the item links to shares its slot' );
 } );
 
-test( 'MUST FAIL: an opener outside the header nav makes a second header menu, never an item of the main one', () => {
-	assert.deepEqual( menusOf( map, 'mega-menu-help' ), [ { menu: 'header-2', position: 1, parentItem: null } ] );
-	assert.deepEqual( menusOf( map, 'help' ), [ { menu: 'footer', position: 2, parentItem: null }, { menu: 'header-2', position: 1, parentItem: null } ] );
-	assert.deepEqual( menusOf( map, 'about' ), [ { menu: 'footer', position: 1, parentItem: null } ], 'a header link that opens no panel stays out of the header menu' );
+test( 'MUST FAIL: an opener beside the logo, outside the nav, is an item of the main menu\'s second half; one in another row makes a second header menu', () => {
+	assert.deepEqual( menusOf( map, 'mega-menu-help' ), header( 6 ) );
+	assert.deepEqual( menusOf( map, 'help' ), [ { menu: 'header', position: 6, parentItem: null }, { menu: 'footer', position: 2, parentItem: null } ] );
+	assert.deepEqual( menusOf( map, 'about' ), [ { menu: 'header', position: 5, parentItem: null }, { menu: 'footer', position: 1, parentItem: null } ], 'a link to a page beside it is an item too' );
+	const other = proposePageMap( { folder: FIX( 'mega-openers-other-row' ), surfacesHint: null } );
+	assert.deepEqual( menusOf( other, 'mega-menu-help' ), [ { menu: 'header-2', position: 1, parentItem: null } ] );
+	assert.deepEqual( menusOf( other, 'help' ), [ { menu: 'footer', position: 2, parentItem: null }, { menu: 'header-2', position: 1, parentItem: null } ] );
 } );
 
-test( 'MUST FAIL: the header menu the site build makes is the three nav mega items, one with its section page, and Help has a menu of its own', () => {
+test( 'MUST FAIL: the header menu the site build makes holds both halves, each mega item with its section page; an opener in another row has a menu of its own', () => {
 	const rows = map.rows.map( ( r, i ) => ( { ...r, id: i + 1 } ) );
 	const got = desiredMenus( rows );
 	assert.deepEqual( got.problems, [] );
@@ -41,9 +46,13 @@ test( 'MUST FAIL: the header menu the site build makes is the three nav mega ite
 		'1 Frames sgs_mega_menu:mega-menu-frames',
 		'2 Brands sgs_mega_menu:mega-menu-brands',
 		'3 Lenses sgs_mega_menu:mega-menu-lenses',
+		'4 About page:about',
+		'5 Help sgs_mega_menu:mega-menu-help',
 	] );
-	assert.deepEqual( got.menus[ 'header-2' ].map( ( it ) => `${ it.order } ${ it.label } ${ it.rowKey }` ), [ '1 Help sgs_mega_menu:mega-menu-help' ] );
+	assert.equal( got.menus[ 'header-2' ], undefined );
 	assert.deepEqual( got.sections, { 'sgs_mega_menu:mega-menu-lenses': 'page:prescription-lenses', 'sgs_mega_menu:mega-menu-help': 'page:help' } );
+	const other = desiredMenus( proposePageMap( { folder: FIX( 'mega-openers-other-row' ), surfacesHint: null } ).rows.map( ( r, i ) => ( { ...r, id: i + 1 } ) ) );
+	assert.deepEqual( other.menus[ 'header-2' ].map( ( it ) => `${ it.order } ${ it.label } ${ it.rowKey }` ), [ '1 Help sgs_mega_menu:mega-menu-help' ] );
 } );
 
 test( 'MUST FAIL: a header with no menu of its own gets one from its openers in document order; a panel two controls open has no slot', () => {

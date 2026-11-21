@@ -23,5 +23,5 @@
 	{ "file": "lib/site-check-nav.mjs", "find": "if ( LINK_TYPES.includes( r.postType ) ) {", "replace": "if ( false ) {", "why": "a product row is matched like a page, by its example address and title" },
 	{ "file": "lib/site-check-nav.mjs", "find": "return { ...base, url: link?.url || null, text: link?.text || wait?.text || null };", "replace": "return { ...base, url: link?.url || null, text: link?.text || null };", "why": "a product not built yet loses its link text" },
 	{ "file": "lib/draft-link.mjs", "find": "catalogue: loadCatalogue( repo, client ), menuItems: proposal.menuItems } )", "replace": "catalogue: loadCatalogue( repo, client ) } )", "why": "the link context carries no draft menu items" },
-	{ "file": "lib/intake-pagemap.mjs", "find": "items: m.items } ) );", "replace": "items: [] } ) );", "why": "the proposal carries no menu items" }
+	{ "file": "lib/intake-pagemap.mjs", "find": "items: m.items, ...( splitPoint( m.items )", "replace": "items: [], ...( splitPoint( m.items )", "why": "the proposal carries no menu items" }
 ]

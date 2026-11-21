@@ -8,6 +8,7 @@ import { attrOf, readBinding, classMethod, isFn, propName, subtree, keyName, dec
 import { ref, resolveRefs, propRefs, elementsOf, evalDeep, oneString, returnsOf } from './intake-ast-eval.mjs';
 import { megaPanelTitle } from './page-map-names.mjs';
 import { megaSlots } from './intake-pagemap-mega-slots.mjs';
+import { splitLinks, placeSplit } from './intake-pagemap-split.mjs';
 import { logicOf, moneyBinding } from './shop-parts-logic.mjs';
 import { narrowedListsOfDraft, narrowsRenderedList } from './skeleton-narrowing.mjs';
 
@@ -457,6 +458,36 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 	const repeated = [ ...copies.values() ].filter( ( list ) => new Set( list.map( ( c ) => c.d.file ) ).size >= 2 );
 	const siteWide = new Set( repeated.map( ( list ) => list[ 0 ].node ) );
 	const dropped = new Set( repeated.flatMap( ( list ) => list.slice( 1 ).map( ( c ) => c.node ) ) );
+	// The links on the far side of a header's logo from its one nav are items of that nav's menu, after (or before) its own,
+	// drawn as the menu's second half (lib/intake-pagemap-split.mjs). Navigation here is a link, or a mega panel's opener,
+	// showing static words of its own with no bound value inside it (a basket's count, a signed-in name), that reaches a
+	// page of the site holding no password field or opens a mega panel: a phone or email link (no page), an icon-only
+	// account or basket control and the logo are not.
+	const routesOf = ( d, x ) => links.filter( ( l ) => l.route && tagKey( l.from ) === `${ d.file }:${ x.line }:${ x.col }` ).map( ( l ) => l.route );
+	const splitHeaderMenu = ( d, tree, header, nav, roots ) => {
+		const menu = menus.find( ( m ) => SCOPE.get( m ) === nav );
+		if ( ! menu ) {
+			return;
+		}
+		const panels = descendants( header ).filter( ( x ) => /position:absolute/.test( style( x ) ) && /top:100%/.test( style( x ) ) );
+		const openers = new Set( panels.flatMap( ( p ) => megaPanels( d, header, p ) ).map( ( p ) => p.opener ).filter( Boolean ) );
+		const isNavigation = ( x ) => {
+			const opener = openers.has( x );
+			const routes = routesOf( d, x );
+			return ( 'a' === x.name || opener ) && /[\p{L}\p{N}]/u.test( innerText( tree.text, x ) ) && ! /\{\{/.test( tree.text.slice( x.end, x.close ?? x.end ) )
+				&& ( opener || ( routes.length > 0 && routes.every( ( k ) => ! accountPages.has( k ) ) ) );
+		};
+		const found = splitLinks( { nav, header, routed: ( x ) => routesOf( d, x ).length > 0, isNavigation, panels } );
+		if ( found ) {
+			const made = found.links.map( ( x ) => anchored( { label: attrOf( x, 'aria-label' ) || innerText( tree.text, x ), targets: [ ...new Set( targetsOf( d, x, new Map(), roots ) ) ], children: [], parentItem: null, splitItem: true }, x ) );
+			placeSplit( menu, made, found.first );
+		}
+	};
+	// The pages holding a password field, read from every draft before any header's split items are (a link to one is an
+	// account control, never a menu item).
+	for ( const [ d, tree ] of trees ) {
+		tree.nodes.filter( ( t ) => 'input' === t.name && 'password' === attrOf( t, 'type' ) ).forEach( ( t ) => accountPages.add( [ t, ...ancestors( t ) ].some( ( u ) => siteWide.has( u ) ) ? null : pageOf( d, t, routeKeys ) ) );
+	}
 	for ( const [ d, tree ] of trees ) {
 		const component = exp.mounted.has( d.file );
 		const roots = d.idx ? rootRefs( d ) : [];
@@ -469,7 +500,6 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 		const chrome =tree.nodes.some( ( t ) => /^(nav|header|footer)$/.test( t.name ) );
 		const page = ( node ) => ( [ node, ...ancestors( node ) ].some( ( u ) => siteWide.has( u ) ) ? null : pageOf( d, node, routeKeys ) );
 		tree.nodes.forEach( ( t ) => pageAt.set( `${ d.file }:${ t.line }:${ t.col }`, () => page( t ) ) );
-		tree.nodes.filter( ( t ) => 'input' === t.name && 'password' === attrOf( t, 'type' ) ).forEach( ( t ) => accountPages.add( page( t ) ) );
 		if ( component && ( tree.nodes.some( ( t ) => 'form' === t.name ) || ( ! chrome && ! inParentForm.has( d.file ) && tree.nodes.filter( ( t ) => FIELDS.has( t.name ) ).length >= 2 ) ) ) {
 			formComponents.add( d.file );
 			surfaces.push( { kind: 'form', page: null, label: stem( d.file ), title: stem( d.file ).replace( /([a-z])([A-Z])/g, '$1 $2' ), route: null, dc: stem( d.file ), draftId: `${ d.file } (dc-import)` } );
@@ -503,6 +533,7 @@ export function codeSurfaces( exp, routeOf = () => null, routeKeys = new Set(), 
 					SCOPE.set( menus[ menus.length - 1 ], s );
 				}
 			} );
+			'header' === r.kind && 1 === navs.length && splitHeaderMenu( d, tree, r.node, navs[ 0 ], roots );
 		}
 		// Mega-menu panels: header items whose children show in a header or drawer menu; else a panel element that
 		// drops below the header (absolute, top:100%), each panel taking the header menu slot of the control that opens

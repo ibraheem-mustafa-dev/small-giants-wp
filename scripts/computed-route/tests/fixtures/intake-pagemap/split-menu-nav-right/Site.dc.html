@@ -1,0 +1,47 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Bakery</title></head><body>
+<script type="application/json" data-sgs-manifest>
+{ "pages": [
+  { "id": "home", "label": "Home", "kind": "front page", "wp": { "slug": "home", "parent": null, "type": "page" } },
+  { "id": "cakes", "label": "Cakes", "kind": "content page", "wp": { "slug": "cakes", "parent": null, "type": "page" } },
+  { "id": "bread", "label": "Bread", "kind": "content page", "wp": { "slug": "bread", "parent": null, "type": "page" } },
+  { "id": "story", "label": "Our story", "kind": "content page", "wp": { "slug": "our-story", "parent": null, "type": "page" } },
+  { "id": "visit", "label": "Visit", "kind": "content page", "wp": { "slug": "visit", "parent": null, "type": "page" } }
+] }
+</script>
+<x-dc>
+<header>
+  <div class="bar">
+    <div class="left">
+      <a href="#" onClick="{{ toStory }}">Our story</a>
+      <a href="#" onClick="{{ toVisit }}">Visit</a>
+    </div>
+    <a href="#" onClick="{{ toHome }}" aria-label="Bakery home"><img src="assets/logo.png" alt="Bakery"></a>
+    <div class="right">
+      <nav>
+        <a href="#" onClick="{{ toCakes }}">Cakes</a>
+        <a href="#" onClick="{{ toBread }}">Bread</a>
+      </nav>
+    </div>
+  </div>
+</header>
+<sc-if value="{{ isHome }}"><main><h1>Welcome</h1></main></sc-if>
+<sc-if value="{{ isCakes }}"><main><h1>Cakes</h1></main></sc-if>
+<sc-if value="{{ isBread }}"><main><h1>Bread</h1></main></sc-if>
+<sc-if value="{{ isStory }}"><main><h1>Our story</h1></main></sc-if>
+<sc-if value="{{ isVisit }}"><main><h1>Visit</h1></main></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { page: 'home' };
+  go(p) { this.setState({ page: p }); }
+  renderVals() {
+    const S = this.state;
+    return {
+      isHome: S.page === 'home', isCakes: S.page === 'cakes', isBread: S.page === 'bread', isStory: S.page === 'story', isVisit: S.page === 'visit',
+      toHome: () => this.go('home'), toCakes: () => this.go('cakes'), toBread: () => this.go('bread'), toStory: () => this.go('story'), toVisit: () => this.go('visit'),
+    };
+  }
+}
+</script>
+</body></html>

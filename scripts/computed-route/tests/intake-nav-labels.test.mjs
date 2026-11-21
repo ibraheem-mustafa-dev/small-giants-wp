@@ -71,12 +71,15 @@ test( 'MUST FAIL: a drawer made only of header mega labels still repeats the hea
 	assert.equal( drawerRepeatsHeader( { region: 'drawer', items: [ { label: 'Other' }, { label: 'Frames' } ] }, mine ), false );
 } );
 
-test( 'MUST FAIL: an opener outside the header nav makes a second header menu, not a fourth item of the main one', () => {
-	const rows = ( slug ) => mega.rows.find( ( r ) => r.slug === slug ).menus;
-	assert.deepEqual( rows( 'mega-menu-help' ), [ { menu: 'header-2', position: 1, parentItem: null } ] );
-	assert.deepEqual( rows( 'mega-menu-lenses' ), [ { menu: 'header', position: 3, parentItem: null } ], 'the nav\'s own openers keep their slots' );
-	assert.deepEqual( menu( mega, 'header' ).items.map( ( it ) => it.label ), [ 'Frames', 'Brands', 'Lenses', 'Contacts' ] );
-	assert.deepEqual( menu( mega, 'header-2' ).items.map( ( it ) => it.label ), [ 'Help' ] );
+test( 'MUST FAIL: an opener in another row of the header makes a second header menu; one beside the logo is the main menu\'s second half', () => {
+	const other = proposePageMap( { folder: FIX( 'mega-openers-other-row' ), surfacesHint: null } );
+	const rows = ( map, slug ) => map.rows.find( ( r ) => r.slug === slug ).menus;
+	assert.deepEqual( rows( other, 'mega-menu-help' ), [ { menu: 'header-2', position: 1, parentItem: null } ] );
+	assert.deepEqual( menu( other, 'header-2' ).items.map( ( it ) => it.label ), [ 'Help' ] );
+	assert.deepEqual( rows( mega, 'mega-menu-help' ), [ { menu: 'header', position: 6, parentItem: null } ] );
+	assert.deepEqual( rows( mega, 'mega-menu-lenses' ), [ { menu: 'header', position: 3, parentItem: null } ], 'the nav\'s own openers keep their slots' );
+	assert.deepEqual( menu( mega, 'header' ).items.map( ( it ) => it.label ), [ 'Frames', 'Brands', 'Lenses', 'Contacts', 'About us', 'Help' ] );
+	assert.equal( menu( mega, 'header-2' ), undefined );
 } );
 
 const el = ( index ) => ( { index } );

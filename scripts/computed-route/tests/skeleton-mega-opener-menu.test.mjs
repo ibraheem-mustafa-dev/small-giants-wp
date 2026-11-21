@@ -45,8 +45,8 @@ const flat = ( list ) => list.flatMap( ( n ) => [ n, ...flat( n.innerBlocks || [
 const navs = ( r ) => flat( r.skeleton ).filter( ( n ) => 'sgs/nav-bar-menu' === n.name );
 const helpButtons = ( r ) => flat( r.skeleton ).filter( ( n ) => 'sgs/button' === n.name && 'Help' === n.attributes.label );
 
-test( 'MUST FAIL: the intake flags a mega opener outside the nav as an item of the second header menu', () => {
-	const mega = proposePageMap( { folder: path.join( HERE, 'fixtures', 'intake-pagemap', 'mega-openers' ), surfacesHint: null } );
+test( 'MUST FAIL: the intake flags a mega opener outside the nav\'s bar (another row of the header) as an item of the second header menu', () => {
+	const mega = proposePageMap( { folder: path.join( HERE, 'fixtures', 'intake-pagemap', 'mega-openers-other-row' ), surfacesHint: null } );
 	const second = mega.menuItems.find( ( m ) => 'header-2' === m.menu );
 	assert.deepEqual( second.items.map( ( it ) => [ it.label, it.megaOpener ] ), [ [ 'Help', true ] ] );
 	const first = mega.menuItems.find( ( m ) => 'header' === m.menu );

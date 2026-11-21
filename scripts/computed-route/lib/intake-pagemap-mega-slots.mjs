@@ -3,9 +3,10 @@
 // nav item, and the panel's row takes the item's slot (lib/site-build-menus.mjs: a page row on the same slot becomes the
 // panel's section page, and a slot with no page is the panel's own item). An opener the header's menu lacks but that
 // sits inside the menu's own element (a control the item reader skipped) joins the menu at its place in the document. An
-// opener outside the menu's element (a control in another cluster of the header bar, drawn there as its own part) never
-// becomes an item of the header's main menu, because that menu draws every item in its own bar: those openers make a
-// second header menu, in document order, which the header's cluster draws. With no header menu at all, the openers make one.
+// opener on the logo's far side of the nav's bar is already an item of the menu's second half (lib/intake-pagemap-split.mjs),
+// so it keeps that slot. An opener outside the menu's element and outside its bar (a control in another row of the header)
+// is a different menu: those openers make a second header menu, in document order, which that row draws
+// (lib/skeleton-mega-opener.mjs). With no header menu at all, the openers make one.
 
 // `menu` is the header's menu ({ menu, items }) or null; `openers` the elements that open each panel (null when a
 // panel has no single opener); `anchorOf( item )` the element a top-level item was read from; `inside( opener )` whether
