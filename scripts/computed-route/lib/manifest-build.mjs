@@ -208,11 +208,13 @@ function intakeRecord( row, intake, record ) {
 
 // The slug of intake's skeleton entry whose id is the matched handoff record's id (never by position), or null. A record
 // intake read as several tab panels (lib/intake-skeletons.mjs::tabPanels, each skeleton naming its `panel` state) links a
-// mega-menu panel row to the panel whose state its label names, as panelStates keeps that one state.
+// mega-menu panel row to the panel whose state its label names, as panelStates keeps that one state. A skeleton names its
+// panel as `panel`, or (an intake.json saved without it) by the state that opened it (`opened.state`).
 function intakeSurfaceOf( record, intake, row = null ) {
 	const found = Object.entries( intake?.skeletons || {} ).filter( ( [ , x ] ) => null != record?.id && x?.id === record.id );
 	const label = row && 'menu' === KINDS[ row.postType ] ? walkerKey( megaPanelLabel( row.title ?? '' ) ) : null;
-	const mine = found.length > 1 && label ? found.filter( ( [ , x ] ) => null != x.panel && walkerKey( x.panel ) === label ) : found;
+	const panelOf = ( x ) => x.panel ?? x.opened?.state ?? null;
+	const mine = found.length > 1 && label ? found.filter( ( [ , x ] ) => null != panelOf( x ) && walkerKey( panelOf( x ) ) === label ) : found;
 	return 1 === mine.length ? mine[ 0 ][ 0 ] : null;
 }
 
@@ -343,7 +345,9 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		match.record && ( out.matched[ key ] = match.record.id );
 		// The entry's link to its intake skeleton, through the handoff record both carry; none when intake has no skeleton for it.
 		const intakeSurface = intakeSurfaceOf( match.record, intake, row );
-		null === intakeSurface && ! noDraft && ! ( have && Object.hasOwn( have, 'intakeSurface' ) ) && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
+		// A kept link counts only while it names a skeleton intake holds; a dead one with nothing generated is listed too.
+		const keptLive = have && Object.hasOwn( have, 'intakeSurface' ) && Object.hasOwn( intake?.skeletons || {}, have.intakeSurface );
+		null === intakeSurface && ! noDraft && ! keptLive && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
 		const surfaceTarget = isTemplate ? { template: row.templateOf.slug } : builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id };
 		// The site run never walks WooCommerce's own cart and checkout pages (lib/site-build-plan.mjs::isUnwalkedWooPage): no walker is named.
 		const walked = ! isUnwalkedWooPage( surfaceTarget, row );

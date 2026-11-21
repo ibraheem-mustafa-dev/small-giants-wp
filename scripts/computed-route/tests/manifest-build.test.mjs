@@ -170,6 +170,25 @@ test( 'MUST FAIL: each panel row links to the intake skeleton read with its own 
 	assert.equal( run( [ drawer ], records, { facts, intake } ).entries[ 'drawer-brands' ].intakeSurface, undefined, 'only a mega menu row picks a panel by its label' );
 } );
 
+// A saved intake.json whose panel skeletons name their tab only by the state that opened each (`opened.state`, no `panel`):
+// Eye Care's four mega menu skeletons share the record id S-04 that way.
+test( 'MUST FAIL: a panel row picks the skeleton its own tab state opened, and a kept link naming no skeleton gives way to it', () => {
+	const panels = [ { name: 'closed', state_keys: { mega: null } }, { name: 'Sunglasses', state_keys: { mega: 'sun' } }, { name: 'Help', state_keys: { mega: 'help' } } ];
+	const records = [ rec( 'S-4', 'menu', 'Mega menu', panels, { dc: 'Site' } ) ];
+	const facts = { state: { Site: { keys: [ 'mega' ], widthKeys: [] } } };
+	const opened = ( state ) => ( { via: 'state', state, keys: { mega: state.toLowerCase() } } );
+	const intake = { skeletons: { 'mega-menu-sunglasses': { id: 'S-4', opened: opened( 'Sunglasses' ) }, 'mega-menu-help': { id: 'S-4', opened: opened( 'Help' ) }, header: { id: 'S-3', opened: opened( 'Help' ) } } };
+	const help = row( 'sgs_mega_menu', 'menu-help', 3, { title: 'Help mega menu' } );
+	assert.equal( run( [ help ], records, { facts, intake } ).entries[ 'mega-menu-help' ].intakeSurface, 'mega-menu-help' );
+	const kept = run( [ help ], records, { facts, intake, existing: { 'mega-menu-help': { intakeSurface: 'mega-menu' } } } );
+	assert.equal( kept.entries[ 'mega-menu-help' ].intakeSurface, 'mega-menu-help', 'the kept link names no skeleton intake holds' );
+	assert.deepEqual( kept.noIntake, [] );
+	// Negative controls: a kept link to a skeleton intake holds stays; a kept dead link with nothing to replace it is reported.
+	assert.equal( run( [ help ], records, { facts, intake, existing: { 'mega-menu-help': { intakeSurface: 'header' } } } ).entries[ 'mega-menu-help' ].intakeSurface, 'header' );
+	const lost = run( [ row( 'sgs_mega_menu', 'menu-brands', 4, { title: 'Brands mega menu' } ) ], records, { facts, intake, existing: { 'mega-menu-brands': { intakeSurface: 'mega-menu' } } } );
+	assert.deepEqual( lost.noIntake.map( ( n ) => n.key ), [ 'mega-menu-brands' ], 'a kept link naming no skeleton, with no generated one, is listed rather than kept silently' );
+} );
+
 test( "'link hover' is dropped and listed as a pointer state", () => {
 	const records = [ rec( 'S-1', 'menu', 'M', [ { name: 'open', state_keys: {} }, { name: 'link hover', state_keys: {} } ] ) ];
 	const out = run( [ row( 'sgs_mega_menu', 'm', 1, { title: 'M' } ) ], records );
