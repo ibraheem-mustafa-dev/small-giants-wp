@@ -1,0 +1,10 @@
+[
+	{"file": "lib/run-ledger-skeleton.mjs", "find": "\t\tif ( carried.has( e.key ) ) {", "replace": "\t\tif ( false ) {", "why": "a carried element writes no row"},
+	{"file": "lib/run-ledger-skeleton.mjs", "find": "\tif ( unpaired ) {", "replace": "\tif ( false ) {", "why": "a refused pairing names its candidates"},
+	{"file": "lib/run-ledger-skeleton.mjs", "find": "\tif ( 'absorbed' === row.action ) {", "replace": "\tif ( false ) {", "why": "an absorbing rule is an absorbed outcome"},
+	{"file": "lib/run-ledger-skeleton.mjs", "find": "\t\treturn partOwner\n", "replace": "\t\treturn false\n", "why": "a drawn part is absorbed into its row's block"},
+	{"file": "lib/run-ledger-skeleton.mjs", "find": "\t\t\t\tif ( e && printed && String( printed ).toLowerCase() !== String( e.tag ).toLowerCase() ) {", "replace": "\t\t\t\tif ( e && printed ) {", "why": "only a differing tag writes a row"},
+	{"file": "lib/run-ledger-skeleton.mjs", "find": "\tif ( calTags ) {", "replace": "\tif ( false ) {", "why": "tag rows are written"},
+	{"file": "lib/run-ledger-skeleton.mjs", "find": "\treturn { section: 'rows', outcome: { kind: 'dropped', reason: `${ why }", "replace": "\treturn { section: 'rows', outcome: { kind: 'dropped', reason: `${ 'x' }", "why": "the reason names the action"},
+	{"file": "lib/run-ledger-skeleton.mjs", "find": "const widthsOf = ( e ) => Object.entries( e?.resolved || {} ).filter( ( [ , v ] ) => v && 'object' === typeof v ).map( ( [ w ] ) => Number( w ) );", "replace": "const widthsOf = ( e ) => [ 1440 ];", "why": "widths are where the element paints"}
+]

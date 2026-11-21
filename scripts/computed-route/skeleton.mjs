@@ -9,7 +9,8 @@
 //   node scripts/computed-route/skeleton.mjs inventory --client <slug> --surface <name> --saved
 //     (the inventory intake saved for the surface's intake skeleton, in the served key space: a form surface, which is read at its
 //     page's route and has no root selector of its own)
-//   node scripts/computed-route/skeleton.mjs propose   --client <slug> --surface <name> [--site-name <text>]
+//   node scripts/computed-route/skeleton.mjs propose   --client <slug> --surface <name> [--site-name <text>] [--run-ledger <run.jsonl>]
+//     (--run-ledger: append the skeleton's rows to that run ledger file, lib/run-ledger-skeleton.mjs)
 //     (a page's proposal holds each form on it as one linked form block, lib/skeleton-form-link.mjs)
 //     (the surfaces.json entry names its intake skeleton in `intakeSurface`: the proposal takes that skeleton's kind, name and
 //     built post, the intake motion inventory's loops, and the client decisions saved under that slug)
@@ -33,6 +34,8 @@ import { proposeSkeleton } from './lib/skeleton-propose.mjs';
 import { loopingKeys } from './lib/skeleton-rerun.mjs';
 import { isServedInventory, servedDecisions, servedMotion } from './lib/key-space.mjs';
 import { reviewHtml } from './lib/skeleton-review.mjs';
+import { openRunLedger } from './lib/run-ledger.mjs';
+import { skeletonRunRows } from './lib/run-ledger-skeleton.mjs';
 import { calKeysFor, calTagsFor, calSettingsFor, calPartsFor, statesOfRecord, thresholdsOf, assertSkeletonPaints } from './lib/skeleton-context.mjs';
 import { allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { assertCurrent } from './lib/freshness.mjs';
@@ -132,7 +135,7 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 // menu, menu items, logo and shop attributes (lib/skeleton-carried.mjs::carriedIds), the calibration's keys, tags, settings
 // and parts, and the paint gate, which names it, so its advice never names the mirror the surface entry records. Default:
 // the surface entry's site.
-export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [], site: runSite = null } ) {
+export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [], site: runSite = null, runLedger = null } ) {
 	const p = skeletonPaths( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
 	const { ctx, saved, served, clientDecisions } = surfaceDecisions( { client, surface, repo, inventory, file: p.decisions } );
@@ -161,6 +164,9 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
+	// The run ledger (lib/run-ledger.mjs, a writer from openRunLedger): what the proposal did with each painted element it does
+	// not carry on, appended after the proposal and skeleton are written (lib/run-ledger-skeleton.mjs).
+	runLedger?.append( skeletonRunRows( { surface, inventory, proposal: r.proposal, skeleton: r.skeleton, calTags: calTagsFor( site, cache ) } ) );
 	return { ...r, paths: p, facts, inventory, clientDecisions };
 }
 
@@ -195,7 +201,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		json( p.inventory, inv );
 		log( `inventory ${ surface }: ${ inv.elements.length } elements, ${ Object.keys( inv.elements.reduce( ( a, e ) => Object.assign( a, e.screenshots ), {} ) ).length ? 'screenshots in' : 'no screenshots in' } ${ p.shots }, ${ inv.checks.duplicateKeys } duplicate keys` );
 	} else if ( 'propose' === cmd ) {
-		const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ) } );
+		const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ), runLedger: openRunLedger( flag( '--run-ledger' ) ) } );
 		const c = r.proposal.counts;
 		log( `propose ${ surface }: ${ c.skeletonNodes } skeleton nodes (${ c.expandedNodes } with Fill's generated icons), ${ c.low } low confidence, ${ c.removed } removed or absorbed, ${ c.unresolved } unresolved, ${ r.problems.length } problems` );
 		r.problems.forEach( ( x ) => log( ` - ${ x }` ) );
