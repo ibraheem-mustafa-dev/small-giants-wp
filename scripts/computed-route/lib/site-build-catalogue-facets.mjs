@@ -2,7 +2,9 @@
 // (lib/catalogue-facets.mjs) made on one site as a global WooCommerce attribute (`pa_<slug>`, type select, ordered by
 // the terms' custom order) with its terms, each colour term's `_sgs_swatch_color`, and each product's terms as a
 // filter-only product attribute (not a variation, not shown on the product page), the shape the hand-built seeds of the
-// client sites use. A facet a variation attribute already is (`axis`) is not written again.
+// client sites use. A facet a variation attribute already is (`axis`) is not written again, but its global attribute (made by
+// the products step as that variation attribute) is read and its id recorded like a written facet's (`attributeFacets`), so the
+// shop's filter by it carries an attribute id.
 //   - plan (reads only): per facet `create` (no attribute has its slug), `complete` (it lacks a term, or a term lacks its
 //     swatch) or `exists`; a slug WooCommerce reserves stops the run; an attribute of that slug under another name is
 //     noted and used as it is. A product lacks a facet when it does not carry the attribute, or lacks one of its terms
@@ -12,6 +14,9 @@
 const b64 = ( v ) => Buffer.from( JSON.stringify( v ) ).toString( 'base64' );
 
 export const writtenFacets = ( catalogue ) => ( catalogue.facets || [] ).filter( ( f ) => ! f.axis );
+// Every facet that is a global attribute on the site: the written ones and the variation axes a facet names (the attribute the
+// products step makes for a product's choice). Their ids are read and recorded in `sites.<site>.attributes`.
+export const attributeFacets = ( catalogue ) => catalogue.facets || [];
 const taxOf = ( slug ) => `pa_${ slug }`;
 
 // The facets plan: { actions: [{ slug, action, say }], notes, problems }.
@@ -68,12 +73,13 @@ export const facetSay = ( catalogue, p ) => {
 
 export const tallyFacets = ( actions ) => Object.fromEntries( [ 'create', 'complete', 'exists' ].map( ( k ) => [ k, actions.filter( ( a ) => a.action === k ).length ] ) );
 
-// The read's PHP: `$facets` (per slug: id, label, reserved, terms name -> swatch) and `$sgs_product_facets( $id )`
-// (per slug: the product's term names).
+// The read's PHP: `$facets` (per slug of every attribute facet, axes included: id, label, reserved, terms name -> swatch) and
+// `$sgs_product_facets( $id )` (per written slug: the product's term names).
 export function facetStatePhp( catalogue ) {
 	return `$facet_in = json_decode( base64_decode( '${ b64( writtenFacets( catalogue ).map( ( f ) => f.slug ) ) }' ), true );
+$attribute_in = json_decode( base64_decode( '${ b64( attributeFacets( catalogue ).map( ( f ) => f.slug ) ) }' ), true );
 $facets = array();
-foreach ( $facet_in as $slug ) {
+foreach ( $attribute_in as $slug ) {
 	$tax = wc_attribute_taxonomy_name( $slug );
 	$aid = (int) wc_attribute_taxonomy_id_by_name( $tax );
 	$terms = array();

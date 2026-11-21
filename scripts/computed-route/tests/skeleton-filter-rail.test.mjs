@@ -63,7 +63,7 @@ const RAIL = [
 	...group( 2, 'Price', [ { tag: 'span', words: 'up to £40' } ] ),
 	...group( 3, 'Brand', [ { tag: 'span', words: 'Acme 4' }, { tag: 'span', words: 'Bolt 2' } ] ),
 	...group( 4, 'Fit', [ { tag: 'input', attrs: { type: 'checkbox' } }, { tag: 'span', words: 'Adults' } ] ),
-	// A group labelled with a variation axis's label: the product page's choice, never a shop filter.
+	// A group labelled with a variation axis's label: the axis is a global attribute too, so the shop filters by it.
 	...group( 5, 'Size' ),
 	// The on-off row, labelled with the boolean facet's own label: the theme's toggle draws it.
 	el( 'Root/20#0', 'Root/5#0', 'label', '', { depth: 4, all: 'Lined' } ),
@@ -90,7 +90,7 @@ const FACETS = [
 	facet( 'theme', 'Theme' ),
 ];
 const SHOP_ROLE = ( facets = FACETS ) => ( { role: 'shop', checkout: null, filters: { facets, brands: [ 'Acme', 'Bolt' ], categories: [] } } );
-const IDS = { shade: 21, kind: 22, fit: 23 };
+const IDS = { shade: 21, kind: 22, fit: 23, size: 24 };
 const CARRIED = ( ids = IDS ) => ( { logo: () => null, menu: () => null, attribute: ( slug ) => ( ids[ slug ] ? { id: ids[ slug ] } : { reason: `no attribute for ${ slug }` } ) } );
 const run = ( elements, commerce, carried = CARRIED() ) => proposeSkeleton( { inventory: inv( elements ), facts: facts(), surface: 'test', commerce, carried, db } );
 const groupsOf = ( pf ) => pf.innerBlocks.slice( 1 ).map( ( n ) => ( 'sgs/heading' === n.name ? `h:${ n.attributes.content }` : n.name.replace( 'woocommerce/product-filter-', '' ) + ( n.attributes.attributeId ? `#${ n.attributes.attributeId }` : '' ) ) );
@@ -106,13 +106,13 @@ test( 'MUST FAIL: the shop\'s filter rail is WooCommerce\'s product filters insi
 	assert.equal( pf.name, 'woocommerce/product-filters' );
 	assert.equal( pf.innerBlocks[ 0 ].name, 'woocommerce/product-filter-active', 'the chosen filters and their clear button lead' );
 	assert.ok( find( [ pf.innerBlocks[ 0 ] ], ( n ) => 'sgs/button' === n.name && /wp-block-button__link/.test( n.attributes.className ) ), 'the clear button is an sgs/button WooCommerce binds' );
-	assert.deepEqual( groupsOf( pf ), [ 'h:Shade', 'attribute#21', 'h:Kind', 'attribute#22', 'h:Price', 'price', 'h:Brand', 'taxonomy', 'h:Fit', 'attribute#23' ] );
+	assert.deepEqual( groupsOf( pf ), [ 'h:Shade', 'attribute#21', 'h:Kind', 'attribute#22', 'h:Price', 'price', 'h:Brand', 'taxonomy', 'h:Fit', 'attribute#23', 'h:Size', 'attribute#24' ] );
 	assert.ok( find( skeleton, named( 'woocommerce/product-collection' ) ), 'the listing is still the product collection' );
 	assert.equal( aside.innerBlocks.length, 1, 'nothing of the draft\'s rail is built beside the filters' );
-	assert.deepEqual( proposal.filterRail.groups.map( ( g ) => [ g.kind, g.facet ?? null ] ), [ [ 'facet', 'shade' ], [ 'facet', 'kind' ], [ 'price', null ], [ 'brand', null ], [ 'facet', 'fit' ] ] );
-	assert.deepEqual( proposal.filterRail.attributeIds, IDS );
+	assert.deepEqual( proposal.filterRail.groups.map( ( g ) => [ g.kind, g.facet ?? null ] ), [ [ 'facet', 'shade' ], [ 'facet', 'kind' ], [ 'price', null ], [ 'brand', null ], [ 'facet', 'fit' ], [ 'facet', 'size' ] ] );
+	assert.deepEqual( proposal.filterRail.attributeIds, IDS, 'the variation axis filter carries the recorded attribute id' );
 	assert.ok( proposal.filterRail.notes.some( ( n ) => /Root\/20#0 "Lined" filters nothing/.test( n ) ), 'the on-off row is the theme\'s toggle, listed, never a block' );
-	assert.ok( proposal.filterRail.notes.some( ( n ) => /Root\/6#5 "Size" filters nothing/.test( n ) ), 'a variation axis is no shop filter' );
+	assert.ok( ! proposal.filterRail.notes.some( ( n ) => /"Size"/.test( n ) ), 'a variation axis is a filter, not a note' );
 	assert.ok( proposal.rows.some( ( r ) => 'Root/8#0' === r.key && 'absorbed' === r.action ), 'the draft\'s group labels are absorbed into the rail' );
 } );
 
@@ -138,7 +138,7 @@ test( 'MUST FAIL: each group heading carries the theme\'s heading class and the 
 
 test( 'MUST FAIL: a facet\'s attribute id comes from the site\'s record; a site without one is a problem, no site writes none', () => {
 	const missing = run( SHOP, SHOP_ROLE(), CARRIED( { shade: 21 } ) );
-	assert.deepEqual( missing.problems, [ 'Root/4#0: the filter for facet kind carries no attributeId: no attribute for kind', 'Root/4#0: the filter for facet fit carries no attributeId: no attribute for fit' ] );
+	assert.deepEqual( missing.problems, [ 'Root/4#0: the filter for facet kind carries no attributeId: no attribute for kind', 'Root/4#0: the filter for facet fit carries no attributeId: no attribute for fit', 'Root/4#0: the filter for facet size carries no attributeId: no attribute for size' ] );
 	const none = run( SHOP, SHOP_ROLE(), { logo: () => null, menu: () => null, attribute: () => null } );
 	assert.deepEqual( none.problems, [] );
 	assert.equal( JSON.stringify( none.skeleton ).includes( 'attributeId' ), false );
@@ -162,7 +162,7 @@ test( 'no rail without the structure: no catalogue, no placeable facet, another 
 	const plain = run( SHOP, { role: 'shop', checkout: null } );
 	absent( plain );
 	assert.equal( plain.proposal.filterRail, undefined );
-	absent( run( SHOP, SHOP_ROLE( FACETS.filter( ( f ) => f.axis || 'boolean' === f.kind || 'theme' === f.slug ) ) ) );
+	absent( run( SHOP, SHOP_ROLE( FACETS.filter( ( f ) => 'boolean' === f.kind || 'theme' === f.slug ) ) ) );
 	absent( run( SHOP, { ...SHOP_ROLE(), role: 'cart', checkout: 'Checkout.dc.html' } ) );
 	absent( run( SHOP, null ) );
 	// Only the cards carry the word: the listing's own text is never a filter label.
@@ -179,7 +179,7 @@ test( 'facet groups under different parents place the facet groups alone, in the
 	const nested = [ ...SHOP.map( ( e ) => ( [ 'Root/6#1', 'Root/6#4' ].includes( e.key ) ? { ...e, parentKey: 'Root/24#0' } : e ) ), el( 'Root/24#0', 'Root/5#0', 'div', '', { depth: 4 } ) ];
 	// The catalogue lists the facets in another order than the draft shows them.
 	const { skeleton } = run( nested, SHOP_ROLE( [ ...FACETS ].reverse() ) );
-	assert.deepEqual( groupsOf( find( skeleton, named( 'woocommerce/product-filters' ) ) ), [ 'h:Shade', 'attribute#21', 'h:Kind', 'attribute#22', 'h:Fit', 'attribute#23' ] );
+	assert.deepEqual( groupsOf( find( skeleton, named( 'woocommerce/product-filters' ) ) ), [ 'h:Shade', 'attribute#21', 'h:Kind', 'attribute#22', 'h:Fit', 'attribute#23', 'h:Size', 'attribute#24' ] );
 } );
 
 test( 'a facet label shown twice places no group for it and says so; the rest of the rail stands', () => {
@@ -212,6 +212,27 @@ test( 'MUST FAIL: the carried attribute id is the site\'s catalogue.json record,
 	// A mirror (calibration-targets.json mirrorOf) whose own record lacks the facet reads the test site it copies.
 	assert.match( carriedIds( { repo, client: 'demo', site: 'local-mamas' } ).attribute( 'shade' ).reason, /records no attributes for local-mamas or mamas-test/ );
 	assert.deepEqual( carriedIds( { repo, client: 'demo', site: 'local-eye-care' } ).attribute( 'shade' ), { id: 31 } );
+	fs.rmSync( repo, { recursive: true, force: true } );
+} );
+
+test( 'MUST FAIL: an axis facet filter carries the attribute id the catalogue step recorded for the axis; a boolean facet is still no filter', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-rail-axis-' ) );
+	const build = path.join( repo, 'sites', 'demo', 'build' );
+	fs.mkdirSync( build, { recursive: true } );
+	// The catalogue step records an id for each written facet and for each variation axis a facet names (here size, the axis).
+	fs.writeFileSync( path.join( build, 'catalogue.json' ), JSON.stringify( { sites: { 'site-a': { attributes: { shade: 21, kind: 22, fit: 23, size: 77 } } } } ) );
+	const carried = { ...CARRIED(), ...carriedIds( { repo, client: 'demo', site: 'site-a' } ) };
+	const { skeleton, proposal, problems } = run( SHOP, SHOP_ROLE(), carried );
+	assert.deepEqual( problems, [] );
+	const pf = find( skeleton, named( 'woocommerce/product-filters' ) );
+	assert.deepEqual( groupsOf( pf ).slice( -2 ), [ 'h:Size', 'attribute#77' ], 'the axis group is a filter carrying the recorded id' );
+	assert.equal( proposal.filterRail.attributeIds.size, 77 );
+	// The on-off facet is the theme's toggle: no heading, no filter and no id for it.
+	assert.ok( ! groupsOf( pf ).includes( 'h:Lined' ) );
+	assert.equal( 'lined' in proposal.filterRail.attributeIds, false );
+	// An axis the catalogue step has recorded no id for is a problem like any facet's, never a filter without an id.
+	const lacking = run( SHOP, SHOP_ROLE(), CARRIED( { shade: 21, kind: 22, fit: 23 } ) );
+	assert.deepEqual( lacking.problems, [ 'Root/4#0: the filter for facet size carries no attributeId: no attribute for size' ] );
 	fs.rmSync( repo, { recursive: true, force: true } );
 } );
 

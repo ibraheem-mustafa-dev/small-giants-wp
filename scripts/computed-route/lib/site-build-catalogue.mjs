@@ -11,7 +11,8 @@
 //     one the link resolver writes (lib/draft-link.mjs);
 //   - each facet (a filter the draft's shop offers) is a global attribute with its terms, and each product's terms a
 //     filter-only product attribute (lib/site-build-catalogue-facets.mjs); a product lacking one is completed, and each
-//     facet's attribute id is recorded in `sites.<site>.attributes`; a true-or-false facet is the theme's on-off filter,
+//     facet's attribute id is recorded in `sites.<site>.attributes`, and so is the id of the attribute a variation axis is that a
+//     facet names (the attribute the product's choice made, read after the products step); a true-or-false facet is the theme's on-off filter,
 //     whose theme mods it sets (lib/site-build-catalogue-toggle.mjs);
 //   - a product dropped in the intake review is skipped; the page map is never read or written;
 //   - each attribute's `variesBy` is written as `_sgs_variesby_value` on its terms that have none (an existing value is
@@ -34,7 +35,7 @@ import { catalogueFile, loadCatalogue, productAddress } from './catalogue-read.m
 import { catalogueProblems } from './intake-catalogue-run.mjs';
 import { PHOTO_TO_COME, catalogueApplyPhp, catalogueStatePhp, productBaseFlushPhp } from './site-build-catalogue-php.mjs';
 import { stockFileName, stockKey } from './media-stock.mjs';
-import { facetLack, facetSay, planFacets, tallyFacets, writtenFacets } from './site-build-catalogue-facets.mjs';
+import { attributeFacets, facetLack, facetSay, planFacets, tallyFacets } from './site-build-catalogue-facets.mjs';
 import { runToggle } from './site-build-catalogue-toggle.mjs';
 
 export { PHOTO_TO_COME };
@@ -206,7 +207,7 @@ export function recordSite( repo, client, site, state, catalogue ) {
 	const file = catalogueFile( repo, client );
 	const record = JSON.parse( fs.readFileSync( file, 'utf8' ) );
 	const made = Object.fromEntries( state.products.filter( ( s ) => s.id && ! s.fixture ).map( ( s ) => [ s.draftId, { id: s.id, permalink: s.permalink, variations: s.variations.length, ...( s.photoToCome ? { photoToCome: true } : {} ) } ] ) );
-	const attributes = Object.fromEntries( writtenFacets( catalogue ).filter( ( f ) => state.facets?.[ f.slug ]?.id ).map( ( f ) => [ f.slug, state.facets[ f.slug ].id ] ) );
+	const attributes = Object.fromEntries( attributeFacets( catalogue ).filter( ( f ) => state.facets?.[ f.slug ]?.id ).map( ( f ) => [ f.slug, state.facets[ f.slug ].id ] ) );
 	const next = { ...record, sites: { ...( record.sites || {} ), [ site ]: { builtAt: new Date().toISOString(), products: made, ...( Object.keys( attributes ).length ? { attributes } : {} ) } } };
 	const problems = catalogueProblems( next );
 	if ( problems.length ) {

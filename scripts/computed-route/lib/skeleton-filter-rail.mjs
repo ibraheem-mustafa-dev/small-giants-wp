@@ -5,9 +5,9 @@
 // assets/js/sgs-shop-filters-accordion.js). Found by structure, from the catalogue's facets (FR-48-92), never by a client's
 // words or name:
 //   - a facet's group label is the draft's own text of the filter group drawing its state key (lib/catalogue-facets.mjs),
-//     so each placeable facet (one the catalogue step makes a global attribute: not a variation axis, not an on-off switch,
-//     which the theme's boolean toggle draws) is found as the shown element outside the product listing whose own words are
-//     its label; a label shown more than once, or nowhere, places no group for that facet;
+//     so each placeable facet (one the catalogue step makes or finds as a global attribute, a variation axis included, the
+//     attribute WooCommerce's filter reads by; not an on-off switch, which the theme's boolean toggle draws) is found as the
+//     shown element outside the product listing whose own words are its label; a label shown more than once, or nowhere, places no group for that facet;
 //   - the rail is the branch beside the product listing holding every found label: the child, holding them all, of the
 //     lowest element holding them and the listing (the shop's commerce region, lib/skeleton-commerce-region.mjs);
 //   - a facet's group is its label's highest ancestor below the rail holding no other facet's label; the groups' parent
@@ -17,16 +17,19 @@
 //   - each group is a heading (the label, read at the draft's label element so Fill takes its look) followed by its filter,
 //     in the draft's order; a group the draft shows open starts open (the heading's open class), a facet with swatches
 //     takes the swatch look, and a group showing checkboxes is a checkbox list, else chips.
-// A facet's filter names its attribute by slug (`facet`); the site's attribute id is a carried id (lib/skeleton-carried.mjs).
+// A facet's filter names its attribute by slug (`facet`); the site's attribute id is a carried id (lib/skeleton-carried.mjs),
+// recorded by the catalogue step for each written facet and for each variation axis a facet names (a product's colour
+// picker and the shop's Colour filter are one attribute, `pa_colour`).
 // Pure: the inventory model, the commerce region and the catalogue's filter data in, the rail out.
 
 const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
 const attr = ( e, name ) => String( e.attrs?.[ name ] ?? new RegExp( `^<[^>]*\\s${ name }="([^"]*)"`, 'i' ).exec( e.snippet || '' )?.[ 1 ] ?? '' );
 
-// The facets the rail places: those the catalogue step writes as filter attributes, not a variation axis and not an
-// on-off switch.
-export const placeableFacets = ( facets ) => ( facets || [] ).filter( ( f ) => ! f.axis && 'boolean' !== f.kind );
+// The facets the rail places: every facet that is a global attribute on the site, those the catalogue step writes as
+// filter attributes and the variation axes a facet names (an axis is a global attribute too, so WooCommerce's attribute
+// filter reads it); an on-off switch is the theme's toggle, never placed.
+export const placeableFacets = ( facets ) => ( facets || [] ).filter( ( f ) => 'boolean' !== f.kind );
 
 // o: { m (lib/skeleton-model.mjs), region (the shop's commerce region: { key }), filters ({ facets, brands, categories }),
 // rule (rules.filterRail), money (rules.commerceRegion.money) }. Returns { key, attributes, inner, groups, notes, reason }, or

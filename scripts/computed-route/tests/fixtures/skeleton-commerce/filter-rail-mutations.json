@@ -1,6 +1,6 @@
 [
-	{ "file": "lib/skeleton-filter-rail.mjs", "find": "( f ) => ! f.axis && 'boolean' !== f.kind );", "replace": "( f ) => ! f.axis );", "why": "an on-off facet becomes a filter block instead of the theme's toggle" },
-	{ "file": "lib/skeleton-filter-rail.mjs", "find": "( f ) => ! f.axis && 'boolean' !== f.kind );", "replace": "( f ) => 'boolean' !== f.kind );", "why": "a variation axis becomes a shop filter" },
+	{ "file": "lib/skeleton-filter-rail.mjs", "find": "( f ) => 'boolean' !== f.kind );", "replace": "( f ) => true );", "why": "an on-off facet becomes a filter block instead of the theme's toggle" },
+	{ "file": "lib/skeleton-filter-rail.mjs", "find": "( f ) => 'boolean' !== f.kind );", "replace": "( f ) => ! f.axis && 'boolean' !== f.kind );", "why": "a facet that is a variation axis is no shop filter (the rail drops its group)" },
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": "const outside = m.els.filter( ( e ) => shown( e ) && ! under( e, listing ) );", "replace": "const outside = m.els.filter( ( e ) => shown( e ) );", "why": "the listing's own words count as filter labels" },
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": "const outside = m.els.filter( ( e ) => shown( e ) && ! under( e, listing ) );", "replace": "const outside = m.els.filter( ( e ) => ! under( e, listing ) );", "why": "a label never shown counts" },
 	{ "file": "lib/skeleton-filter-rail.mjs", "find": "if ( 1 === hits.length ) {", "replace": "if ( hits.length ) {", "why": "a label shown twice still places a group" },

@@ -69,6 +69,27 @@ test( 'a facet a variation attribute already is, is neither planned nor written'
 	assert.doesNotMatch( catalogueApplyPhp( [], {}, {}, null, axis ), /"slug":"kind"/ );
 } );
 
+test( 'MUST FAIL: the attribute of a facet that is a variation axis is read and recorded beside the written facets; an axis with no attribute yet records none', () => {
+	const { repo, catalogue } = setup();
+	const axis = { ...catalogue, facets: catalogue.facets.map( ( f ) => ( 'kind' === f.slug ? { ...f, axis: true } : f ) ) };
+	const decoded = ( php ) => [ ...php.matchAll( /base64_decode\( '([^']+)' \)/g ) ].map( ( m ) => JSON.parse( Buffer.from( m[ 1 ], 'base64' ).toString() ) );
+	const read = catalogueStatePhp( [], {}, axis );
+	// The read looks up the axis attribute (every facet's attribute, written or axis), while a product's filter terms are read only for the written facets.
+	assert.ok( decoded( read ).some( ( v ) => JSON.stringify( v ) === JSON.stringify( [ 'kind', 'shade', 'size-filter', 'lined', 'fits', 'pick-a-theme' ] ) ), 'the attribute lookup names the axis facet' );
+	assert.ok( decoded( read ).some( ( v ) => JSON.stringify( v ) === JSON.stringify( [ 'shade', 'size-filter', 'lined', 'fits', 'pick-a-theme' ] ) ), 'the product terms are read for the written facets only' );
+	assert.match( read, /foreach \( \$attribute_in as \$slug \) \{\s+\$tax = wc_attribute_taxonomy_name\( \$slug \);/, 'the lookup loop runs over every attribute facet' );
+	// The axis attribute exists once the products step made it: its id is recorded with the written facets' ids.
+	recordSite( repo, 'demo', 'local', site( [], { facets: allFacets( axis ) } ), axis );
+	const after = JSON.parse( fs.readFileSync( path.join( repo, 'sites', 'demo', 'build', 'catalogue.json' ), 'utf8' ) );
+	assert.deepEqual( after.sites.local.attributes, { kind: 10, shade: 11, 'size-filter': 12, lined: 13, fits: 14, 'pick-a-theme': 15 } );
+	// Negative control: an axis whose attribute the site does not hold yet (id 0) is not recorded.
+	recordSite( repo, 'demo', 'local', site( [], { facets: allFacets( axis, { kind: { id: 0 } } ) } ), axis );
+	const bare = JSON.parse( fs.readFileSync( path.join( repo, 'sites', 'demo', 'build', 'catalogue.json' ), 'utf8' ) );
+	assert.equal( 'kind' in bare.sites.local.attributes, false );
+	// Negative control: the axis is still never planned as a facet to write.
+	assert.ok( ! planCatalogue( axis, site( [], { facets: allFacets( axis ) } ) ).facets.some( ( a ) => 'kind' === a.slug ) );
+} );
+
 test( 'the read PHP reads the facets and writes nothing; the write makes filter-only attributes, ordered terms and swatches it never overwrites', () => {
 	const { catalogue } = setup();
 	const read = catalogueStatePhp( [], {}, catalogue );
