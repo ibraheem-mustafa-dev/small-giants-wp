@@ -1,9 +1,9 @@
 /**
  * sgs/choice-flow: the bands and boxes (Spec 02 FR-2-34). The "Bands and summary box" inspector panel (the header and
  * footer bands' rules and padding, the summary box's border and padding), their colour rows for the block's one
- * `SgsColourPanel`, and the canvas twin of `includes/choice-flow-bands.php` (`BandsStyle`) for the parts the canvas
- * draws (the header band and the progress track; the footer, the summary box and the help note's icon disc are drawn only
- * on the page). The panel also holds the help note icon disc's size.
+ * `SgsColourPanel`, and the canvas twin of `includes/choice-flow-bands.php` (`BandsStyle`) for every part: the progress
+ * track and the header band (`ChromePreview`), the footer band (the canvas's footer row), the summary box, its dividers
+ * and the help note's icon disc (`SummaryPreview`). The panel also holds the help note icon disc's size.
  *
  * Every setting is unset by default; an unset value adds nothing to the canvas or the page.
  *
@@ -14,7 +14,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, RangeControl } from '@wordpress/components';
 import { ResponsiveOverride, TierBorderControl, fillRow } from '../../components';
-import { colourVar, tierBoxLonghands, usePreviewTier } from '../../utils';
+import { colourVar, tierBoxLonghands, tierValueOf, usePreviewTier } from '../../utils';
 import { TierPadding, cssText, tierBorderPreview } from '../choice-flow-question/OptionCardPanels';
 
 /**
@@ -24,25 +24,26 @@ import { TierPadding, cssText, tierBorderPreview } from '../choice-flow-question
  * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
  */
 export default function BandsPanel( { attributes, setAttributes } ) {
+	// Each part: its border attribute, its padding attribute, and their labels.
 	const parts = [
-		[ 'headerBand', __( 'Header band rule (bottom edge)', 'sgs-blocks' ), __( 'Header band padding', 'sgs-blocks' ) ],
-		[ 'footerBand', __( 'Footer band rule (top edge)', 'sgs-blocks' ), __( 'Footer band padding', 'sgs-blocks' ) ],
-		[ 'summary', __( 'Summary box border', 'sgs-blocks' ), __( 'Summary box padding', 'sgs-blocks' ) ],
+		[ 'headerBandBorder', 'headerBandPadding', __( 'Header band rule (bottom edge)', 'sgs-blocks' ), __( 'Header band padding', 'sgs-blocks' ) ],
+		[ 'footerBandBorder', 'footerBandPadding', __( 'Footer band rule (top edge)', 'sgs-blocks' ), __( 'Footer band padding', 'sgs-blocks' ) ],
+		[ 'summaryBorder', 'summaryPadding', __( 'Summary box border', 'sgs-blocks' ), __( 'Summary box padding', 'sgs-blocks' ) ],
 	];
 	return (
 		<InspectorControls>
 			<PanelBody title={ __( 'Bands and summary box', 'sgs-blocks' ) } initialOpen={ false }>
-				{ parts.map( ( [ prefix, borderLabel, paddingLabel ] ) => (
-					<div key={ prefix }>
+				{ parts.map( ( [ borderAttr, paddingAttr, borderLabel, paddingLabel ] ) => (
+					<div key={ borderAttr }>
 						<TierBorderControl
 							label={ borderLabel }
-							value={ attributes[ `${ prefix }Border` ] }
-							onChange={ ( next ) => setAttributes( { [ `${ prefix }Border` ]: next } ) }
+							value={ attributes[ borderAttr ] }
+							onChange={ ( next ) => setAttributes( { [ borderAttr ]: next } ) }
 						/>
 						<TierPadding
 							label={ paddingLabel }
-							value={ attributes[ `${ prefix }Padding` ] }
-							onChange={ ( obj ) => setAttributes( { [ `${ prefix }Padding` ]: obj } ) }
+							value={ attributes[ paddingAttr ] }
+							onChange={ ( obj ) => setAttributes( { [ paddingAttr ]: obj } ) }
 						/>
 					</div>
 				) ) }
@@ -106,7 +107,35 @@ function sideBorder( style, side ) {
 }
 
 /**
- * The canvas twin of `sgs_choice_flow_bands_css()` for the header band and the progress track.
+ * A fill as `sgs_choice_flow_band_css()` prints it: the colour, and no background image beside it.
+ *
+ * @param {string} value Colour slug or value.
+ * @return {Object} Style object; empty when unset.
+ */
+function bandFill( value ) {
+	const fill = colourVar( value );
+	return fill ? { backgroundColor: fill, backgroundImage: 'none' } : {};
+}
+
+/**
+ * The help note's icon disc diameter at a tier, as `sgs_choice_flow_note_icon_size_css()` accepts it (16 to 96 px).
+ *
+ * @param {Object} value {desktop, tablet, mobile} sizes in px.
+ * @param {string} tier  The previewed device.
+ * @return {string|undefined} CSS length, or undefined when unset.
+ */
+function noteIconSize( value, tier ) {
+	const size = tierValueOf( value, tier, ( raw ) => {
+		const n = Number( raw );
+		return Number.isFinite( n ) && n >= 16 && n <= 96 ? n : undefined;
+	} );
+	return undefined === size ? undefined : `${ Math.round( size * 100 ) / 100 }px`;
+}
+
+/**
+ * The canvas twin of `sgs_choice_flow_bands_css()` and `sgs_choice_flow_note_icon_size_css()`: the progress track, the
+ * header band, the footer band (on the canvas's footer row, `.sgs-choice-flow__footer-preview`), the summary box with
+ * its dividers and the help note's icon disc (on `SummaryPreview`).
  *
  * @param {Object} props
  * @param {Object} props.attributes Block attributes.
@@ -115,20 +144,37 @@ function sideBorder( style, side ) {
  */
 export function BandsStyle( { attributes, clientId } ) {
 	const tier = usePreviewTier();
-	const a = attributes;
 	const scope = `#block-${ clientId }`;
-	const headerFill = colourVar( a.headerBandBackground );
+	const divider = colourVar( attributes.summaryDividerColour );
+	const iconSize = noteIconSize( attributes.stageNoteIconCircleSize, tier );
 	const rules = [
-		[ `${ scope } .sgs-choice-flow__progress`, { backgroundColor: colourVar( a.progressTrackColour ) } ],
+		[ `${ scope } .sgs-choice-flow__progress`, { backgroundColor: colourVar( attributes.progressTrackColour ) } ],
 		[
 			`${ scope } .sgs-choice-flow__chrome-header`,
 			{
-				backgroundColor: headerFill,
-				backgroundImage: headerFill ? 'none' : undefined,
-				...sideBorder( tierBorderPreview( a.headerBandBorder, tier ), 'Bottom' ),
-				...tierBoxLonghands( a.headerBandPadding, tier, 'padding' ),
+				...bandFill( attributes.headerBandBackground ),
+				...sideBorder( tierBorderPreview( attributes.headerBandBorder, tier ), 'Bottom' ),
+				...tierBoxLonghands( attributes.headerBandPadding, tier, 'padding' ),
 			},
 		],
+		[
+			`${ scope } .sgs-choice-flow__footer-preview`,
+			{
+				...bandFill( attributes.footerBandBackground ),
+				...sideBorder( tierBorderPreview( attributes.footerBandBorder, tier ), 'Top' ),
+				...tierBoxLonghands( attributes.footerBandPadding, tier, 'padding' ),
+			},
+		],
+		[
+			`${ scope } .sgs-choice-flow__summary-body`,
+			{
+				...bandFill( attributes.summaryBackground ),
+				...tierBorderPreview( attributes.summaryBorder, tier ),
+				...tierBoxLonghands( attributes.summaryPadding, tier, 'padding' ),
+			},
+		],
+		[ `${ scope } .sgs-choice-flow__summary-lines,${ scope } .sgs-choice-flow__summary-total`, { borderColor: divider } ],
+		[ `${ scope } .sgs-choice-flow__summary-note-icon`, { width: iconSize, height: iconSize } ],
 	];
 	const css = rules
 		.map( ( [ selector, style ] ) => [ selector, cssText( style ) ] )

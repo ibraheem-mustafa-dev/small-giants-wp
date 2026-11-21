@@ -73,14 +73,13 @@ function tierWidth( attributes, tier ) {
 /**
  * A per-device length (minHeight, minWidth) at a tier: the narrowest tier holding a safe length string wins.
  *
- * @param {Object} attributes Block attributes.
- * @param {string} tier       Previewed tier.
- * @param {string} attr       Attribute name.
+ * @param {Object} value The attribute's {desktop, tablet, mobile} length strings.
+ * @param {string} tier  Previewed tier.
  * @return {string|undefined} CSS length, or undefined (style.css default).
  */
-function tierLength( attributes, tier, attr ) {
+function tierLength( value, tier ) {
 	for ( const t of TIER_CHAIN[ tier ] || TIER_CHAIN.desktop ) {
-		const v = cssLengthValue( isUnset( attributes[ attr ]?.[ t ] ) ? '' : attributes[ attr ][ t ] );
+		const v = cssLengthValue( isUnset( value?.[ t ] ) ? '' : value[ t ] );
 		if ( v ) {
 			return v;
 		}
@@ -184,11 +183,11 @@ export function buttonPreviewStyle( attributes, palette, tier = 'desktop' ) {
 	if ( width ) {
 		style.width = width;
 	}
-	const minHeight = tierLength( attributes, tier, 'minHeight' );
+	const minHeight = tierLength( attributes.minHeight, tier );
 	if ( minHeight ) {
 		style.minHeight = minHeight;
 	}
-	const minWidth = tierLength( attributes, tier, 'minWidth' );
+	const minWidth = tierLength( attributes.minWidth, tier );
 	if ( minWidth ) {
 		style.minWidth = minWidth;
 	}

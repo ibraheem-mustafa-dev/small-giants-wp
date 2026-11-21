@@ -298,7 +298,6 @@ export function tierBorderPreview( border, tier ) {
  */
 export function OptionCardStyle( { attributes, clientId } ) {
 	const tier = usePreviewTier();
-	const a = attributes;
 	const scope = `#block-${ clientId }`;
 	const card = `${ scope } .sgs-choice-flow-question__option-preview`;
 	const rest = `${ card }:not(.sgs-choice-flow-question__option-preview--selected)`;
@@ -306,56 +305,56 @@ export function OptionCardStyle( { attributes, clientId } ) {
 		[
 			card,
 			{
-				...sgsBorderPreview( { widthValues: a.optionCardBorderWidth ?? {}, styleValue: a.optionCardBorderStyle, radiusValues: { base: a.optionCardBorderRadius ?? {} } }, 'desktop' ),
-				...tierBoxLonghands( a.optionCardPadding, tier, 'padding' ),
+				...sgsBorderPreview( { widthValues: attributes.optionCardBorderWidth ?? {}, styleValue: attributes.optionCardBorderStyle, radiusValues: { base: attributes.optionCardBorderRadius ?? {} } }, 'desktop' ),
+				...tierBoxLonghands( attributes.optionCardPadding, tier, 'padding' ),
 			},
 		],
 		[
 			rest,
 			{
-				backgroundColor: colourVar( a.optionCardColourBackground ),
-				borderColor: colourVar( a.optionCardColourBorder ),
-				boxShadow: resolveShadowPreviewComposed( a.optionCardShadow, a.optionCardShadowColour ),
+				backgroundColor: colourVar( attributes.optionCardColourBackground ),
+				borderColor: colourVar( attributes.optionCardColourBorder ),
+				boxShadow: resolveShadowPreviewComposed( attributes.optionCardShadow, attributes.optionCardShadowColour ),
 			},
 		],
 		[
 			`${ rest }:hover`,
 			{
-				backgroundColor: colourVar( a.optionCardColourBackgroundHover ),
-				borderColor: colourVar( a.optionCardColourBorderHover ),
-				boxShadow: a.optionCardHoverShadow || a.optionCardHoverShadowColour ? resolveShadowPreviewComposed( a.optionCardHoverShadow || a.optionCardShadow, a.optionCardHoverShadowColour || a.optionCardShadowColour ) : undefined,
+				backgroundColor: colourVar( attributes.optionCardColourBackgroundHover ),
+				borderColor: colourVar( attributes.optionCardColourBorderHover ),
+				boxShadow: attributes.optionCardHoverShadow || attributes.optionCardHoverShadowColour ? resolveShadowPreviewComposed( attributes.optionCardHoverShadow || attributes.optionCardShadow, attributes.optionCardHoverShadowColour || attributes.optionCardShadowColour ) : undefined,
 			},
 		],
 		[
 			`${ card }.sgs-choice-flow-question__option-preview--selected`,
 			{
-				backgroundColor: colourVar( a.optionCardSelectedBackgroundColour ),
-				borderColor: colourVar( a.optionCardSelectedBorderColour ),
-				boxShadow: resolveShadowPreviewComposed( a.optionCardSelectedShadow, a.optionCardSelectedShadowColour ),
+				backgroundColor: colourVar( attributes.optionCardSelectedBackgroundColour ),
+				borderColor: colourVar( attributes.optionCardSelectedBorderColour ),
+				boxShadow: resolveShadowPreviewComposed( attributes.optionCardSelectedShadow, attributes.optionCardSelectedShadowColour ),
 			},
 		],
 		[
 			`${ scope } .sgs-choice-flow-question__option-badge`,
 			{
-				...tierBorderPreview( a.optionBadgeBorder, tier ),
-				borderRadius: a.optionBadgeRadius || undefined,
-				...tierBoxLonghands( a.optionBadgePadding, tier, 'padding' ),
+				...tierBorderPreview( attributes.optionBadgeBorder, tier ),
+				borderRadius: attributes.optionBadgeRadius || undefined,
+				...tierBoxLonghands( attributes.optionBadgePadding, tier, 'padding' ),
 			},
 		],
-		[ `${ scope } .sgs-choice-flow-question__option-media`, { backgroundColor: colourVar( a.optionMediaBackground ) } ],
+		[ `${ scope } .sgs-choice-flow-question__option-media`, { backgroundColor: colourVar( attributes.optionMediaBackground ) } ],
 	];
-	if ( a.optionCheckShow ) {
+	if ( attributes.optionCheckShow ) {
 		rules.push(
 			[ card, { position: 'relative' } ],
 			[ `${ card }--selected > .sgs-choice-flow-question__option-check`, { display: 'block' } ],
 			[
 				`${ scope } .sgs-choice-flow-question__option-check`,
 				{
-					color: colourVar( a.optionCheckColour ),
-					backgroundColor: colourVar( a.optionCheckBackgroundColour ),
-					'--sgs-cfq-check-size': a.optionCheckSize || undefined,
-					top: a.optionCheckInset || undefined,
-					insetInlineEnd: a.optionCheckInset || undefined,
+					color: colourVar( attributes.optionCheckColour ),
+					backgroundColor: colourVar( attributes.optionCheckBackgroundColour ),
+					'--sgs-cfq-check-size': attributes.optionCheckSize || undefined,
+					top: attributes.optionCheckInset || undefined,
+					insetInlineEnd: attributes.optionCheckInset || undefined,
 				},
 			]
 		);
