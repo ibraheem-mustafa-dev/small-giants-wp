@@ -21,9 +21,13 @@ export const INVENTORY_WIDTHS = [ 1440, 375, 768 ];
 // a var(), a calc()) and whatever the element inherits.
 export const RESOLVED = [ 'font-size', 'font-weight', 'letter-spacing', 'text-transform', 'line-height', 'width', 'height', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'text-align' ];
 // The paint a box shows, recorded in `resolved` beside those only where it differs from the value named here (the property's
-// initial value, which paints nothing): a background, a border side, a shadow, a width cap. An absent paint property in a
-// `resolved` read that holds `text-align` therefore means the box does not paint it (lib/skeleton-paint-conservation.mjs).
-export const PAINT_INITIAL = { 'background-color': 'rgba(0, 0, 0, 0)', 'background-image': 'none', 'border-top-width': '0px', 'border-right-width': '0px', 'border-bottom-width': '0px', 'border-left-width': '0px', 'box-shadow': 'none', 'max-width': 'none' };
+// initial value, which paints nothing): a background, a border side's width and style, a shadow, a width cap. An absent paint
+// property in a `resolved` read that holds `text-align` therefore means the box does not paint it
+// (lib/skeleton-paint-conservation.mjs).
+export const PAINT_INITIAL = { 'background-color': 'rgba(0, 0, 0, 0)', 'background-image': 'none', 'border-top-width': '0px', 'border-right-width': '0px', 'border-bottom-width': '0px', 'border-left-width': '0px', 'border-top-style': 'none', 'border-right-style': 'none', 'border-bottom-style': 'none', 'border-left-style': 'none', 'box-shadow': 'none', 'max-width': 'none' };
+// The border side colours, recorded the same sparse way against their initial value, the element's own text colour
+// (currentcolor): an absent colour is the text colour, and a recorded one names another (a transparent side paints nothing).
+export const PAINT_CURRENT_COLOUR = [ 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color' ];
 // The draft's own `data-*` marks kept per element as `data` (a reveal mark, a tilt mark), without the `data-` prefix; the
 // runtime's stamps, the route's own and this reader's working marks are not the draft's.
 export const NOT_DRAFT_DATA = /^data-(?:dc|sc|sgs|inv)-/;
@@ -100,7 +104,7 @@ export function codeItemsOf( e ) {
 	return once.length >= 2 ? once : null;
 }
 
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc, resolvedNames, paintInitial = {}, notDraftData = null ] ) {
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc, resolvedNames, paintInitial = {}, notDraftData = null, currentColour = [] ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	// eslint-disable-next-line no-new-func
@@ -226,6 +230,10 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 		for ( const [ n, initial ] of Object.entries( paintInitial ) ) {
 			const v = cs.getPropertyValue( n );
 			v !== initial && ( resolved[ n ] = v );
+		}
+		for ( const n of currentColour ) {
+			const v = cs.getPropertyValue( n );
+			v !== cs.color && ( resolved[ n ] = v );
 		}
 		const data = notDraftData ? Object.fromEntries( [ ...e.attributes ].filter( ( a ) => a.name.startsWith( 'data-' ) && ! new RegExp( notDraftData ).test( a.name ) ).map( ( a ) => [ a.name.slice( 5 ), a.value ] ) ) : {};
 		const r = e.getBoundingClientRect();
@@ -372,7 +380,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source ];
+		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR ];
 		const res = await page.evaluate( collect, args );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
@@ -412,7 +420,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source ];
+			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR ];
 			const res = await page.evaluate( collect, args );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );

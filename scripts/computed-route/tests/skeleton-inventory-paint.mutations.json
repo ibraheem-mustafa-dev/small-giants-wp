@@ -13,8 +13,8 @@
 	},
 	{
 		"file": "lib/skeleton-inventory.mjs",
-		"find": "codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t}",
-		"replace": "codeItemsOf.toString(), RESOLVED, {}, null ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t}",
+		"find": "codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t}",
+		"replace": "codeItemsOf.toString(), RESOLVED, {}, null, [] ];\n\t\tconst res = await page.evaluate( collect, args );\n\t\tif ( res.error ) {\n\t\t\tthrow new Error( `${ res.error } at ${ w }px` );\n\t\t}\n\t\truns[ w ] = res;\n\t\tlog( `inventory ${ w }px: ${ res.records.length } elements` );\n\t\tawait shootWidth( { page, res, runs, w, root, shotsDir, shots, skipped } );\n\t\tawait addReveals( { page, res, args, reveal, w, log } );\n\t\tawait addDataBranches( { page, res, collect, args, branches, w, log } );\n\t}",
 		"why": "the reader on a prepared page is not given the paint list or the data filter"
 	},
 	{
@@ -52,5 +52,23 @@
 		"find": "const displayAt = ( w ) => ( element.displayAt ? element.displayAt[ w ] : element.display );",
 		"replace": "const displayAt = ( w ) => element.displayAt?.[ w ];",
 		"why": "an inventory without per-width display paints no layout"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "\t\t\tv !== cs.color && ( resolved[ n ] = v );",
+		"replace": "\t\t\tresolved[ n ] = v;",
+		"why": "a border colour equal to the text colour is recorded"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "\t\tfor ( const n of currentColour ) {",
+		"replace": "\t\tfor ( const n of [] ) {",
+		"why": "no border colour is recorded"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "'border-top-style': 'none', 'border-right-style': 'none', 'border-bottom-style': 'none', 'border-left-style': 'none', ",
+		"replace": "",
+		"why": "no border style is recorded"
 	}
 ]

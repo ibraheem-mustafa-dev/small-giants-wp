@@ -4,7 +4,7 @@
 import test, { after, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { readInventory, RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA } from '../lib/skeleton-inventory.mjs';
+import { readInventory, RESOLVED, PAINT_INITIAL, PAINT_CURRENT_COLOUR, NOT_DRAFT_DATA } from '../lib/skeleton-inventory.mjs';
 import { paintsBox } from '../lib/skeleton-paint-conservation.mjs';
 
 const HTML = `<!doctype html><html><head><style>
@@ -14,6 +14,9 @@ body { margin: 0 }
 @media ( max-width: 480px ) { .phone { background-image: linear-gradient( red, blue ) } }
 .centre { text-align: center }
 .row { display: flex; gap: 8px }
+.ghost { border: 2px solid transparent }
+.dash { border-top: 3px dashed rgb(9, 9, 9) }
+.own { color: rgb(20, 30, 40); border: 1px solid }
 @media ( max-width: 480px ) { .row { display: block } }
 </style></head><body>
 <div class="sc-host" data-sc-name="Root" data-dc-tpl="">
@@ -22,6 +25,9 @@ body { margin: 0 }
 		<div data-dc-tpl="3" class="plain">Plain</div>
 		<div data-dc-tpl="4" class="phone">Phone only</div>
 		<div data-dc-tpl="5" class="centre"><p data-dc-tpl="6">Centred words</p></div>
+		<div data-dc-tpl="11" class="ghost">Ghost</div>
+		<div data-dc-tpl="12" class="dash">Dashed</div>
+		<div data-dc-tpl="13" class="own">Own colour</div>
 		<div data-dc-tpl="7" class="row"><span data-dc-tpl="8">One</span><span data-dc-tpl="10">Two</span></div>
 	</main></div>
 </div></body></html>`;
@@ -95,4 +101,19 @@ test( 'display is recorded at each width, and a box lays its children out only w
 	// Negative control: a saved inventory without per-width display keeps the one display at every width.
 	const { displayAt, ...saved } = row;
 	assert.deepEqual( paintsBox( saved, { children: 2 } ), { layout: [ 375, 768, 1440 ] } );
+} );
+
+test( 'each drawn border side records its style and, where it is not the text colour, its colour: a transparent border paints nothing (MUST FAIL where only the side width is read)', () => {
+	const ghost = el( 11 ).resolved[ 1440 ];
+	assert.deepEqual( [ ghost[ 'border-top-width' ], ghost[ 'border-top-style' ], ghost[ 'border-top-color' ] ], [ '2px', 'solid', 'rgba(0, 0, 0, 0)' ] );
+	assert.deepEqual( paintsBox( el( 11 ) ), {} );
+	const dash = el( 12 ).resolved[ 1440 ];
+	assert.deepEqual( [ dash[ 'border-top-style' ], dash[ 'border-top-color' ] ], [ 'dashed', 'rgb(9, 9, 9)' ] );
+	assert.ok( ! ( 'border-bottom-style' in dash ) && ! ( 'border-bottom-color' in dash ), 'an undrawn side records nothing' );
+	assert.deepEqual( Object.keys( paintsBox( el( 12 ) ) ), [ 'border' ] );
+	// Negative controls: a border in the text colour records no colour and paints; a plain box records no style or colour.
+	const own = el( 13 ).resolved[ 1440 ];
+	assert.ok( 'border-top-style' in own && ! ( 'border-top-color' in own ) );
+	assert.deepEqual( Object.keys( paintsBox( el( 13 ) ) ), [ 'border' ] );
+	assert.ok( [ ...Object.keys( PAINT_INITIAL ), ...PAINT_CURRENT_COLOUR ].every( ( n ) => ! ( n in el( 3 ).resolved[ 1440 ] ) ) );
 } );

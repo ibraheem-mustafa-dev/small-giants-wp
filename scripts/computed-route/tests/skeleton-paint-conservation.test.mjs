@@ -126,6 +126,9 @@ test( 'computedLooks reads only the values the inventory recorded, and an inheri
 	assert.deepEqual( looks( { 'background-color': 'rgba(0, 0, 0, 0)', 'background-image': 'none', 'box-shadow': 'none', 'max-width': 'none' } ), [] );
 	assert.deepEqual( looks( { 'border-top-width': '2px', 'border-top-style': 'solid' } ), [ 'border' ] );
 	assert.deepEqual( looks( { 'border-top-width': '2px', 'border-top-style': 'none' } ), [] );
+	assert.deepEqual( looks( { 'border-top-width': '2px' } ), [ 'border' ], 'an inventory read before side styles were recorded: a drawn width is a border' );
+	assert.deepEqual( looks( { 'border-top-width': '2px', 'border-top-style': 'solid', 'border-top-color': 'rgba(0, 0, 0, 0)' } ), [], 'a transparent side' );
+	assert.deepEqual( looks( { 'border-top-width': '2px', 'border-top-style': 'hidden' } ), [] );
 	assert.deepEqual( looks( { 'box-shadow': 'rgb(0, 0, 0) 4px 4px 0px 0px', 'max-width': '640px' } ), [ 'max-width', 'shadow' ] );
 	assert.deepEqual( looks( { 'text-align': 'center' }, { 'text-align': 'start' } ), [ 'text-centre' ] );
 	assert.deepEqual( looks( { 'text-align': 'center' }, { 'text-align': 'center' } ), [], 'inherited from a centred parent' );

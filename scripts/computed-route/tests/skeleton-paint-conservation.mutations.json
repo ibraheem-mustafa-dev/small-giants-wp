@@ -640,5 +640,23 @@
 		"find": "const childrenOf = ( e ) => ( e.reveal ? ( stateKids.get( inState( e, e.key ) ) ?? 0 ) + ( byKey.has( e.key ) ? 0 : kids.get( e.key ) ?? 0 ) : kids.get( e.key ) ?? 0 );",
 		"replace": "const childrenOf = ( e ) => kids.get( e.key ) ?? 0;",
 		"why": "a state element's children in its state are not counted"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": " && ! TRANSPARENT.test( low( v( `border-${ s }-color` ) ) ) ) && looks.add( 'border' );",
+		"replace": " ) && looks.add( 'border' );",
+		"why": "a transparent border side paints"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "! [ ...NONE, 'hidden' ].includes( low( v( `border-${ s }-style` ) ?? 'solid' ) )",
+		"replace": "! [ ...NONE, 'hidden' ].includes( low( v( `border-${ s }-style` ) ?? 'none' ) )",
+		"why": "a side with no recorded style is read as undrawn"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "! [ ...NONE, 'hidden' ].includes(",
+		"replace": "! [ ...NONE ].includes(",
+		"why": "a hidden border side paints"
 	}
 ]

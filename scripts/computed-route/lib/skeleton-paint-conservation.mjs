@@ -111,12 +111,13 @@ export function declaredLooks( st, tag = '' ) {
 }
 
 // The looks an element's computed values show at one width (the inventory's `resolved` read). A value the read does not
-// record says nothing. `text-align` is inherited, so it counts only where it differs from the parent's at that width.
+// record says nothing. `text-align` is inherited, so it counts only where it differs from the parent's at that width. A border
+// side counts where its width is drawn, its style (where recorded) draws, and its colour (where recorded) is not transparent.
 export function computedLooks( values, parentValues = null ) {
 	const looks = new Set();
 	const v = ( n ) => values?.[ n ];
 	( ( undefined !== v( 'background-color' ) && ! NO_COLOUR.has( low( v( 'background-color' ) ) ) ) || ( undefined !== v( 'background-image' ) && ! NONE.has( low( v( 'background-image' ) ) ) ) ) && looks.add( 'background' );
-	SIDES.some( ( s ) => ( pxOf( v( `border-${ s }-width` ) ) ?? 0 ) > 0 && ! NONE.has( low( v( `border-${ s }-style` ) ?? 'solid' ) ) ) && looks.add( 'border' );
+	SIDES.some( ( s ) => ( pxOf( v( `border-${ s }-width` ) ) ?? 0 ) > 0 && ! [ ...NONE, 'hidden' ].includes( low( v( `border-${ s }-style` ) ?? 'solid' ) ) && ! TRANSPARENT.test( low( v( `border-${ s }-color` ) ) ) ) && looks.add( 'border' );
 	undefined !== v( 'box-shadow' ) && ! NONE.has( low( v( 'box-shadow' ) ) ) && looks.add( 'shadow' );
 	CORNERS.some( ( n ) => undefined !== v( n ) && ! zero( v( n ) ) ) && looks.add( 'radius' );
 	SIDES.some( ( s ) => ( pxOf( v( `padding-${ s }` ) ) ?? 0 ) > 0 ) && looks.add( 'padding' );
