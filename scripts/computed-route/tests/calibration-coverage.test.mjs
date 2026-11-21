@@ -29,7 +29,7 @@ test( 'the pool: a painting role is read from its rows, a unit companion and a c
 	const names = new Set( [ 'sgs/demo|gap', 'sgs/demo|gapUnit' ] );
 	assert.ok( companionOf( row( 'gapUnit' ), [ 'Unit' ], names ) );
 	// Negative control: a Unit name with no stem setting is a setting of its own.
-	assert.ok( ! companionOf( row( 'widthUnit' ), [ 'Unit' ], names ) );
+	assert.ok( ! companionOf( row( 'demoUnit' ), [ 'Unit' ], names ) );
 } );
 
 test( 'never planned: no property, no longhand, a skipped role, a number-valued choice', () => {
