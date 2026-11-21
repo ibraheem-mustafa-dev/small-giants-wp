@@ -21,7 +21,7 @@
  * Run (the plugin's own `--user=1` keeps capability checks honest, `apply` is a positional word because eval-file passes those to the file):
  *   wp eval-file wp-content/plugins/sgs-blocks/scripts/sweep-builtin-button-attrs.php --user=1            # dry run
  *   wp eval-file wp-content/plugins/sgs-blocks/scripts/sweep-builtin-button-attrs.php apply --user=1      # write
- *   ... blocks=sgs/buybox,sgs/account                                                                   # only these blocks (default: sgs/buybox, sgs/product-card, sgs/account)
+ *   ... blocks=sgs/buybox,sgs/account                                                                   # only these blocks (default: sgs/buybox, sgs/product-card, sgs/account, sgs/choice-flow)
  *   ... json                                                                                            # the counts as one JSON line
  * Back the database up first on a site that matters (`wp db export`); the sweep never writes without `apply`.
  *
@@ -104,7 +104,7 @@ function sgs_builtin_button_sweep_run( array $words ): void {
 
 	$apply     = in_array( 'apply', $words, true ) || '1' === getenv( 'SGS_SWEEP_APPLY' );
 	$json_only = in_array( 'json', $words, true );
-	$blocks    = array( 'sgs/buybox', 'sgs/product-card', 'sgs/account' );
+	$blocks    = array( 'sgs/buybox', 'sgs/product-card', 'sgs/account', 'sgs/choice-flow' );
 	foreach ( $words as $word ) {
 		if ( 0 === strpos( (string) $word, 'blocks=' ) ) {
 			$blocks = array_values( array_filter( array_map( 'trim', explode( ',', substr( (string) $word, 7 ) ) ) ) );

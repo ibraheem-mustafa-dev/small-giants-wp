@@ -148,6 +148,15 @@ final class ButtonMigrationSweepTest extends TestCase {
 		$this->assertSame( array(), $again['changed'] );
 	}
 
+	public function test_the_choice_flow_back_radius_saved_flat_becomes_per_device(): void {
+		// choice-flow's render reads backBorderRadius per device since it joined the kit; a saved flat corner object would
+		// otherwise print no radius.
+		$flat  = array( 'topLeft' => '4px', 'topRight' => '4px', 'bottomLeft' => '4px', 'bottomRight' => '4px' );
+		$swept = self::attrs( 'sgs/choice-flow', array( 'backBorderRadius' => $flat ) );
+		$this->assertSame( array( 'backBorderRadius' => array( 'desktop' => $flat ) ), $swept );
+		$this->assertSame( $swept, self::attrs( 'sgs/choice-flow', $swept ), 'a second pass changes nothing' );
+	}
+
 	public function test_with_no_map_rows_nothing_changes(): void {
 		$content = '<!-- wp:sgs/buybox {"addToCartBackgroundColour":"x"} /-->';
 		$out     = self::run_cases( array( 'c' => array( 'fn' => 'content', 'blocks' => array( 'sgs/buybox' ), 'content' => $content, 'map' => array( 'sgs/other' => array() ) ) ) )['c'];
