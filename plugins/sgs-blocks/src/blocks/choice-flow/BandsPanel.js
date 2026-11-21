@@ -1,9 +1,10 @@
 /**
- * sgs/choice-flow: the bands and boxes (Spec 02 FR-2-34). The "Bands and summary box" inspector panel (the header and
- * footer bands' rules and padding, the summary box's border and padding), their colour rows for the block's one
- * `SgsColourPanel`, and the canvas twin of `includes/choice-flow-bands.php` (`BandsStyle`) for every part: the progress
- * track and the header band (`ChromePreview`), the footer band (the canvas's footer row), the summary box, its dividers
- * and the help note's icon disc (`SummaryPreview`). The panel also holds the help note icon disc's size.
+ * sgs/choice-flow: the bands and boxes (Spec 02 FR-2-34). One inspector panel per element, titled by the element's
+ * `supports.sgs.elements` label (Spec 35 THE PLACEMENT RULE, TIER 1): "Header band" and "Footer band" (each band's rule
+ * and padding), "Summary box" (its border and padding) and "Help note icon disc" (its size); their colour rows for the
+ * block's one `SgsColourPanel`; and the canvas twin of `includes/choice-flow-bands.php` (`BandsStyle`) for every part:
+ * the progress track and the header band (`ChromePreview`), the footer band (the canvas's footer row), the summary box,
+ * its dividers and the help note's icon disc (`SummaryPreview`).
  *
  * Every setting is unset by default; an unset value adds nothing to the canvas or the page.
  *
@@ -21,32 +22,32 @@ import { TierPadding, cssText, tierBorderPreview } from '../choice-flow-question
  * @param {Object}   o
  * @param {Object}   o.attributes    Block attributes.
  * @param {Function} o.setAttributes Block setAttributes.
- * @return {JSX.Element} The panel, mounted inside its own InspectorControls.
+ * @return {JSX.Element} The four element panels, mounted inside their own InspectorControls.
  */
 export default function BandsPanel( { attributes, setAttributes } ) {
-	// Each part: its border attribute, its padding attribute, and their labels.
+	// Each element: its panel title (the element's label), its border attribute, its padding attribute and their labels.
 	const parts = [
-		[ 'headerBandBorder', 'headerBandPadding', __( 'Header band rule (bottom edge)', 'sgs-blocks' ), __( 'Header band padding', 'sgs-blocks' ) ],
-		[ 'footerBandBorder', 'footerBandPadding', __( 'Footer band rule (top edge)', 'sgs-blocks' ), __( 'Footer band padding', 'sgs-blocks' ) ],
-		[ 'summaryBorder', 'summaryPadding', __( 'Summary box border', 'sgs-blocks' ), __( 'Summary box padding', 'sgs-blocks' ) ],
+		[ __( 'Header band', 'sgs-blocks' ), 'headerBandBorder', 'headerBandPadding', __( 'Rule (bottom edge)', 'sgs-blocks' ), __( 'Padding', 'sgs-blocks' ) ],
+		[ __( 'Footer band', 'sgs-blocks' ), 'footerBandBorder', 'footerBandPadding', __( 'Rule (top edge)', 'sgs-blocks' ), __( 'Padding', 'sgs-blocks' ) ],
+		[ __( 'Summary box', 'sgs-blocks' ), 'summaryBorder', 'summaryPadding', __( 'Border', 'sgs-blocks' ), __( 'Padding', 'sgs-blocks' ) ],
 	];
 	return (
 		<InspectorControls>
-			<PanelBody title={ __( 'Bands and summary box', 'sgs-blocks' ) } initialOpen={ false }>
-				{ parts.map( ( [ borderAttr, paddingAttr, borderLabel, paddingLabel ] ) => (
-					<div key={ borderAttr }>
-						<TierBorderControl
-							label={ borderLabel }
-							value={ attributes[ borderAttr ] }
-							onChange={ ( next ) => setAttributes( { [ borderAttr ]: next } ) }
-						/>
-						<TierPadding
-							label={ paddingLabel }
-							value={ attributes[ paddingAttr ] }
-							onChange={ ( obj ) => setAttributes( { [ paddingAttr ]: obj } ) }
-						/>
-					</div>
-				) ) }
+			{ parts.map( ( [ title, borderAttr, paddingAttr, borderLabel, paddingLabel ] ) => (
+				<PanelBody key={ borderAttr } title={ title } initialOpen={ false }>
+					<TierBorderControl
+						label={ borderLabel }
+						value={ attributes[ borderAttr ] }
+						onChange={ ( next ) => setAttributes( { [ borderAttr ]: next } ) }
+					/>
+					<TierPadding
+						label={ paddingLabel }
+						value={ attributes[ paddingAttr ] }
+						onChange={ ( obj ) => setAttributes( { [ paddingAttr ]: obj } ) }
+					/>
+				</PanelBody>
+			) ) }
+			<PanelBody title={ __( 'Help note icon disc', 'sgs-blocks' ) } initialOpen={ false }>
 				<ResponsiveOverride
 					value={ attributes.stageNoteIconCircleSize }
 					onChange={ ( obj ) => setAttributes( { stageNoteIconCircleSize: obj } ) }
