@@ -1,0 +1,26 @@
+[
+	{
+		"file": "lib/apply-chrome-logo.mjs",
+		"find": "if ( read.length && read.every( ( f ) => 'img' === f.tag ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a picture logo would get an svgParts row again"
+	},
+	{
+		"file": "lib/apply-chrome-logo.mjs",
+		"find": "if ( read.length && read.every( ( f ) => 'img' === f.tag ) ) {",
+		"replace": "if ( read.some( ( f ) => 'img' === f.tag ) ) {",
+		"why": "a logo drawn as an svg at one width would lose its row"
+	},
+	{
+		"file": "lib/apply-chrome-logo.mjs",
+		"find": "if ( read.length && read.every( ( f ) => 'img' === f.tag ) ) {",
+		"replace": "if ( read.every( ( f ) => 'img' === f.tag ) ) {",
+		"why": "a logo with no draft reading would be taken for a picture"
+	},
+	{
+		"file": "lib/apply-chrome-logo.mjs",
+		"find": "if ( read.length && read.every( ( f ) => 'img' === f.tag ) ) {",
+		"replace": "if ( read.length && read.every( ( f ) => 'svg' !== f.tag ) ) {",
+		"why": "a custom element drawing the logo would be taken for a picture"
+	}
+]

@@ -1,13 +1,18 @@
 // Chrome rules, logo: the animated SVG logo. The client's `logo-svgparts.json` holds the attributes (inlineSvg, svgParts, trigger,
 // hover cooldown) of the logo's per-part animation; sgs/responsive-logo takes them as they are, sgs/nav-drawer takes the same
 // four under its `chromeLogo` names. The drawer's logo replays on every open (the draft replays its entrance each time the
-// drawer opens), so its trigger is every-visible.
+// drawer opens), so its trigger is every-visible. A draft logo drawn as a picture (an `img` at every width it is read at) has
+// no parts a page can animate, so it gets no row at all.
 import { settle } from './apply-chrome-records.mjs';
 
 const DRAWER = { inlineSvg: 'chromeLogoInlineSvg', svgParts: 'chromeLogoSvgParts', svgPartsTrigger: 'chromeLogoSvgPartsTrigger', svgPartsHoverCooldown: 'chromeLogoSvgPartsHoverCooldown' };
 
-export function logoRule( { block, target, saved, clientData } ) {
+export function logoRule( { block, target, saved, draft, clientData } ) {
 	if ( target.slot || ! [ 'sgs/responsive-logo', 'sgs/nav-drawer' ].includes( block ) ) {
+		return [];
+	}
+	const read = Object.values( draft ?? {} ).filter( Boolean );
+	if ( read.length && read.every( ( f ) => 'img' === f.tag ) ) {
 		return [];
 	}
 	const data = clientData?.logo;

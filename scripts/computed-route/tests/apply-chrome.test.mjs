@@ -66,6 +66,17 @@ test( 'chrome logo: the client data goes to the block, the drawer takes the chro
 	assert.equal( chrome.decide( ctx( { block: 'sgs/responsive-logo' } ) )[ 0 ].status, 'no-setting' );
 } );
 
+test( 'chrome logo: a draft logo that is a picture (an img at every width) has no parts to animate, so no svgParts row, MUST FAIL before', () => {
+	const img = at( { tag: 'img' } );
+	const logoRows = ( o ) => chrome.decide( ctx( { block: 'sgs/responsive-logo', ...o } ) ).filter( ( r ) => 'svgParts' === r.prop );
+	assert.deepEqual( logoRows( { draft: img } ), [] );
+	assert.deepEqual( logoRows( { draft: img, clientData: { logo: { svgParts: [ { target: 'x' } ] } } } ), [] );
+	// Negative controls: an inline svg, a custom element drawing one, and a logo drawn as an img only at some widths keep the row.
+	assert.equal( logoRows( { draft: at( { tag: 'svg' } ) } )[ 0 ].status, 'no-setting' );
+	assert.equal( logoRows( { draft: at( { tag: 'brand-logo' } ) } )[ 0 ].status, 'no-setting' );
+	assert.equal( logoRows( { draft: { 1440: { tag: 'svg' }, 768: { tag: 'img' }, 375: { tag: 'img' } } } )[ 0 ].status, 'no-setting' );
+} );
+
 test( 'chrome hover: record values land on the drawer menu and the footer list; no record, no item', () => {
 	const items = chrome.decide( ctx( { block: 'sgs/nav-drawer-menu', target: { owns: [ 127, 128 ] } } ) );
 	assert.deepEqual( items.flatMap( ( i ) => i.writes ), [ { attr: 'itemPaddingShiftHover', value: '5px' }, { attr: 'caretBoxShadowHover', value: '0 0 0 6px' }, { attr: 'caretBoxShadowColourHover', value: 'rgba(231,215,104,.22)' } ] );
