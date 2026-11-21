@@ -11,8 +11,10 @@
 //     host is a platform's domain or below it, or an element whose own words (at most `maxNameWords`, so a quote that
 //     mentions the platform never counts) hold the platform's name as a whole word;
 //   - the block is placed at the lowest element holding the tiles and every signal, and draws everything in it.
-// A section whose signals name two platforms is left to the scoring and listed in a note; a section with no signal is
-// not a platform section. Pure: the inventory model and the rule in, the regions out.
+// A section whose signals name two platforms is left to the scoring and listed in a note; so is a section that names a
+// platform without every kind of signal in the rule's `needs` (its mark: a link or the name alone is a mention, and the
+// reviews are in the client's own style); a section with no signal is not a platform section. Pure: the inventory model
+// and the rule in, the regions out.
 import { templateKey } from './fact-key.mjs';
 
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
@@ -102,11 +104,18 @@ export function reviewPlatformRegions( { m, rule } ) {
 			notes.push( `the review section ${ top.key } (loop ${ loop }) names ${ platforms.join( ' and ' ) }, so it is not taken as one platform's reviews` );
 			continue;
 		}
+		// The platform's own look, never a mention of it: the section names the platform by every kind of signal the rule
+		// asks for (`needs`: its mark). Reviews in the client's own style that only name or link the platform stay its blocks.
+		const kinds = [ ...new Set( signals.map( ( s ) => s.kind ) ) ];
+		const lacks = ( rule.needs || [] ).filter( ( k ) => ! kinds.includes( k ) );
+		if ( lacks.length ) {
+			notes.push( `the review section ${ top.key } (loop ${ loop }) names ${ platforms[ 0 ] } without its ${ lacks.join( ', ' ) }, so its reviews stay the draft's own blocks` );
+			continue;
+		}
 		// The lowest element holding the tiles and every signal.
 		const need = [ m.byKey[ holders[ 0 ] ], ...signals.map( ( s ) => m.byKey[ s.key ] ) ];
 		const region = chain( need[ 0 ] ).find( ( a ) => need.every( ( n ) => chain( n ).includes( a ) ) );
 		const p = rule.platforms.find( ( x ) => x.name === platforms[ 0 ] );
-		const kinds = [ ...new Set( signals.map( ( s ) => s.kind ) ) ];
 		regions.set( region.key, { platform: p.name, block: p.block, attributes: { ...( p.attributes || {} ) }, signals, handover: p.handover ?? null, reason: `${ items.length } reviews (loop ${ loop }) in a section naming ${ p.name } by its ${ kinds.join( ', ' ) } (${ signals.length } signal${ 1 === signals.length ? '' : 's' })` } );
 	}
 	return { regions, notes };

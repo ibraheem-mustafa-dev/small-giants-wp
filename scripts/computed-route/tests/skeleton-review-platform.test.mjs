@@ -49,7 +49,8 @@ const GOOGLE = [
 	el( 'Root/7#0', 'Root/5#0', 'div', 'Google Reviews', { depth: 4 } ),
 	el( 'Root/8#0', 'Root/5#0', 'a', 'See all reviews', { depth: 4, attrs: { href: 'https://share.google/abc' } } ),
 ];
-const TRUSTPILOT = [ el( 'Root/8#0', 'Root/5#0', 'a', '4.8 on Trustpilot', { depth: 4, attrs: { href: 'https://uk.trustpilot.com/review/example.com' } } ) ];
+const TRUSTPILOT_MENTION = [ el( 'Root/8#0', 'Root/5#0', 'a', '4.8 on Trustpilot', { depth: 4, attrs: { href: 'https://uk.trustpilot.com/review/example.com' } } ) ];
+const TRUSTPILOT = [ el( 'Root/6#0', 'Root/5#0', 'img', '', { depth: 4, attrs: { srcBasename: 'trustpilot-stars.svg' } } ), ...TRUSTPILOT_MENTION ];
 const run = ( elements ) => proposeSkeleton( { inventory: inv( elements ), facts: facts(), surface: 'test', db } );
 const all = ( tree, name, out = [] ) => {
 	for ( const n of tree ) {
@@ -74,10 +75,23 @@ test( 'MUST FAIL: a review section naming Google by its mark, name and links is 
 	assert.ok( all( skeleton, 'sgs/heading' ).length, 'the section heading outside the card stays' );
 } );
 
-test( 'MUST FAIL: the same rule names Trustpilot from its row of the table (a link to its domain and its name)', () => {
+test( 'MUST FAIL: the same rule names Trustpilot from its row of the table (its mark, a link to its domain and its name)', () => {
 	const { skeleton } = run( page( TRUSTPILOT ) );
 	assert.equal( all( skeleton, 'sgs/trustpilot-reviews' ).length, 1 );
 	assert.equal( all( skeleton, 'sgs/google-reviews' ).length, 0 );
+} );
+
+// The owner's own review cards with the platform's name after each date and a link to it are a testimonial slider on the
+// hand-built site; the section that shows the platform's mark is its block (rules.reviewPlatform.needs).
+test( 'MUST FAIL: reviews that name and link a platform without showing its mark stay the draft\'s own blocks, with a note', () => {
+	const { skeleton, proposal } = run( page( TRUSTPILOT_MENTION ) );
+	assert.equal( all( skeleton, 'sgs/trustpilot-reviews' ).length, 0 );
+	assert.deepEqual( proposal.reviewPlatforms?.regions, {} );
+	assert.match( proposal.reviewPlatforms?.notes[ 0 ] ?? '', /names Trustpilot without its mark/ );
+	assert.notEqual( proposal.rows.find( ( r ) => 'Root/13#0' === r.key )?.rule, 'reviewPlatform', 'the reviews are built as the draft has them' );
+	// Negative control: without the condition in the rule's data the same section is the platform's block.
+	const m = inventoryModel( inv( page( TRUSTPILOT_MENTION ) ) );
+	assert.equal( reviewPlatformRegions( { m, rule: { ...RULE(), needs: [] } } ).regions.size, 1 );
 } );
 
 test( 'negative controls: no platform signal, a quote that mentions the platform, a fixed panel, a lone review', () => {
@@ -100,12 +114,12 @@ test( 'a section naming two platforms is listed in a note and left to the scorin
 
 test( 'a platform named in the next section, or beyond the section\'s word limit, does not reach the reviews', () => {
 	const head = [ el( 'Root/7#0', 'Root/5#0', 'div', 'Customer reviews', { depth: 4 } ) ];
-	const next = [ el( 'Root/21#0', 'Root/20#0', 'a', 'Find us on Google', { depth: 2, attrs: { href: 'https://g.page/x' } } ) ];
-	assert.equal( reviewPlatformRegions( { m: inventoryModel( inv( [ ...page( head ), ...next ] ) ), rule: RULE() } ).regions.size, 0 );
-	const wide = [ el( 'Root/22#0', 'Root/2#0', 'p', 'word '.repeat( 60 ).trim(), { depth: 2 } ), el( 'Root/23#0', 'Root/2#0', 'a', 'Find us on Google', { depth: 2, attrs: { href: 'https://g.page/x' } } ) ];
-	assert.equal( reviewPlatformRegions( { m: inventoryModel( inv( page( head, { extra: wide } ) ) ), rule: RULE() } ).regions.size, 0 );
+	const next = [ el( 'Root/21#0', 'Root/20#0', 'a', 'Find us on Google', { depth: 2, attrs: { href: 'https://g.page/x' } } ), el( 'Root/24#0', 'Root/20#0', 'img', '', { depth: 2, attrs: { alt: 'Google' } } ) ];
+	assert.deepEqual( reviewPlatformRegions( { m: inventoryModel( inv( [ ...page( head ), ...next ] ) ), rule: RULE() } ), { regions: new Map(), notes: [] } );
+	const wide = [ el( 'Root/22#0', 'Root/2#0', 'p', 'word '.repeat( 60 ).trim(), { depth: 2 } ), el( 'Root/23#0', 'Root/2#0', 'a', 'Find us on Google', { depth: 2, attrs: { href: 'https://g.page/x' } } ), el( 'Root/25#0', 'Root/2#0', 'img', '', { depth: 2, attrs: { alt: 'Google' } } ) ];
+	assert.deepEqual( reviewPlatformRegions( { m: inventoryModel( inv( page( head, { extra: wide } ) ) ), rule: RULE() } ), { regions: new Map(), notes: [] } );
 	const near = reviewPlatformRegions( { m: inventoryModel( inv( page( head, { extra: wide.slice( 1 ) } ) ) ), rule: RULE() } );
-	assert.deepEqual( [ ...near.regions.keys() ], [ 'Root/2#0' ], 'within the limit the section\'s own link names the platform' );
+	assert.deepEqual( [ ...near.regions.keys() ], [ 'Root/2#0' ], 'within the limit the section\'s own mark and link name the platform' );
 } );
 
 test( 'a third platform is a row of the table, never code; signalsOf reads marks, links and short words only', () => {
@@ -116,4 +130,6 @@ test( 'a third platform is a row of the table, never code; signalsOf reads marks
 	assert.deepEqual( signalsOf( { key: 'k', tag: 'img', attrs: { alt: 'Google logo' }, words: '' }, words, RULE() ).map( ( s ) => s.kind ), [ 'mark' ] );
 	assert.deepEqual( signalsOf( { key: 'k', tag: 'a', attrs: { href: 'https://notgoogle.com/x' }, words: 'More' }, words, RULE() ), [], 'a host merely ending in the letters is not the domain' );
 	assert.deepEqual( signalsOf( { key: 'k', tag: 'span', attrs: {}, words: 'Googled' }, words, RULE() ), [], 'the name as a whole word only' );
+	assert.deepEqual( signalsOf( { key: 'k', tag: 'span', attrs: {}, words: 'Google Reviews' }, words, RULE() ).map( ( s ) => s.kind ), [ 'name' ] );
+	assert.deepEqual( signalsOf( { key: 'k', tag: 'blockquote', attrs: {}, words: 'I found them on Google and the team were kind and patient every time.' }, words, RULE() ), [], 'a quote that mentions the platform is no signal' );
 } );
