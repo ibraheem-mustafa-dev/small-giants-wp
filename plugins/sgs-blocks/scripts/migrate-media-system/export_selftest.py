@@ -62,10 +62,11 @@ def export(php: str, script: Path, data: dict) -> list[dict]:
 
 
 def run(failures: list[str], script: Path | None = None) -> int:
+    sized = run_command_size(failures)
     php = shutil.which("php")
     if not php:
         print("export-content.php offline proof: SKIPPED (php not on the PATH)")
-        return 0
+        return sized
     got = export(php, script or HERE / "export-content.php", fixture())
     seen = {(r["store"], str(r["ID"])) for r in got}
     wanted = [(("postmeta", "1"), "plain post meta is exported as markup"),
@@ -85,13 +86,12 @@ def run(failures: list[str], script: Path | None = None) -> int:
         failures.append(f"export-content.php: the attachment map (upload, sized copy, id, size, mime) is wrong: {maps}")
     if any(r["store"] == "attachments" for r in got if r.get("md5")):
         failures.append("export-content.php: the attachment record carries a content hash, so it would be mistaken for saved content")
-    return len(wanted) + 3 + run_command_size(failures)
+    return len(wanted) + 3 + sized
 
 
 def run_command_size(failures: list[str]) -> int:
-    """The export command fits Git for Windows' ssh, which cuts a remote command at about 8,192 characters (the deploy's
-    media guard read nothing and refused Mama's deploy on 2026-11-21 with a 9,695-character command), and it carries
-    export-content.php byte for byte."""
+    """The export command fits Git for Windows' ssh, which cuts a remote command at about 8,192 characters, and it
+    carries export-content.php byte for byte."""
     import base64
     import gzip
     import re
@@ -100,9 +100,11 @@ def run_command_size(failures: list[str]) -> int:
     sys.path.insert(0, str(HERE))
     import corpus
 
-    cmd = corpus.export_command("domains/lightsalmon-tarsier-683012.hostingersite.com/public_html")
-    if len(cmd) > corpus.MAX_REMOTE_COMMAND:
-        failures.append(f"export command: {len(cmd)} characters, over the {corpus.MAX_REMOTE_COMMAND} a Git for Windows ssh carries")
+    try:
+        cmd = corpus.export_command("domains/lightsalmon-tarsier-683012.hostingersite.com/public_html")
+    except ValueError as e:
+        failures.append(f"export command: {e}")
+        return 2
     m = re.search(r"echo ([A-Za-z0-9+/=]+) \| base64 -d( \| gunzip)?", cmd)
     raw = base64.b64decode(m.group(1)) if m else b""
     raw = gzip.decompress(raw) if m and m.group(2) else raw
