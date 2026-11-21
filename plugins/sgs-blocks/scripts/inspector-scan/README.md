@@ -40,6 +40,7 @@ It runs in **both** gate chains: `prebuild`, and `.githooks/sgs-gates.sh` on any
 | `golden.js` | `reachedComponents` and the golden-colour-control machinery. |
 | `block-files.js` | `blockSourceCtx`: the per-block source context, so a rule reads the code that moved out of `edit.js` and `render.php` into sibling files. |
 | `media-facts.js` | `mediaSystemOwns`: whether the shared media panels offer a control for an adopted block's media attribute and the shared renderer reads it, from `scripts/wiring-fingerprint/media_system_facts.mjs`. |
+| `kit-facts.js` | `kitControls` and `kitRenders`: whether a block's editor mounts the built-in button kit's or carousel dots kit's panel for an attribute's prefix and its render path calls the kit's printer with it (rules 21 and 34), from `scripts/wiring-fingerprint/kit_wiring.py`, run with the first Python command that works (`pythonCandidates`). |
 | `roster.js` | Which blocks exist — reconciles `roster.json` against `src/blocks/`. |
 | `finding.js` | `makeFinding` — the shape every rule returns. |
 | `baseline.js` | `hasRealReason` — baseline matching. |
