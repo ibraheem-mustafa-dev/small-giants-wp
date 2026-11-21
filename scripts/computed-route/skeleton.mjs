@@ -128,8 +128,10 @@ export function reviewSurface( { client, surface, repo = REPO } ) {
 // to its root (lib/key-space.mjs). `cache`: the calibration cache folder (the route's own by default). A skeleton that uses a block
 // with no default paint on the surface's site is not written (lib/skeleton-context.mjs::assertSkeletonPaints), unless
 // `allowMissingPaint` (--allow-missing-paint) names the block.
-// `site`: the site the run is aimed at (site-run's --site); the paint gate reads and names it, so its advice never names the
-// mirror the surface entry records. Default: the surface entry's site.
+// `site`: the site the run is aimed at (site-run's --site). Every per-site record propose reads is that site's: the carried
+// menu, menu items, logo and shop attributes (lib/skeleton-carried.mjs::carriedIds), the calibration's keys, tags, settings
+// and parts, and the paint gate, which names it, so its advice never names the mirror the surface entry records. Default:
+// the surface entry's site.
 export function proposeSurface( { client, surface, repo = REPO, siteName = null, db = openDb(), propose = proposeSkeleton, cache = undefined, allowMissingPaint = [], site: runSite = null } ) {
 	const p = skeletonPaths( { client, surface, repo } );
 	const inventory = JSON.parse( fs.readFileSync( p.inventory, 'utf8' ) );
@@ -146,7 +148,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const pageRows = readJson( path.join( repo, 'sites', client, 'build', 'page-map.json' ), [] );
 	const catalogue = loadCatalogue( repo, client );
 	const commerce = commerceOf( readSurface( repo, client, surface ), pageRows, catalogue );
-	const site = readSurface( repo, client, surface ).site;
+	const site = runSite ?? readSurface( repo, client, surface ).site;
 	// The catalogue products a page that is not a WooCommerce page binds its product tiles to (lib/skeleton-product-tile.mjs):
 	// the surface's template, else its page row's.
 	const target = readSurface( repo, client, surface ).target || {};
@@ -156,7 +158,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory } );
 	Object.assign( r, { skeleton: pieces.tree, problems: [ ...r.problems, ...pieces.problems ] } );
 	r.proposal.templatePieces = { placed: pieces.placed, problems: pieces.problems, notes: pieces.notes };
-	assertSkeletonPaints( { skeleton: r.skeleton, site: runSite ?? site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
+	assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );
 	return { ...r, paths: p, facts, inventory, clientDecisions };

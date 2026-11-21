@@ -22,7 +22,8 @@ test( 'MUST FAIL: site-run passes its own --site to the propose stage and to Fil
 } );
 
 test( 'MUST FAIL: the propose stage and Fill gate paint on the run\'s site before the surface entry\'s', () => {
-	assert.match( src( 'skeleton.mjs' ), /assertSkeletonPaints\( \{ skeleton: r\.skeleton, site: runSite \?\? site,/ );
+	assert.match( src( 'skeleton.mjs' ), /const site = runSite \?\? readSurface\( repo, client, surface \)\.site;/ );
+	assert.match( src( 'skeleton.mjs' ), /assertSkeletonPaints\( \{ skeleton: r\.skeleton, site, client,/ );
 	assert.match( src( 'fill.mjs' ), /const site = o\.site \|\| entry\.site;\n[^\n]*\n?\s*const calFor = calibrationLoader\( site, o\.cache \);/ );
 	assert.match( src( 'fill.mjs' ), /assertPaints\( \{ blocks: treeBlocks\( skeleton \), calFor, site, client: o\.client,/ );
 	assert.match( src( 'fill.mjs' ), /site: flag\( '--site' \),/ );

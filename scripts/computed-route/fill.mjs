@@ -240,7 +240,7 @@ export async function fillSurface( o ) {
 			// A link to another page of the draft (`Contact.dc.html`) resolved to its site address through the page map, as the skeleton resolves one (lib/draft-link.mjs).
 			draftLink: ( href ) => resolveDraftLink( href, draftLinksFor( { repo, client: o.client } ) ),
 			// FR-48-39: the uploaded images of the surface's site (a null map when media-upload has not run).
-			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site },
+			media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site },
 			snapshot, rawSnapshot, facts, rootComponent: intakeParts.rootComponent,
 			// The draft's token files, for the token references (lib/fill-token-ref.mjs).
 			draftFolder: path.join( repo, 'sites', o.client, 'handoff' ),
@@ -315,7 +315,7 @@ export async function fillSurface( o ) {
 		result.notes.push( ...forms.notes );
 		// FR-48-82: a block holding a list (an array setting, or one kind of child block) takes the items the draft draws,
 		// read from the surface's skeleton inventory and the draft's logic (lib/fill-list-content.mjs, `idxFor` above).
-		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site: entry.site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, snapshot, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
+		const listed = listContentWrites( { nodes, flat, refOf, facts, inventory, idxFor, db, schemaOf: blockSchema, media: { map: readMediaMap( path.join( buildDir, 'media-map.json' ) ), site, origin: reads.origin }, pages: fs.existsSync( path.join( buildDir, 'page-map.json' ) ) ? JSON.parse( fs.readFileSync( path.join( buildDir, 'page-map.json' ), 'utf8' ) ) : null, rootComponent: intakeParts.rootComponent, snapshot, picturesOf: ( id ) => [ 1440, 768, 375 ].map( ( w ) => reads.widths[ w ]?.[ id ]?.pictures ).find( Boolean ) ?? null } );
 		result.writes.push( ...listed.writes );
 		result.unmapped.push( ...listed.unmapped );
 		result.handover.push( ...listed.handover );

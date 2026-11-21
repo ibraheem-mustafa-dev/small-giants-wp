@@ -1,0 +1,5 @@
+[
+	{ "file": "skeleton.mjs", "find": "const site = runSite ?? readSurface( repo, client, surface ).site;", "replace": "const site = readSurface( repo, client, surface ).site;", "why": "propose reads the surface entry's records, not the run's site" },
+	{ "file": "skeleton.mjs", "find": "carried: carriedIds( { repo, client, site, rootComponent", "replace": "carried: carriedIds( { repo, client, site: readSurface( repo, client, surface ).site, rootComponent", "why": "the carried menu items come from the surface entry's site" },
+	{ "file": "skeleton.mjs", "find": "calKeys: calKeysFor( site, cache )", "replace": "calKeys: calKeysFor( readSurface( repo, client, surface ).site, cache )", "why": "the calibration keys come from the surface entry's site" }
+]
