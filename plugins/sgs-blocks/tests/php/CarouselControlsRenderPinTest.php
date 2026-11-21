@@ -166,6 +166,7 @@ final class CarouselControlsRenderPinTest extends TestCase {
 					'width:36px;height:36px;',
 					'border-top-left-radius:4px;border-top-right-radius:4px;border-bottom-left-radius:4px;border-bottom-right-radius:4px;', // the per-device corners the panel writes, printed by the kit's radius rule.
 					'--sgs-carousel-arrow-size:36px;',
+					'--sgs-carousel-arrow-icon:calc(36px / 2);', // the icon stays half an arrow arrowSize sizes.
 					'.sgs-testimonial-slider__dot:not(.sgs-testimonial-slider__dot--active)::before{background-color:#cccccc;}',
 					'.sgs-testimonial-slider__dot--active::before{background-color:#112233;}',
 					'.sgs-testimonial-slider__dots{gap:12px;}',
@@ -179,6 +180,7 @@ final class CarouselControlsRenderPinTest extends TestCase {
 				array(
 					'.sgs-container__arrow{background-color:#112233;',
 					'.sgs-container__arrow{width:36px;height:36px;}',
+					'--sgs-carousel-arrow-icon:calc(36px / 2);',
 					'border-top-left-radius:4px;border-top-right-radius:4px;border-bottom-left-radius:4px;border-bottom-right-radius:4px;',
 					'.sgs-container__dot:not(.sgs-container__dot--active)::before{background-color:#cccccc;}',
 					'.sgs-container__dots{gap:12px;}',
@@ -217,5 +219,30 @@ final class CarouselControlsRenderPinTest extends TestCase {
 		$this->assertStringNotContainsString( 'style="', $now['html'], $name . ' prints no inline style attribute' );
 		$pinned = json_decode( (string) file_get_contents( self::DIR . $name . '.json' ), true );
 		$this->assertNotSame( $pinned['css'], $now['css'], 'a set look changes the CSS: the pin guards the unset case only' );
+	}
+
+	/**
+	 * The arrow icon a block's stylesheet draws while no arrow size is set: 22px on every block, whatever size or padding
+	 * a site's own CSS gives the arrow. A percentage fallback resolves against the arrow's content box, so on a site whose
+	 * arrow is 48px or padded the icon grew or shrank (Mama's home and product pages, render check 2026-11-21).
+	 *
+	 * @return array<string, array{0: string, 1: string}>
+	 */
+	public static function icon_rules(): array {
+		return array(
+			'testimonial-slider' => array( 'testimonial-slider', '.sgs-testimonial-slider__arrow-icon' ),
+			'container'          => array( 'container', '.sgs-container__arrow svg' ),
+		);
+	}
+
+	#[DataProvider( 'icon_rules' )]
+	public function test_the_unset_arrow_icon_is_22px( string $block, string $selector ): void {
+		$css = (string) file_get_contents( __DIR__ . '/../../src/blocks/' . $block . '/style.css' );
+		$css = (string) preg_replace( '#/\*.*?\*/#s', '', $css );
+		$this->assertSame( 1, preg_match( '/(?:^|})\s*' . preg_quote( $selector, '/' ) . '\s*\{([^}]*)\}/', $css, $m ), $selector . ' rule not found' );
+		foreach ( array( 'width', 'height' ) as $prop ) {
+			$this->assertSame( 1, preg_match( '/(?:^|;|\s)' . $prop . '\s*:\s*([^;]+);/', $m[1], $v ), $selector . ' has no ' . $prop );
+			$this->assertSame( 'var(--sgs-carousel-arrow-icon, 22px)', trim( $v[1] ), 'MUST FAIL on 877a8ebcb: ' . $selector . ' ' . $prop . ' falls back to 22px, the size every site rendered before the kit' );
+		}
 	}
 }

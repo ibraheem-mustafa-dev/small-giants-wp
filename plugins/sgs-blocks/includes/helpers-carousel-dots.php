@@ -169,6 +169,19 @@ if ( ! function_exists( 'sgs_carousel_dots_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_carousel_arrow_icon_transform' ) ) {
+	/**
+	 * The arrow icon for an arrow size: half of it, as the 22px icon is half the 44px default arrow.
+	 *
+	 * @param mixed $raw One device's stored arrow size.
+	 * @return string `calc(<length> / 2)`, or '' when the size is not a length.
+	 */
+	function sgs_carousel_arrow_icon_transform( $raw ): string {
+		$length = sgs_length_transform( $raw );
+		return is_string( $length ) && '' !== $length ? 'calc(' . $length . ' / 2)' : '';
+	}
+}
+
 if ( ! function_exists( 'sgs_carousel_controls_css' ) ) {
 
 	/**
@@ -212,6 +225,11 @@ if ( ! function_exists( 'sgs_carousel_controls_css' ) ) {
 							'value'     => $size,
 							'css'       => '--sgs-carousel-arrow-size',
 							'transform' => 'sgs_length_transform',
+						),
+						array(
+							'value'     => $size,
+							'css'       => '--sgs-carousel-arrow-icon',
+							'transform' => 'sgs_carousel_arrow_icon_transform',
 						),
 					),
 					$opts

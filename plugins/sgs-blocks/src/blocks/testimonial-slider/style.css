@@ -232,9 +232,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	/* Half the arrow, which is 22px of the 44px default, so an arrow sized by arrowSize keeps its icon in proportion. */
-	width: var(--sgs-carousel-arrow-icon, 50%);
-	height: var(--sgs-carousel-arrow-icon, 50%);
+	/* 22px, half the 44px default arrow. An arrow sized by arrowSize hands its half on as --sgs-carousel-arrow-icon
+	   (sgs_carousel_controls_css); a percentage would follow the content box a site's own CSS gives the arrow. */
+	width: var(--sgs-carousel-arrow-icon, 22px);
+	height: var(--sgs-carousel-arrow-icon, 22px);
 	pointer-events: none;
 }
 
