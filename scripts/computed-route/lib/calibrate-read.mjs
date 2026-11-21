@@ -178,6 +178,7 @@ export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 	// left marked would be opened instead of this one's.
 	document.querySelectorAll( '[data-cr-target]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-target' ) );
 	document.querySelectorAll( '[data-cr-toggle]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-toggle' ) );
+	document.querySelectorAll( '[data-cr-dialog]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-dialog' ) );
 	const root = document.querySelector( `.${ prefix }${ n }` );
 	if ( ! root ) {
 		return null;
@@ -211,8 +212,41 @@ export function markTargetInPage( [ prefix, n, selector, companionClass ] ) {
 		const ids = new Set( [ root, ...root.querySelectorAll( '[id]' ), ...panels ].map( ( e ) => e.id ).filter( Boolean ) );
 		toggle = [ ...document.querySelectorAll( '[aria-controls][aria-expanded="false"]' ) ].find( ( b ) => ! root.contains( b ) && b.getAttribute( 'aria-controls' ).split( /\s+/ ).some( ( id ) => ids.has( id ) ) ) || null;
 	}
+	// A target inside a closed <dialog> (a drawer the page's burger would open, a modal) shows only once the dialog
+	// opens: a toggle that controls neither the dialog nor an element holding it (a submenu caret inside the drawer)
+	// cannot show it, so it is dropped, and the dialog is marked for the caller to open.
+	const shut = visible ? null : el.closest( 'dialog:not([open])' );
+	if ( shut && toggle && ! toggle.getAttribute( 'aria-controls' ).split( /\s+/ ).some( ( id ) => document.getElementById( id )?.contains( shut ) ) ) {
+		toggle = null;
+	}
+	shut && shut.setAttribute( 'data-cr-dialog', '1' );
 	toggle && toggle.setAttribute( 'data-cr-toggle', '1' );
-	return { visible, toggle: !! toggle };
+	return { visible, toggle: !! toggle, ...( shut ? { dialog: true } : {} ) };
+}
+
+// In-page: opens the dialog markTargetInPage marked (showModal, as a drawer's burger or a modal's trigger opens it, so
+// the block's own [open] rules apply) and tags it data-cr-shown for closeShownDialogsInPage. Returns whether one opened.
+export function showMarkedDialogInPage() {
+	const d = document.querySelector( 'dialog[data-cr-dialog]:not([open])' );
+	if ( ! d ) {
+		return false;
+	}
+	d.setAttribute( 'data-cr-shown', '1' );
+	try {
+		d.showModal();
+	} catch {
+		d.setAttribute( 'open', '' );
+	}
+	return true;
+}
+
+// In-page: closes every dialog showMarkedDialogInPage opened.
+export function closeShownDialogsInPage() {
+	document.querySelectorAll( 'dialog[data-cr-shown]' ).forEach( ( d ) => {
+		d.removeAttribute( 'data-cr-shown' );
+		d.open && d.close();
+		d.removeAttribute( 'open' );
+	} );
 }
 
 // The longest an opened panel is given to show its target: a panel that fills from a fetch (the cart footer waits for the
@@ -318,7 +352,7 @@ export const ownAtOf = ( instances ) => instances.flatMap( ( inst, n ) => ( inst
 const args = ( instances, only, extraProps = [] ) => [ instances.length, CAL_PREFIX, [ ...READ_PROPS, ...extraProps ], elementPath.toString(), [ ...CAL_PSEUDO_PROPS, ...extraProps ], TEXT_PSEUDO_PROPS, only, OWN_INHERITED, ownAtOf( instances ) ];
 
 // One state instance under its trigger: hover or keyboard focus on the styled element (its panel opened first when
-// it is hidden), the state's ancestor class added, or (open) the instance's own disclosure opened (lib/calibrate-open.mjs). A 'probe' state is entered by the first state-vocabulary
+// it is hidden, and the closed dialog it sits in when no toggle shows it), the state's ancestor class added, or (open) the instance's own disclosure opened (lib/calibrate-open.mjs). A 'probe' state is entered by the first state-vocabulary
 // mechanism that changes the setting's property (lib/calibrate-probe.mjs). Returns { read }, or { read: null, why } when it could not be read:
 // why is 'hidden', 'no instance' or the error the browser raised.
 async function readUnderTrigger( page, instances, n, inst, extraProps ) {
@@ -363,6 +397,11 @@ async function readUnderTrigger( page, instances, n, inst, extraProps ) {
 		opened = true;
 		mark = await markOpenedTarget( page, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 	}
+	// Still hidden inside a closed dialog (no toggle on the page opens it): the dialog is opened for the read.
+	const shown = !! ( mark && ! mark.visible && mark.dialog ) && await page.evaluate( showMarkedDialogInPage );
+	if ( shown ) {
+		mark = await markOpenedTarget( page, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
+	}
 	let read = null;
 	let why = mark?.missing ? `no element matches ${ inst.target }` : ( mark ? 'hidden' : 'no instance' );
 	if ( mark?.visible ) {
@@ -396,6 +435,10 @@ async function readUnderTrigger( page, instances, n, inst, extraProps ) {
 		}
 		await page.mouse.move( 0, 0 );
 		await page.evaluate( () => document.activeElement?.blur() );
+	}
+	if ( shown ) {
+		await page.evaluate( closeShownDialogsInPage );
+		await page.waitForTimeout( 300 );
 	}
 	if ( opened ) {
 		await page.keyboard.press( 'Escape' );

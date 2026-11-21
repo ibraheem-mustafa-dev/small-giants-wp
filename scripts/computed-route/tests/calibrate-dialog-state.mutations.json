@@ -1,0 +1,15 @@
+[
+	{"file": "lib/calibrate-read.mjs", "find": "const shut = visible ? null : el.closest( 'dialog:not([open])' );", "replace": "const shut = null;", "why": "a target in a closed dialog is never marked with its dialog"},
+	{"file": "lib/calibrate-read.mjs", "find": "const shut = visible ? null : el.closest( 'dialog:not([open])' );", "replace": "const shut = visible ? null : root.closest( 'dialog:not([open])' );", "why": "the dialog is looked for from the root, missing a dialog inside the instance"},
+	{"file": "lib/calibrate-read.mjs", "find": "if ( shut && toggle && ! toggle.getAttribute( 'aria-controls' ).split( /\\s+/ ).some( ( id ) => document.getElementById( id )?.contains( shut ) ) ) {", "replace": "if ( false ) {", "why": "a submenu caret that cannot show the dialog stays the toggle"},
+	{"file": "lib/calibrate-read.mjs", "find": "if ( shut && toggle && ! toggle.getAttribute( 'aria-controls' ).split( /\\s+/ ).some( ( id ) => document.getElementById( id )?.contains( shut ) ) ) {", "replace": "if ( shut && toggle ) {", "why": "the block's own opener of the dialog is dropped too"},
+	{"file": "lib/calibrate-read.mjs", "find": "\tshut && shut.setAttribute( 'data-cr-dialog', '1' );", "replace": "", "why": "the dialog is not marked for the caller"},
+	{"file": "lib/calibrate-read.mjs", "find": "\tdocument.querySelectorAll( '[data-cr-dialog]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-dialog' ) );", "replace": "", "why": "an earlier instance's dialog mark is left behind"},
+	{"file": "lib/calibrate-read.mjs", "find": "...( shut ? { dialog: true } : {} ) };", "replace": "dialog: !! shut };", "why": "every mark carries a dialog key, changing the mark of a target outside any dialog"},
+	{"file": "lib/calibrate-read.mjs", "find": "const shown = !! ( mark && ! mark.visible && mark.dialog ) && await page.evaluate( showMarkedDialogInPage );", "replace": "const shown = false;", "why": "the marked dialog is never opened for the read"},
+	{"file": "lib/calibrate-read.mjs", "find": "\t\tmark = await markOpenedTarget( page, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );\n\t}\n\tlet read = null;", "replace": "\t}\n\tlet read = null;", "why": "the target is not re-marked once the dialog opened"},
+	{"file": "lib/calibrate-read.mjs", "find": "\t\tawait page.evaluate( closeShownDialogsInPage );", "replace": "", "why": "the opened dialog is left open for the next instance"},
+	{"file": "lib/calibrate-read.mjs", "find": "\t\td.showModal();", "replace": "", "why": "the dialog is only tagged, never opened"},
+	{"file": "lib/calibrate-read.mjs", "find": "\t\td.open && d.close();\n\t\td.removeAttribute( 'open' );", "replace": "", "why": "closing leaves the dialog open"},
+	{"file": "lib/calibrate-read.mjs", "find": "\t\td.removeAttribute( 'data-cr-shown' );", "replace": "", "why": "a closed dialog keeps its shown tag"}
+]
