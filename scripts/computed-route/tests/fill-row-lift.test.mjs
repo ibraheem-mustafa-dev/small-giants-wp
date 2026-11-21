@@ -46,7 +46,7 @@ function run( { linkOf = () => LINK, glyphOf = () => '18px', iconCal = ICON_CAL,
 		'0:': snap( { display: 'flex', gap: '10px' }, 300 ),
 		...Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, snap( linkOf( i, w ), 40, heightOf( i ) ) ], [ glyphTarget( i ).id, snap( { width: glyphOf( i, w ) }, 18 ) ] ] ) ),
 	} );
-	const declared = Object.fromEntries( WIDTHS.map( ( w ) => [ w, Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, { width: '40px' } ], [ glyphTarget( i ).id, { width: glyphOf( i, w ) } ] ] ) ) ] ) );
+	const declared = Object.fromEntries( WIDTHS.map( ( w ) => [ w, Object.fromEntries( [ 1, 2, 3 ].flatMap( ( i ) => [ [ `${ i }:`, { width: linkOf( i, w ).width } ], [ glyphTarget( i ).id, { width: glyphOf( i, w ) } ] ] ) ) ] ) );
 	const reads = { widths: Object.fromEntries( WIDTHS.map( ( w ) => [ w, byWidth( w ) ] ) ), declared, sweep: {}, origin: 'http://127.0.0.1:1' };
 	const out = fillTree( { tree, nodes, reads, db: openDb(), snapshot: { palette: [], spacing: [], fontSizes: [] }, rawSnapshot: {}, calFor: ( b ) => ( 'sgs/icon' === b ? iconCal : rowCal ), ledger: [], ledgerStates: [], origin: 'http://127.0.0.1:1' } );
 	return { tree, out, nodes };
@@ -143,6 +143,29 @@ test( 'MUST FAIL: a draft element is never read at a pseudo-element slot, and a 
 	assert.deepEqual( pseudo, [], 'no row is read against a ::before or ::after slot' );
 	const keys = out.unmapped.map( ( u ) => `${ u.node }|${ u.property }|${ u.state || '' }|${ u.value }` );
 	assert.equal( new Set( keys ).size, keys.length, 'each row once' );
+} );
+
+test( 'MUST FAIL: a row setting that paints only some of the properties of the icon\'s setting holds those properties, and only those', () => {
+	// The live DB: sgs/icon shapeSize paints height and width on the shape; sgs/social-icons childIconShapeSize paints width.
+	const db = openDb();
+	const props = ( block, attr ) => db.prepare( 'SELECT css_property FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr )?.css_property;
+	assert.equal( props( 'sgs/icon', 'shapeSize' ), 'height,width', 'precondition: the icon setting paints more than the row setting' );
+	assert.equal( props( 'sgs/social-icons', 'childIconShapeSize' ), 'width', 'precondition: the row setting paints width only' );
+	// The icon's calibration places shapeSize on its shape, so each copy's own read writes shapeSize from width.
+	const iconCal = { ...ICON_CAL, settings: { ...ICON_CAL.settings, shapeSize: at( '.sgs-icon__shape', 'width' ) } };
+	const shapeWidth = ( o ) => o.settled.filter( ( s ) => 'row-held' === s.reason && 'sgs/icon' === s.block && 'width' === s.property && '' === s.slot );
+	const agreed = run( { iconCal } );
+	assert.deepEqual( agreed.tree[ 0 ].attributes.childIconShapeSize, { desktop: { width: '40px' } } );
+	assert.deepEqual( agreed.tree[ 0 ].innerBlocks.map( ( c ) => c.attributes.shapeSize ), [ undefined, undefined, undefined ], 'the row holds the width, so no icon carries shapeSize' );
+	assert.equal( shapeWidth( agreed.out ).length, 3, 'the width is row-held on each icon' );
+	assert.ok( ! agreed.out.unmapped.some( ( u ) => 'sgs/icon' === u.block && 'width' === u.property ), 'no icon width row' );
+	// Negative control: one copy is 48px wide, so the row writes no shape size while it still holds the other shape
+	// settings (background, border): no icon width is held by those, and each icon keeps its own width.
+	const split = run( { iconCal, linkOf: ( i ) => ( { ...LINK, width: 3 === i ? '48px' : '40px' } ) } );
+	assert.equal( split.tree[ 0 ].attributes.childIconShapeSize, undefined );
+	assert.ok( undefined !== split.tree[ 0 ].attributes.childIconBackground, 'the row still holds a shape setting' );
+	assert.deepEqual( shapeWidth( split.out ), [], 'no icon width is row-held' );
+	assert.deepEqual( split.tree[ 0 ].innerBlocks.map( ( c ) => c.attributes.shapeSize ), [ { desktop: { width: '40px' } }, { desktop: { width: '40px' } }, { desktop: { width: '48px' } } ] );
 } );
 
 test( 'MUST FAIL: an icon value the row\'s setting was not written from stays UNMAPPED, never row-held', () => {

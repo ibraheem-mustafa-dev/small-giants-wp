@@ -19,9 +19,27 @@
  },
  {
   "file": "lib/fill-row-lift.mjs",
-  "find": "const skipped = ( attr ) => childAttr.has( attr ) && held.has( keyOf( childAttr.get( attr ) ) );",
+  "find": "const skipped = ( attr ) => childAttr.has( attr ) && writtenFrom( childAttr.get( attr ), reading.covers[ attr ] ).every( ( p ) => holds( childAttr.get( attr ), p ) );",
   "replace": "const skipped = ( attr ) => false;",
   "why": "an icon would carry what the row already holds"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "const keysOf = ( r ) => String( r.css_property ).split( ',' ).map( ( p ) => `${ r.css_element }|${ p.trim() }|${ r.css_state || '' }` );",
+  "replace": "const keysOf = ( r ) => [ `${ r.css_element }|${ r.css_property }|${ r.css_state || '' }` ];",
+  "why": "a row setting painting only some of the icon setting's properties (width of height,width) would hold none of them"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "&& paints( propOfKey( k ), p ) );",
+  "replace": ");",
+  "why": "any held row setting on the element would hold every icon setting there, so an icon would lose a width the row never wrote"
+ },
+ {
+  "file": "lib/fill-row-lift.mjs",
+  "find": "\treturn css.length ? css : String( r.css_property ).split( ',' ).map( ( p ) => p.trim() );",
+  "replace": "\treturn String( r.css_property ).split( ',' ).map( ( p ) => p.trim() );",
+  "why": "an icon setting would be held only when the row paints every property its DB row names, not the ones its value was read from"
  },
  {
   "file": "lib/fill-row-lift.mjs",

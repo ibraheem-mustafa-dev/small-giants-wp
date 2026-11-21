@@ -40,7 +40,17 @@ function paints( held, prop ) {
 	return held === prop || Boolean( m && new RegExp( m[ 2 ] ? `^${ m[ 1 ] }-(?:${ SIDES })-${ m[ 2 ] }$` : `^${ m[ 1 ] }-(?:${ SIDES })$` ).test( prop ) );
 }
 
-const keyOf = ( r ) => `${ r.css_element }|${ r.css_property }|${ r.css_state || '' }`;
+// A setting's keys, one per CSS property it paints: a row setting and an icon setting are matched property by property,
+// so a row setting that paints only some of what the icon's setting paints (sgs/social-icons childIconShapeSize: width;
+// sgs/icon shapeSize: height and width) still holds those properties for every icon.
+const keysOf = ( r ) => String( r.css_property ).split( ',' ).map( ( p ) => `${ r.css_element }|${ p.trim() }|${ r.css_state || '' }` );
+const propOfKey = ( k ) => k.split( '|' )[ 1 ];
+// The CSS properties a copy's read wrote a setting from; a setting written from no CSS property (a switch) stands for
+// the properties its DB row names.
+const writtenFrom = ( r, covers ) => {
+	const css = ( covers || [] ).filter( ( p ) => /^-?[a-z][a-z-]*$/.test( p ) );
+	return css.length ? css : String( r.css_property ).split( ',' ).map( ( p ) => p.trim() );
+};
 
 // One copy's reading of one element, written into a throwaway copy of the node: { values: { attr: final value },
 // props: { attr: prop }, covers: { attr: [every property written to it] }, widths: { attr: [read widths] }, unmapped: [rows],
@@ -129,7 +139,7 @@ function withCircle( reading, attr ) {
 export function liftRow( st, rowRec, ref, cal, { fillElement, snapsOf } ) {
 	const copies = rowRec.children.map( ( c ) => st.nodes[ c ] ).filter( ( c ) => c.targets.length );
 	const node = st.flat[ rowRec.index ];
-	// The row settings written for every icon: keyOf( setting ) -> the properties every copy's read wrote it from.
+	// The row settings written for every icon: each key of keysOf( setting ) -> the properties every copy's read wrote it from.
 	const held = new Map();
 	const rowAttr = new Map( attrsFor( st.db, rowRec.name ).map( ( r ) => [ r.attr_name, r ] ) );
 	const rowCircle = circleAttr( st.db, rowRec.name );
@@ -141,7 +151,9 @@ export function liftRow( st, rowRec, ref, cal, { fillElement, snapsOf } ) {
 		const lift = ( attr, value, prop, covers = [ prop ] ) => {
 			const { before, after } = setAttr( node, { attr, value, merge: 'replace' } );
 			st.out.writes.push( { node: ref, index: rowRec.index, block: rowRec.name, slot: '', prop, attr, before, after, widths: [], how: 'row-lift' } );
-			rowAttr.has( attr ) && held.set( keyOf( rowAttr.get( attr ) ), new Set( covers ) );
+			for ( const k of rowAttr.has( attr ) ? keysOf( rowAttr.get( attr ) ) : [] ) {
+				held.set( k, new Set( [ ...( held.get( k ) || [] ), ...covers ] ) );
+			}
 		};
 		if ( 'shape' === element && rowCircle && all && copies.every( ( c ) => isCircle( snapsFor( c ) ) ) ) {
 			lift( rowCircle, 'circle', 'border-radius' );
@@ -201,7 +213,11 @@ function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 			}
 			// A copy's settled row keeps the element it was judged on; the draft element it was read as is its readSlot.
 			reading.settled.forEach( ( r ) => keep( { ...r, node: cref, block: c.name, slot: r.slot ?? '', ...( LOOSE( r.slot ?? '' ) !== LOOSE( slotOf ) ? { readSlot: slotOf } : {} ) } ) );
-			const skipped = ( attr ) => childAttr.has( attr ) && held.has( keyOf( childAttr.get( attr ) ) );
+			// An icon setting the row holds: every property the copy's read wrote it from is painted by a row setting written
+			// for every icon, on the same element and state.
+			const heldKeys = [ ...held.keys() ];
+			const holds = ( r, p ) => heldKeys.some( ( k ) => k.startsWith( `${ r.css_element }|` ) && k.endsWith( `|${ r.css_state || '' }` ) && paints( propOfKey( k ), p ) );
+			const skipped = ( attr ) => childAttr.has( attr ) && writtenFrom( childAttr.get( attr ), reading.covers[ attr ] ).every( ( p ) => holds( childAttr.get( attr ), p ) );
 			// A switch (childIconShowBackground's twin) is written only with a value it turns on.
 			const carried = Object.keys( reading.values ).some( ( a ) => '(switch)' !== reading.props[ a ] && ! skipped( a ) );
 			for ( const [ attr, value ] of Object.entries( reading.values ) ) {
@@ -215,7 +231,7 @@ function liftChildren( st, rowRec, copies, held, { fillElement, snapsOf } ) {
 			// A value is row-held only where every copy's read wrote the row's setting from this property (or a shorthand of
 			// it): the copies agreed on that value, so the row's setting paints this icon's value. A setting written from other
 			// properties only is not proven to, so the row stays UNMAPPED.
-			const heldFrom = [ ...childAttr.values() ].filter( ( r ) => r.css_element === element && held.has( keyOf( r ) ) ).flatMap( ( r ) => String( r.css_property ).split( ',' ).map( ( h ) => [ h, held.get( keyOf( r ) ) ] ) );
+			const heldFrom = [ ...childAttr.values() ].filter( ( r ) => r.css_element === element ).flatMap( ( r ) => keysOf( r ).filter( ( k ) => held.has( k ) ).map( ( k ) => [ propOfKey( k ), held.get( k ) ] ) );
 			for ( const u of reading.unmapped ) {
 				if ( heldFrom.some( ( [ h, from ] ) => paints( h, u.property ) && [ ...from ].some( ( p ) => paints( p, u.property ) ) ) ) {
 					rowHeld( u.property, u.widths, u.value );
