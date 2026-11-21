@@ -388,13 +388,14 @@ test( 'MUST FAIL: a grid row merged from width alternatives takes each bar\'s co
 // draft draws only on a phone (its marquee loop).
 const ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2 4 5v6"></path></svg>';
 const CLAIMS = [ 'Genuine, supplied direct by the brands', 'Free UK delivery over 75', 'Lenses glazed here in 7 days' ];
-const stripBar = ( { icons = true, tag = 'span', copy = false, attrs = {}, sep = false } = {} ) => {
+const SIZED = ICON.replace( '<svg ', '<svg width="15" height="15" ' );
+const stripBar = ( { icons = true, tag = 'span', copy = false, attrs = {}, sep = false, icon = ICON } = {} ) => {
 	const out = [ stripRoot( 'Root/10#0', 'before' ), el( 'Root/11#0', 'Root/10#0', 'div', '', { depth: 2, display: 'flex' } ) ];
 	const label = ( i, n, only ) => {
 		const key = `Root/${ 20 + n }#0`;
 		const k = el( key, 'Root/11#0', tag, CLAIMS[ i ], { depth: 3, attrs, box: boxes( 0, 20, 300, i * 320 ) } );
 		only && ( k.visible = { 375: true, 768: false, 1440: false } );
-		const kids = icons ? [ { ...el( `Root/${ 60 + n }#0`, key, 'svg', '', { depth: 4 } ), svg: ICON, ...( only ? { visible: { 375: true, 768: false, 1440: false } } : {} ) } ] : [];
+		const kids = icons ? [ { ...el( `Root/${ 60 + n }#0`, key, 'svg', '', { depth: 4 } ), svg: icon, ...( only ? { visible: { 375: true, 768: false, 1440: false } } : {} ) } ] : [];
 		return [ k, ...kids ];
 	};
 	CLAIMS.forEach( ( c, i ) => out.push( ...( sep && i ? [ el( `Root/${ 40 + i }#0`, 'Root/11#0', 'span', '·', { depth: 3, box: boxes( 0, 20, 10, i * 320 - 10 ) } ) ] : [] ), ...label( i, i ) ) );
@@ -421,6 +422,34 @@ test( 'MUST FAIL: a run of labels with icons in a header strip is one trust bar 
 	noRoot( r );
 	const off = run( inv( [ ...header(), ...stripBar() ], [ near( 'Root/10#0', 'before' ) ] ), noStripBar() );
 	assert.ok( ! flat( rows( off )[ 0 ].innerBlocks ).some( ( n ) => 'sgs/trust-bar' === n.name ), 'without the rule the labels stay loose' );
+} );
+
+// A bare icon is drawn at the size the draft's SVGs state on their root; the kept markup drops it, so the size is a decided
+// setting of the bar (iconBareSize paints a width and a height, so it never sits among the attributes).
+test( 'MUST FAIL: a header strip whose icons state a size on their root decides the bare icon size from it', () => {
+	const r = run( inv( [ ...header(), ...stripBar( { icon: SIZED } ) ], [ near( 'Root/10#0', 'before' ) ] ) );
+	const bar = rows( r )[ 0 ].innerBlocks[ 0 ];
+	assert.deepEqual( bar.decided, { badgeStyle: 'icon-bare', iconBareSize: 15 } );
+	assert.equal( bar.attributes.iconBareSize, undefined, 'a setting that paints a size is decided, never an attribute' );
+	assert.ok( bar.attributes.items.every( ( x ) => ! /width=/.test( x.iconSvg ) ), 'the kept icon carries no size of its own' );
+	noRoot( r );
+	assert.deepEqual( r.problems.filter( ( p ) => /iconBareSize|decided/i.test( p ) ), [] );
+	// The proposal's lint accepts the decided size.
+	assert.deepEqual( lintSkeleton( r.skeleton, db ), [] );
+} );
+
+test( 'negative control: icons that state no size, two sizes, or a size in another unit decide no bare icon size', () => {
+	const none = run( inv( [ ...header(), ...stripBar() ], [ near( 'Root/10#0', 'before' ) ] ) );
+	assert.deepEqual( rows( none )[ 0 ].innerBlocks[ 0 ].decided, { badgeStyle: 'icon-bare' } );
+	const mixed = stripBar( { icon: SIZED } );
+	const second = mixed.find( ( x ) => 'Root/61#0' === x.key );
+	second.svg = ICON.replace( '<svg ', '<svg width="20" height="20" ' );
+	assert.deepEqual( rows( run( inv( [ ...header(), ...mixed ], [ near( 'Root/10#0', 'before' ) ] ) ) )[ 0 ].innerBlocks[ 0 ].decided, { badgeStyle: 'icon-bare' }, 'labels that disagree decide nothing' );
+	const em = run( inv( [ ...header(), ...stripBar( { icon: ICON.replace( '<svg ', '<svg width="1em" height="1em" ' ) } ) ], [ near( 'Root/10#0', 'before' ) ] ) );
+	assert.deepEqual( rows( em )[ 0 ].innerBlocks[ 0 ].decided, { badgeStyle: 'icon-bare' } );
+	// Word-only labels have no icon to size.
+	const plain = run( inv( [ ...header(), ...stripBar( { icons: false } ) ], [ near( 'Root/10#0', 'before' ) ] ) );
+	assert.deepEqual( rows( plain )[ 0 ].innerBlocks[ 0 ].decided, { badgeStyle: 'text-only' } );
 } );
 
 test( 'MUST FAIL: the copy of the run a header strip draws only on a phone is absorbed by the trust bar, never built beside it', () => {

@@ -30,7 +30,7 @@ import { blockPartSurfaces } from './skeleton-surface-role.mjs';
 import { handlerOpens, handlerCloses, opensOn } from './skeleton-handler-opens.mjs';
 import { makeFieldGroups } from './skeleton-field-groups.mjs';
 import { widgetModel } from './skeleton-widgets.mjs';
-import { keptSvg, lucideNearest } from './fill-icon.mjs';
+import { keptSvg, lucideNearest, statedSvgSize } from './fill-icon.mjs';
 import { draftTokenLookup, handoffOf, resolvedOrRaw } from './draft-tokens.mjs';
 import { heroSplitOrder, heroMediaAlignment } from './skeleton-hero-order.mjs';
 import { behindContent, contentAnchor } from './skeleton-hero-background.mjs';
@@ -1239,19 +1239,25 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( labels.length < ( S.minItems ?? 2 ) || ! labels.every( label ) || ! kidsB.every( ( k ) => lettered( k ) || ! m.blockKids( k ).length ) || m.stacked( kidsB ) ) {
 				return null;
 			}
+			const markupOf = ( k ) => [ k, ...desc( k ) ].flatMap( ( d ) => m.kids( d ) ).find( ( c ) => 'svg' === c.tag )?.svg;
 			const iconOf = ( k ) => {
-				const markup = [ k, ...desc( k ) ].flatMap( ( d ) => m.kids( d ) ).find( ( c ) => 'svg' === c.tag )?.svg;
+				const markup = markupOf( k );
 				return markup ? keptSvg( markup ) : null;
 			};
 			const texts = onceOfLoop( labels.map( all ) );
-			const items = labels.slice( 0, texts.length ).map( ( k ) => {
+			const shown = labels.slice( 0, texts.length );
+			const items = shown.map( ( k ) => {
 				const svg = iconOf( k );
 				return { [ S.items.text ]: all( k ), ...( svg ? { [ S.items.svg ]: svg } : {} ) };
 			} );
 			const icons = items.filter( ( x ) => x[ S.items.svg ] ).length;
 			const style = S.style && ( icons === items.length ? S.style.icons : 0 === icons ? S.style.plain : null );
-			const decided = style ? { [ S.style.setting ]: style } : null;
-			return v( 'headerStripBar', { block: S.block, absorb: true, attributes: { [ S.items.setting ]: items, ...( decided || {} ) }, ...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );
+			// The icons are drawn at the size their SVGs state on the root (the block sizes the icon, so the kept markup carries
+			// none): one size every label states is the bare icon's size, a setting that paints a width and a height, so decided.
+			const sizes = new Set( shown.map( ( k ) => statedSvgSize( markupOf( k ) ) ) );
+			const size = S.style?.iconSize && style === S.style.icons && 1 === sizes.size ? [ ...sizes ][ 0 ] : null;
+			const decided = style ? { [ S.style.setting ]: style, ...( null !== size ? { [ S.style.iconSize ]: size } : {} ) } : null;
+			return v( 'headerStripBar', { block: S.block, absorb: true, attributes: { [ S.items.setting ]: items, ...( style ? { [ S.style.setting ]: style } : {} ) }, ...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );
 		},
 		// A link to a messaging app holding the app's mark and words is the app's button block, floating where fixed to the
 		// viewport, its card style for a title over a line; words alone are a text link reading the app's Site Info address

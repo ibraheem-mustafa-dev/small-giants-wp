@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { iconDecisions, allowedSvg, signature, markKind, lucideSignatures, brandSignatures, LUCIDE_FILE, BRAND_FILE } from '../lib/fill-icon.mjs';
+import { iconDecisions, statedSvgSize, allowedSvg, signature, markKind, lucideSignatures, brandSignatures, LUCIDE_FILE, BRAND_FILE } from '../lib/fill-icon.mjs';
 
 const SCHEMA = { iconSource: {}, iconName: {}, brandName: {}, iconSvg: {}, iconFill: {} };
 const val = ( r, attr ) => r.writes.find( ( w ) => w.attr === attr )?.value;
@@ -144,4 +144,13 @@ test( 'a Site Info-bound brand row whose draft mark is another thing is the own 
 	const other = run( WHATSAPP.replace( '<path', '<path fill="currentColor"' ), { attributes: { ...BOUND, brandName: 'facebook' }, href: 'https://example.com' } );
 	assert.equal( val( other, 'brandName' ), undefined, 'a bound row is never re-pointed at the glyph of another brand' );
 	assert.equal( val( other, 'iconSource' ), 'custom' );
+} );
+
+test( 'MUST FAIL: statedSvgSize reads the size a root states in pixels; none, one side, two sides or another unit state none', () => {
+	assert.equal( statedSvgSize( '<svg width="15" height="15" viewBox="0 0 24 24"><path d="M0 0"/></svg>' ), 15 );
+	assert.equal( statedSvgSize( '<svg width="16px" height="16px"><path d="M0 0"/></svg>' ), 16 );
+	for ( const bad of [ '<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>', '<svg width="15"><path d="M0 0"/></svg>', '<svg width="15" height="20"><path d="M0 0"/></svg>', '<svg width="1em" height="1em"><path d="M0 0"/></svg>', '<svg width="100%" height="100%"><path d="M0 0"/></svg>', '<svg width="0" height="0"><path d="M0 0"/></svg>', 'not markup', null ] ) {
+		assert.equal( statedSvgSize( bad ), null, String( bad ) );
+	}
+	assert.equal( statedSvgSize( '<svg viewBox="0 0 24 24"><svg width="9" height="9"><path d="M0 0"/></svg></svg>' ), null, 'only the root states the size' );
 } );

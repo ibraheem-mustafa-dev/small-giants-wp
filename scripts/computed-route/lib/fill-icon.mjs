@@ -155,6 +155,19 @@ export function keptSvg( markup, allowed = allowedSvg() ) {
 	return kept && shapesOf( kept ).length ? render( kept ) : null;
 }
 
+// The size in pixels the draft's SVG states on its root (`width="15" height="15"`, `px` or none), or null when it states none,
+// states only one side, states the two sides differently, or states a length that is not plain pixels. keptSvg drops the root's
+// width and height (the block sizes the icon), so a stated size is read from the markup before it is kept.
+export function statedSvgSize( markup ) {
+	const tree = parseTree( String( markup ?? '' ) );
+	const px = ( v ) => {
+		const m = /^\s*(\d+(?:\.\d+)?)(?:px)?\s*$/.exec( String( v ?? '' ) );
+		return m ? Number( m[ 1 ] ) : null;
+	};
+	const [ w, h ] = [ px( tree?.attrs?.width ), px( tree?.attrs?.height ) ];
+	return null !== w && w > 0 && w === h ? w : null;
+}
+
 // The drawing elements of a tree in document order.
 const shapesOf = ( el ) => [ ...( SHAPES.includes( el.name ) ? [ el ] : [] ), ...el.children.flatMap( shapesOf ) ];
 
