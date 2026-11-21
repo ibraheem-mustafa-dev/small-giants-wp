@@ -28,6 +28,8 @@ import { compareSettings, faultsOf } from './lib/part-look-compare.mjs';
 import { REPO, assertMayWrite, blockRows, customCssOf, patchBlock, readParts, readSavedBlock, templateIdOf } from './lib/part-look-run.mjs';
 import { reportMarkdown, totalsOf } from './lib/part-look-report.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
+import { applyBuiltinButtons, declaredButtons } from './lib/fill-builtin-button.mjs';
+import { OPENER_PART, flowControls, openerShopParts } from './lib/part-look-controls.mjs';
 import { blockElementsOf, liveSelectorsFor, readLiveSurface, seedOf, shootLiveSurface, verifySurface } from './lib/part-look-verify.mjs';
 import { READ_PROPS } from './lib/fill-part-look.mjs';
 import { evaluateModes } from './lib/part-look-modes.mjs';
@@ -71,8 +73,10 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	const pages = Object.fromEntries( Object.entries( pagesOf( { rows, surfaces: manifest } ) ).filter( ( [ , f ] ) => anyEntry && fs.existsSync( path.join( draftDirOf( anyEntry ), f ) ) ) );
 	let snapshot = null;
 	let snapshotNote = null;
+	let buttonPresets = {};
 	try {
 		snapshot = loadSnapshot( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) );
+		buttonPresets = readJson( path.join( REPO, 'sites', client, 'theme-snapshot.json' ) ).settings?.custom?.buttonPresets || {};
 	} catch ( e ) {
 		snapshotNote = `no theme snapshot read (${ e.message.split( '\n' )[ 0 ] }): colours and font families are written as literals`;
 	}
@@ -100,6 +104,14 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 				shopParts[ part.id ] = ( part.locators || [] ).map( ( k ) => ( { dc: k.slice( 0, k.lastIndexOf( '/' ) ), tpl: k.slice( k.lastIndexOf( '/' ) + 1 ) } ) );
 			}
 		}
+		// The flow opener has no structure to locate it by: the draft's code names it (lib/part-look-controls.mjs).
+		const opensFlow = Object.values( group.parts ).some( ( p ) => [].concat( p.match?.shopPart ?? [] ).includes( OPENER_PART ) );
+		if ( opensFlow && ! entry.noDraft ) {
+			const controls = flowControls( { repo: REPO, client, entry, surface: loc.entryOf || surface, template: loc.template } );
+			Object.assign( shopParts, openerShopParts( controls ) );
+			controls.why && notes.push( `${ surface }: the flow opener is not located: ${ controls.why }` );
+		}
+		const builtin = declaredButtons( loc.block );
 		const spec = { anchors: group.anchors, parts: group.parts, shopParts, rootName: String( mainFile ).replace( /\.dc\.html$/, '' ) };
 		const also = ( loc.alsoRead || [] ).map( ( role ) => pages[ role ] ).filter( Boolean );
 		const { rows: blockRowsOf, names } = blockRows( loc.block, db );
@@ -117,13 +129,16 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			reads = signed.reads;
 			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		} else {
-			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init ? cfg : null, headed, log } ) );
+			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
 		}
 		const build = buildLook( {
 			block: loc.block, rows: blockRowsOf, names, locators: spec, reads, snapshot,
 			selectorOf: ( part ) => ( blockKey ? tableSelector( table, part, blockKey ) : null ),
 			faultOf: faultsOf( { block: loc.block, blockKey, table, listed } ), tableParts, switches, policy: loc.instances || null,
 		} );
+		// A built-in button's preset and hover look (lib/fill-builtin-button.mjs): the declared buttons of the block.
+		const builtinResult = applyBuiltinButtons( { block: loc.block, build, rows: blockRowsOf, names, db, reads, presets: buttonPresets, snapshot, buttons: builtin } );
+		notes.push( ...builtinResult.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		// Content and mode settings (what a card draws, what its button says): rules over the located parts.
 		const modes = evaluateModes( { block: loc.block, rules: modesData.blocks?.[ loc.block ]?.rules, rows: blockRowsOf, reads } );
 		build.writes.push( ...modes.writes );
