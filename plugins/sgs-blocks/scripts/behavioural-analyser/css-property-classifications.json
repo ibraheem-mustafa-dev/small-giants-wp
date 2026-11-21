@@ -27440,56 +27440,74 @@
       "slug": "sgs/product-card",
       "attr": "cta2ColourBackground",
       "fields": {
-        "css_element": "cta"
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "cta2"
       }
     },
     {
       "slug": "sgs/product-card",
       "attr": "cta2ColourBackgroundGradient",
       "fields": {
-        "css_element": "cta"
+        "css_property": "background-image",
+        "css_element": "cta2"
       }
     },
     {
       "slug": "sgs/product-card",
       "attr": "cta2ColourBackgroundHover",
       "fields": {
-        "css_element": "cta"
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "cta2",
+        "css_state": "hover"
       }
     },
     {
       "slug": "sgs/product-card",
       "attr": "cta2ColourBackgroundHoverGradient",
       "fields": {
-        "css_element": "cta"
+        "css_property": "background-image",
+        "css_element": "cta2",
+        "css_state": "hover"
       }
     },
     {
       "slug": "sgs/product-card",
       "attr": "cta2ColourBorder",
       "fields": {
-        "css_element": "cta"
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "cta2"
       }
     },
     {
       "slug": "sgs/product-card",
       "attr": "cta2ColourBorderHover",
       "fields": {
-        "css_element": "cta"
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "cta2",
+        "css_state": "hover"
       }
     },
     {
       "slug": "sgs/product-card",
       "attr": "cta2ColourText",
       "fields": {
-        "css_element": "cta"
+        "css_property": "color",
+        "role": "color",
+        "css_element": "cta2"
       }
     },
     {
       "slug": "sgs/product-card",
       "attr": "cta2ColourTextHover",
       "fields": {
-        "css_element": "cta"
+        "css_property": "color",
+        "role": "color",
+        "css_element": "cta2",
+        "css_state": "hover"
       }
     },
     {
@@ -27536,7 +27554,8 @@
       "slug": "sgs/product-card",
       "attr": "cta2LineHeight",
       "fields": {
-        "css_element": "cta"
+        "css_property": "line-height",
+        "css_element": "cta2"
       }
     },
     {
@@ -27551,7 +27570,8 @@
       "slug": "sgs/product-card",
       "attr": "cta2Padding",
       "fields": {
-        "css_element": "cta"
+        "css_property": "padding",
+        "css_element": "cta2"
       }
     },
     {
@@ -48757,6 +48777,40 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "cta2ColourBorderGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "cta2"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBorderHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "cta2",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourTextGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "cta2"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourTextHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "cta2",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaColourBorderGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -52364,40 +52418,6 @@
         "css_property": "background-color-gradient",
         "css_layer": "OUTER",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "cta2ColourBorderGradient",
-      "fields": {
-        "css_property": "border-color-gradient",
-        "css_element": "cta2"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "cta2ColourBorderHoverGradient",
-      "fields": {
-        "css_property": "border-color-gradient",
-        "css_element": "cta2",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "cta2ColourTextGradient",
-      "fields": {
-        "css_property": "color-gradient",
-        "css_element": "cta2"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "cta2ColourTextHoverGradient",
-      "fields": {
-        "css_property": "color-gradient",
-        "css_element": "cta2",
-        "css_state": "hover"
       }
     },
     {

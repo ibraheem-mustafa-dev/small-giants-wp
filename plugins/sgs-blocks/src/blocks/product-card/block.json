@@ -734,13 +734,35 @@
 					"label": "Secondary call to action",
 					"order": 24,
 					"clusters": [
-						"text"
+						"text",
+						"fill",
+						"layout"
 					],
 					"prefix": "cta2",
 					"attrMap": {
-						"css:text-align": "cta2TextAlign"
+						"css:line-height": "cta2LineHeight",
+						"css:text-align": "cta2TextAlign",
+						"css:background-color": "cta2ColourBackground",
+						"css:background-image": "cta2ColourBackgroundGradient",
+						"css:color": "cta2ColourText",
+						"css:color-gradient": "cta2ColourTextGradient",
+						"css:border-color": "cta2ColourBorder",
+						"css:padding": "cta2Padding",
+						"css:border-color-gradient": "cta2ColourBorderGradient"
 					},
-					"_note": "The secondary learn-more link (.sgs-product-card__cta--secondary typed, .product-card__cta-secondary bound). cta2TextAlign is emitted by render.php through sgs_button_element_text_align()."
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "cta2ColourBackgroundHover",
+								"css:background-image": "cta2ColourBackgroundHoverGradient",
+								"css:color": "cta2ColourTextHover",
+								"css:color-gradient": "cta2ColourTextHoverGradient",
+								"css:border-color": "cta2ColourBorderHover",
+								"css:border-color-gradient": "cta2ColourBorderHoverGradient"
+							}
+						}
+					},
+					"_note": "The secondary learn-more link (.sgs-product-card__cta--secondary typed, .product-card__cta-secondary bound). cta2TextAlign is emitted by render.php through sgs_button_element_text_align(); the look is the built-in button kit's cta2 button (supports.sgs.builtinButtons), printed through sgs_button_kit_css on the same selectors, the primary button's own map."
 				},
 				"noImageLabel": {
 					"absentIn": ["typed", "live-wc-simple", "live-cpt", "readonly-variable", "interactive-variable"],
