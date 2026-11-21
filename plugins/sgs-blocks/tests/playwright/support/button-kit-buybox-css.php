@@ -22,18 +22,8 @@ $GLOBALS['sgs_qa_global_settings'] = json_decode( $argv[2] ?? '{}', true );
 $attributes                        = json_decode( $argv[1] ?? '{}', true );
 $root_sel                          = '.sgs-bb-X.wp-block-sgs-buybox';
 
-// The Add to Cart call of src/blocks/buybox/render.php, option for option.
-$add_to_cart_css = sgs_button_kit_css(
-	$attributes,
-	'addToCart',
-	$root_sel . ' .buybox__add-to-cart',
-	array(
-		'preset'      => false,
-		'state_guard' => ':not([disabled])',
-		'lift_prefix' => 'addToCart',
-		'block'       => 'sgs/buybox',
-	)
-);
+// Add to Cart's rules as src/blocks/buybox/render.php prints them (the one shared call).
+$add_to_cart_css = sgs_buybox_add_to_cart_kit_css( $attributes, $root_sel );
 
 echo wp_json_encode( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	array(
