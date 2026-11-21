@@ -424,5 +424,35 @@
 		"find": "${ sum( client, READ ) } | ${ total( client, 'listedApart' ) } |",
 		"replace": "${ sum( client, READ ) + total( client, 'listedApart' ) } | ${ total( client, 'listedApart' ) } |",
 		"why": "recorded-unread rows are counted as read"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "row && out.set( row.key, 'full' );",
+		"replace": "",
+		"why": "a Site Info row's own element is not read through its selector"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const item = 'string' === typeof s ? select( s, row ) : null;",
+		"replace": "const item = 'string' === typeof s ? select( s ) : null;",
+		"why": "a Site Info item is looked for anywhere, not inside its row"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "return 1 === hits.length ? hits[ 0 ] : null;",
+		"replace": "return hits[ 0 ] ?? null;",
+		"why": "a selector the draft holds twice names its first match"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "( tpls.length < 2 || inside( e, ( p ) => Number( p.tpl ) === tpls[ 0 ] && p.template === e.template ) )",
+		"replace": "true",
+		"why": "the selector's outer element is not checked"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const reads = namedReads( skeleton, elements );",
+		"replace": "const reads = namedReads( skeleton );",
+		"why": "conservationRows never resolves selector finders"
 	}
 ]

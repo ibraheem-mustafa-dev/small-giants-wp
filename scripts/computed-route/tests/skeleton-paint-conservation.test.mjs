@@ -147,6 +147,22 @@ test( 'namedKeys collects every finder on a node, and never a value in its attri
 	assert.deepEqual( [ ...namedKeys( tree[ 0 ] ) ].sort(), [ 'Root/1#0', 'Root/2#0', 'Root/3#0', 'Root/4#0', 'Root/5#0' ], 'a single node is read as a tree of one' );
 } );
 
+test( 'a Site Info row\'s selector finder names its element and its items inside it; a selector the draft holds twice, or no number, names none; MUST FAIL where only { tpl } finders count', () => {
+	const at = ( key, tpl, parentKey, template = 'SiteFooter' ) => ( { key, tpl, parentKey, template, tag: 'div' } );
+	const elements = [ at( 'F/2#0', 2, null ), at( 'F/44#0', 44, 'F/2#0' ), at( 'F/45#0', 45, 'F/44#0' ), at( 'F/50#0', 50, 'F/44#0' ), at( 'F/9#0', 9, null ), at( 'F/45#1', 45, 'F/9#0' ), at( 'X/44#0', 44, null, 'Other' ) ];
+	const tree = [ { name: 'sgs/social-icons', attributes: {}, draftRef: 'footer[data-dc-tpl="2"] [data-dc-tpl="44"]', siteInfoRow: [ 'instagram', 'whatsapp' ], childRefs: { instagram: '[data-dc-tpl="45"]', whatsapp: '[data-dc-tpl="50"]' } } ];
+	assert.deepEqual( [ ...namedKeys( tree, elements ) ].sort(), [ 'F/44#0', 'F/45#0', 'F/50#0' ], 'the row, and each item inside the row only (not F/45#1 under another element)' );
+	assert.deepEqual( [ ...namedKeys( tree ) ], [], 'without the inventory nothing resolves' );
+	assert.deepEqual( [ ...namedKeys( [ { ...tree[ 0 ], draftRef: '[data-dc-tpl="45"]', childRefs: {} } ], elements ) ], [], 'a number the draft holds twice names no element' );
+	assert.deepEqual( [ ...namedKeys( [ { ...tree[ 0 ], draftRef: 'footer .social', childRefs: {} } ], elements ) ], [], 'a selector with no number names none' );
+	// conservationRows reads the selector finder: the painted row is read, not kept-unnamed.
+	const SHOWN = { 375: { x: 0, y: 0, w: 100, h: 20 }, 768: { x: 0, y: 0, w: 100, h: 20 }, 1440: { x: 0, y: 0, w: 100, h: 20 } };
+	const inventory = { elements: elements.map( ( e ) => ( { ...e, box: SHOWN, visible: { 375: true, 768: true, 1440: true }, attrs: 'F/44#0' === e.key ? { style: 'display:flex;gap:10px;padding:8px' } : {}, display: 'F/44#0' === e.key ? 'flex' : 'block' } ) ) };
+	const proposal = { rows: elements.map( ( e ) => ( { key: e.key, block: 'sgs/social-icons', action: null } ) ) };
+	assert.deepEqual( conservationRows( { inventory, proposal, skeleton: tree } ).rows.map( ( r ) => r.key ), [] );
+	assert.deepEqual( conservationRows( { inventory, proposal, skeleton: [] } ).rows.map( ( r ) => [ r.key, r.class ] ), [ [ 'F/44#0', 'kept-unnamed' ] ], 'negative control: with no node it is a row' );
+} );
+
 test( 'loopOf, templateOf and identityOf', () => {
 	assert.equal( loopOf( 'Root>Card@40#1/3#2' ), 'Root>Card@40#1/3' );
 	assert.equal( templateOf( 'Root>Card@40#1/3#2' ), 'Root>Card@40/3' );

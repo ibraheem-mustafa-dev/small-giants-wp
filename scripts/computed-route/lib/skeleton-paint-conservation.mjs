@@ -142,8 +142,9 @@ const BAND_KEY = 'draftBandWrappers';
 // width alternative's `{ key, shown }` (the element the node is read at on other widths), never a value in its attributes
 // or fingerprint. A finder under `draftBandWrappers` reads the box's width cap
 // only (`band`); an element another finder also names is read in full.
-export function namedReads( tree ) {
+export function namedReads( tree, elements = [] ) {
 	const out = new Map();
+	const select = selectorFinder( elements );
 	const find = ( v, kind ) => {
 		if ( Array.isArray( v ) ) {
 			v.forEach( ( x ) => find( x, kind ) );
@@ -158,6 +159,13 @@ export function namedReads( tree ) {
 			for ( const [ k, v ] of Object.entries( n ) ) {
 				[ 'innerBlocks', 'attributes', 'draftFingerprint', 'name' ].includes( k ) || find( v, BAND_KEY === k ? 'band' : 'full' );
 			}
+			// A Site Info row names its element with a selector (lib/skeleton-write-units.mjs, `siteInfoRow`), and its items with selectors inside it (`childRefs`).
+			const row = 'string' === typeof n.draftRef ? select( n.draftRef ) : null;
+			row && out.set( row.key, 'full' );
+			row && Object.values( n.childRefs || {} ).forEach( ( s ) => {
+				const item = 'string' === typeof s ? select( s, row ) : null;
+				item && out.set( item.key, 'full' );
+			} );
 			walk( n.innerBlocks );
 		}
 	};
@@ -165,8 +173,31 @@ export function namedReads( tree ) {
 	return out;
 }
 
-// The draft element keys a skeleton tree names with any finder.
-export const namedKeys = ( tree ) => new Set( namedReads( tree ).keys() );
+const DC_TPL = /\[data-dc-tpl="(\d+)"\]/g;
+
+// The inventory element a selector finder names (`footer[data-dc-tpl="2"] [data-dc-tpl="44"]`): the one element whose template
+// number is the selector's last, inside an element of the same template whose number is the selector's first (and inside
+// `within`, when given). Null when the selector names no number or the draft holds no one such element.
+export function selectorFinder( elements = [] ) {
+	const byKey = new Map( elements.map( ( e ) => [ e.key, e ] ) );
+	const inside = ( e, test ) => {
+		for ( let p = byKey.get( e.parentKey ); p; p = byKey.get( p.parentKey ) ) {
+			if ( test( p ) ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	return ( selector, within = null ) => {
+		const tpls = [ ...String( selector ).matchAll( DC_TPL ) ].map( ( m ) => Number( m[ 1 ] ) );
+		const last = tpls.at( -1 );
+		const hits = elements.filter( ( e ) => Number( e.tpl ) === last && ( ! within || inside( e, ( p ) => p === within ) ) && ( tpls.length < 2 || inside( e, ( p ) => Number( p.tpl ) === tpls[ 0 ] && p.template === e.template ) ) );
+		return 1 === hits.length ? hits[ 0 ] : null;
+	};
+}
+
+// The draft element keys a skeleton tree names with any finder (`elements`: the inventory's, to read selector finders).
+export const namedKeys = ( tree, elements = [] ) => new Set( namedReads( tree, elements ).keys() );
 
 // An element's identity across the surfaces of one client: its template's component and number. An element of the surface's
 // own root template takes the surface's draft file as its component (`component`), since `Root` names a different file on
@@ -180,7 +211,7 @@ export const heldIdentities = ( { inventory, component } ) => new Set( ( invento
 export function namedIdentities( { inventory, skeleton, component } ) {
 	const byKey = new Map( ( inventory?.elements || [] ).map( ( e ) => [ e.key, e ] ) );
 	const out = new Set();
-	for ( const key of namedKeys( skeleton ) ) {
+	for ( const key of namedKeys( skeleton, inventory?.elements || [] ) ) {
 		const e = byKey.get( key );
 		e && out.add( identityOf( e, component ) );
 	}
@@ -351,7 +382,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	const elements = inventory?.elements || [];
 	const byKey = new Map( elements.map( ( e ) => [ e.key, e ] ) );
 	const rows = new Map( ( proposal?.rows || [] ).map( ( r ) => [ r.key, r ] ) );
-	const reads = namedReads( skeleton );
+	const reads = namedReads( skeleton, elements );
 	const named = new Set( reads.keys() );
 	const full = [ ...named ].filter( ( k ) => 'full' === reads.get( k ) );
 	const loops = new Set( full.map( loopOf ) );
