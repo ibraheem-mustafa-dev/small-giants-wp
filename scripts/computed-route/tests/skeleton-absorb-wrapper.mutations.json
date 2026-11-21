@@ -130,5 +130,17 @@
 		"find": "const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed',",
 		"replace": "const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers',",
 		"why": "the skeleton's draftAbsorbed key is written into the page"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "! apart ? v( 'alignWrapper', { action: 'unwrap', ...( holdsSpace ? { onlyIfAbsorbed: true } : {} ) } ) : null;",
+		"replace": "! apart ? v( 'alignWrapper', { action: 'unwrap' } ) : null;",
+		"why": "a wrapper holding space above or below goes without its parent absorbing it"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const holdsSpace = !! R.alignWrapper?.blockPadding && (",
+		"replace": "const holdsSpace = false && (",
+		"why": "the blockPadding entry is never read"
 	}
 ]

@@ -1256,8 +1256,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		},
 		// The frame that only clips or fades a marquee track goes: the strip draws its own overflow and edge fade.
 		( { e, kidsB } ) => ( ! m.words( e ) && 1 === kidsB.length && loops( kidsB[ 0 ] ) && desc( kidsB[ 0 ] ).some( isMedia ) ? v( 'marqueeFrame', { action: 'unwrap' } ) : null ),
-		// A wrapper that only aligns or spaces its content (text-align, padding, margin) goes: the blocks around and inside
-		// it align and pad themselves. Anything that paints (a background, border, shadow), positions or lays out stays.
+		// A wrapper whose only styles align or space its content (text-align, padding, margin) is proposed for dissolving, and
+		// goes only where nothing it paints is lost: its alignment goes (the nodes inside read centred text themselves), while
+		// padding is a look ruleFor's unwrap guard keeps unless a reader or its parent (absorbFor) takes it. Anything that paints
+		// (a background, border, shadow), positions or lays out is not this rule's.
 		( { e, st, kidsB, parentBlock } ) => {
 			const props = Object.keys( st );
 			const only = new Set( R.alignWrapper?.properties || [] );
@@ -1266,7 +1268,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const apart = !! R.alignWrapper?.siblingGap && props.some( ( p ) => p.startsWith( 'margin' ) ) && m.blockKids( m.byKey[ e.parentKey ] || { key: null } ).indexOf( e ) > 0;
 			// Padding above or below its content is space no block around or inside it holds: the wrapper goes only where its
 			// parent absorbs it (`onlyIfAbsorbed`, ruleFor's absorbFor), whose part then carries the space; otherwise it stays
-			// and carries its own padding. Alignment alone still goes.
+			// and carries its own padding, even where a reader takes the padding. Side padding alone is the unwrap guard's: it
+			// stays unless read or absorbed. Alignment alone goes.
 			const holdsSpace = !! R.alignWrapper?.blockPadding && ( blockPadding( st ) > 0 || someWidth( e, ( r ) => ( pxOf( r[ 'padding-top' ] ) ?? 0 ) > 0 || ( pxOf( r[ 'padding-bottom' ] ) ?? 0 ) > 0, () => false ) );
 			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) && ! apart ? v( 'alignWrapper', { action: 'unwrap', ...( holdsSpace ? { onlyIfAbsorbed: true } : {} ) } ) : null;
 		},
