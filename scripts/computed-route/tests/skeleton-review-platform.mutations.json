@@ -1,0 +1,20 @@
+[
+	{"file": "lib/skeleton-review-platform.mjs", "find": "if ( items.length < 2 || 1 !== holders.length || items.some( overlay ) ) {", "replace": "if ( 1 !== holders.length || items.some( overlay ) ) {", "why": "one review is no loop"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "if ( items.length < 2 || 1 !== holders.length || items.some( overlay ) ) {", "replace": "if ( items.length < 2 || 1 !== holders.length ) {", "why": "a fixed panel is an overlay"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": ".length * 2 < items.length ) {", "replace": ".length < 1 ) {", "why": "mostly one-word tiles are not reviews"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "if ( outside > rule.maxSectionWords ) {", "replace": "if ( false ) {", "why": "the section stops at the word limit"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "if ( a === m.root || ! a ) {", "replace": "if ( ! a ) {", "why": "the section stops short of the surface's root"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "if ( platforms.length > 1 ) {", "replace": "if ( false ) {", "why": "two platforms are a note"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "notes.push( `the review section ${ top.key } (loop ${ loop }) names ${ platforms.join( ' and ' ) }", "replace": "( `the review section ${ top.key } (loop ${ loop }) names ${ platforms.join( ' and ' ) }", "why": "the note is written"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "const region = chain( need[ 0 ] ).find( ( a ) => need.every( ( n ) => chain( n ).includes( a ) ) );", "replace": "const region = top;", "why": "the block sits at the lowest element holding the reviews and every signal"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "'img' === e.tag && ( p.marks || [] ).some(", "replace": "false && ( p.marks || [] ).some(", "why": "a mark image names the platform"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "|| wordRe( w ).test( e.attrs?.alt ?? '' ) ) && hit( 'mark' );", "replace": ") && hit( 'mark' );", "why": "a mark's alt text names the platform"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "host && ( p.domains || [] ).some( ( d ) => host === d || host.endsWith( `.${ d }` ) ) && hit( 'link' );", "replace": "", "why": "a link to the platform's domain names it"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "host === d || host.endsWith( `.${ d }` )", "replace": "host.endsWith( d )", "why": "a host merely ending in the letters is not the domain"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "own && count( own ) <= rule.maxNameWords && ", "replace": "own && ", "why": "a quote mentioning the platform is no signal"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "const wordRe = ( w ) => new RegExp( `(^|[^\\\\p{L}\\\\p{N}])${ escape( w ) }($|[^\\\\p{L}\\\\p{N}])`, 'iu' );", "replace": "const wordRe = ( w ) => new RegExp( escape( w ), 'i' );", "why": "the name as a whole word only"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "regions.set( region.key, { platform: p.name, block: p.block,", "replace": "regions.set( region.key, { platform: p.name, block: 'sgs/google-reviews',", "why": "the platform's row names its block"},
+	{"file": "lib/skeleton-review-platform.mjs", "find": "handover: p.handover ?? null,", "replace": "handover: null,", "why": "the live source is the handover"},
+	{"file": "lib/skeleton-rules.mjs", "find": "return hit ? v( 'reviewPlatform', {", "replace": "return false ? v( 'reviewPlatform', {", "why": "the region is the platform's block"},
+	{"file": "lib/skeleton-propose.mjs", "find": "...( cls.reviewPlatforms?.regions.size || cls.reviewPlatforms?.notes.length ? { reviewPlatforms:", "replace": "...( false ? { reviewPlatforms:", "why": "the proposal records the regions"}
+]

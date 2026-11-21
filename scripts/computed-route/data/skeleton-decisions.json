@@ -191,6 +191,47 @@
 			"listingReason": "the element whose children are all a loop's product tiles lays the cards out, so it is the layout container, as the hand-built reference shop's home page holds its best sellers in an sgs/container grid; never a block that accepts only product cards because of that (the wishlist panel draws the visitor's saved products, not these)",
 			"reason": "a tile of a priced loop on a page that is not a WooCommerce page, whose words name one product of the draft catalogue (its name, with its brand when the catalogue gives one), is the site's own product card bound to that product, the card the shop's collection draws, as the hand-built reference shop's home page has its best sellers (each an sgs/product-card in wc-product mode with its productId); found by structure and by the catalogue (lib/skeleton-product-tile.mjs), never by a draft's words; a loop any tile of which names no single product stays the draft's own blocks, because a card with no product prints nothing (2026-11-21)"
 		},
+		"reviewPlatform": {
+			"reason": "a review section that names a review platform is that platform's review block (Bean, 2026-11-21: the Google mark, an overall rating with a review count and see-all or write-a-review links to Google make Google's reviews block, and the rule works for other platforms such as Trustpilot); one rule over this platform table, so another platform is another row; found by structure (lib/skeleton-review-platform.mjs): a loop of reviews in a section whose mark, short words or links name exactly one platform. The block keeps its default source, which shows the reviews the route writes from the draft's loop (Google: dataSource auto shows written reviews before any live ones; Trustpilot: dataSource inline), so the section always renders the draft's reviews; a live source (a Google place ID with an API key, a Trustpilot business unit) is the handover. Reviews in the client's own style that name no platform stay the testimonial slider (rules.slider)",
+			"minQuoteWords": 8,
+			"maxNameWords": 6,
+			"maxSectionWords": 40,
+			"platforms": [
+				{
+					"name": "Google",
+					"block": "sgs/google-reviews",
+					"marks": [
+						"google"
+					],
+					"words": [
+						"google"
+					],
+					"domains": [
+						"google.com",
+						"google.co.uk",
+						"share.google",
+						"g.page",
+						"goo.gl",
+						"maps.app.goo.gl"
+					],
+					"handover": "the reviews are the draft's, written into the block; for Google's live reviews set the block's place ID (placeId) with the site's Google API key"
+				},
+				{
+					"name": "Trustpilot",
+					"block": "sgs/trustpilot-reviews",
+					"marks": [
+						"trustpilot"
+					],
+					"words": [
+						"trustpilot"
+					],
+					"domains": [
+						"trustpilot.com"
+					],
+					"handover": "the reviews are the draft's, written into the block; for Trustpilot's live reviews set the block's business unit address (businessUnitUrl) and switch its source to synced"
+				}
+			]
+		},
 		"drawsChildren": {
 			"reason": "a block that draws the draft element's children itself, though it is neither a leaf nor holds an array item schema: the children are absorbed, never built",
 			"blocks": [
@@ -920,7 +961,7 @@
 			},
 			"scope": "an element bound to a ref whose block children are all copies of one loop template (two or more), with controls outside it whose click handlers scroll that ref (scrollTo, scrollBy, scrollIntoView or a scrollLeft write, followed through the component's own methods) or write a state key the track's own style reads; a timer doing the same is autoplay (its delay the speed); drag handlers on the track are noted only, the draggable setting being a motion value Fill writes. The slides' item fields are matched to each listed block's child settings by name and role (lib/fill-list-content.mjs::matchFields): the first block whose listed roles are all taken is the slider and draws its slides (Fill writes them from the loop); the controls and the wrappers holding only controls are absorbed. Slides no listed block takes keep their proposal, and the track's row is a missing-features row and a proposal problem naming the blocks with the listed capabilities",
 			"clients": [ "mamas-munches-redesign" ],
-			"reason": "a track of slides that controls scroll is a slider: slides holding a quote and an author are the testimonial slider, which draws its own arrows and dots (Bean: a review card in the client's own style is sgs/testimonial-slider; a wordless control is drawn by the block, never a button reading \"Click Here\")"
+			"reason": "a track of slides that controls scroll is a slider: slides holding a quote and an author are the testimonial slider, which draws its own arrows and dots (Bean: a review card in the client's own style is sgs/testimonial-slider; narrowed 2026-11-21 by Bean's ruling that a review section naming a review platform is that platform's review block, rules.reviewPlatform, decided before the slider; a wordless control is drawn by the block, never a button reading \"Click Here\")"
 		},
 		"tabs": {
 			"id": "tabs",
