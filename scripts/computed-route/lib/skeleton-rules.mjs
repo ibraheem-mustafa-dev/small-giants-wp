@@ -31,6 +31,7 @@ import { behindContent, contentAnchor } from './skeleton-hero-background.mjs';
 import { heroCollage } from './skeleton-hero-collage.mjs';
 import { tileCount, stripGap, squareTile, boxWidths } from './skeleton-tile-count.mjs';
 import { menuOfOpener } from './skeleton-mega-opener.mjs';
+import { splitLinkOf, sidesOf } from './skeleton-split-menu.mjs';
 import { openerTargets, controlWrites, openedBy, openerAttributes } from './skeleton-openers.mjs';
 
 // Whether words are the Site Info value of a kind itself (a typed phone number or email address), so a label showing
@@ -714,11 +715,31 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// A header control outside the nav that opens a mega panel is an item of a second header menu: a menu bar bound to that
 		// menu (no burger of its own; the main menu owns the drawer's), so the item and its panel are one thing
 		// (lib/skeleton-mega-opener.mjs).
+		// A navigation link on the logo's far side from the header's nav is an item of the nav's menu drawn as its second half:
+		// the far side's first link is a menu bar bound to the same menu, and every later one is absorbed into it
+		// (lib/skeleton-split-menu.mjs).
+		( { e } ) => {
+			const link = R.splitMenu ? splitLinkOf( { e, els: m.els, byKey: m.byKey, split: surface.splitMenu, surfaceKind: surface.kind } ) : null;
+			if ( ! link ) {
+				return null;
+			}
+			if ( link.first !== link.key ) {
+				return v( 'splitMenu', { action: 'absorbed', into: link.first } );
+			}
+			return v( 'splitMenu', { block: R.splitMenu.block, absorb: true, menu: surface.splitMenu.menu, split: { after: surface.splitMenu.after, readAt: link.group }, attributes: { ...R.splitMenu.attributes, splitSide: sidesOf( surface.splitMenu ).links } } );
+		},
 		( { e } ) => {
 			const menu = R.megaOpenerMenu ? menuOfOpener( { e, byKey: m.byKey, openers: surface.megaOpeners, surfaceKind: surface.kind } ) : null;
 			return menu ? v( 'megaOpenerMenu', { block: R.megaOpenerMenu.block, absorb: true, menu, attributes: { ...R.megaOpenerMenu.attributes } } ) : null;
 		},
-		( { e } ) => ( 'nav' === e.tag && R.navigation?.bySurface?.[ surface.kind ] ? v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true } ) : null ),
+		// The nav of a header whose menu is drawn in two halves is the first half (or the second, after the far side's links).
+		( { e } ) => {
+			if ( 'nav' !== e.tag || ! R.navigation?.bySurface?.[ surface.kind ] ) {
+				return null;
+			}
+			const split = R.splitMenu && 'header' === surface.kind ? surface.splitMenu : null;
+			return v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true, ...( split ? { split: { after: split.after, readAt: e.key }, attributes: { splitSide: sidesOf( split ).nav } } : {} ) } );
+		},
 		( { e } ) => ( ! m.isIconLink( e ) && ( iconOnly( e ) || emojiOnly( e ) || bindingGlyph( e ) ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null ),
 		// The call to action that ends a card link is the card's button, holding the card's link.
 		( { e } ) => {

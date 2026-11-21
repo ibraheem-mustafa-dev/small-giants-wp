@@ -417,6 +417,14 @@
 			},
 			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
 		},
+		"splitMenu": {
+			"id": "splitMenu",
+			"scope": "a link or button of a header, outside every nav element, whose words are the label of an item the page map flagged `splitItem` in the main header menu (lib/skeleton-split-menu.mjs, from lib/intake-pagemap-split.mjs), and the header's nav itself",
+			"block": "sgs/nav-bar-menu",
+			"attributes": { "showBurger": false },
+			"slots": { "bar": [ "gap" ], "item": [ "itemColour" ] },
+			"reason": "the navigation links on the logo's far side from the header's nav are items of the nav's own menu, so the menu is drawn twice: the nav as its first half and the far side's links as one menu bar bound to the same menu, with splitSide and the item the split falls after on both, and no burger on the far side's (the nav owns the drawer's). The far side's first link is that bar; the others are its items. Each half reads its own gap and padding: the far side's bar at the group holding its links, its items at its first link (Spec 48 FR-48-30)"
+		},
 		"megaOpenerMenu": {
 			"id": "megaOpenerMenu",
 			"scope": "a link or button of a header, outside every nav element, whose words are the label of an item the page map flagged `megaOpener` in a second header menu (lib/skeleton-mega-opener.mjs, from lib/intake-pagemap-mega-slots.mjs::megaSlots)",

@@ -117,12 +117,12 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, unwrapReads, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block, brandOf: ( k ) => brandFor( k )[ 0 ]?.brand?.slug ?? null } } );
 	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
 	const fromRule = ( r ) => {
-		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.decided ? { decided: r.decided } : {} ), ...( r.handovers ? { handovers: r.handovers } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.closedInner ? { closedInner: r.closedInner } : {} ), ...( r.units ? { units: r.units } : {} ), ...( r.slides ? { slides: r.slides, slideFields: r.slideFields } : {} ), ...( r.codeItem ? { codeItem: r.codeItem } : {} ), ...( r.firstItem ? { firstItem: r.firstItem } : {} ), ...( r.chips ? { chips: r.chips } : {} ), ...( r.glyphNote ? { glyphNote: r.glyphNote } : {} ), ...( r.mediaFrame ? { mediaFrame: r.mediaFrame } : {} ), ...( r.conserve ? { conserve: r.conserve } : {} ) };
+		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.decided ? { decided: r.decided } : {} ), ...( r.handovers ? { handovers: r.handovers } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.closedInner ? { closedInner: r.closedInner } : {} ), ...( r.units ? { units: r.units } : {} ), ...( r.slides ? { slides: r.slides, slideFields: r.slideFields } : {} ), ...( r.codeItem ? { codeItem: r.codeItem } : {} ), ...( r.firstItem ? { firstItem: r.firstItem } : {} ), ...( r.chips ? { chips: r.chips } : {} ), ...( r.glyphNote ? { glyphNote: r.glyphNote } : {} ), ...( r.mediaFrame ? { mediaFrame: r.mediaFrame } : {} ), ...( r.conserve ? { conserve: r.conserve } : {} ), ...( r.split ? { split: r.split } : {} ) };
 		if ( r.action ) {
 			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), ...( r.hostSetting ? { hostSetting: r.hostSetting } : {} ), candidates: [] };
 		}
 		const C = {};
-		add( C, r.block, 'rule', W.rule, `rule ${ r.rule }: ${ r.reason }`, { attributes: r.attributes, ...( r.wordBound ? { wordBound: r.wordBound } : {} ), ...( r.menu ? { menu: r.menu } : {} ) } );
+		add( C, r.block, 'rule', W.rule, `rule ${ r.rule }: ${ r.reason }`, { attributes: r.attributes, ...( r.wordBound ? { wordBound: r.wordBound } : {} ), ...( r.menu ? { menu: r.menu } : {} ), ...( r.split ? { split: r.split } : {} ) } );
 		return { ...finish( C ), ...base, absorb: !! r.absorb };
 	};
 

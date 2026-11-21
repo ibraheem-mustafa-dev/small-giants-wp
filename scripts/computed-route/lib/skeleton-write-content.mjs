@@ -398,10 +398,18 @@ export function makeContent( ctx ) {
 			id && Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ surfaceKind } menu` );
 		}
 		// A header control that opens a mega panel is a menu bar bound to the second header menu its page-map item sits in
-		// (rules.megaOpenerMenu). A menu the map lacks would draw an unbound, empty bar, so it is reported.
+		// (rules.megaOpenerMenu), and the far side's links of a split header menu a bar bound to the header menu
+		// (rules.splitMenu). A menu the map lacks would draw an unbound, empty bar, so it is reported.
 		if ( top?.menu && attrExists( block, 'ref' ) ) {
 			const id = carried.menu( top.menu );
 			id ? Object.assign( out.attrs, { ref: id } ) && ( out.said.ref = `menu-map.json: the ${ top.menu } menu` ) : out.missing.push( `${ e.key }: no menu ref is carried: menu-map.json holds no ${ top.menu } menu for this site (run site-build.mjs --menus --apply)` );
+		}
+		// Each half of a split header menu names the item the split falls after by the identifier the site recorded for it
+		// (lib/site-build-map.mjs::itemIdentifier). Without it the block draws every item in both halves, so a missing one is
+		// reported, never left out in silence.
+		if ( top?.split?.after && attrExists( block, 'splitAfterItemId' ) && surfaceKind ) {
+			const id = ( carried.items?.( surfaceKind ) || {} )[ top.split.after ];
+			id ? Object.assign( out.attrs, { splitAfterItemId: id } ) && ( out.said.splitAfterItemId = `menu-map.json: the ${ surfaceKind } menu's item "${ top.split.after }"` ) : out.missing.push( `${ e.key }: no splitAfterItemId is carried: menu-map.json records no item "${ top.split.after }" of the ${ surfaceKind } menu for this site (run site-build.mjs --menus --apply)` );
 		}
 		return out;
 	}

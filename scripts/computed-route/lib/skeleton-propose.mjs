@@ -21,6 +21,7 @@ import { recordFor, openersFor, recordView, surfaceContext } from './skeleton-re
 import { formStepNodes, formStepContext } from './skeleton-form-steps.mjs';
 import { scIfFields } from './form-scif-fields.mjs';
 import { megaOpenerMenus } from './skeleton-mega-opener.mjs';
+import { splitMenuOf, splitSlots } from './skeleton-split-menu.mjs';
 import { surfaceFrames, openerTargets, frameSettings, surfaceRow, surfaceOpenerControls, openerListItems } from './skeleton-openers.mjs';
 import { handoffOf } from './draft-tokens.mjs';
 import { formHostNodes } from './skeleton-form-host.mjs';
@@ -139,7 +140,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
 	// (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r ) => w.unwrapReads( e, r ) } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, role, pageMap, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ), splitMenu: splitMenuOf( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r ) => w.unwrapReads( e, r ) } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -223,6 +224,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const clash = Object.keys( carry ).filter( ( k ) => undefined !== top.attributes?.[ k ] && shown( top.attributes[ k ] ) !== shown( carry[ k ] ) );
 		r.handovers ? handover.push( ...r.handovers ) : r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
+		// A half of a menu drawn in two halves reads its outer element and bar at its own element (lib/skeleton-split-menu.mjs):
+		// the far side's half, which has none, at the group holding its links.
+		const splitAt = r.split ? m.byKey[ r.split.readAt ] : null;
+		splitAt && splitAt !== e && Object.assign( node, { draftRef: finder( splitAt ), draftFingerprint: m.fingerprint( splitAt ) } );
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a
 		// commerce region's WooCommerce piece, which draws the region from WooCommerce; the product card inside the shop's
 		// collection is read at the draft's first card, whose look it takes.
@@ -259,6 +264,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const clashSaid = clash.map( ( k ) => `the client decision sets ${ k } ${ shown( top.attributes[ k ] ) }, which is not applied; the build carries ${ shown( carry[ k ] ) } (${ said[ k ] })` );
 		const row = record( e, r, { attributes: a, ...( Object.keys( carry ).length ? { carried: said } : {} ), ...( missing.length ? { carriedMissing: missing } : {} ), ...( clash.length ? { stale: [ r.stale, ...clashSaid ].filter( Boolean ).join( '; ' ) } : {} ) } );
 		const slots = {};
+		// Each half's bar at its own element, and the far side's items at its first link.
+		const halves = splitAt && R.splitMenu?.slots ? splitSlots( { at: splitAt, link: splitAt !== e ? e : null, finder, settings: R.splitMenu.slots, calibrated: calSettings( block ) } ) : null;
+		halves && Object.assign( slots, halves.slots );
+		halves?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...halves.notes ] );
 		drawnSvgParts( m.kids( e ), ( k ) => m.isPart( k ) ).forEach( ( k ) => {
 			const key = calKeys( block ).filter( ( c ) => new RegExp( `(^|> )svg$` ).test( c ) ).sort( ( x, y ) => x.length - y.length )[ 0 ];
 			key && ( slots[ key ] = finder( k ) );
@@ -356,7 +365,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
 		// The element's own words in a block that holds its body as inner blocks (rules.wrappedWords): one body child holding them,
 		// read at the same draft element (a review's text inside sgs/quote, which would otherwise print its placeholder body).
-		if ( ! node.innerBlocks.length && wrappedBody( block, e ) ) {
+		if ( ! node.innerBlocks.length && ! r.split && wrappedBody( block, e ) ) {
 			const W = R.wrappedWords;
 			const text = skeletonSettings( facts, W.block ).text;
 			text && ( node.innerBlocks = [ base( e, W.block, { [ text ]: m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : m.words( e ) } ) ] );
