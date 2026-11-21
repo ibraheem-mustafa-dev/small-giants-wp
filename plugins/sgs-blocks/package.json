@@ -73,6 +73,7 @@
     "check:db-consistency": "python scripts/db-consistency/run.py --report",
     "check:inline-styling": "node scripts/audit-inline-styling.js --check",
     "check:scrollbar-mechanism": "python scripts/check-scrollbar-mechanism.py --check",
+    "check:child-sizing-coverage": "python scripts/check-child-sizing-coverage.py --check",
     "check:serverside-render-disabled": "node scripts/consistency/audit-serverside-render-disabled.js --check",
     "check:id-scoped-emits": "node scripts/check-id-scoped-emits.js --check",
     "check:text-gradient-companion": "node scripts/check-text-gradient-companion.js --check",

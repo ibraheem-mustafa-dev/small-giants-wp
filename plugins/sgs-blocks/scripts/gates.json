@@ -2456,5 +2456,23 @@
     "added_commit": null,
     "budget_ms": 3000,
     "order": 278
+  },
+  {
+    "id": "check-child-sizing-coverage",
+    "cmd": "python scripts/check-child-sizing-coverage.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 2000,
+    "order": 279
+  },
+  {
+    "id": "check-child-sizing-coverage-self-test",
+    "cmd": "python scripts/check-child-sizing-coverage.py --self-test",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 280
   }
 ]
