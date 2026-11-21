@@ -11,6 +11,7 @@ import { loadChromium } from './fill-read.mjs';
 import { READ_PROPS, WIDTHS, findPartsInPage } from './fill-part-look.mjs';
 import { SCRATCH_NAME, assertUnprotected, readTargets } from './site-targets.mjs';
 import { assertSiteContact } from './site-contact.mjs';
+import { readHover } from './part-look-hover.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -67,7 +68,8 @@ async function openPage( browser, { url, width, config } ) {
 
 // Reads every part of a locator group from a served draft at each width: { part: { width: [ { key, tag, text, box, styles } ] } }.
 // `files` are tried in order; a part no earlier file located is taken from a later one (the sign-in page's fields for the account).
-export async function readParts( { draftDir, files, spec, names, pages, config = null, headed = false, log = () => {} } ) {
+// `hover` names the parts whose instances are also hovered (lib/part-look-hover.mjs: each gains `hover`).
+export async function readParts( { draftDir, files, spec, names, pages, config = null, hover = [], headed = false, log = () => {} } ) {
 	const { chromium } = await loadChromium();
 	const served = await serveDraft( draftDir, { index: files[ 0 ] } );
 	const browser = await chromium.launch( { headless: ! headed, args: [ '--hide-scrollbars' ] } );
@@ -80,6 +82,7 @@ export async function readParts( { draftDir, files, spec, names, pages, config =
 				const { ctx, page } = await openPage( browser, { url, width, config: file === files[ 0 ] ? config : null } );
 				try {
 					const found = await page.evaluate( findPartsInPage, { spec, names, props: READ_PROPS, pages } );
+					hover.length && await readHover( { page, found, parts: hover, log } );
 					for ( const [ part, list ] of Object.entries( found ) ) {
 						if ( ! list.length || ( filled[ part ] && filled[ part ] !== file ) ) {
 							continue;
