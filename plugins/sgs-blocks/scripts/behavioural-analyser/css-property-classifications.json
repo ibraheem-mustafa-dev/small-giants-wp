@@ -9486,6 +9486,40 @@
     },
     {
       "slug": "sgs/choice-flow",
+      "attr": "backMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_layer": "CONTENT",
+        "css_element": "nav-back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_layer": "CONTENT",
+        "css_element": "nav-back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_element": "nav-back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "backWidthType",
+      "fields": {
+        "css_property": "width",
+        "css_element": "nav-back"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
       "attr": "headerEyebrowColour",
       "fields": {
         "css_property": "color",
@@ -9498,26 +9532,6 @@
       "fields": {
         "css_property": "height",
         "css_element": "chrome-logo"
-      }
-    },
-    {
-      "slug": "sgs/choice-flow",
-      "attr": "infoToggleBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_layer": "CONTENT",
-        "css_element": "info-toggle"
-      }
-    },
-    {
-      "slug": "sgs/choice-flow",
-      "attr": "infoToggleColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_layer": "CONTENT",
-        "css_element": "info-toggle"
       }
     },
     {
@@ -9535,13 +9549,6 @@
       "fields": {
         "css_property": "grid-template-columns",
         "css_layer": "GRID"
-      }
-    },
-    {
-      "slug": "sgs/choice-flow",
-      "attr": "optionMediaSize",
-      "fields": {
-        "css_property": "width"
       }
     },
     {
@@ -40037,6 +40044,26 @@
         "css_property": "flex-wrap",
         "css_layer": "GRID",
         "css_element": "footer-actions"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "infoToggleBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "info-toggle"
+      }
+    },
+    {
+      "slug": "sgs/choice-flow",
+      "attr": "infoToggleColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_layer": "CONTENT",
+        "css_element": "info-toggle"
       }
     },
     {
