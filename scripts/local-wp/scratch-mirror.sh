@@ -12,6 +12,8 @@
 # The name must start local-mediatest; the source must be one of the four mirrors; the port must be free and 8090-8199.
 # The copy records its source in <docroot>/.scratch-source, which sync-build.sh reads to pick the theme.json. create also makes the
 # copy its own application password (in its login file) and registers it as a route site target; drop removes the registration.
+# strip takes a copy back to a blank foundation for the foundation command, and refuses any folder that is not a copy this
+# script made with its own database (see strip below).
 set -euo pipefail
 
 MIRRORS="local-eye-care local-sandybrown local-indus local-mamas"
@@ -183,22 +185,39 @@ drop() {
 }
 
 # Takes a scratch copy back to a blank foundation, so the foundation command (scripts/computed-route/build-foundation.mjs)
-# can be proved from the handoff alone: the active header, footer and menu drawer pointers, every header, footer and drawer
-# post, the saved global styles, the templates and template parts saved in the database, the classic menus and the theme
-# mods go. Pages, media, products, forms and modals stay: the site build adopts or replaces them. Only a copy this script
-# made (its name matches NAME_RE and its folder holds .scratch-source) is stripped; a real mirror is refused.
-STRIP_POST_TYPES="sgs_header sgs_footer sgs_drawer wp_global_styles wp_template wp_template_part"
+# can be proved from the handoff alone: everything the foundation writes goes, so a step that writes nothing shows as
+# missing instead of passing on the source client's leftovers. That is the active header, footer and menu drawer
+# pointers; every header, footer and drawer post in any status (trash and auto-draft included); the saved global styles;
+# the templates and template parts saved in the database; the block menus and classic menus; the Additional CSS post;
+# the installed fonts; the business details (sgs_business_*, sgs_site_info*, sgs_social_*); and the theme mods. Pages,
+# media, products, forms and modals stay: the site build adopts or replaces them. Only a copy this script made is
+# stripped: its name matches NAME_RE, its folder holds .scratch-source, and its wp-config names its own database
+# (a create that died before switching the database would otherwise strip the source copy's).
+STRIP_POST_TYPES="sgs_header sgs_footer sgs_drawer wp_global_styles wp_template wp_template_part wp_navigation custom_css wp_font_family wp_font_face"
 STRIP_OPTIONS="sgs_active_header_cpt_id sgs_active_footer_cpt_id sgs_active_drawer_cpt_id"
+STRIP_OPTION_PATTERNS="sgs_business_* sgs_site_info* sgs_social_*"
 
 strip() {
-  local name="$1" dir="${SCRATCH_WWW_ROOT:-/var/www}/$1" type ids count menus
+  local name="$1" dir="${SCRATCH_WWW_ROOT:-/var/www}/$1" type ids count menus opt names pattern
   [[ "$name" =~ $NAME_RE ]] || die "name must match $NAME_RE"
   [ -f "$dir/.scratch-source" ] || die "$name is not a scratch copy this script made (no $dir/.scratch-source)"
+  [ "$(wp --path="$dir" --allow-root config get DB_NAME)" = "$(db_of "$name")" ] || die "$name's wp-config does not name its own database $(db_of "$name"); refusing to strip"
+  # An option that is not there is skipped; any other failure stops the strip.
   for opt in $STRIP_OPTIONS; do
-    wp --path="$dir" --allow-root option delete "$opt" >/dev/null 2>&1 || true
+    if wp --path="$dir" --allow-root option get "$opt" >/dev/null 2>&1; then
+      wp --path="$dir" --allow-root option delete "$opt" >/dev/null
+    fi
+  done
+  echo "stripped $name: the active header, footer and drawer pointers"
+  for pattern in $STRIP_OPTION_PATTERNS; do
+    names="$(wp --path="$dir" --allow-root option list --search="$pattern" --field=option_name)"
+    for opt in $names; do
+      wp --path="$dir" --allow-root option delete "$opt" >/dev/null
+    done
+    echo "stripped $name: $(echo "$names" | wc -w) $pattern options"
   done
   for type in $STRIP_POST_TYPES; do
-    ids="$(wp --path="$dir" --allow-root post list --post_type="$type" --post_status=any --format=ids)"
+    ids="$(wp --path="$dir" --allow-root post list --post_type="$type" --post_status=any,trash,auto-draft --format=ids)"
     count=0
     if [ -n "$ids" ]; then
       # shellcheck disable=SC2086
@@ -214,7 +233,7 @@ strip() {
   fi
   echo "stripped $name: $(echo "$menus" | wc -w) classic menus"
   wp --path="$dir" --allow-root theme mod remove --all >/dev/null
-  echo "stripped $name: the active header, footer and drawer pointers and the theme mods"
+  echo "stripped $name: the theme mods"
   sudo -u www-data wp --path="$dir" cache flush >/dev/null 2>&1 || wp --path="$dir" --allow-root cache flush >/dev/null
 }
 

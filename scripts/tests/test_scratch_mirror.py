@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Tests for scripts/local-wp/scratch-mirror.sh: the functions that give a scratch copy its own application password and register it
-as a route site target. The script is sourced (it then runs nothing), with `wp` and `node` replaced by stubs that log their
+Tests for scripts/local-wp/scratch-mirror.sh: the functions that give a scratch copy its own application password, register it
+as a route site target and strip it back to a blank foundation. The script is sourced (it then runs nothing), with `wp` and `node` replaced by stubs that log their
 arguments; no WSL, database or site is reached.
 Run: python -m pytest scripts/tests/test_scratch_mirror.py
 """
@@ -24,6 +24,11 @@ case "$*" in
   *"application-password list"*) printf 'uuid,name\nu-1,route-%s\nu-2,somebody-else\n' "$STUB_NAME" ;;
   *"application-password delete"*) ;;
   *"application-password create"*) [ -n "$STUB_APP" ] && printf '%s\n' "$STUB_APP" ;;
+  *"config get DB_NAME"*) echo "${STUB_DB:-wp_mediatest_acme}" ;;
+  *"option get sgs_active_header_cpt_id"*) echo 5 ;;
+  *"option get"*) exit 1 ;;
+  *"option list --search=sgs_business_*"*) printf 'sgs_business_name\nsgs_business_phone\n' ;;
+  *"option list"*) ;;
   *"post list --post_type=sgs_header"*) echo "11 12" ;;
   *"post list --post_type=wp_global_styles"*) echo "40" ;;
   *"post list"*) ;;
@@ -132,40 +137,46 @@ class ScratchMirror(unittest.TestCase):
         self.assertEqual(r.stdout.strip(), "sourced")
         self.assertEqual(self.log.read_text(encoding="utf-8"), "")
 
-    def strip_copy(self, name=NAME, marked=True):
+    def strip_copy(self, name=NAME, marked=True, db=None):
         www = Path(self.tmp.name) / "www"
         (www / name).mkdir(parents=True, exist_ok=True)
         if marked:
             (www / name / ".scratch-source").write_text("local-mamas\n", encoding="utf-8")
-        snippet = f'sudo() {{ shift 2; "$@"; }}; SCRATCH_WWW_ROOT="{www.as_posix()}" strip {name}'
+        self.log.write_text("", encoding="utf-8")
+        db_env = f"STUB_DB={db} " if db else ""
+        snippet = f'sudo() {{ shift 2; "$@"; }}; {db_env}SCRATCH_WWW_ROOT="{www.as_posix()}" strip {name}'
         return self.bash(snippet), www / name
 
     def test_strip_removes_the_foundation_a_copy_holds_and_keeps_its_pages(self):
         r, d = self.strip_copy()
         self.assertEqual(r.returncode, 0, r.stderr)
         call = self.log.read_text(encoding="utf-8")
-        for opt in ("sgs_active_header_cpt_id", "sgs_active_footer_cpt_id", "sgs_active_drawer_cpt_id"):
-            self.assertIn(f"option delete {opt}", call)
-        for t in ("sgs_header", "sgs_footer", "sgs_drawer", "wp_global_styles", "wp_template", "wp_template_part"):
-            self.assertIn(f"post list --post_type={t} --post_status=any --format=ids", call)
+        self.assertIn("option delete sgs_active_header_cpt_id", call)
+        self.assertNotIn("option delete sgs_active_footer_cpt_id", call, "an option that is not there is skipped, not deleted")
+        self.assertIn("option delete sgs_business_name", call)
+        self.assertIn("option delete sgs_business_phone", call)
+        for pattern in ("sgs_business_*", "sgs_site_info*", "sgs_social_*"):
+            self.assertIn(f"option list --search={pattern} --field=option_name", call)
+        for t in ("sgs_header", "sgs_footer", "sgs_drawer", "wp_global_styles", "wp_template", "wp_template_part", "wp_navigation", "custom_css", "wp_font_family", "wp_font_face"):
+            self.assertIn(f"post list --post_type={t} --post_status=any,trash,auto-draft --format=ids", call)
         self.assertIn("post delete 11 12 --force", call)
         self.assertIn("post delete 40 --force", call)
         self.assertIn("menu delete 7 8", call)
         self.assertIn("theme mod remove --all", call)
-        self.assertNotIn("--post_type=page", call)
-        self.assertNotIn("--post_type=attachment", call)
-        self.assertNotIn("--post_type=product", call)
+        for kept in ("page", "attachment", "product", "sgs_form", "sgs_modal"):
+            self.assertNotIn(f"--post_type={kept} ", call)
         self.assertIn("stripped local-mediatest-acme: 2 sgs_header", r.stdout)
+        self.assertIn("stripped local-mediatest-acme: 0 sgs_footer", r.stdout)
+        self.assertIn("stripped local-mediatest-acme: 0 sgs_drawer", r.stdout)
         self.assertIn(f"--path={d.as_posix()}", call)
 
-    def test_strip_refuses_a_folder_this_script_did_not_make_and_a_real_mirror(self):
-        r, _ = self.strip_copy(marked=False)
-        self.assertNotEqual(r.returncode, 0)
-        self.assertIn("not a scratch copy", r.stderr)
-        r, _ = self.strip_copy(name="local-mamas")
-        self.assertNotEqual(r.returncode, 0)
-        self.assertIn("name must match", r.stderr)
-        self.assertNotIn("delete", self.log.read_text(encoding="utf-8"))
+    def test_strip_refuses_a_folder_this_script_did_not_make_a_real_mirror_and_another_database(self):
+        for kwargs, message in (({"marked": False}, "not a scratch copy"), ({"name": "local-mamas"}, "name must match"), ({"db": "wp_mediatest_other"}, "does not name its own database")):
+            r, _ = self.strip_copy(**kwargs)
+            self.assertNotEqual(r.returncode, 0, kwargs)
+            self.assertIn(message, r.stderr)
+            self.assertNotIn("delete", self.log.read_text(encoding="utf-8"), kwargs)
+            self.assertNotIn("remove", self.log.read_text(encoding="utf-8"), kwargs)
 
     def test_create_makes_the_password_and_the_registration_in_that_order_and_drop_removes_the_registration(self):
         src = Path(SCRIPT).read_text(encoding="utf-8")
