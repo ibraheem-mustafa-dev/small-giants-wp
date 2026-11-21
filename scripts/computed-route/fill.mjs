@@ -41,6 +41,7 @@ import { widthLadderWrites } from './lib/fill-width-ladder.mjs';
 import { residualCssWrites, PASS as PASS_RESIDUAL } from './lib/fill-residual-css.mjs';
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
+import { partMarginWrites } from './lib/fill-part-margin.mjs';
 import { layerRotationWrites } from './lib/fill-layer-rotation.mjs';
 import { stickyHeaderWrites } from './lib/fill-header-sticky.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
@@ -290,10 +291,12 @@ export async function fillSurface( o ) {
 		addEntries( ledgerFile, ladder.ledger );
 		const dims = dimensionWrites( { nodes, flat, refOf, reads, db, unmapped: ladder.unmapped, calFor: nodeCal, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, dims.ledger );
-		result.writes.push( ...ladder.writes, ...dims.writes );
-		result.settled.push( ...passSettled( result.unmapped, ladder.unmapped, 'width-ladder', ladder.answered ), ...passSettled( ladder.unmapped, dims.unmapped, 'dimension', dims.answered ) );
-		result.unmapped = dims.unmapped;
-		result.notes.push( ...ladder.notes, ...dims.notes );
+		// A margin the draft states on a part only at some widths, where the part is the block's only visible element there, is the block's own margin (lib/fill-part-margin.mjs).
+		const partMargins = partMarginWrites( { nodes, flat, refOf, reads, db, unmapped: dims.unmapped, calFor: nodeCal, snapshot } );
+		result.writes.push( ...ladder.writes, ...dims.writes, ...partMargins.writes );
+		result.settled.push( ...passSettled( result.unmapped, ladder.unmapped, 'width-ladder', ladder.answered ), ...passSettled( ladder.unmapped, dims.unmapped, 'dimension', dims.answered ), ...passSettled( dims.unmapped, partMargins.unmapped, 'part-margin', partMargins.answered ) );
+		result.unmapped = partMargins.unmapped;
+		result.notes.push( ...ladder.notes, ...dims.notes, ...partMargins.notes );
 		// A step between the read widths that a written per-device setting cannot hold, as a scoped @media rule at the draft's threshold (lib/fill-step-rungs.mjs).
 		const stepRungs = stepRungWrites( { nodes, flat, refOf, reads, writes: result.writes, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, stepRungs.ledger );
@@ -409,7 +412,7 @@ export async function fillSurface( o ) {
 		result.emptyPictures = emptyPictureRows( { reads, nodes, flat, refOf } );
 		// FR-48-8: every written style value against what the draft's code declares, at each read width.
 		// A state write is judged by the state check (lib/state-check.mjs), never against the resting read.
-		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'layer-rotation', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
+		result.confirm = confirmRecords( { writes: result.writes.filter( ( w ) => ! [ 'motion', 'width-gate', 'preset', 'width-ladder', 'dimension', 'part-margin', 'layer-rotation', PASS_RESIDUAL ].includes( w.how ) && ! w.state ), nodes, reads, defects: defectIndex( intakeParts.draftDefects ), rootComponent: intakeParts.rootComponent, calFor } );
 		// FR-48-8: a declaration that asks the device safe-area inset is named once per element and property.
 		result.notes.push( ...[ ...new Set( result.confirm.filter( ( r ) => r.safeArea ).map( ( r ) => `${ r.node } ${ r.block } ${ r.property }: ${ r.safeArea.note }` ) ) ] );
 		result.confirm.push( ...imageRecords( { images: result.images } ) );

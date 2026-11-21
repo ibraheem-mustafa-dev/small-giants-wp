@@ -17,7 +17,7 @@ import { paintedProperties, runRow } from './run-ledger.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 
 // The pass names whose settled row means the pass answered the row with a write (lib/fill-report.mjs::passSettled).
-export const ANSWERING_PASSES = [ 'logo-size', 'width-ladder', 'dimension', 'motion', 'layer-rotation' ];
+export const ANSWERING_PASSES = [ 'logo-size', 'width-ladder', 'dimension', 'part-margin', 'motion', 'layer-rotation' ];
 // The record sections of the rows Fill's records did not hold before the run ledger.
 export const NEW_SECTIONS = [ 'unread', 'state-ledger', 'state-unrendered', 'box', 'content' ];
 

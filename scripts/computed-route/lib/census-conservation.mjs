@@ -190,7 +190,7 @@ const BLOCKIFIED = { 'inline-flex': 'flex', 'inline-grid': 'grid', 'inline-block
 
 // The writers that act on a row the generic pass left UNMAPPED (fill.mjs's later passes): a write of theirs says the
 // element did not already show the value.
-const PASS_HOW = [ 'logo-size', 'width-ladder', 'width-gate', 'dimension', 'layer-rotation' ];
+const PASS_HOW = [ 'logo-size', 'width-ladder', 'width-gate', 'dimension', 'part-margin', 'layer-rotation' ];
 
 // Why the outcomes answering one read contradict each other, or null: the run calls the read's own property `equal` (the
 // element already shows it) and also leaves that property unwritten or writes it in a later pass. Only outcomes naming the
