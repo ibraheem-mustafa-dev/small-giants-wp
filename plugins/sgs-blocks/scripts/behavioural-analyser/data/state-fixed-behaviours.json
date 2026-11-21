@@ -1013,12 +1013,12 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
-   "selector": ".sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden]) .sgs-choice-flow__add-to-basket",
+   "selector": ":where(.sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden])) .sgs-choice-flow__add-to-basket",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
-   "selector": ".sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden]) .sgs-choice-flow__add-to-basket:hover",
+   "selector": ":where(.sgs-choice-flow__footer-actions:has(> .sgs-choice-flow__buy-now[hidden])) .sgs-choice-flow__add-to-basket:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {

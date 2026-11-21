@@ -1,6 +1,6 @@
 <?php
 /**
- * The sgs/choice-flow buttons on the built-in button kit (Spec 43 FR-43-26, Spec 11 section 4).
+ * The sgs/choice-flow buttons on the built-in button kit (Spec 43 FR-43-28, Spec 11 section 4).
  *
  * The flow's six buttons are declared in `block.json` `supports.sgs.builtinButtons`: Back, the Skip link, Continue, Add to basket,
  * Buy now (the footer) and Close (the chrome header). Each has the kit's look set under its prefix (`backStyle`,
@@ -100,6 +100,26 @@ if ( ! function_exists( 'sgs_choice_flow_button_classes' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_choice_flow_mark_buttons' ) ) {
+	/**
+	 * Puts each button's preset classes (`sgs_choice_flow_button_classes()`) on the button in `$html`, straight after its own class,
+	 * so the markup builders keep their class attributes as literals. A button whose `{prefix}Style` names no preset is untouched.
+	 *
+	 * @param string              $html       Markup holding some of the flow's buttons.
+	 * @param array<string,mixed> $attributes Block attributes.
+	 * @return string
+	 */
+	function sgs_choice_flow_mark_buttons( string $html, array $attributes ): string {
+		foreach ( sgs_choice_flow_button_elements() as $prefix => $element ) {
+			$extra = sgs_choice_flow_button_classes( $attributes, $prefix );
+			if ( '' !== $extra ) {
+				$html = (string) preg_replace( '/class="(' . preg_quote( ltrim( $element, '.' ), '/' ) . ')(?=[ "])/', 'class="$1' . $extra, $html, 1 );
+			}
+		}
+		return $html;
+	}
+}
+
 if ( ! function_exists( 'sgs_choice_flow_back_css' ) ) {
 	/**
 	 * Back's CSS. Its colours, border and desktop radius carry defaults, and its rule has always printed through
@@ -108,13 +128,14 @@ if ( ! function_exists( 'sgs_choice_flow_back_css' ) ) {
 	 * With a preset chosen the kit prints everything, the defaults dropped (`sgs_choice_flow_button_attrs()`).
 	 *
 	 * @param array<string,mixed> $attributes Block attributes.
-	 * @param string              $selector   Back's scoped selector.
+	 * @param string              $root_sel   The flow's own scoped root selector.
 	 * @param array<string,mixed> $defaults   {@see sgs_choice_flow_attribute_defaults()}.
 	 * @return string CSS text.
 	 */
-	function sgs_choice_flow_back_css( array $attributes, string $selector, array $defaults ): string {
+	function sgs_choice_flow_back_css( array $attributes, string $root_sel, array $defaults ): string {
 		require_once __DIR__ . '/helpers-button-style.php';
-		$opts = array( 'element' => sgs_choice_flow_button_elements()['back'] );
+		$selector = "{$root_sel} .sgs-choice-flow__nav-back";
+		$opts     = array( 'element' => '.sgs-choice-flow__nav-back' );
 		$kit  = sgs_choice_flow_button_attrs( $attributes, 'back', $defaults );
 		if ( $kit !== $attributes ) {
 			return sgs_button_kit_css( $kit, 'back', $selector, $opts );
@@ -132,14 +153,34 @@ if ( ! function_exists( 'sgs_choice_flow_back_css' ) ) {
 			unset( $radius['desktop'] );
 			$kit['backBorderRadius'] = $radius;
 		}
-		return sgs_button_element_style_css( $legacy, 'back', $selector ) . sgs_button_kit_css( $kit, 'back', $selector, $opts );
+		return sgs_button_element_style_css( $legacy, 'back', "{$root_sel} .sgs-choice-flow__nav-back" ) . sgs_button_kit_css( $kit, 'back', $selector, $opts );
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_button_kit_css' ) ) {
+	/**
+	 * One button's kit CSS (not Back's, {@see sgs_choice_flow_back_css()}): '' when it has no setting.
+	 *
+	 * @param array<string,mixed> $attributes Block attributes.
+	 * @param string              $prefix     The button's prefix (a key of {@see sgs_choice_flow_button_elements()}).
+	 * @param string              $root_sel   The flow's own scoped root selector.
+	 * @param array<string,mixed> $defaults   {@see sgs_choice_flow_attribute_defaults()}.
+	 * @return string CSS text.
+	 */
+	function sgs_choice_flow_button_kit_css( array $attributes, string $prefix, string $root_sel, array $defaults ): string {
+		$element = sgs_choice_flow_button_elements()[ $prefix ] ?? '';
+		if ( '' === $element ) {
+			return '';
+		}
+		require_once __DIR__ . '/helpers-button-style.php';
+		return sgs_button_kit_css( sgs_choice_flow_button_attrs( $attributes, $prefix, $defaults ), $prefix, $root_sel . ' ' . $element, array( 'element' => $element ) );
 	}
 }
 
 if ( ! function_exists( 'sgs_choice_flow_buttons_css' ) ) {
 	/**
-	 * The scoped CSS of every flow button's kit settings: Back's always (its look attributes carry defaults), each other button's
-	 * only when it has a setting.
+	 * The scoped CSS of every flow button's kit settings, in footer order then Close: Back's always (its look attributes carry
+	 * defaults), each other button's only when it has a setting.
 	 *
 	 * @param array<string,mixed> $attributes Block attributes.
 	 * @param string              $root_sel   The flow's own scoped root selector.
@@ -147,20 +188,11 @@ if ( ! function_exists( 'sgs_choice_flow_buttons_css' ) ) {
 	 * @return string CSS text ('' when nothing prints).
 	 */
 	function sgs_choice_flow_buttons_css( array $attributes, string $root_sel, array $defaults ): string {
-		require_once __DIR__ . '/helpers-button-style.php';
-		$css = '';
-		foreach ( sgs_choice_flow_button_elements() as $prefix => $element ) {
-			if ( 'back' === $prefix ) {
-				$css .= sgs_choice_flow_back_css( $attributes, $root_sel . ' ' . $element, $defaults );
-				continue;
-			}
-			$css .= sgs_button_kit_css(
-				sgs_choice_flow_button_attrs( $attributes, $prefix, $defaults ),
-				$prefix,
-				$root_sel . ' ' . $element,
-				array( 'element' => $element )
-			);
-		}
-		return $css;
+		return sgs_choice_flow_back_css( $attributes, $root_sel, $defaults )
+			. sgs_choice_flow_button_kit_css( $attributes, 'skip', $root_sel, $defaults )
+			. sgs_choice_flow_button_kit_css( $attributes, 'continue', $root_sel, $defaults )
+			. sgs_choice_flow_button_kit_css( $attributes, 'addToBasket', $root_sel, $defaults )
+			. sgs_choice_flow_button_kit_css( $attributes, 'buyNow', $root_sel, $defaults )
+			. sgs_choice_flow_button_kit_css( $attributes, 'closeButton', $root_sel, $defaults );
 	}
 }

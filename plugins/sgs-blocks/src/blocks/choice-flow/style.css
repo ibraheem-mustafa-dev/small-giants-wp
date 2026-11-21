@@ -107,7 +107,6 @@
 	align-items: center;
 	gap: 6px;
 	min-height: 44px;
-	padding: 8px 20px;
 	/* Default TRANSPARENT — the browser's own <button> UA stylesheet has a
 	   non-transparent default background (measured live: rgb(240,240,240),
 	   not the "none" the real reference uses), which the resting-state PHP
@@ -123,6 +122,12 @@
 	letter-spacing: 0.08em;
 	cursor: pointer;
 	transition: border-color var(--wp--custom--transition--fast, 0.15s ease);
+}
+
+/* Back's padding is a setting (backPadding, the built-in button kit): its default sits in :where() so a value
+   set in the panel always out-ranks it. */
+:where(.sgs-choice-flow__nav-back) {
+	padding: 8px 20px;
 }
 
 .sgs-choice-flow__nav-back[hidden] {
@@ -308,7 +313,6 @@
 	display: inline-flex;
 	align-items: center;
 	min-height: 44px;
-	padding: 8px 20px;
 	font-family: inherit;
 	font-size: 12.5px;
 	font-weight: 600;
@@ -316,6 +320,11 @@
 	letter-spacing: 0.08em;
 	border-width: 2px;
 	border-style: solid;
+}
+
+/* The canvas twin of Back's padding default (see :where(.sgs-choice-flow__nav-back) above). */
+:where(.sgs-choice-flow__nav-back-preview) {
+	padding: 8px 20px;
 }
 
 /* ===== Step progress indicator (gap #2) =====
@@ -399,7 +408,6 @@
 	height: 44px;
 	padding: 0;
 	border: none;
-	border-radius: 50%;
 	background-color: var(--wp--preset--color--surface-alt, #F1F0EC);
 	color: var(--wp--preset--color--text, #1A202C);
 	cursor: pointer;
@@ -407,13 +415,22 @@
 	transition: background-color var(--wp--custom--transition--fast, 0.15s ease);
 }
 
+/* The round shape is the icon variant's default and a setting (closeButtonBorderRadius, the built-in button kit): it sits
+   in :where() so a value set in the panel always out-ranks it, and the text variant's square corners still do. */
+:where(.sgs-choice-flow__chrome-close) {
+	border-radius: 50%;
+}
+
 .sgs-choice-flow__chrome-close:hover {
 	background-color: color-mix(in srgb, var(--wp--preset--color--surface-alt, #F1F0EC) 80%, white 20%);
 }
 
-.sgs-choice-flow__chrome-close-icon {
+:where(.sgs-choice-flow__chrome-close-icon) {
 	width: 18px;
 	height: 18px;
+}
+
+.sgs-choice-flow__chrome-close-icon {
 	flex-shrink: 0;
 }
 

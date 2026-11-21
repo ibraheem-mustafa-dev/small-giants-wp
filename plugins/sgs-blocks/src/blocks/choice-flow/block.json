@@ -22,7 +22,8 @@
 				{
 					"prefix": "back",
 					"part": "back",
-					"label": "Back button"
+					"label": "Back button",
+					"groups": [ "preset", "colour", "border", "padding", "width", "minHeight", "shadow" ]
 				},
 				{
 					"prefix": "skip",
@@ -506,17 +507,6 @@
 		"backShadowColour": {"type":"string","_generated":"button-kit"},
 		"backShadowHover": {"type":"string","_generated":"button-kit"},
 		"backShadowColourHover": {"type":"string","_generated":"button-kit"},
-		"backFontFamily": {"type":"string","_generated":"button-kit"},
-		"backFontWeight": {"type":"string","_generated":"button-kit"},
-		"backFontStyle": {"type":"string","_generated":"button-kit"},
-		"backTextTransform": {"type":"string","_generated":"button-kit"},
-		"backTextDecoration": {"type":"string","_generated":"button-kit"},
-		"backFontSize": {"type":"object","_generated":"button-kit"},
-		"backLineHeight": {"type":"object","_generated":"button-kit"},
-		"backLetterSpacing": {"type":"object","_generated":"button-kit"},
-		"backFontSizeUnit": {"type":"string","_generated":"button-kit"},
-		"backLineHeightUnit": {"type":"string","_generated":"button-kit"},
-		"backLetterSpacingUnit": {"type":"string","_generated":"button-kit"},
 		"skipStyle": {"type":"string","_generated":"button-kit"},
 		"skipColourBackground": {"type":"string","_generated":"button-kit"},
 		"skipColourText": {"type":"string","_generated":"button-kit"},

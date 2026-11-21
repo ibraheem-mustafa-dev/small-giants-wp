@@ -1,7 +1,7 @@
 <?php
 /**
  * sgs/choice-flow's six buttons (Back, Skip, Continue, Add to basket, Buy now, Close) on the built-in button kit (Spec 43
- * FR-43-26): a preset chosen for a button prints as the kit's shared rule and puts its classes on that button alone, a colour
+ * FR-43-28): a preset chosen for a button prints as the kit's shared rule and puts its classes on that button alone, a colour
  * set prints on the button's scoped selector, Back's per-device radius prints per device, and the stylesheet's lone-Add-to-basket
  * rule no longer out-ranks a look set on the button. With every setting unset the render is what
  * ChoiceFlowFooterPinTest pins.

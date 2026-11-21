@@ -135,7 +135,7 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 
 		$html .= '<span class="sgs-choice-flow__chrome-eyebrow" aria-live="polite">' . esc_html( $initial_eyebrow ) . '</span>';
 
-		$html .= '<button type="button" class="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--' . esc_attr( $close_style ) . sgs_choice_flow_button_classes( $attributes, 'closeButton' ) . '">';
+		$html .= '<button type="button" class="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--' . esc_attr( $close_style ) . '">';
 		if ( 'text' === $close_style ) {
 			$html .= '<span class="sgs-choice-flow__chrome-close-text">' . sgs_rich_text_kses( $close_label, false ) . '</span>';
 			$html .= '<span class="sgs-choice-flow__chrome-close-glyph" aria-hidden="true">&times;</span>';
@@ -147,7 +147,7 @@ if ( ! function_exists( 'sgs_choice_flow_chrome_header_html' ) ) {
 
 		$html .= '</div>';
 
-		return $html;
+		return sgs_choice_flow_mark_buttons( $html, $attributes );
 	}
 }
 
