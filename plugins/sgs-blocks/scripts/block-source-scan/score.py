@@ -8,7 +8,8 @@ against the setting's measured placements (slot x property) and its measured eff
   wrong-state / wrong-tier / wrong-part / wrong-prop / wrong   (wrong-part: the property
                is measured on another part; wrong-prop: the part is measured with another property);
   unknown      the scan states no part;
-  untestable   the placement holds only under a condition calibration does not set (reduced motion, print).
+  untestable   the placement holds only under a condition calibration does not set (reduced motion, print);
+  other-state  a second state (focus beside hover) of a paint that is right in the state calibration measured.
 Items are split by evidence: code (read from code), declared (block.json element with a
 selector) and hint (block.json element with no selector, whose part is a guessed class).
 A measured placement is covered when a right item names it. Per setting, code alone:
@@ -63,7 +64,8 @@ def scan_key(part, root_tok: str, aliases=()):
 
 
 def scan_items(placements: list, root_tok: str, aliases=()) -> list:
-    """One item per (part, canonical property) of every placement that paints."""
+    """One item per (part, declared property) of every placement that paints; a shorthand's
+    longhands stay one item (`props`), right when any of them is measured."""
     items, seen = [], set()
     for p in placements:
         if not p.get('props'):
@@ -71,13 +73,15 @@ def scan_items(placements: list, root_tok: str, aliases=()) -> list:
         key = scan_key(p.get('part'), root_tok, aliases)
         ev = evidence_of(p)
         for prop in p['props']:
-            for cp in R.canon_props(prop):
-                sig = (key, cp, R.norm_state(p.get('state')), tuple(p.get('tiers') or ()), ev)
-                if sig in seen:
-                    continue
-                seen.add(sig)
-                items.append({'part': key, 'prop': cp, 'state': sig[2], 'tiers': list(sig[3]), 'evidence': ev,
-                              'mechanism': p['mechanism'], **({'selector': p['selector']} if p.get('selector') else {})})
+            cps = tuple(sorted(R.canon_props(prop)))
+            if not cps:
+                continue
+            sig = (key, cps, R.norm_state(p.get('state')), tuple(p.get('tiers') or ()), ev)
+            if sig in seen:
+                continue
+            seen.add(sig)
+            items.append({'part': key, 'prop': '|'.join(cps), 'props': list(cps), 'state': sig[2], 'tiers': list(sig[3]), 'evidence': ev,
+                          'mechanism': p['mechanism'], **({'selector': p['selector']} if p.get('selector') else {})})
     return items
 
 
@@ -106,19 +110,28 @@ def judge(item: dict, ref: dict) -> str:
     both = places | ref['effects']
     state_ok = item['state'] == ref['state']
     tier_ok = widths is None or bool(widths & ref['widths'])
-    if (item['part'], item['prop']) in both:
+    if any((item['part'], cp) in both for cp in item['props']):
         if not state_ok:
             return 'wrong-state'
         if not tier_ok:
             return 'wrong-tier'
         return 'right'
-    if state_ok and any(R.container_of(k) == item['part'] and cp == item['prop'] for k, cp in places):
+    if state_ok and any(R.container_of(k) == item['part'] and cp in item['props'] for k, cp in places):
         return 'container'
-    if any(cp == item['prop'] for _, cp in both):
+    if any(cp in item['props'] for _, cp in both):
         return 'wrong-part'
     if any(k == item['part'] for k, _ in both):
         return 'wrong-prop'
     return 'wrong'
+
+
+def other_states(items: list) -> None:
+    """Calibration measures one state per setting: a placement in another state whose paint
+    (part and property) is right in the measured state is unconfirmed ('other-state'), not wrong."""
+    right = [i for i in items if i['verdict'] == 'right']
+    for i in items:
+        if i['verdict'] == 'wrong-state' and any(j['part'] == i['part'] and set(j['props']) & set(i['props']) and j['evidence'] == i['evidence'] for j in right):
+            i['verdict'] = 'other-state'
 
 
 def setting_verdict(items: list, ref: dict) -> dict:
@@ -126,7 +139,7 @@ def setting_verdict(items: list, ref: dict) -> dict:
     by_ev = {ev: [i for i in items if i['evidence'] == ev] for ev in ('code', 'declared', 'hint')}
     covered = {}
     for ev, its in by_ev.items():
-        covered[ev] = {(i['part'], i['prop']) for i in its if i['verdict'] == 'right'} & set(places)
+        covered[ev] = {(i['part'], cp) for i in its if i['verdict'] == 'right' for cp in i['props']} & set(places)
     code = by_ev['code']
     n_wrong = sum(1 for i in code if i['verdict'] in WRONG)
     n_cov = len(covered['code'])
@@ -266,6 +279,8 @@ def score_block(block: str, scan: dict, ref: dict, child_scans: dict, blocks_dir
         if rs is not None and rs['placements']:
             for i in items:
                 i['verdict'] = judge(i, rs)
+            other_states(items)
+            for i in items:
                 item_counts[i['evidence']][i['verdict']] += 1
             sv = setting_verdict(items, rs)
             verdicts[sv['code']] += 1

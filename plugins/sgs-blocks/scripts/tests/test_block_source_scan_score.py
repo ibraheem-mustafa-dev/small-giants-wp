@@ -218,3 +218,30 @@ def test_scan_only_parts_are_split(tmp_path):
     sc = build(tmp_path, {}, {}, {}, scan_parts={'sgs-demo__x': rec(['declared-only']), 'sgs-demo__y': rec(['php']), 'sgs-demo__z': rec(['php'], ['if ($a)']), 'sgs-demo__w': rec(['css-only'])})
     so = sc['parts']['scanOnly']
     assert so == {'conditional': ['sgs-demo__z'], 'declared-only': ['sgs-demo__x'], 'stylesheet-only': ['sgs-demo__w'], 'unconditional': ['sgs-demo__y']}
+
+
+# ---------------------------------------------------------------- shorthand and second states
+def test_shorthand_is_one_placement(tmp_path):
+    sc = build(tmp_path, {'c': {'type': 'string'}}, {'c': setting(['.sgs-demo__a::before'], 'background-image')},
+               {'c': [place('sgs-demo__a::before', ['background'])]})
+    assert items(sc, 'c') == ['right']
+    assert verdict(sc, 'c')['code'] == 'clean'
+
+
+def test_shorthand_negative_control(tmp_path):
+    sc = build(tmp_path, {'c': {'type': 'string'}}, {'c': setting(['.sgs-demo__a::before'], 'background-image')},
+               {'c': [place('sgs-demo__a::before', ['background-color'])]})
+    assert items(sc, 'c') == ['wrong-prop']
+
+
+def test_second_state_of_a_right_paint_is_unconfirmed(tmp_path):
+    sc = build(tmp_path, {'c': {'type': 'string'}}, {'c': setting(['.sgs-demo__a'], 'color', state='hover')},
+               {'c': [place('sgs-demo__a', ['color'], state=':hover'), place('sgs-demo__a', ['color'], state=':focus-visible')]})
+    assert sorted(items(sc, 'c')) == ['other-state', 'right']
+    assert verdict(sc, 'c')['code'] == 'clean'
+
+
+def test_second_state_alone_stays_wrong(tmp_path):
+    sc = build(tmp_path, {'c': {'type': 'string'}}, {'c': setting(['.sgs-demo__a'], 'color', state='hover')},
+               {'c': [place('sgs-demo__a', ['color'], state=':focus-visible')]})
+    assert items(sc, 'c') == ['wrong-state']
