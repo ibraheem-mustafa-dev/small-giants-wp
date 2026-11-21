@@ -230,8 +230,10 @@ export const INHERITED_LOOKS = [ 'text-centre' ];
 //                 verified when that node is in the skeleton and holds `setting` among its attributes or its decided settings.
 //   inherited     `looks` are inherited (INHERITED_LOOKS) and a node inside the element reads them from its own computed values.
 //   host-layout   the block at `node` lays the element's children out itself (a hero's split columns): `looks` is layout only.
-//   no-part       the host block `block` draws the element as a part with a fixed look and its calibration (`checked`, the
-//                 calibration file read) holds no setting that paints any of `looks` at a part: a missing block setting.
+//   no-part       the host block `block` draws the element as a part with a fixed look: a missing block setting. The check
+//                 verifies it against the block's calibration (`calibration( block )`, the slot map `cache/<block>.json`
+//                 named in `checked`): no setting at any slot paints any of `looks`, or the record is refused.
+//   not-calibrated the host block `block` has no calibration to check, so whether a part paints the look is unknown.
 //   handover      `delivers` names the block effect or site setting that paints it (a pointer glare, a reading progress bar).
 //   own-surface   the element is built and read on a surface of its own (`rule`: a linked form, a commerce region).
 //   site-decision a per-site decision dropped it (`source`); a new draft never has one.
@@ -240,12 +242,21 @@ export const RECORD_KINDS = {
 	inherited: { needs: [ 'looks' ], delivers: true },
 	'host-layout': { needs: [ 'node', 'looks' ], delivers: true },
 	'no-part': { needs: [ 'block', 'looks', 'checked' ], delivers: false },
+	'not-calibrated': { needs: [ 'block' ], delivers: false },
 	handover: { needs: [ 'delivers' ], delivers: false },
 	'own-surface': { needs: [ 'rule' ], delivers: false },
 	'site-decision': { needs: [ 'source' ], delivers: false },
 };
 
-// The classes of a row that carries a valid record which delivers nothing: listed apart, never a failure of --check.
+// Whether a row a record lists apart (it delivers nothing to the clone: RECORDED-UNREAD) fails the proposal and --check. Off: a
+// page whose block lacks a setting still clones, and the proposal names what it does not show (paintUnread). On is the rule as
+// written: a painted element is read by a block or the proposal fails.
+export const STRICT_DEFAULT = false;
+
+// The looks the settings of a calibration paint at any slot and in any state (lookOfProperty).
+export const calibratedLooks = ( settings = {} ) => new Set( Object.values( settings || {} ).map( ( x ) => lookOfProperty( x?.property ) ).filter( Boolean ) );
+
+// The classes of a row that carries a valid record which delivers nothing (RECORDED-UNREAD): listed apart, failing only in strict mode.
 export const RECORDED_CLASSES = Object.keys( RECORD_KINDS ).filter( ( k ) => ! RECORD_KINDS[ k ].delivers );
 
 // The skeleton node of each draft element named as a node's own element (its draftRef): Map( key -> node ).
@@ -261,7 +272,8 @@ export function nodesByRef( tree ) {
 
 // What a row's records do for the looks left unread: { delivered: [ looks ], listed: record | null, bad: [ text ] }.
 // `nodes`: nodesByRef of the skeleton; `below`: whether a node reads an element inside this one.
-export function checkRecords( records, { looks, nodes, below = false } ) {
+// `calibration( block )`: the block's calibrated settings, or null where it has none (a no-part record is refused without it).
+export function checkRecords( records, { looks, nodes, below = false, calibration = () => null } ) {
 	const out = { delivered: [], listed: null, bad: [] };
 	for ( const rec of [].concat( records || [] ) ) {
 		const kind = RECORD_KINDS[ rec?.kind ];
@@ -269,6 +281,16 @@ export function checkRecords( records, { looks, nodes, below = false } ) {
 		if ( ! kind || missing.length ) {
 			out.bad.push( kind ? `${ rec.kind } names no ${ missing.join( ', ' ) }` : `no record kind ${ rec?.kind }` );
 			continue;
+		}
+		if ( 'no-part' === rec.kind || 'not-calibrated' === rec.kind ) {
+			const settings = calibration( rec.block );
+			const has = settings && Object.keys( settings ).length;
+			const painted = has ? [].concat( rec.looks || looks ).filter( ( l ) => looks.includes( l ) && calibratedLooks( settings ).has( l ) ) : [];
+			const why = 'no-part' === rec.kind ? ( ! has ? `no-part for ${ rec.block }: the block has no calibration, so it is not calibrated, not no-part` : painted.length ? `no-part for ${ rec.block }: its calibration paints ${ painted.join( ', ' ) } at a slot` : null ) : has ? `not-calibrated for ${ rec.block }: the block has a calibration` : null;
+			if ( why ) {
+				out.bad.push( why );
+				continue;
+			}
 		}
 		if ( ! kind.delivers ) {
 			out.listed ??= rec;
@@ -323,9 +345,9 @@ export function droppedBy( row, rows, depth = 0 ) {
 // Row: { key, tag, words, looks, class, action, rule, by, into, host, hostBlock, hostSlots }.
 //   class: `unwrapped` (the wrapper went and nothing records where its look goes), `band-only` (the wrapper went and a band
 //   finder reads its width cap, so `looks` holds only the paint that finder does not read), `host-unread` (absorbed into a
-//   block that draws it, whose slots do not name it), `removed`, `kept-unnamed` (the row kept a block but no node names the
-//   element) or `no-row` (the proposal holds no row for it).
-export function conservationRows( { inventory, proposal, skeleton, view = null, otherSurfaces = [], ownedElsewhere = new Set(), component = null } ) {
+//   block that draws it, whose slots do not name it), `removed`, `unresolved` (no block fits it: a proposal problem of its own),
+//   `kept-unnamed` (the row kept a block but no node names the element) or `no-row` (the proposal holds no row for it).
+export function conservationRows( { inventory, proposal, skeleton, view = null, otherSurfaces = [], ownedElsewhere = new Set(), component = null, calibration = () => null } ) {
 	const elements = inventory?.elements || [];
 	const byKey = new Map( elements.map( ( e ) => [ e.key, e ] ) );
 	const rows = new Map( ( proposal?.rows || [] ).map( ( r ) => [ r.key, r ] ) );
@@ -348,7 +370,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 	const listRow = ( e, looks, cls, host = null ) => {
 		const row = rows.get( e.key ) ?? null;
 		const dropped = droppedBy( row, rows );
-		const rec = checkRecords( recordsOf( row, rows ), { looks: Object.keys( looks ), nodes, below: holdsRead.has( e.key ) } );
+		const rec = checkRecords( recordsOf( row, rows ), { looks: Object.keys( looks ), nodes, below: holdsRead.has( e.key ), calibration } );
 		const left = Object.fromEntries( Object.entries( looks ).filter( ( [ l ] ) => ! rec.delivered.includes( l ) ) );
 		if ( ! Object.keys( left ).length ) {
 			counts.recorded++;
@@ -414,7 +436,7 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 			continue;
 		}
 		const row = rows.get( e.key ) ?? null;
-		const cls = ! row ? 'no-row' : 'unwrap' === row.action ? 'unwrapped' : 'absorbed' === row.action ? 'host-unread' : 'remove' === row.action ? 'removed' : 'kept-unnamed';
+		const cls = ! row ? 'no-row' : 'unwrap' === row.action ? 'unwrapped' : 'absorbed' === row.action ? 'host-unread' : 'remove' === row.action ? 'removed' : 'unresolved' === row.action ? 'unresolved' : 'kept-unnamed';
 		listRow( e, looks, cls, hostOf( row ) );
 	}
 	return { rows: out, counts };
@@ -422,16 +444,18 @@ export function conservationRows( { inventory, proposal, skeleton, view = null, 
 
 // The proposal problems of one surface's paint conservation (the propose-time check): one line per class and rule, naming each
 // painted element that is neither read nor validly recorded. Takes the same arguments as conservationRows.
-export function paintProblems( args ) {
+// With `strict` (STRICT_DEFAULT when not given) a row a record lists apart (RECORDED-UNREAD) is a problem too.
+export function paintProblems( { strict = STRICT_DEFAULT, ...args } ) {
 	const groups = new Map();
-	for ( const r of conservationRows( args ).rows.filter( ( x ) => 'unrecorded' === x.state ) ) {
-		const id = JSON.stringify( [ r.class, r.rule, r.hostBlock ] );
+	for ( const r of conservationRows( args ).rows.filter( ( x ) => 'unrecorded' === x.state || strict ) ) {
+		const id = JSON.stringify( [ r.class, r.rule, r.hostBlock, r.state ] );
 		( groups.get( id ) ?? groups.set( id, [] ).get( id ) ).push( r );
 	}
 	return [ ...groups.values() ].map( ( list ) => {
 		const [ r ] = list;
 		const where = [ r.rule ? `rule ${ r.rule }` : 'no rule', r.hostBlock ? `host ${ r.hostBlock }` : null ].filter( Boolean ).join( ', ' );
-		return `paint conservation: ${ list.length } painted element${ 1 === list.length ? '' : 's' } ${ r.class } (${ where }) no node reads and no record carries: ${ list.slice( 0, 6 ).map( ( x ) => `${ x.key } ${ Object.keys( x.looks ).join( '/' ) }` ).join( '; ' ) }${ list.length > 6 ? `; and ${ list.length - 6 } more` : '' }${ r.recordProblems ? ` (${ r.recordProblems.join( '; ' ) })` : '' }`;
+		const what = 'recorded' === r.state ? 'is recorded, and no block reads it' : 'no node reads and no record carries';
+		return `paint conservation: ${ list.length } painted element${ 1 === list.length ? '' : 's' } ${ r.class } (${ where }) ${ what }: ${ list.slice( 0, 6 ).map( ( x ) => `${ x.key } ${ Object.keys( x.looks ).join( '/' ) }` ).join( '; ' ) }${ list.length > 6 ? `; and ${ list.length - 6 } more` : '' }${ r.recordProblems ? ` (${ r.recordProblems.join( '; ' ) })` : '' }`;
 	} );
 }
 
@@ -448,3 +472,7 @@ export function groupRows( rows, { examples = 3 } = {} ) {
 	}
 	return [ ...groups.values() ].map( ( g ) => ( { ...g, surfaces: [ ...g.surfaces ].sort() } ) ).sort( ( a, b ) => b.count - a.count );
 }
+
+// The rows a record lists apart (RECORDED-UNREAD: looks the clone does not show), as the proposal names them for the run's
+// report: [ { key, block, kind, looks } ].
+export const unreadList = ( args ) => conservationRows( args ).rows.filter( ( r ) => 'recorded' === r.state ).map( ( r ) => ( { key: r.key, block: r.record?.block ?? r.hostBlock ?? null, kind: r.record?.kind ?? r.class, looks: Object.keys( r.looks ) } ) );

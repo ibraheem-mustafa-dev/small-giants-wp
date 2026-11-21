@@ -4,7 +4,7 @@
 // a loop whose first copy a slot names, a form's field listed once under the form's own surface, a per-site removal.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { RECORD_KINDS, RECORDED_CLASSES, INHERITED_LOOKS, lookOfProperty, checkRecords, recordsOf, nodesByRef, paintProblems, styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, namedReads, BAND_LOOKS, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
+import { RECORD_KINDS, RECORDED_CLASSES, INHERITED_LOOKS, lookOfProperty, checkRecords, unreadList, recordsOf, nodesByRef, paintProblems, styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, namedReads, BAND_LOOKS, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
 import { listAll, loadClient, markdown, main } from '../tools/paint-conservation.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -360,14 +360,25 @@ test( 'an inherited look is delivered where a node inside reads it, and a no-par
 	const t = surface();
 	t.proposal.rows.find( ( r ) => 'Root/5#0' === r.key ).conserve = [ { kind: 'no-part', block: 'sgs/option-picker', looks: [ 'background', 'radius' ], checked: 'cache/option-picker.json' } ];
 	t.proposal.rows.find( ( r ) => 'Root/5#1' === r.key ).conserve = [ { kind: 'no-part', block: 'sgs/option-picker', looks: [ 'background' ] } ];
-	const rows = conservationRows( t );
+	// The record is verified against the block's calibration: a setting painting the look at any slot refuses it, and so does
+	// no calibration at all (that is not calibrated, not no-part).
+	const textOnly = ( b ) => ( 'sgs/option-picker' === b ? { pillText: { slot: '.chip:nth-of-type(1)', property: 'color' }, gap: { slot: '', property: 'font-size' } } : null );
+	const rows = conservationRows( { ...t, calibration: textOnly } );
 	const chip = rows.rows.find( ( r ) => 'Root/5#0' === r.key );
 	assert.deepEqual( [ chip.class, chip.state, chip.record.block ], [ 'no-part', 'recorded', 'sgs/option-picker' ] );
 	assert.deepEqual( [ rows.rows.find( ( r ) => 'Root/5#1' === r.key ).class, rows.counts.listedApart, rows.counts.unread ], [ 'record-unverified', 1, 4 ], 'a no-part record that names no calibration file is no record' );
+	const painting = ( b ) => ( 'sgs/option-picker' === b ? { pillBg: { slot: '.chip:nth-of-type(2)', property: 'background-color', state: 'hover' } } : null );
+	const refused = conservationRows( { ...t, calibration: painting } ).rows.find( ( r ) => 'Root/5#0' === r.key );
+	assert.deepEqual( [ refused.class, refused.state ], [ 'record-unverified', 'unrecorded' ], 'a calibration that paints the look at any slot refuses no-part' );
+	assert.match( refused.recordProblems[ 0 ], /its calibration paints background/ );
+	const none = conservationRows( t ).rows.find( ( r ) => 'Root/5#0' === r.key );
+	assert.match( none.recordProblems[ 0 ], /not calibrated, not no-part/ );
+	t.proposal.rows.find( ( r ) => 'Root/5#1' === r.key ).conserve = [ { kind: 'not-calibrated', block: 'sgs/option-picker' } ];
+	assert.deepEqual( [ conservationRows( t ).rows.find( ( r ) => 'Root/5#1' === r.key ).state, conservationRows( { ...t, calibration: textOnly } ).rows.find( ( r ) => 'Root/5#1' === r.key ).state ], [ 'recorded', 'unrecorded' ], 'not-calibrated holds only where the block has no calibration' );
 } );
 
 test( 'a per-site decision is listed apart, a row inside a removed element takes its remover\'s record, and a kind outside the list is refused', () => {
-	assert.deepEqual( [ ...RECORDED_CLASSES ].sort(), [ 'handover', 'no-part', 'own-surface', 'site-decision' ] );
+	assert.deepEqual( [ ...RECORDED_CLASSES ].sort(), [ 'handover', 'no-part', 'not-calibrated', 'own-surface', 'site-decision' ] );
 	const rows = new Map( [ [ 'Root/1#0', row( 'Root/1#0', { action: 'remove', conserve: { kind: 'handover', delivers: 'the glare effect' } } ) ], [ 'Root/2#0', row( 'Root/2#0', { action: 'remove', reason: 'inside a removed element (Root/1#0)' } ) ] ] );
 	assert.deepEqual( recordsOf( rows.get( 'Root/2#0' ), rows ), [ { kind: 'handover', delivers: 'the glare effect' } ] );
 	assert.deepEqual( checkRecords( [ { kind: 'moved', node: 'Root/1#0' } ], { looks: [ 'background' ], nodes: new Map() } ).bad, [ 'no record kind moved' ] );
@@ -399,6 +410,9 @@ test( 'paintProblems names each unrecorded element once per class and rule, and 
 	const decided = surface();
 	Object.assign( decided.proposal.rows.find( ( r ) => 'Root/8#0' === r.key ), { rule: null, source: 'client decision' } );
 	assert.equal( paintProblems( decided ).length, 3 );
+	assert.equal( paintProblems( { ...decided, strict: true } ).length, 4, 'strict: a recorded row that no block reads fails too' );
+	assert.match( paintProblems( { ...decided, strict: true } ).find( ( l ) => /site-decision/.test( l ) ), /is recorded, and no block reads it/ );
+	assert.deepEqual( unreadList( decided ), [ { key: 'Root/8#0', block: null, kind: 'site-decision', looks: [ 'background', 'radius', 'width' ] } ] );
 	const s = surface( { chipSlot: true, wrapperNamed: true } );
 	s.inventory.elements = s.inventory.elements.filter( ( e ) => ! [ 'Root/8#0', 'Root/9#0' ].includes( e.key ) );
 	assert.deepEqual( paintProblems( s ), [] );
@@ -412,11 +426,26 @@ test( 'the tool\'s --check exits 1 while an element is neither read nor recorded
 	write( surface() );
 	const lines = [];
 	assert.equal( main( [ '--root', repo, '--client', 'demo', '--check' ], { log: ( l ) => lines.push( l ) } ), 1 );
-	assert.match( lines.at( -1 ), /5 painted elements neither read nor recorded/ );
+	assert.match( lines.at( -1 ), /5 painted elements FAILING/ );
+	assert.match( lines.join( ' ' ), /\| demo \| 8 \| 3 \| 0 \| 5 \|/, 'READ, RECORDED-UNREAD and FAILING are three numbers' );
 	assert.equal( main( [ '--root', repo, '--client', 'demo' ], { log: () => {} } ), 0, 'without --check the list is a report' );
 	const read = surface( { chipSlot: true, wrapperNamed: true } );
 	read.inventory.elements = read.inventory.elements.filter( ( e ) => ! [ 'Root/8#0', 'Root/9#0' ].includes( e.key ) );
 	write( read );
 	assert.equal( main( [ '--root', repo, '--client', 'demo', '--check' ], { log: () => {} } ), 0 );
+	const decided = surface( { chipSlot: true, wrapperNamed: true } );
+	decided.inventory.elements = decided.inventory.elements.filter( ( e ) => 'Root/9#0' !== e.key );
+	Object.assign( decided.proposal.rows.find( ( r ) => 'Root/8#0' === r.key ), { rule: null, source: 'client decision' } );
+	write( decided );
+	const said = [];
+	assert.equal( main( [ '--root', repo, '--client', 'demo', '--check' ], { log: ( l ) => said.push( l ) } ), 0, 'a recorded row fails only in strict mode' );
+	assert.match( said.join( ' ' ), /\| demo \| 7 \| 6 \| 1 \| 0 \|/, 'a recorded row is RECORDED-UNREAD, never READ' );
+	assert.equal( main( [ '--root', repo, '--client', 'demo', '--check', '--strict' ], { log: () => {} } ), 1 );
 	fs.rmSync( repo, { recursive: true, force: true } );
+} );
+
+test( 'a row no block fits is class unresolved, not kept-unnamed', () => {
+	const s = surface();
+	s.proposal.rows.push( row( 'Root/9#0', { action: 'unresolved' } ) );
+	assert.equal( conservationRows( s ).rows.find( ( r ) => 'Root/9#0' === r.key ).class, 'unresolved' );
 } );

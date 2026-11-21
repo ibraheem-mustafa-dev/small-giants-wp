@@ -364,5 +364,65 @@
 		"find": "return argv.includes( '--check' ) && unrecorded ? 1 : 0;",
 		"replace": "return 0;",
 		"why": "--check never fails"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const painted = has ? [].concat( rec.looks || looks ).filter( ( l ) => looks.includes( l ) && calibratedLooks( settings ).has( l ) ) : [];",
+		"replace": "const painted = [];",
+		"why": "a no-part record is taken where the calibration paints the look"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const why = 'no-part' === rec.kind ? ( ! has ?",
+		"replace": "const why = 'no-part' === rec.kind ? ( false ?",
+		"why": "a no-part record is taken for a block with no calibration"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": ": has ? `not-calibrated for ${ rec.block }: the block has a calibration` : null;",
+		"replace": ": null;",
+		"why": "not-calibrated is taken for a calibrated block"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "new Set( Object.values( settings || {} ).map( ( x ) => lookOfProperty( x?.property ) ).filter( Boolean ) );",
+		"replace": "new Set( Object.values( settings || {} ).filter( ( x ) => ! x?.state ).map( ( x ) => lookOfProperty( x?.property ) ).filter( Boolean ) );",
+		"why": "a setting in a state is not counted as painting the look"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "rows.filter( ( x ) => 'unrecorded' === x.state || strict ) ) {",
+		"replace": "rows.filter( ( x ) => 'unrecorded' === x.state ) ) {",
+		"why": "strict mode does not fail recorded rows"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const what = 'recorded' === r.state ? 'is recorded, and no block reads it' : 'no node reads and no record carries';",
+		"replace": "const what = 'no node reads and no record carries';",
+		"why": "a strict problem does not say the row is recorded"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "rows.filter( ( r ) => 'recorded' === r.state ).map( ( r ) => ( { key: r.key, block: r.record?.block ?? r.hostBlock ?? null,",
+		"replace": "rows.map( ( r ) => ( { key: r.key, block: r.record?.block ?? r.hostBlock ?? null,",
+		"why": "the unread list names failing rows too"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "? 'removed' : 'unresolved' === row.action ? 'unresolved' : 'kept-unnamed';",
+		"replace": "? 'removed' : 'kept-unnamed';",
+		"why": "an unresolved row is counted as kept-unnamed"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "return argv.includes( '--check' ) && ( failing || ( strict && recorded ) ) ? 1 : 0;",
+		"replace": "return argv.includes( '--check' ) && failing ? 1 : 0;",
+		"why": "--strict does not fail recorded rows"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "${ sum( client, READ ) } | ${ total( client, 'listedApart' ) } |",
+		"replace": "${ sum( client, READ ) + total( client, 'listedApart' ) } | ${ total( client, 'listedApart' ) } |",
+		"why": "recorded-unread rows are counted as read"
 	}
 ]
