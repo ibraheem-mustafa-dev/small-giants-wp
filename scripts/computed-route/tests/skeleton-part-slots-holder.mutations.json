@@ -1,0 +1,10 @@
+[
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "const box = list.length > 1 && holds( i ) ? list.filter( ( k ) => sameShaped( kids( k ) ) ) : [];", "replace": "const box = [];", "why": "the bars' box beside the word is never found, so the bars are read at the box and the word" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "const box = list.length > 1 && holds( i ) ? list.filter( ( k ) => sameShaped( kids( k ) ) ) : [];", "replace": "const box = list.length > 1 ? list.filter( ( k ) => sameShaped( kids( k ) ) ) : [];", "why": "every lone step with several children lands on the bars' box, the word step included" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "if ( ! cur && sameShaped( list ) ) {", "replace": "if ( false ) {", "why": "a bar past the draft's last is never recorded absent" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "if ( ! cur && sameShaped( list ) ) {", "replace": "if ( ! cur ) {", "why": "a missing item of uneven siblings is recorded absent" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "return widths.length > 0 && widths.every( ( w ) => list.every( ( k ) => Math.abs( k.box[ w ].w - list[ 0 ].box[ w ].w ) <= 1 && Math.abs( k.box[ w ].h - list[ 0 ].box[ w ].h ) <= 1 ) );", "replace": "return widths.length > 0;", "why": "siblings of different sizes count as one part's items" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "hit.absent ? ( out.slots[ p ] = ABSENT_PART, out.notes.push( `${ p }: ${ hit.note }` ) )", "replace": "hit.absent ? out.notes.push( `${ p }: ${ hit.note }` )", "why": "an absent bar gets no slot, so Fill has no evidence of it" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "( i > 0 && NTH.test( s ) ? [ all.slice( 0, i ).join( ' > ' ) ] : [] )", "replace": "( i > 0 && NTH.test( s ) ? [ all.slice( 0, i - 1 ).join( ' > ' ) ] : [] )", "why": "the holder is named one step too high" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "if ( list.length < 2 || list.some( ( k ) => k.tag !== list[ 0 ].tag ) ) {", "replace": "if ( list.length < 2 ) {", "why": "elements of different tags count as one part's items" }
+]

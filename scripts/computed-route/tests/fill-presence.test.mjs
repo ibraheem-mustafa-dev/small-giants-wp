@@ -128,3 +128,21 @@ test( 'a real link where no setting makes that element a link is UNMAPPED', () =
 test( 'plainText strips markup and collapses whitespace', () => {
 	assert.equal( plainText( ' <b>Hi</b>\n  there &amp; you ' ), 'Hi there & you' );
 } );
+
+// A choice among numbers that removes a repeated part (how many bars a burger draws): its reading hides the third bar, and
+// the draft's evidence names each bar by its position.
+const BAR = ( n ) => `.sgs-x__icon > .sgs-x__bar:nth-of-type(${ n })`;
+const BARS = { elements: { '': {}, [ BAR( 1 ) ]: {}, [ BAR( 2 ) ]: {}, [ BAR( 3 ) ]: {} }, presence: { 'barCount=2': { shows: [], hides: [ BAR( 3 ) ] } } };
+const BAR_SCHEMA = { barCount: { type: 'number', default: 3, enum: [ 2, 3 ] } };
+const bars = ( evidence ) => presenceDecisions( { calibration: BARS, schema: BAR_SCHEMA, attributes: {}, evidence } );
+
+test( 'MUST FAIL: a draft drawing two of a part\'s three positions chooses the count that hides the third, written as a number', () => {
+	assert.equal( value( bars( { [ BAR( 1 ) ]: true, [ BAR( 2 ) ]: true, [ BAR( 3 ) ]: false } ), 'barCount' ), 2 );
+} );
+
+test( 'negative controls: a draft drawing all three bars, or naming no third position, chooses no count; a string setting keeps the text', () => {
+	assert.equal( value( bars( { [ BAR( 1 ) ]: true, [ BAR( 2 ) ]: true, [ BAR( 3 ) ]: true } ), 'barCount' ), undefined );
+	assert.equal( value( bars( { [ BAR( 1 ) ]: true, [ BAR( 2 ) ]: true } ), 'barCount' ), undefined, 'the third bar read at the first bar\'s evidence: shown' );
+	assert.equal( value( run( { '.sgs-card__date': false, '.sgs-card__badge': false } ), 'layout' ), 'compact' );
+	assert.equal( value( run( { '.sgs-card__badge:nth-of-type(1)': true } ), 'showBadge' ), true, 'a path the evidence names at a position is still read where the entry names none' );
+} );

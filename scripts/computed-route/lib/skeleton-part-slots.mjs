@@ -25,20 +25,44 @@ function subPartPaths( db, block, cal, part, homeSlot ) {
 	return [ ...found ].sort( ( a, b ) => a.length - b.length || a.localeCompare( b ) );
 }
 
+// A finder that finds no element: the slot of a repeated sub-part the draft does not draw (a third bar where the draft's
+// bars stop at two). Fill reads that target missing at every width, which is its evidence that the part is absent
+// (lib/fill-resolve.mjs::fillContent), so a setting that removes the part (a bar count) can be chosen.
+export const ABSENT_PART = Object.freeze( { js: '() => null' } );
+
+// Whether draft elements are one repeated part's items: two or more of one tag, each drawn at the same size (within 1px) at
+// every width they all show.
+export function sameShaped( list ) {
+	if ( list.length < 2 || list.some( ( k ) => k.tag !== list[ 0 ].tag ) ) {
+		return false;
+	}
+	const widths = Object.keys( list[ 0 ].box || {} ).filter( ( w ) => list.every( ( k ) => k.box?.[ w ] ) );
+	return widths.length > 0 && widths.every( ( w ) => list.every( ( k ) => Math.abs( k.box[ w ].w - list[ 0 ].box[ w ].w ) <= 1 && Math.abs( k.box[ w ].h - list[ 0 ].box[ w ].h ) <= 1 ) );
+}
+
 // The draft element a calibrated sub-part path is, walking down from the part's element: a repeated step
-// (`:nth-of-type(k)`) is the k-th child; a lone step is the only child; a step with several children below it that
-// the next steps count over is a box the draft does not draw (the burger's icon box when the bars sit straight in the
-// button), and has no element of its own. Returns { el } or { note }.
-function walk( steps, from, kids ) {
+// (`:nth-of-type(k)`) is the k-th child; a lone step is the only child. A lone step with several children is, where the
+// calibration repeats a part inside it (`holds( i )`), the one child whose own children are same-shaped items (the bars'
+// box beside the burger's word); where no child holds such items and the next step counts over the children, it is a box
+// the draft does not draw (the bars straight in the button) and has no element of its own. A repeated step past the last of
+// the draft's same-shaped items is that item drawn by the draft as absent. Returns { el }, { absent, note } or { note }.
+function walk( steps, from, kids, holds = () => false ) {
 	let cur = from;
 	for ( let i = 0; i < steps.length; i++ ) {
 		const list = kids( cur );
 		const nth = NTH.exec( steps[ i ] );
+		const next = i < steps.length - 1 && NTH.test( steps[ i + 1 ] );
+		const box = list.length > 1 && holds( i ) ? list.filter( ( k ) => sameShaped( kids( k ) ) ) : [];
 		if ( nth ) {
 			cur = list[ Number( nth[ 1 ] ) - 1 ];
+			if ( ! cur && sameShaped( list ) ) {
+				return { absent: true, note: `the draft draws ${ list.length } of these items, so item ${ nth[ 1 ] } is absent` };
+			}
 		} else if ( 1 === list.length ) {
 			cur = list[ 0 ];
-		} else if ( list.length > 1 && i < steps.length - 1 && NTH.test( steps[ i + 1 ] ) ) {
+		} else if ( 1 === box.length ) {
+			cur = box[ 0 ];
+		} else if ( list.length > 1 && next ) {
 			continue;
 		} else {
 			return { note: `the draft has no element for ${ steps[ i ] }` };
@@ -62,10 +86,13 @@ export function partSlots( { db, block, cal, part, opener, m, finder } ) {
 	const homeSlot = Object.values( cal.settings ).map( ( s ) => s.slot ).find( ( p ) => LOOSE( p ) === home );
 	out.slots[ homeSlot ] = finder( opener );
 	const kids = ( e ) => m.kids( e ).filter( ( k ) => ! m.isPart( k ) );
-	for ( const p of subPartPaths( db, block, cal, part, homeSlot ) ) {
+	const paths = subPartPaths( db, block, cal, part, homeSlot );
+	// The steps below the part that hold a repeated part: a prefix some calibrated path follows with a `:nth-of-type` step.
+	const holders = new Set( paths.flatMap( ( p ) => p.split( ' > ' ).flatMap( ( s, i, all ) => ( i > 0 && NTH.test( s ) ? [ all.slice( 0, i ).join( ' > ' ) ] : [] ) ) ) );
+	for ( const p of paths ) {
 		const steps = p.slice( homeSlot.length + 3 ).split( ' > ' );
-		const hit = walk( steps, opener, kids );
-		hit.el ? ( out.slots[ p ] = finder( hit.el ) ) : out.notes.push( `${ p }: ${ hit.note }` );
+		const hit = walk( steps, opener, kids, ( i ) => holders.has( [ homeSlot, ...steps.slice( 0, i + 1 ) ].join( ' > ' ) ) );
+		hit.el ? ( out.slots[ p ] = finder( hit.el ) ) : hit.absent ? ( out.slots[ p ] = ABSENT_PART, out.notes.push( `${ p }: ${ hit.note }` ) ) : out.notes.push( `${ p }: ${ hit.note }` );
 	}
 	return out;
 }

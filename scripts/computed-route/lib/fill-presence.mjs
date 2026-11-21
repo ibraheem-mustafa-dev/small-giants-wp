@@ -37,9 +37,11 @@ export const presenceSettings = ( calibration ) => [ ...new Set( Object.keys( ca
 export const plainText = ( s ) => String( s ?? '' ).replace( /<[^>]*>/g, ' ' ).replace( /&amp;/g, '&' ).replace( /&lt;/g, '<' ).replace( /&gt;/g, '>' ).replace( /&quot;/g, '"' ).replace( /&#0?39;/g, "'" ).replace( /&nbsp;/g, ' ' ).replace( /\s+/g, ' ' ).trim();
 
 // How well one presence entry matches the draft: +1 for each element it shows that the draft shows and each it hides that
-// the draft lacks, -1 for each the other way. evidence: { path: true | false } for the elements the skeleton named.
+// the draft lacks, -1 for each the other way. evidence: { path: true | false } for the elements the skeleton named. A path
+// the evidence names exactly is read there (the third of a repeated part is not the first); any other is read at the first
+// evidence path of the same part at any position.
 function margin( entry, evidence ) {
-	const at = ( p ) => Object.entries( evidence ).find( ( [ k ] ) => same( k, p ) )?.[ 1 ];
+	const at = ( p ) => ( Object.prototype.hasOwnProperty.call( evidence, p ) ? evidence[ p ] : Object.entries( evidence ).find( ( [ k ] ) => same( k, p ) )?.[ 1 ] );
 	let score = 0;
 	const phrases = [];
 	for ( const p of entry.shows || [] ) {
@@ -103,7 +105,9 @@ export function presenceDecisions( { calibration, schema, attributes = {}, evide
 			out.notes.push( `${ attr }: values ${ top.map( ( o ) => o.value ).join( ', ' ) } fit the draft equally well; none written` );
 			continue;
 		}
-		setTo( attr, top[ 0 ].value, top[ 0 ].phrases );
+		// The value comes from the calibration key's text: a number setting takes it as a number (burgerBarCount=2 is 2).
+		const numeric = [].concat( schema?.[ attr ]?.type || [] ).some( ( t ) => [ 'number', 'integer' ].includes( t ) ) && '' !== top[ 0 ].value.trim() && Number.isFinite( Number( top[ 0 ].value ) );
+		setTo( attr, numeric ? Number( top[ 0 ].value ) : top[ 0 ].value, top[ 0 ].phrases );
 	}
 	const known = Object.keys( calibration.elements || {} );
 	const listed = Object.values( presence );

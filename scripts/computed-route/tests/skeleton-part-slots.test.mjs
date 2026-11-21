@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import { openDb } from '../lib/db.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
-import { mediaSelfSlot, drawnSvgParts, codeItemSlots } from '../lib/skeleton-part-slots.mjs';
+import { mediaSelfSlot, drawnSvgParts, codeItemSlots, ABSENT_PART } from '../lib/skeleton-part-slots.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -73,6 +73,31 @@ test( 'MUST FAIL (a drawn icon box is its slot): bars inside one span give the b
 	const r = run( [ ...HEADER, ...BOXED ] );
 	assert.equal( slotsOf( r )[ ICON ].tpl, 'Root/63#0' );
 	assert.deepEqual( [ 1, 2, 3 ].map( ( n ) => slotsOf( r )[ BAR( n ) ]?.tpl ), [ 'Root/60#0', 'Root/61#0', 'Root/62#0' ] );
+} );
+
+// The bars in a box beside the burger's word (two same-shaped bars, then a word shown only on the tablet): the box is the
+// icon slot, the bars are bars 1 and 2, and the third bar the calibration measures is absent, not the word.
+const BARITEM = ( id, i ) => el( id, 63, 'span', '', { depth: 4, widths: COMPACT, box: { x: 500, y: i * 6.5, w: 22, h: 1.5 } } );
+const WORDED = [ el( 63, 59, 'span', '', { depth: 3, widths: COMPACT, box: { x: 500, y: 0, w: 22, h: 8 } } ), BARITEM( 60, 0 ), BARITEM( 61, 1 ), el( 64, 59, 'span', 'Menu', { depth: 3, widths: [ 768 ], box: { x: 532, y: 0, w: 36, h: 16 } } ) ];
+const CAL3 = { ...CAL, burgerBar3BorderRadius: { slot: BAR( 3 ), slots: [ BAR( 3 ) ] } };
+
+test( 'MUST FAIL (the bars\' box beside a word): the box holding the same-shaped bars is the icon slot, the bars are bars 1 and 2, and the third is absent', () => {
+	const r = run( [ ...HEADER, ...WORDED ], () => CAL3 );
+	assert.equal( slotsOf( r )[ ICON ]?.tpl, 'Root/63#0', JSON.stringify( slotsOf( r ) ) );
+	assert.deepEqual( [ 1, 2 ].map( ( n ) => slotsOf( r )[ BAR( n ) ]?.tpl ), [ 'Root/60#0', 'Root/61#0' ] );
+	assert.deepEqual( slotsOf( r )[ BAR( 3 ) ], ABSENT_PART, 'the third bar has the finder that finds nothing' );
+	assert.ok( r.proposal.rows.find( ( x ) => 'Root/45#0' === x.key ).slotNotes.some( ( n ) => n.startsWith( `${ BAR( 3 ) }:` ) && n.includes( 'draws 2' ) ) );
+} );
+
+test( 'negative controls: bars of different sizes are no repeated items (no absent bar), a step with no calibrated repeated part is never the bars\' box, and different tags are no items', () => {
+	const uneven = [ ...HEADER, el( 63, 59, 'span', '', { depth: 3, widths: COMPACT, box: at( 500, 0, 22 ) } ), el( 60, 63, 'span', '', { depth: 4, widths: COMPACT, box: at( 500, 0, 22 ) } ), el( 61, 63, 'span', '', { depth: 4, widths: COMPACT, box: at( 500, 6, 12 ) } ), el( 64, 59, 'span', 'Menu', { depth: 3, widths: [ 768 ], box: at( 532, 0, 36 ) } ) ];
+	const r = run( uneven, () => CAL3 );
+	assert.ok( ! ( BAR( 3 ) in slotsOf( r ) ), JSON.stringify( slotsOf( r ) ) );
+	assert.ok( ! ( ICON in slotsOf( r ) ), 'no child holds same-shaped items, so the icon box is not invented' );
+	const lone = run( [ ...HEADER, ...WORDED ], () => ( { burgerSize: CAL.burgerSize, burgerIconWidth: { slot: ICON, slots: [ ICON ] } } ) );
+	assert.ok( ! ( ICON in slotsOf( lone ) ), 'a step the calibration repeats no part inside is never chosen by its children\'s shape' );
+	const mixed = [ ...HEADER, el( 63, 59, 'span', '', { depth: 3, widths: COMPACT, box: at( 500, 0, 22 ) } ), el( 60, 63, 'span', '', { depth: 4, widths: COMPACT, box: at( 500, 0, 22 ) } ), el( 61, 63, 'i', '', { depth: 4, widths: COMPACT, box: at( 500, 6, 22 ) } ), el( 64, 59, 'span', 'Menu', { depth: 3, widths: [ 768 ], box: at( 532, 0, 36 ) } ) ];
+	assert.ok( ! ( BAR( 3 ) in slotsOf( run( mixed, () => CAL3 ) ) ), 'two elements of different tags are no repeated items' );
 } );
 
 test( 'MUST FAIL (no calibration, no slot): a block with no calibrated burger gains no slot and says so', () => {

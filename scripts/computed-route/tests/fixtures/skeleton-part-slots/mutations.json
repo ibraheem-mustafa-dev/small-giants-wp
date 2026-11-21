@@ -19,8 +19,8 @@
 	},
 	{
 		"file": "lib/skeleton-part-slots.mjs",
-		"find": "} else if ( list.length > 1 && i < steps.length - 1 && NTH.test( steps[ i + 1 ] ) ) {\n\t\t\tcontinue;",
-		"replace": "} else if ( list.length > 1 && i < steps.length - 1 && NTH.test( steps[ i + 1 ] ) ) {\n\t\t\tcur = list[ 0 ];",
+		"find": "} else if ( list.length > 1 && next ) {\n\t\t\tcontinue;",
+		"replace": "} else if ( list.length > 1 && next ) {\n\t\t\tcur = list[ 0 ];",
 		"why": "an undrawn icon box is invented from the first bar"
 	},
 	{

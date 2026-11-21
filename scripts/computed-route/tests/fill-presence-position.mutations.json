@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/fill-presence.mjs", "find": "const at = ( p ) => ( Object.prototype.hasOwnProperty.call( evidence, p ) ? evidence[ p ] : Object.entries( evidence ).find( ( [ k ] ) => same( k, p ) )?.[ 1 ] );", "replace": "const at = ( p ) => Object.entries( evidence ).find( ( [ k ] ) => same( k, p ) )?.[ 1 ];", "why": "the third bar is read at the first bar's evidence" },
+	{ "file": "lib/fill-presence.mjs", "find": "const at = ( p ) => ( Object.prototype.hasOwnProperty.call( evidence, p ) ? evidence[ p ] : Object.entries( evidence ).find( ( [ k ] ) => same( k, p ) )?.[ 1 ] );", "replace": "const at = ( p ) => evidence[ p ];", "why": "a path the evidence names at another position is not read" },
+	{ "file": "lib/fill-presence.mjs", "find": "setTo( attr, numeric ? Number( top[ 0 ].value ) : top[ 0 ].value, top[ 0 ].phrases );", "replace": "setTo( attr, top[ 0 ].value, top[ 0 ].phrases );", "why": "a number setting is written as text" },
+	{ "file": "lib/fill-presence.mjs", "find": "setTo( attr, numeric ? Number( top[ 0 ].value ) : top[ 0 ].value, top[ 0 ].phrases );", "replace": "setTo( attr, Number( top[ 0 ].value ), top[ 0 ].phrases );", "why": "a string setting is written as a number" }
+]
