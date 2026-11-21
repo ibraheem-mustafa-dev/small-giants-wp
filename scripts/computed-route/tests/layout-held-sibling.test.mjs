@@ -41,6 +41,11 @@ test( 'negative control: a setting measured on another element of the block is n
 	assert.equal( pick( inner, row ).gap, 'ambiguous' );
 } );
 
+test( 'negative control: the setting being chosen is no hold on its own sibling property', () => {
+	const own = { ...without, settings: { layout: { slot: '', slots: [ '' ], property: 'display', enumReads: { stack: { 'flex-wrap': every( 'nowrap' ) } } } } };
+	assert.equal( pick( own, row ).gap, 'ambiguous' );
+} );
+
 test( 'negative control: a setting measured at another value is no hold, so the draft\'s value stays evidence', () => {
 	const other = { ...withSetting, settings: { flexWrap: { ...flexWrap, enumReads: { 'wrap-reverse': { 'flex-wrap': every( 'wrap-reverse' ) } } } } };
 	assert.equal( pick( other, row ).gap, 'ambiguous' );
