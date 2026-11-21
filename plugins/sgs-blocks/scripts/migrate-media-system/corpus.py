@@ -8,6 +8,7 @@ Content targets (every store of a mirror that holds block markup, or an export f
 from __future__ import annotations
 
 import base64
+import gzip
 import json
 import os
 import re
@@ -25,6 +26,8 @@ SKIP_DIRS = {"node_modules", ".git", "__pycache__", "vendor"}
 
 # A mirror is a folder /var/www/local-<name>; only a plain name is accepted.
 MIRROR_NAME = re.compile(r"^[a-z0-9-]+$")
+# The longest remote command sent over ssh: Git for Windows' ssh cuts one at about 8,192 characters.
+MAX_REMOTE_COMMAND = 8000
 
 
 def _walk(root: Path, suffixes: set[str], skip: set[str] = frozenset()) -> Iterator[Path]:
@@ -206,10 +209,17 @@ def export_command(wp_path: str) -> str:
 
     It runs on a WSL mirror or over SSH on a host: the PHP (`export-content.php`) travels inside the command, so
     nothing is copied to the host. The JSON is the list `load_content` and `--content FILE` accept.
+
+    The PHP is gzipped before it is encoded: Git for Windows' ssh cuts a remote command at about 8,192 characters
+    (measured 2026-11-21: 8,035 arrives whole, 9,635 arrives cut and bash reports an unclosed `$(`), and the plain
+    encoding had grown to 9,695. A command over MAX_REMOTE_COMMAND is refused here, never sent.
     """
     code = (HERE / "export-content.php").read_bytes()
-    encoded = base64.b64encode(code).decode("ascii")
-    return f'wp --path={check_wp_path(wp_path)} --allow-root eval "$(echo {encoded} | base64 -d)"'
+    encoded = base64.b64encode(gzip.compress(code, mtime=0)).decode("ascii")
+    cmd = f'wp --path={check_wp_path(wp_path)} --allow-root eval "$(echo {encoded} | base64 -d | gunzip)"'
+    if len(cmd) > MAX_REMOTE_COMMAND:
+        raise SystemExit(f"the export command is {len(cmd)} characters, over the {MAX_REMOTE_COMMAND} an ssh on Windows carries")
+    return cmd
 
 
 def check_mirror_name(name: str) -> str:
