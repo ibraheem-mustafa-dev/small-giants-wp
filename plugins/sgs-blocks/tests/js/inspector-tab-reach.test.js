@@ -173,8 +173,6 @@ const CASES = [
 			'Numbered steps (not yet reached)',
 			'Numbered steps (current and done)',
 			'Step-count badge text',
-			'Back button background',
-			'Back button text',
 			'Stage and chosen card',
 			'Help note icon',
 			'Help note border',
@@ -198,6 +196,24 @@ describe( 'every colour row is reachable on an inspector tab', () => {
 		const seen = reachable( c.slug, c.attrs );
 		const missing = c.labels.filter( ( l ) => ! seen.has( l ) );
 		expect( missing ).toEqual( [] );
+	} );
+
+	it( 'the choice flow\'s button kit panels sit outside every other fill, so their Styles fill shows (Back\'s colours live there)', () => {
+		// The kit panel (components/button-kit/BuiltinButtonPanelBody.js) is one top-level <InspectorControls group="styles">,
+		// loaded lazily, so the render above cannot capture its rows: what keeps them reachable is that edit.js never mounts a
+		// BuiltinButtonPanel inside another InspectorControls fill.
+		const fs = require( 'fs' );
+		const src = fs.readFileSync( path.join( __dirname, '../../src/blocks/choice-flow/edit.js' ), 'utf8' );
+		const body = fs.readFileSync( path.join( __dirname, '../../src/components/button-kit/BuiltinButtonPanelBody.js' ), 'utf8' );
+		expect( body ).toMatch( /<InspectorControls group="styles">/ );
+		const prefixes = [ ...src.matchAll( /<BuiltinButtonPanel[^>]*?prefix="([a-zA-Z]+)"/g ) ].map( ( m ) => m[ 1 ] );
+		expect( prefixes ).toContain( 'back' );
+		for ( const m of src.matchAll( /<BuiltinButtonPanel\b/g ) ) {
+			const before = src.slice( 0, m.index );
+			const opened = ( before.match( /<InspectorControls\b(?:[^>]*[^/>])?>/g ) || [] ).length;
+			const closed = ( before.match( /<\/InspectorControls>/g ) || [] ).length;
+			expect( opened - closed ).toBe( 0 );
+		}
 	} );
 
 	it( 'the tab model hides a Styles fill nested in a Settings fill (positive control for the stand-in)', () => {
