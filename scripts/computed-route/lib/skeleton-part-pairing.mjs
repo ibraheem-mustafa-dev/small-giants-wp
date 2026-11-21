@@ -12,9 +12,11 @@
 // - kind: a control, a picture, a glyph, a mark (a box with no words), words, or a box holding other boxes;
 // - repetition: a part whose path counts `:nth-of-type` steps repeats once per item, and so does a draft element with loop
 //   copies or same-shaped sibling controls; the counts must be equal;
-// - out of flow: an absolutely or fixed placed draft element is only an out-of-flow part;
+// - out of flow: a draft element absolutely or fixed placed at every width it is drawn at is only an out-of-flow part, and
+//   one placed so at some widths only may be either;
 // - containment: an element inside a paired element pairs only inside that pair's part, preferring that part's direct
-//   children, and an ambiguous wrapper keeps only the parts that hold its paired children;
+//   children, and an ambiguous wrapper keeps only the parts that hold its paired children; an element inside a draft element
+//   the node already holds at a part's slot (`taken`) pairs inside that part the same way;
 // - words: where several parts fit, a worded element keeps the parts printing the same words, else the parts printing the
 //   same kind of words (a number, a price, other words);
 // - place: where several parts still fit, the part whose box centre inside the block lies nearest the element's centre inside
@@ -183,7 +185,16 @@ export function byPlace( cands, e, host, rootBox ) {
 
 const visible = ( e ) => ! e.visible || Object.values( e.visible ).some( Boolean );
 const boxOf = ( e ) => e.box?.[ WIDTH ] ?? Object.values( e.box || {} )[ 0 ] ?? {};
-const positionOf = ( e ) => ( 'string' === typeof e.position ? e.position : e.position?.[ WIDTH ] ?? Object.values( e.position || {} )[ 0 ] ?? '' );
+// Whether a draft element is out of flow at each width it is drawn at: [ true ], [ false ] or both (a count badge the draft
+// pins to its button's corner only on the phone).
+const OUT_OF_FLOW = [ 'absolute', 'fixed' ];
+export const flowsOf = ( e ) => {
+	if ( 'string' === typeof e.position ) {
+		return [ OUT_OF_FLOW.includes( e.position ) ];
+	}
+	const at = Object.entries( e.position || {} ).filter( ( [ w, v ] ) => v && ( ! e.visible || e.visible[ w ] ) ).map( ( [ , v ] ) => OUT_OF_FLOW.includes( v ) );
+	return at.length ? [ ...new Set( at ) ] : [ false ];
+};
 
 // What a draft element is, from its tag, role, words and visible children. kids( element ) gives its children.
 export function draftKind( e, kids ) {
@@ -250,6 +261,23 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		}
 		return false;
 	};
+	// The part a draft element already holds a slot of (the trigger the slot walk gave the host itself): what lies inside
+	// that element pairs inside that part, as inside a part this pairing chose.
+	const takenAt = new Map();
+	for ( const [ slot, f ] of Object.entries( taken || {} ) ) {
+		const g = model.groups.get( model.headOf.get( templateOf( slot ) ) );
+		const id = JSON.stringify( f );
+		g && ! g.root && ! slot.includes( '::' ) && ! takenAt.has( id ) && takenAt.set( id, g );
+	}
+	const heldPart = ( e ) => {
+		for ( let x = parent.get( e ); x; x = x === host ? null : parent.get( x ) ) {
+			const g = takenAt.get( JSON.stringify( finder( x ) ) );
+			if ( g ) {
+				return g;
+			}
+		}
+		return null;
+	};
 	const banned = new Map();
 	const forced = new Map();
 	let result;
@@ -257,7 +285,8 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		result = new Map();
 		for ( const e of order ) {
 			const kind = kindOf.get( e );
-			const oof = [ 'absolute', 'fixed' ].includes( positionOf( e ) );
+			const flows = flowsOf( e );
+			const oof = flows.every( Boolean );
 			let up = null;
 			for ( let x = parent.get( e ); x && x !== host; x = parent.get( x ) ) {
 				if ( 1 === result.get( x )?.length ) {
@@ -265,8 +294,9 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 					break;
 				}
 			}
+			up = up ?? heldPart( e );
 			let cands = groups.filter( ( g ) => g.level === chain.get( e ).length && FITS[ kind ].includes( g.kind ) && ( ! oof || g.oof ) && ( ! up || up.inside.has( g.head ) ) );
-			for ( const tier of [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => g.oof === oof ] ) {
+			for ( const tier of [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
 				const kept = cands.filter( tier );
 				kept.length && ( cands = kept );
 			}
@@ -377,6 +407,12 @@ export function pairingNotes( pairing, block ) {
 		out.notes.set( p.key, `${ p.key } is ${ block }'s pseudo-element part ${ p.part }, which no slot reads from a draft element` );
 	}
 	return out;
+}
+
+// The record each refused element carries on its proposal row (lib/skeleton-paint-conservation.mjs RECORD_KINDS unpaired):
+// Map( key -> { kind: 'unpaired', block, candidates, why? } ), one per element several parts fit or no part position holds.
+export function unpairedRecords( pairing, block ) {
+	return new Map( ( pairing?.ambiguous || [] ).map( ( a ) => [ a.key, { kind: 'unpaired', block, candidates: a.candidates, ...( a.why ? { why: a.why } : {} ) } ] ) );
 }
 
 // The draft element at a repeated part's position: the k-th item at each repetition level, reached by the same child steps

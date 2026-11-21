@@ -189,7 +189,7 @@ function unpairedVerdict( row, owner ) {
 	}
 	const keep = { rule: row.rule ?? null, action: row.action ?? null, block: row.block ?? null, reason: row.reason ?? null };
 	if ( 'absorbed' === row.action && row.into ) {
-		return { stage: 'other-block', proof: { record: 'proposal', ...keep, into: row.into, drawnBy: owner || null } };
+		return { stage: 'other-block', proof: { record: 'proposal', ...keep, into: row.into, drawnBy: owner || null, ...( row.conserve ? { conserve: row.conserve } : {} ) } };
 	}
 	return { stage: 'no-node', proof: { record: 'proposal', ...keep, why: row.block && 'None' !== String( row.block ) ? `the row names ${ row.block }, and no skeleton node or slot holds this element` : 'the row draws no block' } };
 }

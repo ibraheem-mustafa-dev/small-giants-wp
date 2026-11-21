@@ -320,6 +320,9 @@ export const INHERITED_LOOKS = [ 'text-centre' ];
 //                 verifies it against the block's calibration (`calibration( block )`, the slot map `cache/<block>.json`
 //                 named in `checked`): no setting at any slot paints any of `looks`, or the record is refused.
 //   not-calibrated the host block `block` has no calibration to check, so whether a part paints the look is unknown.
+//   unpaired      the host block `block` absorbed the element and the proposal's part pairing
+//                 (lib/skeleton-part-pairing.mjs) refused it: several of the block's measured parts fit it (`candidates`), or
+//                 none of the part's positions holds it, so no slot reads its looks.
 //   handover      `delivers` names the block effect or site setting that paints it (a pointer glare, a reading progress bar).
 //   own-surface   the element is built and read on a surface of its own (`rule`: a linked form, a commerce region).
 //   site-decision a per-site decision dropped it (`source`); a new draft never has one.
@@ -332,6 +335,7 @@ export const RECORD_KINDS = {
 	overlay: { needs: [ 'node', 'slot', 'setting', 'layer', 'looks' ], delivers: true },
 	'no-part': { needs: [ 'block', 'looks', 'checked' ], delivers: false },
 	'not-calibrated': { needs: [ 'block' ], delivers: false },
+	unpaired: { needs: [ 'block', 'candidates' ], delivers: false },
 	handover: { needs: [ 'delivers' ], delivers: false },
 	'own-surface': { needs: [ 'rule' ], delivers: false },
 	'site-decision': { needs: [ 'source' ], delivers: false },

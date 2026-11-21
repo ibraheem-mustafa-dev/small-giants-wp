@@ -543,7 +543,7 @@ test( 'a link-slot record delivers its looks where the block it names holds the 
 } );
 
 test( 'a per-site decision is listed apart, a row inside a removed element takes its remover\'s record, and a kind outside the list is refused', () => {
-	assert.deepEqual( [ ...RECORDED_CLASSES ].sort(), [ 'handover', 'no-part', 'not-calibrated', 'own-surface', 'site-decision' ] );
+	assert.deepEqual( [ ...RECORDED_CLASSES ].sort(), [ 'handover', 'no-part', 'not-calibrated', 'own-surface', 'site-decision', 'unpaired' ] );
 	const rows = new Map( [ [ 'Root/1#0', row( 'Root/1#0', { action: 'remove', conserve: { kind: 'handover', delivers: 'the glare effect' } } ) ], [ 'Root/2#0', row( 'Root/2#0', { action: 'remove', reason: 'inside a removed element (Root/1#0)' } ) ] ] );
 	assert.deepEqual( recordsOf( rows.get( 'Root/2#0' ), rows ), [ { kind: 'handover', delivers: 'the glare effect' } ] );
 	assert.deepEqual( checkRecords( [ { kind: 'moved', node: 'Root/1#0' } ], { looks: [ 'background' ], nodes: new Map() } ).bad, [ 'no record kind moved' ] );

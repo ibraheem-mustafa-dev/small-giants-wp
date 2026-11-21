@@ -4,7 +4,8 @@
 // settings (cache/form-field-tiles.json, cache/mamas-test/form-field-tiles.paint.json), whose markup the draft does not share.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { partModel, draftKind, pairAbsorbed, pairingNotes, glyphy, wordsClass } from '../lib/skeleton-part-pairing.mjs';
+import { partModel, draftKind, pairAbsorbed, pairingNotes, glyphy, wordsClass, unpairedRecords } from '../lib/skeleton-part-pairing.mjs';
+import { checkRecords } from '../lib/skeleton-paint-conservation.mjs';
 import { absorbedSlots } from '../lib/skeleton-conserve-slots.mjs';
 import { calPartsFor } from '../lib/skeleton-context.mjs';
 import fs from 'fs';
@@ -263,4 +264,48 @@ test( 'MUST FAIL (no place signal): a wordless panel pairs with the part whose b
 	assert.deepEqual( run( 840, 360 ).slots, { '.side': { tpl: 'Root/2#0' } }, 'the right-hand column is the side part' );
 	assert.equal( run( 420, 360 ).ambiguous.length, 1, 'a box between the two parts decides nothing' );
 	assert.equal( run( 840, 360, { ...PANELS2, parts: {} } ).ambiguous.length, 1, 'no recorded boxes: ambiguous as before' );
+} );
+
+// A bag button's count: the block draws its trigger twice (alone, and inside a wrapper) with a badge pinned to the corner;
+// the draft's count sits in flow on the desktop and is pinned to the corner only on the phone, and the slot walk already
+// gave the trigger part the draft's button (cache/cart.json, cache/eye-care-clone-test/cart.paint.json, trimmed).
+const pinned = ( tag, extra = {} ) => ( { 375: { _tag: tag, _position: 'absolute', width: '18px', 'background-color': 'rgba(0, 0, 0, 0)', ...extra }, 1440: { _tag: tag, _position: 'absolute', width: '18px', 'background-color': 'rgba(0, 0, 0, 0)', ...extra } } );
+const BAG = {
+	elements: {
+		'': flat( 'div' ), '.trigger': flat( 'button' ), '.trigger > .icon': flat( 'span', { width: '24px' } ), '.trigger > .icon > svg': flat( 'svg', { width: '24px' } ), '.trigger > .badge': pinned( 'span' ),
+		'.trigger > .badge::after': pinned( 'span', { 'background-color': 'rgb(156, 139, 120)' } ), '.trigger > .label': flat( 'span' ),
+		'.wrap': flat( 'div' ), '.wrap > .trigger': flat( 'button' ), '.wrap > .trigger > .icon': flat( 'span', { width: '24px' } ), '.wrap > .trigger > .icon > svg': flat( 'svg', { width: '24px' } ), '.wrap > .trigger > .badge': pinned( 'span' ),
+	},
+	settings: { labelFill: { slot: '.trigger > .label', property: 'background-color' }, iconColour: { slot: '.trigger > .icon > svg', property: 'color' }, badgeText: { slot: '.trigger > .badge', property: 'color' }, badgeFill: { slot: '.trigger > .badge', property: 'background-image' }, triggerBorder: { slot: '.trigger', property: 'border-top-width' } },
+	parts: { '.trigger > .label': { words: 'Bag', box: { 1440: [ 14, 12, 29, 19 ] } }, '.trigger > .badge': { words: '0', box: { 1440: [ 24, 2, 18, 18 ] } }, '.wrap > .trigger > .badge': { words: '0', box: { 1440: [ 24, 2, 18, 18 ] } } },
+};
+const bag = ( positions, taken, words = '0', visible = { 375: true, 1440: true } ) => {
+	const count = { ...node( 'Root/3#0', 'span', [], { words } ), position: positions, visible };
+	const button = node( 'Root/1#0', 'button', [ node( 'Root/2#0', 'svg' ), count ] );
+	return pairAbsorbed( { host: button, absorbed: [ { element: count, looks: [ 'background' ] } ], kids, calibration: BAG, finder, taken } );
+};
+
+test( 'MUST FAIL (a count pinned only on the phone, inside a held trigger): it pairs with the held trigger\'s badge', () => {
+	const r = bag( { 375: 'absolute', 1440: 'static' }, { '.trigger': { tpl: 'Root/1#0' } } );
+	assert.deepEqual( r.slots, { '.trigger > .badge': { tpl: 'Root/3#0' } }, JSON.stringify( r ) );
+	assert.deepEqual( bag( { 375: 'static', 1440: 'absolute' }, { '.trigger': { tpl: 'Root/1#0' } } ).slots, { '.trigger > .badge': { tpl: 'Root/3#0' } }, 'pinned on the desktop only' );
+	assert.deepEqual( bag( { 375: 'absolute', 1440: 'static' }, { '.trigger': { tpl: 'Root/1#0' } }, 'Bag' ).slots, { '.trigger > .label': { tpl: 'Root/3#0' } }, 'a word pinned on the phone only may still be an in-flow part' );
+} );
+
+test( 'negative controls: with no held trigger both badges fit; a count in flow at every width keeps the in-flow parts; a count pinned at every width takes only a pinned part', () => {
+	assert.equal( bag( { 375: 'absolute', 1440: 'static' }, {} ).ambiguous.length, 1, 'no held part: the two triggers\' badges both fit' );
+	assert.ok( ! Object.keys( bag( { 375: 'static', 1440: 'static' }, { '.trigger': { tpl: 'Root/1#0' } } ).slots ).length, 'a count never pinned is not paired with the pinned badge' );
+	assert.deepEqual( bag( { 375: 'absolute', 1440: 'absolute' }, { '.trigger': { tpl: 'Root/1#0' } } ).slots, { '.trigger > .badge': { tpl: 'Root/3#0' } } );
+	assert.deepEqual( bag( { 375: 'absolute', 1440: 'static' }, { '.trigger > .badge::after': { tpl: 'Root/1#0' } } ).ambiguous.length, 1, 'a held pseudo-element slot is no part to pair inside' );
+	assert.ok( ! Object.keys( bag( { 375: 'absolute', 1440: 'static' }, { '.trigger': { tpl: 'Root/1#0' } }, '0', { 375: false, 1440: true } ).slots ).length, 'a width the count is not drawn at says nothing of its flow' );
+} );
+
+test( 'MUST FAIL (a refused pairing leaves no record): each element several parts fit carries an unpaired record the conservation check lists apart', () => {
+	const r = bag( { 375: 'absolute', 1440: 'static' }, {} );
+	const recs = unpairedRecords( r, 'sgs/x' );
+	assert.deepEqual( recs.get( 'Root/3#0' ), { kind: 'unpaired', block: 'sgs/x', candidates: r.ambiguous[ 0 ].candidates } );
+	const checked = checkRecords( [ recs.get( 'Root/3#0' ) ], { looks: [ 'background' ], nodes: new Map() } );
+	assert.equal( checked.listed?.kind, 'unpaired', JSON.stringify( checked ) );
+	assert.equal( checkRecords( [ { kind: 'unpaired', block: 'sgs/x', candidates: [] } ], { looks: [ 'background' ], nodes: new Map() } ).bad.length, 1, 'a record naming no candidates is refused' );
+	assert.equal( unpairedRecords( bag( { 375: 'absolute', 1440: 'static' }, { '.trigger': { tpl: 'Root/1#0' } } ), 'sgs/x' ).size, 0, 'a paired element has no record' );
 } );

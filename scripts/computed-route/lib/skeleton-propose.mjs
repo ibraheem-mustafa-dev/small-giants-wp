@@ -39,7 +39,7 @@ import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
 import { DISSOLVED_LOOKS } from './skeleton-rules.mjs';
 import { conservationRows, nodesByRef, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
 import { absorbedSlots } from './skeleton-conserve-slots.mjs';
-import { pairAbsorbed, pairingNotes } from './skeleton-part-pairing.mjs';
+import { pairAbsorbed, pairingNotes, unpairedRecords } from './skeleton-part-pairing.mjs';
 import { slotMapFile } from './cache.mjs';
 
 // A carried or decided value as text: an id as itself, a Source object as its JSON.
@@ -561,6 +561,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			rowOf[ hostKey ] && ( rowOf[ hostKey ].slots = { ...rowOf[ hostKey ].slots, ...slots } );
 		}
 		made.records.forEach( ( rec, key ) => rowOf[ key ] && ( rowOf[ key ].conserve = [ rec ] ) );
+		// A refused pairing is the element's record, so the conservation check lists it apart and the ledger reads why.
+		unpairedRecords( pairing, node.name ).forEach( ( rec, key ) => rowOf[ key ] && ! rowOf[ key ].conserve && ( rowOf[ key ].conserve = [ rec ] ) );
 		const said = pairingNotes( pairing, node.name );
 		const unmatched = made.unmatched.filter( ( u ) => ! said.paired.has( u.key ) );
 		const notes = [ ...unmatched.filter( ( u ) => ! said.notes.has( u.key ) ).map( ( u ) => [ u.key, 'paints', u.looks.join( '/' ), 'which parts of', node.name, 'paint (', u.parts.join( ' | ' ), '), and no calibrated slot lands on it' ].join( ' ' ) ), ...said.notes.values() ];

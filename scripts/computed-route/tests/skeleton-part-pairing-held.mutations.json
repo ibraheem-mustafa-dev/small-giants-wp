@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "up = up ?? heldPart( e );",
+		"replace": "",
+		"why": "a held trigger does not scope its children, so both triggers' badges fit"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "( g ) => flows.includes( g.oof ) ]",
+		"replace": "( g ) => g.oof === flows[ 0 ] ]",
+		"why": "the flow tier reads one width only, so the phone-pinned count loses the badge"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "const oof = flows.every( Boolean );",
+		"replace": "const oof = flows.some( Boolean );",
+		"why": "a count pinned at one width only is held to pinned parts at every width"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "const oof = flows.every( Boolean );",
+		"replace": "const oof = false;",
+		"why": "a count pinned at every width may pair with an in-flow part"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "g && ! g.root && ! slot.includes( '::' ) && ! takenAt.has( id ) && takenAt.set( id, g );",
+		"replace": "g && ! g.root && ! takenAt.has( id ) && takenAt.set( id, g );",
+		"why": "a held pseudo-element slot scopes the pairing"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "for ( let x = parent.get( e ); x; x = x === host ? null : parent.get( x ) ) {",
+		"replace": "for ( let x = parent.get( e ); x && x !== host; x = parent.get( x ) ) {",
+		"why": "the host itself is never a held part"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": ".filter( ( [ w, v ] ) => v && ( ! e.visible || e.visible[ w ] ) )",
+		"replace": ".filter( ( [ , v ] ) => v )",
+		"why": "a width the element is not drawn at counts for its flow"
+	},
+	{
+		"file": "lib/skeleton-part-pairing.mjs",
+		"find": "[ a.key, { kind: 'unpaired', block, candidates: a.candidates, ...( a.why ? { why: a.why } : {} ) } ]",
+		"replace": "[ a.key, { kind: 'unpaired', block, candidates: [], ...( a.why ? { why: a.why } : {} ) } ]",
+		"why": "the record names no candidates"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "unpaired: { needs: [ 'block', 'candidates' ], delivers: false },",
+		"replace": "",
+		"why": "the conservation check knows no unpaired record"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "unpaired: { needs: [ 'block', 'candidates' ], delivers: false },",
+		"replace": "\tunpaired: { needs: [ 'block' ], delivers: false },",
+		"why": "a record naming no candidates is accepted"
+	}
+]
