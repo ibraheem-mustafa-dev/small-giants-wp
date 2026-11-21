@@ -11322,15 +11322,6 @@
     },
     {
       "slug": "sgs/form",
-      "attr": "fieldBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "field-input"
-      }
-    },
-    {
-      "slug": "sgs/form",
       "attr": "fieldBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -11396,15 +11387,6 @@
       "fields": {
         "css_property": "line-height",
         "css_element": "field-input"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "fieldPlaceholderColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "field-placeholder"
       }
     },
     {
@@ -12325,15 +12307,6 @@
         "css_property": "justify-items",
         "css_layer": "GRID",
         "css_element": "inner"
-      }
-    },
-    {
-      "slug": "sgs/form",
-      "attr": "labelFloatedOffset",
-      "fields": {
-        "css_property": "top",
-        "css_element": "field-label",
-        "css_state": "focus"
       }
     },
     {
@@ -17663,6 +17636,14 @@
       "attr": "borderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/heading",
+      "attr": "boxAlign",
+      "fields": {
+        "css_property": "margin-inline",
         "css_element": "wrapper"
       }
     },
@@ -32168,6 +32149,23 @@
     },
     {
       "slug": "sgs/testimonial",
+      "attr": "quoteMarkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "quote-mark"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "quoteMarkSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "quote-mark"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
       "attr": "quoteTextAlign",
       "fields": {
         "css_property": "text-align",
@@ -39752,6 +39750,15 @@
     },
     {
       "slug": "sgs/form",
+      "attr": "fieldBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
       "attr": "fieldBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -39810,6 +39817,15 @@
       "fields": {
         "css_property": "padding",
         "css_element": "field-input"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "fieldPlaceholderColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "field-placeholder"
       }
     },
     {
@@ -39929,6 +39945,15 @@
       "attr": "labelFloatedFontSize",
       "fields": {
         "css_property": "font-size",
+        "css_element": "field-label",
+        "css_state": "focus"
+      }
+    },
+    {
+      "slug": "sgs/form",
+      "attr": "labelFloatedOffset",
+      "fields": {
+        "css_property": "top",
         "css_element": "field-label",
         "css_state": "focus"
       }
@@ -49510,6 +49535,23 @@
       "attr": "borderRadius",
       "fields": {
         "css_property": "border-radius",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "boxShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/testimonial",
+      "attr": "boxShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_element": "wrapper"
       }
     },

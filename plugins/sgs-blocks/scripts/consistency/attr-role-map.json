@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 13422,
+    "row_count": 13428,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -6195,6 +6195,7 @@
     "sgs/heading::borderRadius": "visual",
     "sgs/heading::borderStyle": "visual",
     "sgs/heading::borderWidth": "visual",
+    "sgs/heading::boxAlign": "enum-mode",
     "sgs/heading::boxShadow": "visual",
     "sgs/heading::boxShadowColour": "color",
     "sgs/heading::boxShadowColourHover": "color",
@@ -11070,6 +11071,8 @@
     "sgs/testimonial::borderRadius": "visual",
     "sgs/testimonial::borderStyle": "visual",
     "sgs/testimonial::borderWidth": "visual",
+    "sgs/testimonial::boxShadow": "visual",
+    "sgs/testimonial::boxShadowColour": "color",
     "sgs/testimonial::linkColour": "color",
     "sgs/testimonial::linkColourGradient": "colour-gradient",
     "sgs/testimonial::linkColourHover": "color",
@@ -11135,6 +11138,9 @@
     "sgs/testimonial::quoteLinkUnderlineOffset": "typography",
     "sgs/testimonial::quoteLinkUnderlineThickness": "typography",
     "sgs/testimonial::quoteMarginBottom": "layout",
+    "sgs/testimonial::quoteMarkColour": "color",
+    "sgs/testimonial::quoteMarkGlyph": "text-content",
+    "sgs/testimonial::quoteMarkSize": "select-from-enum",
     "sgs/testimonial::quoteTextAlign": "typography",
     "sgs/testimonial::quoteTextColumns": "layout",
     "sgs/testimonial::quoteTextDecoration": "typography",
