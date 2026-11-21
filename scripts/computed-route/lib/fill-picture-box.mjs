@@ -12,6 +12,9 @@
 //     the box) leave the root's read: the block draws the picture at the part, so no background setting answers them.
 //   - A size no fit draws (a percentage or a length) and the repeat beside it stay in the root's read, so they are reported
 //     as before; the part's read carries no background longhand.
+//   - The box's own object-fit and an `auto` aspect-ratio are no look of the picture (a box that is no replaced element draws
+//     nothing with object-fit, and its auto ratio means "sized by its box", where a picture's means "its file's"): the part's
+//     read drops them, so a size no fit draws writes no fit and the picture keeps the block's ratio.
 // Never a block name or a slot name: the part comes from the calibration. Mutates reads.widths, reads.declared and the nodes'
 // targets in place; returns one entry per node changed ({ index, slot, fits: { width: object-fit } }).
 import { READ_WIDTHS } from './fill-read.mjs';
@@ -54,8 +57,9 @@ function asPicture( snap, fit ) {
 	[ ...BG_LOOK, 'background-repeat' ].forEach( ( p ) => delete styles[ p ] );
 	const x = snap.styles[ 'background-position-x' ];
 	const y = snap.styles[ 'background-position-y' ];
-	fit && ( styles[ 'object-fit' ] = fit );
+	fit ? ( styles[ 'object-fit' ] = fit ) : delete styles[ 'object-fit' ];
 	undefined !== x && undefined !== y && ( styles[ 'object-position' ] = `${ x } ${ y }` );
+	/^auto$/i.test( String( styles[ 'aspect-ratio' ] ?? '' ).trim() ) && delete styles[ 'aspect-ratio' ];
 	return { ...snap, styles };
 }
 

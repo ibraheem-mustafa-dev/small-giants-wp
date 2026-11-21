@@ -55,11 +55,21 @@ test( 'a size no fit draws stays on the root, reported as before', () => {
 	pictureBoxReads( reads, nodesOf(), calFor );
 	const part = reads.widths[ 1440 ][ '0:.sgs-media-el' ].styles;
 	const root = reads.widths[ 1440 ][ '0:' ].styles;
-	assert.equal( part[ 'object-fit' ], 'fill', 'the part keeps the element\'s own object-fit read' );
+	assert.equal( part[ 'object-fit' ], undefined, 'MUST FAIL on 8272cd48f: the box\'s own object-fit (fill) is no fit of the picture, so it is not read' );
 	assert.equal( part[ 'background-size' ], undefined );
 	assert.equal( root[ 'background-size' ], '62%' );
 	assert.equal( root[ 'background-repeat' ], 'no-repeat' );
 	assert.equal( root[ 'background-image' ], undefined, 'the picture itself is the Source' );
+} );
+
+test( 'MUST FAIL: the box\'s auto aspect-ratio is not read as the picture\'s; a ratio the draft gives is', () => {
+	const reads = readsOf( box( 'cover', { 'aspect-ratio': 'auto' } ) );
+	pictureBoxReads( reads, nodesOf(), calFor );
+	assert.equal( reads.widths[ 1440 ][ '0:.sgs-media-el' ].styles[ 'aspect-ratio' ], undefined );
+	assert.equal( reads.widths[ 1440 ][ '0:' ].styles[ 'aspect-ratio' ], 'auto', 'the root keeps its own read' );
+	const given = readsOf( box( 'cover', { 'aspect-ratio': '3 / 4' } ) );
+	pictureBoxReads( given, nodesOf(), calFor );
+	assert.equal( given.widths[ 1440 ][ '0:.sgs-media-el' ].styles[ 'aspect-ratio' ], '3 / 4' );
 } );
 
 test( 'fitOfBackgroundSize and picturePart', () => {
