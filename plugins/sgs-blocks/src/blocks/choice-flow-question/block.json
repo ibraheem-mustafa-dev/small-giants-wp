@@ -85,9 +85,14 @@
 					"prefix": "optionBadge",
 					"attrMap": {
 						"css:background-color": "optionBadgeColour",
-						"css:color": "optionBadgeTextColour"
+						"css:color": "optionBadgeTextColour",
+						"css:border-width": "optionBadgeBorder",
+						"css:border-style": "optionBadgeBorder",
+						"css:border-color": "optionBadgeBorder",
+						"css:border-radius": "optionBadgeRadius",
+						"css:padding": "optionBadgePadding"
 					},
-					"_note": "The small tag on an option card (a solid tag on picture cards, a soft tag on text cards; render.php prints it only when the option has a badge); scoped CSS from helpers-description-style.php. Empty keeps the stylesheet's own paint for each card kind."
+					"_note": "The small tag on an option card (a solid tag on picture cards, a soft tag on text cards; render.php prints it only when the option has a badge); colours from helpers-description-style.php, the box (optionBadgeBorder per device as {width, style, colour}, optionBadgeRadius, optionBadgePadding per device) from helpers-option-card-style.php. Empty keeps the stylesheet's own paint and box for each card kind."
 				},
 				"option-card": {
 					"selector": ".sgs-choice-flow-question__option-button",
@@ -521,6 +526,18 @@
 			"type": "string",
 			"default": "",
 			"description": "Text colour of the option badge tag, a palette slug or hex. Empty keeps the stylesheet's paint: inherited on a picture card, accent-text on a text card."
+		},
+		"optionBadgeBorder": {
+			"type": "object",
+			"description": "Border round the option badge tag per device: {desktop|tablet|mobile: {width, style, colour}}. Width is a CSS length, style is none, solid, dashed or dotted, colour is a palette slug or any colour. A member a device leaves empty takes the device above's. Unset draws no border."
+		},
+		"optionBadgeRadius": {
+			"type": "string",
+			"description": "Corner radius of the option badge tag (a CSS length). Empty keeps the stylesheet's: a pill on a compact card, square in the showcase layout."
+		},
+		"optionBadgePadding": {
+			"type": "object",
+			"description": "Padding inside the option badge tag, a {desktop,tablet,mobile} tier object of {top,right,bottom,left}. Empty keeps the stylesheet's."
 		},
 		"optionCardColourBackground": {
 			"type": "string",

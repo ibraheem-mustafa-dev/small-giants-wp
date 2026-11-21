@@ -17,6 +17,8 @@ import {
 	ShadowControl,
 	SgsBorderControl,
 	SgsBoxControl,
+	SgsLengthControl,
+	TierBorderControl,
 	ResponsiveOverride,
 	BOX_UNITS,
 	normaliseResponsiveBox,
@@ -114,6 +116,37 @@ export function OptionCardPanel( { attributes, setAttributes } ) {
 }
 
 /**
+ * The "Option badge box" panel: the badge tag's border per device, its corners and its padding per device.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block attribute setter.
+ * @return {JSX.Element} The panel.
+ */
+export function OptionBadgeBoxPanel( { attributes, setAttributes } ) {
+	return (
+		<PanelBody title={ __( 'Option badge box', 'sgs-blocks' ) } initialOpen={ false }>
+			<TierBorderControl
+				label={ __( 'Badge border', 'sgs-blocks' ) }
+				value={ attributes.optionBadgeBorder }
+				onChange={ ( next ) => setAttributes( { optionBadgeBorder: next } ) }
+			/>
+			<SgsLengthControl
+				presets={ false }
+				label={ __( 'Badge corner radius', 'sgs-blocks' ) }
+				value={ attributes.optionBadgeRadius || '' }
+				onChange={ ( val ) => setAttributes( { optionBadgeRadius: val || '' } ) }
+			/>
+			<TierPadding
+				label={ __( 'Badge padding', 'sgs-blocks' ) }
+				value={ attributes.optionBadgePadding }
+				onChange={ ( obj ) => setAttributes( { optionBadgePadding: obj } ) }
+			/>
+		</PanelBody>
+	);
+}
+
+/**
  * The colour rows for the option card, the chosen card, the picture band and the tick.
  *
  * @param {Object}   props
@@ -163,6 +196,32 @@ function cssText( style ) {
 }
 
 /**
+ * The badge border for one previewed device: each member a device leaves empty takes the wider device's, as
+ * `sgs_tiered_border_specs` cascades it on the page.
+ *
+ * @param {Object} border `{ desktop, tablet, mobile }` of `{ width, style, colour }`.
+ * @param {string} tier   The previewed device.
+ * @return {Object} Style object.
+ */
+function tierBorderPreview( border, tier ) {
+	const source = border && 'object' === typeof border ? border : {};
+	const order = [ 'desktop', 'tablet', 'mobile' ].slice( 0, [ 'desktop', 'tablet', 'mobile' ].indexOf( tier ) + 1 );
+	const merged = {};
+	order.forEach( ( device ) => {
+		Object.entries( source[ device ] || {} ).forEach( ( [ member, value ] ) => {
+			if ( value ) {
+				merged[ member ] = value;
+			}
+		} );
+	} );
+	return {
+		borderWidth: merged.width,
+		borderStyle: [ 'none', 'solid', 'dashed', 'dotted' ].includes( merged.style ) ? merged.style : undefined,
+		borderColor: colourVar( merged.colour ),
+	};
+}
+
+/**
  * The canvas twin of `sgs_choice_flow_question_option_card_css()`: one scoped `<style>` for the preview options.
  *
  * @param {Object} props
@@ -206,6 +265,14 @@ export function OptionCardStyle( { attributes, clientId } ) {
 				backgroundColor: colourVar( a.optionCardSelectedBackgroundColour ),
 				borderColor: colourVar( a.optionCardSelectedBorderColour ),
 				boxShadow: resolveShadowPreviewComposed( a.optionCardSelectedShadow, a.optionCardSelectedShadowColour ),
+			},
+		],
+		[
+			`${ scope } .sgs-choice-flow-question__option-badge`,
+			{
+				...tierBorderPreview( a.optionBadgeBorder, tier ),
+				borderRadius: a.optionBadgeRadius || undefined,
+				...tierBoxLonghands( a.optionBadgePadding, tier, 'padding' ),
 			},
 		],
 	];

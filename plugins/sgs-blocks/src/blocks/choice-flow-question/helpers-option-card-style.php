@@ -15,6 +15,8 @@
  * - The chosen card (`optionCardSelected*`, named as sgs/form-field-tiles' `tileSelected*`): fill, border colour and
  *   shadow on `.sgs-choice-flow-question__option-button--selected` (set by sgs/choice-flow's view script). A fill also
  *   clears the stage gradient the showcase layout lays over a chosen card, so the colour shows.
+ * - The badge box (`optionBadgeBorder` per device, `optionBadgeRadius`, `optionBadgePadding` per device), as
+ *   sgs/nav-drawer-menu's `badgeBorder` and sgs/nav-bar-menu's `itemBadgePadding` and `itemBadgeBorderRadius`.
  *
  * render.php is past its line cap, so it makes one call to each function here.
  *
@@ -24,6 +26,7 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once dirname( __DIR__, 3 ) . '/includes/render-helpers.php';
+require_once dirname( __DIR__, 3 ) . '/includes/helpers-tiered-border.php';
 
 if ( ! function_exists( 'sgs_choice_flow_question_option_card_css' ) ) {
 	/**
@@ -106,6 +109,25 @@ if ( ! function_exists( 'sgs_choice_flow_question_option_card_css' ) ) {
 		$selected = array_merge( $selected, sgs_choice_flow_question_focus_under( $selected_glow['normal'] ) );
 		if ( array() !== $selected ) {
 			$css .= $card . '.sgs-choice-flow-question__option-button--selected{' . implode( ';', $selected ) . ';}';
+		}
+
+		// The badge box.
+		$badge = $scope . '.sgs-choice-flow-question__option-badge';
+		$css  .= sgs_emit_responsive_css( $badge, sgs_tiered_border_specs( $attributes['optionBadgeBorder'] ?? array() ) );
+		$css  .= sgs_emit_responsive_css(
+			$badge,
+			array(
+				array(
+					'value'        => $attributes['optionBadgePadding'] ?? null,
+					'css'          => 'padding',
+					'box'          => true,
+					'unit_default' => 'px',
+				),
+			)
+		);
+		$badge_radius = sgs_css_length_value( (string) ( $attributes['optionBadgeRadius'] ?? '' ) );
+		if ( '' !== $badge_radius ) {
+			$css .= $badge . '{border-radius:' . $badge_radius . ';}';
 		}
 
 		if ( '' === $css ) {

@@ -25,7 +25,7 @@ import TitlePanel from './TitlePanel';
 import VariationCoverageNotice from './VariationCoverageNotice';
 import OptionPolishFields, { OptionDescriptionPanel, optionDescriptionColourRows, optionBadgeColourRows } from './OptionPolishFields';
 import { SgsColourPanel } from '../../components';
-import { OptionCardPanel, OptionCardStyle, optionCardColourRows } from './OptionCardPanels';
+import { OptionCardPanel, OptionBadgeBoxPanel, OptionCardStyle, optionCardColourRows } from './OptionCardPanels';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
@@ -352,6 +352,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				<OptionCardsPanel attributes={ attributes } setAttributes={ setAttributes } title={ __( 'Option pictures', 'sgs-blocks' ) } />
 				<OptionDescriptionPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<OptionCardPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<OptionBadgeBoxPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>
