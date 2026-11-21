@@ -12,6 +12,7 @@
 import { __ } from '@wordpress/i18n';
 import {
 	PanelBody,
+	ToggleControl,
 } from '@wordpress/components';
 import {
 	ShadowControl,
@@ -23,6 +24,7 @@ import {
 	BOX_UNITS,
 	normaliseResponsiveBox,
 	fillRow,
+	textRow,
 } from '../../components';
 import { colourVar, resolveShadowPreviewComposed, sgsBorderPreview, tierBoxLonghands, usePreviewTier } from '../../utils';
 
@@ -147,6 +149,46 @@ export function OptionBadgeBoxPanel( { attributes, setAttributes } ) {
 }
 
 /**
+ * The "Chosen option tick" panel: the switch, then the disc's size and its distance from the card's corner.
+ *
+ * @param {Object}   props
+ * @param {Object}   props.attributes    Block attributes.
+ * @param {Function} props.setAttributes Block attribute setter.
+ * @return {JSX.Element} The panel.
+ */
+export function OptionCheckPanel( { attributes, setAttributes } ) {
+	return (
+		<PanelBody title={ __( 'Chosen option tick', 'sgs-blocks' ) } initialOpen={ false }>
+			<ToggleControl
+				label={ __( 'Show a tick on the chosen option', 'sgs-blocks' ) }
+				help={ __( 'A tick disc in the top corner of the card a shopper picks. Its colours are in the Colour panel.', 'sgs-blocks' ) }
+				checked={ !! attributes.optionCheckShow }
+				onChange={ ( val ) => setAttributes( { optionCheckShow: val } ) }
+				__nextHasNoMarginBottom
+			/>
+			{ !! attributes.optionCheckShow && (
+				<>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Tick size', 'sgs-blocks' ) }
+						help={ __( 'Empty keeps 20px.', 'sgs-blocks' ) }
+						value={ attributes.optionCheckSize || '' }
+						onChange={ ( val ) => setAttributes( { optionCheckSize: val || '' } ) }
+					/>
+					<SgsLengthControl
+						presets={ false }
+						label={ __( 'Tick distance from the corner', 'sgs-blocks' ) }
+						help={ __( 'Empty keeps 0.5rem.', 'sgs-blocks' ) }
+						value={ attributes.optionCheckInset || '' }
+						onChange={ ( val ) => setAttributes( { optionCheckInset: val || '' } ) }
+					/>
+				</>
+			) }
+		</PanelBody>
+	);
+}
+
+/**
  * The colour rows for the option card, the chosen card, the picture band and the tick.
  *
  * @param {Object}   props
@@ -186,6 +228,24 @@ export function optionCardColourRows( { attributes, setAttributes } ) {
 			setAttributes,
 		} ),
 	];
+	if ( attributes.optionCheckShow ) {
+		rows.push(
+			fillRow( {
+				key: 'optionCheckDisc',
+				label: __( 'Chosen option tick disc', 'sgs-blocks' ),
+				attrs: { base: 'optionCheckBackgroundColour' },
+				attributes,
+				setAttributes,
+			} ),
+			textRow( {
+				key: 'optionCheckMark',
+				label: __( 'Chosen option tick', 'sgs-blocks' ),
+				attrs: { base: 'optionCheckColour' },
+				attributes,
+				setAttributes,
+			} )
+		);
+	}
 	return rows;
 }
 
@@ -284,6 +344,22 @@ export function OptionCardStyle( { attributes, clientId } ) {
 		],
 		[ `${ scope } .sgs-choice-flow-question__option-media`, { backgroundColor: colourVar( a.optionMediaBackground ) } ],
 	];
+	if ( a.optionCheckShow ) {
+		rules.push(
+			[ card, { position: 'relative' } ],
+			[ `${ card }--selected > .sgs-choice-flow-question__option-check`, { display: 'block' } ],
+			[
+				`${ scope } .sgs-choice-flow-question__option-check`,
+				{
+					color: colourVar( a.optionCheckColour ),
+					backgroundColor: colourVar( a.optionCheckBackgroundColour ),
+					'--sgs-cfq-check-size': a.optionCheckSize || undefined,
+					top: a.optionCheckInset || undefined,
+					insetInlineEnd: a.optionCheckInset || undefined,
+				},
+			]
+		);
+	}
 	const css = rules
 		.map( ( [ selector, style ] ) => [ selector, cssText( style ) ] )
 		.filter( ( [ , body ] ) => '' !== body )

@@ -19,6 +19,8 @@
  *   sgs/nav-drawer-menu's `badgeBorder` and sgs/nav-bar-menu's `itemBadgePadding` and `itemBadgeBorderRadius`.
  * - The picture band (`optionMediaBackground`): the band's fill, and the blank band the showcase layout draws on a
  *   picture-less card beside pictured ones.
+ * - The tick (`optionCheck*`, as sgs/form-field-tiles' `tileCheck*`): printed only while `optionCheckShow` is on
+ *   (`sgs_choice_flow_question_option_check_html`); style.css draws it and shows it on the chosen card.
  *
  * render.php is past its line cap, so it makes one call to each function here.
  *
@@ -138,6 +140,31 @@ if ( ! function_exists( 'sgs_choice_flow_question_option_card_css' ) ) {
 			$css .= $scope . '.sgs-choice-flow-question__option-media,' . $card . ':not(:has(.sgs-choice-flow-question__option-media))::before{background-color:' . $band . ';background-image:none;}';
 		}
 
+		// The tick: its colour, disc, size and distance from the card's top and end edges (style.css draws it).
+		if ( ! empty( $attributes['optionCheckShow'] ) ) {
+			$check  = array();
+			$colour = sgs_colour_value( (string) ( $attributes['optionCheckColour'] ?? '' ) );
+			if ( '' !== $colour ) {
+				$check[] = 'color:' . $colour;
+			}
+			$disc = sgs_colour_value( (string) ( $attributes['optionCheckBackgroundColour'] ?? '' ) );
+			if ( '' !== $disc ) {
+				$check[] = 'background-color:' . $disc;
+			}
+			$size = sgs_css_single_length_value( (string) ( $attributes['optionCheckSize'] ?? '' ) );
+			if ( '' !== $size ) {
+				$check[] = '--sgs-cfq-check-size:' . $size;
+			}
+			$inset = sgs_css_single_length_value( (string) ( $attributes['optionCheckInset'] ?? '' ) );
+			if ( '' !== $inset ) {
+				$check[] = 'top:' . $inset;
+				$check[] = 'inset-inline-end:' . $inset;
+			}
+			if ( array() !== $check ) {
+				$css .= $scope . '.sgs-choice-flow-question__option-check{' . implode( ';', $check ) . ';}';
+			}
+		}
+
 		if ( '' === $css ) {
 			return '';
 		}
@@ -163,5 +190,17 @@ if ( ! function_exists( 'sgs_choice_flow_question_focus_under' ) ) {
 			}
 		}
 		return $out;
+	}
+}
+
+if ( ! function_exists( 'sgs_choice_flow_question_option_check_html' ) ) {
+	/**
+	 * The tick printed inside every option card while `optionCheckShow` is on; style.css shows it on the chosen card.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return string The tick's span, or '' when the tick is off.
+	 */
+	function sgs_choice_flow_question_option_check_html( array $attributes ): string {
+		return empty( $attributes['optionCheckShow'] ) ? '' : '<span class="sgs-choice-flow-question__option-check" aria-hidden="true"></span>';
 	}
 }

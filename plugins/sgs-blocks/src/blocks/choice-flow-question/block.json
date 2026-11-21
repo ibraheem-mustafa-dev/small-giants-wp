@@ -149,6 +149,31 @@
 					"motion": false,
 					"_note": "The band an option's picture sits in (render.php prints it only when the option has a picture), and the blank band the showcase layout draws on a picture-less card beside pictured ones; scoped CSS from helpers-option-card-style.php. Empty keeps the stylesheet's stage colour."
 				},
+				"option-check": {
+					"selector": ".sgs-choice-flow-question__option-check",
+					"label": "Chosen option tick",
+					"layer": "CONTENT",
+					"order": 7,
+					"clusters": [
+						"text",
+						"fill",
+						"layout",
+						"position"
+					],
+					"attrMap": {
+						"css:color": "optionCheckColour",
+						"css:background-color": "optionCheckBackgroundColour",
+						"css:width": "optionCheckSize",
+						"css:height": "optionCheckSize",
+						"css:top": "optionCheckInset"
+					},
+					"motion": false,
+					"absentIn": [
+						"check-off"
+					],
+					"absentWhy": "The tick prints only while optionCheckShow is on.",
+					"_note": "A tick disc in the top end corner of the chosen option card (render.php prints it in every card only while optionCheckShow is on; style.css shows it on the chosen card and draws the tick from the element's colour and size, as sgs/form-field-tiles' tile-check). Names copied from tileCheck* as optionCheck*."
+				},
 				"question": {
 					"selector": ".sgs-choice-flow-question__title",
 					"text": true,
@@ -621,6 +646,26 @@
 		"optionMediaBackground": {
 			"type": "string",
 			"description": "Fill of the band behind an option's picture (and the blank band of a picture-less card beside pictured ones in the showcase layout), a palette slug or any colour. Empty keeps the stage colour."
+		},
+		"optionCheckShow": {
+			"type": "boolean",
+			"description": "Show a tick disc in the top end corner of the chosen option card. Off (unset) prints no tick at all."
+		},
+		"optionCheckColour": {
+			"type": "string",
+			"description": "Colour of the tick mark. Empty = white."
+		},
+		"optionCheckBackgroundColour": {
+			"type": "string",
+			"description": "Fill of the disc behind the tick. Empty = the accent-text colour."
+		},
+		"optionCheckSize": {
+			"type": "string",
+			"description": "Width and height of the tick disc (a length); the tick scales with it. Empty = 20px."
+		},
+		"optionCheckInset": {
+			"type": "string",
+			"description": "How far the tick disc sits from the card's top and end edges (a length). Empty = 0.5rem."
 		},
 		"optionLoading": {"type":"string","_generated":"media-atoms"},
 		"optionFit": {"type":"object","_generated":"media-atoms"},

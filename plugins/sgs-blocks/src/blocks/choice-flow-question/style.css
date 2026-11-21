@@ -282,6 +282,39 @@
 	--sgs-focus-under: 0 0 0 1px var( --wp--preset--color--primary, #1f7a7a );
 }
 
+/* The chosen option's tick (optionCheckShow; render.php prints it in every card only while the setting is on): a disc
+   in the card's top end corner, shown on the chosen card. The tick is drawn from the element's colour and scales with
+   --sgs-cfq-check-size, as sgs/form-field-tiles' tile-check; the defaults sit in :where() so the optionCheck* rules
+   win. */
+:where(.sgs-choice-flow-question__option-check) {
+	display: none;
+	position: absolute;
+	z-index: 1;
+	top: 0.5rem;
+	inset-inline-end: 0.5rem;
+	width: var(--sgs-cfq-check-size, 20px);
+	height: var(--sgs-cfq-check-size, 20px);
+	color: var(--wp--preset--color--text-inverse, #fff);
+	background-color: var(--wp--preset--color--accent-text, #7a6b00);
+	border-radius: 50%;
+}
+
+.sgs-choice-flow-question__option-check::after {
+	content: "";
+	position: absolute;
+	top: calc(var(--sgs-cfq-check-size, 20px) * 0.2);
+	left: calc(var(--sgs-cfq-check-size, 20px) * 0.35);
+	width: calc(var(--sgs-cfq-check-size, 20px) * 0.25);
+	height: calc(var(--sgs-cfq-check-size, 20px) * 0.45);
+	border: solid currentcolor;
+	border-width: 0 max(2px, calc(var(--sgs-cfq-check-size, 20px) * 0.1)) max(2px, calc(var(--sgs-cfq-check-size, 20px) * 0.1)) 0;
+	transform: rotate(45deg);
+}
+
+.sgs-choice-flow-question__option-button--selected > .sgs-choice-flow-question__option-check {
+	display: block;
+}
+
 /* FR-43-17 — priced add-on step: the option's price, read from the
    site-wide list at render time (never typed into the block). Absent
    entirely for a plain question, matching the label-only markup this file

@@ -132,6 +132,7 @@ $sgs_cfq_render_media = sgs_media_item_renderer(
 // without auto-advancing. Only the FIRST flagged option renders
 // data-default="1" — a second flagged option is a stored data mistake.
 $default_rendered = false;
+$sgs_cfq_check   = sgs_choice_flow_question_option_check_html( $attributes ); // The chosen option's tick, '' while it is off.
 
 if ( $is_product_attribute_step ) {
 	echo '<ul class="sgs-choice-flow-question__options sgs-choice-flow-question__options--' . esc_attr( $options_layout ) . '">';
@@ -176,7 +177,7 @@ if ( $is_product_attribute_step ) {
 		if ( $disabled ) {
 			echo ' disabled aria-disabled="true"';
 		}
-		echo '>';
+		echo '>' . $sgs_cfq_check; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a fixed span.
 		if ( '' !== $badge ) {
 			echo '<span class="sgs-choice-flow-question__option-badge">' . esc_html( $badge ) . '</span>';
 		}
@@ -269,7 +270,7 @@ if ( $is_product_attribute_step ) {
 			echo ' data-default="1"';
 		}
 		echo sgs_choice_flow_option_data_attrs( $option ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- helper escapes internally.
-		echo '>';
+		echo '>' . $sgs_cfq_check; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- a fixed span.
 
 		if ( '' !== $badge ) {
 			echo '<span class="sgs-choice-flow-question__option-badge">' . esc_html( $badge ) . '</span>';

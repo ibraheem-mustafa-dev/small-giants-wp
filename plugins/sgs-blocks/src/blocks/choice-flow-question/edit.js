@@ -25,7 +25,7 @@ import TitlePanel from './TitlePanel';
 import VariationCoverageNotice from './VariationCoverageNotice';
 import OptionPolishFields, { OptionDescriptionPanel, optionDescriptionColourRows, optionBadgeColourRows } from './OptionPolishFields';
 import { SgsColourPanel } from '../../components';
-import { OptionCardPanel, OptionBadgeBoxPanel, OptionCardStyle, optionCardColourRows } from './OptionCardPanels';
+import { OptionCardPanel, OptionBadgeBoxPanel, OptionCheckPanel, OptionCardStyle, optionCardColourRows } from './OptionCardPanels';
 
 import SgsFreeTextField from '../../components/SgsFreeTextField';
 // Reserved sentinel (FR-43-2 / spec brief) — "jump straight to whichever
@@ -353,6 +353,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				<OptionDescriptionPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<OptionCardPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<OptionBadgeBoxPanel attributes={ attributes } setAttributes={ setAttributes } />
+				<OptionCheckPanel attributes={ attributes } setAttributes={ setAttributes } />
 			</InspectorControls>
 
 			<div { ...blockProps }>
@@ -372,6 +373,7 @@ export default function Edit( { attributes, setAttributes, clientId, context } )
 				>
 					{ options.map( ( option, index ) => (
 						<li key={ index } className={ `sgs-choice-flow-question__option-preview${ option.isDefault ? ' sgs-choice-flow-question__option-preview--selected' : '' }` }>
+							{ attributes.optionCheckShow && <span className="sgs-choice-flow-question__option-check" aria-hidden="true" /> }
 							{ /* The option's own picture, ahead of the label as render.php prints it. */ }
 							{ [ 'desktop', 'tablet', 'mobile' ].some( ( device ) => hasFile( option.source?.[ device ] ) ) && (
 								<span className="sgs-choice-flow-question__option-media">
