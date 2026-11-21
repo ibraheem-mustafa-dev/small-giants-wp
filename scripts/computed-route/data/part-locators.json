@@ -1191,6 +1191,20 @@
 						]
 					},
 					"pick": "first"
+				},
+				"registerButton": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"type": [
+							"submit"
+						]
+					},
+					"pick": {
+						"index": 1
+					}
 				}
 			}
 		},

@@ -21,7 +21,7 @@
 				{
 					"id": "block-setting:behaviour:array",
 					"label": "block settings, role behaviour, array",
-					"count": 217,
+					"count": 223,
 					"examples": [
 						"sgs/accordion-item.sgsConditionDays",
 						"sgs/accordion-item.sgsConditionUserRole",
@@ -34,21 +34,23 @@
 				{
 					"id": "block-setting:behaviour:boolean",
 					"label": "block settings, role behaviour, boolean",
-					"count": 175,
+					"count": 181,
 					"examples": [
 						"sgs/accordion-item.sgsFocusRests",
 						"sgs/accordion.allowMultiple",
 						"sgs/accordion.sgsFocusRests",
-						"sgs/account.sgsFocusRests",
-						"sgs/audio.sgsFocusRests"
+						"sgs/account.accountDetailsCards",
+						"sgs/account.sgsFocusRests"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:behaviour:integer",
 					"label": "block settings, role behaviour, integer",
-					"count": 1,
+					"count": 3,
 					"examples": [
+						"sgs/account.orderDeliveredAfterDays",
+						"sgs/button.addProductId",
 						"sgs/form.rateLimit"
 					],
 					"motion": false
@@ -56,7 +58,7 @@
 				{
 					"id": "block-setting:behaviour:mode",
 					"label": "block settings, role behaviour, mode",
-					"count": 273,
+					"count": 278,
 					"examples": [
 						"sgs/accordion-item.sgsConditionLoggedIn",
 						"sgs/accordion-item.sgsConditionProductReviews",
@@ -82,7 +84,7 @@
 				{
 					"id": "block-setting:behaviour:number",
 					"label": "block settings, role behaviour, number",
-					"count": 124,
+					"count": 127,
 					"examples": [
 						"sgs/accordion-item.sgsConditionCollectionQueryId",
 						"sgs/accordion.defaultOpen",
@@ -108,7 +110,7 @@
 				{
 					"id": "block-setting:behaviour:string",
 					"label": "block settings, role behaviour, string",
-					"count": 1114,
+					"count": 1145,
 					"examples": [
 						"sgs/accordion-item.sgsCollapseVisibility",
 						"sgs/accordion-item.sgsConditionDateEnd",
@@ -134,13 +136,13 @@
 				{
 					"id": "block-setting:boolean-visibility:boolean",
 					"label": "block settings, role boolean-visibility, boolean",
-					"count": 324,
+					"count": 354,
 					"examples": [
 						"sgs/accordion-item.isOpen",
 						"sgs/accordion-item.showCategoryEyebrow",
+						"sgs/accordion.categoryEyebrowAlways",
 						"sgs/accordion.filterChips",
-						"sgs/accordion.filterEnabled",
-						"sgs/accordion.filterSearch"
+						"sgs/accordion.filterEnabled"
 					],
 					"motion": false
 				},
@@ -159,7 +161,7 @@
 				{
 					"id": "block-setting:boolean-visibility:styling",
 					"label": "block settings, role boolean-visibility, styling",
-					"count": 309,
+					"count": 318,
 					"examples": [
 						"sgs/accordion-item.sgsHideOnDesktop",
 						"sgs/accordion-item.sgsHideOnMobile",
@@ -170,9 +172,45 @@
 					"motion": false
 				},
 				{
+					"id": "block-setting:button-preset:mode",
+					"label": "block settings, role button-preset, mode",
+					"count": 3,
+					"examples": [
+						"sgs/account.loginButtonStyle",
+						"sgs/account.registerButtonStyle",
+						"sgs/button.inheritStyle"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:button-preset:string",
+					"label": "block settings, role button-preset, string",
+					"count": 4,
+					"examples": [
+						"sgs/buybox.addToCartStyle",
+						"sgs/buybox.flowOpenerStyle",
+						"sgs/product-card.cta2Style",
+						"sgs/product-card.ctaStyle"
+					],
+					"motion": false
+				},
+				{
+					"id": "block-setting:button-preset:styling",
+					"label": "block settings, role button-preset, styling",
+					"count": 5,
+					"examples": [
+						"sgs/account.emptyStateStyle",
+						"sgs/account.signedOutRegisterStyle",
+						"sgs/account.signedOutSignInStyle",
+						"sgs/form.submitStyle",
+						"sgs/product-search.submitStyle"
+					],
+					"motion": false
+				},
+				{
 					"id": "block-setting:color:string",
 					"label": "block settings, role color, string",
-					"count": 123,
+					"count": 124,
 					"examples": [
 						"sgs/accordion-item.backgroundColourHover",
 						"sgs/brand-strip.logoBorderColourHover",
@@ -185,7 +223,7 @@
 				{
 					"id": "block-setting:color:styling",
 					"label": "block settings, role color, styling",
-					"count": 1422,
+					"count": 1554,
 					"examples": [
 						"sgs/accordion-item.backgroundColour",
 						"sgs/accordion-item.borderColour",
@@ -211,7 +249,7 @@
 				{
 					"id": "block-setting:colour-gradient:string",
 					"label": "block settings, role colour-gradient, string",
-					"count": 82,
+					"count": 84,
 					"examples": [
 						"sgs/accordion-item.backgroundColourHoverGradient",
 						"sgs/brand-strip.logoBorderColourGradient",
@@ -224,7 +262,7 @@
 				{
 					"id": "block-setting:colour-gradient:styling",
 					"label": "block settings, role colour-gradient, styling",
-					"count": 572,
+					"count": 580,
 					"examples": [
 						"sgs/accordion-item.backgroundColourGradient",
 						"sgs/accordion-item.borderColourGradient",
@@ -276,26 +314,26 @@
 				{
 					"id": "block-setting:content:object",
 					"label": "block settings, role content, object",
-					"count": 41,
+					"count": 30,
 					"examples": [
 						"sgs/accordion.filterEmptyLink",
-						"sgs/before-after.afterCaptions",
 						"sgs/before-after.afterSource",
-						"sgs/before-after.beforeCaptions",
-						"sgs/before-after.beforeSource"
+						"sgs/before-after.beforeSource",
+						"sgs/buybox.previewSource",
+						"sgs/cart.emptyImageSource"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:content:string",
 					"label": "block settings, role content, string",
-					"count": 27,
+					"count": 29,
 					"examples": [
 						"sgs/account.ordersEmptyButtonUrl",
+						"sgs/account.signedInRedirectUrl",
 						"sgs/account.signedOutRegisterUrl",
 						"sgs/account.signedOutSignInUrl",
-						"sgs/account.wishlistEmptyButtonUrl",
-						"sgs/audio.audioUrl"
+						"sgs/account.wishlistEmptyButtonUrl"
 					],
 					"motion": false
 				},
@@ -311,10 +349,11 @@
 				{
 					"id": "block-setting:enum-class-probe:integer",
 					"label": "block settings, role enum-class-probe, integer",
-					"count": 3,
+					"count": 4,
 					"examples": [
 						"sgs/audio.audioId",
 						"sgs/buybox.buyboxProductId",
+						"sgs/cart.emptyProductId",
 						"sgs/choice-flow.flowProductId"
 					],
 					"motion": false
@@ -380,7 +419,7 @@
 				{
 					"id": "block-setting:enum-mode:mode",
 					"label": "block settings, role enum-mode, mode",
-					"count": 136,
+					"count": 139,
 					"examples": [
 						"sgs/account.headerTitleTag",
 						"sgs/account.loginButtonScope",
@@ -406,7 +445,7 @@
 				{
 					"id": "block-setting:enum-mode:styling",
 					"label": "block settings, role enum-mode, styling",
-					"count": 30,
+					"count": 31,
 					"examples": [
 						"sgs/accordion.filterChipsJustify",
 						"sgs/accordion.filterSearchAlign",
@@ -499,13 +538,13 @@
 				{
 					"id": "block-setting:identity:string",
 					"label": "block settings, role identity, string",
-					"count": 5,
+					"count": 8,
 					"examples": [
+						"sgs/account.loginButtonIcon",
+						"sgs/account.ordersRowViewIcon",
+						"sgs/account.registerButtonIcon",
 						"sgs/cart.iconName",
-						"sgs/notice-banner.iconName",
-						"sgs/notice-banner.iconSource",
-						"sgs/wishlist-link.iconName",
-						"sgs/wishlist-link.iconSource"
+						"sgs/notice-banner.iconName"
 					],
 					"motion": false
 				},
@@ -523,13 +562,13 @@
 				{
 					"id": "block-setting:image-alt:string",
 					"label": "block settings, role image-alt, string",
-					"count": 23,
+					"count": 24,
 					"examples": [
 						"sgs/before-after.afterAlt",
 						"sgs/before-after.beforeAlt",
+						"sgs/cart.emptyImageAlt",
 						"sgs/choice-flow.headerLogoAlt",
-						"sgs/container.backgroundAlt",
-						"sgs/decorative-image.layerAlt"
+						"sgs/container.backgroundAlt"
 					],
 					"motion": false
 				},
@@ -564,8 +603,9 @@
 				{
 					"id": "block-setting:layout:boolean",
 					"label": "block settings, role layout, boolean",
-					"count": 4,
+					"count": 5,
 					"examples": [
+						"sgs/accordion.filterBandFullWidth",
 						"sgs/account.showLatestOrder",
 						"sgs/google-rating-badge.fullWidth",
 						"sgs/label.fullWidth",
@@ -576,7 +616,7 @@
 				{
 					"id": "block-setting:layout:mode",
 					"label": "block settings, role layout, mode",
-					"count": 61,
+					"count": 62,
 					"examples": [
 						"sgs/accordion.layout",
 						"sgs/account.authLayout",
@@ -602,7 +642,7 @@
 				{
 					"id": "block-setting:layout:object",
 					"label": "block settings, role layout, object",
-					"count": 215,
+					"count": 230,
 					"examples": [
 						"sgs/account.accountFieldsetGap",
 						"sgs/account.accountFieldsetMargin",
@@ -615,7 +655,7 @@
 				{
 					"id": "block-setting:layout:string",
 					"label": "block settings, role layout, string",
-					"count": 49,
+					"count": 51,
 					"examples": [
 						"sgs/accordion.scrollToOpenedGap",
 						"sgs/brand-strip.logoBorderColour",
@@ -628,7 +668,7 @@
 				{
 					"id": "block-setting:layout:styling",
 					"label": "block settings, role layout, styling",
-					"count": 1059,
+					"count": 1103,
 					"examples": [
 						"sgs/accordion-item.contentWidth",
 						"sgs/accordion-item.maxWidth",
@@ -671,13 +711,13 @@
 				{
 					"id": "block-setting:link-href:string",
 					"label": "block settings, role link-href, string",
-					"count": 15,
+					"count": 17,
 					"examples": [
+						"sgs/account.orderDetailHelpUrl",
+						"sgs/account.orderDetailHelpUrlSource",
 						"sgs/account.orderDetailWhatsAppNumber",
 						"sgs/button.url",
-						"sgs/buybox.pickerLabelLinkAxis",
-						"sgs/cart.itemAddOptionsLabel",
-						"sgs/commerce-note.linkUrl"
+						"sgs/buybox.pickerLabelLinkAxis"
 					],
 					"motion": false
 				},
@@ -806,13 +846,13 @@
 				{
 					"id": "block-setting:select-from-enum:mode",
 					"label": "block settings, role select-from-enum, mode",
-					"count": 73,
+					"count": 76,
 					"examples": [
 						"sgs/accordion.iconPosition",
-						"sgs/account.loginButtonPreset",
+						"sgs/account.loginButtonIconPosition",
+						"sgs/account.registerButtonIconPosition",
 						"sgs/brand-strip.imageEffect",
-						"sgs/brand-strip.logoLayout",
-						"sgs/business-info.displayType"
+						"sgs/brand-strip.logoLayout"
 					],
 					"motion": false
 				},
@@ -831,13 +871,13 @@
 				{
 					"id": "block-setting:select-from-enum:object",
 					"label": "block settings, role select-from-enum, object",
-					"count": 17,
+					"count": 23,
 					"examples": [
-						"sgs/account.rememberCheckboxSize",
-						"sgs/button.iconShapeSize",
-						"sgs/button.iconSize",
-						"sgs/button.widthType",
-						"sgs/buybox.galleryThumbSize"
+						"sgs/account.loginButtonIconGap",
+						"sgs/account.loginButtonIconShapeSize",
+						"sgs/account.loginButtonIconSize",
+						"sgs/account.registerButtonIconGap",
+						"sgs/account.registerButtonIconShapeSize"
 					],
 					"motion": false
 				},
@@ -857,13 +897,13 @@
 				{
 					"id": "block-setting:select-from-enum:styling",
 					"label": "block settings, role select-from-enum, styling",
-					"count": 195,
+					"count": 205,
 					"examples": [
 						"sgs/accordion.filterSearchIconSize",
 						"sgs/accordion.iconCircleSize",
 						"sgs/accordion.iconSize",
 						"sgs/accordion.writingMode",
-						"sgs/account.labelPosition"
+						"sgs/account.emptyStateWidthType"
 					],
 					"motion": false
 				},
@@ -926,7 +966,7 @@
 				{
 					"id": "block-setting:styling:string",
 					"label": "block settings, role styling, string",
-					"count": 101,
+					"count": 104,
 					"examples": [
 						"sgs/accordion-item.sgsCustomCss",
 						"sgs/accordion.sgsCustomCss",
@@ -1061,7 +1101,7 @@
 				{
 					"id": "block-setting:technical:string",
 					"label": "block settings, role technical, string",
-					"count": 134,
+					"count": 140,
 					"examples": [
 						"sgs/accordion.filterCountSingular",
 						"sgs/accordion.filterCountTemplate",
@@ -1083,8 +1123,9 @@
 				{
 					"id": "block-setting:text-content:object",
 					"label": "block settings, role text-content, object",
-					"count": 2,
+					"count": 3,
 					"examples": [
+						"sgs/account.orderStatusLabels",
 						"woocommerce/cart.sgsCheckoutStrings",
 						"woocommerce/checkout.sgsCheckoutStrings"
 					],
@@ -1093,7 +1134,7 @@
 				{
 					"id": "block-setting:text-content:string",
 					"label": "block settings, role text-content, string",
-					"count": 226,
+					"count": 255,
 					"examples": [
 						"sgs/accordion-item.category",
 						"sgs/accordion-item.title",
@@ -1116,7 +1157,7 @@
 				{
 					"id": "block-setting:typography:mode",
 					"label": "block settings, role typography, mode",
-					"count": 50,
+					"count": 47,
 					"examples": [
 						"sgs/account.accountSectionFontStyle",
 						"sgs/account.accountSectionTextDecoration",
@@ -1142,7 +1183,7 @@
 				{
 					"id": "block-setting:typography:object",
 					"label": "block settings, role typography, object",
-					"count": 37,
+					"count": 34,
 					"examples": [
 						"sgs/account.accountSectionFontSize",
 						"sgs/account.accountSectionLetterSpacing",
@@ -1155,33 +1196,33 @@
 				{
 					"id": "block-setting:typography:string",
 					"label": "block settings, role typography, string",
-					"count": 924,
+					"count": 970,
 					"examples": [
+						"sgs/accordion.categoryEyebrowFontSizeUnit",
+						"sgs/accordion.categoryEyebrowLetterSpacingUnit",
+						"sgs/accordion.categoryEyebrowLineHeightUnit",
 						"sgs/accordion.fontSizeUnit",
-						"sgs/accordion.letterSpacingUnit",
-						"sgs/accordion.lineHeightUnit",
-						"sgs/account.accountPasswordHelperTypeFontSizeUnit",
-						"sgs/account.accountPasswordHelperTypeLetterSpacingUnit"
+						"sgs/accordion.itemTitleFontSizeUnit"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:typography:styling",
 					"label": "block settings, role typography, styling",
-					"count": 2854,
+					"count": 2979,
 					"examples": [
-						"sgs/accordion.filterChipFontFamily",
-						"sgs/accordion.filterChipFontSize",
-						"sgs/accordion.filterSearchFontFamily",
-						"sgs/accordion.filterSearchFontSize",
-						"sgs/accordion.fontFamily"
+						"sgs/accordion.categoryEyebrowFontFamily",
+						"sgs/accordion.categoryEyebrowFontSize",
+						"sgs/accordion.categoryEyebrowFontWeight",
+						"sgs/accordion.categoryEyebrowLetterSpacing",
+						"sgs/accordion.categoryEyebrowLineHeight"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:unclassified:array",
 					"label": "block settings, role unclassified, array",
-					"count": 11,
+					"count": 12,
 					"examples": [
 						"sgs/account.hiddenEndpoints",
 						"sgs/buybox.pickerAlwaysShowAxes",
@@ -1194,13 +1235,13 @@
 				{
 					"id": "block-setting:unclassified:integer",
 					"label": "block settings, role unclassified, integer",
-					"count": 8,
+					"count": 9,
 					"examples": [
+						"sgs/buybox.noteMaxLength",
 						"sgs/choice-flow-question.answersMax",
 						"sgs/choice-flow-question.answersMin",
 						"sgs/choice-flow-result.rateLimit",
-						"sgs/gift-order.messageLimit",
-						"sgs/gift-order.recipientLimit"
+						"sgs/gift-order.messageLimit"
 					],
 					"motion": false
 				},
@@ -1224,16 +1265,16 @@
 					"examples": [
 						"sgs/account.cardDescriptions",
 						"sgs/account.navIcons",
+						"sgs/account.registerNameRow",
 						"sgs/account.statusStepLabels",
-						"sgs/account.strings",
-						"sgs/buybox.groupStyles"
+						"sgs/account.strings"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:unclassified:string",
 					"label": "block settings, role unclassified, string",
-					"count": 121,
+					"count": 129,
 					"examples": [
 						"sgs/account.addressAddLabel",
 						"sgs/account.addressCancelLabel",
@@ -1282,7 +1323,7 @@
 				{
 					"id": "block-setting:visual:object",
 					"label": "block settings, role visual, object",
-					"count": 92,
+					"count": 94,
 					"examples": [
 						"sgs/account.accountFieldsetBorderWidth",
 						"sgs/account.authPairBorderWidth",
@@ -1295,20 +1336,20 @@
 				{
 					"id": "block-setting:visual:string",
 					"label": "block settings, role visual, string",
-					"count": 38,
+					"count": 37,
 					"examples": [
-						"sgs/buybox.addToCartShadowHover",
 						"sgs/buybox.mainBoxShadow",
 						"sgs/buybox.pickerPillBorderWidth",
 						"sgs/container.backgroundOverlayBlend",
-						"sgs/decorative-image.layerBlend"
+						"sgs/decorative-image.layerBlend",
+						"sgs/form-field-checkbox.boxRadius"
 					],
 					"motion": false
 				},
 				{
 					"id": "block-setting:visual:styling",
 					"label": "block settings, role visual, styling",
-					"count": 612,
+					"count": 693,
 					"examples": [
 						"sgs/accordion-item.borderRadius",
 						"sgs/accordion-item.borderStyle",
@@ -2230,13 +2271,37 @@
 				{
 					"id": "sgs-support:boxFamilies",
 					"label": "supports.sgs.boxFamilies",
-					"count": 74,
+					"count": 77,
 					"examples": [
 						"sgs/accordion",
 						"sgs/accordion-item",
 						"sgs/audio",
 						"sgs/before-after",
 						"sgs/brand-strip"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:builtinButtons",
+					"label": "supports.sgs.builtinButtons",
+					"count": 7,
+					"examples": [
+						"sgs/account",
+						"sgs/buybox",
+						"sgs/container",
+						"sgs/gallery",
+						"sgs/product-card"
+					],
+					"motion": false
+				},
+				{
+					"id": "sgs-support:carouselDots",
+					"label": "supports.sgs.carouselDots",
+					"count": 3,
+					"examples": [
+						"sgs/container",
+						"sgs/gallery",
+						"sgs/testimonial-slider"
 					],
 					"motion": false
 				},
@@ -2256,7 +2321,7 @@
 				{
 					"id": "sgs-support:colourExemptions",
 					"label": "supports.sgs.colourExemptions",
-					"count": 19,
+					"count": 20,
 					"examples": [
 						"sgs/before-after",
 						"sgs/business-info",
@@ -2282,7 +2347,7 @@
 				{
 					"id": "sgs-support:elements",
 					"label": "supports.sgs.elements",
-					"count": 101,
+					"count": 104,
 					"examples": [
 						"sgs/accordion",
 						"sgs/accordion-item",
@@ -2368,20 +2433,20 @@
 				{
 					"id": "sgs-support:mediaElements",
 					"label": "supports.sgs.mediaElements",
-					"count": 27,
+					"count": 29,
 					"examples": [
 						"sgs/before-after",
 						"sgs/brand-strip",
 						"sgs/buybox",
 						"sgs/card-grid",
-						"sgs/choice-flow"
+						"sgs/cart"
 					],
 					"motion": false
 				},
 				{
 					"id": "sgs-support:motion",
 					"label": "supports.sgs.motion",
-					"count": 78,
+					"count": 80,
 					"examples": [
 						"sgs/accordion",
 						"sgs/account",
@@ -2542,13 +2607,13 @@
 				{
 					"id": "sgs-support:specRef",
 					"label": "supports.sgs.specRef",
-					"count": 5,
+					"count": 6,
 					"examples": [
 						"sgs/account",
 						"sgs/commerce-note",
 						"sgs/free-delivery-bar",
 						"sgs/gift-order",
-						"sgs/pay-later-message"
+						"sgs/order-items"
 					],
 					"motion": false
 				},
@@ -2695,7 +2760,7 @@
 				{
 					"id": "extension:filterLook",
 					"label": "extension filterLook (product-filter-look.js)",
-					"count": 22,
+					"count": 23,
 					"examples": [
 						"sgsChipAllCount",
 						"sgsChipAllLabel",
@@ -3563,6 +3628,13 @@
 					"motion": false
 				},
 				{
+					"id": "snapshot-key:settings.custom.choiceControls",
+					"label": "theme-snapshot settings.custom.choiceControls",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
 					"id": "snapshot-key:settings.custom.colourRoles",
 					"label": "theme-snapshot settings.custom.colourRoles",
 					"count": 1,
@@ -3593,6 +3665,13 @@
 				{
 					"id": "snapshot-key:settings.custom.easing",
 					"label": "theme-snapshot settings.custom.easing",
+					"count": 1,
+					"examples": [],
+					"motion": false
+				},
+				{
+					"id": "snapshot-key:settings.custom.email",
+					"label": "theme-snapshot settings.custom.email",
 					"count": 1,
 					"examples": [],
 					"motion": false

@@ -1339,6 +1339,27 @@
 			"wave": "modes and values with no CSS property",
 			"note": "hide on a device: no hide-on-device read or write yet (FR-48-45, FR-48-50)"
 		},
+		"block-setting:button-preset:mode": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-11-21, not yet triaged"
+		},
+		"block-setting:button-preset:string": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-11-21, not yet triaged"
+		},
+		"block-setting:button-preset:styling": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-11-21, not yet triaged"
+		},
 		"block-setting:color:string": {
 			"recognise": null,
 			"write": null,
@@ -16075,6 +16096,20 @@
 				"date": "2026-10-17"
 			}
 		},
+		"sgs-support:builtinButtons": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-11-21, not yet triaged"
+		},
+		"sgs-support:carouselDots": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-11-21, not yet triaged"
+		},
 		"sgs-support:collection": {
 			"excluded": {
 				"reason": "block.json metadata that tells the tools how to treat a block, not a value a draft holds; the settings it switches on are in the block-setting families",
@@ -16383,6 +16418,13 @@
 			"wave": "site and surfaces",
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
 		},
+		"snapshot-key:settings.custom.choiceControls": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-11-21, not yet triaged"
+		},
 		"snapshot-key:settings.custom.colourRoles": {
 			"recognise": null,
 			"write": null,
@@ -16417,6 +16459,13 @@
 			"check": null,
 			"wave": "site and surfaces",
 			"note": "site tokens: intake proposes the palette and Site Info; no snapshot writer or site-level check in this route (FR-48-48)"
+		},
+		"snapshot-key:settings.custom.email": {
+			"recognise": null,
+			"write": null,
+			"check": null,
+			"wave": "unassigned",
+			"note": "seeded 2026-11-21, not yet triaged"
 		},
 		"snapshot-key:settings.custom.entrance": {
 			"recognise": null,
