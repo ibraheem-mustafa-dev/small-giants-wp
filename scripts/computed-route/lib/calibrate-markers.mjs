@@ -264,7 +264,8 @@ export function formMarkers( row, schema ) {
 	const box = !! row.box_family || 'box_only' === row.tier_shape || isSizeBox( def ) || /\{x, y\}/.test( def.description ?? '' );
 	const holdsString = tiered ? t.includes( 'object' ) : t.includes( 'string' );
 	const sibling = 'flat_sibling' === row.tier_shape && /(Tablet|Mobile)$/.test( row.attr_name );
-	if ( ! fluidProp || box || ! holdsString || sibling || FLOORED_ATTR.test( row.attr_name ) ) {
+	// A setting holding one of listed choices takes no formula.
+	if ( ! fluidProp || box || ! holdsString || sibling || FLOORED_ATTR.test( row.attr_name ) || Array.isArray( def.enum ) ) {
 		return out;
 	}
 	const unitAttr = schema[ `${ row.attr_name }Unit` ] ? `${ row.attr_name }Unit` : null;
@@ -305,7 +306,8 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 	const set = ( v ) => ( { [ row.attr_name ]: v } );
 	const isGradient = /Gradient$/.test( row.attr_name ) || 'colour-gradient' === row.role || /-gradient$/.test( prop );
 	// A colour setting: by its property, or by its DB role (an overlay colour painted as a background-image layer).
-	if ( ! isGradient && t.includes( 'string' ) && ( isColourProp( prop ) || 'color' === row.role ) ) {
+	// A setting whose value is one of listed choices (a colour mode, a button preset) takes the enum markers below even when it paints a colour.
+	if ( ! isGradient && t.includes( 'string' ) && ! Array.isArray( def.enum ) && ( isColourProp( prop ) || 'color' === row.role ) ) {
 		const exact = isColourProp( prop ) ? all( MARKER_RGB ) : null;
 		// The palette colour furthest from both black and white, so it differs from any default text or ground.
 		const mid = ( c ) => Math.min( c.r + c.g + c.b, 765 - ( c.r + c.g + c.b ) ) + ( Math.max( c.r, c.g, c.b ) - Math.min( c.r, c.g, c.b ) );
@@ -329,7 +331,9 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 		// against a baseline instance carrying the same width (`base`), never against the plain default.
 		const pair = 'border-style' === prop ? companionWidth( row.attr_name, schema ) : null;
 		const extra = pair ? pair.attrs : {};
-		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, enumValue: v, attrs: { ...set( v ), ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
+		// A per-device choice (an object holding a value per tier) is written at every tier.
+		const perDevice = 'tier_object' === row.tier_shape && t.includes( 'object' ) && ! t.includes( 'string' );
+		return def.enum.filter( ( v ) => '' !== v && v !== def.default ).map( ( v ) => ( { label: `enum-${ v }`, enumValue: v, attrs: { ...set( perDevice ? everyTier( v ) : v ), ...extra }, expect: null, ...( pair ? { base: pair.attrs } : {} ) } ) );
 	}
 	// Transition timing: only a setting whose value is a time or an easing (transitionMarker's two-fact gate); a setting
 	// that merely triggers a transition has no time to write, so it gets no marker. An enum setting returned above.
@@ -455,6 +459,9 @@ function plainMarkers( row, schema, snapshot, current, ctx ) {
 	}
 	return [];
 }
+
+// One value at every tier of a per-device setting.
+export const everyTier = ( v ) => Object.fromEntries( TIERS.map( ( tier ) => [ tier, v ] ) );
 
 const TRANSFORM = /^(transform|rotate|scale|translate)$/;
 const BORDER_TRIO = [ 'border-color', 'border-style', 'border-width' ];

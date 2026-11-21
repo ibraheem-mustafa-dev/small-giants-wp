@@ -1,7 +1,7 @@
 // Which instances one block's calibration page holds (FR-47-2): a default per fixture variant, then one marked
 // instance per setting and marker, each carrying the preconditions its element needs to render, plus one instance
 // per enum value of a setting with no css_property (discovery). No browser, no site; it reads the block manifests and data/shared-state-elements.json.
-import { markersFor, borderPartners, shadowPartners, defOf, types } from './calibrate-markers.mjs';
+import { markersFor, borderPartners, shadowPartners, defOf, types, everyTier } from './calibrate-markers.mjs';
 import { modifierOf } from './db.mjs';
 import fs from 'fs';
 import { blockElements, blockWrapperElements } from './resolve.mjs';
@@ -108,7 +108,8 @@ export function preconditionsFor( row, schema, current = {}, ctx = {} ) {
 	const first = properties[ 0 ] || '';
 	const slot = ( ctx.variantSlots || [] ).find( ( s ) => s.unique_slot === row.attr_name );
 	if ( slot && ctx.variantAttr && current[ ctx.variantAttr ] !== slot.variant_value ) {
-		out[ ctx.variantAttr ] = slot.variant_value;
+		// A per-device variant setting (a gallery's layout) holds the value at every tier.
+		out[ ctx.variantAttr ] = 'object' === schema[ ctx.variantAttr ]?.type ? everyTier( slot.variant_value ) : slot.variant_value;
 	}
 	// A variant whose media renders only with an image (hero's split media is absent without a splitSource) gets
 	// the calibration image in that variant's own Source slots, so its media settings have an element to paint.

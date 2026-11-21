@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/calibrate-markers.mjs",
-		"find": "label: `enum-${ v }`, enumValue: v, attrs: { ...set( v ), ...extra }",
-		"replace": "label: `enum-${ v }`, attrs: { ...set( v ), ...extra }",
+		"find": "label: `enum-${ v }`, enumValue: v, attrs: { ...set( perDevice ? everyTier( v ) : v ), ...extra }",
+		"replace": "label: `enum-${ v }`, attrs: { ...set( perDevice ? everyTier( v ) : v ), ...extra }",
 		"why": "an enum marker no longer says which value it carries"
 	},
 	{
