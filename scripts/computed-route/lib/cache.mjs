@@ -3,7 +3,8 @@
 //     property. It is site-independent, keyed by `slotKey` (the deployed build's hash), and names the measuring site for
 //     provenance only. A run on another site replaces it only with --recalibrate.
 //   - the DEFAULT PAINT, one file per site and block (`cache/<site>/<block>.paint.json`): the computed style of each
-//     element with no settings applied. It carries its `paintKey` (the slot key plus the md5 of that site's
+//     element with no settings applied (`elements`), and each element's own words and box inside the block (`parts`, for
+//     the pairing of absorbed draft elements). It carries its `paintKey` (the slot key plus the md5 of that site's
 //     theme-snapshot.json). A run on one site never opens another site's paint file. A local mirror is the same site as
 //     the test site it copies (`mirrorOf` in calibration-targets.json: same build, same database, same snapshot, so the
 //     same paintKey), so a mirror's paint lives in, and is read from, its test site's folder.
@@ -46,7 +47,7 @@ export function paintOwner( paint, folder, targets = targetsNow() ) {
 export const recordSite = paintSite;
 
 // The fields that make up the default paint; every other calibration field belongs to the slot map.
-export const PAINT_FIELDS = [ 'elements', 'paintStates' ];
+export const PAINT_FIELDS = [ 'elements', 'parts', 'paintStates' ];
 
 const slugOf = ( block ) => String( block ).replace( /^sgs\//, '' );
 
@@ -128,7 +129,7 @@ export function loadCalibration( dir, block, site ) {
 	if ( ! paint ) {
 		return { ...slotMap, elements: {}, paintMissing: site ? `no default paint for ${ site }; run calibrate.mjs on that site` : 'no site named, so no default paint to read' };
 	}
-	return { ...slotMap, elements: paint.elements || {}, ...( paint.paintStates ? { paintStates: paint.paintStates } : {} ), paintKey: paint.paintKey, paintSite: paint.site, paintReadKey: paint.readKey ?? null };
+	return { ...slotMap, elements: paint.elements || {}, ...( paint.parts ? { parts: paint.parts } : {} ), ...( paint.paintStates ? { paintStates: paint.paintStates } : {} ), paintKey: paint.paintKey, paintSite: paint.site, paintReadKey: paint.readKey ?? null };
 }
 
 // The properties of the block's own read list a slot map was measured without.

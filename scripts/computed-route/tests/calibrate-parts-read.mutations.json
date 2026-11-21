@@ -1,0 +1,12 @@
+[
+	{"file": "lib/calibrate-read.mjs", "find": "\t\tconst root = at.includes( n ) ? document.querySelector( `.${ prefix }${ n }` ) : null;", "replace": "\t\tconst root = document.querySelector( `.${ prefix }${ n }` );", "why": "every instance is read, not only the default ones"},
+	{"file": "lib/calibrate-read.mjs", "find": "[ ...el.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.textContent )", "replace": "[ el.textContent ]", "why": "a part's words include its children's"},
+	{"file": "lib/calibrate-read.mjs", "find": ".join( ' ' ).replace( /\\s+/g, ' ' ).trim().slice( 0, 80 );", "replace": ".join( ' ' ).slice( 0, 80 );", "why": "the words keep their raw spaces"},
+	{"file": "lib/calibrate-read.mjs", "find": "box: [ r1( r.left - o.left ), r1( r.top - o.top ), r1( r.width ), r1( r.height ) ]", "replace": "box: [ r1( r.left ), r1( r.top ), r1( r.width ), r1( r.height ) ]", "why": "the box is measured from the page, not the instance root"},
+	{"file": "lib/calibrate-read.mjs", "find": "\t\tids.map( ( id ) => document.getElementById( id ) ).filter( ( t ) => t && ! root.contains( t ) ).forEach( ( t, i ) => collect( t, i ? `@controls:${ i + 1 }` : '@controls' ) );", "replace": "", "why": "a controlled panel's parts are not read"},
+	{"file": "lib/calibrate-read.mjs", "find": "\tif ( partsAt?.length ) {\n\t\tparts[ w ] = await readParts( page, instances.length, partsAt );", "replace": "\tif ( partsAt?.length && w > 1000 ) {\n\t\tparts[ w ] = await readParts( page, instances.length, partsAt );", "why": "only the widest width is read"},
+	{"file": "lib/calibrate-read.mjs", "find": "...( partsAt?.length ? { parts } : {} ) } );", "replace": "parts } );", "why": "a read with no partsAt carries an empty parts key"},
+	{"file": "lib/calibrate-block.mjs", "find": "\t\t\tout[ p ] ??= undefined === e.words ? { box: e.box } : { words: e.words, box: e.box };", "replace": "\t\t\tout[ p ] = undefined === e.words ? { box: e.box } : { words: e.words, box: e.box };", "why": "a later variant's part replaces the first variant's"},
+	{"file": "lib/calibrate-block.mjs", "find": "\t\t\t\tv.words && undefined === e.words && ( e.words = v.words );", "replace": "\t\t\t\tv.words && ( e.words = v.words );", "why": "the last width's words win"},
+	{"file": "lib/cache.mjs", "find": "export const PAINT_FIELDS = [ 'elements', 'parts', 'paintStates' ];", "replace": "export const PAINT_FIELDS = [ 'elements', 'paintStates' ];", "why": "the parts land in the slot map, not the paint file"}
+]

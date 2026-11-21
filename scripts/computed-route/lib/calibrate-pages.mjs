@@ -119,7 +119,10 @@ export async function measurePages( block, instances, { fixture, site, target, e
 		// A page holding a content instance has its content read on this pass's own load (lib/calibrate-read.mjs::readAll
 		// `contentAt`), unless the fixture holds the style read for settleGone: that page's content keeps a load of its own.
 		const contentAt = list.some( ( i ) => i.content ) && ! settleGone ? contentReader( list.length, needles ) : null;
-		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner, extraProps, contentAt } ) ) ];
+		// The default instances are kept from the block's first page only, so their parts (words and box, for the pairing of
+		// absorbed draft elements) are read there, on the same load.
+		const partsAt = 0 === done ? list.flatMap( ( i, n ) => ( i.isDefault ? [ n ] : [] ) ) : null;
+		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner, extraProps, contentAt, partsAt } ) ) ];
 		clock.addReads( passes[ 0 ].timing );
 		// Once a page shows how many elements each instance draws, the pages still queued hold no more than the element budget
 		// (lib/calibrate-chunk.mjs::pageCapFor): a block whose instances draw hundreds of elements reads fewer per page.
@@ -177,7 +180,7 @@ export async function measurePages( block, instances, { fixture, site, target, e
 				? ( r ) => ! slotFor( inst.row, inst.marker, at( d, r ), at( n, r ), { own: stateTarget( block, inst.row ) } ).dead
 				: null;
 			const reads = pickPass( passes, n, d, reached );
-			kept.push( settle( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } ) );
+			kept.push( settle( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ), ...( inst.isDefault && passes[ 0 ].parts ? { partsRead: at( n, passes[ 0 ].parts ) } : {} ) } ) );
 		} );
 		done++;
 	}

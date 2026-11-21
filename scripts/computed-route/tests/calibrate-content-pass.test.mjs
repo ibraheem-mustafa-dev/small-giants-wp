@@ -64,6 +64,6 @@ test( 'negative control: without contentAt readAll returns no content and its re
 test( 'MUST FAIL: measurePages reads the content on the style pass unless the fixture holds the read for settleGone', () => {
 	const src = fs.readFileSync( new URL( '../lib/calibrate-pages.mjs', import.meta.url ), 'utf8' );
 	assert.match( src, /const contentAt = list\.some\( \( i \) => i\.content \) && ! settleGone \? contentReader\( list\.length, needles \) : null;/ );
-	assert.match( src, /readAll\( shared\.page, pageUrl, list, \{ settleGone, owner, extraProps, contentAt \} \)/ );
+	assert.match( src, /readAll\( shared\.page, pageUrl, list, \{ settleGone, owner, extraProps, contentAt(?:, partsAt)? \} \)/ );
 	assert.match( src, /passes\[ 0 \]\.content \?\? await clock\.time\( 'contentRead', \(\) => readContentAll\( shared\.page, pageUrl, list, needles \) \)/ );
 } );

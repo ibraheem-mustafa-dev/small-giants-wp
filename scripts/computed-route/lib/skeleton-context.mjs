@@ -35,9 +35,9 @@ export const calPartsFor = ( site, dir = CACHE ) => ( slug ) => {
 	if ( ! cal ) {
 		return null;
 	}
-	const own = Object.keys( cal.elements || {} ).length ? cal.elements : null;
-	const elements = own ?? ( cal.site && cal.site !== site ? loadCalibration( dir, slug, cal.site )?.elements : null ) ?? {};
-	return { elements, settings: cal.settings || {}, text: cal.text || {} };
+	const own = Object.keys( cal.elements || {} ).length ? cal : null;
+	const paint = own ?? ( cal.site && cal.site !== site ? loadCalibration( dir, slug, cal.site ) : null ) ?? {};
+	return { elements: paint.elements || {}, parts: paint.parts || {}, settings: cal.settings || {}, text: cal.text || {} };
 };
 
 // A proposed skeleton is written only when every block it uses has `site`'s default paint, since calKeysFor reads none

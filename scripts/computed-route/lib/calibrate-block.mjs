@@ -29,6 +29,28 @@ export function statePaint( elements, props ) {
 	return Object.fromEntries( Object.entries( elements ).map( ( [ p, widths ] ) => [ p, Object.fromEntries( Object.entries( widths ).map( ( [ w, styles ] ) => [ w, Object.fromEntries( Object.entries( styles || {} ).filter( ( [ k ] ) => props.includes( k ) ) ) ] ) ) ] ) );
 }
 
+// The block's parts as its default instances draw them (lib/calibrate-read.mjs::readPartsInPage), for the pairing of
+// absorbed draft elements (lib/skeleton-part-pairing.mjs): { path: { words?, box: { width: [ x, y, w, h ] } } }, a path
+// drawn by several variants keeping the first variant's (as the default paint does), its words the first width's that has
+// any. Empty when no default instance carries a parts read.
+export function foldParts( defaults ) {
+	const out = {};
+	for ( const inst of defaults ) {
+		const mine = {};
+		for ( const [ w, read ] of Object.entries( inst.partsRead || {} ) ) {
+			for ( const [ p, v ] of Object.entries( read || {} ) ) {
+				const e = ( mine[ p ] ??= { box: {} } );
+				e.box[ w ] = v.box;
+				v.words && undefined === e.words && ( e.words = v.words );
+			}
+		}
+		for ( const [ p, e ] of Object.entries( mine ) ) {
+			out[ p ] ??= undefined === e.words ? { box: e.box } : { words: e.words, box: e.box };
+		}
+	}
+	return out;
+}
+
 // The paint states a fixture declares that a run did not measure.
 export function missingPaintStates( fixture, paintStates ) {
 	return ( fixture?.paintStates || [] ).map( ( s ) => s.name ).filter( ( n ) => ! paintStates?.[ n ] );
@@ -118,7 +140,8 @@ function foldMeasured( instances, { block, short, repo, fixture, states } ) {
 	const deadNames = [ ...new Set( dead ) ].filter( ( n ) => ! settings[ n ] );
 	// text, presence and link are omitted entirely when the block has nothing of that kind.
 	const content = collectContent( instances.filter( ( i ) => i.content && i.contentRead ) );
-	return { elements, paintStates, statesMissing, settings, deadNames, oneWidth, discovered, content, untested: [ ...new Set( untested ) ] };
+	const parts = foldParts( instances.filter( ( i ) => i.isDefault ) );
+	return { elements, parts, paintStates, statesMissing, settings, deadNames, oneWidth, discovered, content, untested: [ ...new Set( untested ) ] };
 }
 
 // The block's error in { block, error }, or its counts. due: { slotMap, paint } (lib/cache.mjs::dueOutputs).
@@ -186,9 +209,9 @@ export async function calibrateBlock( block, { site, target, env, shared, fixtur
 		throw e;
 	}
 	const { reading } = run;
-	const { kept, rejected, pages, elements, paintStates, statesMissing, settings, deadNames, oneWidth, discovered, content } = reading;
+	const { kept, rejected, pages, elements, parts, paintStates, statesMissing, settings, deadNames, oneWidth, discovered, content } = reading;
 	rejectedOut.push( ...rejected.map( ( r ) => ( { block, ...r } ) ) );
-	const measuredFile = { block, site, slotKey, paintKey, readKey: READ_KEY, ...( extraProps.length ? { extraProps } : {} ), fixtureKey, fingerprints: prints, ...versions, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: reading.untested, rejected };
+	const measuredFile = { block, site, slotKey, paintKey, readKey: READ_KEY, ...( extraProps.length ? { extraProps } : {} ), fixtureKey, fingerprints: prints, ...versions, measured: new Date().toISOString(), settings, discovered, elements, ...( Object.keys( parts || {} ).length ? { parts } : {} ), ...( Object.keys( paintStates ).length ? { paintStates } : {} ), ...content, dead: deadNames, oneWidth, noMarker: [ ...noMarker ], untestedStates: reading.untested, rejected };
 	const isIncremental = 'incremental' === run.mode;
 	const mark = { chain: ( prev?.incremental?.chain || 0 ) + 1, lastFull: prev?.incremental?.lastFull ?? prev?.slotKey ?? null, lastFullAt: prev?.incremental?.lastFullAt ?? prev?.measured ?? null };
 	const file = isIncremental ? { ...mergeSlotMap( prev, measuredFile, [ ...incremental.measure, ...incremental.canary ], declared ), incremental: mark } : measuredFile;

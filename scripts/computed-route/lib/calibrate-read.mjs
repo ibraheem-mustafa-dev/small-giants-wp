@@ -123,6 +123,52 @@ export async function readInstances( page, readArgs ) {
 	return texts.map( ( t ) => ( null === t ? null : JSON.parse( t ) ) );
 }
 
+// In-page: what the pairing of absorbed draft elements reads about each part of the instances `at` (the default instances),
+// keyed as readInstancesInPage keys them (the instance root, its `@controls` panels and `@companion` pieces): `words`, the
+// part's own text (its direct text nodes, spaces collapsed, at most 80 characters; absent when it prints none), and `box`,
+// its border box relative to the instance root's as [ x, y, width, height ] in px to one decimal. Returns one JSON text per
+// instance, null where the instance is not in `at` or not on the page.
+export function readPartsInPage( [ count, prefix, pathSrc, at ] ) {
+	// eslint-disable-next-line no-new-func
+	const pathOf = new Function( `return (${ pathSrc });` )();
+	const r1 = ( v ) => Math.round( v * 10 ) / 10;
+	const out = [];
+	for ( let n = 0; n < count; n++ ) {
+		const root = at.includes( n ) ? document.querySelector( `.${ prefix }${ n }` ) : null;
+		if ( ! root ) {
+			out.push( null );
+			continue;
+		}
+		const o = root.getBoundingClientRect();
+		const parts = {};
+		const collect = ( top, keyPrefix ) => {
+			for ( const el of [ top, ...top.querySelectorAll( '*' ) ] ) {
+				const p = pathOf( el, top );
+				const key = keyPrefix ? ( p ? `${ keyPrefix } > ${ p }` : keyPrefix ) : p;
+				if ( key in parts ) {
+					continue;
+				}
+				const r = el.getBoundingClientRect();
+				const words = [ ...el.childNodes ].filter( ( c ) => 3 === c.nodeType ).map( ( c ) => c.textContent ).join( ' ' ).replace( /\s+/g, ' ' ).trim().slice( 0, 80 );
+				parts[ key ] = { ...( words ? { words } : {} ), box: [ r1( r.left - o.left ), r1( r.top - o.top ), r1( r.width ), r1( r.height ) ] };
+			}
+		};
+		collect( root, '' );
+		const ids = [ ...new Set( [ root, ...root.querySelectorAll( '[aria-controls]' ) ].flatMap( ( e ) => ( e.getAttribute( 'aria-controls' ) || '' ).split( /\s+/ ) ).filter( Boolean ) ) ];
+		ids.map( ( id ) => document.getElementById( id ) ).filter( ( t ) => t && ! root.contains( t ) ).forEach( ( t, i ) => collect( t, i ? `@controls:${ i + 1 }` : '@controls' ) );
+		const uid = [ ...root.classList ].find( ( c ) => /^sgs-[a-z0-9-]+-[0-9a-f]{8}$/.test( c ) );
+		uid && [ ...document.querySelectorAll( `.${ uid }` ) ].filter( ( c ) => ! root.contains( c ) && ! c.contains( root ) ).forEach( ( c, i ) => collect( c, i ? `@companion:${ i + 1 }` : '@companion' ) );
+		out.push( JSON.stringify( parts ) );
+	}
+	return out;
+}
+
+// The parts read of the instances `at` on the loaded page (readPartsInPage), parsed: [ { path: { words?, box } } | null ].
+export async function readParts( page, count, at ) {
+	const texts = await page.evaluate( readPartsInPage, [ count, CAL_PREFIX, elementPath.toString(), at ] );
+	return texts.map( ( t ) => ( null === t ? null : JSON.parse( t ) ) );
+}
+
 // In-page: marks the element a state trigger acts on (the instance's styled element, searched in the instance and its
 // controlled panels; the root when no selector is given) with data-cr-target, and says whether it is visible and whether
 // the instance has a closed panel toggle it could open. A selector that matches nothing marks nothing and returns
@@ -196,8 +242,9 @@ const SETTLE_TIMEOUT_MS = 120000;
 // { scrolled: { width: { n: read } }, scrollMissed: [n], hoverMissed: [n] (state instances read at no width),
 // hoverWhy: { n: [ '<width>px: <why>' ] } (why each width's read failed: hidden, no instance, or the browser's error) }. The widths are read in parallel, each in its own page of the logged-in context.
 // contentAt(page) (lib/calibrate-content.mjs::contentReader), when given, is read on the same load right after the resting
-// style read and before any state trigger, and returned as { content: { width: result } }.
-export async function readAll( page, url, instances, { settle = null, settleGone = null, owner = { block: 'the block', site: 'this site' }, extraProps = [], contentAt = null } = {} ) {
+// style read and before any state trigger, and returned as { content: { width: result } }. partsAt (instance indices), when
+// given, has those instances' parts read on the same load at the same point (readParts), returned as { parts: { width: reads } }.
+export async function readAll( page, url, instances, { settle = null, settleGone = null, owner = { block: 'the block', site: 'this site' }, extraProps = [], contentAt = null, partsAt = null } = {} ) {
 	const out = {};
 	const scrolled = {};
 	const scrollMissed = [];
@@ -206,11 +253,12 @@ export async function readAll( page, url, instances, { settle = null, settleGone
 	const hoverWhy = {};
 	const timing = {};
 	const content = {};
+	const parts = {};
 	const ctx = page.context();
 	await Promise.all( WIDTHS.map( async ( w ) => {
 		const p = await ctx.newPage();
 		try {
-			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, timing, settle, settleGone, owner, extraProps, content, contentAt } );
+			await readWidth( p, url, instances, w, { out, scrolled, scrollMissed, hoverMissed: missedAtAWidth, hoverHit, hoverWhy, timing, settle, settleGone, owner, extraProps, content, contentAt, parts, partsAt } );
 		} finally {
 			await p.close();
 		}
@@ -221,7 +269,7 @@ export async function readAll( page, url, instances, { settle = null, settleGone
 	scrollMissed.sort( ( a, b ) => a - b );
 	hoverMissed.sort( ( a, b ) => a - b );
 	hoverMissed.forEach( ( n ) => hoverWhy[ n ]?.sort( ( a, b ) => parseInt( a, 10 ) - parseInt( b, 10 ) ) );
-	return Object.assign( out, { timing, scrolled, scrollMissed, hoverMissed, hoverWhy: Object.fromEntries( hoverMissed.map( ( n ) => [ n, hoverWhy[ n ] || [] ] ) ), ...( contentAt ? { content } : {} ) } );
+	return Object.assign( out, { timing, scrolled, scrollMissed, hoverMissed, hoverWhy: Object.fromEntries( hoverMissed.map( ( n ) => [ n, hoverWhy[ n ] || [] ] ) ), ...( contentAt ? { content } : {} ), ...( partsAt?.length ? { parts } : {} ) } );
 }
 
 // The untested-state reason for a state instance read at no width, from readAll's hoverWhy lines. Each width names
@@ -385,7 +433,7 @@ export function missingDependencyReason( block, site, noticeText ) {
 }
 
 // One width of readAll: fills out[w], scrolled[w] and the missed lists.
-async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, timing = {}, settle = null, settleGone = null, owner, extraProps, content = {}, contentAt = null } ) {
+async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed, hoverMissed, hoverHit, hoverWhy = {}, timing = {}, settle = null, settleGone = null, owner, extraProps, content = {}, contentAt = null, parts = {}, partsAt = null } ) {
 	const t0 = Date.now();
 	await page.setViewportSize( { width: w, height: 900 } );
 	const response = await page.goto( `${ url }${ url.includes( '?' ) ? '&' : '?' }cb=${ Date.now() }`, { waitUntil: 'domcontentloaded', timeout: EDITOR_TIMEOUT_MS } );
@@ -423,6 +471,9 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 	const t2 = Date.now();
 	if ( contentAt ) {
 		content[ w ] = await contentAt( page );
+	}
+	if ( partsAt?.length ) {
+		parts[ w ] = await readParts( page, instances.length, partsAt );
 	}
 	const tc = Date.now();
 	const calibrationUrl = page.url();
