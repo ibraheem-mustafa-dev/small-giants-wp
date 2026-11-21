@@ -1,7 +1,7 @@
 // Fill resolution state (FR-47-4 steps 2 and 3): the run state built once, the baselines an element is judged against,
 // the divergence ledger view and the spacing-ownership plan per node.
 import { HOVER_PROPS } from '../../parity/lib/collect.mjs';
-import { blockSchema, splitProperty } from './resolve.mjs';
+import { blockSchema, splitProperty, LOOSE } from './resolve.mjs';
 import { refOf, walk } from './tree.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { INHERITED, CARRIED, FLEX_ONLY, TIER_WIDTHS, defaultPaint } from './fill-prop.mjs';
@@ -11,6 +11,8 @@ import { pageBaseline } from './fill-page.mjs';
 import { spacingOwnership } from './fill-spacing.mjs';
 import { unstyledBaseline } from './fill-fixture.mjs';
 import { match as ledgerMatch } from './ledger.mjs';
+import { contextDiffs, heldPainters, measuredContext } from './equal-context.mjs';
+import { elementContext } from './fill-held.mjs';
 
 export const GAP_PROPS = [ 'row-gap', 'column-gap' ];
 export const slugClass = ( name ) => `sgs-${ name.replace( /^sgs\//, '' ) }`;
@@ -197,8 +199,51 @@ export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 
 // The names a baseline's source takes: the block's own stylesheet paint, the theme's style for the element, the node's own
 // element (for a part), the parent's shown value, the painting setting's flex default, the calibration fixture's unstyled
-// value, the calibrated default paint, and the page gutter (lib/fill-gutter.mjs::gutterBaseline's substitute).
-export const BASELINE_SOURCES = [ 'block-own', 'theme', 'own-element', 'parent', 'flex-default', 'fixture-unstyled', 'calibrated-default', 'page-gutter' ];
+// value, the calibrated default paint, the page gutter (lib/fill-gutter.mjs::gutterBaseline's substitute), and what a setting
+// the node holds paints there as calibration read it (contextBaseline).
+export const BASELINE_SOURCES = [ 'block-own', 'theme', 'own-element', 'parent', 'flex-default', 'fixture-unstyled', 'calibrated-default', 'page-gutter', 'held-setting' ];
+
+// The display the clone shows on each element of a node, recorded as Fill resolves `display` (it is the first property an
+// element resolves, lib/fill-read.mjs::PROPS): the draft's value where it was written or already shown, else the block's
+// default paint. `${ index }|${ slot }` -> { width: value }.
+export function recordDisplay( st, rec, cal, slot, draft, shown ) {
+	st.cloneDisplay ??= new Map();
+	st.cloneDisplay.set( `${ rec.index }|${ slot }`, Object.fromEntries( Object.keys( draft ).map( ( w ) => [ Number( w ), shown ? draft[ w ] : defaultPaint( cal, slot, Number( w ), 'display' ) ] ) ) );
+}
+
+// The node's own context at a slot and width as the clone shows it (lib/equal-context.mjs::contextDiffs's `node`): the
+// display recorded for the element and for the element it sits in (the parent node's root, or the part above), the draft's
+// position, and the settings the node holds that calibration read painting the slot otherwise than `calibrated`. Null where
+// the node reads no element at the slot (an alternate slot): its context is the calibrated one.
+function nodeContext( st, rec, cal, prop, slot, w, calibrated ) {
+	const target = ( rec.targets || [] ).find( ( t ) => t.slot === slot );
+	if ( ! target || ! st.reads ) {
+		return null;
+	}
+	const shown = ( index, at ) => st.cloneDisplay?.get( `${ index }|${ at }` )?.[ w ];
+	const steps = slot.split( /\s*>\s*/ ).filter( Boolean );
+	return {
+		parentDisplay: steps.length ? shown( rec.index, steps.slice( 0, -1 ).join( ' > ' ) ) : null === rec.parent ? undefined : shown( rec.parent, '' ),
+		display: shown( rec.index, slot ),
+		position: elementContext( st, rec, target, w ).position,
+		held: heldPainters( cal, blockSchema( rec.name ) || {}, st.flat[ rec.index ]?.attributes, slot, prop, w, calibrated ),
+	};
+}
+
+// The baseline a calibrated default gives once the node's context is weighed (mechanism A): the default itself where the node
+// sits in the context calibration measured it in, or where no difference changes the property (lib/equal-context.mjs::
+// contextDiffs); what a setting the node holds paints there, where calibration read it (`held-setting`); otherwise no
+// baseline (`context-<kind>`), so the draft's value is written rather than judged equal to a value the node does not show.
+function contextBaseline( st, rec, cal, prop, slot, w, found ) {
+	const key = Object.keys( cal?.elements || {} ).find( ( k ) => LOOSE( k ) === LOOSE( slot ) );
+	const measured = measuredContext( undefined !== key ? cal.elements[ key ]?.[ String( 1920 === w ? 1440 : w ) ] : null );
+	const diffs = contextDiffs( prop, slot, measured, nodeContext( st, rec, cal, prop, slot, w, found.value ) );
+	if ( ! diffs.length ) {
+		return found;
+	}
+	const read = diffs.find( ( d ) => 'held-setting' === d.kind && d.read )?.read?.[ String( 1920 === w ? 1440 : w ) ];
+	return undefined !== read && 1 === diffs.length ? { value: read, source: 'held-setting' } : { value: undefined, source: `context-${ diffs[ 0 ].kind }` };
+}
 
 // baselineFn with the source of each answer: ( slot, width ) => { value, source }, `source` one of BASELINE_SOURCES, or null
 // where nothing gave a value.
@@ -235,11 +280,13 @@ export function baselineSourceFn( st, rec, cal, prop, ownFontPx = () => undefine
 		if ( undefined !== flexDefault ) {
 			return { value: flexDefault, source: 'flex-default' };
 		}
-		// A property the calibration fixture switched on (lib/fill-fixture.mjs) is compared with its unstyled value.
-		return first( [
+		// A property the calibration fixture switched on (lib/fill-fixture.mjs) is compared with its unstyled value; the calibrated
+		// default stands only in the context it was measured in (contextBaseline).
+		const found = first( [
 			[ 'fixture-unstyled', () => unstyledBaseline( st, rec.name, cal, blockSchema( rec.name ), slot, prop ) ],
 			[ 'calibrated-default', () => defaultPaint( cal, slot, w, prop ) ],
 		] );
+		return 'calibrated-default' === found.source ? contextBaseline( st, rec, cal, prop, slot, w, found ) : found;
 	};
 }
 

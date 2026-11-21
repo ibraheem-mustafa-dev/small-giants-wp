@@ -19,7 +19,7 @@ import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
 import { gutterBaseline } from './fill-gutter.mjs';
 import { BOX_LOOK, parentDrawsBox } from './fill-shared-element.mjs';
-import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, baselineSourceFn, equalBaseline, ledgerView, gapTarget, draftOf } from './fill-resolve-state.mjs';
+import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, baselineSourceFn, equalBaseline, ledgerView, gapTarget, draftOf, recordDisplay } from './fill-resolve-state.mjs';
 
 // Whether a resolver result writes only settings calibration measured painting `slot` itself (not ones that only reach it).
 const writesOwnSlot = ( res, cal, slot ) => 'written' === res?.status && res.writes.length > 0 && res.writes.every( ( w ) => {
@@ -298,6 +298,10 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		// residual pass writes each width's own expression; a row carrying the plain width alone would read as every width.
 		const stated = 'gap' === res.status && 'no-setting' === res.gap && ( ! eq || 'gap' === eq.status ) && Object.keys( notPlainDeclared ).length ? { ...draft, ...notPlainDeclared } : null;
 		( stated ? [] : notPlain ).forEach( ( row ) => unmapped( st, rec, ref, row ) );
+		// The display the clone shows on this element, for the context its later properties and its children are judged in.
+		if ( ! layer && 'display' === prop ) {
+			recordDisplay( st, rec, cal, target.slot, draft, 'written' === res.status || 'equal' === res.status || 'equal' === eq?.status );
+		}
 		if ( 'equal' === res.status || 'equal' === eq?.status ) {
 			// Which baseline made it equal (lib/fill-resolve-state.mjs::equalBaseline), and for a calibrated default the context
 			// calibration measured it in (lib/fill-prop.mjs::calibratedContext). An equivalent setting's verdict names itself.
