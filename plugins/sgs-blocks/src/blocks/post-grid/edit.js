@@ -25,6 +25,8 @@ import {
 	typographyPreviewStyle,
 	usePreviewTier, isCssGradient, tierBoxLonghands,
 } from '../../utils';
+import { scrollbarCss, scrollbarStyle as scrollbarChoice } from '../../utils/scrollbar-style';
+import { cssLengthValue } from '../../utils/css-length';
 import { useSeparatorsCanvas } from '../../shared/separators/useSeparatorsCanvas';
 import { postGridWrapperPreview, filterChipVarsPreview, orderFilterTerms } from './preview-style';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
@@ -197,12 +199,13 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const shadowPreview = resolveShadowPreviewComposed( shadow, shadowColour );
 
 	// Wrapper inline styles.
-	// gap is now a raw CSS string (e.g. "30px") set by ContainerWrapperControls.
+	// gap is a tier object ({ desktop: '30px' }); render.php prints its desktop length as --sgs-gap (30px when empty).
+	const gapCss = cssLengthValue( gap && 'object' === typeof gap ? gap.desktop : gap ) || '30px';
 	const inlineStyles = {
 		'--sgs-columns-desktop': columnsDesktop,
 		'--sgs-columns-tablet':  columnsTabletTier,
 		'--sgs-columns-mobile':  columnsMobileTier,
-		'--sgs-gap':             gap || '30px',
+		'--sgs-gap':             gapCss,
 		...( shadowPreview ? { '--sgs-card-shadow': shadowPreview } : {} ),
 	};
 
@@ -264,15 +267,23 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	// -----------------------------------------------------------------------
 	// Preview grid layout class for editor.
 	// -----------------------------------------------------------------------
-	const previewGridStyle = {
-		display:             'grid',
-		gridTemplateColumns: 'masonry' === layout
-			? undefined
-			: `repeat( ${ columnsDesktop }, 1fr )`,
-		columnCount:         'masonry' === layout ? columnsDesktop : undefined,
-		gap:                 gap || '30px',
-		...separatorsCanvas.style,
-	};
+	// The carousel keeps style.css's own scrolling row (the root's --sgs-columns-* and --sgs-gap size its cards), so
+	// the canvas scrolls as the page does and shows the row's scrollbar choice; the other layouts preview as a grid.
+	const previewGridStyle = 'carousel' === layout
+		? { ...separatorsCanvas.style }
+		: {
+			display:             'grid',
+			gridTemplateColumns: 'masonry' === layout
+				? undefined
+				: `repeat( ${ columnsDesktop }, 1fr )`,
+			columnCount:         'masonry' === layout ? columnsDesktop : undefined,
+			gap:                 gapCss,
+			...separatorsCanvas.style,
+		};
+	// The carousel row's scrollbar, the twin of render-scoped-css.php's sgs_scrollbar_css() call: hidden unless chosen.
+	const scrollbarPreviewCss = 'carousel' === layout
+		? scrollbarCss( `.${ postGridPreviewScope } .sgs-post-grid__inner`, scrollbarChoice( attributes.scrollbarStyle, 'hidden' ) )
+		: '';
 
 	return (
 		<>
@@ -555,6 +566,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			     ============================================================ */ }
 			<div { ...blockProps }>
 				{ postGridHoverPreviewCss && <style>{ postGridHoverPreviewCss }</style> }
+				{ scrollbarPreviewCss && <style>{ scrollbarPreviewCss }</style> }
 				{ 'carousel' === layout && attributes.carouselAutoplay && attributes.carouselPauseButton && (
 					<MotionPausePreview block="sgs-post-grid" />
 				) }
