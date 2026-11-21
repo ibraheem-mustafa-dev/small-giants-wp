@@ -340,6 +340,10 @@
 		"decorationLayer": {
 			"block": "sgs/decorative-image",
 			"sectionAnchorBlocks": [ "sgs/hero" ],
+			"fillBar": {
+				"decided": { "positionTop": { "desktop": "0px" }, "positionLeft": { "desktop": "0px" } },
+				"reason": "a fill bar (a bare element in the flow, alone in a parent that declares its own height, filling that height and a percentage of its width with a fill: a rating breakdown's bar, a progress meter) sits at its parent's start corner, so as a layer its top and left edges are 0"
+			},
 			"reason": "a bare layer that only paints a fill, gradient, glow or bar is a decorative image at its own position, size, radius and fill (Bean, 2026-11-07)"
 		},
 		"overlayLayer": {

@@ -189,6 +189,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
 	const bare = ( e ) => ! m.words( e ) && ! m.blockKids( e ).length;
+	// A fill bar: an element in the flow with no children, alone in a parent that declares its own height in px, filling that
+	// height (100%) and a percentage of the width with a fill of its own (a rating breakdown's bar, a progress meter). Placed
+	// at its parent's start corner it draws the same as a layer there, and the parent's size never depended on it.
+	const FILL = /^(?:background|background-color|background-image)$/;
+	const OWN_HEIGHT = /^\d+(?:\.\d+)?(?:px|r?em)$/;
+	const fillBar = ( e, st ) => {
+		const p = m.byKey[ e.parentKey ];
+		const paints = Object.entries( st ).some( ( [ k, val ] ) => FILL.test( k ) && ! /^(?:none|transparent|rgba\(0,\s*0,\s*0,\s*0\))$/.test( String( val ).trim() ) );
+		return !! R.decorationLayer?.fillBar && !! p && ! [ 'absolute', 'fixed' ].includes( st.position ) && ! m.kids( e ).length && 1 === m.kids( p ).length && OWN_HEIGHT.test( String( declared( p, tokens ).height ?? '' ).trim() ) && '100%' === String( st.height ?? '' ).trim() && /^\d+(?:\.\d+)?%$/.test( String( st.width ?? '' ).trim() ) && paints;
+	};
 	// An element that paints a picture: an <img>, or one whose own style paints a url() as its background (a tile photo, a role="img" div).
 	const paintsPicture = ( k ) => 'img' === k.tag || /background(?:-image)?\s*:[^;]*url\(/i.test( String( k.attrs?.style ?? '' ) );
 	// A mount's host (the element the runtime stamps for a `dc-import`) or a mounted component's root (the host's child)
@@ -579,8 +589,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// (Bean, 2026-11-07), except a layer something else already delivers: the pointer glare (the motion layer), the hero's
 		// animated SVG and a line the owning block draws itself, each removed with a handover naming its owner.
 		( { e, st } ) => {
-			if ( ! bare( e ) || hasSvg( e ) || DECORATION_TAGS.has( e.tag ) || ! ( 'true' === e.attrs?.[ 'aria-hidden' ] || [ 'absolute', 'fixed' ].includes( st.position ) ) ) {
+			const bar = fillBar( e, st );
+			if ( ! bare( e ) || hasSvg( e ) || DECORATION_TAGS.has( e.tag ) || ! ( 'true' === e.attrs?.[ 'aria-hidden' ] || [ 'absolute', 'fixed' ].includes( st.position ) || bar ) ) {
 				return null;
+			}
+			// A fill bar sits at its track's start corner: the layer's edges there are rules.decorationLayer.fillBar.decided.
+			if ( bar ) {
+				return v( 'decorationLayer', { block: R.decorationLayer?.block || null, decided: structuredClone( R.decorationLayer.fillBar.decided ) } );
 			}
 			const ring = /\d/.test( st.border || st[ 'border-width' ] || '' ) && ! /^(?:0|none)/.test( st.border || '' );
 			if ( ring ) {

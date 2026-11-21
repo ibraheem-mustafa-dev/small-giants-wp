@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "[ 'absolute', 'fixed' ].includes( st.position ) || bar ) ) {",
+		"replace": "[ 'absolute', 'fixed' ].includes( st.position ) ) ) {",
+		"why": "a fill bar is a decoration layer"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "decided: structuredClone( R.decorationLayer.fillBar.decided ) } );",
+		"replace": "} );",
+		"why": "the fill sits at its track's start corner"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "1 === m.kids( p ).length && OWN_HEIGHT",
+		"replace": "m.kids( p ).length && OWN_HEIGHT",
+		"why": "the fill is alone in its track"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "OWN_HEIGHT.test( String( declared( p, tokens ).height ?? '' ).trim() )",
+		"replace": "true",
+		"why": "the track declares its own height"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "'100%' === String( st.height ?? '' ).trim()",
+		"replace": "true",
+		"why": "the fill fills its track's height"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "/^\\d+(?:\\.\\d+)?%$/.test( String( st.width ?? '' ).trim() )",
+		"replace": "true",
+		"why": "the fill's width is a share of the track"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "&& '100%' === String( st.height ?? '' ).trim() && /^\\d+(?:\\.\\d+)?%$/.test( String( st.width ?? '' ).trim() ) && paints;",
+		"replace": "&& '100%' === String( st.height ?? '' ).trim() && /^\\d+(?:\\.\\d+)?%$/.test( String( st.width ?? '' ).trim() );",
+		"why": "the fill paints a fill of its own"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "!! p && ! [ 'absolute', 'fixed' ].includes( st.position ) && ! m.kids( e ).length",
+		"replace": "!! p && ! m.kids( e ).length",
+		"why": "a layer the draft places itself keeps no decided corner"
+	}
+]
