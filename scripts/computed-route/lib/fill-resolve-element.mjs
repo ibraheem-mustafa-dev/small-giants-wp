@@ -12,6 +12,7 @@ import { unpairedPart } from './fill-part-pairing.mjs';
 import { gateFor, carriedFor } from './fill-fixture.mjs';
 import { fillEquivalent } from './fill-equivalents.mjs';
 import { compareDR } from './fill-confirm.mjs';
+import { declaredTracks } from './normalise.mjs';
 import { elementContext } from './fill-held.mjs';
 import { samePaint } from './css-equivalence/tolerance.mjs';
 import { fillLayerBox } from './fill-layer-box.mjs';
@@ -409,9 +410,11 @@ export function notPaintedWhy( prop, styles, snap = null, declared = null ) {
 
 // The code's value at each width where it agrees with the value being written (FR-48-36 D–R `agree`): a confirmed row
 // writes it in place of the rendered value. A run-time value (var(), calc(), a percentage) and a disagreement are left out.
-function agreedDeclared( st, target, prop, draft, fontPx ) {
+// A column track list agrees where it lays out the rendered tracks (lib/normalise.mjs::declaredTracks): its `fr` and
+// `auto` tracks never equal the rendered px, which is what the browser resolves them to.
+export function agreedDeclared( st, target, prop, draft, fontPx ) {
 	return Object.fromEntries( Object.keys( draft ).map( ( w ) => [ w, st.reads.declared?.[ w ]?.[ target.id ]?.[ prop ] ] )
-		.filter( ( [ w, d ] ) => null != d && 'agree' === compareDR( prop, d, draft[ w ], fontPx[ w ] || 16 ).dr ) );
+		.filter( ( [ w, d ] ) => null != d && ( 'agree' === compareDR( prop, d, draft[ w ], fontPx[ w ] || 16 ).dr || ( 'grid-template-columns' === prop && !! declaredTracks( d, draft[ w ] ) ) ) ) );
 }
 
 // The fluid value the code declares for a property when it declares the same clamp(), min() or max() at every read width

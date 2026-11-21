@@ -116,6 +116,91 @@ export function tracksSetting( raw ) {
 	return { value: r.every( ( n ) => 1 === n ) ? `repeat(${ r.length }, minmax(0, 1fr))` : r.map( ( n ) => `minmax(0, ${ n }fr)` ).join( ' ' ) };
 }
 
+// One track of a declared list: a flexible, fixed or content-sized size, alone or inside minmax()/fit-content().
+const TRACK_LENGTH = /^(?:0|-?\d*\.?\d+(?:px|em|rem|%|vw|vh|ch|ex))$/;
+const TRACK_SIZE = /^(?:\d*\.?\d+fr|auto|min-content|max-content)$/;
+const MIN_MAX = /^(?:min|max|clamp)\((.*)\)$/;
+const isLengthish = ( t ) => TRACK_LENGTH.test( t ) || ( MIN_MAX.test( t ) && splitTop( MIN_MAX.exec( t )[ 1 ], ',' ).every( isLengthish ) );
+function isTrack( t ) {
+	if ( TRACK_SIZE.test( t ) || isLengthish( t ) ) {
+		return true;
+	}
+	const mm = /^minmax\((.*)\)$/.exec( t );
+	if ( mm ) {
+		const args = splitTop( mm[ 1 ], ',' );
+		return 2 === args.length && args.every( isTrack );
+	}
+	const fc = /^fit-content\((.*)\)$/.exec( t );
+	return !! fc && isLengthish( fc[ 1 ] );
+}
+
+// A value's parts split on `sep` outside brackets, each trimmed.
+function splitTop( v, sep ) {
+	const out = [];
+	let depth = 0;
+	let buf = '';
+	for ( const ch of v ) {
+		depth += '(' === ch ? 1 : ')' === ch ? -1 : 0;
+		if ( 0 === depth && ( ' ' === sep ? /\s/.test( ch ) : ch === sep ) ) {
+			buf.trim() && out.push( buf.trim() );
+			buf = '';
+		} else {
+			buf += ch;
+		}
+	}
+	buf.trim() && out.push( buf.trim() );
+	return out;
+}
+
+// The tracks a declared list lays out ([track]), repeat(N, …) expanded; null when it is no list of tracks a setting holds
+// as written; { auto: true } for a repeat(auto-fit|auto-fill, …), whose count the browser decides from the width.
+function declaredTrackList( v ) {
+	const out = [];
+	for ( const t of splitTop( v, ' ' ) ) {
+		const rep = /^repeat\(\s*(\d+|auto-fit|auto-fill)\s*,(.*)\)$/.exec( t );
+		if ( rep ) {
+			const inner = declaredTrackList( rep[ 2 ] );
+			if ( ! Array.isArray( inner ) || ! inner.length ) {
+				return null;
+			}
+			if ( ! /^\d+$/.test( rep[ 1 ] ) ) {
+				return { auto: true };
+			}
+			for ( let i = 0; i < Number( rep[ 1 ] ); i++ ) {
+				out.push( ...inner );
+			}
+		} else if ( isTrack( t ) ) {
+			out.push( t );
+		} else {
+			return null;
+		}
+	}
+	return out.length ? out : null;
+}
+
+// The column tracks the draft's code declares, as the setting's value, where the declaration can be held as written and
+// is what the draft renders: { value } or null. A grid template setting prints its string through
+// includes/helpers-container.php::sgs_sanitize_grid_template, so a list of `fr`, `auto`, `min-content`, `max-content`,
+// lengths, minmax(), fit-content(), min()/max()/clamp() of lengths and repeat() of these is held as declared (each is
+// written in characters the sanitiser keeps); a variable, a calc(), named lines, a slash or `none` is not. The
+// declaration is what the draft renders (`rendered`: the computed px tracks at the same width) when it lays out as many
+// tracks and each fixed px track is the rendered one (±0.5px); a repeat(auto-fit|auto-fill) lays out a count the width
+// decides, so it agrees with any rendered track list. Written as declared, a content-sized track stays content-sized and
+// a bare `1fr` keeps its min-content floor at every width the device tier covers, where measured shares would fix each
+// track to the proportion one width happened to give.
+export function declaredTracks( declared, rendered ) {
+	const d = String( declared ?? '' ).trim().replace( /\s*!important$/, '' ).replace( /\s+/g, ' ' );
+	const list = d ? declaredTrackList( d ) : null;
+	const px = String( rendered ?? '' ).trim().split( /\s+/ ).map( ( t ) => ( /^-?\d*\.?\d+px$/.test( t ) ? parseFloat( t ) : NaN ) );
+	if ( ! list || px.some( Number.isNaN ) ) {
+		return null;
+	}
+	if ( ! list.auto && ( list.length !== px.length || list.some( ( t, i ) => /^-?\d*\.?\d+px$/.test( t ) && Math.abs( parseFloat( t ) - px[ i ] ) > 0.5 ) ) ) {
+		return null;
+	}
+	return { value: d };
+}
+
 // The site's tokens: palette colours, spacing sizes and font sizes, each with a px value where it has one. A snapshot that was
 // not extracted from the site's current handoff export is refused (FR-33-12).
 export function loadSnapshot( file ) {

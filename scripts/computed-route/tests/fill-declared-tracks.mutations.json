@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/resolve.mjs",
+		"find": "const tracks = 'grid-template-columns' === short && holdsString( def ) ? declaredTracks( d, raw ) : null;",
+		"replace": "const tracks = null;",
+		"why": "a declared track list would be written as measured shares again"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "const tracks = 'grid-template-columns' === short && holdsString( def ) ? declaredTracks( d, raw ) : null;",
+		"replace": "const tracks = 'grid-template-columns' === short ? declaredTracks( d, raw ) : null;",
+		"why": "a declared list would be written into a count per device (the sgs/post-grid negative control)"
+	},
+	{
+		"file": "lib/fill-resolve-element.mjs",
+		"find": " || ( 'grid-template-columns' === prop && !! declaredTracks( d, draft[ w ] ) )",
+		"replace": "",
+		"why": "Fill would never pass a declared track list to the resolver"
+	},
+	{
+		"file": "lib/normalise.mjs",
+		"find": "if ( ! list.auto && ( list.length !== px.length || list.some( ( t, i ) => /^-?\\d*\\.?\\d+px$/.test( t ) && Math.abs( parseFloat( t ) - px[ i ] ) > 0.5 ) ) ) {",
+		"replace": "if ( ! list.auto && list.length !== px.length ) {",
+		"why": "a fixed track the draft does not render at that width would be taken as agreeing"
+	},
+	{
+		"file": "lib/normalise.mjs",
+		"find": "if ( ! list.auto && ( list.length !== px.length || list.some(",
+		"replace": "if ( ! list.auto && ( false || list.some(",
+		"why": "a declaration laying out another number of tracks would be taken as agreeing"
+	},
+	{
+		"file": "lib/normalise.mjs",
+		"find": "if ( ! /^\\d+$/.test( rep[ 1 ] ) ) {\n\t\t\t\treturn { auto: true };\n\t\t\t}",
+		"replace": "if ( ! /^\\d+$/.test( rep[ 1 ] ) ) {\n\t\t\t\treturn null;\n\t\t\t}",
+		"why": "an auto-fit repeat would never be held as declared"
+	},
+	{
+		"file": "lib/normalise.mjs",
+		"find": "for ( let i = 0; i < Number( rep[ 1 ] ); i++ ) {",
+		"replace": "for ( let i = 0; i < 1; i++ ) {",
+		"why": "repeat(N, ...) would count as one track"
+	},
+	{
+		"file": "lib/normalise.mjs",
+		"find": "const TRACK_SIZE = /^(?:\\d*\\.?\\d+fr|auto|min-content|max-content)$/;",
+		"replace": "const TRACK_SIZE = /^(?:\\d*\\.?\\d+fr|min-content|max-content)$/;",
+		"why": "an auto track (the header bar's middle) would not be held"
+	},
+	{
+		"file": "lib/normalise.mjs",
+		"find": "return 2 === args.length && args.every( isTrack );",
+		"replace": "return args.every( isTrack );",
+		"why": "a minmax() with one argument would be held"
+	},
+	{
+		"file": "lib/resolve-declared.mjs",
+		"find": "return ! Array.isArray( def?.enum ) && ( types.includes( 'string' ) || ( types.includes( 'object' ) && ! countsPerDevice( def ) ) );",
+		"replace": "return types.includes( 'string' ) || types.includes( 'object' );",
+		"why": "a count per device or an enum would be taken as holding a string"
+	}
+]

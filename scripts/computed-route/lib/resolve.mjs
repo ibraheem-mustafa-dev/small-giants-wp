@@ -9,10 +9,10 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty, listedProperties } from './db.mjs';
-import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, round } from './normalise.mjs';
+import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, declaredTracks, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
-import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizeShape, isSizeProperty } from './resolve-declared.mjs';
+import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizeShape, isSizeProperty, holdsString } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
 import { valueBlind } from './css-equivalence/effect.mjs';
 import { holdsValue, mapTiers } from './resolve-enum.mjs';
@@ -722,6 +722,12 @@ export function resolve( input, ctx ) {
 		const d = decl[ t ];
 		if ( undefined === d ) {
 			return fmt( t, raw, def );
+		}
+		// A declared column track list is written as declared (lib/normalise.mjs::declaredTracks) where the setting holds a
+		// string; the measured shares stay the answer where the code declares none or one the setting cannot hold.
+		const tracks = 'grid-template-columns' === short && holdsString( def ) ? declaredTracks( d, raw ) : null;
+		if ( tracks ) {
+			return tracks;
 		}
 		const held = declaredLength( { prop: short, declared: d, def, unit: unitAttr ? unitTo ?? unit : undefined, forms, box: isBox } );
 		if ( held ) {
