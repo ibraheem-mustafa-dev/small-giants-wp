@@ -351,6 +351,9 @@ function extractBemElements( selector ) {
  */
 const ATTR_ELEMENT_OVERRIDES = {
 	submenuLinkPadding: [ 'sublink' ],
+	// sgs/buybox: the flow opener's note colour paints `.buybox__add-to-cart-note` alone; "opener-no-te" holds the token "no",
+	// which the substring scan would match to `.product-card__no-image`.
+	'buybox::openerNoteColour': [ 'add-to-cart-note' ],
 	// sgs/account: the sign-in card's chrome belongs to `.sgs-account__auth-card` alone (the card and the container
 	// of the sign-in tabs), never to the block's other cards or WooCommerce's own notices and forms.
 	signedOutCardBorderRadius: [ 'auth-card' ],

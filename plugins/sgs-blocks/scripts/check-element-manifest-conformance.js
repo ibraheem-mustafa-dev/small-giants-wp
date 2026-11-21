@@ -301,8 +301,9 @@ function resolveMember( element, member, blockJson ) {
  * to arrange. A member with NO `appliesToLayers` is a BOX property (padding,
  * border, width…) and applies to every element.
  *
- * An element qualifies ONLY when its declared `layer` is in the member's
- * `appliesToLayers` list. An element with NO `layer` is never asked about
+ * An element qualifies when its declared `layer` is in the member's
+ * `appliesToLayers` list, or when its own `attrMap` names the member (explicit
+ * and authoritative, as everywhere in this manifest). An element with NO `layer` is never asked about
  * arrangement — which is the correct default, because it has not declared itself
  * to be a structural layout layer.
  *
@@ -324,6 +325,10 @@ function resolveMember( element, member, blockJson ) {
 function memberAppliesToElement( member, element ) {
 	const layers = member.appliesToLayers;
 	if ( ! Array.isArray( layers ) || layers.length === 0 ) return true; // box member
+	// An explicit attrMap entry is authoritative: the element's author declared that this element carries the property (a
+	// button arranging its own label and price with `justify-content`, sgs/button's contentAlign and the built-in button kit's
+	// {prefix}ContentAlign), so the member applies whatever the element's layer.
+	if ( element.attrMap && Object.prototype.hasOwnProperty.call( element.attrMap, member.key ) ) return true;
 
 	return !! element.layer && layers.includes( element.layer );
 }

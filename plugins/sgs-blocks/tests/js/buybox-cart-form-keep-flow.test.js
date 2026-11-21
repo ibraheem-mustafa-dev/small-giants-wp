@@ -26,6 +26,16 @@ describe( 'cartFormMock keeps the opener under the same conditions as render.php
 		expect( order( { openerBeforeAddToCart: false } ) ).toEqual( [ 'buybox__cart-form', 'buybox__cart-form buybox__cart-form--modal' ] );
 	} );
 
+	it( 'draws a placeholder note in the note colour when openerNoteColour is set, and none otherwise', () => {
+		const opener = ( attributes, noteColour ) =>
+			cartFormMock( { attributes: { keepAddToCartWithFlow: true, ...attributes }, cartVariant: '', cartStyle: {}, noteColour } ).props.children[ 1 ].props.children;
+		const noted = opener( { openerNoteColour: 'accent' }, 'var(--wp--preset--color--accent)' );
+		const note = noted.props.children[ 1 ];
+		expect( note.props.className ).toBe( 'buybox__add-to-cart-note' );
+		expect( note.props.style ).toEqual( { color: 'var(--wp--preset--color--accent)' } );
+		expect( opener( {} ).props.children[ 1 ] ).toBeFalsy();
+	} );
+
 	it( 'shows no opener when the setting is off or absent', () => {
 		expect( shows( {} ) ).toBe( false );
 		expect( shows( { keepAddToCartWithFlow: false } ) ).toBe( false );

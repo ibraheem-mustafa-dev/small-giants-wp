@@ -1218,7 +1218,18 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 	const sideCart = 'configurator' === attributes.buyboxLayout && true === attributes.pickSideButton;
 	// The flow opener's own look (the built-in button kit), previewed at the device being edited.
 	const openerStyle = buttonKitStyle( attributes, 'flowOpener', { tier, palette } );
-	const cartForm = cartFormMock( { attributes, cartVariant, cartStyle, openerStyle } );
+	// The opener note's colour (openerNoteColour), resolved as render.php's sgs_colour_value() does.
+	const noteColour = attributes.openerNoteColour
+		? resolveColourToken( attributes.openerNoteColour, palette ) ||
+		  attributes.openerNoteColour
+		: '';
+	const cartForm = cartFormMock( {
+		attributes,
+		cartVariant,
+		cartStyle,
+		openerStyle,
+		noteColour,
+	} );
 	const stockAbove = 'above' === attributes.stockLinePosition;
 	const stockLine = (
 		<p className="buybox__stock buybox__stock--status buybox__stock--in-stock">

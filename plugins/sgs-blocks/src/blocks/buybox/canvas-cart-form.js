@@ -33,9 +33,11 @@ export function keepsFlowOpener( attributes ) {
  * @param {Object} props.cartStyle   The Add to Cart button's own canvas style.
  * @param {Object} [props.openerStyle] The flow opener's own canvas style (`buttonKitStyle( attributes, 'flowOpener', ... )`): the
  *                                     kit's look settings, as the page prints them.
+ * @param {string} [props.noteColour]  The resolved `openerNoteColour`: with it set the opener previews a placeholder note in that
+ *                                     colour (the note's words live on the linked flow, which the canvas cannot read).
  * @return {Element} The form, or the form and the flow opener in their wrapper.
  */
-export function cartFormMock( { attributes, cartVariant, cartStyle, openerStyle } ) {
+export function cartFormMock( { attributes, cartVariant, cartStyle, openerStyle, noteColour } ) {
 	const form = (
 		<div className="buybox__cart-form">
 			<span
@@ -68,6 +70,14 @@ export function cartFormMock( { attributes, cartVariant, cartStyle, openerStyle 
 				<span className="buybox__cart-label">
 					{ __( 'Flow button (from the linked flow)', 'sgs-blocks' ) }
 				</span>
+				{ attributes.openerNoteColour && (
+					<span
+						className="buybox__add-to-cart-note"
+						style={ { color: noteColour } }
+					>
+						{ __( 'Note (from the linked flow)', 'sgs-blocks' ) }
+					</span>
+				) }
 			</span>
 		</div>
 	);

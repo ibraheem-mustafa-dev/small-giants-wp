@@ -740,6 +740,7 @@
 					],
 					"prefix": "cta2",
 					"attrMap": {
+						"css:justify-content": "cta2ContentAlign",
 						"css:line-height": "cta2LineHeight",
 						"css:text-align": "cta2TextAlign",
 						"css:background-color": "cta2ColourBackground",
@@ -847,6 +848,7 @@
 					],
 					"prefix": "cta",
 					"attrMap": {
+						"css:justify-content": "ctaContentAlign",
 						"css:line-height": "ctaLineHeight",
 						"css:text-align": "ctaTextAlign",
 						"css:background-color": "ctaColourBackground",

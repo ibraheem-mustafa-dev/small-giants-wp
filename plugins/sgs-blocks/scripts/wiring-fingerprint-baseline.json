@@ -1,7 +1,7 @@
 {
  "_comment": "Wiring-fingerprint ratchet baseline (check-wiring-fingerprint.py). Each entry is <block>::<attr>::<link>. --check fails only for a blocking gap not listed here; regenerate with --update-baseline after fixing gaps, or add named gaps with --accept. Advisory links (L3-state, L6-token) are never listed.",
  "counts": {
-  "L3": 285,
+  "L3": 288,
   "L5": 29,
   "C1": 3,
   "L2": 2,
@@ -22,6 +22,7 @@
   "sgs/choice-flow::addToBasketColourBackground::L3",
   "sgs/choice-flow::addToBasketColourBorder::L3",
   "sgs/choice-flow::addToBasketColourText::L3",
+  "sgs/choice-flow::addToBasketContentAlign::L3",
   "sgs/choice-flow::addToBasketFontFamily::L3",
   "sgs/choice-flow::addToBasketFontSize::L3",
   "sgs/choice-flow::addToBasketFontStyle::L3",
@@ -43,6 +44,7 @@
   "sgs/choice-flow::buyNowColourBackground::L3",
   "sgs/choice-flow::buyNowColourBorder::L3",
   "sgs/choice-flow::buyNowColourText::L3",
+  "sgs/choice-flow::buyNowContentAlign::L3",
   "sgs/choice-flow::buyNowFontFamily::L3",
   "sgs/choice-flow::buyNowFontSize::L3",
   "sgs/choice-flow::buyNowFontStyle::L3",
@@ -63,6 +65,7 @@
   "sgs/choice-flow::continueColourBackground::L3",
   "sgs/choice-flow::continueColourBorder::L3",
   "sgs/choice-flow::continueColourText::L3",
+  "sgs/choice-flow::continueContentAlign::L3",
   "sgs/choice-flow::continueFontFamily::L3",
   "sgs/choice-flow::continueFontSize::L3",
   "sgs/choice-flow::continueFontStyle::L3",
