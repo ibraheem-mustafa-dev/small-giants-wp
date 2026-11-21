@@ -140,6 +140,29 @@
 					"order": 4,
 					"clusters": [],
 					"_note": "`.sgs-container__svg-bg`, the wrapper SGS_Container_Wrapper prints around a background or foreground SVG (bgSvg*). A motion target so an SVG loop or `draw` effect layer reaches the SVG alone; it declares no style clusters because its look is governed by the bgSvg* controls."
+				},
+				"overlay": {
+					"selector": ".sgs-bg-overlay",
+					"prefix": "",
+					"label": "Background overlay",
+					"order": 5,
+					"clusters": [],
+					"motion": false,
+					"attrMap": {
+						"css:background-image": "backgroundOverlayGradient",
+						"css:background-color": "backgroundOverlayColour",
+						"css:opacity": "backgroundOverlayOpacity",
+						"css:mix-blend-mode": "backgroundOverlayBlend"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundOverlayColourHover",
+								"css:background-image": "backgroundOverlayGradientHover"
+							}
+						}
+					},
+					"_note": "The overlay span the shared background renderer prints as a direct child of the root (`.<uid> > .sgs-bg-overlay`, includes/media/background-css.php::sgs_bg_overlay_css; assets/css/media-bg.css places it). Declared so calibration reads what each overlay setting paints; not a motion target. Written by scripts/check-overlay-element.py --fix."
 				}
 			}
 		}

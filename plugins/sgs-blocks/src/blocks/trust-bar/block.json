@@ -129,7 +129,6 @@
 					"attrMap": {
 						"css:background-color": "backgroundColour",
 						"css:color": "textColour",
-						"css:background-image": "backgroundOverlayColour",
 						"css:margin": "margin",
 						"css:max-width": "maxWidth",
 						"css:min-height": "minHeight",
@@ -403,6 +402,29 @@
 						"css:max-width": "contentWidth",
 						"css:padding": "padding"
 					}
+				},
+				"overlay": {
+					"selector": ".sgs-bg-overlay",
+					"prefix": "",
+					"label": "Background overlay",
+					"order": 11,
+					"clusters": [],
+					"motion": false,
+					"attrMap": {
+						"css:background-image": "backgroundOverlayGradient",
+						"css:background-color": "backgroundOverlayColour",
+						"css:opacity": "backgroundOverlayOpacity",
+						"css:mix-blend-mode": "backgroundOverlayBlend"
+					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:background-color": "backgroundOverlayColourHover",
+								"css:background-image": "backgroundOverlayGradientHover"
+							}
+						}
+					},
+					"_note": "The overlay span the shared background renderer prints as a direct child of the root (`.<uid> > .sgs-bg-overlay`, includes/media/background-css.php::sgs_bg_overlay_css; assets/css/media-bg.css places it). Declared so calibration reads what each overlay setting paints; not a motion target. Written by scripts/check-overlay-element.py --fix."
 				}
 			}
 		},
