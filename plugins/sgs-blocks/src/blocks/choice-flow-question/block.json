@@ -81,7 +81,8 @@
 					"order": 6,
 					"clusters": [
 						"text",
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "optionBadge",
 					"attrMap": {
