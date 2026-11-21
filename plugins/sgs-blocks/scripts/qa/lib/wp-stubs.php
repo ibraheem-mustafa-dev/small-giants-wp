@@ -174,6 +174,9 @@ if ( ! function_exists( 'wp_list_pluck' ) ) {
 
 if ( ! function_exists( 'get_block_wrapper_attributes' ) ) {
 	function get_block_wrapper_attributes( array $extra = array() ): string {
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+			return sgs_qa_wrapper_attributes_as_wordpress( $extra );
+		}
 		$parts = array();
 		foreach ( $extra as $key => $value ) {
 			$parts[] = esc_attr( (string) $key ) . '="' . esc_attr( (string) $value ) . '"';
@@ -196,6 +199,10 @@ if ( ! function_exists( 'apply_filters' ) ) {
 		if ( is_array( $returns ) && array_key_exists( $tag, $returns ) ) {
 			return $returns[ $tag ];
 		}
+		// --render-block-filters / --print-footer: the hook table runs the callbacks registered for a tag the runner fires.
+		if ( isset( $GLOBALS['sgs_qa_hook_table'] ) ) {
+			return sgs_qa_run_hooks( $tag, array_slice( func_get_args(), 1 ), true );
+		}
 		return $value;
 	}
 }
@@ -207,6 +214,9 @@ if ( ! function_exists( 'do_action' ) ) {
 		if ( in_array( $tag, array_filter( explode( ',', (string) getenv( 'SGS_QA_ECHO_ACTIONS' ) ) ), true ) ) {
 			$product = $GLOBALS['product'] ?? null;
 			echo '<!--action:' . $tag . ' product=' . ( is_object( $product ) && method_exists( $product, 'get_id' ) ? $product->get_id() : 'none' ) . '-->';
+		}
+		if ( isset( $GLOBALS['sgs_qa_hook_table'] ) ) {
+			sgs_qa_run_hooks( $tag, $args, false );
 		}
 	}
 }
@@ -275,6 +285,24 @@ if ( ! function_exists( 'wp_style_engine_get_styles' ) ) {
 				foreach ( $sides as $key => $prop ) {
 					if ( isset( $radius[ $key ] ) && '' !== $radius[ $key ] ) {
 						$decls[] = $prop . ':' . $radius[ $key ];
+					}
+				}
+			}
+		}
+
+		// --wp-fidelity: padding and margin as WordPress's style engine writes them (a side object or one shorthand
+		// value; a `var:preset|spacing|x` value becomes its custom property). blockGap is left to the layout support, as
+		// in WordPress, whose style engine does not write it.
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) && isset( $styles['spacing'] ) && is_array( $styles['spacing'] ) ) {
+			foreach ( array( 'padding', 'margin' ) as $box ) {
+				$value = $styles['spacing'][ $box ] ?? null;
+				if ( is_string( $value ) && '' !== $value ) {
+					$decls[] = $box . ':' . sgs_qa_style_engine_value( $value );
+				} elseif ( is_array( $value ) ) {
+					foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+						if ( isset( $value[ $side ] ) && is_string( $value[ $side ] ) && '' !== $value[ $side ] ) {
+							$decls[] = $box . '-' . $side . ':' . sgs_qa_style_engine_value( $value[ $side ] );
+						}
 					}
 				}
 			}
@@ -644,6 +672,9 @@ if ( ! function_exists( 'wp_interactivity_state' ) ) {
 			$stores[ $namespace ] = array();
 		}
 		$stores[ $namespace ] = array_merge( $stores[ $namespace ], $state );
+		if ( isset( $GLOBALS['sgs_qa_interactivity_capture'] ) ) {
+			$GLOBALS['sgs_qa_interactivity_capture'][ $namespace ] = $stores[ $namespace ]; // --interactivity-state
+		}
 		return $stores[ $namespace ];
 	}
 }
@@ -913,7 +944,11 @@ if ( ! function_exists( 'wp_kses_allowed_html' ) ) {
 if ( ! function_exists( 'add_action' ) ) {
 	function add_action( string $tag, $function_to_add, int $priority = 10, int $accepted_args = 1 ): bool {
 		// No-op — matches do_action()'s "harness has no registered listeners"
-		// convention (nothing here ever fires wp_footer etc.).
+		// convention (nothing here ever fires wp_footer etc.), unless the runner keeps a hook table
+		// (--render-block-filters, --print-footer).
+		if ( isset( $GLOBALS['sgs_qa_hook_table'] ) ) {
+			$GLOBALS['sgs_qa_hook_table'][ $tag ][ $priority ][] = array( $function_to_add, $accepted_args );
+		}
 		return true;
 	}
 }
@@ -922,6 +957,10 @@ if ( ! function_exists( 'add_filter' ) ) {
 	function add_filter( string $tag, $function_to_add, int $priority = 10, int $accepted_args = 1 ): bool {
 		// No-op, as add_action() above: a class that registers its filters as it loads
 		// (Sgs_Motion_Loop_Delays) loads cleanly, and apply_filters() here returns the value unchanged.
+		// With a hook table (--render-block-filters, --print-footer) the filter is recorded.
+		if ( isset( $GLOBALS['sgs_qa_hook_table'] ) ) {
+			$GLOBALS['sgs_qa_hook_table'][ $tag ][ $priority ][] = array( $function_to_add, $accepted_args );
+		}
 		return true;
 	}
 }
@@ -1458,4 +1497,101 @@ foreach ( array_filter( explode( ',', (string) getenv( 'SGS_QA_DECLARE_CLASSES' 
 	if ( false !== $sgs_qa_pos && ! class_exists( $sgs_qa_class, false ) ) {
 		eval( 'namespace ' . substr( $sgs_qa_class, 0, $sgs_qa_pos ) . '; class ' . substr( $sgs_qa_class, $sgs_qa_pos + 1 ) . ' {}' ); // phpcs:ignore Squiz.PHP.Eval.Discouraged -- test stub.
 	}
+}
+
+/*
+ * Opt-in WordPress behaviour for the setting check (scripts/setting-record/). Each part runs only under its runner flag
+ * (render-css-harness.php sets the global); without the flag every stub above behaves as before.
+ */
+
+/**
+ * --render-block-filters / --print-footer: run the callbacks registered for `$tag` in priority order, when the runner
+ * fires that tag (`$GLOBALS['sgs_qa_hook_fire']`). A filter passes its value on; an action's callbacks print.
+ *
+ * @param string $tag       Hook name.
+ * @param array  $args      The value (filters) and the further arguments.
+ * @param bool   $is_filter True for apply_filters().
+ * @return mixed The filtered value (filters), null (actions).
+ */
+function sgs_qa_run_hooks( string $tag, array $args, bool $is_filter ) {
+	$value = $is_filter ? ( $args[0] ?? null ) : null;
+	if ( ! in_array( $tag, $GLOBALS['sgs_qa_hook_fire'] ?? array(), true ) || empty( $GLOBALS['sgs_qa_hook_table'][ $tag ] ) ) {
+		return $value;
+	}
+	$by_priority = $GLOBALS['sgs_qa_hook_table'][ $tag ];
+	ksort( $by_priority );
+	foreach ( $by_priority as $callbacks ) {
+		foreach ( $callbacks as $callback ) {
+			list( $fn, $accepted ) = $callback;
+			$call_args             = array_slice( $args, 0, max( 0, (int) $accepted ) );
+			if ( $is_filter ) {
+				$call_args[0] = $value;
+				$value        = call_user_func_array( $fn, $call_args );
+			} else {
+				call_user_func_array( $fn, $call_args );
+			}
+		}
+	}
+	return $value;
+}
+
+/**
+ * --wp-fidelity: a style-engine value as WordPress writes it (`var:preset|spacing|40` is `var(--wp--preset--spacing--40)`).
+ *
+ * @param string $value Raw value.
+ * @return string
+ */
+function sgs_qa_style_engine_value( string $value ): string {
+	if ( str_starts_with( $value, 'var:' ) ) {
+		return 'var(--wp--' . str_replace( '|', '--', substr( $value, 4 ) ) . ')';
+	}
+	return $value;
+}
+
+/**
+ * --wp-fidelity: get_block_wrapper_attributes() as WordPress builds it for the block being rendered
+ * (`$GLOBALS['sgs_qa_current_block']`): the generated `wp-block-<namespace>-<name>` class (unless block.json sets
+ * supports.className false), the saved `className` (unless supports.customClassName is false) and the `align<x>` class
+ * when the block supports align. The caller's class and style come first, then the generated ones
+ * (WP_Block_Supports::get_block_wrapper_attributes order), and style, class and id come before the caller's other
+ * attributes.
+ *
+ * @param array $extra The caller's extra attributes.
+ * @return string
+ */
+function sgs_qa_wrapper_attributes_as_wordpress( array $extra ): string {
+	$current  = $GLOBALS['sgs_qa_current_block'] ?? array();
+	$name     = (string) ( $current['name'] ?? '' );
+	$attrs    = is_array( $current['attrs'] ?? null ) ? $current['attrs'] : array();
+	$supports = is_array( $current['supports'] ?? null ) ? $current['supports'] : array();
+	$classes  = array();
+	if ( '' !== $name && false !== ( $supports['className'] ?? true ) ) {
+		$classes[] = 'wp-block-' . str_replace( '/', '-', (string) preg_replace( '#^core/#', '', $name ) );
+	}
+	if ( ! empty( $attrs['className'] ) && false !== ( $supports['customClassName'] ?? true ) ) {
+		$classes[] = (string) $attrs['className'];
+	}
+	if ( ! empty( $attrs['align'] ) && ! empty( $supports['align'] ) ) {
+		$classes[] = 'align' . $attrs['align'];
+	}
+	$new = array( 'class' => implode( ' ', $classes ) );
+	$out = array();
+	foreach ( array( 'style', 'class', 'id' ) as $key ) {
+		$a = (string) ( $extra[ $key ] ?? '' );
+		$b = (string) ( $new[ $key ] ?? '' );
+		if ( '' === $a && '' === $b ) {
+			continue;
+		}
+		$out[ $key ] = ( '' === $a ) ? $b : ( ( '' === $b ) ? $a : $a . ' ' . $b );
+	}
+	foreach ( $extra as $key => $value ) {
+		if ( ! in_array( $key, array( 'style', 'class', 'id' ), true ) ) {
+			$out[ $key ] = $value;
+		}
+	}
+	$parts = array();
+	foreach ( $out as $key => $value ) {
+		$parts[] = esc_attr( (string) $key ) . '="' . esc_attr( (string) $value ) . '"';
+	}
+	return implode( ' ', $parts );
 }

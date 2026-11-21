@@ -61,6 +61,19 @@
  *   --queried-file q.json         the request's queried post ({"id": N, "post_type": "..."}): is_singular() and
  *                                 get_queried_object_id() answer as on that post's own page
  *
+ *   Opt-in WordPress behaviour, used by the setting check (scripts/setting-record/); without them the output is unchanged:
+ *   --render-block-filters        add_filter()/add_action() keep a hook table, the plugin's render_block filters that
+ *                                 change a block's own markup are loaded (SGS_QA_RENDER_BLOCK_FILTER_FILES), and the
+ *                                 render passes through `render_block_<name>` then `render_block`, as WP_Block::render does
+ *                                 (sgs/* children rendered in this process too)
+ *   --print-footer                do_action( 'wp_footer' ) runs after the render and its listeners' output (a scrim, a
+ *                                 detached menu chip) is appended to `html`, its <style> to `css`; `footerHtml` holds it alone
+ *   --wp-fidelity                 get_block_wrapper_attributes() adds the generated wp-block-<name> class, className and
+ *                                 align (wp-stubs.php::sgs_qa_wrapper_attributes_as_wordpress), wp_style_engine_get_styles()
+ *                                 writes padding and margin, and $block->parsed_block carries the saved attributes
+ *   --interactivity-state         the JSON gains `interactivityState`: every namespace's state wp_interactivity_state()
+ *                                 collected during the render (closures, which WordPress derives in the browser, left out)
+ *
  * @package SGS\Blocks\QA
  */
 
@@ -94,6 +107,20 @@ if ( ! defined( 'SGS_ATTRIBUTION_URL' ) ) {
 }
 if ( ! defined( 'SGS_ATTRIBUTION_TEXT' ) ) {
 	define( 'SGS_ATTRIBUTION_TEXT', 'Website by Small Giants Studio' );
+}
+
+// The opt-in flags that change what the stubs do are read before the stubs and the plugin files load, so a file that
+// registers a hook as it loads (helpers-scrim.php, nav-detach-chip.php) records it in the hook table.
+$sgs_qa_argv = array_slice( $argv, 1 );
+if ( in_array( '--render-block-filters', $sgs_qa_argv, true ) || in_array( '--print-footer', $sgs_qa_argv, true ) ) {
+	$GLOBALS['sgs_qa_hook_table'] = array();
+	$GLOBALS['sgs_qa_hook_fire']  = array();
+}
+if ( in_array( '--wp-fidelity', $sgs_qa_argv, true ) ) {
+	$GLOBALS['sgs_qa_wp_fidelity'] = true;
+}
+if ( in_array( '--interactivity-state', $sgs_qa_argv, true ) ) {
+	$GLOBALS['sgs_qa_interactivity_capture'] = array();
 }
 
 require_once __DIR__ . '/wp-stubs.php';
@@ -242,6 +269,7 @@ $attributes = json_decode( $attrs_json, true );
 if ( ! is_array( $attributes ) ) {
 	harness_fail( 'invalid JSON for attrs: ' . json_last_error_msg() );
 }
+$harness_saved_attrs = $attributes; // what a post saves: no defaults, no forced source (--render-block-filters, --wp-fidelity)
 
 // Force the faithfully-covered render path unless the caller explicitly
 // opted into something else (never silently — the caller sees the value it
@@ -424,7 +452,20 @@ if ( isset( $args['render-children'] ) ) {
 			require $render_path;
 			return (string) ob_get_clean();
 		};
-		return $render( $child_attrs, '', new SGS_QA_Stub_Block( $child_attrs, array(), $child_type ), $child_path );
+		$outer = $GLOBALS['sgs_qa_current_block'] ?? null;
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+			$GLOBALS['sgs_qa_current_block'] = array( 'name' => $child_slug, 'attrs' => $child_attrs, 'supports' => is_array( $child_meta['supports'] ?? null ) ? $child_meta['supports'] : array() );
+		}
+		$child_block = new SGS_QA_Stub_Block( $child_attrs, array(), $child_type );
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+			$child_block->parsed_block = array_merge( array( 'blockName' => $child_slug ), $parsed_block, array( 'attrs' => array_merge( array( 'anchor' => '' ), $child_attrs ) ) );
+		}
+		$child_html = $render( $child_attrs, '', $child_block, $child_path );
+		if ( isset( $GLOBALS['sgs_qa_render_block_filters'] ) ) {
+			$child_html = sgs_qa_render_block_filters( $child_html, $parsed_block, $child_block );
+		}
+		$GLOBALS['sgs_qa_current_block'] = $outer;
+		return $child_html;
 	};
 }
 
@@ -558,6 +599,63 @@ if ( isset( $args['content-file'] ) && is_file( $args['content-file'] ) ) {
 $harness_slug     = $slug;
 $harness_elements = null !== $block_type && is_array( $block_meta['supports']['sgs']['elements'] ?? null ) ? $block_meta['supports']['sgs']['elements'] : array();
 
+// --wp-fidelity: the block as WP_Block holds it (its saved attributes, children and content), and the block
+// get_block_wrapper_attributes() describes.
+if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+	$block->parsed_block = array_merge(
+		$block->parsed_block,
+		array(
+			'blockName' => $harness_slug,
+			'attrs'     => array_merge( array( 'anchor' => '' ), $harness_saved_attrs ),
+			'innerHTML' => $content,
+		)
+	);
+	$GLOBALS['sgs_qa_current_block'] = array(
+		'name'     => $harness_slug,
+		'attrs'    => $attributes,
+		'supports' => is_array( $block_meta['supports'] ?? null ) ? $block_meta['supports'] : array(),
+	);
+}
+
+// --render-block-filters: the plugin's render_block filters that change a block's own markup (each loads standalone).
+// Left out: filters that only deliver or enqueue assets (class-sgs-css-registry.php lifts <style> to the head,
+// configurator-asset-optimiser.php, class-sgs-motion-registry.php, class-sgs-blocks.php's inline-format enqueue) and
+// class-sgs-focus-rests.php, whose frame this runner opens and closes itself below.
+const SGS_QA_RENDER_BLOCK_FILTER_FILES = array(
+	'conditional-visibility.php',
+	'device-visibility.php',
+	'child-sizing.php',
+	'custom-css.php',
+	'float-position.php',
+	'heading-anchors.php',
+	'hover-effects/block-link.php',
+	'fx-magnet.php',
+);
+if ( isset( $args['render-block-filters'] ) ) {
+	$GLOBALS['sgs_qa_render_block_filters'] = true;
+	foreach ( SGS_QA_RENDER_BLOCK_FILTER_FILES as $filter_file ) {
+		require_once $sgs_blocks_dir . '/includes/' . $filter_file;
+	}
+}
+
+/**
+ * A block's output through `render_block_<name>` then `render_block`, as WP_Block::render() passes it.
+ *
+ * @param string $html         The block's output.
+ * @param array  $parsed_block The parsed block.
+ * @param object $block        The block instance.
+ * @return string
+ */
+function sgs_qa_render_block_filters( string $html, array $parsed_block, object $block ): string {
+	$name                         = (string) ( $parsed_block['blockName'] ?? '' );
+	$fire                         = $GLOBALS['sgs_qa_hook_fire'];
+	$GLOBALS['sgs_qa_hook_fire'] = array_merge( $fire, array( 'render_block_' . $name, 'render_block' ) );
+	$html                         = (string) apply_filters( 'render_block_' . $name, $html, $parsed_block, $block );
+	$html                         = (string) apply_filters( 'render_block', $html, $parsed_block, $block );
+	$GLOBALS['sgs_qa_hook_fire'] = $fire;
+	return $html;
+}
+
 $html  = '';
 $error = null;
 // The real focus-rests render stack (includes/class-sgs-focus-rests.php): the frame WordPress opens for the block
@@ -585,6 +683,29 @@ if ( null !== $error ) {
 	harness_fail( $error );
 }
 
+if ( isset( $args['render-block-filters'] ) ) {
+	$harness_parsed = array_merge(
+		array(
+			'blockName'   => $harness_slug,
+			'attrs'       => $harness_saved_attrs,
+			'innerBlocks' => array(),
+			'innerHTML'   => $content,
+		),
+		isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ? $block->parsed_block : array(),
+		array( 'blockName' => $harness_slug )
+	);
+	$html = sgs_qa_render_block_filters( $html, $harness_parsed, $block );
+}
+
+$footer_html = null;
+if ( isset( $args['print-footer'] ) ) {
+	$GLOBALS['sgs_qa_hook_fire'][] = 'wp_footer';
+	ob_start();
+	do_action( 'wp_footer' );
+	$footer_html = (string) ob_get_clean();
+	$html       .= $footer_html;
+}
+
 // Extract every <style ...>...</style> block's inner CSS.
 $css = '';
 if ( preg_match_all( '#<style\b[^>]*>(.*?)</style>#s', $html, $matches ) ) {
@@ -596,6 +717,27 @@ $result = array(
 	'html' => $html,
 	'css'  => $css,
 );
+if ( null !== $footer_html ) {
+	$result['footerHtml'] = $footer_html;
+}
+if ( isset( $GLOBALS['sgs_qa_interactivity_capture'] ) ) {
+	$plain_state = static function ( $value ) use ( &$plain_state ) {
+		if ( $value instanceof \Closure ) {
+			return null;
+		}
+		if ( is_array( $value ) ) {
+			$out = array();
+			foreach ( $value as $k => $v ) {
+				if ( ! ( $v instanceof \Closure ) ) {
+					$out[ $k ] = $plain_state( $v );
+				}
+			}
+			return array_is_list( $out ) ? $out : (object) $out;
+		}
+		return $value;
+	};
+	$result['interactivityState'] = (object) array_map( $plain_state, $GLOBALS['sgs_qa_interactivity_capture'] );
+}
 
 // Every declared part resolved by the real resolver, relative to a placeholder scope class the caller maps onto the
 // rendered root. A part the resolver does not offer (`"motion": false`) resolves to null.
