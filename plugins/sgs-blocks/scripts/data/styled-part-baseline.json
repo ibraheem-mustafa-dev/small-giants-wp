@@ -66,7 +66,7 @@
     },
     "parts": {
       "_comment": "Every BEM part with a literal look and no setting, keyed file::symbol::part.",
-      "ceiling": 271,
+      "ceiling": 270,
       "entries": {
         "plugins/sgs-blocks/src/blocks/accordion/style.css::(file)::chevron": 1,
         "plugins/sgs-blocks/src/blocks/accordion/style.css::(file)::icon-close": 1,
@@ -170,7 +170,6 @@
         "plugins/sgs-blocks/src/blocks/choice-flow/style.css::(file)::step-label": 1,
         "plugins/sgs-blocks/src/blocks/choice-flow/style.css::(file)::stepper-connector": 1,
         "plugins/sgs-blocks/src/blocks/choice-flow/style.css::(file)::stepper-label": 1,
-        "plugins/sgs-blocks/src/blocks/choice-flow/style.css::(file)::summary-body": 1,
         "plugins/sgs-blocks/src/blocks/choice-flow/style.css::(file)::summary-brand": 1,
         "plugins/sgs-blocks/src/blocks/choice-flow/style.css::(file)::summary-effect": 1,
         "plugins/sgs-blocks/src/blocks/choice-flow/style.css::(file)::summary-lines": 1,
