@@ -164,7 +164,7 @@ final class BuyboxKeepFlowTest extends TestCase {
 	}
 
 	public function test_a_colour_set_on_the_opener_prints_on_its_own_selector_after_add_to_carts(): void {
-		$html = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartBackgroundColour' => 'surface', 'flowOpenerColourBackground' => 'accent' ) );
+		$html = self::render( array( 'keepAddToCartWithFlow' => true, 'addToCartColourBackground' => 'surface', 'flowOpenerColourBackground' => 'accent' ) );
 		$css  = self::css( $html );
 		$sel  = '.buybox__add-to-cart:where(.buybox__add-to-cart--flow-opener){';
 		$this->assertMatchesRegularExpression( '#\.wp-block-sgs-buybox ' . preg_quote( $sel, '#' ) . '(?:[^}]*;)?background-color:var\(--wp--preset--color--accent,#', $css );

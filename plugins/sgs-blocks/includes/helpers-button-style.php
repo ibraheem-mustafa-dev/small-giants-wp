@@ -138,9 +138,12 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	 *                         positioning) — the caller's stylesheet must then carry
 	 *                         `isolation:isolate` itself (pricing-table badge precedent,
 	 *                         D938).
+	 * @param string $state_guard Optional (default ''): a pseudo-class chained onto each selector before `:hover` and `:focus-visible` in the
+	 *                         colour state rules, so a button that must not change while it is `[disabled]` passes `:not([disabled])` (the
+	 *                         built-in button kit's `state_guard` option). The resting rules are unaffected.
 	 * @return string CSS text (no <style> wrapper); '' when nothing is set.
 	 */
-	function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer = false, bool $bg_layer_positioned = false ): string {
+	function sgs_button_element_style_css( array $attrs, string $prefix, string $selector, bool $bg_layer = false, bool $bg_layer_positioned = false, string $state_guard = '' ): string {
 		$read = static function ( string $base ) use ( $attrs, $prefix ) {
 			$key = $prefix . $base;
 			return isset( $attrs[ $key ] ) ? $attrs[ $key ] : '';
@@ -324,8 +327,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			$hover_selector = implode(
 				',',
 				array_map(
-					static function ( $part ) {
-						return $part . ':hover';
+					static function ( $part ) use ( $state_guard ) {
+						return $part . $state_guard . ':hover';
 					},
 					$selector_parts
 				)
@@ -333,8 +336,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			$focus_selector = implode(
 				',',
 				array_map(
-					static function ( $part ) {
-						return $part . ':focus-visible';
+					static function ( $part ) use ( $state_guard ) {
+						return $part . $state_guard . ':focus-visible';
 					},
 					$selector_parts
 				)
@@ -422,8 +425,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			$hover_only_selector = implode(
 				',',
 				array_map(
-					static function ( $part ) {
-						return SGS_HOVER_NOT_TOUCH . ' ' . $part . ':hover';
+					static function ( $part ) use ( $state_guard ) {
+						return SGS_HOVER_NOT_TOUCH . ' ' . $part . $state_guard . ':hover';
 					},
 					$selector_parts
 				)
@@ -431,8 +434,8 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 			$focus_only_selector = implode(
 				',',
 				array_map(
-					static function ( $part ) {
-						return $part . ':focus-visible';
+					static function ( $part ) use ( $state_guard ) {
+						return $part . $state_guard . ':focus-visible';
 					},
 					$selector_parts
 				)
@@ -611,9 +614,20 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 	 * @param array  $attrs    Block attributes (the whole set; the kit reads only the `$prefix` keys).
 	 * @param string $prefix   Attribute prefix of the button (e.g. 'flowOpener').
 	 * @param string $selector Fully-formed, already-safe selector, uid-scoped by the caller; a comma-separated list is allowed.
-	 * @param array  $opts     { element?: string, bg_layer?: bool, bg_layer_positioned?: bool, container?: bool }. `element` is the
+	 * @param array  $opts     { element?: string, preset?: bool, state_guard?: string, shadow_lift?: bool, lift_prefix?: string, block?: string,
+	 *                         bg_layer?: bool, bg_layer_positioned?: bool, container?: bool }. `element` is the
 	 *                         compound selector the shared preset rule chains onto the minted class on the button itself
 	 *                         (`.buybox__add-to-cart`; '' for the class alone), the same one `sgs_button_kit_classes()` was given.
+	 *                         `preset` false skips step 1 and the pressed look of step 6: a block that already prints the preset
+	 *                         through its own selector or variant class (Add to Cart's `buybox__add-to-cart--{preset}`, the account
+	 *                         form's `sgs_button_preset_css()` per button) asks for the look alone.
+	 *                         `state_guard` (for example `:not([disabled])`) is chained before `:hover` and `:focus-visible` in the
+	 *                         colour and shadow state rules, so a button that must not change while disabled keeps that.
+	 *                         `shadow_lift` false turns the shadow's automatic hover lift off for this button (an explicit hover shadow
+	 *                         still prints): the account form's buttons never lifted.
+	 *                         `lift_prefix` and `block` give the shadow step the block's own automatic-lift switch
+	 *                         (`{lift_prefix}ShadowLiftOnHover`, gated by `supports.sgs.shadowLift` of `block`), as
+	 *                         `sgs_shadow_decls()` reads them; unset, the block-root switch applies.
 	 *                         `bg_layer` and `bg_layer_positioned` pass to the look step (see sgs_button_element_style_css());
 	 *                         `container` also emits the tiers as container queries.
 	 * @return string CSS text (no <style> wrapper), the shared groups fenced for `sgs_style_tags()`; '' when nothing is set.
@@ -634,16 +648,23 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 
 		// 1. Preset: the whole preset as a shared rule (one copy a page: sgs_button_kit_shared()), and the focus host border
 		// where this button's own border differs from the preset's.
-		$shared = sgs_button_kit_shared( $attrs, $prefix, isset( $opts['element'] ) ? (string) $opts['element'] : '' );
-		$css    = $shared['preset_css'];
-		$slug   = sgs_button_preset_resolve( isset( $attrs[ $prefix . 'Style' ] ) && is_string( $attrs[ $prefix . 'Style' ] ) ? $attrs[ $prefix . 'Style' ] : '' );
-		$style  = sgs_border_style_keyword( $attrs[ $prefix . 'BorderStyle' ] ?? '' );
-		$widths = array();
+		$own_preset = isset( $opts['preset'] ) && false === $opts['preset'];
+		$guard      = isset( $opts['state_guard'] ) ? (string) $opts['state_guard'] : '';
+		$shared     = $own_preset
+			? array(
+				'preset_css' => '',
+				'press_css'  => '',
+			)
+			: sgs_button_kit_shared( $attrs, $prefix, isset( $opts['element'] ) ? (string) $opts['element'] : '' );
+		$css        = $shared['preset_css'];
+		$slug       = $own_preset ? '' : sgs_button_preset_resolve( isset( $attrs[ $prefix . 'Style' ] ) && is_string( $attrs[ $prefix . 'Style' ] ) ? $attrs[ $prefix . 'Style' ] : '' );
+		$style      = sgs_border_style_keyword( $attrs[ $prefix . 'BorderStyle' ] ?? '' );
+		$widths     = array();
 		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
 			$box      = $attrs[ $prefix . 'BorderWidth' ] ?? null;
 			$widths[] = is_array( $box ) && is_scalar( $box[ $side ] ?? null ) ? sgs_css_length_value( $box[ $side ] ) : '';
 		}
-		$host   = array() !== array_filter( $widths ) ? sgs_button_focus_host_border( $widths, $style, $slug, '1px' ) : '';
+		$host       = array() !== array_filter( $widths ) ? sgs_button_focus_host_border( $widths, $style, $slug, '1px' ) : '';
 		if ( '' !== $host ) {
 			$css .= $selector . '{--sgs-focus-host-border:' . $host . ';}';
 		} elseif ( '' !== $slug && in_array( $style, array( 'none', 'hidden' ), true ) ) {
@@ -658,7 +679,7 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 				$look[ $prefix . $base ] = $attrs[ $prefix . $base ];
 			}
 		}
-		$css .= sgs_button_element_style_css( $look, $prefix, $selector, ! empty( $opts['bg_layer'] ), ! empty( $opts['bg_layer_positioned'] ) );
+		$css .= sgs_button_element_style_css( $look, $prefix, $selector, ! empty( $opts['bg_layer'] ), ! empty( $opts['bg_layer_positioned'] ), $guard );
 		// "Fit to the text": sgs_button_element_style_css() prints only `full` (its callers' contract is pinned), so `fit` prints
 		// here. `fit-content`, not `auto`: a built-in button is a block-level flex box, which `width:auto` stretches to its column.
 		if ( 'fit' === ( $attrs[ $prefix . 'WidthType' ] ?? '' ) ) {
@@ -745,7 +766,17 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 		}
 
 		// 5. Shadow: resting (also handed to the focus ring) and hover (behind the touch guard).
-		$shadow = sgs_shadow_decls( $attrs, sgs_shadow_attr_map( $prefix . 'Shadow', true, true ) );
+		$shadow_map   = sgs_shadow_attr_map( $prefix . 'Shadow', true, true );
+		$shadow_attrs = $attrs;
+		if ( ! empty( $opts['lift_prefix'] ) ) {
+			$shadow_map['lift_prefix'] = (string) $opts['lift_prefix'];
+		}
+		if ( isset( $opts['shadow_lift'] ) && false === $opts['shadow_lift'] ) {
+			// The lift switch is read as `{lift_prefix}ShadowLiftOnHover` (sgs_shadow_lift_attr_names()): switched off here, under this button's own prefix.
+			$shadow_map['lift_prefix']                      = $prefix;
+			$shadow_attrs[ $prefix . 'ShadowLiftOnHover' ] = false;
+		}
+		$shadow = sgs_shadow_decls( $shadow_attrs, $shadow_map, isset( $opts['block'] ) ? (string) $opts['block'] : '' );
 		$rest   = sgs_focus_under_decls( $shadow['normal'] );
 		if ( array() !== $rest ) {
 			$css .= $selector . '{' . implode( ';', $rest ) . ';}';
@@ -753,7 +784,7 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 		$hover = sgs_focus_under_decls( $shadow['hover'] );
 		if ( array() !== $hover ) {
 			// Guarded `:hover` and the keyboard-focus twin, as every other hover look prints.
-			$css .= sgs_hover_state_rules( $selector, implode( ';', $hover ) . ';' );
+			$css .= sgs_hover_state_rules( implode( ',', array_map( static fn( string $part ): string => $part . $guard, $parts ) ), implode( ';', $hover ) . ';' );
 		}
 
 		// 6. The pressed look, last: it ties in weight with the hover shadow rule above and must win while the button is held.

@@ -42,6 +42,8 @@ export const BOX_VALUE_SHAPES = [ 'sides', 'corners', 'device_sides', 'device_co
 
 const PREFIX_RE = /^[a-z][A-Za-z0-9]*$/;
 const PART_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+// A part is the database's `css_element`: kebab-case, or lowerCamelCase where the block names its element so (sgs/account's `loginButton`).
+const PART_NAME_RE = /^[a-z][A-Za-z0-9]*(?:-[a-z0-9]+)*$/;
 
 /**
  * Check the registry's shape and return it.
@@ -139,8 +141,8 @@ export function declaredButtons( block, registry ) {
 			problems.push( `${ at } repeats the prefix "${ entry.prefix }"` );
 		}
 		prefixes.add( entry?.prefix );
-		if ( ! entry?.part || ! PART_RE.test( entry.part ) ) {
-			problems.push( `${ at } needs a "part" in kebab-case (${ JSON.stringify( entry?.part ) })` );
+		if ( ! entry?.part || ! PART_NAME_RE.test( entry.part ) ) {
+			problems.push( `${ at } needs a "part" in kebab-case or lowerCamelCase (${ JSON.stringify( entry?.part ) })` );
 		}
 		if ( ! entry?.label || 'string' !== typeof entry.label ) {
 			problems.push( `${ at } needs a "label"` );

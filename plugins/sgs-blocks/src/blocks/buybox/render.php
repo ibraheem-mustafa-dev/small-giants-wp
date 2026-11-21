@@ -871,31 +871,25 @@ if ( '' !== $sgs_bb_price_typo_css ) {
 // sgs_typography_css_rule() emits every set property for the given prefix
 // unconditionally, so line-height needed no separate call.
 
-// Add-to-cart button typography (transform/letter-spacing/
-// weight/size) — same shared helper, prefix 'addToCart', scoped to the
-// button's label text. Minimum height is a plain CSS length, not a
-// typography property, so it is emitted as its own declaration on the same
-// selector straight after.
-$sgs_bb_add_to_cart_typo_css = sgs_typography_css_rule( $attributes, 'addToCart', $root_sel . ' .buybox__add-to-cart', '', false, false, sgs_object_attr_keys( $block ) );
-if ( '' !== $sgs_bb_add_to_cart_typo_css ) {
-	$scoped_css[] = $sgs_bb_add_to_cart_typo_css;
-}
-$sgs_bb_add_to_cart_min_height = sgs_css_length_value( (string) ( $attributes['addToCartMinHeight'] ?? '' ) );
-if ( '' !== $sgs_bb_add_to_cart_min_height ) {
-	$scoped_css[] = $root_sel . ' .buybox__add-to-cart{min-height:' . $sgs_bb_add_to_cart_min_height . ';}';
-}
-// Add-to-cart background/border override — colour-emission.md's
-// "background/border only, no text" row, flat colour only (no hover/gradient
-// requested), same shape as sgs_buybox_extras_scoped_css()'s RRP-pill colours.
-// Unset attributes emit nothing (both helpers early-return ''), leaving the
-// active addToCartStyle preset's own background/border exactly as today.
-$sgs_bb_add_to_cart_bg_css = sgs_fill_states_css( $root_sel . ' .buybox__add-to-cart', $attributes, array( 'base' => 'addToCartBackgroundColour' ) );
-if ( '' !== $sgs_bb_add_to_cart_bg_css ) {
-	$scoped_css[] = $sgs_bb_add_to_cart_bg_css;
-}
-$sgs_bb_add_to_cart_border_css = sgs_border_states_css( $root_sel . ' .buybox__add-to-cart', $attributes, array( 'base' => 'addToCartBorderColour' ) );
-if ( '' !== $sgs_bb_add_to_cart_border_css ) {
-	$scoped_css[] = $sgs_bb_add_to_cart_border_css;
+// The Add to Cart button's look: the built-in button kit's `addToCart` button (block.json supports.sgs.builtinButtons), printed
+// through the one shared emitter. Colours (and their hover colours), border, padding, "fit to the text" or full width, type,
+// minimum height and shadow each print only when set, so an unset button keeps the stylesheet's own look. The preset stays
+// the variant class on the element (`buybox__add-to-cart--{preset}`, style.css and includes/helpers-button-preset-names.php), so
+// the kit prints the look alone (`preset` false). The hover rules skip a disabled button, as the stylesheet's own do, and the
+// shadow's automatic lift follows `addToCartShadowLiftOnHover`.
+$sgs_bb_add_to_cart_css = sgs_button_kit_css(
+	$attributes,
+	'addToCart',
+	$root_sel . ' .buybox__add-to-cart',
+	array(
+		'preset'      => false,
+		'state_guard' => ':not([disabled])',
+		'lift_prefix' => 'addToCart',
+		'block'       => 'sgs/buybox',
+	)
+);
+if ( '' !== $sgs_bb_add_to_cart_css ) {
+	$scoped_css[] = $sgs_bb_add_to_cart_css;
 }
 
 // Picker-label typography, OWN-RENDER path only. When
@@ -991,31 +985,6 @@ $sgs_bb_surface_typo_css  = sgs_typography_css_rule( $attributes, 'stock', $root
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'savingBadge', $root_sel . ' .sgs-buybox__saving-badge', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'rrpPrice', $root_sel . ' .buybox__rrp-price', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_buybox_gallery_sticker_css( $attributes, $root_sel, sgs_object_attr_keys( $block ) );
-// The add-to-cart button's resting and hover shadow (the shared shadow composer; the stylesheet's own button
-// transition already runs box-shadow). Unset prints nothing.
-$sgs_bb_cart_shadow = sgs_shadow_decls(
-	$attributes,
-	array(
-		'base'         => 'addToCartShadow',
-		'colour'       => 'addToCartShadowColour',
-		'hover'        => 'addToCartShadowHover',
-		'hover_colour' => 'addToCartShadowColourHover',
-		'lift_prefix'  => 'addToCart',
-	),
-	'sgs/buybox'
-);
-if ( $sgs_bb_cart_shadow['normal'] ) {
-	$sgs_bb_surface_typo_css .= $root_sel . ' .buybox__add-to-cart{' . implode( ';', $sgs_bb_cart_shadow['normal'] ) . ';}';
-}
-if ( $sgs_bb_cart_shadow['hover'] ) {
-	$sgs_bb_surface_typo_css .= sgs_hover_state_rules( $root_sel . ' .buybox__add-to-cart:not([disabled])', implode( ';', $sgs_bb_cart_shadow['hover'] ) );
-}
-$sgs_bb_surface_typo_css .= sgs_label_box_css_rule(
-	array(
-		'padding' => is_array( $attributes['addToCartPadding'] ?? null ) ? $attributes['addToCartPadding'] : array(),
-	),
-	$root_sel . ' .buybox__add-to-cart'
-);
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'rrpChip', $root_sel . ' .buybox__rrp-pill', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_label_box_css_rule(
 	array(

@@ -769,6 +769,9 @@ def shape_json(old_block_text, spec):
         d = obj.get('default')
         if isinstance(d, dict) and d and not any(k in d for k in ('desktop', 'tablet', 'mobile')):
             obj['default'] = {'desktop': d}
+    elif kind == 'fit-to-unset':
+        # The kit's width choice has no default: unset keeps the block's own width, and a saved `fit` is dropped by the sweep.
+        obj.pop('default', None)
     elif kind == 'true-to-full':
         obj['type'] = 'string'
         obj.pop('default', None)
@@ -949,9 +952,11 @@ def diff_text(plan):
     return ''.join(out)
 
 
-def load_renames():
+def load_renames(blocks=''):
+    """The rename map's rows; `blocks` (a comma list of block slugs, `buybox,account`) keeps only those blocks' rows."""
     d = load_json(RENAMES_PATH, {'renames': []}) or {'renames': []}
-    return [Rename(x) for x in d.get('renames', [])]
+    keep = {b.strip().split('/')[-1] for b in blocks.split(',') if b.strip()}
+    return [Rename(x) for x in d.get('renames', []) if not keep or x['block'].split('/', 1)[1] in keep]
 
 
 # ----------------------------------------------------------------------------
@@ -2317,6 +2322,7 @@ def main():
     ap.add_argument('--write-baseline', action='store_true')
     ap.add_argument('--self-test', action='store_true')
     ap.add_argument('--pass', dest='pass_', default='all', choices=('all',) + PASSES)
+    ap.add_argument('--block', default='', help='the rename pass and the rename census: only the rows of these blocks in the map (a comma list of slugs)')
     a = ap.parse_args()
     passes = PASSES if a.pass_ == 'all' else (a.pass_,)
 
@@ -2338,7 +2344,7 @@ def main():
         print(json.dumps({'generated_by': 'plugins/sgs-blocks/scripts/check-styled-part-has-setting.py --survey --json',
                           'passes': results}, indent=2, ensure_ascii=False))
     elif results and 'buttons' in results and not a.json:
-        renames = load_renames()
+        renames = load_renames(a.block)
         plan = rename_plan(rename_corpus(), renames)
         by = {}
         for old, r, sh in plan['records']:
@@ -2356,7 +2362,7 @@ def main():
 
 
 def run_fix(a):
-    renames = load_renames()
+    renames = load_renames(a.block)
     plan = rename_plan(rename_corpus(), renames)
     d = diff_text(plan)
     sys.stdout.write(d)

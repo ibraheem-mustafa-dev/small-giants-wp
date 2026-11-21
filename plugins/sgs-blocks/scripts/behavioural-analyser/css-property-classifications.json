@@ -1020,6 +1020,174 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "emptyStateBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateColourText",
+      "fields": {
+        "css_property": "color",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStatePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "emptyStateWidthType",
+      "fields": {
+        "css_property": "width",
+        "css_element": "orders-empty-actions"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "fieldFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -1064,15 +1232,6 @@
       "fields": {
         "css_property": "line-height",
         "css_element": "fieldInput"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "fieldPlaceholderColour",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "fieldPlaceholder"
       }
     },
     {
@@ -2604,6 +2763,16 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "ordersRowBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "ordersRows",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "ordersRowBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -2836,14 +3005,6 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "progress-step"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "registerButtonPreset",
-      "fields": {
-        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
-        "css_layer": "OUTER"
       }
     },
     {
@@ -3131,6 +3292,342 @@
       "fields": {
         "css_property": "text-wrap",
         "css_element": "signed-out-heading"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterColourText",
+      "fields": {
+        "css_property": "color",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutRegisterWidthType",
+      "fields": {
+        "css_property": "width",
+        "css_element": "signed-out-register"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInColourText",
+      "fields": {
+        "css_property": "color",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "signed-out-sign-in"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "signedOutSignInWidthType",
+      "fields": {
+        "css_property": "width",
+        "css_element": "signed-out-sign-in"
       }
     },
     {
@@ -4882,7 +5379,44 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "addToCartBorderColour",
+      "attr": "addToCartBorderRadius",
+      "fields": {
+        "css_property": "border-radius"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartBorderStyle",
+      "fields": {
+        "css_property": "border-style"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartBorderWidth",
+      "fields": {
+        "css_property": "border-width"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartColourBorder",
       "fields": {
         "css_property": "border-color",
         "role": "color",
@@ -4891,10 +5425,45 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "addToCartColourBorderHover",
+      "fields": {
+        "css_property": "border-color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartColourText",
+      "fields": {
+        "css_property": "color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartColourTextHover",
+      "fields": {
+        "css_property": "color"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartFontFamily",
+      "fields": {
+        "css_property": "font-family"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "addToCartFontSize",
       "fields": {
         "css_property": "font-size",
         "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartFontStyle",
+      "fields": {
+        "css_property": "font-style"
       }
     },
     {
@@ -4915,6 +5484,13 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "addToCartLineHeight",
+      "fields": {
+        "css_property": "line-height"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "addToCartMinHeight",
       "fields": {
         "css_property": "min-height",
@@ -4923,10 +5499,25 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "addToCartPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "addToCartStyle",
       "fields": {
-        "css_property": "box-shadow,transform",
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
         "css_layer": "OUTER"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartTextDecoration",
+      "fields": {
+        "css_property": "text-decoration"
       }
     },
     {
@@ -4935,6 +5526,22 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartWidthType",
+      "fields": {
+        "css_property": "width"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "backgroundColour",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "wrapper"
       }
     },
     {
@@ -4978,28 +5585,6 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "flowOpenerPadding",
-      "fields": {
-        "css_property": "padding"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "flowOpenerStyle",
-      "fields": {
-        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
-        "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "flowOpenerWidthType",
-      "fields": {
-        "css_property": "width"
       }
     },
     {
@@ -26829,6 +27414,188 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "cta2BorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2BorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2BorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBackground",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBackgroundGradient",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBackgroundHover",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBackgroundHoverGradient",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBorder",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBorderHover",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourText",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourTextHover",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2FontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2FontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2FontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2FontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2LetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2LineHeight",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2MinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2Padding",
+      "fields": {
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2Style",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2TextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "cta2"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2TextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2TextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2WidthType",
+      "fields": {
+        "css_property": "width",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -26927,9 +27694,25 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "ctaFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaFontSize",
       "fields": {
         "css_property": "font-size",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaFontStyle",
+      "fields": {
+        "css_property": "font-style",
         "css_element": "cta"
       }
     },
@@ -26943,6 +27726,14 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "ctaLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaLineHeight",
       "fields": {
         "css_property": "line-height",
@@ -26951,9 +27742,49 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "ctaMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "ctaPadding",
       "fields": {
         "css_property": "padding",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "cta"
       }
     },
@@ -29007,6 +29838,174 @@
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitBorderRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitColourBorderHover",
+      "fields": {
+        "css_property": "border-color",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitColourText",
+      "fields": {
+        "css_property": "color",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "submit"
+      }
+    },
+    {
+      "slug": "sgs/product-search",
+      "attr": "submitWidthType",
+      "fields": {
+        "css_property": "width",
+        "css_element": "submit"
       }
     },
     {
@@ -36169,6 +37168,15 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "fieldPlaceholderColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "fieldPlaceholder"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "fieldShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -36276,34 +37284,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "loginButtonBackground",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "loginButton"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "loginButtonBackgroundHover",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "loginButton",
-        "css_state": "hover"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "loginButtonBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "loginButton"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "loginButtonBorderRadius",
       "fields": {
         "css_property": "border-radius",
@@ -36328,10 +37308,49 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "loginButtonFullWidth",
+      "attr": "loginButtonColourBackground",
       "fields": {
-        "css_property": "width",
+        "css_property": "background-color",
+        "role": "color",
         "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonColourBackgroundHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "loginButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonColourText",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "loginButton"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "loginButtonColourTextHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "loginButton",
+        "css_state": "hover"
       }
     },
     {
@@ -36386,21 +37405,10 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "loginButtonText",
+      "attr": "loginButtonWidthType",
       "fields": {
-        "css_property": "color",
-        "role": "color",
+        "css_property": "width",
         "css_element": "loginButton"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "loginButtonTextHover",
-      "fields": {
-        "css_property": "color",
-        "role": "color",
-        "css_element": "loginButton",
-        "css_state": "hover"
       }
     },
     {
@@ -36837,16 +37845,6 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "ordersRows"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "ordersRowBackgroundHover",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "ordersRows",
-        "css_state": "hover"
       }
     },
     {
@@ -37761,23 +38759,6 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "addToCartBackgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "addToCartShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -37790,15 +38771,6 @@
       "fields": {
         "css_property": "box-shadow-color",
         "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "backgroundColour",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "wrapper"
       }
     },
     {
@@ -47785,14 +48757,6 @@
     },
     {
       "slug": "sgs/product-card",
-      "attr": "cta2TextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "cta2"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
       "attr": "ctaColourBorderGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -47832,14 +48796,6 @@
         "css_property": "flex-wrap",
         "css_layer": "OUTER",
         "css_element": "cta-row"
-      }
-    },
-    {
-      "slug": "sgs/product-card",
-      "attr": "ctaTextAlign",
-      "fields": {
-        "css_property": "text-align",
-        "css_element": "cta"
       }
     },
     {
@@ -51408,6 +52364,40 @@
         "css_property": "background-color-gradient",
         "css_layer": "OUTER",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBorderGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "cta2"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourBorderHoverGradient",
+      "fields": {
+        "css_property": "border-color-gradient",
+        "css_element": "cta2",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourTextGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "cta2"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "cta2ColourTextHoverGradient",
+      "fields": {
+        "css_property": "color-gradient",
+        "css_element": "cta2",
+        "css_state": "hover"
       }
     },
     {

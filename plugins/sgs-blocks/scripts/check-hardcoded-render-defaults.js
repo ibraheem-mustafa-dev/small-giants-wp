@@ -1681,6 +1681,22 @@ const CONTROL_HELPERS = {
 			{ base: 'LineHeight', prop: 'line-height', variants: [ '' ], scalarOnly: true },
 		],
 	},
+	// The built-in button kit (includes/helpers-button-style.php::sgs_button_kit_css): the type, each a {desktop, tablet, mobile}
+	// object or a scalar, printed on the one selector the block gives the button. (The text colour is left out as the colour of a
+	// button name-suffix path is: the kit's own attribute names are not read as owning every colour in the block's stylesheet.)
+	sgs_button_kit_css: {
+		prefixArg: 1,
+		selectorArg: 2,
+		suffixes: [
+			{ base: 'FontSize', prop: 'font-size', variants: [ '', 'Unit' ] },
+			{ base: 'FontFamily', prop: 'font-family', variants: [ '' ] },
+			{ base: 'FontWeight', prop: 'font-weight', variants: [ '' ] },
+			{ base: 'FontStyle', prop: 'font-style', variants: [ '' ] },
+			{ base: 'TextTransform', prop: 'text-transform', variants: [ '' ] },
+			{ base: 'LineHeight', prop: 'line-height', variants: [ '', 'Unit' ] },
+			{ base: 'LetterSpacing', prop: 'letter-spacing', variants: [ '', 'Unit' ] },
+		],
+	},
 };
 
 const UNK       = '\u0001'; // marks an unresolved PHP fragment inside a resolved string

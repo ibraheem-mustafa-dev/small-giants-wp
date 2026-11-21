@@ -60,11 +60,6 @@
 	},
 	"existingPresetAttrs": [
 		{ "block": "sgs/button", "attr": "inheritStyle" },
-		{ "block": "sgs/buybox", "attr": "addToCartStyle" },
-		{ "block": "sgs/product-card", "attr": "ctaStyle" },
-		{ "block": "sgs/product-card", "attr": "cta2Style" },
-		{ "block": "sgs/form", "attr": "submitStyle" },
-		{ "block": "sgs/account", "attr": "loginButtonPreset" },
-		{ "block": "sgs/account", "attr": "registerButtonPreset" }
+		{ "block": "sgs/form", "attr": "submitStyle" }
 	]
 }

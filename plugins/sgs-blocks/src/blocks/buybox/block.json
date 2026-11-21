@@ -33,6 +33,11 @@
 					"prefix": "flowOpener",
 					"part": "flow-opener",
 					"label": "Flow opener button"
+				},
+				{
+					"prefix": "addToCart",
+					"part": "add-to-cart",
+					"label": "Add to Cart button"
 				}
 			],
 			"spacingDefaults": {
@@ -307,8 +312,8 @@
 						"layout"
 					],
 					"attrMap": {
-						"css:background-color": "addToCartBackgroundColour",
-						"css:border-color": "addToCartBorderColour",
+						"css:background-color": "addToCartColourBackground",
+						"css:border-color": "addToCartColourBorder",
 						"css:font-size": "addToCartFontSize",
 						"css:font-weight": "addToCartFontWeight",
 						"css:text-transform": "addToCartTextTransform",
@@ -2201,20 +2206,20 @@
 			"type": "string",
 			"default": "px"
 		},
-		"addToCartBorderColour": {
+		"addToCartColourBorder": {
 			"type": "string",
 			"default": "",
 			"description": "Border colour for the add-to-cart button (a palette slug or raw CSS colour, resolved via sgs_colour_value()). Empty = the active addToCartStyle preset's own border (today's look). An outline preset may carry a translucent border; this override lets a different add-to-cart instance (e.g. a white-fill button beside it) paint a solid border instead, without changing the shared preset for every other outline button on the site."
 		},
-		"addToCartBackgroundColour": {
+		"addToCartColourBackground": {
 			"type": "string",
 			"default": "",
 			"description": "Background colour for the add-to-cart button (a palette slug or raw CSS colour, resolved via sgs_colour_value()). Empty = the active addToCartStyle preset's own background (today's look)."
 		},
 		"addToCartMinHeight": {
-			"type": "string",
-			"default": "",
-			"description": "Minimum height for the add-to-cart button, as a CSS length (e.g. \"56px\"). Empty = today's 48px (style.css default)."
+			"type": "object",
+			"default": {},
+			"description": "Minimum height for the add-to-cart button per device: {desktop, tablet, mobile}, each a CSS length (for example \"56px\"). Empty = today's 48px (style.css default)."
 		},
 		"addToCartShowIcon": {
 			"type": "boolean",
@@ -3705,7 +3710,7 @@
 		"addToCartPadding": {
 			"type": "object",
 			"default": {},
-			"description": "Padding of the add-to-cart button, a {top, right, bottom, left} box. An unset side keeps the stylesheet's 12px 24px."
+			"description": "Padding of the add-to-cart button per device: {desktop, tablet, mobile}, each a {top, right, bottom, left} box. An unset side keeps the stylesheet's 12px 24px."
 		},
 		"rrpPriceFontSize": {
 			"type": "object",
@@ -3977,7 +3982,20 @@
 		"flowOpenerLetterSpacing": {"type":"object","_generated":"button-kit"},
 		"flowOpenerFontSizeUnit": {"type":"string","_generated":"button-kit"},
 		"flowOpenerLineHeightUnit": {"type":"string","_generated":"button-kit"},
-		"flowOpenerLetterSpacingUnit": {"type":"string","_generated":"button-kit"}
+		"flowOpenerLetterSpacingUnit": {"type":"string","_generated":"button-kit"},
+		"addToCartColourText": {"type":"string","_generated":"button-kit"},
+		"addToCartColourBackgroundHover": {"type":"string","_generated":"button-kit"},
+		"addToCartColourTextHover": {"type":"string","_generated":"button-kit"},
+		"addToCartColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"addToCartBorderStyle": {"type":"string","_generated":"button-kit"},
+		"addToCartBorderWidth": {"type":"object","_generated":"button-kit"},
+		"addToCartBorderRadius": {"type":"object","_generated":"button-kit"},
+		"addToCartWidthType": {"type":"string","_generated":"button-kit"},
+		"addToCartFontFamily": {"type":"string","_generated":"button-kit"},
+		"addToCartFontStyle": {"type":"string","_generated":"button-kit"},
+		"addToCartTextDecoration": {"type":"string","_generated":"button-kit"},
+		"addToCartLineHeight": {"type":"object","_generated":"button-kit"},
+		"addToCartLineHeightUnit": {"type":"string","_generated":"button-kit"}
 	},
 	"editorScript": "file:./index.js",
 	"style": "file:./style-index.css",

@@ -114,13 +114,6 @@
       "reason": "the modal trigger's own style rules (triggerStyle also holds text-link and none); not built (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
     },
     {
-      "file": "plugins/sgs-blocks/src/blocks/account/ExtraPanels.js",
-      "kind": "list",
-      "key": "",
-      "status": "deferred",
-      "reason": "the account block's sign-in and register preset choice (block.json enum primary, secondary); sgs_button_preset_css already takes any name, the setting does not (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
-    },
-    {
       "file": "plugins/sgs-blocks/src/blocks/account/style.css",
       "kind": "css",
       "key": "--button-presets--",

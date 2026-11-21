@@ -41,6 +41,16 @@
 					"prefix": "emptyState",
 					"part": "empty-state",
 					"label": "Empty-state button (orders and saved items)"
+				},
+				{
+					"prefix": "loginButton",
+					"part": "loginButton",
+					"label": "Sign in button (and the other form buttons with the all-forms scope)"
+				},
+				{
+					"prefix": "registerButton",
+					"part": "registerButton",
+					"label": "Create account button (account form)"
 				}
 			],
 			"motion": true,
@@ -1024,9 +1034,9 @@
 						],
 						"prefix": "loginButton",
 						"attrMap": {
-							"css:color": "loginButtonText",
-							"css:background-color": "loginButtonBackground",
-							"css:border-color": "loginButtonBorderColour",
+							"css:color": "loginButtonColourText",
+							"css:background-color": "loginButtonColourBackground",
+							"css:border-color": "loginButtonColourBorder",
 							"css:border-width": "loginButtonBorderWidth",
 							"css:border-style": "loginButtonBorderStyle",
 							"css:border-radius": "loginButtonBorderRadius",
@@ -1034,13 +1044,13 @@
 							"css:min-height": "loginButtonMinHeight",
 							"css:box-shadow": "loginButtonShadow",
 							"css:box-shadow-color": "loginButtonShadowColour",
-							"css:width": "loginButtonFullWidth"
+							"css:width": "loginButtonWidthType"
 						},
 						"states": {
 							"hover": {
 								"attrMap": {
-									"css:color": "loginButtonTextHover",
-									"css:background-color": "loginButtonBackgroundHover"
+									"css:color": "loginButtonColourTextHover",
+									"css:background-color": "loginButtonColourBackgroundHover"
 								}
 							}
 						},
@@ -4902,7 +4912,7 @@
 					"line-through"
 				]
 			},
-			"loginButtonPreset": {
+			"loginButtonStyle": {
 				"type": "string",
 				"enum": [
 					"",
@@ -4911,7 +4921,7 @@
 				],
 				"description": "Takes the site's button preset for the form submit button. Unset = WooCommerce's button."
 			},
-			"registerButtonPreset": {
+			"registerButtonStyle": {
 				"type": "string",
 				"enum": [
 					"",
@@ -4928,19 +4938,19 @@
 				],
 				"description": "Unset = the sign-in button only. all-forms = also register, lost password, account details and address save."
 			},
-			"loginButtonBackground": {
+			"loginButtonColourBackground": {
 				"type": "string"
 			},
-			"loginButtonText": {
+			"loginButtonColourText": {
 				"type": "string"
 			},
-			"loginButtonBackgroundHover": {
+			"loginButtonColourBackgroundHover": {
 				"type": "string"
 			},
-			"loginButtonTextHover": {
+			"loginButtonColourTextHover": {
 				"type": "string"
 			},
-			"loginButtonBorderColour": {
+			"loginButtonColourBorder": {
 				"type": "string"
 			},
 			"loginButtonShadow": {
@@ -4978,8 +4988,8 @@
 			"loginButtonMinHeight": {
 				"type": "object"
 			},
-			"loginButtonFullWidth": {
-				"type": "boolean"
+			"loginButtonWidthType": {
+				"type": "string"
 			},
 			"loginButtonIcon": {
 				"type": "string",
@@ -5365,7 +5375,37 @@
 		"emptyStateLetterSpacing": {"type":"object","_generated":"button-kit"},
 		"emptyStateFontSizeUnit": {"type":"string","_generated":"button-kit"},
 		"emptyStateLineHeightUnit": {"type":"string","_generated":"button-kit"},
-		"emptyStateLetterSpacingUnit": {"type":"string","_generated":"button-kit"}
+		"emptyStateLetterSpacingUnit": {"type":"string","_generated":"button-kit"},
+		"loginButtonColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"loginButtonShadowHover": {"type":"string","_generated":"button-kit"},
+		"loginButtonShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"registerButtonColourBackground": {"type":"string","_generated":"button-kit"},
+		"registerButtonColourText": {"type":"string","_generated":"button-kit"},
+		"registerButtonColourBorder": {"type":"string","_generated":"button-kit"},
+		"registerButtonColourBackgroundHover": {"type":"string","_generated":"button-kit"},
+		"registerButtonColourTextHover": {"type":"string","_generated":"button-kit"},
+		"registerButtonColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"registerButtonBorderStyle": {"type":"string","_generated":"button-kit"},
+		"registerButtonBorderWidth": {"type":"object","_generated":"button-kit"},
+		"registerButtonBorderRadius": {"type":"object","_generated":"button-kit"},
+		"registerButtonPadding": {"type":"object","_generated":"button-kit"},
+		"registerButtonWidthType": {"type":"string","_generated":"button-kit"},
+		"registerButtonMinHeight": {"type":"object","_generated":"button-kit"},
+		"registerButtonShadow": {"type":"string","_generated":"button-kit"},
+		"registerButtonShadowColour": {"type":"string","_generated":"button-kit"},
+		"registerButtonShadowHover": {"type":"string","_generated":"button-kit"},
+		"registerButtonShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"registerButtonFontFamily": {"type":"string","_generated":"button-kit"},
+		"registerButtonFontWeight": {"type":"string","_generated":"button-kit"},
+		"registerButtonFontStyle": {"type":"string","_generated":"button-kit"},
+		"registerButtonTextTransform": {"type":"string","_generated":"button-kit"},
+		"registerButtonTextDecoration": {"type":"string","_generated":"button-kit"},
+		"registerButtonFontSize": {"type":"object","_generated":"button-kit"},
+		"registerButtonLineHeight": {"type":"object","_generated":"button-kit"},
+		"registerButtonLetterSpacing": {"type":"object","_generated":"button-kit"},
+		"registerButtonFontSizeUnit": {"type":"string","_generated":"button-kit"},
+		"registerButtonLineHeightUnit": {"type":"string","_generated":"button-kit"},
+		"registerButtonLetterSpacingUnit": {"type":"string","_generated":"button-kit"}
 	},
 	"editorScript": "file:./index.js",
 	"viewScriptModule": "file:./view.js",

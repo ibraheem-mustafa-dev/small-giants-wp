@@ -744,12 +744,17 @@ if ( 'typed' === $source_mode ) {
 	// layer, freeing ctaColourText for a future text-gradient sibling. Not
 	// positioned (confirmed — no `position` on this selector in style.css),
 	// so the helper's own `position:relative` is safe here.
-	$sgs_card_typo_css .= sgs_button_element_style_css(
+	$sgs_card_typo_css .= sgs_button_kit_css(
 		$attributes,
 		'cta',
 		'.' . $sgs_card_uid . ' .sgs-product-card__cta--primary',
-		true
+		array(
+			'preset'   => false,
+			'bg_layer' => true,
+		)
 	);
+	// The secondary button's look: the same kit, its own prefix and selector.
+	$sgs_card_typo_css .= sgs_button_kit_css( $attributes, 'cta2', '.' . $sgs_card_uid . ' .sgs-product-card__cta--secondary', array( 'preset' => false ) );
 	// Text alignment of the typed primary and secondary CTAs (ctaTextAlign / cta2TextAlign). Empty keeps
 	// style.css's centred default.
 	foreach ( array(
@@ -874,12 +879,16 @@ if ( 'typed' === $source_mode ) {
 // bg_layer=true (D940 batch): moves ctaColourBackground onto a `::after`
 // layer per branch (D940's comma-split fix), freeing ctaColourText for a
 // future text-gradient sibling. Neither branch is positioned in style.css.
-$sgs_card_typo_css .= sgs_button_element_style_css(
+$sgs_card_typo_css .= sgs_button_kit_css(
 	$attributes,
 	'cta',
 	'.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart',
-	true
+	array(
+		'preset'   => false,
+		'bg_layer' => true,
+	)
 );
+$sgs_card_typo_css .= sgs_button_kit_css( $attributes, 'cta2', '.' . $sgs_card_uid . ' .product-card__cta-secondary', array( 'preset' => false ) );
 // Text alignment of the bound primary and secondary CTAs; empty keeps style.css's centred default.
 foreach ( array(
 	'ctaTextAlign'  => '.' . $sgs_card_uid . ' .product-card__view, .' . $sgs_card_uid . ' .product-card__add-to-cart',

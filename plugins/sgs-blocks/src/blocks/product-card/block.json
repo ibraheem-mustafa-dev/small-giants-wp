@@ -19,6 +19,20 @@
 	"icon": "products",
 	"supports": {
 		"sgs": {
+			"builtinButtons": [
+				{
+					"prefix": "cta",
+					"part": "cta",
+					"label": "Call to action button",
+					"groups": [ "preset", "colour", "gradient", "border", "padding", "width", "minHeight", "shadow", "typography" ]
+				},
+				{
+					"prefix": "cta2",
+					"part": "cta2",
+					"label": "Secondary call to action button",
+					"groups": [ "preset", "colour", "gradient", "border", "padding", "width", "minHeight", "shadow", "typography" ]
+				}
+			],
 			"motion": true,
 			"scalarStylingLift": true,
 			"enabledExtensions": [ "blockLink" ],
@@ -1138,10 +1152,12 @@
 		"ctaBorderRadius": {
 			"type": "object",
 			"default": {
-				"topLeft": "10px",
-				"topRight": "10px",
-				"bottomLeft": "10px",
-				"bottomRight": "10px"
+				"desktop": {
+					"topLeft": "10px",
+					"topRight": "10px",
+					"bottomLeft": "10px",
+					"bottomRight": "10px"
+				}
 			}
 		},
 		"ctaFontWeight": {
@@ -1149,16 +1165,15 @@
 			"default": "600"
 		},
 		"ctaFontSize": {
-			"type": "number"
+			"type": "object"
 		},
 		"ctaPadding": {
 			"type": "object",
 			"default": {},
-			"description": "Box padding for the built-in CTA button { top, right, bottom, left }. Migrated from the ctaPaddingX/ctaPaddingY axis-pair scalars to the universal box-object standard (Spec 32 section 6.1) — mirrors sgs/button's padding box family and this block's own tagPadding attr. Rendered scoped via sgs_button_element_style_css()."
+			"description": "Padding of the built-in CTA button per device: {desktop, tablet, mobile}, each a { top, right, bottom, left } box (Spec 32 section 6.1). Rendered scoped through sgs_button_kit_css()."
 		},
 		"ctaWidthType": {
 			"type": "string",
-			"default": "fit",
 			"enum": [
 				"fit",
 				"full"
@@ -2566,8 +2581,10 @@
 			"default": ""
 		},
 		"ctaLineHeight": {
-			"type": "string",
-			"default": "1.4"
+			"type": "object",
+			"default": {
+				"desktop": "1.4"
+			}
 		},
 		"ctaTextAlign": {
 			"type": "object",
@@ -3314,7 +3331,53 @@
 		"logoMinWidth": {"type":"object","_generated":"media-atoms"},
 		"logoMaxWidth": {"type":"object","_generated":"media-atoms"},
 		"logoMinHeight": {"type":"object","_generated":"media-atoms"},
-		"logoMaxHeight": {"type":"object","_generated":"media-atoms"}
+		"logoMaxHeight": {"type":"object","_generated":"media-atoms"},
+		"ctaMinHeight": {"type":"object","_generated":"button-kit"},
+		"ctaShadow": {"type":"string","_generated":"button-kit"},
+		"ctaShadowColour": {"type":"string","_generated":"button-kit"},
+		"ctaShadowHover": {"type":"string","_generated":"button-kit"},
+		"ctaShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"ctaFontFamily": {"type":"string","_generated":"button-kit"},
+		"ctaFontStyle": {"type":"string","_generated":"button-kit"},
+		"ctaTextTransform": {"type":"string","_generated":"button-kit"},
+		"ctaTextDecoration": {"type":"string","_generated":"button-kit"},
+		"ctaLetterSpacing": {"type":"object","_generated":"button-kit"},
+		"ctaFontSizeUnit": {"type":"string","_generated":"button-kit"},
+		"ctaLineHeightUnit": {"type":"string","_generated":"button-kit"},
+		"ctaLetterSpacingUnit": {"type":"string","_generated":"button-kit"},
+		"cta2ColourBackground": {"type":"string","_generated":"button-kit"},
+		"cta2ColourText": {"type":"string","_generated":"button-kit"},
+		"cta2ColourBorder": {"type":"string","_generated":"button-kit"},
+		"cta2ColourBackgroundHover": {"type":"string","_generated":"button-kit"},
+		"cta2ColourTextHover": {"type":"string","_generated":"button-kit"},
+		"cta2ColourBorderHover": {"type":"string","_generated":"button-kit"},
+		"cta2ColourBackgroundGradient": {"type":"string","_generated":"button-kit"},
+		"cta2ColourBackgroundHoverGradient": {"type":"string","_generated":"button-kit"},
+		"cta2ColourTextGradient": {"type":"string","_generated":"button-kit"},
+		"cta2ColourTextHoverGradient": {"type":"string","_generated":"button-kit"},
+		"cta2ColourBorderGradient": {"type":"string","_generated":"button-kit"},
+		"cta2ColourBorderHoverGradient": {"type":"string","_generated":"button-kit"},
+		"cta2BorderStyle": {"type":"string","_generated":"button-kit"},
+		"cta2BorderWidth": {"type":"object","_generated":"button-kit"},
+		"cta2BorderRadius": {"type":"object","_generated":"button-kit"},
+		"cta2Padding": {"type":"object","_generated":"button-kit"},
+		"cta2WidthType": {"type":"string","_generated":"button-kit"},
+		"cta2MinHeight": {"type":"object","_generated":"button-kit"},
+		"cta2Shadow": {"type":"string","_generated":"button-kit"},
+		"cta2ShadowColour": {"type":"string","_generated":"button-kit"},
+		"cta2ShadowHover": {"type":"string","_generated":"button-kit"},
+		"cta2ShadowColourHover": {"type":"string","_generated":"button-kit"},
+		"cta2FontFamily": {"type":"string","_generated":"button-kit"},
+		"cta2FontWeight": {"type":"string","_generated":"button-kit"},
+		"cta2FontStyle": {"type":"string","_generated":"button-kit"},
+		"cta2TextTransform": {"type":"string","_generated":"button-kit"},
+		"cta2TextDecoration": {"type":"string","_generated":"button-kit"},
+		"cta2FontSize": {"type":"object","_generated":"button-kit"},
+		"cta2LineHeight": {"type":"object","_generated":"button-kit"},
+		"cta2LetterSpacing": {"type":"object","_generated":"button-kit"},
+		"cta2FontSizeUnit": {"type":"string","_generated":"button-kit"},
+		"cta2LineHeightUnit": {"type":"string","_generated":"button-kit"},
+		"cta2LetterSpacingUnit": {"type":"string","_generated":"button-kit"}
 	},
 	"styles": [
 		{

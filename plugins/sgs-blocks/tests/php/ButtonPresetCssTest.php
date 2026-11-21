@@ -57,8 +57,8 @@ final class ButtonPresetCssTest extends TestCase {
 	public function test_sign_in_and_create_account_take_their_own_full_preset(): void {
 		$css = $this->account(
 			array(
-				'loginButtonPreset'    => 'primary',
-				'registerButtonPreset' => 'secondary',
+				'loginButtonStyle'    => 'primary',
+				'registerButtonStyle' => 'secondary',
 			)
 		);
 		$this->assertFullPreset( $css, self::LOGIN, self::FIRST );
@@ -69,7 +69,7 @@ final class ButtonPresetCssTest extends TestCase {
 	public function test_all_forms_scope_gives_every_form_button_the_login_preset(): void {
 		$css = $this->account(
 			array(
-				'loginButtonPreset' => 'primary',
+				'loginButtonStyle' => 'primary',
 				'loginButtonScope'  => 'all-forms',
 			)
 		);
@@ -99,7 +99,7 @@ final class ButtonPresetCssTest extends TestCase {
 	}
 
 	public function test_reduced_motion_removes_the_transition_and_the_hover_movement(): void {
-		$css = $this->account( array( 'loginButtonPreset' => 'primary' ) );
+		$css = $this->account( array( 'loginButtonStyle' => 'primary' ) );
 		$this->assertStringContainsString( '@media (prefers-reduced-motion: reduce){' . self::LOGIN . '{transition:none;}' . self::LOGIN . ':hover{transform:none;scale:none;rotate:none;}}', $css );
 	}
 

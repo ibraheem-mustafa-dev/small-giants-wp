@@ -18,6 +18,7 @@ require_once dirname( __DIR__ ) . '/helpers-typography.php';
 require_once dirname( __DIR__ ) . '/helpers-border-style.php';
 require_once dirname( __DIR__ ) . '/helpers-colour-variants.php';
 require_once dirname( __DIR__ ) . '/helpers-button-preset.php';
+require_once dirname( __DIR__ ) . '/helpers-button-style.php';
 require_once __DIR__ . '/helpers-account-header.php';
 require_once __DIR__ . '/helpers-account-cells-css.php';
 
@@ -361,8 +362,8 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 			);
 			$buttons = array_merge( $buttons, $extra );
 		}
-		$preset   = (string) ( $attributes['loginButtonPreset'] ?? '' );
-		$reg_pre  = (string) ( $attributes['registerButtonPreset'] ?? '' );
+		$preset   = (string) ( $attributes['loginButtonStyle'] ?? '' );
+		$reg_pre  = (string) ( $attributes['registerButtonStyle'] ?? '' );
 		$register = $form . ' .woocommerce-form-register__submit';
 		foreach ( $buttons as $btn ) {
 			$css[] = sgs_button_preset_css( $btn, $btn === $register && '' !== $reg_pre ? $reg_pre : $preset );
@@ -371,70 +372,32 @@ if ( ! function_exists( 'sgs_account_login_look_css' ) ) {
 			// Create account takes its own preset even when the login scope stops at the sign-in button.
 			$css[] = sgs_button_preset_css( $register, $reg_pre );
 		}
-		$height = $attributes['loginButtonMinHeight'] ?? array();
+		// The sign-in button's look is the built-in button kit's `loginButton` button (block.json supports.sgs.builtinButtons), printed on every
+		// button above (the preset above stays this function's own: it is per button and per scope). The buttons inside the account content
+		// (`$extra`) keep their natural width, so they are handed no width choice. The look prints no automatic hover lift on a shadow (there
+		// never was one here); a hover shadow prints when `loginButtonShadowHover` or its colour is set.
 		foreach ( $buttons as $btn ) {
-			$border = sgs_border_element_decls(
-				$attributes,
+			$look = in_array( $btn, $extra, true ) ? array_diff_key( $attributes, array( 'loginButtonWidthType' => true ) ) : $attributes;
+			$css[] = sgs_button_kit_css(
+				$look,
 				'loginButton',
 				$btn,
 				array(
-					'colour' => array( 'base' => 'loginButtonBorderColour' ),
-					'radius' => 'loginButtonBorderRadius',
+					'preset'      => false,
+					'shadow_lift' => false,
 				)
 			);
-			$css[]  = sgs_account_box_shape_css(
-				$attributes,
-				$border,
-				$btn,
-				array(
-					'background'    => '',
-					'shadow'        => 'loginButtonShadow',
-					'shadow_colour' => 'loginButtonShadowColour',
-				)
-			);
-			$css[]  = sgs_text_states_css(
-				$btn,
-				$attributes,
-				array(
-					'base'  => 'loginButtonText',
-					'hover' => 'loginButtonTextHover',
-				)
-			);
-			$css[]  = sgs_fill_states_css(
-				$btn,
-				$attributes,
-				array(
-					'base'  => 'loginButtonBackground',
-					'hover' => 'loginButtonBackgroundHover',
-				)
-			);
-			$css[]  = sgs_typography_css_rule( $attributes, 'loginButton', $btn, '', false, false, $tiered );
-			$css[]  = sgs_emit_responsive_css(
-				$btn,
-				array(
-					array(
-						'value' => $attributes['loginButtonPadding'] ?? array(),
-						'css'   => 'padding',
-						'box'   => true,
-					),
-				)
-			);
-			if ( is_array( $height ) && array() !== $height ) {
-				$css[] = sgs_emit_responsive_css(
-					$btn,
-					array(
-						array(
-							'value'     => $height,
-							'css'       => 'min-height',
-							'transform' => 'sgs_account_length_transform',
-						),
-					)
-				);
-			}
-			if ( ! empty( $attributes['loginButtonFullWidth'] ) && ! in_array( $btn, $extra, true ) ) {
-				$css[] = $btn . '{width:100%;}';
-			}
 		}
+		// Create account's own look prints last on its button, so it wins a tie with the sign-in look the all-forms scope shares with it.
+		$css[] = sgs_button_kit_css(
+			$attributes,
+			'registerButton',
+			$register,
+			array(
+				'preset'      => false,
+				'shadow_lift' => false,
+			)
+		);
 
 		$link  = $form . ' .lost_password a';
 		$css[] = sgs_typography_css_rule( $attributes, 'loginLink', $link, '', false, false, $tiered );

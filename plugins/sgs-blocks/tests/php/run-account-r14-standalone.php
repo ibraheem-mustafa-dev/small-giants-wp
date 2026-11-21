@@ -47,12 +47,12 @@ function ok( bool $c, string $label ): void {
 }
 
 // 1) Extra account buttons take the preset, at natural width.
-$css = sgs_account_login_look_css( array( 'loginButtonPreset' => 'primary', 'loginButtonScope' => 'all-forms', 'loginButtonFullWidth' => true ), '.x' );
+$css = sgs_account_login_look_css( array( 'loginButtonStyle' => 'primary', 'loginButtonScope' => 'all-forms', 'loginButtonWidthType' => 'full' ), '.x' );
 ok( false !== strpos( $css, '.x .sgs-wishlist-panel__empty-cta{background:var(--wp--custom--button-presets--primary--background)' ), 'the saved-items empty link takes the primary preset' );
 ok( false !== strpos( $css, '.x .sgs-wishlist-panel__choose-options:hover{' ), 'Select options has the preset hover rule' );
 ok( false === strpos( $css, '.x .sgs-wishlist-panel__empty-cta{width:100%;}' ), 'the extra buttons are not stretched to full width' );
 ok( false !== strpos( $css, '.x .sgs-account__wc form .woocommerce-form-login__submit{width:100%;}' ), 'the sign-in button still stretches' );
-$none = sgs_account_login_look_css( array( 'loginButtonPreset' => 'primary' ), '.x' );
+$none = sgs_account_login_look_css( array( 'loginButtonStyle' => 'primary' ), '.x' );
 ok( false === strpos( $none, 'sgs-wishlist-panel__empty-cta' ), 'without the all-forms scope the extra buttons are left alone' );
 
 // 1b) A block notice's action link inside the account content is a text link (the notice look), never a preset button.

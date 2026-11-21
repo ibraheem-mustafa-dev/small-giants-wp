@@ -305,6 +305,48 @@ final class ButtonKitCssTest extends TestCase {
 		$this->assertSame( '', $this->kit( array( 'xShadowColour' => '#112233' ) ), 'negative control: a colour with no shape prints nothing' );
 	}
 
+	public function test_preset_false_prints_the_look_alone_for_a_block_that_prints_its_own_preset(): void {
+		$attrs = array(
+			'xStyle'            => 'primary',
+			'xColourBackground' => '#112233',
+			'xBorderStyle'      => 'solid',
+			'xBorderWidth'      => array( 'top' => '2px', 'right' => '2px', 'bottom' => '2px', 'left' => '2px' ),
+		);
+		$with  = $this->kit( $attrs );
+		$alone = $this->kit( $attrs, self::SEL, null, array( 'preset' => false ) );
+		$this->assertStringContainsString( 'sgs-btn-kit-', $with, 'MUST FAIL: by default the preset prints as a shared rule' );
+		$this->assertStringNotContainsString( 'sgs-btn-kit-', $alone, 'preset false: no shared preset rule' );
+		$this->assertStringNotContainsString( 'sgs-btn-press-', $alone, 'preset false: no pressed rule' );
+		$this->assertStringContainsString( '.u .btn{background-color:#112233;', $alone, 'the look still prints' );
+		$this->assertStringContainsString( '--sgs-focus-host-border:2px', $alone, 'a border width the button sets still re-anchors the focus ring' );
+	}
+
+	public function test_a_state_guard_is_chained_before_hover_and_focus_in_the_colour_and_shadow_rules(): void {
+		$attrs = array(
+			'xColourBackgroundHover' => '#112233',
+			'xShadow'                => '0 4px 12px 0',
+			'xShadowColour'          => '#112233',
+			'xShadowHover'           => '0 8px 22px 0',
+		);
+		$css   = $this->kit( $attrs, self::SEL, null, array( 'state_guard' => ':not([disabled])' ) );
+		$this->assertStringContainsString( '.u .btn:not([disabled]):hover{background-color:#112233;}', $css, 'MUST FAIL: the colour hover skips a disabled button' );
+		$this->assertStringContainsString( '.u .btn:not([disabled]):focus-visible{background-color:#112233;}', $css, 'and its keyboard-focus twin' );
+		$this->assertStringContainsString( '.u .btn:not([disabled]):hover{box-shadow:', $css, 'the hover shadow skips a disabled button' );
+		$this->assertDoesNotMatchRegularExpression( '/\.u \.btn:hover\{/', $css, 'no unguarded hover rule' );
+		$this->assertStringContainsString( '.u .btn{box-shadow:', $css, 'the resting shadow is not guarded' );
+		$this->assertStringContainsString( ':hover{background-color:#112233;}', $this->kit( $attrs ), 'negative control: without the option the selector is unchanged' );
+	}
+
+	public function test_shadow_lift_false_and_a_lift_prefix_switch_the_automatic_hover_lift_off(): void {
+		$rest = array( 'xShadow' => '0 4px 12px 0', 'xShadowColour' => '#112233' );
+		$this->assertStringContainsString( ':hover{box-shadow:', $this->kit( $rest ), 'MUST FAIL: a resting shadow alone lifts by default' );
+		$this->assertStringNotContainsString( ':hover{box-shadow:', $this->kit( $rest, self::SEL, null, array( 'shadow_lift' => false ) ), 'shadow_lift false: no automatic lift' );
+		$explicit = $this->kit( $rest + array( 'xShadowHover' => '0 8px 22px 0' ), self::SEL, null, array( 'shadow_lift' => false ) );
+		$this->assertStringContainsString( ':hover{box-shadow:', $explicit, 'an explicit hover shadow still prints' );
+		$this->assertStringNotContainsString( ':hover{box-shadow:', $this->kit( $rest + array( 'xShadowLiftOnHover' => false ), self::SEL, null, array( 'lift_prefix' => 'x' ) ), 'the own {prefix}ShadowLiftOnHover switch of the block is read' );
+		$this->assertStringContainsString( ':hover{box-shadow:', $this->kit( $rest + array( 'xShadowLiftOnHover' => true ), self::SEL, null, array( 'lift_prefix' => 'x' ) ), 'negative control: the switch on lifts' );
+	}
+
 	public function test_colours_print_and_the_hover_is_behind_the_touch_guard(): void {
 		$css = $this->kit(
 			array(
