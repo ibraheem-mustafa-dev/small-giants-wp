@@ -109,8 +109,8 @@
   },
   {
     "file": "lib/shop-fixtures.mjs",
-    "find": "convert: ! global }",
-    "replace": "convert: false }",
+    "find": "convert: ! global, hide:",
+    "replace": "convert: false, hide:",
     "why": "a product-local choice is never converted"
   },
   {
@@ -196,5 +196,41 @@
     "find": "query: Object.fromEntries( u.searchParams )",
     "replace": "query: {}",
     "why": "the query string is dropped"
+  },
+  {
+    "file": "lib/shop-fixtures.mjs",
+    "find": "status: 'publish', catalog_visibility: FIXTURE_VISIBILITY, sku: skuFor( client, 'simple' ),",
+    "replace": "status: 'publish', sku: skuFor( client, 'simple' ),",
+    "why": "the simple fixture is created listed in the shop"
+  },
+  {
+    "file": "lib/shop-fixtures.mjs",
+    "find": "status: 'publish', catalog_visibility: FIXTURE_VISIBILITY, sku: skuFor( client, 'variable' ),",
+    "replace": "status: 'publish', sku: skuFor( client, 'variable' ),",
+    "why": "the variable fixture is created listed in the shop"
+  },
+  {
+    "file": "lib/shop-fixtures.mjs",
+    "find": "hide: FIXTURE_VISIBILITY !== product.catalog_visibility",
+    "replace": "hide: false",
+    "why": "a fixture found listed in the shop is never reported"
+  },
+  {
+    "file": "lib/shop-fixtures.mjs",
+    "find": "if ( 'create' !== step.action && step.hide ) {",
+    "replace": "if ( false ) {",
+    "why": "a fixture found listed in the shop is never set hidden"
+  },
+  {
+    "file": "lib/shop-fixtures.mjs",
+    "find": "if ( 'create' !== step.action && step.hide ) {",
+    "replace": "if ( 'create' !== step.action ) {",
+    "why": "an already hidden fixture is written again on every run"
+  },
+  {
+    "file": "lib/shop-fixtures.mjs",
+    "find": "{ catalog_visibility: FIXTURE_VISIBILITY } );",
+    "replace": "{ catalog_visibility: 'catalog' } );",
+    "why": "a listed fixture is set to a visibility that still shows it in a shop listing's search"
   }
 ]

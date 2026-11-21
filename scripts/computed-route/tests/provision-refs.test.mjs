@@ -4,9 +4,10 @@
 // after a run come from what the site printed. Offline: no site is read or written.
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { planProvision, refsFromResult, applyPhp, MENU_ITEMS, MENU_ITEM_ROLE_KEY, CURRENT_ITEM_KEY } from '../lib/provision-refs.mjs';
 import { parseArgs, describePlan } from '../provision-calibration-refs.mjs';
-import { PRODUCT_SPEC, PRODUCT_SPEC_KEY, BASKET_VARIATION, productApplyPhp } from '../lib/provision-product.mjs';
+import { PRODUCT_SPEC, PRODUCT_SPEC_KEY, BASKET_VARIATION, productApplyPhp, productStatePhp } from '../lib/provision-product.mjs';
 
 const empty = { woocommerce: false, menu: null, items: [], posts: { panel: null, drawer: null }, media: { image: null, logo: null }, product: null };
 // The target's calibration page (calibration-targets.json postId).
@@ -162,4 +163,67 @@ test( 'MUST FAIL (the spec exercises every product setting): variable colour and
 	for ( const needle of [ "get_posts( array( 'post_type' => 'product', 'title' => $P['title']", "update_post_meta( $pid, '_sgs_rrp'", 'set_sale_price', "get_option( 'woocommerce_placeholder_image', 0 )", '$p->set_image_id( $placeholder );', '$v->set_image_id( 0 );', "update_post_meta( $pid, '_sgs_cr_fixture'", "update_term_meta( $bids[0], 'thumbnail_id'" ] ) {
 		assert.ok( php.includes( needle ), needle );
 	}
+} );
+
+// productApplyPhp run in php against a stand-in WooCommerce: products live in $GLOBALS['store'] (id => catalogue visibility),
+// `get_posts` finds the product by the title it is given, and every set_catalog_visibility call is logged by product id.
+const WOO_STUB = `
+$GLOBALS['store'] = array(); $GLOBALS['sets'] = array(); $GLOBALS['made'] = array(); $GLOBALS['saves'] = array(); $GLOBALS['next'] = 200;
+foreach ( json_decode( getenv( 'STORE' ), true ) as $id => $row ) { $GLOBALS['store'][ (int) $id ] = $row; }
+class WC_Product_Factory { public static function get_product_type( $id ) { return $GLOBALS['store'][ $id ]['type'] ?? 'variable'; } }
+class WC_Product_Attribute { public function __call( $n, $a ) { return $this; } }
+class WC_Product_Variation { public function __call( $n, $a ) { return $this; } public function save() { return 1; } }
+class WC_Product_Variable {
+	public $id = 0;
+	public function __construct( $id = 0 ) { $this->id = (int) $id; if ( $id ) { $GLOBALS['made'][] = (int) $id; } }
+	public function set_catalog_visibility( $v ) { $GLOBALS['sets'][] = array( $this->id, $v ); $this->vis = $v; }
+	public function get_catalog_visibility() { return $this->vis ?? ( $GLOBALS['store'][ $this->id ]['vis'] ?? 'visible' ); }
+	public function save() { if ( ! $this->id ) { $this->id = $GLOBALS['next']++; $GLOBALS['made'][] = $this->id; } $GLOBALS['saves'][] = array( $this->id, $this->get_catalog_visibility() ); $GLOBALS['store'][ $this->id ] = array( 'type' => 'variable', 'vis' => $this->get_catalog_visibility() ); return $this->id; }
+	public function get_children() { return array(); }
+	public static function sync( $id ) {}
+	public function __call( $n, $a ) { return $this; }
+}
+function get_posts( $q ) { foreach ( $GLOBALS['store'] as $id => $row ) { if ( ( $row['title'] ?? '' ) === $q['title'] ) { return array( (object) array( 'ID' => $id ) ); } } return array(); }
+function wp_set_object_terms() {} function wc_delete_product_transients() {} function update_post_meta() {} function update_term_meta() {}
+function wc_attribute_taxonomy_name( $n ) { return 'pa_' . $n; } function wc_attribute_taxonomy_id_by_name( $n ) { return 1; }
+function taxonomy_exists() { return true; } function is_wp_error( $x ) { return false; }
+function get_term_by() { return (object) array( 'term_id' => 5 ); } function wp_insert_term() { return array( 'term_id' => 5 ); }
+function get_option() { return 0; } function wp_json_encode( $x ) { return json_encode( $x ); } function wc_get_product() { return false; }
+`;
+function runProductApply( store ) {
+	const script = `<?php\n${ WOO_STUB }\n$ids = array(); $fail = function ( $m ) { throw new Exception( $m ); };\n${ productApplyPhp() }\necho json_encode( array( 'store' => $GLOBALS['store'], 'sets' => $GLOBALS['sets'], 'made' => $GLOBALS['made'], 'saves' => $GLOBALS['saves'], 'pid' => $ids['product'] ) );\n`;
+	const r = spawnSync( 'php', [], { input: script, encoding: 'utf8', env: { ...process.env, STORE: JSON.stringify( store ) } } );
+	assert.equal( r.status, 0, `php failed: ${ r.stderr || r.stdout }` );
+	return JSON.parse( r.stdout.trim().split( /\r?\n/ ).pop() );
+}
+const CLIENT_PRODUCT = { title: 'Aviator frame', type: 'simple', vis: 'visible' };
+
+test( 'MUST FAIL: a calibration product made on a site is catalogue-hidden (published, reachable by URL, never in a shop listing or its filters)', () => {
+	const run = runProductApply( { 50: CLIENT_PRODUCT } );
+	assert.ok( run.pid >= 200, 'a new product was made' );
+	assert.equal( run.store[ run.pid ].vis, 'hidden' );
+	assert.deepEqual( run.saves[ 0 ], [ run.pid, 'hidden' ], 'its first save is already hidden, so a run that stops part-way leaves no listed product' );
+	assert.equal( run.store[ 50 ].vis, 'visible', 'the client product is never touched' );
+	assert.ok( ! run.made.includes( 50 ) && ! run.sets.some( ( s ) => 50 === s[ 0 ] ), 'the client product is neither loaded nor written' );
+} );
+
+test( 'MUST FAIL: a found calibration product that is listed in the shop is set hidden in place, keeping its ID', () => {
+	const run = runProductApply( { 50: CLIENT_PRODUCT, 80: { title: PRODUCT_SPEC.title, type: 'variable', vis: 'visible' } } );
+	assert.equal( run.pid, 80, 'completed in place' );
+	assert.equal( run.store[ 80 ].vis, 'hidden' );
+	assert.equal( run.store[ 50 ].vis, 'visible', 'the client product is never touched' );
+	assert.ok( ! run.sets.some( ( s ) => 50 === s[ 0 ] ) );
+} );
+
+test( 'a found calibration product already hidden is not rewritten', () => {
+	const run = runProductApply( { 80: { title: PRODUCT_SPEC.title, type: 'variable', vis: 'hidden' } } );
+	assert.equal( run.store[ 80 ].vis, 'hidden' );
+	assert.deepEqual( run.sets, [], 'no visibility write at all' );
+} );
+
+test( 'MUST FAIL: a calibration product at the current spec but listed in the shop is due again; one at the spec and hidden is not', () => {
+	const stateScript = ( vis ) => `<?php\n${ WOO_STUB.replace( 'function wc_get_product() { return false; }', '' ) }\nfunction get_post_meta() { return '${ PRODUCT_SPEC_KEY }'; }\nfunction wc_get_product() { $p = new WC_Product_Variable( 80 ); $p->vis = '${ vis }'; return $p; }\n$s = array( 'product' => 80 );\n${ productStatePhp() }\necho json_encode( $s['productReady'] );\n`;
+	const ready = ( vis ) => JSON.parse( spawnSync( 'php', [], { input: stateScript( vis ), encoding: 'utf8', env: { ...process.env, STORE: '{"80":{"type":"variable"}}' } } ).stdout.trim().split( /\r?\n/ ).pop() );
+	assert.equal( ready( 'visible' ), false );
+	assert.equal( ready( 'hidden' ), true );
 } );

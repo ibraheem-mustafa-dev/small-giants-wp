@@ -1,7 +1,9 @@
 // The minimum fixture products for the shop proofs (Spec 48 section 16): one simple and one variable WooCommerce product
 // with a price, stock and an image, created through the WooCommerce REST API so the buy box, filter, basket drawer and
 // toast render on a test site. Each product carries a SKU and a `_sgs_fixture` meta key (`<client>:<kind>`), so a rerun
-// finds what exists and creates nothing twice. Content is generic: fixtures name no client.
+// finds what exists and creates nothing twice. Each is created with catalogue visibility `hidden` (published and reachable by
+// URL, but never listed in the shop, a search or a filter, so a client's shop shows only the client's products), and a run that
+// finds one that is not hidden sets it hidden. Content is generic: fixtures name no client.
 import fs from 'node:fs';
 import path from 'node:path';
 import { variesByOf } from './catalogue-read.mjs';
@@ -11,6 +13,7 @@ import { applyVariesBy, planVariesBy } from './shop-fixtures-variesby.mjs';
 export class ShopFixturesError extends Error {}
 
 export const META_KEY = '_sgs_fixture';
+export const FIXTURE_VISIBILITY = 'hidden';
 const PHOTO = /photo|product|frame|hero/i;
 const RASTER = new Set( [ '.jpg', '.jpeg', '.png', '.webp' ] );
 const json = async ( res ) => {
@@ -32,8 +35,8 @@ export const SIZE_ATTRIBUTE = { name: 'Size', slug: 'size', taxonomy: 'pa_size',
 export function fixtureDefs( client ) {
 	const tag = ( kind ) => [ { key: META_KEY, value: `${ client }:${ kind }` } ];
 	return [
-		{ kind: 'simple', body: { name: 'Fixture simple product', type: 'simple', status: 'publish', sku: skuFor( client, 'simple' ), regular_price: '12.50', manage_stock: true, stock_quantity: 25, short_description: 'A simple product for the shop proofs.', meta_data: tag( 'simple' ) }, variations: [] },
-		{ kind: 'variable', body: { name: 'Fixture variable product', type: 'variable', status: 'publish', sku: skuFor( client, 'variable' ), short_description: 'A variable product for the shop proofs.', meta_data: tag( 'variable' ) }, attribute: SIZE_ATTRIBUTE, variations: [ { option: 'Small', regular_price: '10.00', stock_quantity: 20 }, { option: 'Large', regular_price: '14.00', stock_quantity: 15 } ] },
+		{ kind: 'simple', body: { name: 'Fixture simple product', type: 'simple', status: 'publish', catalog_visibility: FIXTURE_VISIBILITY, sku: skuFor( client, 'simple' ), regular_price: '12.50', manage_stock: true, stock_quantity: 25, short_description: 'A simple product for the shop proofs.', meta_data: tag( 'simple' ) }, variations: [] },
+		{ kind: 'variable', body: { name: 'Fixture variable product', type: 'variable', status: 'publish', catalog_visibility: FIXTURE_VISIBILITY, sku: skuFor( client, 'variable' ), short_description: 'A variable product for the shop proofs.', meta_data: tag( 'variable' ) }, attribute: SIZE_ATTRIBUTE, variations: [ { option: 'Small', regular_price: '10.00', stock_quantity: 20 }, { option: 'Large', regular_price: '14.00', stock_quantity: 15 } ] },
 	];
 }
 
@@ -88,7 +91,8 @@ async function globalAttribute( call, attribute ) {
 }
 
 // The existing fixture product for a definition (by SKU, any status), the sizes it already has, and whether its choice is
-// still a product-local attribute (no terms, so no variesBy axis) instead of the global one.
+// still a product-local attribute (no terms, so no variesBy axis) instead of the global one, and whether it is listed in the
+// shop (its catalogue visibility is not `hidden`).
 async function existingFor( call, def, attrId ) {
 	const [ product ] = await call( 'GET', `wc/v3/products?sku=${ encodeURIComponent( def.body.sku ) }&status=any` );
 	if ( ! product ) {
@@ -96,11 +100,12 @@ async function existingFor( call, def, attrId ) {
 	}
 	const have = def.variations.length ? ( await call( 'GET', `wc/v3/products/${ product.id }/variations?per_page=100` ) ).map( ( v ) => v.attributes?.[ 0 ]?.option ) : [];
 	const global = ! def.attribute || ( attrId && ( product.attributes || [] ).some( ( a ) => Number( a.id ) === Number( attrId ) ) );
-	return { id: product.id, haveOptions: have, convert: ! global };
+	return { id: product.id, haveOptions: have, convert: ! global, hide: FIXTURE_VISIBILITY !== product.catalog_visibility };
 }
 
 // What a run would do, from the site's current state: per fixture `create` (new product, all its variations) or
-// `exists` (with the variations still missing, and `convert` when its choice is still product-local). Reads only.
+// `exists` (with the variations still missing, `convert` when its choice is still product-local, and `hide` when it is listed in
+// the shop). Reads only.
 export async function planFixtures( { client, creds, fetchImpl = fetch } ) {
 	await requireWooCommerce( { creds, fetchImpl } );
 	const call = api( creds, fetchImpl );
@@ -108,7 +113,7 @@ export async function planFixtures( { client, creds, fetchImpl = fetch } ) {
 	for ( const def of fixtureDefs( client ) ) {
 		const attrId = def.attribute ? ( await globalAttribute( call, def.attribute ) )?.id ?? null : null;
 		const found = await existingFor( call, def, attrId );
-		plan.push( { kind: def.kind, sku: def.body.sku, action: found ? 'exists' : 'create', id: found?.id ?? null, convert: !! found?.convert, missingVariations: def.variations.filter( ( v ) => ! ( found?.haveOptions || [] ).includes( v.option ) ).map( ( v ) => v.option ) } );
+		plan.push( { kind: def.kind, sku: def.body.sku, action: found ? 'exists' : 'create', id: found?.id ?? null, convert: !! found?.convert, hide: !! found?.hide, missingVariations: def.variations.filter( ( v ) => ! ( found?.haveOptions || [] ).includes( v.option ) ).map( ( v ) => v.option ) } );
 	}
 	return plan;
 }
@@ -156,8 +161,9 @@ const attributeBody = ( attribute, attrId ) => [ { id: attrId, visible: true, va
 // Creates what the plan lacks (the global size attribute, the products, their variations, a product-local choice turned
 // into the global one with its variations moved over), then writes each choice's Google variesBy axis on the terms that
 // have none through `wp` (wp-cli: `_sgs_variesby_value` is not writable over REST), then reads every fixture product back
-// (GET) and returns `{ kind, id, type, price, stock, image, variations }` per product plus `variesBy`. A rerun creates
-// nothing: `created` is empty and `variesBy` has no `write` action.
+// (GET) and returns `{ kind, id, type, price, stock, image, variations }` per product plus `variesBy`. A fixture found
+// listed in the shop is set to `catalog_visibility: hidden` and named in `hidden`. A rerun creates nothing: `created` and
+// `hidden` are empty and `variesBy` has no `write` action.
 export async function applyFixtures( { repo, client, site, creds, fetchImpl = fetch, wp } ) {
 	if ( ! wp ) {
 		throw new ShopFixturesError( 'a wp-cli runner is required: the variesBy axis on the size terms is term meta, which REST cannot write' );
@@ -166,6 +172,7 @@ export async function applyFixtures( { repo, client, site, creds, fetchImpl = fe
 	const call = api( creds, fetchImpl );
 	const image = await ensureImage( { repo, client, choice: imageChoice( repo, client, site ), creds, fetchImpl, apply: true } );
 	const created = [];
+	const hidden = [];
 	for ( const def of fixtureDefs( client ) ) {
 		const step = plan.find( ( p ) => p.kind === def.kind );
 		let attrId = null;
@@ -189,6 +196,10 @@ export async function applyFixtures( { repo, client, site, creds, fetchImpl = fe
 			}
 			created.push( `${ def.kind }:global-${ def.attribute.slug }` );
 		}
+		if ( 'create' !== step.action && step.hide ) {
+			await call( 'PUT', `wc/v3/products/${ id }`, { catalog_visibility: FIXTURE_VISIBILITY } );
+			hidden.push( def.kind );
+		}
 		for ( const v of def.variations.filter( ( x ) => step.missingVariations.includes( x.option ) ) ) {
 			await call( 'POST', `wc/v3/products/${ id }/variations`, { regular_price: v.regular_price, manage_stock: true, stock_quantity: v.stock_quantity, attributes: [ { id: attrId, option: v.option } ], ...( image ? { image: { id: image.id } } : {} ) } );
 			created.push( `${ def.kind }:${ v.option }` );
@@ -202,9 +213,9 @@ export async function applyFixtures( { repo, client, site, creds, fetchImpl = fe
 			throw new ShopFixturesError( `${ def.body.sku } did not read back after creation` );
 		}
 		const variations = def.variations.length ? ( await call( 'GET', `wc/v3/products/${ p.id }/variations?per_page=100` ) ).map( ( v ) => ( { id: v.id, option: v.attributes?.[ 0 ]?.option, price: v.price, stock: v.stock_quantity } ) ) : [];
-		products.push( { kind: def.kind, id: p.id, type: p.type, status: p.status, price: p.price, stock: p.stock_quantity, image: p.images?.[ 0 ]?.id ?? null, variations } );
+		products.push( { kind: def.kind, id: p.id, type: p.type, status: p.status, visibility: p.catalog_visibility, price: p.price, stock: p.stock_quantity, image: p.images?.[ 0 ]?.id ?? null, variations } );
 	}
-	return { created, imageUploaded: !! image?.uploaded, products, variesBy };
+	return { created, hidden, imageUploaded: !! image?.uploaded, products, variesBy };
 }
 
 // The variesBy state of the fixture choices' terms, read only: per term `{ taxonomy, term, current, axis, action }`.

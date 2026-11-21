@@ -15,6 +15,9 @@
 //   - two brand terms (the brand taxonomy, `product_brand` unless a site filters it), both on the product, so the card's
 //     brand prints and a brand filter has the two terms its threshold needs; the first carries the calibration image as
 //     its logo (`thumbnail_id`) when the site has one.
+//   - catalogue visibility `hidden`: the product is published and reachable by URL (the basket, the product page and every
+//     block pinned to its ID render it) but never listed in the shop, a search or a filter, so a client's shop shows only
+//     the client's products. Creation sets it, and a found product that is visible is set hidden when it is completed.
 // A product found by title is completed in place (same ID, so the target's refs stay valid); `_sgs_cr_fixture` records
 // the spec key it was completed to, so a site already at this spec plans nothing.
 import { createHash } from 'crypto';
@@ -71,7 +74,7 @@ export const BASKET_VARIATION = Object.fromEntries( PRODUCT_SPEC.attributes.filt
 
 // Read-only PHP (inside statePhp, after `$s['product']` is set): whether the found product is at this spec.
 export function productStatePhp() {
-	return `$s['productReady'] = $s['product'] && '${ PRODUCT_SPEC_KEY }' === (string) get_post_meta( $s['product'], '_sgs_cr_fixture', true ) && 'variable' === WC_Product_Factory::get_product_type( $s['product'] );`;
+	return `$s['productReady'] = $s['product'] && '${ PRODUCT_SPEC_KEY }' === (string) get_post_meta( $s['product'], '_sgs_cr_fixture', true ) && 'variable' === WC_Product_Factory::get_product_type( $s['product'] ) && 'hidden' === wc_get_product( $s['product'] )->get_catalog_visibility();`;
 }
 
 // PHP (inside applyPhp, after media) that finds the product by title or creates it, and completes it to the spec. Reads
@@ -85,6 +88,7 @@ if ( ! $pid ) {
 	$np = new WC_Product_Variable();
 	$np->set_name( $P['title'] );
 	$np->set_status( 'publish' );
+	$np->set_catalog_visibility( 'hidden' );
 	$pid = (int) $np->save();
 }
 if ( 'variable' !== WC_Product_Factory::get_product_type( $pid ) ) {
@@ -132,6 +136,7 @@ $p->set_name( $P['title'] );
 $p->set_image_id( $placeholder );
 $p->set_gallery_image_ids( array_values( array_filter( array( $img, $placeholder ) ) ) );
 $p->set_status( 'publish' );
+if ( 'hidden' !== $p->get_catalog_visibility() ) { $p->set_catalog_visibility( 'hidden' ); }
 $p->set_attributes( $wc_attrs );
 $p->set_default_attributes( array_map( function ( $s ) { return $s[0]; }, $axes ) );
 $p->save();

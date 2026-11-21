@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { VARIESBY_VALUES, variesByOf } from '../lib/catalogue-read.mjs';
-import { SIZE_ATTRIBUTE, ShopFixturesError, applyFixtures, imageChoice, planFixtures, ensureImage } from '../lib/shop-fixtures.mjs';
+import { SIZE_ATTRIBUTE, ShopFixturesError, applyFixtures, fixtureDefs, imageChoice, planFixtures, ensureImage } from '../lib/shop-fixtures.mjs';
 import { VariesByError, applyVariesBy, planVariesBy } from '../lib/shop-fixtures-variesby.mjs';
 import { wpFetch } from '../lib/shop-fixtures-wp.mjs';
 
@@ -67,14 +67,19 @@ function stub( { woo = true, attachments = [ 77 ] } = {} ) {
 		if ( pm && 'PUT' === method ) {
 			posts.push( route );
 			const p = products.find( ( x ) => x.id === Number( pm[ 1 ] ) );
-			p.attributes = body.attributes.map( ( a ) => ( { id: a.id, options: a.options } ) );
-			// A variation still holding the product-local choice reads back empty once the product's choice is global, as WooCommerce does.
-			variations[ p.id ].forEach( ( v ) => {
-				if ( ! v.attributes.some( ( a ) => a.id ) ) {
-					v.stale = v.attributes[ 0 ].option;
-					v.attributes = [];
-				}
-			} );
+			if ( body.catalog_visibility ) {
+				p.catalog_visibility = body.catalog_visibility;
+			}
+			if ( body.attributes ) {
+				p.attributes = body.attributes.map( ( a ) => ( { id: a.id, options: a.options } ) );
+				// A variation still holding the product-local choice reads back empty once the product's choice is global, as WooCommerce does.
+				variations[ p.id ].forEach( ( v ) => {
+					if ( ! v.attributes.some( ( a ) => a.id ) ) {
+						v.stale = v.attributes[ 0 ].option;
+						v.attributes = [];
+					}
+				} );
+			}
 			return reply( 200, p );
 		}
 		const vp = /^wc\/v3\/products\/(\d+)\/variations\/(\d+)$/.exec( route );
@@ -86,7 +91,7 @@ function stub( { woo = true, attachments = [ 77 ] } = {} ) {
 		}
 		if ( 'POST' === method && 'wc/v3/products' === route ) {
 			posts.push( route );
-			const p = { id: 100 + products.length, status: body.status, type: body.type, sku: body.sku, price: body.regular_price || '', stock_quantity: body.stock_quantity ?? null, images: body.images ? [ { id: body.images[ 0 ].id } ] : [], attributes: ( body.attributes || [] ).map( ( a ) => ( { id: a.id, options: a.options } ) ) };
+			const p = { id: 100 + products.length, status: body.status, type: body.type, sku: body.sku, catalog_visibility: body.catalog_visibility ?? 'visible', price: body.regular_price || '', stock_quantity: body.stock_quantity ?? null, images: body.images ? [ { id: body.images[ 0 ].id } ] : [], attributes: ( body.attributes || [] ).map( ( a ) => ( { id: a.id, options: a.options } ) ) };
 			products.push( p );
 			variations[ p.id ] = [];
 			return reply( 201, p );
@@ -305,4 +310,41 @@ test( 'a mirror\'s REST requests are dispatched in-process through wp-cli: the r
 	assert.deepEqual( await res.json(), { id: 9 } );
 	await assert.rejects( f( 'http://localhost/wp-json/wp/v2/media', { method: 'POST', body: Buffer.from( 'png' ) } ), /binary upload cannot go through wp-cli/ );
 	await assert.rejects( wpFetch( () => 'no result' )( 'http://localhost/wp-json/' ), /answered no REST result/ );
+} );
+
+test( 'MUST FAIL: both fixture products are created with catalogue visibility hidden, so no shop listing, search or filter shows them', async () => {
+	const s = stub();
+	const first = await applyFixtures( { repo: repoWith(), client: 'acme', site: 'acme-test', creds: CREDS, fetchImpl: s.impl, wp: s.wp } );
+	assert.deepEqual( s.products.map( ( p ) => p.catalog_visibility ), [ 'hidden', 'hidden' ], 'each create body carries catalog_visibility hidden' );
+	assert.deepEqual( first.products.map( ( p ) => [ p.kind, p.status, p.visibility ] ), [ [ 'simple', 'publish', 'hidden' ], [ 'variable', 'publish', 'hidden' ] ], 'still published, hidden from the catalogue' );
+	assert.deepEqual( first.hidden, [], 'a product created hidden needs no second write' );
+	assert.deepEqual( fixtureDefs( 'acme' ).map( ( d ) => d.body.catalog_visibility ), [ 'hidden', 'hidden' ] );
+} );
+
+test( 'MUST FAIL: a fixture found listed in the shop is set hidden with a write of that one field; one already hidden is not rewritten; a client product is never touched', async () => {
+	const s = stub();
+	const repo = repoWith();
+	await applyFixtures( { repo, client: 'acme', site: 'acme-test', creds: CREDS, fetchImpl: s.impl, wp: s.wp } );
+	const client = { id: 300, status: 'publish', type: 'simple', sku: 'frame-one', catalog_visibility: 'visible', attributes: [] };
+	s.products.push( client );
+	s.variations[ 300 ] = [];
+	const listed = s.products[ 1 ];
+	listed.catalog_visibility = 'visible';
+	const plan = await planFixtures( { client: 'acme', creds: CREDS, fetchImpl: s.impl } );
+	assert.deepEqual( plan.map( ( p ) => [ p.kind, p.action, p.hide ] ), [ [ 'simple', 'exists', false ], [ 'variable', 'exists', true ] ], 'the plan names only the listed fixture' );
+	const writes = [];
+	const spy = async ( url, init = {} ) => {
+		if ( init.method && 'GET' !== init.method && /wc\/v3\/products/.test( url ) ) {
+			writes.push( [ init.method, new URL( url ).pathname.replace( '/wp-json/', '' ), init.body ] );
+		}
+		return s.impl( url, init );
+	};
+	const run = await applyFixtures( { repo, client: 'acme', site: 'acme-test', creds: CREDS, fetchImpl: spy, wp: s.wp } );
+	assert.deepEqual( writes, [ [ 'PUT', `wc/v3/products/${ listed.id }`, JSON.stringify( { catalog_visibility: 'hidden' } ) ] ], 'one write: the listed fixture, that field only' );
+	assert.deepEqual( run.hidden, [ 'variable' ] );
+	assert.equal( listed.catalog_visibility, 'hidden' );
+	assert.equal( client.catalog_visibility, 'visible', 'the client product keeps its visibility' );
+	writes.length = 0;
+	const again = await applyFixtures( { repo, client: 'acme', site: 'acme-test', creds: CREDS, fetchImpl: spy, wp: s.wp } );
+	assert.deepEqual( [ writes, again.hidden ], [ [], [] ], 'an already hidden fixture is not rewritten' );
 } );

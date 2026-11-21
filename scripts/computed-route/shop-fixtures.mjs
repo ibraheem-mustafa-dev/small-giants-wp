@@ -64,12 +64,13 @@ try {
 	if ( args.includes( '--apply' ) ) {
 		const r = await applyFixtures( { repo, client, site, creds, fetchImpl, wp } );
 		console.log( r.created.length ? `created: ${ r.created.join( ', ' ) }${ r.imageUploaded ? ' (image uploaded)' : '' }` : 'nothing to create: every fixture already exists' );
+		r.hidden.length && console.log( `set hidden from the shop: ${ r.hidden.join( ', ' ) }` );
 		r.variesBy.forEach( ( v ) => console.log( `variesBy: ${ v.taxonomy } ${ v.term } (term ${ v.termId }) ${ 'write' === v.action ? `set to ${ v.axis }` : `kept ${ v.current }` }` ) );
 		r.products.forEach( ( p ) => console.log( `read back: ${ p.kind } id ${ p.id } ${ p.type } ${ p.status } price ${ p.price } stock ${ p.stock } image ${ p.image }${ p.variations.length ? ` variations ${ JSON.stringify( p.variations ) }` : '' }` ) );
 	} else {
 		const plan = await planFixtures( { client, creds, fetchImpl } );
 		const choice = imageChoice( repo, client, site );
-		plan.forEach( ( p ) => console.log( `${ p.action }: ${ p.kind } (${ p.sku })${ p.id ? ` id ${ p.id }` : '' }${ p.convert ? ' choice product-local, becomes the global attribute' : '' }${ p.missingVariations.length ? ` missing variations ${ p.missingVariations.join( ', ' ) }` : '' }` ) );
+		plan.forEach( ( p ) => console.log( `${ p.action }: ${ p.kind } (${ p.sku })${ p.id ? ` id ${ p.id }` : '' }${ p.convert ? ' choice product-local, becomes the global attribute' : '' }${ p.hide ? ' listed in the shop, becomes hidden' : '' }${ p.missingVariations.length ? ` missing variations ${ p.missingVariations.join( ', ' ) }` : '' }` ) );
 		planFixtureVariesBy( client, wp ).forEach( ( v ) => console.log( `variesBy: ${ v.taxonomy } ${ v.term } ${ 'missing' === v.action ? 'has no term yet' : 'write' === v.action ? `no value, would set ${ v.axis }` : `has ${ v.current }` }` ) );
 		console.log( `image: ${ choice ? `${ choice.source } ${ choice.asset }${ choice.id ? ` id ${ choice.id }` : '' }` : 'none found' }` );
 		console.log( 'dry run: nothing written (re-run with --apply)' );
