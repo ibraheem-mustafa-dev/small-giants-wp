@@ -709,8 +709,26 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": "const refuted = ( look, w ) => computed.has( w ) && ! computed.get( w ).has( look ) &&",
-		"replace": "const refuted = ( look, w ) => ! computed.get( w )?.has( look ) &&",
+		"find": "const refuted = ( look, w ) => decides.has( w ) && ! decides.get( w ).has( look ) &&",
+		"replace": "const refuted = ( look, w ) => ! decides.get( w )?.has( look ) &&",
 		"why": "a width with no computed read refutes a declaration"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const decides = null === paddingBase ? new Map( resolvedWidths( element ).map( ( w ) => [ w, computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ) ] ) ) : computed;",
+		"replace": "const decides = computed;",
+		"why": "a missing browser baseline refutes every declared padding"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const decides = null === paddingBase ? new Map( resolvedWidths( element ).map( ( w ) => [ w, computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ) ] ) ) : computed;",
+		"replace": "const decides = new Map( resolvedWidths( element ).map( ( w ) => [ w, computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ) ] ) );",
+		"why": "a padding that computes to the browser's own for the tag is taken as the draft's"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const decides = null === paddingBase ? new Map( resolvedWidths( element ).map( ( w ) => [ w, computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ) ] ) ) : computed;",
+		"replace": "const decides = null === paddingBase ? new Map() : computed;",
+		"why": "with no baseline a padding computing to zero on every side is no longer refuted"
 	}
 ]

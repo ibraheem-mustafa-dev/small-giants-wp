@@ -155,6 +155,20 @@ test( 'a declared token that computes to nothing paints nothing where the width 
 	assert.deepEqual( paintsBox( el( 'Root/1#0', 'border-radius: var(--r)', { resolved: { 375: square, 768: square, 1440: square } } ) ), {} );
 } );
 
+test( 'a declared padding with no browser baseline for its tag stands where a recorded side computes above zero (MUST FAIL where a missing baseline refutes it)', () => {
+	const pad = { 'padding-top': '64px', 'padding-right': '24px', 'padding-bottom': '64px', 'padding-left': '24px' };
+	const padded = el( 'Root/1#0', 'padding: 64px 24px', { resolved: { 375: pad, 768: pad, 1440: pad } } );
+	// No measurement in the inventory (null), or one that lacks the tag: the computed read adds no padding of its own, and
+	// the declaration it does not refute stands.
+	assert.deepEqual( paintsBox( padded, { uaPadding: null } ), { padding: [ 375, 768, 1440 ] } );
+	assert.deepEqual( paintsBox( padded, { uaPadding: { p: {} } } ), { padding: [ 375, 768, 1440 ] } );
+	// Negative controls: every side computing to zero is still no padding with no baseline; a padding that computes to the
+	// browser's own for the tag is still no padding of the draft's.
+	const zero = { 'padding-top': '0px', 'padding-right': '0px', 'padding-bottom': '0px', 'padding-left': '0px' };
+	assert.deepEqual( paintsBox( el( 'Root/1#0', 'padding: var(--section) 0', { resolved: { 375: zero, 768: zero, 1440: zero } } ), { uaPadding: null } ), {} );
+	assert.deepEqual( paintsBox( padded, { uaPadding: { div: pad } } ), {}, 'the padding is the browser\'s own for a div' );
+} );
+
 test( 'paintsBox gives each look the widths it shows at, from computed values per width and declarations at every rendered width', () => {
 	assert.deepEqual( paintsBox( el( 'Root/1#0', 'background: red' ) ), { background: [ 375, 768, 1440 ] } );
 	assert.deepEqual( paintsBox( el( 'Root/1#0', 'background: red', { visible: { 375: false, 768: true, 1440: true } } ) ), { background: [ 768, 1440 ] } );
