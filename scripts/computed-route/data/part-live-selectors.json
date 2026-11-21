@@ -1,5 +1,5 @@
 {
-	"_comment": "For a Cart or Checkout part whose settings are older than the look table, the look-table row (selectors.json rows) whose selector finds that part on the live page. A part whose name is a row's id with hyphens for underscores needs no entry. The verify pass (lib/part-look-verify.mjs) reads the live page through these selectors; a part with neither a row nor an entry is not verified and says so. `blocks` names, per block, the live selector of a part of the block's own whose block.json element has no selector or prints another selector in the mode the route writes: the signed-in account views, read with ordersRowList and orderDetailLook on (plugins/sgs-blocks/includes/account/helpers-account-orders-list.php::sgs_account_orders_list_html, helpers-account-order-detail.php::sgs_account_order_detail_html), where the orders are a list of rows and an order has its own page; and the buy box's two built-in buttons, because the flow opener wears Add to Cart's own class `buybox__add-to-cart` (plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_flow_opener_html), so the element selector of `add-to-cart` would read the opener first.",
+	"_comment": "For a Cart or Checkout part whose settings are older than the look table, the look-table row (selectors.json rows) whose selector finds that part on the live page. A part whose name is a row's id with hyphens for underscores needs no entry. The verify pass (lib/part-look-verify.mjs) reads the live page through these selectors; a part with neither a row nor an entry is not verified and says so (so is a block's own part whose block.json element declares no selector). `blocks` names, per block, the live selector of a part of the block's own whose block.json element has no selector or prints another selector in the mode the route writes: the cart's root element (the class sgs-cart in src/blocks/cart/render.php `$wrapper_classes`) and its drawer scrim (the shared `sgs-scrim` element carries only a per-instance class of its own, so it is found by its `data-sgs-scrim-open` value naming the cart's drawer: includes/helpers-scrim.php::sgs_scrim_render, called from render.php), the signed-in account views, read with ordersRowList and orderDetailLook on (plugins/sgs-blocks/includes/account/helpers-account-orders-list.php::sgs_account_orders_list_html, helpers-account-order-detail.php::sgs_account_order_detail_html), where the orders are a list of rows and an order has its own page; and the buy box's two built-in buttons, because the flow opener wears Add to Cart's own class `buybox__add-to-cart` (plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_flow_opener_html), so the element selector of `add-to-cart` would read the opener first.",
 	"parts": {
 		"line-item": "item",
 		"line-item-image": "item_image_img",
@@ -28,6 +28,10 @@
 		"sgs/buybox": {
 			"add-to-cart": ".sgs-buybox .buybox__add-to-cart:not(.buybox__add-to-cart--flow-opener)",
 			"flow-opener": ".buybox__add-to-cart--flow-opener"
+		},
+		"sgs/cart": {
+			"wrapper": ".sgs-cart",
+			"scrim": ".sgs-scrim[data-sgs-scrim-open*=\"sgs-cart__panel--drawer\"]"
 		},
 		"sgs/account": {
 			"ordersRows": ".sgs-account__orders-list .sgs-account__order",

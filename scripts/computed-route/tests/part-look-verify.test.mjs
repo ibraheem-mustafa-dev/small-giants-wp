@@ -5,7 +5,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 import { READ_PROPS, buildLook } from '../lib/fill-part-look.mjs';
-import { compareParts, liveSelectorsFor, seedOf, verifySurface } from '../lib/part-look-verify.mjs';
+import * as VERIFY from '../lib/part-look-verify.mjs';
+import { blockElementsOf, compareParts, liveSelectorsFor, seedOf, verifySurface } from '../lib/part-look-verify.mjs';
+import { REPO } from '../lib/part-look-run.mjs';
+import { reportMarkdown } from '../lib/part-look-report.mjs';
 import { runPartLook } from '../part-look.mjs';
 
 const json = ( f ) => JSON.parse( fs.readFileSync( new URL( f, import.meta.url ), 'utf8' ) );
@@ -73,8 +76,8 @@ test( 'a part is found on the live page through its look-table row, the row the 
 	assert.equal( r.selectors[ 'line-item-name' ], TABLE.rows.item_name.cart );
 	assert.match( r.none.step, /no cart selector/ );
 	assert.match( r.none.nothing, /no row/ );
-	const own = liveSelectorsFor( { parts: [ 'panel-heading', 'scrim', 'wrapper', 'missing' ], blockKey: null, table: TABLE, map: LIVE_MAP, elements: { scrim: {}, wrapper: {}, 'panel-heading': { selector: '.x' } }, short: 'cart' } );
-	assert.deepEqual( own.selectors, { 'panel-heading': '.x', scrim: '.sgs-cart__scrim', wrapper: '.sgs-cart' } );
+	const own = liveSelectorsFor( { parts: [ 'panel-heading', 'missing' ], blockKey: null, table: TABLE, map: LIVE_MAP, elements: { 'panel-heading': { selector: '.x' } }, short: 'cart' } );
+	assert.deepEqual( own.selectors, { 'panel-heading': '.x' } );
 	assert.match( own.none.missing, /no element/ );
 } );
 
@@ -197,4 +200,159 @@ test( 'a draft line height of normal is the same look as a live ratio of the fon
 	const px = ( ratio ) => `${ ratio * 19 }px`;
 	assert.equal( compareParts( { draftReads: draft, liveReads: { p: at( { 'line-height': px( 1.188 ) } ) } } ).differs.length, 0 );
 	assert.equal( compareParts( { draftReads: draft, liveReads: { p: at( { 'line-height': px( 1.4 ) } ) } } ).differs.length, 1 );
+} );
+
+// ---- a part with no selector, the basket drawer, a surface that compared nothing ------------------------------------------
+
+test( 'MUST FAIL: a block.json element with no selector has no live selector and is listed as not verified with the reason', () => {
+	const elements = { freeDeliveryTrack: {}, wrapper: { isWrapper: true }, scrim: {}, 'panel-heading': { selector: '.x' }, padded: { selector: '  .y  ' } };
+	const r = liveSelectorsFor( { parts: [ 'freeDeliveryTrack', 'wrapper', 'scrim', 'panel-heading', 'padded' ], blockKey: null, table: TABLE, map: LIVE_MAP, elements, short: 'cart', block: 'sgs/other' } );
+	assert.deepEqual( r.selectors, { 'panel-heading': '.x', padded: '.y' }, 'only the elements that declare a selector are read' );
+	for ( const part of [ 'freeDeliveryTrack', 'wrapper', 'scrim' ] ) {
+		assert.match( r.none[ part ], /declares no selector/, `${ part } is listed as not verified` );
+	}
+	// negative control: the route's own data names a selector for a part whose element declares none, and it is read
+	const named = liveSelectorsFor( { parts: [ 'scrim' ], blockKey: null, table: TABLE, map: { blocks: { 'sgs/other': { scrim: '.sgs-scrim' } } }, elements, short: 'cart', block: 'sgs/other' } );
+	assert.deepEqual( named.selectors, { scrim: '.sgs-scrim' } );
+	assert.deepEqual( named.none, {} );
+} );
+
+// The text the sgs/cart block prints its classes from: its render code, the shared panel and scrim helpers and the scripts that build the rows.
+const CART_SOURCES = ( () => {
+	const plugin = ( ...p ) => fs.readFileSync( new URL( [ '../../../plugins/sgs-blocks', ...p ].join( '/' ), import.meta.url ), 'utf8' );
+	const blockDir = [ 'src', 'blocks', 'cart' ];
+	return [ 'render.php', 'render-scoped-css.php', 'panel-render.js', 'item-row-template.js', 'free-delivery.js', 'view.js' ].map( ( f ) => plugin( ...blockDir, f ) )
+		.concat( [ 'helpers-cart-panel.php', 'helpers-cart-panel-extras.php', 'helpers-scrim.php' ].map( ( f ) => plugin( 'includes', f ) ) ).join( '\n' );
+} )();
+const printed = ( cls ) => new RegExp( `(?<![\\w-])${ cls }(?![\\w-])` ).test( CART_SOURCES );
+
+test( 'MUST FAIL: every element of sgs/cart has a live selector and each class in it is one the block\'s render code prints', () => {
+	const elements = blockElementsOf( REPO, 'cart' );
+	const parts = Object.keys( elements );
+	assert.ok( parts.length > 30, 'the cart block declares its elements' );
+	const r = liveSelectorsFor( { parts, blockKey: null, table: TABLE, map: LIVE_MAP, elements, short: 'cart', block: 'sgs/cart' } );
+	assert.deepEqual( r.none, {}, 'no element of sgs/cart is left without a selector' );
+	for ( const [ part, selector ] of Object.entries( r.selectors ) ) {
+		const classes = selector.match( /\.[A-Za-z][\w-]*/g ) || [];
+		assert.ok( classes.length, `${ part }: ${ selector } names a class` );
+		for ( const c of classes ) {
+			assert.ok( printed( c.slice( 1 ) ), `${ part }: the class ${ c } is not printed by the cart block` );
+		}
+	}
+} );
+
+test( 'negative control: the class check refuses a class the cart block never prints', () => {
+	assert.equal( printed( 'sgs-cart__free-delivery-track' ), true );
+	assert.equal( printed( 'sgs-cart__freeDeliveryTrack' ), false );
+} );
+
+// A fake Playwright page for the basket drawer: `:visible` finds the visible trigger only, a click on a hidden one cannot happen, and the panel
+// opens (or does not) when the visible trigger is clicked.
+function fakeBasketPage( { opens = true, clickFails = false } = {} ) {
+	const state = { clicked: [], waited: [] };
+	const trigger = ( name, visible ) => ( {
+		first: () => trigger( name, visible ),
+		click: async () => {
+			if ( ! visible ) {
+				throw new Error( 'element is not visible' );
+			}
+			if ( clickFails ) {
+				throw new Error( 'click timed out' );
+			}
+			state.clicked.push( name );
+		},
+	} );
+	return {
+		state,
+		locator: ( selector ) => ( /:visible/.test( selector ) ? trigger( 'visible', true ) : trigger( 'hidden', false ) ),
+		waitForSelector: async ( selector ) => {
+			state.waited.push( selector );
+			if ( ! opens || ! state.clicked.length || ! /dialog\.sgs-cart__panel\[open\]/.test( selector ) ) {
+				throw new Error( 'timeout waiting for the selector' );
+			}
+		},
+	};
+}
+
+test( 'MUST FAIL: the basket drawer is opened through the first visible trigger and the read needs the panel open', async () => {
+	const page = fakeBasketPage();
+	await VERIFY.openBasketDrawer( page );
+	assert.deepEqual( page.state.clicked, [ 'visible' ], 'the visible trigger was clicked, not the first one in the markup' );
+	assert.ok( page.state.waited.some( ( s ) => /dialog\.sgs-cart__panel\[open\]/.test( s ) ), 'the open panel was waited for' );
+} );
+
+test( 'MUST FAIL: a basket drawer that does not open, or a click that fails, fails the read with an error that says so', async () => {
+	await assert.rejects( VERIFY.openBasketDrawer( fakeBasketPage( { opens: false } ) ), /basket panel did not open/ );
+	await assert.rejects( VERIFY.openBasketDrawer( fakeBasketPage( { clickFails: true } ) ), /basket trigger could not be clicked/ );
+} );
+
+// A fake browser launcher around fakeBasketPage: the page answers the loads and reads readLiveSurface makes with one shown element.
+function fakeChromium( options ) {
+	const pages = [];
+	return {
+		pages,
+		launch: async () => ( {
+			newContext: async () => ( {
+				newPage: async () => {
+					const inner = fakeBasketPage( options );
+					pages.push( inner );
+					return {
+						locator: inner.locator,
+						waitForSelector: async ( selector ) => ( /dialog\.sgs-cart__panel/.test( selector ) ? inner.waitForSelector( selector ) : undefined ),
+						goto: async () => {},
+						waitForLoadState: async () => {},
+						waitForTimeout: async () => {},
+						evaluate: async ( fn, args ) => ( args?.selectors ? { heading: { matched: 1, instances: [ { key: 'k', tag: 'h2', text: 'x', styles: {} } ] } } : undefined ),
+					};
+				},
+				close: async () => {},
+			} ),
+			close: async () => {},
+		} ),
+	};
+}
+
+test( 'MUST FAIL: the header read opens the basket panel and stops with an error when it stays shut; a read that needs no panel never clicks', async () => {
+	const args = { base: 'http://x', pagePath: '/p/', selectors: { heading: 'h2' }, props: [ 'color' ] };
+	const shut = fakeChromium( { opens: false } );
+	await assert.rejects( VERIFY.readLiveSurface( { ...args, openDrawer: true, chromium: shut } ), /basket panel did not open/ );
+	const open = fakeChromium( {} );
+	const read = await VERIFY.readLiveSurface( { ...args, openDrawer: true, chromium: open } );
+	assert.deepEqual( Object.keys( read.reads ), [ 'heading' ] );
+	assert.ok( open.pages.every( ( p ) => 1 === p.state.clicked.length ), 'the visible trigger was clicked once at every width' );
+	const plain = fakeChromium( {} );
+	await VERIFY.readLiveSurface( { ...args, chromium: plain } );
+	assert.ok( plain.pages.every( ( p ) => 0 === p.state.clicked.length ), 'negative control: a surface that is not the header clicks nothing' );
+} );
+
+test( 'MUST FAIL: a surface whose draft located parts but whose live read compared nothing fails, with the parts and why', async () => {
+	const f = fake( {} );
+	f.readLive = async () => ( { reads: {}, shown: { heading: 0 } } );
+	const bi = inputs();
+	const v = await verifySurface( { buildInputs: bi, built: buildLook( bi ), selectorsNone: { footer: 'the block.json element of this part declares no selector' }, ...f } );
+	assert.equal( v.counts.compared, 0 );
+	assert.equal( v.failures.length, 1 );
+	assert.match( v.failures[ 0 ], /draft located 1 part/ );
+	assert.match( v.failures[ 0 ], /heading/ );
+	assert.match( v.failures[ 0 ], /footer: the block\.json element of this part declares no selector/ );
+} );
+
+test( 'negative control: a surface that compared pairs, or whose draft located no part, has no failure', async () => {
+	const f = fake( {} );
+	const bi = inputs();
+	const compared = await verifySurface( { buildInputs: bi, built: buildLook( bi ), ...f } );
+	assert.ok( compared.counts.compared > 0 );
+	assert.deepEqual( compared.failures, [] );
+	const none = inputs( { reads: {} } );
+	const g = fake( {} );
+	g.readLive = async () => ( { reads: {}, shown: {} } );
+	const nothing = await verifySurface( { buildInputs: none, built: buildLook( none ), ...g } );
+	assert.equal( nothing.counts.compared, 0 );
+	assert.deepEqual( nothing.failures, [] );
+} );
+
+test( 'the report names a failed verify, and says nothing when none failed', () => {
+	const args = { client: 'x', site: 'local-x', compare: false, generated: 'now', surfaces: {}, totals: {} };
+	assert.match( reportMarkdown( { ...args, failures: [ 'header: the draft located 2 parts and the live read compared no pair' ] } ), /## Verify failed\n\n- header: the draft located 2 parts/ );
+	assert.doesNotMatch( reportMarkdown( { ...args, failures: [] } ), /Verify failed/ );
 } );

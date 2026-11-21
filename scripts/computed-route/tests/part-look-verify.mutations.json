@@ -1,0 +1,80 @@
+[
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( declared ) {\n\t\t\t\tselectors[ part ] = declared;",
+		"replace": "if ( true ) {\n\t\t\t\tselectors[ part ] = declared || `.sgs-${ short }__${ part }`;",
+		"why": "an element with no selector is read through a class made up from its name"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "'string' === typeof elements[ part ].selector ? elements[ part ].selector.trim() : ''",
+		"replace": "'string' === typeof elements[ part ].selector ? elements[ part ].selector : ''",
+		"why": "a declared selector keeps the spaces around it"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "const named = block ? map?.blocks?.[ block ]?.[ part ] : null;",
+		"replace": "const named = null;",
+		"why": "the route's own selector for a part whose element declares none is ignored"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "await page.locator( '.sgs-cart__trigger:visible' ).first().click( { timeout: 5000 } );",
+		"replace": "await page.locator( '.sgs-cart__trigger' ).first().click( { timeout: 5000 } );",
+		"why": "the first trigger in the markup is clicked, visible or not"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "await page.locator( '.sgs-cart__trigger:visible' ).first().click( { timeout: 5000 } );",
+		"replace": "await page.locator( '.sgs-cart__trigger:visible' ).first().click( { timeout: 5000 } ).catch( () => {} );",
+		"why": "a click that fails is ignored"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "await page.waitForSelector( 'dialog.sgs-cart__panel[open], .sgs-cart__panel--flyout:not([hidden])', { state: 'visible', timeout: 5000 } );",
+		"replace": "void 0;",
+		"why": "the read does not wait for the panel to be open"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "await page.waitForSelector( 'dialog.sgs-cart__panel[open], .sgs-cart__panel--flyout:not([hidden])', { state: 'visible', timeout: 5000 } );",
+		"replace": "await page.waitForSelector( '.sgs-cart__panel', { state: 'attached', timeout: 5000 } );",
+		"why": "any panel element counts as open, shut or not"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( openDrawer ) {\n\t\t\t\t\tawait openBasketDrawer( page );",
+		"replace": "if ( openDrawer ) {\n\t\t\t\t\tawait page.locator( '.sgs-cart__trigger' ).first().click( { timeout: 5000 } ).catch( () => {} );",
+		"why": "the header read goes back to clicking the first trigger and ignoring a failure"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( draftLocated.length && 0 === cmp1.compared.size ) {",
+		"replace": "if ( false ) {",
+		"why": "a surface that compared nothing passes"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( draftLocated.length && 0 === cmp1.compared.size ) {",
+		"replace": "if ( 0 === cmp1.compared.size ) {",
+		"why": "a surface whose draft located no part fails too"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "if ( draftLocated.length && 0 === cmp1.compared.size ) {",
+		"replace": "if ( draftLocated.length ) {",
+		"why": "a surface that compared pairs fails too"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "...Object.entries( selectorsNone ).map( ( [ part, why ] ) => `${ part }: ${ why }` ),",
+		"replace": "",
+		"why": "the failure does not say which parts had no live selector"
+	},
+	{
+		"file": "lib/part-look-report.mjs",
+		"find": "failures.length && lines.push( '## Verify failed',",
+		"replace": "false && lines.push( '## Verify failed',",
+		"why": "the report hides a failed verify"
+	}
+]

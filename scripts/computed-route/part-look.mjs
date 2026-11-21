@@ -16,6 +16,8 @@
 //              read on a real product instead, linked to a choice flow where the draft draws the flow's opener), reads each paired part on the
 //              live page at the three widths, writes the settings whose live value differs from the draft's (and takes back a write that changed
 //              nothing) and reports what still differs. It needs a `local-mediatest-*` --site; set SGS_SECRETS_ROOT in a worktree.
+//              A surface whose draft located parts and whose live read compared none of them fails: the report is written, each reason is
+//              printed as VERIFY FAILED and the exit code is 1. A header read whose basket panel stays shut throws (exit 2).
 //   my-account-in  the account's signed-in views (orders, an order's page, addresses, details): the draft is signed in on its own
 //              sign-in page and read view by view (lib/part-look-signed-in.mjs); --verify reads the copy signed in as --login <user:pass>
 //              (the seeded customer) on every view its menu links to and the seed's order page.
@@ -91,6 +93,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	const outDir = out || path.join( buildDir, 'qa', 'part-look', stamp );
 	fs.mkdirSync( outDir, { recursive: true } );
 	const results = {};
+	const failures = [];
 	const notes = snapshotNote ? [ snapshotNote ] : [];
 	for ( const surface of wanted ) {
 		const loc = locators.surfaces[ surface ];
@@ -230,6 +233,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 				readSaved: async () => readSavedBlock( { site, postId: result.postId, block: loc.block } ).attrs,
 				selectorsNone: live.none, selectors: live.selectors, log,
 			} );
+			failures.push( ...result.verify.failures.map( ( f ) => `${ surface }: ${ f }` ) );
 			if ( shots && loc.signedIn ) {
 				result.shots = { ...( result.shots || {} ), after: await shootLiveSignedIn( { base, pagePath: pagePathOf(), login: signedIn.login, orderView: signedIn.orderView, dir: outDir, prefix: `${ surface }-after` } ) };
 			} else if ( shots ) {
@@ -240,10 +244,10 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		results[ surface ] = result;
 	}
 	const totals = totalsOf( results );
-	const report = { client, site, compare, generated: new Date().toISOString(), outDir, widths: [ 1440, 768, 375 ], notes, totals, surfaces: results };
+	const report = { client, site, compare, generated: new Date().toISOString(), outDir, widths: [ 1440, 768, 375 ], notes, failures, totals, surfaces: results };
 	fs.writeFileSync( path.join( outDir, 'report.json' ), `${ JSON.stringify( report, null, '\t' ) }\n` );
-	fs.writeFileSync( path.join( outDir, 'report.md' ), reportMarkdown( { client, site, compare, generated: report.generated, surfaces: results, totals, notes } ) );
-	return { outDir, totals, report };
+	fs.writeFileSync( path.join( outDir, 'report.md' ), reportMarkdown( { client, site, compare, generated: report.generated, surfaces: results, totals, notes, failures } ) );
+	return { outDir, totals, report, failures };
 }
 
 // `--login user:pass`: the seeded customer the signed-in views are read as ({ user, pass }); the password may hold a colon.
@@ -275,6 +279,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			console.log( `${ block }: ${ t.written } values to write (${ t.knownFaultWrites } known not to paint), table rows paired ${ t.tableRowsPaired}/${ t.tableRowsPresent }, parts paired ${ t.partsPaired }/${ t.partsWithSettings }, ${ t.unpaired } unpaired, ${ t.noLocator } no locator, ${ t.noSetting } no setting${ t.compare ? `; compare: equal ${ t.compare.equal }, differs ${ t.compare.differs }, hand-set only ${ t.compare.handSetOnly }, route only ${ t.compare.routeOnly }` : '' }` );
 		}
 		console.log( `Report: ${ path.join( r.outDir, 'report.md' ) }` );
+		if ( r.failures.length ) {
+			r.failures.forEach( ( f ) => console.error( `VERIFY FAILED ${ f }` ) );
+			process.exitCode = 1;
+		}
 	} catch ( e ) {
 		console.error( e.message );
 		process.exit( 2 );

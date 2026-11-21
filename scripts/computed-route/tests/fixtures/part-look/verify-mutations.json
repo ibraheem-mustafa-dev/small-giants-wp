@@ -46,11 +46,5 @@
 		"find": "const rowId = map?.parts?.[ part ] || part.replace( /-/g, '_' );",
 		"replace": "const rowId = map?.parts?.[ part ] || part;",
 		"why": "a part is not found through its row id"
-	},
-	{
-		"file": "lib/part-look-verify.mjs",
-		"find": "( [ 'wrapper', 'box' ].includes( part ) ? `.sgs-${ short }` : `.sgs-${ short }__${ part }` );",
-		"replace": "`.sgs-${ short }__${ part }`;",
-		"why": "a block's wrapper is looked for as an element named wrapper"
 	}
 ]

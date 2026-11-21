@@ -163,7 +163,8 @@ test( 'a part the live map names for the block is read through that selector; an
 	const mine = liveSelectorsFor( { parts: [ 'ordersRows', 'heading', 'od-back' ], blockKey: null, table: {}, map: LIVE, elements, short: 'account', block: 'sgs/account' } );
 	assert.equal( mine.selectors.ordersRows, LIVE.blocks[ 'sgs/account' ].ordersRows );
 	assert.equal( mine.selectors[ 'od-back' ], '.sgs-account__od-back' );
-	assert.equal( mine.selectors.heading, '.sgs-account__heading' );
+	assert.equal( mine.selectors.heading, undefined, 'an element with no selector is not read through a class made up from its name' );
+	assert.match( mine.none.heading, /declares no selector/ );
 	const other = liveSelectorsFor( { parts: [ 'ordersRows', 'od-back' ], blockKey: null, table: {}, map: LIVE, elements, short: 'account', block: 'sgs/other' } );
 	assert.equal( other.selectors.ordersRows, '.table-row' );
 	assert.ok( other.none[ 'od-back' ] );

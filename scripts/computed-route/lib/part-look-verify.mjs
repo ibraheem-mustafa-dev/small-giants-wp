@@ -13,9 +13,10 @@ import { COVERS, LOOKS, WIDTHS, buildLook, primitive, readPart, samePrimitive } 
 import { sameSetting } from './part-look-compare.mjs';
 
 // A part's live selector. WooCommerce blocks: the look table's selector for the part's row (the part named for the row's id, or the
-// row `map.parts` names for a part older than the table). The block's own parts: `supports.sgs.elements[part].selector`, else the
-// block's BEM class for an element of that name. A part `map.blocks[block]` names takes that selector first (a part whose block.json
-// element has no selector, or one the block prints only in another mode). Returns { selectors: { part: selector }, none: { part: reason } }.
+// row `map.parts` names for a part older than the table). The block's own parts: `supports.sgs.elements[part].selector`; an element with no
+// selector has none (no class is made up from its name) and is listed in `none` with the reason. A part `map.blocks[block]` names takes that
+// selector first (a part whose block.json element has no selector, or one the block prints only in another mode).
+// Returns { selectors: { part: selector }, none: { part: reason } }.
 export function liveSelectorsFor( { parts, blockKey, table, map, elements, short, block = null } ) {
 	const selectors = {};
 	const none = {};
@@ -36,7 +37,14 @@ export function liveSelectorsFor( { parts, blockKey, table, map, elements, short
 				selectors[ part ] = sel;
 			}
 		} else if ( elements?.[ part ] ) {
-			selectors[ part ] = elements[ part ].selector || ( [ 'wrapper', 'box' ].includes( part ) ? `.sgs-${ short }` : `.sgs-${ short }__${ part }` );
+			// A class is never made up from the part's name: the block prints its own spelling (`.sgs-cart__free-delivery-track` for the
+			// part freeDeliveryTrack), so an element that declares no selector is not read, and says so.
+			const declared = 'string' === typeof elements[ part ].selector ? elements[ part ].selector.trim() : '';
+			if ( declared ) {
+				selectors[ part ] = declared;
+			} else {
+				none[ part ] = `the block's block.json element of this part declares no selector${ short ? ` (and data/part-live-selectors.json names none for ${ block ?? `sgs/${ short }` })` : '' }`;
+			}
 		} else {
 			none[ part ] = 'the block\'s block.json names no element of this part';
 		}
@@ -203,7 +211,17 @@ export async function verifySurface( { buildInputs, built, readLive, patch, read
 			noSetting.push( { ...n, live: null, liveRead: false } );
 		}
 	}
-	return { stillDiffers, kept, takenBack, noEffect, noSetting, droppedNoSetting: dropped, counts: { compared: cmp1.compared.size, matched: cmp1.matched.size, differs: cmp1.differs.length, written: kept.length, takenBack: takenBack.length, stillShown: stillShown.length, noSettingBefore: built.noSetting.length, noSettingAfter: noSetting.filter( ( n ) => false !== n.liveRead ).length }, notVerified: selectorsNone };
+	// A surface whose draft located parts and whose live read compared none of them proved nothing: it fails, with the parts and why.
+	const failures = [];
+	const draftLocated = Object.keys( buildInputs.reads || {} ).filter( ( part ) => Object.values( buildInputs.reads[ part ] || {} ).some( ( l ) => l.length ) );
+	if ( draftLocated.length && 0 === cmp1.compared.size ) {
+		const reasons = [
+			...Object.entries( selectorsNone ).map( ( [ part, why ] ) => `${ part }: ${ why }` ),
+			...Object.entries( selectors ).filter( ( [ part ] ) => ! first.reads[ part ] ).map( ( [ part, sel ] ) => `${ part }: ${ sel } shows no element on the live page` ),
+		];
+		failures.push( `the draft located ${ draftLocated.length } part${ 1 === draftLocated.length ? '' : 's' } (${ draftLocated.join( ', ' ) }) and the live read compared no part and property pair${ reasons.length ? `: ${ reasons.join( '; ' ) }` : '' }` );
+	}
+	return { stillDiffers, kept, takenBack, noEffect, noSetting, droppedNoSetting: dropped, failures, counts: { compared: cmp1.compared.size, matched: cmp1.matched.size, differs: cmp1.differs.length, written: kept.length, takenBack: takenBack.length, stillShown: stillShown.length, noSettingBefore: built.noSetting.length, noSettingAfter: noSetting.filter( ( n ) => false !== n.liveRead ).length }, notVerified: selectorsNone };
 }
 
 // ---- the browser effect -------------------------------------------------------------------------------------------------
@@ -251,10 +269,28 @@ export function seedOf( text ) {
 	return seed.product;
 }
 
+// Opens the basket panel the way a visitor does and confirms it is open: clicks the first trigger that is visible (the header may hold a
+// trigger per width, one hidden) and waits for the panel the block prints. A drawer is `dialog.sgs-cart__panel` (includes/helpers-cart-panel.php::
+// sgs_cart_panel_wrapper_html, opened by the shared nav store's showModal, so it carries `open`); a flyout is `.sgs-cart__panel--flyout`, whose
+// `hidden` attribute src/blocks/cart/flyout.js removes on open. A trigger that cannot be clicked, or a panel that stays shut (link mode builds
+// none), throws: a read taken with the panel closed would compare nothing of the panel.
+export async function openBasketDrawer( page ) {
+	try {
+		await page.locator( '.sgs-cart__trigger:visible' ).first().click( { timeout: 5000 } );
+	} catch ( e ) {
+		throw new Error( `the basket trigger could not be clicked (no visible .sgs-cart__trigger, or it refused the click): ${ String( e.message ).split( '\n' )[ 0 ] }` );
+	}
+	try {
+		await page.waitForSelector( 'dialog.sgs-cart__panel[open], .sgs-cart__panel--flyout:not([hidden])', { state: 'visible', timeout: 5000 } );
+	} catch ( e ) {
+		throw new Error( 'the basket panel did not open after the trigger was clicked (no dialog.sgs-cart__panel[open] and no shown flyout panel), so the header surface was not read' );
+	}
+}
+
 // Reads the live page at each width: { reads: { part: { width: [ instance ] } }, shown: { part: count at 1440 } }. The page is opened
-// as a visitor with the seed's product in the basket; `openDrawer` clicks the basket button first (the header's basket panel).
-export async function readLiveSurface( { base, pagePath, selectors, props, product = null, openDrawer = false, headed = false } ) {
-	const { chromium } = await loadChromium();
+// as a visitor with the seed's product in the basket; `chromium` is the browser launcher (tests pass a fake); `openDrawer` opens the header's basket panel first (`openBasketDrawer`: the read fails if it stays shut).
+export async function readLiveSurface( { base, pagePath, selectors, props, product = null, openDrawer = false, headed = false, chromium: given = null } ) {
+	const chromium = given ?? ( await loadChromium() ).chromium;
 	const browser = await chromium.launch( { headless: ! headed, args: [ '--hide-scrollbars' ] } );
 	const reads = {};
 	const shown = {};
@@ -279,7 +315,7 @@ export async function readLiveSurface( { base, pagePath, selectors, props, produ
 				await page.waitForSelector( '.wc-block-components-product-name, .sgs-cart__item', { state: 'attached', timeout: 20000 } ).catch( () => {} );
 				await page.evaluate( () => document.fonts && document.fonts.ready ).catch( () => {} );
 				if ( openDrawer ) {
-					await page.locator( '.sgs-cart__trigger' ).first().click( { timeout: 5000 } ).catch( () => {} );
+					await openBasketDrawer( page );
 				}
 				await page.waitForTimeout( 1500 );
 				const found = await page.evaluate( readLiveInPage, { selectors, props } );
