@@ -191,7 +191,8 @@ export function makeSlotRows( ctx ) {
 		for ( let depth = 0; 1 === kids.length && depth < 4 && 'unwrap' === cls.classify( kids[ 0 ], parentBlock ).action; depth++ ) {
 			kids = m.blockKids( kids[ 0 ] );
 		}
-		const top = 1 === kids.length ? cls.classify( kids[ 0 ], parentBlock ) : null;		const s = top && ! top.action ? entries.find( ( x ) => top.candidates?.[ 0 ]?.block === x.block ) : null;
+		const top = 1 === kids.length ? cls.classify( kids[ 0 ], parentBlock ) : null;
+		const s =top && ! top.action ? entries.find( ( x ) => top.candidates?.[ 0 ]?.block === x.block ) : null;
 		const settings = s ? calSettings( s.block ) || {} : {};
 		const calibrated = s ? settings[ s.setting ] : null;
 		if ( ! calibrated || ! [ calibrated.slot, ...( calibrated.slots || [] ) ].includes( s.slot ) ) {
