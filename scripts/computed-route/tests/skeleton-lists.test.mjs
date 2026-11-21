@@ -183,3 +183,12 @@ test( 'negative controls: plain div rows of a ul have no item slot, and a row th
 	assert.deepEqual( Object.keys( marked.draftSlots || {} ).filter( ( s ) => ! s.endsWith( '__icon' ) ), [], 'a drawn marker has no item slot' );
 	assert.equal( Object.keys( marked.draftSlots || {} ).length, 3 );
 } );
+
+test( 'a list row that lays its marker and text out records that the list block lays them out (host-layout on the list node); MUST FAIL without the record', () => {
+	const r = runCal( rowsOf( 3, bulleted( 'A point' ) ) );
+	const list = lists( r )[ 0 ];
+	const row = r.proposal.rows.find( ( x ) => 'Root/3#1' === x.key );
+	assert.deepEqual( row.conserve, [ { kind: 'host-layout', node: list.draftRef.tpl, looks: [ 'layout' ] } ] );
+	const plain = runCal( plainRows( 'div', 'block' ) );
+	assert.equal( plain.proposal.rows.find( ( x ) => 'Root/3#1' === x.key ).conserve, undefined, 'negative control: a block row lays nothing out' );
+} );

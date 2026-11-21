@@ -60,3 +60,25 @@ test( 'negative control: a short phrase is not one glyph, and an empty element o
 	assert.deepEqual( slotTpls( listOf( () => '→', undefined, false, 'button' ) ), [], 'a button is a control, not a marker' );
 	assert.deepEqual( slotTpls( listOf( () => '→', undefined, false, 'span', false ) ), [], 'a first child no width shows is not a marker' );
 } );
+
+// Rows of text, each after a typed ordinal: a row that paints a look of its own (padding, a rule) is read at its copy's item part
+// too, as the marker is at the marker part (lib/skeleton-write-units.mjs::markerSlotsOf); a row that paints nothing is not.
+const textRows = ( style, tag = 'div' ) => {
+	const rows = [];
+	[ 'Trade accounts', 'Orders', 'Pricing' ].forEach( ( words, i ) => {
+		const n = 4 + i * 2;
+		rows.push( el( `Root/${ n }#0`, 'Root/3#0', tag, words, { depth: 3, attrs: { ...( style ? { style } : {} ), ...( 'a' === tag ? { href: `#/${ i }` } : {} ) }, box: boxAt( i * 30 ), allText: `0${ i + 1 } ${ words }` } ) );
+		rows.push( el( `Root/${ n + 1 }#0`, `Root/${ n }#0`, 'span', `0${ i + 1 }`, { depth: 4, box: boxAt( i * 30, 16, 0, 16 ) } ) );
+	} );
+	return { generated: 'x', source: 'planted', root: 'main', keyFormat: 'x', checks: { duplicateKeys: 0 }, elements: [ el( 'Root/1#0', null, 'main', '', { depth: 0 } ), el( 'Root/2#0', 'Root/1#0', 'div', '' ), el( 'Root/3#0', 'Root/2#0', 'div', '', { depth: 2 } ), ...rows ] };
+};
+const itemTpls = ( style, tag ) => {
+	const list = nodes( proposeSkeleton( { inventory: textRows( style, tag ), facts: facts(), surface: 'page', surfaceKind: 'page', surfaceName: 'Fixture', db, calSettings: ( b ) => ( 'sgs/icon-list' === b ? CAL : {} ) } ).skeleton ).find( ( n ) => facts().listSlug === n.name );
+	return Object.entries( list?.draftSlots || {} ).filter( ( [ s ] ) => /__item:nth-of-type\(\d\)$/.test( s ) ).map( ( [ sl, f ] ) => [ sl, f.tpl ] );
+};
+
+test( 'MUST FAIL: a padded text row beside its marker is read at its own copy\'s item part; negative control: a row that paints nothing is not', () => {
+	assert.deepEqual( itemTpls( 'padding:8px 0 8px 16px' ), [ [ '.sgs-icon-list > .sgs-icon-list__item:nth-of-type(1)', 'Root/4#0' ], [ '.sgs-icon-list > .sgs-icon-list__item:nth-of-type(2)', 'Root/6#0' ], [ '.sgs-icon-list > .sgs-icon-list__item:nth-of-type(3)', 'Root/8#0' ] ] );
+	assert.deepEqual( itemTpls( null ), [] );
+	assert.deepEqual( itemTpls( 'padding:8px 0 8px 16px', 'a' ), [], 'a padded link row is the link part\'s, never the item\'s' );
+} );

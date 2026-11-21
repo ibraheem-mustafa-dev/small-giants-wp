@@ -13,8 +13,8 @@
 	},
 	{
 		"file": "lib/skeleton-write-units.mjs",
-		"find": "el ? ( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) ) : item &&",
-		"replace": "true ? ( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) ) : item &&",
+		"find": "el && ( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) );",
+		"replace": "( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) );",
 		"why": "an item with no marker element is given a slot"
 	},
 	{

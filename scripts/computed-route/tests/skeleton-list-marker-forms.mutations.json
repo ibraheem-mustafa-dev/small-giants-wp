@@ -46,5 +46,17 @@
 		"find": "[ 'a', 'button', 'input', 'select', 'textarea', 'label', 'form' ].includes( k.tag ) ||",
 		"replace": "false ||",
 		"why": "a link is no control"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "item && ( el ? 'a' !== row.tag && rowLooks( row ).some( ( l ) => 'layout' !== l ) : 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );",
+		"replace": "item && ! el && ( 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );",
+		"why": "a padded text row beside its marker is not read at its item part"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "item && ( el ? 'a' !== row.tag && rowLooks",
+		"replace": "item && ( el ? rowLooks",
+		"why": "a link row is read at the item part"
 	}
 ]

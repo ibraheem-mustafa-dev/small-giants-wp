@@ -10,6 +10,7 @@ import { finish, W } from './skeleton-classify.mjs';
 import { itemSlots, drawnSvgParts } from './skeleton-part-slots.mjs';
 import { markerPart, markerSlotAt, itemSlotAt, markerSettingsFrom, ordinal, glyph } from './fill-list-marker.mjs';
 import { unitSlots } from './skeleton-child-slots.mjs';
+import { paintsBox } from './skeleton-paint-conservation.mjs';
 
 export const LOGO_HANDOVER = { owner: 'site-info', kind: 'presence', detail: 'the logo image: a logo block\'s image setting paints a measured size, so a skeleton cannot hold it; choose the site logo in the editor' };
 
@@ -221,15 +222,18 @@ export function makeUnits( ctx ) {
 	// The marker element a list row draws before its text: its first drawn svg, else its leading dot, bar, ordinal or glyph.
 	const markerElOf = ( row ) => ( drawnSvgParts( m.kids( row ), m.isPart )[ 0 ] ?? leadingMarker( row )?.el ?? null );
 	// { <marker part slot of item copy k>: finder } for the rows that draw a marker element, and { <item part slot of copy k>:
-	// finder } for a list-item row with none (its CSS draws the marker: lib/fill-list-marker.mjs::drawnByCss), when the block's
-	// calibration holds a marker part.
+	// finder } for a list-item row with none (its CSS draws the marker: lib/fill-list-marker.mjs::drawnByCss) and for a row of
+	// text beside its marker that paints a box of its own (a padded or ruled row: rowLooks), when the block's calibration holds a
+	// marker part. A link row is the link part's, never the item's; a row's marker-and-text layout is the list block's own.
+	const rowLooks = ( row ) => Object.keys( paintsBox( row, { declared: view?.declared?.( row ) ?? {}, parent: m.byKey[ row.parentKey ] ?? null, children: m.kids( row ).length } ) );
 	const markerSlotsOf = ( slug, rows ) => {
 		const part = markerPart( ctx.calSettings?.( slug ) );
 		const out = {};
 		part && rows.forEach( ( row, i ) => {
 			const el = markerElOf( row );
 			const item = itemSlotAt( part, i + 1 );
-			el ? ( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) ) : item && ( 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );
+			el && ( out[ markerSlotAt( part, i + 1 ) ] = finder( el ) );
+			item && ( el ? 'a' !== row.tag && rowLooks( row ).some( ( l ) => 'layout' !== l ) : 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );
 		} );
 		return out;
 	};
@@ -301,7 +305,10 @@ export function makeUnits( ctx ) {
 				return record( l, { action: 'remove', reason: b ? `brief-only line (${ b.id }): ${ b.reason }` : o.reason || o.source, source: b ? `decisions ${ b.id }` : o.source, confidence: 0.9, candidates: [] } );
 			}
 			const at = items[ els.filter( ( x, j ) => j < i && ! removedBy( x ) ).length ];
-			const row = record( l, i === els.findIndex( ( x ) => ! removedBy( x ) ) ? r : { ...r, candidates: r.candidates.slice( 0, 1 ) }, { unit: 'list', item: at, ...( at[ li.siteInfoSource ] ? { siteInfoKind: at[ li.siteInfoSource ] } : {} ) } );
+			// The list block lays each item's marker and text out itself: a row that lays them out records the list's node
+			// (lib/skeleton-paint-conservation.mjs host-layout).
+			const lays = node.draftRef?.tpl && rowLooks( l ).includes( 'layout' ) ? { conserve: [ { kind: 'host-layout', node: node.draftRef.tpl, looks: [ 'layout' ] } ] } : {};
+			const row = record( l, { ...( i === els.findIndex( ( x ) => ! removedBy( x ) ) ? r : { ...r, candidates: r.candidates.slice( 0, 1 ) } ), ...lays }, { unit: 'list', item: at, ...( at[ li.siteInfoSource ] ? { siteInfoKind: at[ li.siteInfoSource ] } : {} ) } );
 			absorbSubtree( l, { block: slug, key: l.key }, 'the list item\'s marker', 'drawsChildren' );
 			return row;
 		} );

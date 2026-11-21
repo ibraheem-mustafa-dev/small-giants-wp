@@ -121,26 +121,44 @@
 	},
 	{
 		"file": "lib/skeleton-write-units.mjs",
-		"find": "item && ( 'li' === row.tag || 'list-item' === row.display ) && (",
-		"replace": "item && (",
+		"find": ": 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );",
+		"replace": ": true ) && ( out[ item ] = finder( row ) );",
 		"why": "every row with no marker element is read at the item part"
 	},
 	{
 		"file": "lib/skeleton-write-units.mjs",
-		"find": "item && ( 'li' === row.tag || 'list-item' === row.display ) && (",
-		"replace": "false && (",
+		"find": ": 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );",
+		"replace": ": false ) && ( out[ item ] = finder( row ) );",
 		"why": "no list-item row is read at the item part"
 	},
 	{
 		"file": "lib/skeleton-write-units.mjs",
-		"find": "( 'li' === row.tag || 'list-item' === row.display )",
-		"replace": "( 'list-item' === row.display )",
+		"find": ": 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );",
+		"replace": ": 'list-item' === row.display ) && ( out[ item ] = finder( row ) );",
 		"why": "an li whose display was reset is no list item"
 	},
 	{
 		"file": "lib/skeleton-write-units.mjs",
-		"find": "( 'li' === row.tag || 'list-item' === row.display )",
-		"replace": "( 'li' === row.tag )",
+		"find": ": 'li' === row.tag || 'list-item' === row.display ) && ( out[ item ] = finder( row ) );",
+		"replace": ": 'li' === row.tag ) && ( out[ item ] = finder( row ) );",
 		"why": "a div displayed as a list item is no list item"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "rowLooks( row ).some( ( l ) => 'layout' !== l )",
+		"replace": "rowLooks( row ).length > 0",
+		"why": "a row that only lays out its marker and text gets an item slot"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const lays = node.draftRef?.tpl && rowLooks( l ).includes( 'layout' ) ?",
+		"replace": "const lays = false ?",
+		"why": "a list row that lays out its marker and text records nothing"
+	},
+	{
+		"file": "lib/skeleton-write-units.mjs",
+		"find": "const lays = node.draftRef?.tpl && rowLooks( l ).includes( 'layout' ) ?",
+		"replace": "const lays = node.draftRef?.tpl ?",
+		"why": "every list row records host-layout, laid out or not"
 	}
 ]
