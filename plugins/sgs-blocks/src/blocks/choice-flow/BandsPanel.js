@@ -2,7 +2,8 @@
  * sgs/choice-flow: the bands and boxes (Spec 02 FR-2-34). The "Bands and summary box" inspector panel (the header and
  * footer bands' rules and padding, the summary box's border and padding), their colour rows for the block's one
  * `SgsColourPanel`, and the canvas twin of `includes/choice-flow-bands.php` (`BandsStyle`) for the parts the canvas
- * draws (the header band and the progress track; the footer and the summary box are drawn only on the page).
+ * draws (the header band and the progress track; the footer, the summary box and the help note's icon disc are drawn only
+ * on the page). The panel also holds the help note icon disc's size.
  *
  * Every setting is unset by default; an unset value adds nothing to the canvas or the page.
  *
@@ -11,8 +12,8 @@
 
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
-import { TierBorderControl, fillRow } from '../../components';
+import { PanelBody, RangeControl } from '@wordpress/components';
+import { ResponsiveOverride, TierBorderControl, fillRow } from '../../components';
 import { colourVar, tierBoxLonghands, usePreviewTier } from '../../utils';
 import { TierPadding, cssText, tierBorderPreview } from '../choice-flow-question/OptionCardPanels';
 
@@ -45,6 +46,25 @@ export default function BandsPanel( { attributes, setAttributes } ) {
 						/>
 					</div>
 				) ) }
+				<ResponsiveOverride
+					value={ attributes.stageNoteIconCircleSize }
+					onChange={ ( obj ) => setAttributes( { stageNoteIconCircleSize: obj } ) }
+				>
+					{ ( { ownValue, setOwnValue } ) => (
+						<RangeControl
+							label={ __( 'Help note icon disc size (px)', 'sgs-blocks' ) }
+							help={ __( 'The disc behind the help note’s icon in the showcase layout. Empty keeps 34px; the icon keeps its own size.', 'sgs-blocks' ) }
+							value={ 'number' === typeof ownValue ? ownValue : undefined }
+							onChange={ ( val ) => setOwnValue( val ) }
+							min={ 16 }
+							max={ 96 }
+							step={ 1 }
+							allowReset
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ResponsiveOverride>
 			</PanelBody>
 		</InspectorControls>
 	);

@@ -248,6 +248,28 @@
 					"motion": false,
 					"_note": "The rules between the summary's lines and above its total: summaryDividerColour paints the border colour of .sgs-choice-flow__summary-lines and .sgs-choice-flow__summary-total (includes/choice-flow-bands.php)."
 				},
+				"note-icon": {
+					"absentIn": [
+						"compact"
+					],
+					"absentWhy": "The help note with its icon disc prints only in the showcase layout, and only when the note has an icon.",
+					"selector": ".sgs-choice-flow__summary-note-icon",
+					"label": "Help note icon disc",
+					"layer": "CONTENT",
+					"order": 5,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"attrMap": {
+						"css:background-color": "stageNoteIconColour",
+						"css:background-image": "stageNoteIconColourGradient",
+						"css:width": "stageNoteIconCircleSize",
+						"css:height": "stageNoteIconCircleSize"
+					},
+					"motion": false,
+					"_note": "The disc behind the help note's icon (includes/choice-flow-showcase.php prints it when stageNoteIcon is set). Its fill is the --sgs-choice-flow-note-icon custom property; its size prints from includes/choice-flow-bands.php."
+				},
 				"summary-photo": {
 					"absentIn": ["compact"],
 					"absentWhy": "The summary pane (its photo and its total) renders only in the showcase layout; the compact layout prints neither.",
@@ -461,6 +483,10 @@
 		"summaryDividerColour": {
 			"type": "string",
 			"description": "Colour of the rules between the summary's lines and above its total, a palette slug or any colour. Empty keeps the stylesheet's border colour."
+		},
+		"stageNoteIconCircleSize": {
+			"type": "object",
+			"description": "Diameter of the help note's icon disc in px, per device {desktop,tablet,mobile} (16 to 96). The icon keeps its own 18px inside it. Empty keeps the stylesheet's 34px."
 		},
 		"progressColour": {
 			"type": "string",

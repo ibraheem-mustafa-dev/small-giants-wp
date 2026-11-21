@@ -76,3 +76,35 @@ if ( ! function_exists( 'sgs_choice_flow_bands_css' ) ) {
 		return $css;
 	}
 }
+
+if ( ! function_exists( 'sgs_choice_flow_note_icon_size_css' ) ) {
+	/**
+	 * The help note's icon disc diameter per device (`stageNoteIconCircleSize`, 16 to 96 px, as sgs/accordion's
+	 * iconCircleSize); the icon inside keeps its own size.
+	 *
+	 * @param array  $attributes Root block attributes.
+	 * @param string $root_sel   The instance's scoped root selector.
+	 * @return string Scoped rules, or '' when unset.
+	 */
+	function sgs_choice_flow_note_icon_size_css( array $attributes, string $root_sel ): string {
+		$size = static function ( $value ) {
+			return is_numeric( $value ) && (float) $value >= 16 && (float) $value <= 96 ? (string) round( (float) $value, 2 ) . 'px' : null;
+		};
+		$raw  = $attributes['stageNoteIconCircleSize'] ?? null;
+		return sgs_emit_responsive_css(
+			$root_sel . ' .sgs-choice-flow__summary-note-icon',
+			array(
+				array(
+					'value'     => $raw,
+					'css'       => 'width',
+					'transform' => $size,
+				),
+				array(
+					'value'     => $raw,
+					'css'       => 'height',
+					'transform' => $size,
+				),
+			)
+		);
+	}
+}
