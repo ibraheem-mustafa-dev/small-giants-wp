@@ -1,7 +1,7 @@
 // Markers and preconditions written in the setting's declared shape (lib/calibrate-markers.mjs::markersFor,
 // lib/calibrate-instances.mjs::preconditionsFor): the editor refused a bare string for a per-device choice
 // (sgs/button sgsPosition "must be object, got static"), a colour for a setting that holds one of listed choices
-// (sgs/icon colourMode, sgs/account registerButtonPreset), and a bare variant value for a per-device variant setting
+// (sgs/icon colourMode, a button preset), and a bare variant value for a per-device variant setting
 // (sgs/gallery layout "must be object, got carousel"). Each refusal also built the calibration page twice.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -32,10 +32,15 @@ test( 'MUST FAIL (button sgsPosition refused): a per-device choice is marked as 
 	}
 } );
 
-test( 'MUST FAIL (icon colourMode and account registerButtonPreset refused): a setting holding one of listed choices is marked with them, never a colour or a formula', () => {
-	for ( const [ block, attr ] of [ [ 'sgs/icon', 'colourMode' ], [ 'sgs/account', 'registerButtonPreset' ] ] ) {
-		const def = defOf( rowOf( block, attr ), blockSchema( block ) || {} );
-		const ms = markers( block, attr );
+// The second sample is a row and a schema written here (a button preset painting a colour and a length: the shape of
+// sgs/account's old registerButtonPreset), so the test does not hang on a setting another change may rename.
+test( 'MUST FAIL (icon colourMode and a button preset refused): a setting holding one of listed choices is marked with them, never a colour or a formula', () => {
+	const preset = { ...rowOf( 'sgs/icon', 'colourMode' ), attr_name: 'demoPreset', css_property: 'padding-top,color,border-color', role: 'button-preset', enum_values: null };
+	const presetSchema = { demoPreset: { type: 'string', default: 'primary', enum: [ 'primary', 'secondary', 'accent' ] } };
+	for ( const [ row, schema ] of [ [ rowOf( 'sgs/icon', 'colourMode' ), blockSchema( 'sgs/icon' ) || {} ], [ preset, presetSchema ] ] ) {
+		const attr = row.attr_name;
+		const def = defOf( row, schema );
+		const ms = markersFor( row, schema, SNAP );
 		assert.ok( ms.length > 0, `${ attr } has markers` );
 		for ( const m of ms ) {
 			assert.ok( def.enum.includes( m.attrs[ attr ] ), `${ attr } marker ${ JSON.stringify( m.attrs[ attr ] ) } is a listed choice` );
