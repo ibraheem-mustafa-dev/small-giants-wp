@@ -20,6 +20,7 @@ import { tokenWrites } from './fill-token-ref.mjs';
 import { normalKeywords } from './fill-normal-keywords.mjs';
 import { gutterBaseline } from './fill-gutter.mjs';
 import { BOX_LOOK, parentDrawsBox } from './fill-shared-element.mjs';
+import { notInForce } from './fill-device-mode.mjs';
 import { GAP_PROPS, RADIUS_CORNERS, mergedRadius, valueText, json, alternateSlots, baselineFn, baselineSourceFn, equalBaseline, ledgerView, gapTarget, draftOf, recordDisplay } from './fill-resolve-state.mjs';
 
 // Whether a resolver result writes only settings calibration measured painting `slot` itself (not ones that only reach it).
@@ -320,6 +321,13 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 			// A no-setting row on an element's own box goes to the part-wide pass (lib/fill-ancestor.mjs::partWideWrites), which asks the enclosing blocks.
 			'no-setting' === res.gap && ! layer && ( st.hopRows ??= [] ).push( { row: st.out.unmapped.at( -1 ), rec, target, prop, draft: { ...draft }, siblings: allDrafts } );
 		} else if ( 'written' === res.status ) {
+			// The widths of a mode no setting answers (lib/fill-prop.mjs::byMode) are a row of their own, naming those widths only
+			// (`modeWidths`) and the settings not in force there (`notInForce`), so the passes after the walk write those widths'
+			// look in the mode drawn there and never answer them from a setting of the other mode.
+			for ( const g of res.modeGaps || [] ) {
+				unmapped( st, rec, ref, { slot, property: prop, value: json( g.draft ), reason: `${ g.gap }: ${ g.detail }`, ...( g.code ? { code: g.code } : {} ), modeWidths: g.widths, notInForce: notInForce( cal, g.widths ) } );
+				draft = Object.fromEntries( Object.entries( draft ).filter( ( [ w ] ) => ! g.widths.includes( Number( w ) ) ) );
+			}
 			// A setting of a part is written only from the element paired to that part (lib/fill-part-pairing.mjs).
 			const unpaired = target.paired ? [] : res.writes.map( ( w ) => ( { w, why: unpairedPart( { db: st.db, block: rec.name, cal, attr: w.attr, readSlot: target.slot, prop, value: valueText( draft ), targets: rec.targets, readAt: ( id, x ) => st.reads.widths?.[ x ]?.[ id ] } ) } ) ).filter( ( x ) => x.why );
 			if ( unpaired.length ) {

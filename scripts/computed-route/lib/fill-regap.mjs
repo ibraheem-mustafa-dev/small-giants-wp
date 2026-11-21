@@ -18,8 +18,12 @@ export function rowTarget( { nodes, flat, refOf }, row ) {
 
 // A row's per-width values: { 375: v, 768: v, 1440: v } for the widths the row holds ("{\"375\":\"a\"}"), every width for a
 // plain value. A width the row omits takes the draft's rendered value there (reads.widths) when the row's property is a
-// style Fill reads.
+// style Fill reads. A row of one mode's widths (`modeWidths`, lib/fill-device-mode.mjs) holds those widths only.
 export function rowValues( row, reads, target ) {
+	if ( Array.isArray( row.modeWidths ) ) {
+		const own = rowValues( { ...row, modeWidths: undefined }, reads, target );
+		return Object.fromEntries( Object.entries( own ).filter( ( [ w ] ) => row.modeWidths.includes( Number( w ) ) ) );
+	}
 	let held;
 	try {
 		held = JSON.parse( row.value );

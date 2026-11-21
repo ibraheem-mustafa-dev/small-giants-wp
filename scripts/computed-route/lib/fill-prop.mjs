@@ -8,6 +8,7 @@ import { fitFluid, acceptsClamp, applyClamp, LENGTH_PROPS } from './fill-values.
 import { INHERITED } from './calibrate-props.mjs';
 import { paintedAt, TIER_OF } from './fill-held.mjs';
 import { initialOf } from './css-families.mjs';
+import { modeGroups } from './fill-device-mode.mjs';
 
 // The clone-coverage IDs this module writes (lib/clone-coverage.mjs::declaredWrites holds each entry's write to it):
 // the CSS groups whose declared values a draft header's Fill run wrote and confirmed.
@@ -329,6 +330,62 @@ export function ownedCopy( from, copy ) {
 // A setting holding one value for every width: its writes are no tier object and no Tablet or Mobile sibling.
 const untiered = ( writes ) => writes.every( ( w ) => ! ( isObj( w.value ) && TIER_KEYS.some( ( t ) => t in w.value ) ) && ! /(Tablet|Mobile)$/.test( w.attr ) );
 
+const pick = ( from, widths ) => Object.fromEntries( widths.filter( ( w ) => undefined !== from[ w ] ).map( ( w ) => [ w, from[ w ] ] ) );
+const tierObject = ( v ) => isObj( v ) && Object.keys( v ).length > 0 && Object.keys( v ).every( ( k ) => TIER_KEYS.includes( k ) );
+
+// A node drawn in another mode at some widths (calibration.modeAt, lib/fill-device-mode.mjs) whose property no one setting
+// answers at every width is resolved once per mode: each group of widths drawn in one mode asks only the settings in force
+// there (lib/resolve.mjs::resolve), a one-value setting holding the draft at every width that mode draws at. A group no setting
+// answers is returned as a gap of its own widths (`modeGaps`: { widths, draft, gap, detail, code }) beside the other groups'
+// writes, so its look goes to what paints it in that mode. Two groups writing one setting merge where each holds its own
+// tiers; another value for a setting already written is that group's conflict. Returns null when the node has one mode over
+// these widths or no group is written.
+function byMode( { calibration, included, draft, call, sink, log, slot } ) {
+	const widths = Object.keys( included ).map( Number );
+	const groups = modeGroups( calibration?.modeAt, widths );
+	if ( groups.length < 2 ) {
+		return null;
+	}
+	const drawn = modeGroups( calibration.modeAt, Object.keys( draft ).map( Number ) );
+	const kept = [];
+	const ask = ( pw ) => {
+		const r = call( pw );
+		kept.push( ...sink );
+		return r;
+	};
+	const parts = groups.map( ( ws ) => {
+		let r = ask( pick( included, ws ) );
+		let how = 'tiers';
+		if ( ! r.gap && untiered( r.writes ) ) {
+			r = ask( pick( draft, drawn.find( ( g ) => g.includes( ws[ 0 ] ) ) || ws ) );
+			how = 'single';
+		}
+		return { widths: ws, r, how };
+	} );
+	const writes = [];
+	for ( const p of parts.filter( ( x ) => ! x.r.gap ) ) {
+		const clash = p.r.writes.find( ( w ) => writes.some( ( x ) => x.attr === w.attr && JSON.stringify( x.value ) !== JSON.stringify( w.value ) && ! ( tierObject( x.value ) && tierObject( w.value ) && Object.keys( w.value ).every( ( k ) => ! ( k in x.value ) || JSON.stringify( x.value[ k ] ) === JSON.stringify( w.value[ k ] ) ) ) ) );
+		if ( clash ) {
+			p.r = { gap: 'conflict', detail: `${ clash.attr } is written for the mode drawn at ${ widths.filter( ( w ) => ! p.widths.includes( w ) ).join( ', ' ) } with another value than the mode drawn at ${ p.widths.join( ', ' ) } needs` };
+			continue;
+		}
+		for ( const w of p.r.writes ) {
+			const prior = writes.find( ( x ) => x.attr === w.attr );
+			prior ? ( tierObject( prior.value ) && ( prior.value = { ...prior.value, ...w.value } ) ) : writes.push( { ...w } );
+		}
+	}
+	const done = parts.filter( ( p ) => ! p.r.gap );
+	if ( ! done.length ) {
+		return null;
+	}
+	log.push( ...kept );
+	const gaps = parts.filter( ( p ) => p.r.gap );
+	return {
+		status: 'written', slot, writes, included: pick( included, done.flatMap( ( p ) => p.widths ) ), how: done.every( ( p ) => 'single' === p.how ) ? 'single' : 'tiers',
+		modeGaps: gaps.map( ( p ) => ( { widths: p.widths, draft: pick( included, p.widths ), gap: p.r.gap, detail: `${ p.r.detail }; the block draws another mode at ${ widths.filter( ( w ) => ! p.widths.includes( w ) ).join( ', ' ) }, whose settings do not paint ${ p.widths.join( ', ' ) }`, ...( p.r.code ? { code: p.r.code } : {} ) } ) ),
+	};
+}
+
 const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => acceptsClamp( cal, w.attr ) || acceptsClamp( cal, w.attr.replace( /(Tablet|Mobile)$/, '' ) ) );
 
 // ctx: { node, owned ({ attr: value }: the settings a content writer decided for the node, which no answer changes;
@@ -338,7 +395,8 @@ const clampOk = ( cal, writes ) => writes.length > 0 && writes.every( ( w ) => a
 // declared ({ width: value }: the code's value where it agrees with the draft value, written in its place, FR-48-36),
 // contextAt ( width => { parentDisplay }: the element's parent's display, where the caller reads it; the element's own
 // position and direction come from `siblings`) }.
-// Returns { status: 'equal' | 'written' | 'gap', slot, writes?, included?, how?: 'tiers' | 'single' | 'clamp', fluid?, gap?, detail? }.
+// Returns { status: 'equal' | 'written' | 'gap', slot, writes?, included?, how?: 'tiers' | 'single' | 'clamp', fluid?, gap?, detail?,
+// modeGaps? (the widths of a mode no setting answers, beside a written mode: byMode) }.
 // 'equal': the draft matches what the node shows at every tier, nothing to write.
 export function resolveProperty( ctx ) {
 	const { node, owned: given = OWNED.get( node ) ?? null, block, prop, draft, baseline, slots, calibration, db, snapshot, log, fontPx = {}, siblings = {}, fluid = null, state = null, declared = {}, declaredFluid = null, contextAt = () => ( {} ), rest } = ctx;
@@ -373,6 +431,10 @@ export function resolveProperty( ctx ) {
 			return resolve( { block, slot, anyIndex: false, tag: null, prop, state, perWidth, fontPx, current: node.attributes || {}, ...( owned ? { owned } : {} ), siblings, declaredForm, ...( rest ? { rest } : {} ), ...( declaredFluid ? { declared: declaredFluid } : {} ) }, { db, snapshot, calibration, log: sink } );
 		};
 		let r = call( included );
+		const split = 'no-setting' === r.gap ? byMode( { calibration, included, draft, call, sink, log, slot } ) : null;
+		if ( split ) {
+			return split;
+		}
 		if ( r.gap ) {
 			firstGap ??= { ...r, slot };
 			if ( [ 'no-setting', 'unmapped-element' ].includes( r.gap ) ) {
@@ -383,7 +445,13 @@ export function resolveProperty( ctx ) {
 		let how = 'tiers';
 		if ( untiered( r.writes ) ) {
 			// One value for every width: the draft must hold it at every tier, not only where it differs.
-			r = call( Object.fromEntries( TIER_WIDTHS.filter( ( w ) => undefined !== draft[ w ] ).map( ( w ) => [ w, draft[ w ] ] ) ) );
+			const every = Object.fromEntries( TIER_WIDTHS.filter( ( w ) => undefined !== draft[ w ] ).map( ( w ) => [ w, draft[ w ] ] ) );
+			r = call( every );
+			// A one-value setting of one mode cannot hold the widths the node draws in another: resolved per mode.
+			const perMode = 'no-setting' === r.gap ? byMode( { calibration, included: every, draft, call, sink, log, slot } ) : null;
+			if ( perMode ) {
+				return perMode;
+			}
 			if ( r.gap ) {
 				return { status: 'gap', ...r, slot };
 			}

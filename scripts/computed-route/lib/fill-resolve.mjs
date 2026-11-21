@@ -180,14 +180,15 @@ function withFamilies( cal ) {
 
 // Fills the tree in place. tree: the cleaned skeleton (refs added, draft keys removed), nodes: skeletonNodes of the
 // skeleton (same indices), reads: lib/fill-read.mjs::readDraft, calFor( block ): calibration or null (a node is judged
-// against its paint state's default paint, lib/paint-state.mjs, through st.calFor( name, rec )), ledger: the
+// against its paint state's default paint, lib/paint-state.mjs, through st.calFor( name, rec ), per read width where its
+// way of drawing differs by device, lib/fill-device-mode.mjs), ledger: the
 // divergence entries, ledgerStates: the walker states that are the rest state (the ledger's `state` names one),
 // fixtures: calibration-fixtures.json (null reads every rest paint as the block's default).
 // Returns { writes, unmapped, alreadyHeld, notes, handover, spacing, fluid, held, snaps, settleHeld } — `settleHeld( result )` moves
 // every row of result.unmapped whose value the element already renders (lib/fill-held.mjs) into result.alreadyHeld, for the
 // caller to run once all its writers have added their rows and writes.
 export function fillTree( opts ) {
-	const st = makeState( { ledger: [], ledgerStates: [], origin: '', fixtures: null, ...opts, calFor: ( block, rec = null ) => withFamilies( calibrationForNode( opts.calFor( block ), rec ? st.flat[ rec.index ] : null ) ), snaps: [] } );
+	const st = makeState( { ledger: [], ledgerStates: [], origin: '', fixtures: null, ...opts, calFor: ( block, rec = null ) => withFamilies( calibrationForNode( opts.calFor( block ), rec ? st.flat[ rec.index ] : null, { fixture: opts.fixtures?.[ block ] ?? null, schema: blockSchema( block ) } ) ), snaps: [] } );
 	const settle = makeSettle( st );
 	// A node Fill reads: it has targets, a calibration and a visible draftRef element (each refusal is reported once).
 	const readable = new Set();

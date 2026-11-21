@@ -16,6 +16,7 @@ import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, size
 import { consult } from './css-equivalence/index.mjs';
 import { valueBlind } from './css-equivalence/effect.mjs';
 import { holdsValue, mapTiers } from './resolve-enum.mjs';
+import { inForceAt } from './fill-device-mode.mjs';
 export { valueBlind };
 import { sameAlignment } from './css-equivalence/keywords.mjs';
 
@@ -610,10 +611,25 @@ export function resolve( input, ctx ) {
 		const type = [].concat( r.attr_type ?? schemaOf[ r.attr_name ]?.type ?? [] );
 		return 'display' !== prop || ! ( 1 === type.length && 'boolean' === type[ 0 ] ) || Object.values( perWidth ).some( ( v ) => 'none' === v );
 	};
+	// A node drawn in another mode at some widths (calibration.modeAt, lib/fill-device-mode.mjs): a setting calibration measured
+	// only in variants not in force at a width paints nothing there, so it is a candidate only where the draft's value at every
+	// such width is what the mode in force already paints (its default paint at that width).
+	const inForce = ( c ) => {
+		const modeAt = ctx.calibration.modeAt;
+		if ( ! modeAt ) {
+			return true;
+		}
+		const off = [ 375, 768, 1440 ].filter( ( w ) => undefined !== perWidth[ w ] && ! inForceAt( modeAt, c, w ) );
+		if ( ! off.length ) {
+			return true;
+		}
+		const paint = defaultPaint( ctx.calibration, slot, prop, ( a, b ) => loose( a ) === b );
+		return off.every( ( w ) => undefined !== paint[ w ] && sameMeasured( prop, paint[ w ], perWidth[ w ] ) );
+	};
 	// A setting painting the slot itself wins; otherwise one whose inherited value calibration saw reach the slot.
 	const tiedBy = ( paths ) => rows.filter( ( r ) => {
 		const c = ctx.calibration.settings?.[ r.attr_name ];
-		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );
+		return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );
 	} );
 	const direct = tiedBy( ( c ) => c.slots || [ c.slot ] );
 	const reached = direct.length ? direct : tiedBy( ( c ) => c.reaches || [] );

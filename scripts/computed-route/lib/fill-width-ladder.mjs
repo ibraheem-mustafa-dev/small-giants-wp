@@ -37,8 +37,10 @@ import { sameCanonical } from './css-equivalence/values.mjs';
 // element that may be the same box). The size family is lib/fill-dimensions.mjs's own.
 const CANNOT_HOLD = /^shape: .+ cannot be held/;
 const PAINTS_OTHER = /^no-setting: no .+ setting on .+ paints "/;
-export const isLadderRow = ( row ) => ONE_VALUE_EVERY_WIDTH === row.code || / is not one of /.test( row.reason ?? '' ) ||
-	( ! sizeOf( row.property ?? '' ) && ( CANNOT_HOLD.test( row.reason ?? '' ) || PAINTS_OTHER.test( row.reason ?? '' ) ) );
+// A row of one mode's widths (`modeWidths`, lib/fill-device-mode.mjs) is not the ladder's: the resolver already asked every
+// setting in force in that mode, and a rule over the ladder's ranges would reach the widths the other mode draws.
+export const isLadderRow = ( row ) => ! Array.isArray( row.modeWidths ) && ( ONE_VALUE_EVERY_WIDTH === row.code || / is not one of /.test( row.reason ?? '' ) ||
+	( ! sizeOf( row.property ?? '' ) && ( CANNOT_HOLD.test( row.reason ?? '' ) || PAINTS_OTHER.test( row.reason ?? '' ) ) ) );
 
 export const STATE_PSEUDO = { hover: ':hover', focus: ':focus-visible', 'focus-visible': ':focus-visible', active: ':active', 'focus-within': ':focus-within' };
 const BOX = /(flex|grid)$/;

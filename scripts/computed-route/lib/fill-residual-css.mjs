@@ -122,13 +122,16 @@ export function classifyRow( row, { calFor, db } ) {
 	// holdsDisplay), so it is no home for a display the draft shows the element with.
 	const values = Object.entries( statedValues( row ) );
 	const toggle = ( attr ) => 'display' === canon && ! values.some( ( [ , v ] ) => 'none' === String( v ).trim() ) && 'boolean' === db?.prepare( 'SELECT attr_type FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( row.block, attr )?.attr_type;
-	const homes = measuredHomes( cal, { slot, prop: canon, state } ).filter( ( h ) => ( 'property' === h.via || 'reaches' === h.via ) && ! toggle( h.attr ) );
+	// A setting not in force at the row's widths (`notInForce`: the block draws another mode there, lib/fill-device-mode.mjs)
+	// paints nothing there, so it is no home for them.
+	const off = new Set( row.notInForce || [] );
+	const homes = measuredHomes( cal, { slot, prop: canon, state } ).filter( ( h ) => ( 'property' === h.via || 'reaches' === h.via ) && ! toggle( h.attr ) && ! off.has( h.attr ) );
 	if ( homes.length ) {
 		return { cls: 'route', cause: `equal-judging: ${ homes.map( ( h ) => h.attr ).join( ', ' ) } ${ 1 === homes.length ? 'paints' : 'paint' } ${ canon } on this part (calibration), so the value is a setting's to hold` };
 	}
 	// A setting of the block for the property that paints a part calibration measured as the same box as this one.
 	const same = candidates( db, row.block, canon, state ).find( ( r ) => {
-		const c = cal.settings?.[ r.attr_name.replace( /(Tablet|Mobile)$/, '' ) ];
+		const c = off.has( r.attr_name.replace( /(Tablet|Mobile)$/, '' ) ) ? null : cal.settings?.[ r.attr_name.replace( /(Tablet|Mobile)$/, '' ) ];
 		return c && [ ...( c.slots || [ c.slot ] ), ...( c.reaches || [] ) ].some( ( p ) => undefined !== p && LOOSE( p ) !== LOOSE( slot ) && ! String( p ).startsWith( '@' ) && calSameBox( cal, slot, p ) );
 	} );
 	if ( same ) {
@@ -192,6 +195,15 @@ export function tokenised( prop, value, snapshot ) {
 		}
 	}
 	return { value: out, refs };
+}
+
+// The ranges of a row holding some read widths only: lib/fill-width-ladder.mjs::widthSpans over every read width, the widths
+// the row does not hold marked as none, and their ranges dropped.
+const NONE = '\u0000none';
+export function modeSpans( { read, widths, values, series } ) {
+	const all = Object.fromEntries( read.map( ( w ) => [ w, widths.includes( w ) ? values[ w ] : NONE ] ) );
+	const spans = widthSpans( { widths: read, values: all, series } );
+	return { ranges: spans.ranges.filter( ( s ) => NONE !== s.value ), snaps: spans.snaps };
 }
 
 // Whether two targets of a node read one draft element: the same box at every width both are read at (at least one).
@@ -383,7 +395,9 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				continue;
 			}
 			const series = reads.sweep?.[ target.id ]?.[ prop ];
-			const spans = widthSpans( { widths, values, series } );
+			// A row of one mode's widths (`modeWidths`) holds its rule over those widths' ranges only: the ranges are cut among every
+			// read width, and the other mode's are left out.
+			const spans = Array.isArray( row.modeWidths ) ? modeSpans( { read, widths, values, series } ) : widthSpans( { widths, values, series } );
 			for ( const s of spans.snaps ) {
 				const e = snapEntry( { scope, ref: row.node, snap: s, entries: [ ...entries, ...out.ledger ], date } );
 				e && out.ledger.push( e );
