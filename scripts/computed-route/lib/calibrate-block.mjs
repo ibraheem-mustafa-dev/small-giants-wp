@@ -40,7 +40,34 @@ function blockPhp( repo, short ) {
 	return fs.existsSync( dir ) ? fs.readdirSync( dir ).filter( ( f ) => f.endsWith( '.php' ) && ! f.endsWith( '.asset.php' ) ).map( ( f ) => fs.readFileSync( path.join( dir, f ), 'utf8' ) ) : [];
 }
 
-// Folds a measurement's instances into the block's readings.
+// A marked instance as the run holds it once its page is read: what foldMeasured takes from it (its setting's slot by
+// lib/calibrate.mjs::slotFor, or a discovery instance's effects by discoverEffects, each a pure function of the readings it
+// is given here) with its readings dropped. A default or paint-state instance keeps its readings (they are the block's
+// default paint), as does a content instance (read for existence and text apart). Holding every marked reading until the
+// block's file was written outgrew the run's 8 GB heap on sgs/nav-bar-menu (1,200 instances of 416 elements x 139
+// properties x 3 widths, 2026-11-21); the run now holds one page's readings at a time.
+export function settleInstance( inst, { block, containerQuery } ) {
+	if ( inst.isDefault || inst.paintState || inst.content ) {
+		return inst;
+	}
+	const { read, def, readScrolled, defScrolled, ...rest } = inst;
+	if ( inst.discover ) {
+		return { ...rest, effects: discoverEffects( def, read ) };
+	}
+	if ( ! inst.row ) {
+		return rest;
+	}
+	const opts = { containerQuery, own: stateTarget( block, inst.row ) };
+	return { ...rest, slot: 'scroll' === inst.trigger ? slotFor( inst.row, inst.marker, defScrolled, readScrolled, opts ) : slotFor( inst.row, inst.marker, def, read, opts ) };
+}
+
+// Whether the block's tiers follow its container's width (an @container rule): either the built stylesheet holds one, or the
+// render emits them at run time (site-footer-row's built style-index.css has none, because the wrapper writes its tier rules
+// when it renders).
+const containerQueryOf = ( short, repo ) => isContainerQueryBlock( short, path.join( repo, 'plugins/sgs-blocks/build/blocks' ), path.join( repo, 'plugins/sgs-blocks/src/blocks' ) );
+
+// Folds a measurement's instances into the block's readings. A marked instance settled by settleInstance carries its
+// `slot` or `effects`; one that was not is worked out here from its readings, with the same result.
 function foldMeasured( instances, { block, short, repo, fixture, states } ) {
 	const untested = [ ...states ];
 	// Default paint: every variant's elements (a path seen in several variants keeps the first).
@@ -52,16 +79,14 @@ function foldMeasured( instances, { block, short, repo, fixture, states } ) {
 	// the next run measures it again instead of keeping a paint key that claims the state.
 	const statesMissing = missingPaintStates( fixture, paintStates );
 	// A block whose tiers follow its container's width (an @container rule) reaches a tier at fewer page widths by design.
-	// Either the built stylesheet holds an @container rule, or the render emits them at run time (site-footer-row's
-	// built style-index.css has none, because the wrapper writes its tier rules when it renders).
-	const containerQuery = isContainerQueryBlock( short, path.join( repo, 'plugins/sgs-blocks/build/blocks' ), path.join( repo, 'plugins/sgs-blocks/src/blocks' ) );
+	const containerQuery = containerQueryOf( short, repo );
 	const settings = {};
 	const dead = [];
 	const oneWidth = [];
 	const discovered = {};
 	instances.forEach( ( inst ) => {
 		if ( inst.discover ) {
-			const fx = discoverEffects( inst.def, inst.read );
+			const fx = inst.effects ?? discoverEffects( inst.def, inst.read );
 			const d = ( discovered[ inst.discover.attr ] ??= {} );
 			for ( const [ prop, e ] of Object.entries( fx ) ) {
 				( d[ prop ] ??= { slots: [], values: {}, ...( inst.discover.tier ? { tier: inst.discover.tier } : {} ) } );
@@ -84,9 +109,9 @@ function foldMeasured( instances, { block, short, repo, fixture, states } ) {
 		}
 		// A scrolled marker is compared with its variant's default read scrolled too, so the state's own look is not
 		// counted as the marker's effect.
-		const s = 'scroll' === inst.trigger
+		const s = inst.slot ?? ( 'scroll' === inst.trigger
 			? slotFor( inst.row, inst.marker, inst.defScrolled, inst.readScrolled, { containerQuery, own: stateTarget( block, inst.row ) } )
-			: slotFor( inst.row, inst.marker, inst.def, inst.read, { containerQuery, own: stateTarget( block, inst.row ) } );
+			: slotFor( inst.row, inst.marker, inst.def, inst.read, { containerQuery, own: stateTarget( block, inst.row ) } ) );
 		foldReading( { settings, dead, oneWidth }, inst, s );
 	} );
 	// Dead: no marker of the setting changed anything (a setting with one live marker is not dead).
@@ -138,7 +163,8 @@ export async function calibrateBlock( block, { site, target, env, shared, fixtur
 	if ( incremental?.unplanned.length ) {
 		fullWhy = `${ incremental.unplanned.join( ', ' ) } no longer planned`;
 	}
-	const pageCtx = { fixture, site, target, env, shared, repo, treeFile: path.join( cache, `${ short }.tree.json` ), needles, clock, extraProps };
+	const containerQuery = containerQueryOf( short, repo );
+	const pageCtx = { fixture, site, target, env, shared, repo, treeFile: path.join( cache, `${ short }.tree.json` ), needles, clock, extraProps, settle: ( inst ) => settleInstance( inst, { block, containerQuery } ) };
 	let run;
 	try {
 		run = await measureWithFallback( {

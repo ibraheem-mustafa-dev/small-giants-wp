@@ -1,0 +1,8 @@
+[
+	{"file": "lib/calibrate-block.mjs", "find": "\tconst { read, def, readScrolled, defScrolled, ...rest } = inst;", "replace": "\tconst { ...rest } = inst;", "why": "a settled instance still holds its readings (the old run)"},
+	{"file": "lib/calibrate-block.mjs", "find": "return { ...rest, slot: 'scroll' === inst.trigger ? slotFor( inst.row, inst.marker, defScrolled, readScrolled, opts ) : slotFor( inst.row, inst.marker, def, read, opts ) };", "replace": "return { ...rest, slot: slotFor( inst.row, inst.marker, def, read, opts ) };", "why": "a scrolled marker is settled on its resting readings"},
+	{"file": "lib/calibrate-block.mjs", "find": "\tconst opts = { containerQuery, own: stateTarget( block, inst.row ) };", "replace": "\tconst opts = { own: stateTarget( block, inst.row ) };", "why": "a container-query block's tiers are read as one-width"},
+	{"file": "lib/calibrate-block.mjs", "find": "\t\treturn { ...rest, effects: discoverEffects( def, read ) };", "replace": "\t\treturn rest;", "why": "a discovery instance loses what its value paints"},
+	{"file": "lib/calibrate-block.mjs", "find": "\tif ( inst.isDefault || inst.paintState || inst.content ) {", "replace": "\tif ( inst.isDefault ) {", "why": "a paint-state or content instance loses its readings"},
+	{"file": "lib/calibrate-block.mjs", "find": "\tif ( inst.isDefault || inst.paintState || inst.content ) {", "replace": "\tif ( inst.paintState || inst.content ) {", "why": "the default paint loses its readings"}
+]

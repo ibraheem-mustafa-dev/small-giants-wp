@@ -8,8 +8,9 @@ import path from 'node:path';
 export const NODE_HEAP_FLAG = '--max-old-space-size=8192';
 export const MIN_CHUNK = 1;
 
-// The run itself holds every chunk's reads until the block's file is written, and reads one chunk at a time within
-// ELEMENT_BUDGET; a run started below this limit restarts itself with NODE_HEAP_FLAG (calibrate.mjs).
+// The run reads one chunk at a time within ELEMENT_BUDGET and holds one chunk's reads at a time (each marked instance keeps
+// only its result once its page is read, lib/calibrate-block.mjs::settleInstance); a run started below this limit restarts
+// itself with NODE_HEAP_FLAG (calibrate.mjs).
 export const RUN_HEAP_BYTES = 7 * 1024 ** 3;
 export const needsBiggerHeap = ( heapLimitBytes ) => heapLimitBytes < RUN_HEAP_BYTES;
 // How long each page load (the login, the editor, the save, and the front-end reads in calibrate-read.mjs and

@@ -50,8 +50,10 @@ export async function build( repo, target, treeFile, extra = [] ) {
 }
 
 // Builds and reads `instances` page by page. Returns { kept, rejected, pages }: each instance with its reads and its
-// page's default reads. Throws PageError when a page cannot be built.
-export async function measurePages( block, instances, { fixture, site, target, env, shared, repo, treeFile, needles, clock, extraProps } ) {
+// page's default reads, passed through `settle` as its page is read (lib/calibrate-block.mjs::settleInstance keeps a marked
+// instance's result and drops its readings, so the run holds one page's readings at a time, not the block's). Throws
+// PageError when a page cannot be built.
+export async function measurePages( block, instances, { fixture, site, target, env, shared, repo, treeFile, needles, clock, extraProps, settle = ( i ) => i } ) {
 	const rejected = [];
 	const defaults = instances.filter( ( i ) => i.isDefault || i.isBase );
 	const others = instances.filter( ( i ) => ! i.isDefault && ! i.isBase );
@@ -169,7 +171,7 @@ export async function measurePages( block, instances, { fixture, site, target, e
 				? ( r ) => ! slotFor( inst.row, inst.marker, at( d, r ), at( n, r ), { own: stateTarget( block, inst.row ) } ).dead
 				: null;
 			const reads = pickPass( passes, n, d, reached );
-			kept.push( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } );
+			kept.push( settle( { ...inst, read: at( n, reads ), readScrolled: at( n, reads.scrolled ), def: at( d, reads ), defScrolled: at( d, reads.scrolled ), hoverMissed: reads.hoverMissed.includes( n ), hoverWhy: reads.hoverWhy?.[ n ], scrollMissed: reads.scrollMissed.includes( n ), ...( inst.content ? { contentRead: at( n, contentReads ), contentDef: at( d, contentReads ) } : {} ) } ) );
 		} );
 		done++;
 	}
