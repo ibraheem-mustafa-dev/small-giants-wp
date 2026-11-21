@@ -360,6 +360,12 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 	const baseOf = ( p ) => defaultPaint( calibration, slot, p, ( a, b ) => lp( a ) === lp( b ) );
 	const rowWidths = [ 375, 768, 1440 ].filter( ( w ) => undefined !== at( perWidth, w ) );
 	const atRow = ( pw ) => Object.fromEntries( rowWidths.filter( ( w ) => undefined !== pw[ w ] ).map( ( w ) => [ w, pw[ w ] ] ) );
+	// A sibling property another setting of the block was measured painting at the draft's value on the row's element (its
+	// enumReads: sgs/trust-bar's flexWrap nowrap on the root) is written by that setting whichever value this one takes, so
+	// it is no evidence for or against a value.
+	const heldBySetting = ( attr, p2, pw ) => Object.keys( pw ).length > 0 && Object.entries( calibration?.settings || {} ).some( ( [ other, s ] ) => other !== attr
+		&& ( s?.slots || [ s?.slot ] ).map( lp ).includes( lp( slot ) )
+		&& Object.values( s?.enumReads || {} ).some( ( reads ) => reads?.[ p2 ] && fits( reads[ p2 ], pw ) ) );
 	const options = [];
 	for ( const [ attr, props ] of Object.entries( calibration?.discovered || {} ) ) {
 		const d = props[ prop ];
@@ -386,7 +392,7 @@ export function resolveDiscovered( { slot, prop, perWidth, siblings = {}, anyInd
 				continue;
 			}
 			if ( rowWidths.some( ( w ) => undefined !== values[ w ] ) && fits( values, perWidth, baseOf( prop ) ) ) {
-				const matched = Object.entries( siblings ).filter( ( [ p2, pw ] ) => p2 !== prop && props[ p2 ] && fits( props[ p2 ].values[ value ] || {}, atRow( pw ), baseOf( p2 ) ) ).map( ( [ p2 ] ) => p2 );
+				const matched = Object.entries( siblings ).filter( ( [ p2, pw ] ) => p2 !== prop && props[ p2 ] && ! heldBySetting( attr, p2, atRow( pw ) ) && fits( props[ p2 ].values[ value ] || {}, atRow( pw ), baseOf( p2 ) ) ).map( ( [ p2 ] ) => p2 );
 				const own = matched.filter( ( p2 ) => ( props[ p2 ].slots || [] ).map( lp ).includes( lp( slot ) ) ).length;
 				const score = [ own, matched.length - own ];
 				options.push( { attr, value, score } );

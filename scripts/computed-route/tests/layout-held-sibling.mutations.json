@@ -1,0 +1,6 @@
+[
+	{ "file": "lib/resolve.mjs", "find": "&& ! heldBySetting( attr, p2, atRow( pw ) ) && fits(", "replace": "&& fits(", "why": "a sibling another setting writes still counts as evidence" },
+	{ "file": "lib/resolve.mjs", "find": "Object.entries( calibration?.settings || {} ).some( ( [ other, s ] ) => other !== attr", "replace": "Object.entries( calibration?.settings || {} ).some( ( [ other, s ] ) => true", "why": "the setting being chosen could hold its own evidence" },
+	{ "file": "lib/resolve.mjs", "find": "&& Object.values( s?.enumReads || {} ).some( ( reads ) => reads?.[ p2 ] && fits( reads[ p2 ], pw ) ) );", "replace": "&& Object.values( s?.enumReads || {} ).some( ( reads ) => reads?.[ p2 ] ) );", "why": "a setting measured at any value of the property, not the draft's, would hold it" },
+	{ "file": "lib/resolve.mjs", "find": "&& ( s?.slots || [ s?.slot ] ).map( lp ).includes( lp( slot ) )", "replace": "", "why": "a setting on another element would hold the row element's property" }
+]
