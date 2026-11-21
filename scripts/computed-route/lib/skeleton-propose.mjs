@@ -40,6 +40,8 @@ import { DISSOLVED_LOOKS } from './skeleton-rules.mjs';
 import { conservationRows, nodesByRef, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
 import { absorbedSlots } from './skeleton-conserve-slots.mjs';
 import { pairAbsorbed, pairingNotes, unpairedRecords } from './skeleton-part-pairing.mjs';
+import { hostParts } from './skeleton-part-reads.mjs';
+import { copylessKey } from './fact-key.mjs';
 import { slotMapFile } from './cache.mjs';
 
 // A carried or decided value as text: an id as itself, a Source object as its JSON.
@@ -574,6 +576,32 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const notes = [ ...unmatched.filter( ( u ) => ! said.notes.has( u.key ) ).map( ( u ) => [ u.key, 'paints', u.looks.join( '/' ), 'which parts of', node.name, 'paint (', u.parts.join( ' | ' ), '), and no calibrated slot lands on it' ].join( ' ' ) ), ...said.notes.values() ];
 		notes.length && rowOf[ hostKey ] && ( rowOf[ hostKey ].slotNotes = [ ...( rowOf[ hostKey ].slotNotes || [] ), ...notes ] );
 		pairProblems.push( ...said.problems );
+	}
+	// The absorbed elements that paint no box (an icon that only sets a colour, a chrome row that only lays its children out) are
+	// not in the conservation list above, so their part's settings were never read. Each one is paired with the measured part it
+	// is, whatever that part's settings paint, and read at the part's slots; one several parts fit is said on the host's row.
+	const partsOf = hostParts( { rows: new Map( rows.map( ( r ) => [ r.key, r ] ) ), isNode: ( k ) => refNodes.has( k ) } );
+	for ( const [ hostKey, keys ] of partsOf ) {
+		const node = refNodes.get( hostKey );
+		const host = m.byKey[ hostKey ];
+		const held = new Set( Object.values( node?.draftSlots || {} ).map( ( f ) => JSON.stringify( f ) ) );
+		// One element stands for its copies (a menu's links, a list's items): the representative's slots are the loop's, and a
+		// copy a slot already names leaves the whole loop read.
+		const copies = new Map();
+		for ( const e of db && node && host ? [ ...keys ].map( ( k ) => m.byKey[ k ] ).filter( ( x ) => x && ! refNodes.has( x.key ) ) : [] ) {
+			copies.get( copylessKey( e.key ) )?.push( e ) ?? copies.set( copylessKey( e.key ), [ e ] );
+		}
+		const extras = [ ...copies.values() ].filter( ( list ) => ! list.some( ( e ) => held.has( JSON.stringify( finder( e ) ) ) ) ).map( ( list ) => ( { element: list[ 0 ], looks: null } ) );
+		if ( ! extras.length ) {
+			continue;
+		}
+		const pairing = pairAbsorbed( { host, absorbed: extras, kids: ( x ) => m.kids( x ).filter( ( k ) => 'svg' === k.tag || ! m.isPart( k ) ), isNode: ( x ) => refNodes.has( x.key ), calibration: calParts( node.name ), finder, taken: node.draftSlots || {} } );
+		if ( Object.keys( pairing.slots ).length ) {
+			node.draftSlots = { ...node.draftSlots, ...pairing.slots };
+			rowOf[ hostKey ] && ( rowOf[ hostKey ].slots = { ...rowOf[ hostKey ].slots, ...pairing.slots } );
+		}
+		const said = pairingNotes( { ambiguous: pairing.ambiguous.filter( ( a ) => a.candidates.length > 1 ) }, node.name ).notes;
+		said.size && rowOf[ hostKey ] && ( rowOf[ hostKey ].slotNotes = [ ...( rowOf[ hostKey ].slotNotes || [] ), ...said.values() ] );
 	}
 	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...pairProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ), ...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ];
 	// The painted elements a record lists and no block reads (RECORDED-UNREAD): looks the clone does not show, named for the run's report.

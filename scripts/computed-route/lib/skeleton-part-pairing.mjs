@@ -218,7 +218,8 @@ export function draftKind( e, kids ) {
 }
 
 // The slots and readings of a host's absorbed elements the slot walk left. host: the block's draft element; absorbed:
-// [ { element, looks } ]; kids( element ): its children in order; isNode( element ): true for an element another skeleton node
+// [ { element, looks } ] (`looks: null` is an element whose paint is not in question: it pairs with the part it is whatever
+// the part's settings paint, and is read at every slot the part's settings are calibrated at); kids( element ): its children in order; isNode( element ): true for an element another skeleton node
 // reads (its subtree is that block's); calibration: { elements, settings, text }; finder( element ); taken: the slots the node
 // already holds. Returns { slots: { slot: finder }, paired: [ { key, part, slots } ], ambiguous: [ { key, candidates } ],
 // unpainted: [ { key, part, looks } ], pseudo: [ { key, part } ] }.
@@ -366,7 +367,7 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 			}
 		}
 		const painted = new Set( [ ...slotLooks.values() ].flatMap( ( x ) => [ ...x ] ) );
-		if ( ! looks.some( ( l ) => painted.has( l ) ) ) {
+		if ( null === looks ? ! slotLooks.size : ! looks.some( ( l ) => painted.has( l ) ) ) {
 			out.unpainted.push( { key: e.key, part: g.head, looks } );
 			continue;
 		}
