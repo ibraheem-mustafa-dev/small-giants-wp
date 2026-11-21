@@ -17,6 +17,7 @@
 	"icon": "welcome-view-site",
 	"supports": {
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": {
 				"opens": [
 					"dialog"

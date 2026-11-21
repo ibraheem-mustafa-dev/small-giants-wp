@@ -30,7 +30,8 @@
 				"width",
 				"layout",
 				"background",
-				"shapeDividers"
+				"shapeDividers",
+				"childSizing"
 			],
 			"arrayContentLift": true,
 			"scalarStylingLift": true,

@@ -37,7 +37,8 @@
 				"cardStyle"
 			],
 			"enabledExtensions": [
-				"blockLink"
+				"blockLink",
+				"childSizing"
 			],
 			"boxFamilies": {
 				"padding": [

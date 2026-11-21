@@ -21,6 +21,7 @@
 		"anchor": true,
 		"html": false,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
 			"boxFamilies": {
 				"padding": [

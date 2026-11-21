@@ -22,6 +22,7 @@
         "html": false,
         "anchor": false,
         "sgs": {
+            "enabledExtensions": [ "childSizing" ],
             "elements": {
                 "label": {
                     "label": "Field label",

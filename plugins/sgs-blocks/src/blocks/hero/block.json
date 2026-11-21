@@ -37,7 +37,8 @@
 				"width",
 				"background",
 				"shapeDividers",
-				"hoverSpillScale"
+				"hoverSpillScale",
+				"childSizing"
 			],
 			"_comment_hoverSpillScale": "2026-09-10, Bean-directed — shared wrapper capability (class-sgs-container-wrapper.php), migrated off hero's own private CSS. Promotes the whole composite root's stacking context above a document-later sibling and lets the split-media hover-zoom spill past its column without a page-level horizontal scrollbar. Universal — targets the shared .sgs-media-box/.sgs-media-el marker pair, so it applies to ANY composite that opts in, not just hero. Inert on the standard variant (no .sgs-media-box descendant there).",
 			"mediaElements": [

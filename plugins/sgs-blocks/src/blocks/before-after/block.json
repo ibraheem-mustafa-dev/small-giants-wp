@@ -17,6 +17,7 @@
 	"icon": "columns",
 	"supports": {
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
 			"colourExemptions": {
 				"labelBackground": {

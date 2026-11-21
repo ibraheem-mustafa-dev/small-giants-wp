@@ -26,6 +26,7 @@
 			"full"
 		],
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
 			"boxFamilies": {
 				"padding": [

@@ -33,6 +33,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
 			"separators": {
 				"separators": {

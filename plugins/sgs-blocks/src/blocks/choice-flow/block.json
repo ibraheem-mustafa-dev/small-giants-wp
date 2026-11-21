@@ -18,6 +18,7 @@
 	"supports": {
 		"html": false,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"builtinButtons": [
 				{
 					"prefix": "back",

@@ -45,7 +45,8 @@
 			"_comment_overlayNotAdopted": "The background is the media system's `background` slot (supports.sgs.mediaElements, Spec 49 section 7.8): the Background panel is the shared media panel, and SGS_Container_Wrapper (via SGS_Background_Media) prints the element and overlay. An SVG drawn over a photo or video is the block's own kept layer (bgSvg* attributes).",
 			"containerKind": "section",
 			"enabledExtensions": [
-				"background"
+				"background",
+				"childSizing"
 			],
 			"boxFamilies": {
 				"padding": [

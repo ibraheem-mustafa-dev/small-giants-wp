@@ -38,6 +38,7 @@
       "__experimentalSkipSerialization": true
     },
     "sgs": {
+      "enabledExtensions": [ "childSizing" ],
       "motionItems": "card",
       "motion": true,
       "separators": {

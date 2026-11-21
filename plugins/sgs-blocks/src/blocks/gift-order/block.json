@@ -21,6 +21,7 @@
 		"reusable": false,
 		"inserter": true,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"specRef": "30",
 			"colourExemptions": {
 				"checkbox": {

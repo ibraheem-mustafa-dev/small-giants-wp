@@ -23,6 +23,7 @@
         "html": false,
         "anchor": false,
         "sgs": {
+            "enabledExtensions": [ "childSizing" ],
             "boxFamilies": {
                 "rowPadding": [
                     "rowPadding"

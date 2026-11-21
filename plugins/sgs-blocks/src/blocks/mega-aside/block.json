@@ -19,7 +19,8 @@
 		"sgs": {
 			"motion": true,
 			"enabledExtensions": [
-				"blockLink"
+				"blockLink",
+				"childSizing"
 			],
 			"boxFamilies": {
 				"asidePadding": [ "asidePadding" ]

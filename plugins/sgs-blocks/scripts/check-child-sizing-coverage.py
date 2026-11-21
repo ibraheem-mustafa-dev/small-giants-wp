@@ -318,7 +318,7 @@ def main():
         print(f'check-child-sizing-coverage: {"FAIL" if probs else "ok"} ({sum(1 for r in rows if r["state"] == "has")} have it, {len(EXEMPT)} exempt)')
         return 1 if probs else 0
     if a.json:
-        print(json.dumps({'blocks': rows, 'stale_exemptions': stale}, indent=1))
+        print(json.dumps({'blocks': [{k: v for k, v in r.items() if k != 'path'} for r in rows], 'stale_exemptions': stale}, indent=1))
     else:
         print_survey(rows, stale)
     return 0

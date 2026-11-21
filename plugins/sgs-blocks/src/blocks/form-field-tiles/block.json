@@ -21,6 +21,7 @@
 	],
 	"supports": {
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"mediaElements": [
 				{
 					"prefix": "tile",

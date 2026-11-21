@@ -25,6 +25,7 @@
 		],
 		"inserter": false,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
 			"mediaElements": [
 				{

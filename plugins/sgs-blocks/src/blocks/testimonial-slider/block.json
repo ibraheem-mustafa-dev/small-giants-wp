@@ -17,6 +17,7 @@
 	"icon": "slides",
 	"supports": {
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
 			"collection": true,
 			"iconPicker": true,

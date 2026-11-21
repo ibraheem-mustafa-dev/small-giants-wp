@@ -30,6 +30,7 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"colourExemptions": {
 				"field-background": {
 					"rule": "states",

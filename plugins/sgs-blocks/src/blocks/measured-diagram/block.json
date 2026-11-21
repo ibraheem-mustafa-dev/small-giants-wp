@@ -29,6 +29,7 @@
 		"html": false,
 		"align": false,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
 			"mediaElements": [
 				{

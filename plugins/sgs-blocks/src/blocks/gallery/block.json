@@ -35,6 +35,7 @@
 		},
 		"interactivity": true,
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"builtinButtons": [
 				{ "prefix": "arrow", "part": "arrow", "label": "Carousel arrows and pause button", "groups": [ "colour", "border", "size", "shadow" ], "elements": [ "carousel-prev", "carousel-next", "pause" ] }
 			],

@@ -24,6 +24,7 @@
         "anchor": false,
         "interactivity": true,
         "sgs": {
+            "enabledExtensions": [ "childSizing" ],
             "elements": {
                 "label": {
                     "label": "Field label",

@@ -1,0 +1,694 @@
+{
+ "blocks": [
+  {
+   "block": "sgs/accordion",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/accordion-item",
+   "state": "exempt",
+   "kind": "parent",
+   "reason": "only inside sgs/accordion, which stacks its items in a column",
+   "problem": "",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/account",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/audio",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/before-after",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/brand-strip",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/breadcrumbs",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/business-info",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/button",
+   "state": "has",
+   "own": [
+    "customWidth"
+   ]
+  },
+  {
+   "block": "sgs/buybox",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/card-grid",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/cart",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/choice-flow",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/choice-flow-question",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/choice-flow-result",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/collapsible-text",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/commerce-note",
+   "state": "exempt",
+   "kind": "woo-parent",
+   "reason": "only inside WooCommerce's cart and checkout blocks, which are not SGS grid or row parents",
+   "problem": "",
+   "own": []
+  },
+  {
+   "block": "sgs/container",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/countdown-timer",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/counter",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/decorative-image",
+   "state": "exempt",
+   "kind": "out-of-flow",
+   "reason": "an absolutely placed layer that floats over its section; it is never laid out in a row or grid",
+   "problem": "",
+   "own": [
+    "layerWidth"
+   ]
+  },
+  {
+   "block": "sgs/diagram-dimension",
+   "state": "exempt",
+   "kind": "parent",
+   "reason": "only inside sgs/measured-diagram, which places each measurement absolutely over its picture",
+   "problem": "",
+   "own": []
+  },
+  {
+   "block": "sgs/feature-grid",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/filter-search",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/form",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/form-field-address",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-checkbox",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-consent",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-date",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-email",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-file",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-hidden",
+   "state": "exempt",
+   "kind": "no-box",
+   "reason": "a hidden input: it renders no box to size",
+   "problem": "",
+   "own": []
+  },
+  {
+   "block": "sgs/form-field-number",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-phone",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-radio",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-select",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-text",
+   "state": "has",
+   "own": [
+    "width",
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/form-field-textarea",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/form-field-tiles",
+   "state": "has",
+   "own": [
+    "width",
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/form-review",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/form-step",
+   "state": "exempt",
+   "kind": "parent",
+   "reason": "only inside sgs/form or sgs/choice-flow, which show one step at a time",
+   "problem": "",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/free-delivery-bar",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/gallery",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/gift-order",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/google-rating-badge",
+   "state": "has",
+   "own": [
+    "fullWidth"
+   ]
+  },
+  {
+   "block": "sgs/google-reviews",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/heading",
+   "state": "has",
+   "own": [
+    "customWidth",
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/hero",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/icon",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/icon-list",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/image-sequence",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/info-box",
+   "state": "has",
+   "own": [
+    "width",
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/label",
+   "state": "has",
+   "own": [
+    "fullWidth"
+   ]
+  },
+  {
+   "block": "sgs/language-switch",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/local-time",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/measured-diagram",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/media",
+   "state": "has",
+   "own": [
+    "width",
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/mega-aside",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/mega-group",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/mega-panel",
+   "state": "exempt",
+   "kind": "chrome",
+   "reason": "a mega menu's content container: it lives in a sgs_mega_menu post and shows in the menu's dropdown or drawer",
+   "problem": "",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/message-preview",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/message-preview-line",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/modal",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/multi-button",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/nav-bar-menu",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/nav-drawer",
+   "state": "exempt",
+   "kind": "out-of-flow",
+   "reason": "a fixed dialog over the page; it is never laid out in a row or grid",
+   "problem": "",
+   "own": []
+  },
+  {
+   "block": "sgs/nav-drawer-menu",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/notice-banner",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/notice-message",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/option-picker",
+   "state": "has",
+   "own": [
+    "width",
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/order-items",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/pay-later-message",
+   "state": "exempt",
+   "kind": "woo-parent",
+   "reason": "only inside WooCommerce's cart and checkout blocks, which are not SGS grid or row parents",
+   "problem": "",
+   "own": []
+  },
+  {
+   "block": "sgs/physics-canvas",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/post-grid",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/pricing-table",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/process-steps",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/product-card",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/product-faq",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/product-faq-item",
+   "state": "exempt",
+   "kind": "parent",
+   "reason": "only inside sgs/product-faq, which stacks its items in a column",
+   "problem": "",
+   "own": []
+  },
+  {
+   "block": "sgs/product-search",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/quote",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/responsive-logo",
+   "state": "has",
+   "own": [
+    "width",
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/separator",
+   "state": "has",
+   "own": [
+    "width"
+   ]
+  },
+  {
+   "block": "sgs/site-footer",
+   "state": "exempt",
+   "kind": "chrome",
+   "reason": "the page's footer, never a grid or row child",
+   "problem": "",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/site-footer-row",
+   "state": "exempt",
+   "kind": "parent",
+   "reason": "only inside sgs/site-footer, which stacks its rows in a column",
+   "problem": "",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/site-header",
+   "state": "exempt",
+   "kind": "chrome",
+   "reason": "the page's header, never a grid or row child",
+   "problem": "",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/site-header-row",
+   "state": "exempt",
+   "kind": "parent",
+   "reason": "only inside sgs/site-header, which stacks its rows in a column",
+   "problem": "",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/social-icons",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/star-rating",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/store-selector",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/tab",
+   "state": "exempt",
+   "kind": "parent",
+   "reason": "only inside sgs/tabs, which shows one panel at a time",
+   "problem": "",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/table-of-contents",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/tabs",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/team-member",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/testimonial",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/testimonial-slider",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/text",
+   "state": "has",
+   "own": [
+    "customWidth",
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/theme-toggle",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/timeline",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/trust-bar",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/trustpilot-reviews",
+   "state": "has",
+   "own": [
+    "maxWidth"
+   ]
+  },
+  {
+   "block": "sgs/whatsapp-cta",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/wishlist-link",
+   "state": "has",
+   "own": []
+  },
+  {
+   "block": "sgs/wishlist-panel",
+   "state": "has",
+   "own": []
+  }
+ ],
+ "stale_exemptions": []
+}

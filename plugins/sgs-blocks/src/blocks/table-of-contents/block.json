@@ -29,6 +29,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"motion": true,
 			"collection": true,
 			"boxFamilies": {

@@ -28,6 +28,7 @@
 			"__experimentalSkipSerialization": true
 		},
 		"sgs": {
+			"enabledExtensions": [ "childSizing" ],
 			"elements": {
 				"message": {
 					"label": "Message",
