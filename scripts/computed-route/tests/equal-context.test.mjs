@@ -50,7 +50,6 @@ test( 'heldPainters lists a held value calibration read painting the slot otherw
 
 test( 'measuredContext reads the paint\'s context, its display and the fixture\'s band', () => {
 	assert.deepEqual( measuredContext( { _parentDisplay: 'block', _position: 'static', display: 'flex' } ), { parentDisplay: 'block', position: 'static', display: 'flex', band: true } );
-	assert.equal( measuredContext( { _parentDisplay: 'block', _inBand: false } ).band, false );
 	assert.equal( measuredContext( { display: 'block' } ), null );
 } );
 

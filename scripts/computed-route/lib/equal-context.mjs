@@ -103,8 +103,8 @@ export function heldPainters( cal, schema, attributes, slot, prop, w = undefined
 }
 
 // The context calibration measured a default in at a slot and width: calibratedContext's fields, the element's own display
-// (its default paint), and whether the instance sat inside a band (`_inBand`; a paint read before it was recorded sat in the
-// banded wrapper every instance is built in, lib/calibrate.mjs::buildTree). paint: the element's paint at the width.
+// (its default paint), and `band`: every instance is built inside a banded wrapper (lib/calibrate.mjs::buildTree), so it
+// always sat nested in a band. paint: the element's paint at the width.
 export function measuredContext( paint ) {
 	if ( ! paint || undefined === paint._parentDisplay ) {
 		return null;
@@ -114,7 +114,7 @@ export function measuredContext( paint ) {
 		parentDisplay: paint._parentDisplay,
 		...( paint._position ? { position: paint._position } : {} ),
 		...( paint.display ? { display: paint.display } : {} ),
-		band: false !== paint._inBand,
+		band: true,
 		...( own.length ? { own } : {} ),
 	};
 }
