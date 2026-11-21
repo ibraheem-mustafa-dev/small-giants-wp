@@ -27,6 +27,19 @@ export const calTagsFor = ( site, dir = CACHE ) => ( slug ) => Object.fromEntrie
 // The calibration's settings (each with the slot it was measured on) for a block on a site.
 export const calSettingsFor = ( site, dir = CACHE ) => ( slug ) => calibrationsAt( site, dir )( slug )?.settings || {};
 
+// A block's measured parts for the general pairing (lib/skeleton-part-pairing.mjs): its default paint on the site, else its
+// default paint on the site its slot map was calibrated on (a block draws the same parts with the same tags on every site; only
+// their values differ), with its settings and text fields. Null for a block with no calibration.
+export const calPartsFor = ( site, dir = CACHE ) => ( slug ) => {
+	const cal = calibrationsAt( site, dir )( slug );
+	if ( ! cal ) {
+		return null;
+	}
+	const own = Object.keys( cal.elements || {} ).length ? cal.elements : null;
+	const elements = own ?? ( cal.site && cal.site !== site ? loadCalibration( dir, slug, cal.site )?.elements : null ) ?? {};
+	return { elements, settings: cal.settings || {}, text: cal.text || {} };
+};
+
 // A proposed skeleton is written only when every block it uses has `site`'s default paint, since calKeysFor reads none
 // for a block without it (lib/paint-gate.mjs::assertPaints); a block named in `allow` (--allow-missing-paint) goes on
 // without it and is printed. No site: nothing to check. Returns the named blocks the skeleton used without paint.
@@ -51,5 +64,5 @@ export function siteOf( { repo, client, slug } ) {
 // cache folder (the route's own by default).
 export function proposalContext( { repo, client, slug, id, breakpoints, site = siteOf( { repo, client, slug } ), cache = CACHE } ) {
 	const refs = detectReferences();
-	return { calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
+	return { calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), calParts: calPartsFor( site, cache ), states: statesOfRecord( { repo, client, id } ), thresholds: thresholdsOf( breakpoints ), formLinks: formLinksFor( { repo, client, refs } ), refs, draftLinks: draftLinksFor( { repo, client } ) };
 }

@@ -38,6 +38,7 @@ import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
 import { DISSOLVED_LOOKS } from './skeleton-rules.mjs';
 import { conservationRows, nodesByRef, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
 import { absorbedSlots } from './skeleton-conserve-slots.mjs';
+import { pairAbsorbed, pairingNotes } from './skeleton-part-pairing.mjs';
 import { slotMapFile } from './cache.mjs';
 
 // A carried or decided value as text: an id as itself, a Source object as its JSON.
@@ -121,7 +122,7 @@ const count = ( list ) => list.reduce( ( a, n ) => a + 1 + count( n.innerBlocks 
 // null resolves every draft route to no address), pageMap (the page-map rows: which surface is a choice flow or a block-owned
 // part, lib/skeleton-surface-role.mjs), surfaceId (the surface's surfaces.json id; the record's matching surface when omitted) and
 // surfaceRoute (its surfaces.json route: the page whose page-map row may hold it as a part) }.
-export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calTags = () => ( {} ), calSettings = () => ( {} ), states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, surfaceRoute = null, strictPaint = STRICT_DEFAULT } ) {
+export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null, surfaceName = null, commerce = null, built = null, motion = new Set(), clientDecisions = {}, carried = null, picks = {}, calKeys = () => [], calTags = () => ( {} ), calSettings = () => ( {} ), calParts = () => null, states = [], thresholds = [], db = null, factRecord: given = undefined, openers = undefined, rootComponent = null, formLinks = [], refs = detectReferences(), draftLinks = null, pageMap = [], surfaceId = null, surfaceRoute = null, strictPaint = STRICT_DEFAULT } ) {
 	const m = inventoryModel( inventory );
 	const { composition } = facts;
 	const overrides = ( e, words ) => overrideFor( e, { clientDecisions, picks, facts, surface, words } );
@@ -531,6 +532,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	const calibration = ( block ) => calSettings( block ) ?? null;
 	const unread = conservationRows( { inventory, proposal: { rows }, skeleton, view, calibration } ).rows.filter( ( x ) => 'host-unread' === x.class && x.host );
 	const refNodes = nodesByRef( skeleton );
+	const pairProblems = [];
 	for ( const hostKey of new Set( unread.map( ( x ) => x.host ) ) ) {
 		const node = refNodes.get( hostKey );
 		const host = m.byKey[ hostKey ];
@@ -538,15 +540,25 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			continue;
 		}
 		const absorbed = unread.filter( ( x ) => x.host === hostKey ).map( ( x ) => ( { element: m.byKey[ x.key ], looks: Object.keys( x.looks ) } ) ).filter( ( a ) => a.element );
-		const made = absorbedSlots( { host, node, absorbed, kids: ( x ) => m.kids( x ).filter( ( k ) => ! m.isPart( k ) ), finder, settings: calSettings( node.name ), tags: calTags( node.name ), block: node.name, checked: slotMapFile( 'cache', node.name ).split( '\\' ).join( '/' ) } );
-		if ( Object.keys( made.slots ).length ) {
-			node.draftSlots = { ...node.draftSlots, ...made.slots };
-			rowOf[ hostKey ] && ( rowOf[ hostKey ].slots = { ...rowOf[ hostKey ].slots, ...made.slots } );
+		const kidsOf = ( x ) => m.kids( x ).filter( ( k ) => ! m.isPart( k ) );
+		const made = absorbedSlots( { host, node, absorbed, kids: kidsOf, finder, settings: calSettings( node.name ), tags: calTags( node.name ), block: node.name, checked: slotMapFile( 'cache', node.name ).split( '\\' ).join( '/' ) } );
+		// Where no slot walk lands, the general pairing (lib/skeleton-part-pairing.mjs) decides which measured part each left
+		// element is, and reads it at that part's slots; an element with several fitting parts is a problem naming them.
+		const left = new Set( made.unmatched.map( ( u ) => u.key ) );
+		const pairing = left.size ? pairAbsorbed( { host, absorbed: absorbed.filter( ( a ) => left.has( a.element.key ) ), kids: kidsOf, isNode: ( x ) => refNodes.has( x.key ), calibration: calParts( node.name ), finder, taken: { ...node.draftSlots, ...made.slots } } ) : null;
+		const slots = { ...made.slots, ...pairing?.slots };
+		if ( Object.keys( slots ).length ) {
+			node.draftSlots = { ...node.draftSlots, ...slots };
+			rowOf[ hostKey ] && ( rowOf[ hostKey ].slots = { ...rowOf[ hostKey ].slots, ...slots } );
 		}
 		made.records.forEach( ( rec, key ) => rowOf[ key ] && ( rowOf[ key ].conserve = [ rec ] ) );
-		made.unmatched.length && rowOf[ hostKey ] && ( rowOf[ hostKey ].slotNotes = [ ...( rowOf[ hostKey ].slotNotes || [] ), ...made.unmatched.map( ( u ) => [ u.key, 'paints', u.looks.join( '/' ), 'which parts of', node.name, 'paint (', u.parts.join( ' | ' ), '), and no calibrated slot lands on it' ].join( ' ' ) ) ] );
+		const said = pairingNotes( pairing, node.name );
+		const unmatched = made.unmatched.filter( ( u ) => ! said.paired.has( u.key ) );
+		const notes = [ ...unmatched.filter( ( u ) => ! said.notes.has( u.key ) ).map( ( u ) => [ u.key, 'paints', u.looks.join( '/' ), 'which parts of', node.name, 'paint (', u.parts.join( ' | ' ), '), and no calibrated slot lands on it' ].join( ' ' ) ), ...said.notes.values() ];
+		notes.length && rowOf[ hostKey ] && ( rowOf[ hostKey ].slotNotes = [ ...( rowOf[ hostKey ].slotNotes || [] ), ...notes ] );
+		pairProblems.push( ...said.problems );
 	}
-	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ), ...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ];
+	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...pairProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ), ...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ];
 	// The painted elements a record lists and no block reads (RECORDED-UNREAD): looks the clone does not show, named for the run's report.
 	const paintUnread = unreadList( { inventory, proposal: { rows }, skeleton, view, calibration } );
 	const proposal = {
