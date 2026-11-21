@@ -190,13 +190,15 @@ export function refGate( blocks, fixtures, refs, exists, site ) {
 // default, which fails as ENOBUFS.
 const WP_OUTPUT_MAX = 256 * 1024 * 1024;
 
+// A mirror's wp runs through `wsl --exec`, with no Linux shell in between, so every argument reaches wp verbatim ('#',
+// spaces, '$', quotes), as the SSH branch's quoting gives the remote shell.
 // Each call first passes lib/site-contact.mjs::assertSiteContact: refused under SGS_NO_SITE, and refused on a `protected` target
 // unless the caller passes { readOnly: true } (a command that only reads). `exec` replaces execFileSync (tests).
 export function wpCommand( target, site, repo, { readOnly = false, exec = execFileSync } = {} ) {
 	const wsl = String( target.pluginDir || '' ).match( /^\/\/wsl\.localhost\/([^/]+)(\/.+)\/wp-content\/plugins\/sgs-blocks\/?$/ );
 	const guard = () => assertSiteContact( { site, target, readOnly } );
 	if ( wsl ) {
-		return ( args, input ) => guard() ?? exec( 'wsl', [ '-d', wsl[ 1 ], '-u', 'root', '--', 'wp', `--path=${ wsl[ 2 ] }`, '--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );
+		return ( args, input ) => guard() ?? exec( 'wsl', [ '-d', wsl[ 1 ], '-u', 'root', '--exec', 'wp', `--path=${ wsl[ 2 ] }`, '--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );
 	}
 	const root = hostedRoot( site, repo );
 	const quote = ( a ) => `'${ String( a ).replace( /'/g, `'\\''` ) }'`;

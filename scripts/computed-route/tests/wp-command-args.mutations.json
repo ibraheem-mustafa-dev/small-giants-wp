@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/calibration-refs.mjs",
+		"find": "[ '-d', wsl[ 1 ], '-u', 'root', '--exec', 'wp',",
+		"replace": "[ '-d', wsl[ 1 ], '-u', 'root', '--', 'wp',",
+		"why": "a mirror's wp runs through the Linux shell again (# drops every later argument)"
+	},
+	{
+		"file": "lib/calibration-refs.mjs",
+		"find": "[ '-d', wsl[ 1 ], '-u', 'root', '--exec', 'wp',",
+		"replace": "[ '-d', wsl[ 1 ], '-u', 'root', '--exec', 'bash', '-c', 'wp \"$@\"', 'wp',",
+		"why": "wp runs under a shell wrapper instead of directly"
+	},
+	{
+		"file": "lib/calibration-refs.mjs",
+		"find": "'--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );\n\t}",
+		"replace": "'--allow-root', ...args.filter( ( a ) => '#' !== a ), '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );\n\t}",
+		"why": "a '#' argument is dropped on a mirror"
+	},
+	{
+		"file": "lib/calibration-refs.mjs",
+		"find": "'--allow-root', ...args, '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );\n\t}",
+		"replace": "'--allow-root', ...args.map( ( a ) => / /.test( a ) ? `\"${ a }\"` : a ), '--user=Claude' ], { encoding: 'utf8', timeout: 120000, input, maxBuffer: WP_OUTPUT_MAX } );\n\t}",
+		"why": "a mirror's argument holding a space is quoted for a shell, so wp receives the quotes"
+	},
+	{
+		"file": "lib/calibration-refs.mjs",
+		"find": "const quote = ( a ) => `'${ String( a ).replace( /'/g, `'\\\\''` ) }'`;",
+		"replace": "const quote = ( a ) => `'${ String( a ) }'`;",
+		"why": "the SSH branch stops escaping a single quote (the negative control's quoting)"
+	}
+]
