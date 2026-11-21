@@ -466,8 +466,14 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 						}
 						__nextHasNoMarginBottom
 					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'On phones', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
 					<SelectControl
-						label={ __( 'On phones', 'sgs-blocks' ) }
+						label={ __( 'Tab layout', 'sgs-blocks' ) }
 						help={ __( 'Below 768px: stack the tabs as full-width buttons, or keep them as a row.', 'sgs-blocks' ) }
 						value={ mobileLayout || 'stack' }
 						options={ [
