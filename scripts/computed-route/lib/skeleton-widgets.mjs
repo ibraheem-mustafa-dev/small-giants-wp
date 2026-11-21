@@ -43,12 +43,18 @@ export function logicReadings( d ) {
 	};
 	// The logic node a template binding names (`f.toggle` for a loop variable `f`, `prev`, `rd.down`): the renderVals value
 	// of the loop's list or of the head, then each later part as a property inside it.
+	// A value that is a local name (renderVals' shorthand `{ pdpAcc }` for `const pdpAcc = list.map( … )`) is read through the
+	// name's declaration.
+	const declOf = ( n ) => {
+		const r = 'Identifier' === n?.type ? resolveName( d.idx, n ) : null;
+		return 'var' === r?.kind && r.init ? r.init : n;
+	};
 	const valueOf = ( t, expr ) => {
 		const parts = String( expr ?? '' ).split( '.' );
 		const loop = ( t?.membership?.scFor || [] ).find( ( f ) => f.as === parts[ 0 ] );
-		let n = d.values.get( loop ? bound( loop.list ) : parts[ 0 ] ) ?? null;
+		let n = declOf( d.values.get( loop ? bound( loop.list ) : parts[ 0 ] ) ?? null );
 		for ( const p of parts.slice( 1 ) ) {
-			n = n && propIn( n, p );
+			n = n && declOf( propIn( n, p ) );
 		}
 		return n;
 	};
@@ -86,8 +92,18 @@ export function logicReadings( d ) {
 		visit( fn, 0 );
 		return out;
 	};
-	// The state writes a function makes (its own and its methods'): [{ key, value, keyed }], `keyed` when the value is an
-	// object holding a computed key (a map of open items).
+	// The object of a keyed map write holding its computed keys: the value itself (`{ ...s.open, [ i ]: ! s.open[ i ] }`), or
+	// the last object argument holding one of an `Object.assign( {}, s.open, { [ i ]: ! s.open[ i ] } )`; else null.
+	const keyedObject = ( v ) => {
+		const computed = ( o ) => 'ObjectExpression' === o?.type && o.properties.some( ( q ) => q.computed );
+		if ( computed( v ) ) {
+			return v;
+		}
+		const assign = 'CallExpression' === v?.type && 'MemberExpression' === v.callee?.type && 'Object' === v.callee.object?.name && 'assign' === v.callee.property?.name;
+		return assign ? v.arguments.filter( computed ).at( -1 ) ?? null : null;
+	};
+	// The state writes a function makes (its own and its methods'): [{ key, value, keyed }], `keyed` when the value is a keyed
+	// map write (keyedObject, a map of open items), whose `value` is then the object holding the computed keys.
 	const writesOf = ( fn ) => reach( fn ).flatMap( ( f ) => subtree( d.idx, f ) )
 		.filter( ( n ) => 'CallExpression' === n.type && isThisMember( n.callee, 'setState' ) )
 		.flatMap( ( n ) => {
@@ -98,7 +114,10 @@ export function logicReadings( d ) {
 			} else if ( isFn( arg ) && 'ObjectExpression' === arg.body?.type ) {
 				obj = arg.body;
 			}
-			return ( obj?.properties || [] ).filter( ( p ) => 'ObjectProperty' === p.type && ! p.computed && keyName( p ) ).map( ( p ) => ( { key: keyName( p ), value: p.value, keyed: 'ObjectExpression' === p.value?.type && p.value.properties.some( ( q ) => q.computed ) } ) );
+			return ( obj?.properties || [] ).filter( ( p ) => 'ObjectProperty' === p.type && ! p.computed && keyName( p ) ).map( ( p ) => {
+				const map = keyedObject( p.value );
+				return { key: keyName( p ), value: map ?? p.value, keyed: !! map };
+			} );
 		} );
 	// The state keys an expression reads, following the local names it uses to their declarations.
 	const readsOf = ( node, seen = new Set() ) => {

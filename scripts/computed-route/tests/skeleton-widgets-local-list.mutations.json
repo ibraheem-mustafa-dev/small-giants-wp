@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "let n = declOf( d.values.get( loop ? bound( loop.list ) : parts[ 0 ] ) ?? null );",
+		"replace": "let n = d.values.get( loop ? bound( loop.list ) : parts[ 0 ] ) ?? null;",
+		"why": "a list renderVals names by a local name is read through its declaration"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "return 'var' === r?.kind && r.init ? r.init : n;",
+		"replace": "return n;",
+		"why": "a local name resolves to its declared value"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "return assign ? v.arguments.filter( computed ).at( -1 ) ?? null : null;",
+		"replace": "return null;",
+		"why": "an Object.assign holding a computed-key object is a keyed map write"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "'Object' === v.callee.object?.name && 'assign' === v.callee.property?.name",
+		"replace": "'Object' === v.callee.object?.name",
+		"why": "only Object.assign merges a map"
+	},
+	{
+		"file": "lib/skeleton-widgets.mjs",
+		"find": "return { key: keyName( p ), value: map ?? p.value, keyed: !! map };",
+		"replace": "return { key: keyName( p ), value: p.value, keyed: !! map };",
+		"why": "a keyed write's value is the object holding the computed keys, whose item values toggles reads"
+	}
+]
