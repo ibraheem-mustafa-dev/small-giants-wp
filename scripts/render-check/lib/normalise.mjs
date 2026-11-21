@@ -31,3 +31,11 @@ export function normaliser( port ) {
 			} );
 	};
 }
+
+// An element reading (capture.mjs's recordTree JSON) with the copy's own address written as {host}: a computed
+// background-image or a link's address names the copy's port, which differs between the two copies and is never
+// what a visitor sees.
+export function recordHost( origin ) {
+	const host = new URL( origin ).host;
+	return ( json ) => json.split( host ).join( '{host}' );
+}

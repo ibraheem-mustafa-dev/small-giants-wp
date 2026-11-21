@@ -38,3 +38,10 @@ test( 'what a visitor sees is never normalised away', () => {
 	assert.notEqual( a( '.x{color:#000}' ), a( '.x{color:#111}' ) );
 	assert.notEqual( a( 'src="/photo.jpg"' ), a( 'src="/photo-2.jpg"' ) );
 } );
+
+test( 'MUST FAIL before recordHost: an element reading names the copy only as {host}', async () => {
+	const { recordHost } = await import( '../lib/normalise.mjs' );
+	const reading = ( port ) => JSON.stringify( { styles: [ [ `url("http://localhost:${ port }/wp-content/uploads/a.jpg")` ] ] } );
+	assert.equal( recordHost( 'http://localhost:8150' )( reading( 8150 ) ), recordHost( 'http://localhost:8151' )( reading( 8151 ) ) );
+	assert.notEqual( recordHost( 'http://localhost:8150' )( reading( 8150 ).replace( 'a.jpg', 'b.jpg' ) ), recordHost( 'http://localhost:8151' )( reading( 8151 ) ) );
+} );

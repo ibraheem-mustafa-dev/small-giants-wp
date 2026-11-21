@@ -16,7 +16,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { recordTree, settle, scrollThrough, breakpoints, probeTargets } from './lib/page.mjs';
 import { blockNoisy, makeViewer } from './lib/session.mjs';
-import { normaliser } from './lib/normalise.mjs';
+import { normaliser, recordHost } from './lib/normalise.mjs';
 import { runActions } from './lib/actions.mjs';
 import { probeClip } from './lib/clip.mjs';
 
@@ -352,7 +352,7 @@ async function domJobOnce( job, side ) {
 			}
 		}
 		data.fails = fails;
-		fs.writeFileSync( path.join( dir, name + '.json' ), JSON.stringify( data ) );
+		fs.writeFileSync( path.join( dir, name + '.json' ), recordHost( cfg.sides[ side ].origin )( JSON.stringify( data ) ) );
 	} catch ( e ) {
 		fails.push( 'threw: ' + String( e ).split( '\n' )[ 0 ].slice( 0, 200 ) );
 	}
