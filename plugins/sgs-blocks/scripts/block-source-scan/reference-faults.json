@@ -1,0 +1,16 @@
+{
+  "_doc": "Known faults of the calibration reader (scripts/computed-route/lib/calibrate-read.mjs::readInstancesInPage). A reference part matching an entry is listed in the score's referenceFaults and scored neither for nor against the scan. Delete an entry when the reader is fixed.",
+  "faults": [
+    {
+      "id": "first-letter-on-faded-text",
+      "pseudo": "first-letter",
+      "onlyProps": ["opacity", "float"],
+      "reason": "The reader records a ::first-letter layer whenever any TEXT_PSEUDO_PROPS value differs from the element's own; opacity does not inherit, so every text element whose opacity is not 1 gains a ::first-letter that no rule paints (its only recorded values are opacity 1 and float none)."
+    },
+    {
+      "id": "placeholder-on-every-input",
+      "pseudo": "placeholder",
+      "reason": "The reader records ::placeholder on every input and textarea, whether or not any rule styles it or the input can show one (a file input draws none), so a measured ::placeholder part is no evidence either way."
+    }
+  ]
+}

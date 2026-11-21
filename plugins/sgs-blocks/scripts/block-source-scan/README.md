@@ -17,6 +17,15 @@ Offline only: it reads `src/blocks/<block>/` (block.json, render.php and the PHP
 | `parts.py` | `PartsReader`: printed classes and tags, the call graph through `includes/`, script-built parts, stylesheet-only and declared-only parts, and the flags for regions it cannot read |
 | `settings.py` | `SettingsReader`: setting placements by mechanism (listed in its docstring) |
 
+| `reference.py` | The measured reference: a calibration slot map and default paint files turned into part keys (zones host, shared, child, outside), measured placements (part x property, state, widths) and measured effects | | `reference-faults.json` | Known faults of the calibration reader (the `::first-letter` on faded text, the `::placeholder` on every input), excluded from the score with their reason; delete an entry when the reader is fixed | | `score.py` | The score: `python score.py --manifest <manifest.json> --scans <folder> --out <folder> [block ...]`; the manifest maps each block to `{"slotmap": path, "paint": [paths]}`; a missing scan (a child block's) is made on the spot |
+
+## The score
+
+Every placement counts, not the best one. A scan placement is expanded to one item per (part, property) and judged right only when part, property and state agree and its tier does not contradict the widths calibration measured (`score.py::judge`); width and height are separate properties, a pseudo-element layer is a part of its own, a longhand folds to the shorthand the slot map uses (`reference.py::canon_props`). Items are split by evidence: code, a declaration with a `selector`, and a hint (a declared element with no `selector`, whose part is the guessed `sgs-<block>__<key>`). Per block and in total it reports:
+- settings: code alone clean (every measured placement covered, nothing wrong) and any right; settings right only through a declaration or a hint; item precision (right against wrong; unknown parts are reported, not counted wrong); measured placements covered by code;
+- parts: matched by class per zone (host, shared, child block, outside the root), tag-only matches in their own column, scan parts never measured split into declared-only, stylesheet-only, conditional and unconditional;
+- settings neither side places, each with whether front-end source names it; unit companions (`fooUnit` beside `foo`) folded into their value.
+
 ## Output (`<block>.scan.json`)
 
 - `parts`: token -> owner (`host`, `block:<name>`, `shared`), origins, tags, where printed, loop and condition context, the settings that decide whether it prints.
