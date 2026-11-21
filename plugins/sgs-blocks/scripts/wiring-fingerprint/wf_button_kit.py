@@ -81,6 +81,14 @@ def _name(prefix: str, base: str) -> str:
     return prefix + base if prefix else lower_first(base)
 
 
+def _enclosing_second_param_fn(src: str, pos: int, ident: str) -> str | None:
+    """The name of the last function declared before `pos` whose second parameter is `ident`, else None."""
+    found = None
+    for m in re.finditer(r"\bfunction\s+(\w+)\s*\(\s*\w+\s*,\s*(\w+)", src[:pos]):
+        found = m.group(1) if m.group(2) == ident else None
+    return found
+
+
 def _const_value(src: str, ident: str) -> str | None:
     const = re.search(r"\bconst\s+" + re.escape(ident) + r"\s*=\s*(['\"`])(\w*)\1", src)
     return const.group(2) if const else None
@@ -105,6 +113,7 @@ class ButtonKit:
         self._call_re = _call_re(self.function)
         self._mounts: dict[str, set[str]] = {}
         self._twin_calls: dict[str, set[str]] = {}
+        self._twin_wrappers: dict[str, set[str]] = {}
         self._twin_bases: set[str] | None = None
 
     def _load(self, registry: dict) -> None:
@@ -161,19 +170,49 @@ class ButtonKit:
         """The prefixes an editor file passes to `buttonKitStyle()` (it must import the twin from button-kit-style)."""
         if rel not in self._twin_calls:
             out: set[str] = set()
-            path = self._plugin / rel
-            if rel.endswith((".js", ".jsx")) and path.is_file():
-                src = LINE_COMMENT_RE.sub("", BLOCK_COMMENT_RE.sub("", read(path)))
-                if TWIN_IMPORT_RE.search(src):
-                    for m in TWIN_CALL_RE.finditer(src):
-                        if m.group("id"):
-                            value = _const_value(src, m.group("id"))
-                            if value is not None:
-                                out.add(value)
+            wrappers: set[str] = set()
+            src = self._editor_src(rel)
+            if src is not None and TWIN_IMPORT_RE.search(src):
+                for m in TWIN_CALL_RE.finditer(src):
+                    if m.group("id"):
+                        value = _const_value(src, m.group("id"))
+                        if value is not None:
+                            out.add(value)
                         else:
-                            out.add(m.group("lit"))
+                            # A wrapper: the enclosing function hands its own second parameter to the twin
+                            # (choice-flow's `buttonKitPreview( attributes, prefix, … )`); its callers' literal
+                            # second arguments are the prefixes it previews (_wrapper_prefixes).
+                            name = _enclosing_second_param_fn(src, m.start(), m.group("id"))
+                            if name:
+                                wrappers.add(name)
+                    else:
+                        out.add(m.group("lit"))
             self._twin_calls[rel] = out
+            self._twin_wrappers[rel] = wrappers
         return self._twin_calls[rel]
+
+    def _editor_src(self, rel: str) -> str | None:
+        path = self._plugin / rel
+        if rel.endswith((".js", ".jsx")) and path.is_file():
+            return LINE_COMMENT_RE.sub("", BLOCK_COMMENT_RE.sub("", read(path)))
+        return None
+
+    def _wrapper_prefixes(self, editor_files: list[str]) -> set[str]:
+        """The literal prefixes the block's editor files pass to a wrapper of the twin."""
+        names: set[str] = set()
+        for rel in editor_files:
+            self._twin_prefixes(rel)
+            names |= self._twin_wrappers.get(rel, set())
+        out: set[str] = set()
+        if not names:
+            return out
+        call_re = re.compile(r"(?<![\w$.])(?:" + "|".join(map(re.escape, sorted(names))) +
+                             r""")\s*\(\s*[^,()]+,\s*(["'`])(\w*)\1\s*[,)]""")
+        for rel in editor_files:
+            src = self._editor_src(rel)
+            if src is not None:
+                out |= {m.group(2) for m in call_re.finditer(src)}
+        return out
 
     def twin_bases(self) -> set[str]:
         """The registry bases the canvas twin's own source reads."""
@@ -194,7 +233,7 @@ class ButtonKit:
         base = self.base_of(prefix, attr)
         if base is None or base not in self.twin_bases():
             return False
-        return any(prefix in self._twin_prefixes(rel) for rel in editor_files)
+        return any(prefix in self._twin_prefixes(rel) for rel in editor_files) or prefix in self._wrapper_prefixes(editor_files)
 
     # ---- L4, L5: the emitter called with the prefix
 

@@ -135,6 +135,12 @@ def report(tmp_path_factory):
                              "twin": TWIN_CALL.replace("'cta'", "'other'")},
         "twin-const": {"groups": ["colour"], "attrs": ("ColourBackground",), "mount": "<BuiltinButtonPanel prefix={ PREFIX } />", "render": RENDER_LITERAL,
                        "twin": TWIN_CALL.replace("'cta'", "PREFIX")},
+        "twin-wrapper": {"groups": ["colour"], "attrs": ("ColourBackground",), "mount": MOUNT, "render": RENDER_LITERAL,
+                         "twin": "function lookOf( attributes, prefix, opts ) { return buttonKitStyle( attributes, prefix, opts ); } "
+                                 "const looked = lookOf( attributes, 'cta', {} );"},
+        "twin-wrapper-other": {"groups": ["colour"], "attrs": ("ColourBackground",), "mount": MOUNT, "render": RENDER_LITERAL,
+                               "twin": "function lookOf( attributes, prefix, opts ) { return buttonKitStyle( attributes, prefix, opts ); } "
+                                       "const looked = lookOf( attributes, 'other', {} );"},
         "twin-notimported": {"groups": ["colour"], "attrs": ("ColourBackground",), "mount": MOUNT, "render": RENDER_LITERAL,
                              "twin": "const buttonKitStyle = () => ( {} ); " + TWIN_CALL, "no_import": True},
         # The carousel dots kit.
@@ -213,6 +219,15 @@ def test_must_fail_the_canvas_twin_credits_no_unread_base_no_other_prefix_and_no
     assert "L3" in links_of(report, "sgs/twin-ok", "ctaBorderStyle")
     assert "L3" in links_of(report, "sgs/twin-wrongprefix", "ctaColourBackground")
     assert "L3" in links_of(report, "sgs/twin-notimported", "ctaColourBackground")
+
+
+def test_a_wrapper_of_the_twin_credits_the_literal_prefixes_its_callers_pass(report):
+    # choice-flow's buttonKitPreview( attributes, prefix, … ) hands its second parameter to the twin.
+    assert "L3" not in links_of(report, "sgs/twin-wrapper", "ctaColourBackground")
+
+
+def test_must_fail_a_wrapper_called_with_another_prefix_credits_nothing(report):
+    assert "L3" in links_of(report, "sgs/twin-wrapper-other", "ctaColourBackground")
 
 
 def test_the_twin_credit_is_read_from_the_twin_source(tmp_path):
