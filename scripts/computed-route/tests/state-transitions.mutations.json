@@ -1,0 +1,18 @@
+[
+ { "file": "lib/state-transitions.mjs", "find": "const SILENT = /nothing recognised it/;", "replace": "const SILENT = /no effect, setting or handover holds it/;", "why": "only the rows nothing recognised are this mechanism's" },
+ { "file": "lib/state-transitions.mjs", "find": "( u ) => 'motion' === u.property && SILENT", "replace": "( u ) => SILENT", "why": "a row of another property is not a motion record" },
+ { "file": "lib/state-transitions.mjs", "find": "export const isTransition = ( mechanism ) => 'css-transition' === mechanism || 'css-pseudo' === mechanism;", "replace": "export const isTransition = ( mechanism ) => 'css-transition' === mechanism;", "why": "a pseudo-class rule is a state transition too" },
+ { "file": "lib/state-transitions.mjs", "find": "\tif ( /^border(?:-(?:top|right|bottom|left|block|inline)(?:-(?:start|end))?)?-colou?r$/.test( p ) ) {", "replace": "\tif ( /^border-colou?r$/.test( p ) ) {", "why": "a setting's border-top-color is the record's border-color family" },
+ { "file": "lib/state-transitions.mjs", "find": "\tif ( /^(?:transform|translate|scale|rotate)$/.test( p ) ) {", "replace": "\tif ( /^transform$/.test( p ) ) {", "why": "the individual transform properties are the transform family" },
+ { "file": "lib/state-transitions.mjs", "find": "\treturn 'state' === trigger ? null : [];", "replace": "\treturn [];", "why": "a script-set state is any named state" },
+ { "file": "lib/state-transitions.mjs", "find": "\treturn null === s ? ! [ 'hover', 'focus' ].includes( state ) : s.includes( state );", "replace": "\treturn null === s ? true : s.includes( state );", "why": "a state trigger is not a hover or focus setting" },
+ { "file": "lib/state-transitions.mjs", "find": "\tif ( keys.some( ( k ) => targetKeys.has( k ) ) ) {", "replace": "\tif ( targetKeys.has( keys[ 0 ] ) ) {", "why": "a record naming several elements is the node's own when any is a target" },
+ { "file": "lib/state-transitions.mjs", "find": "\treturn { kind: 'folded', depth: at < 0 ? null : at + 1,", "replace": "\treturn { kind: 'folded', depth: at < 0 ? null : at,", "why": "the depth counts the steps up to the target" },
+ { "file": "lib/state-transitions.mjs", "find": "( w ) => ( w.slot || '' ) === slot && stateMatches", "replace": "( w ) => stateMatches", "why": "a write at another slot is another element's look" },
+ { "file": "lib/state-transitions.mjs", "find": "( [ , s ] ) => s && stateMatches( trigger, s.state ) && familyOf", "replace": "( [ , s ] ) => s && familyOf", "why": "a resting setting holds no state change" },
+ { "file": "lib/state-transitions.mjs", "find": "verdict: MOTION.has( family ) ? 'motion' : 'none'", "replace": "verdict: 'none'", "why": "a motion channel is the hover layer's" },
+ { "file": "lib/state-transitions.mjs", "find": "\t\t\tchanges: null !== ( p.to ?? null ) ? String( p.from ?? '' ) !== String( p.to ) : !! p.formula,", "replace": "\t\t\tchanges: true,", "why": "a value that does not change is marked" },
+ { "file": "lib/state-transitions.mjs", "find": "\t\t\tconst why = `${ place }; ${ p.verdict }${ false === p.changes ? ' (no change stated)' : '' }`;", "replace": "\t\t\tconst why = `${ place }; ${ p.verdict }`;", "why": "the no-change mark is part of the cause" },
+ { "file": "lib/state-transitions.mjs", "find": "\t\tfor ( const f of [ n.draftRef, ...Object.values( n.draftSlots || {} ) ] ) {", "replace": "\t\tfor ( const f of [ n.draftRef ] ) {", "why": "a slot's element is a target" },
+ { "file": "lib/state-transitions.mjs", "find": "\t\tgo( n.innerBlocks );", "replace": "", "why": "inner blocks' targets are targets" }
+]
