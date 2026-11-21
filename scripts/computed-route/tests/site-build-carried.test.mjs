@@ -8,7 +8,7 @@ import os from 'os';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { desiredMenus } from '../lib/site-build-menus.mjs';
-import { labelRoutes, readLinkText } from '../lib/site-build-labels.mjs';
+import { labelRoutes, readLinkText, handlerLinkText } from '../lib/site-build-labels.mjs';
 import { loadDraft } from '../lib/intake-ast.mjs';
 import { carriedIds, logoFile, mediaEntry, sourceMaps } from '../lib/skeleton-carried.mjs';
 import { planBuild } from '../lib/site-build-plan.mjs';
@@ -93,6 +93,33 @@ test( 'MUST FAIL: readLinkText gives, per surface kind, the text of each looped 
 	fs.writeFileSync( path.join( build, 'facts.json' ), JSON.stringify( { elements: { a: el } } ) );
 	assert.deepEqual( readLinkText( { repo, client: 'c' } ), { header: { contact: 'Contact', home: 'Home' } } );
 	assert.deepEqual( readLinkText( { repo, client: 'none' } ), {} );
+} );
+
+// Static links (no list): the words a header link shows beside the route its click handler opens, from the intake's routing.
+const LINKS = [ { call: 'onClick="{{ goAbout }}"', route: 'about' }, { call: 'onClick="{{ goAbout }}"', route: 'about' }, { call: 'onClick="{{ go }}"', route: 'a' }, { call: 'onClick="{{ go }}"', route: 'b' }, { call: 'onMouseEnter="{{ goHelp }}"', route: 'help' } ];
+const link = ( words, expr, kind = 'header', extra = {} ) => ( { template: { tag: 'a', words, inFor: false, holes: [], events: [ { name: 'onClick', expr } ], ...extra }, surfaces: [ { kind } ] } );
+
+test( 'MUST FAIL: a static link\'s own words are the text of the one route its click handler opens, per surface kind', () => {
+	assert.deepEqual( handlerLinkText( { a: link( 'About  Eye Care', 'goAbout' ), b: link( 'About Eye Care', 'goAbout', 'drawer' ) }, LINKS ), { header: { about: 'About Eye Care' }, drawer: { about: 'About Eye Care' } } );
+	assert.deepEqual( handlerLinkText( { a: link( 'Help', 'goAbout', 'header', { events: [ { name: 'onMouseEnter', expr: 'openMega' }, { name: 'onClick', expr: 'goAbout' } ] } ) }, LINKS ), { header: { about: 'Help' } }, 'the click handler, whatever comes before it' );
+	const repo = tmp();
+	const build = path.join( repo, 'sites', 'c', 'build', 'intake' );
+	fs.mkdirSync( build, { recursive: true } );
+	fs.mkdirSync( path.join( repo, 'sites', 'c', 'handoff' ), { recursive: true } );
+	fs.writeFileSync( path.join( repo, 'sites', 'c', 'handoff', 'p.dc.html' ), DRAFT );
+	const looped = { template: { inFor: true, holes: [ { id: 'text#0', where: 'text', path: 'item.label' } ] }, logic: { holes: { 'text#0': hole( [ 'Contact' ] ) } }, surfaces: [ { kind: 'header' } ] };
+	fs.writeFileSync( path.join( build, 'facts.json' ), JSON.stringify( { elements: { a: looped, b: link( 'About Eye Care', 'goAbout' ), c: { ...link( 'Get in touch', 'goContact' ) } } } ) );
+	fs.writeFileSync( path.join( build, 'intake.json' ), JSON.stringify( { routing: { links: [ ...LINKS, { call: 'onClick="{{ goContact }}"', route: 'contact' } ] } } ) );
+	assert.deepEqual( readLinkText( { repo, client: 'c' } ), { header: { contact: 'Contact', about: 'About Eye Care' } }, 'a looped label keeps its route; a static link fills the routes no list gives' );
+} );
+
+test( 'negative controls: a handler two routes share, a link inside a list, words with a hole, no click handler, and two words for one route give no text', () => {
+	assert.deepEqual( handlerLinkText( { a: link( 'Go', 'go' ) }, LINKS ), {} );
+	assert.deepEqual( handlerLinkText( { a: link( 'About', 'goAbout', 'header', { inFor: true } ) }, LINKS ), {} );
+	assert.deepEqual( handlerLinkText( { a: link( 'Hi {{ name }}', 'goAbout', 'header', { holes: [ { where: 'text' } ] } ) }, LINKS ), {} );
+	assert.deepEqual( handlerLinkText( { a: link( 'Help', 'goHelp' ) }, LINKS ), {}, 'a hover handler is no link' );
+	assert.deepEqual( handlerLinkText( { a: link( 'About', 'goAbout' ), b: link( 'Our story', 'goAbout' ) }, LINKS ), { header: {} } );
+	assert.deepEqual( handlerLinkText( { a: link( '', 'goAbout' ) }, LINKS ), {} );
 } );
 
 // A client with a custom logo element drawn from a script's source map, and an <img> logo.

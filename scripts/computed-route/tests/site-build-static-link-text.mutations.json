@@ -1,0 +1,11 @@
+[
+	{ "file": "lib/site-build-labels.mjs", "find": "for ( const [ kind, byRoute ] of Object.entries( handlerLinkText( elements, links ) ) ) {", "replace": "for ( const [ kind, byRoute ] of Object.entries( {} ) ) {", "why": "a static link's words are never carried" },
+	{ "file": "lib/site-build-labels.mjs", "find": "undefined === seen[ kind ]?.[ route ] && ( text[ kind ] = { ...text[ kind ], [ route ]: words } );", "replace": "text[ kind ] = { ...text[ kind ], [ route ]: words };", "why": "a static link overrides a looped label" },
+	{ "file": "lib/site-build-labels.mjs", "find": "const route = handler && 1 === routes.get( handler )?.size ?", "replace": "const route = handler && routes.get( handler )?.size ?", "why": "a handler two routes share names its first" },
+	{ "file": "lib/site-build-labels.mjs", "find": "if ( ! t || t.inFor || ! words || ! route || ( t.holes || [] ).some( ( h ) => 'text' === h.where ) ) {", "replace": "if ( ! t || ! words || ! route || ( t.holes || [] ).some( ( h ) => 'text' === h.where ) ) {", "why": "a link inside a list is read as static" },
+	{ "file": "lib/site-build-labels.mjs", "find": "if ( ! t || t.inFor || ! words || ! route || ( t.holes || [] ).some( ( h ) => 'text' === h.where ) ) {", "replace": "if ( ! t || t.inFor || ! words || ! route ) {", "why": "words with a hole are read as static" },
+	{ "file": "lib/site-build-labels.mjs", "find": "out[ kind ][ route ] = undefined === out[ kind ][ route ] || out[ kind ][ route ] === words ? words : null;", "replace": "out[ kind ][ route ] = words;", "why": "two words for one route: the last wins" },
+	{ "file": "lib/site-build-labels.mjs", "find": "const words = String( t?.words ?? '' ).replace( /\\s+/g, ' ' ).trim();", "replace": "const words = String( t?.words ?? '' );", "why": "the words keep their spacing" },
+	{ "file": "lib/site-build-labels.mjs", "find": "const handler = ( t?.events || [] ).find( ( x ) => 'onClick' === x.name )?.expr;", "replace": "const handler = ( t?.events || [] )[ 0 ]?.expr;", "why": "any event is read as the click" },
+	{ "file": "lib/site-build-labels.mjs", "find": "const HANDLER = /^onClick=", "replace": "const HANDLER = /^\\w+=", "why": "a hover handler's route counts" }
+]
