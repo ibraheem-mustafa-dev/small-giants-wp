@@ -93,6 +93,7 @@
 						"css:border-color-gradient": "borderColourGradient",
 						"css:border-radius": "borderRadius",
 						"css:width": "shapeSize",
+						"css:height": "shapeSize",
 						"css:rotate": "iconRotate",
 						"css:box-shadow": "boxShadow"
 					},
@@ -109,7 +110,7 @@
 							}
 						}
 					},
-					"_note": "`.sgs-icon__shape`: the shape around the glyph. Colours print as --sgs-icon-* custom properties only when the client set them, so a wrapping sgs/social-icons group default (--sgs-si-*) and brand colours show through; style.css paints the theme roles last. A custom outline (hexagon, diamond, octagon, star, blob) paints no box: its inline svg.sgs-icon__outline draws the background as fill and the border as stroke. Width and height come from shapeSize (circle and the outlines use width only); unset, the shape is the icon size plus 2 x spacing-20 when it has a background or border."
+					"_note": "`.sgs-icon__shape`: the shape around the glyph. Colours print as --sgs-icon-* custom properties only when the client set them, so a wrapping sgs/social-icons group default (--sgs-si-*) and brand colours show through; style.css paints the theme roles last. A custom outline (hexagon, diamond, octagon, star, blob) paints no box: its inline svg.sgs-icon__outline draws the background as fill and the border as stroke. Width and height come from shapeSize, a per-device {width,height} object, so it maps as css:width and css:height (circle and the outlines use width only; height follows width while shapeSizeLinked); unset, the shape is the icon size plus 2 x spacing-20 when it has a background or border."
 				},
 				"glyph": {
 					"label": "Glyph",

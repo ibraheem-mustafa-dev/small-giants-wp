@@ -132,7 +132,9 @@
 					"attrMap": {
 						"css:color": "iconColour",
 						"css:stroke": "iconColourGradient",
-						"css:background-color": "iconBackground"
+						"css:background-color": "iconBackground",
+						"css:height": "iconSize",
+						"css:width": "iconSize"
 					},
 					"states": {
 						"hover": {
@@ -143,7 +145,7 @@
 							}
 						}
 					},
-					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize remains an unmapped bespoke icon control, not a Text/Fill/Layout member. iconGap (per-device label-to-icon gap) is mapped on the button element as css:gap because the gap is a flex gap on the button root. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient/iconColourHoverGradient, added 2026-08-16 (Builder 4) — non-empty wins over the flat currentColor paint at render time (helpers-svg-gradient.php)."
+					"_note": "iconColour/iconColourHover resolve via css:color (render.php:658 `.sgs-button__icon{color:...}`) — mirrors sgs/icon's own icon element, which uses the same css:color base + hover-state attrMap convention (Spec 35 vocabulary fix). iconSize (a per-device length) sizes the glyph: render.php prints it as --sgs-btn-icon-size on the button, which `.sgs-button__icon svg` reads for its width and height, so it maps as css:width and css:height. iconGap (per-device label-to-icon gap) is mapped on the button element as css:gap because the gap is a flex gap on the button root. `css:stroke` (D636/D644 icon/SVG gradient mechanism) explicit-mapped to iconColourGradient/iconColourHoverGradient, added 2026-08-16 (Builder 4) — non-empty wins over the flat currentColor paint at render time (helpers-svg-gradient.php)."
 				}
 			}
 		}
