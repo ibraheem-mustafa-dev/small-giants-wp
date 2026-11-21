@@ -4,6 +4,7 @@
 //   node scripts/computed-route/tools/clone-ledger.mjs <client> --surface <slug> --site <scratch copy | http address>
 //        [--records <build dir>] [--fill <fill run dir>] [--out <dir>] [--widths 375,768,1440]
 //        [--draft-url <url>] [--live-url <url>] [--build-diff <wp-build-page diff file>]
+//        [--run <run.jsonl> | --no-run]
 // --records: the client's build folder holding skeleton/, qa/fill/, qa/apply/ and surfaces.json (default
 // sites/<client>/build of this checkout); the draft is served from that checkout's handoff folder unless --draft-url names
 // it. --fill: the Fill run whose report and Filled tree were built (default the newest run holding fill-report.json).
@@ -18,6 +19,11 @@
 // block paints it on. Comparison (lib/ledger-diff.mjs): the parity walker's collector and comparePair; hover
 // (lib/ledger-hover.mjs). Stage (lib/ledger-stage.mjs): from the inventory, proposal, Fill report, built tree and apply plan.
 // One row per fact (lib/ledger-fold.mjs). ledger.json's rows take the run ledger's row shape (lib/ledger-row.mjs::asRunRow).
+// The run ledger file (lib/run-ledger.mjs; --run <file>, default the run.jsonl of the Fill run read, --no-run to ignore it):
+// where it exists, a difference's stage is the one the stages' own rows name (lib/ledger-run.mjs::stageFromRun), the
+// re-derived stage kept beside it as derivedStage; a box key, and a look no row decides, keep the re-derived stage. ledger.json
+// then carries `run`: the file, its rows by stage, the comparison of the two judges and the coverage check
+// (lib/run-ledger.mjs::runCoverage: each painted property of a named draft element with no row of any stage).
 // Writes <out>/ledger.json and <out>/LEDGER.md (default out: <records>/qa/ledger/<surface>/). Exit 0 (a report), 2 usage.
 import fs from 'fs';
 import path from 'path';
@@ -36,6 +42,8 @@ import { hoverPlan, hoverDiffs } from '../lib/ledger-hover.mjs';
 import { oneRowPerFact } from '../lib/ledger-fold.mjs';
 import { asRunRow } from '../lib/ledger-row.mjs';
 import { inventoryHolds } from '../lib/ledger-records.mjs';
+import { findRunLedger, readRunLedger, runCoverage } from '../lib/run-ledger.mjs';
+import { runIndex, rowsForDiff, stageFromRun, compareStages } from '../lib/ledger-run.mjs';
 import { LOOK_PROPS } from '../lib/ledger-page.mjs';
 import { sameValue } from '../../parity/lib/compare.mjs';
 import { routeHash } from '../lib/fill-open.mjs';
@@ -99,6 +107,11 @@ const report = readJson( path.join( fillDir, 'fill-report.json' ) );
 const filled = readJson( path.join( fillDir, 'filled.tree.json' ) );
 const applyPlan = maybe( path.join( records, 'qa', 'apply', `${ surface }.plan.json` ) );
 const notes = [ `records ${ records }; Fill run ${ path.basename( fillDir ) }; apply plan ${ applyPlan ? 'read' : 'none' }` ];
+// The run ledger file the stages wrote for this Fill run.
+const runFile = argv.includes( '--no-run' ) ? null : ( flag( '--run' ) ? path.resolve( flag( '--run' ) ) : findRunLedger( records, surface, path.basename( fillDir ) ) );
+const runRows = readRunLedger( runFile );
+const runIdx = runRows.length ? runIndex( runRows ) : null;
+notes.push( runIdx ? `run ledger ${ runFile }: ${ runRows.length } rows; a difference's stage is the one its stage rows name` : 'no run ledger file: every stage is re-derived from the stages\' records' );
 
 // The build's read-back, when it is newer than the Fill run.
 const postId = entry.target?.postId;
@@ -178,6 +191,12 @@ try {
 	await served?.close();
 }
 
+// The proof of a stage the run file names: the deciding row, in the shape lib/ledger-row.mjs::outcomeOf reads.
+function runProof( row, live ) {
+	const o = row.outcome || {};
+	return { record: `run ${ row.stage } ${ row.record?.section ?? '' }`.trim(), reason: o.reason ?? null, baseline: o.baseline ?? null, why: o.reason ?? null, into: o.into ?? null, row: { attr: o.setting ?? null, after: o.value ?? null }, run: { stage: row.stage, outcome: o, record: row.record }, live };
+}
+
 // Differences and stages.
 const ctx = {
 	fill: fillIndex( report ),
@@ -225,8 +244,11 @@ for ( const w of widths ) {
 			}
 			const on = df.pseudo || df.state ? null : ( painted.paintedOn.get( df.key ) ?? ( painted.boxOn && [ 'w', 'h', 'x', 'y' ].includes( df.key ) ? painted.boxOn : null ) );
 			const liveAt = { selector: null === on ? liveSel( t ) : `${ t.liveRoot } ${ on }`, ...( null === on ? {} : { paintedOn: on } ), box: ( null === on ? l : live[ `${ n }@${ on }` ] )?.snap?.box || l?.box || null, value: df.live, ...( t.top ? { parent: l?.parent || null } : {} ) };
-			const { stage, proof } = stageOf( { ...df, width: w }, t, { ...ctx, live: liveAt } );
-			raw.push( { id: t.id, index: t.index, ref: t.ref, block: t.block, slot: t.slot, draftKey: t.draftKey, kind: df.kind, key: df.key, ...( df.pseudo ? { pseudo: df.pseudo } : {} ), ...( df.state ? { state: df.state } : {} ), ...( null === on ? {} : { paintedOn: on } ), ...( l?.byPart ? { byPart: true } : {} ), ...( outOfFlow ? { outOfFlow } : {} ), selector: liveAt.selector, ...( liveAt.box ? { box: liveAt.box } : {} ), width: w, draft: df.draft, live: df.live, stage, proof } );
+			const derived = stageOf( { ...df, width: w }, t, { ...ctx, live: liveAt } );
+			const run = runIdx && ! df.pseudo ? stageFromRun( rowsForDiff( runIdx, { ref: t.ref, slot: t.slot, draftKey: t.draftKey, key: df.key, state: df.state } ), df.key ) : null;
+			const stage = run?.stage ?? derived.stage;
+			const proof = run ? runProof( run.row, liveAt ) : derived.proof;
+			raw.push( { id: t.id, index: t.index, ref: t.ref, block: t.block, slot: t.slot, draftKey: t.draftKey, kind: df.kind, key: df.key, ...( runIdx ? { derivedStage: derived.stage, runStage: run?.stage ?? null } : {} ), ...( df.pseudo ? { pseudo: df.pseudo } : {} ), ...( df.state ? { state: df.state } : {} ), ...( null === on ? {} : { paintedOn: on } ), ...( l?.byPart ? { byPart: true } : {} ), ...( outOfFlow ? { outOfFlow } : {} ), selector: liveAt.selector, ...( liveAt.box ? { box: liveAt.box } : {} ), width: w, draft: df.draft, live: df.live, stage, proof } );
 		}
 	} );
 }
@@ -277,11 +299,19 @@ const inventoryFile = skel( 'inventory' );
 const recordsHeld = { inventory: { file: inventoryFile, written: fs.statSync( inventoryFile ).mtime.toISOString(), ...inventoryHolds( inventory, LOOK_PROPS, widths ) } };
 notes.push( `inventory ${ recordsHeld.inventory.tooOld ? 'TOO OLD' : 'current' }: ${ recordsHeld.inventory.why } (generated ${ recordsHeld.inventory.generated }, file written ${ recordsHeld.inventory.written })` );
 
+// The run ledger's own account: its rows by stage, the two judges compared and the coverage check.
+const runAccount = runIdx ? ( () => {
+	const coverage = runCoverage( { inventory, skeleton, proposal, rows: runRows } );
+	const byStage = runRows.reduce( ( o, r ) => ( { ...o, [ r.stage ]: ( o[ r.stage ] || 0 ) + 1 } ), {} );
+	const compare = compareStages( raw.filter( ( r ) => r.derivedStage ) );
+	notes.push( `run ledger: ${ compare.fromRun } of ${ compare.judged } difference rows judged from the run file (${ compare.agree } agree with the re-derived stage${ Object.keys( compare.differ ).length ? `; differ: ${ Object.entries( compare.differ ).map( ( [ k, n ] ) => `${ k } ${ n }` ).join( ', ' ) }` : '' }); coverage ${ coverage.covered } of ${ coverage.pairs } painted properties of ${ coverage.elements } named draft elements have a stage row (${ coverage.missing.length } without)` );
+	return { file: runFile, rows: runRows.length, byStage, compare, coverage: { elements: coverage.elements, pairs: coverage.pairs, covered: coverage.covered, without: coverage.missing.length, byProperty: coverage.byProperty, missing: coverage.missing.slice( 0, 300 ) } };
+} )() : null;
 const summary = summarise( rows );
 const seconds = Math.round( ( Date.now() - started ) / 1000 );
 const out = path.resolve( flag( '--out', path.join( records, 'qa', 'ledger', surface ) ) );
 fs.mkdirSync( out, { recursive: true } );
 const fillName = path.basename( fillDir );
-fs.writeFileSync( path.join( out, 'ledger.json' ), JSON.stringify( { client, surface, site: base, liveUrl, draftUrl, widths, seconds, fillRun: fillDir, records: recordsHeld, summary, rows: rows.map( ( r ) => asRunRow( r, { surface, fill: fillName } ) ), unpaired: unpairedRows, notes }, null, 1 ) );
+fs.writeFileSync( path.join( out, 'ledger.json' ), JSON.stringify( { client, surface, site: base, liveUrl, draftUrl, widths, seconds, fillRun: fillDir, records: recordsHeld, ...( runAccount ? { run: runAccount } : {} ), summary, rows: rows.map( ( r ) => asRunRow( r, { surface, fill: fillName } ) ), unpaired: unpairedRows, notes }, null, 1 ) );
 fs.writeFileSync( path.join( out, 'LEDGER.md' ), ledgerMarkdown( { client, surface, site: base, widths, seconds, summary, rows, unpaired: unpairedRows, notes } ) );
 console.log( `${ surface }: ${ rows.length } rows (${ Object.entries( summary.byStage ).map( ( [ s, n ] ) => `${ s } ${ n }` ).join( ', ' ) }); ${ seconds }s; ${ path.join( out, 'LEDGER.md' ) }` );
