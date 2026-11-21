@@ -41,6 +41,7 @@ import ChromePanel from './ChromePanel';
 import chromeColourRows from './chrome-colour-rows';
 import ChromePreview from './ChromePreview';
 import { scrollbarCss, scrollbarStyle } from '../../utils/scrollbar-style';
+import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
 import { shellBorderStyle, closeBorderStyle, closeFillStyle } from './chrome-preview-style';
 import { useSelect } from '@wordpress/data';
 import BackgroundLayers from '../../components/media/BackgroundLayers';
@@ -941,6 +942,22 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 								drawerPadding: { ...drawerPadding, [ key ]: next },
 							} );
 						} }
+					/>
+
+					{ /* The drawer's scrollbar: both settings paint the dialog (supports.sgs.elements
+					   dialog), or its body under a sticky top row, so they sit in its panel. */ }
+					<ToggleControl
+						label={ __( 'Reserve space for the scrollbar', 'sgs-blocks' ) }
+						help={ __( 'On: the menu keeps its width when a section opens and the drawer first scrolls. Off: the scrollbar takes width only while it shows. Has no effect where scrollbars overlay the content.', 'sgs-blocks' ) }
+						checked={ false !== attributes.drawerScrollbarGutter }
+						onChange={ ( value ) => setAttributes( { drawerScrollbarGutter: value } ) }
+						__nextHasNoMarginBottom
+					/>
+					<ScrollbarStyleControl
+						label={ __( 'Drawer scrollbar', 'sgs-blocks' ) }
+						value={ attributes.scrollbarStyle }
+						start="thin"
+						onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
 					/>
 				</PanelBody>
 

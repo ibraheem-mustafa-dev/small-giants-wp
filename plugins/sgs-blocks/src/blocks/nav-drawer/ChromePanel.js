@@ -10,7 +10,6 @@
 
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl } from '@wordpress/components';
-import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
 import { MediaElementPanel, ResponsiveBoxControl, ResponsiveLengthControl, SvgPartsControls } from '../../components';
 import { hasLogoFile } from '../../utils/logo-source';
 import metadata from './block.json';
@@ -38,7 +37,6 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 		chromeLogoWidth,
 		chromeLogoShow,
 		chromeSticky,
-		drawerScrollbarGutter,
 	} = attributes;
 
 	return (
@@ -136,21 +134,6 @@ export default function ChromePanel( { name, attributes, setAttributes, clientId
 				checked={ !! chromeSticky }
 				onChange={ ( value ) => setAttributes( { chromeSticky: value } ) }
 				__nextHasNoMarginBottom
-			/>
-
-			<ToggleControl
-				label={ __( 'Reserve space for the scrollbar', 'sgs-blocks' ) }
-				help={ __( 'On: the menu keeps its width when a section opens and the drawer first scrolls. Off: the scrollbar takes width only while it shows. Has no effect where scrollbars overlay the content.', 'sgs-blocks' ) }
-				checked={ false !== drawerScrollbarGutter }
-				onChange={ ( value ) => setAttributes( { drawerScrollbarGutter: value } ) }
-				__nextHasNoMarginBottom
-			/>
-
-			<ScrollbarStyleControl
-				label={ __( 'Drawer scrollbar', 'sgs-blocks' ) }
-				value={ attributes.scrollbarStyle }
-				start="thin"
-				onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
 			/>
 
 			<ChromeRowBorderControls attributes={ attributes } setAttributes={ setAttributes } />
