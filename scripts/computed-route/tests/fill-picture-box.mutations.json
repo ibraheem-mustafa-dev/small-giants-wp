@@ -1,0 +1,20 @@
+[
+	{ "file": "lib/fill-picture-box.mjs", "find": "if ( 'cover' === v || 'contain' === v ) {", "replace": "if ( 'cover' === v ) {", "why": "contain is a fit" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "if ( '100% 100%' === v ) {", "replace": "if ( '100% 100%' !== v ) {", "why": "only 100% 100% is fill" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "return 'auto' === v || 'auto auto' === v ? 'none' : null;", "replace": "return 'none';", "why": "a percentage size has no fit" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "filter( ( slot ) => '' !== slot && PICTURE_TAGS.has( tagOf( slot ) ) )", "replace": "filter( ( slot ) => '' !== slot )", "why": "the part must be a replaced picture" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "return !! ( m && ! snap.missing && 1 === media.length && media[ 0 ].src === m[ 2 ] );", "replace": "return !! ( m && ! snap.missing && 1 === media.length );", "why": "the background must be the picture the read lists" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "return !! ( m && ! snap.missing && 1 === media.length && media[ 0 ].src === m[ 2 ] );", "replace": "return !! ( ! snap.missing && 1 === media.length );", "why": "an <img> paints no background picture" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "if ( null === slot || rec.targets.some( ( t ) => t.slot === slot ) ) {", "replace": "if ( null === slot ) {", "why": "a part the skeleton already gave keeps its own target" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "if ( null === slot || rec.targets.some( ( t ) => t.slot === slot ) ) {", "replace": "if ( rec.targets.some( ( t ) => t.slot === slot ) ) {", "why": "a block with no picture part gains nothing" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "\tfit && ( styles[ 'object-fit' ] = fit );", "replace": "\tstyles[ 'object-fit' ] = fit;", "why": "a size no fit draws leaves the element's own fit read" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "( styles[ 'object-position' ] = `${ x } ${ y }` )", "replace": "( styles[ 'object-position' ] = `${ y } ${ x }` )", "why": "x then y" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "\tif ( fit ) {\n\t\tdelete out[ 'background-size' ];", "replace": "\tif ( true ) {\n\t\tdelete out[ 'background-size' ];", "why": "an unanswered size stays on the root" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "( 'cover' === fit || 'fill' === fit ) && delete out[ 'background-repeat' ];", "replace": "delete out[ 'background-repeat' ];", "why": "a contained picture keeps its repeat" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "\t\t\treads.widths[ w ][ root.id ] = { ...snap, styles: withoutPicture( snap.styles, fit ) };\n", "replace": "", "why": "the root read loses the answered longhands" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "\t\t\t\treads.declared[ w ][ root.id ] = declaredAs( declared, fit, true );\n", "replace": "", "why": "the declared longhands follow" },
+	{ "file": "lib/fill-picture-box.mjs", "find": "\t\trec.targets.push( { id, index: rec.index, slot, finder: root.finder, scoped: true, state: null } );", "replace": "", "why": "the part gains a target" },
+	{ "file": "lib/setting-families.mjs", "find": "if ( r.block && '' === r.slot && PICTURE_LOOK.has( r.property ) && null !== picturePart( calFor( r.block ) ) ) {", "replace": "if ( r.block && PICTURE_LOOK.has( r.property ) && null !== picturePart( calFor( r.block ) ) ) {", "why": "detector: root rows only" },
+	{ "file": "lib/setting-families.mjs", "find": "if ( r.block && '' === r.slot && PICTURE_LOOK.has( r.property ) && null !== picturePart( calFor( r.block ) ) ) {", "replace": "if ( r.block && '' === r.slot && PICTURE_LOOK.has( r.property ) ) {", "why": "detector: blocks with a picture part only" },
+	{ "file": "lib/setting-families.mjs", "find": "block: r.block ?? blockOf[ r.node ] ?? null", "replace": "block: r.block ?? null", "why": "detector: an unmapped row's block comes from the node's writes" }
+]

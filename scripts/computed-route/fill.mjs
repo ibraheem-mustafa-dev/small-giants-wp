@@ -47,6 +47,7 @@ import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
 import { widthGateWrites, maskHiddenVariants } from './lib/fill-width-gate.mjs';
+import { pictureBoxReads } from './lib/fill-picture-box.mjs';
 import { addDefectLooks } from './lib/fill-state-defect.mjs';
 import { draftDefectsFile, writeDraftDefects } from './lib/draft-defects-file.mjs';
 import { presetWrites, dropPresetMotion } from './lib/fill-preset.mjs';
@@ -225,6 +226,8 @@ export async function fillSurface( o ) {
 		const reads = await readDraft( { url: readUrl, nodes, open: o.open || null, opener, branches: branchesShown( inventory ), headless: o.headless ?? true, sweep: o.sweep ?? true, external: !! o.external, mirror: o.mirror || {}, states: vocab.rows, logicRows, currentGroups, log } );
 		// FR-48-69: a state declaration the draft never paints (intake.json `draftDefects`) is built from the code value, as a code look.
 		maskHiddenVariants( reads, nodes, facts, intakeParts.rootComponent );
+		// A picture the draft paints as a box's background is read at the block's picture part, its size and position as fit and focal.
+		pictureBoxReads( reads, nodes, calFor ).forEach( ( c ) => log( `picture box: node ${ c.index } read at ${ c.slot } (fit ${ JSON.stringify( c.fits ) })` ) );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
 		const result = fillTree( {
