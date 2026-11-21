@@ -16,7 +16,8 @@
 // Fill run (lib/site-build-options.mjs). --flow-links runs only the product flow links (lib/site-build-flow-links.mjs):
 // each published product covered by a page-map product row with `opensFlow` gets that flow's slug as `_sgs_choice_flow`
 // (a dry run without --apply), reading the page map and writing nothing else, the map included; a whole build (neither
-// --templates-only nor --only) runs the same step after its four phases. --catalogue runs only the draft catalogue
+// --templates-only nor --only) runs the same step after its four phases. Both runs then set each linked flow's `openerLabel` from the
+// words of the draft's control that opens it (lib/site-build-flow-opener-label.mjs), writing nothing where the rows disagree. --catalogue runs only the draft catalogue
 // (lib/site-build-catalogue.mjs, FR-48-92): every product of sites/<client>/build/catalogue.json planned by SKU (create,
 // complete, exists, or left when it is a fixture), made or completed with --apply, read back, and its product id and
 // permalink recorded in catalogue.json's `sites.<site>`; the page map is neither read nor written. --store-visible runs
@@ -43,6 +44,7 @@ import { applyPhase, wpBuildPage } from './lib/site-build-apply.mjs';
 import { openDetachedSession, readEnv } from './lib/wp-run-session.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath } from './lib/site-targets.mjs';
 import { runFlowLinks } from './lib/site-build-flow-links.mjs';
+import { openerControlsOf, runOpenerLabels } from './lib/site-build-flow-opener-label.mjs';
 import { flowProductIdsFor } from './lib/site-build-flow-product.mjs';
 import { runCatalogue } from './lib/site-build-catalogue.mjs';
 import { runStoreVisible } from './lib/site-build-store-visible.mjs';
@@ -119,7 +121,11 @@ if ( args.includes( '--account-registration' ) ) {
 }
 if ( args.includes( '--flow-links' ) ) {
 	try {
-		process.exit( runFlowLinks( { rows: readPageMap( mapFile ), runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
+		{
+			const rows = readPageMap( mapFile );
+			const runPhp = wpEvalRunner( target, site, repo, { readOnly: ! apply } );
+			process.exit( runFlowLinks( { rows, runPhp, apply } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply } ) );
+		}
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -198,7 +204,7 @@ try {
 	const counts = tally( first.actions );
 	if ( ! apply ) {
 		console.log( `${ counts.creates } to create, ${ counts.changes } to change (${ first.actions.filter( ( a ) => 'template-remove' === a.type ).length } of them saved templates removed), ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
-		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runAccountRegistration( { rows, repo, client, runPhp, apply: false } ) );
+		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply: false, pending: true } ) || runAccountRegistration( { rows, repo, client, runPhp, apply: false } ) );
 	}
 	const build = wpBuildPage( repo, site );
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
@@ -226,8 +232,8 @@ try {
 	console.log( 'a fresh read plans 0 creates and 0 changes' );
 	writeMenuMap( path.join( repo, 'sites', client, 'build', 'menu-map.json' ), site, readState( runPhp, rows ).menus );
 	// The product flow links last, once the posts phase has made the flow posts they name.
-	if ( ! templatesOnly && ! onlyRows && 0 !== runFlowLinks( { rows, runPhp, apply: true } ) ) {
-		throw new Error( 'the product flow links did not complete' );
+	if ( ! templatesOnly && ! onlyRows && 0 !== ( runFlowLinks( { rows, runPhp, apply: true } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply: true } ) ) ) {
+		throw new Error( 'the product flow links or the opener labels did not complete' );
 	}
 	// The account page's registration switch, once the page map's account row is built (lib/site-build-account-registration.mjs).
 	if ( ! templatesOnly && ! onlyRows && 0 !== runAccountRegistration( { rows, repo, client, runPhp, apply: true } ) ) {
