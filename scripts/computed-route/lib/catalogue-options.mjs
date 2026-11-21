@@ -149,20 +149,20 @@ export function lineKeys( ctx, line ) {
 }
 
 // The first value of a state key (the component's `state = { … }`), or UNREAD.
-function initialOf( ctx, src, key ) {
+export function initialOf( ctx, src, key ) {
 	const decl = initialStateObject( src.idx );
 	const v = decl ? valueOf( ctx, src, decl ) : UNREAD;
 	return v && UNREAD !== v && key in v ? v[ key ] : UNREAD;
 }
 
 // The object a setState call writes: its argument, or what an updater returns.
-const written = ( call ) => {
+export const written = ( call ) => {
 	const a = call.arguments[ 0 ];
 	return isFn( a ) && 'ObjectExpression' === a.body?.type ? a.body : a;
 };
 
 // The binding name a mapped list is kept under (`sizes: list.map( … )`, `const sizes = …`), or null.
-function bindingName( src, node ) {
+export function bindingName( src, node ) {
 	const up = parentOf( src, node );
 	if ( 'ObjectProperty' === up?.type ) {
 		return keyName( up );

@@ -5,15 +5,17 @@
 //   node lib/draft-defects-file.mjs <client> --request          print the request text for the entries not yet sent
 //   node lib/draft-defects-file.mjs <client> --mark-sent        stamp today on every entry not yet sent
 // Fill passes `defectLooks.listed` (lib/fill-state-defect.mjs::addDefectLooks) as `listed`, so an entry also records the
-// value the code intent was built as; a command-line rebuild keeps what the file already holds there.
+// value the code intent was built as; a command-line rebuild keeps what the file already holds there. The file also lists the
+// choices the draft's basket line omits (build/catalogue.json's `draft-omission` gap rows).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildDraftDefects, mergeDraftDefects, validateDraftDefects, OWNER_DEFAULT } from './draft-defects.mjs';
+import { buildDraftDefects, catalogueDefects, mergeDraftDefects, validateDraftDefects, OWNER_DEFAULT } from './draft-defects.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
 export const defectsPath = ( client, repo = REPO ) => path.join( repo, 'sites', client, 'build', 'qa', 'draft-defects.json' );
 const intakePath = ( client, repo = REPO ) => path.join( repo, 'sites', client, 'build', 'intake', 'intake.json' );
+const cataloguePath = ( client, repo = REPO ) => path.join( repo, 'sites', client, 'build', 'catalogue.json' );
 const readJson = ( file ) => ( fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : null );
 
 // The file's content for a client: { client, takenOn, defects }, each defect keeping the dates, owner and built values the file already held.
@@ -23,7 +25,7 @@ export function draftDefectsFile( { client, repo = REPO, owner = OWNER_DEFAULT, 
 		throw new Error( `no intake.json for ${ client } (${ intakePath( client, repo ) }); run intake first` );
 	}
 	const earlier = readJson( defectsPath( client, repo ) )?.defects || [];
-	const fresh = buildDraftDefects( { draftDefects: intake.draftDefects, listed, owner, date } );
+	const fresh = [ ...buildDraftDefects( { draftDefects: intake.draftDefects, listed, owner, date } ), ...catalogueDefects( readJson( cataloguePath( client, repo ) ), { owner, date } ) ];
 	const merged = mergeDraftDefects( fresh, earlier );
 	const heldBuilt = new Map( earlier.map( ( d ) => [ d.id, d.built ] ) );
 	return { client, takenOn: intake.takenOn ?? null, defects: merged.map( ( d ) => ( d.built ? d : { ...d, built: heldBuilt.get( d.id ) ?? null } ) ) };

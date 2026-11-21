@@ -57,6 +57,17 @@ export function buildDraftDefects( { draftDefects = [], listed = [], owner = OWN
 	return out.sort( ( a, b ) => a.draftId.localeCompare( b.draftId, 'en', { numeric: true } ) || a.construct.localeCompare( b.construct ) );
 }
 
+// The entries for the choices the draft's basket line omits (the catalogue's `draft-omission` gap rows, lib/catalogue-omitted.mjs):
+// one defect each, the draft's own code declaring a picker whose choice never reaches the basket (a catalogue gap row carries
+// the entry's id, construct, declares and renders).
+export function catalogueDefects( catalogue, { owner = OWNER_DEFAULT, date = new Date().toISOString().slice( 0, 10 ) } = {} ) {
+	return ( catalogue?.gaps || [] ).filter( ( g ) => 'draft-omission' === g.kind && g.defect ).map( ( g ) => ( {
+		id: g.defect.id, draftId: g.defect.id.replace( /^defect:/, '' ), construct: g.defect.construct, test: 'omitted-choice',
+		declares: tail( g.defect.declares ), renders: tail( g.defect.renders ), owner, widths: [], built: null,
+		listedOn: date, sentOn: null,
+	} ) );
+}
+
 // The list a re-run writes: the fresh entries, each keeping the dates and owner of the entry the earlier file held for the
 // same defect (a defect the draft no longer has drops out; one still present is never re-listed as new or as unsent).
 export function mergeDraftDefects( fresh, earlier = [] ) {

@@ -1,0 +1,61 @@
+<!doctype html>
+<html><head><meta charset="utf-8"></head><body>
+<x-dc>
+<sc-if value="{{ isShop }}"><main><h1>Goods</h1>
+  <sc-for list="{{ results }}" as="p"><a href="#" onClick="{{ p.open }}">{{ p.name }} {{ p.priceLabel }}</a></sc-for>
+</main></sc-if>
+<sc-if value="{{ isProduct }}"><main>
+  <h1>{{ cur.name }}</h1>
+  <div><span>Size</span><sc-for list="{{ sizes }}" as="s"><button onClick="{{ s.pick }}">{{ s.name }}</button></sc-for></div>
+  <div><span>Shade</span><span>{{ cur.toneName }}</span></div>
+  <sc-for list="{{ toneTiles }}" as="t"><button onClick="{{ t.pick }}">{{ t.name }}</button></sc-for>
+  <div><span>Finish</span></div>
+  <sc-for list="{{ finishTiles }}" as="f"><button onClick="{{ f.pick }}">{{ f.name }}</button></sc-for>
+  <div><span>View</span></div>
+  <sc-for list="{{ views }}" as="v"><button onClick="{{ v.pick }}">{{ v.label }}</button></sc-for>
+  <sc-for list="{{ shotTiles }}" as="s"><button onClick="{{ s.pick }}"><img src="{{ s.img }}"></button></sc-for>
+  <button onClick="{{ addPlain }}">Add</button>
+</main></sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static TONES = { ink: ['Ink', '#101820'], sand: ['Sand', '#d8c3a5'], moss: ['Moss', '#4a5d23'], rust: ['Rust', '#8a3b12'] };
+  static PALETTE = { tones: [{ name: 'Mist', hex: '#cccccc' }, { name: 'Dusk', hex: '#443355' }] };
+  static GOODS = [
+    { id: 1, name: 'Ridge Cap', price: 30, tones: ['ink', 'sand', 'moss'], finishes: [{ name: 'Matt', hex: '#222222' }, { name: 'Gloss', hex: '#eeeeee' }], shots: ['front.jpg', 'side.jpg'] },
+    { id: 2, name: 'Fold Beanie', price: 20, tones: ['moss'], shots: ['front.jpg', 'side.jpg'] },
+    { id: 3, name: 'Storm Hood', price: 45, tones: ['rust', 'ink'], finishes: [{ name: 'Waxed', hex: '#554433' }, { name: 'Plain', hex: '#999999' }], shots: ['front.jpg'] }
+  ];
+  state = { page: 'shop', curId: 1, curSize: 'M', curTone: 0, curFinish: 0, curView: 0, curShot: 0, bag: [] };
+  gbp(n) { return '£' + n.toFixed(2); }
+  go(page, extra) { this.setState(Object.assign({ page }, extra || {})); }
+  renderVals() {
+    const S = this.state, C = Component;
+    const deco = p => {
+      const keys = p.tones || ['ink'];
+      const sel = keys[Math.min(S.curTone, keys.length - 1)];
+      return Object.assign({}, p, {
+        priceLabel: this.gbp(p.price), toneName: C.TONES[sel][0],
+        tones: keys.map((k, i) => ({ name: C.TONES[k][0], hex: C.TONES[k][1], ring: i === S.curTone ? 'on' : 'none' })),
+        open: () => this.go('product', { curId: p.id, curTone: 0 })
+      });
+    };
+    const goods = C.GOODS.map(deco);
+    const cur = goods.find(p => p.id === S.curId) || goods[0];
+    const sizes = [['S', -2], ['M', 0], ['L', 2]].map(s => ({ name: s[0], pick: () => this.setState({ curSize: s[0] }) }));
+    const toneTiles = (cur.tones || []).map((t, i) => ({ name: t.name, border: i === S.curTone ? 'on' : 'off', pick: () => this.setState({ curTone: i }) }));
+    const finishTiles = (cur.finishes || []).map((f, i) => ({ name: f.name, pick: () => this.setState({ curFinish: i }) }));
+    const views = ['Front', 'Side', 'Back'].map((v, i) => ({ label: v, pick: () => this.setState({ curView: i }) }));
+    const shotTiles = (cur.shots || []).map((g, i) => ({ img: g, pick: () => this.setState({ curShot: i }) }));
+    return {
+      isShop: S.page === 'shop', isProduct: S.page === 'product', results: goods, cur, sizes, toneTiles, finishTiles, views, shotTiles,
+      addPlain: () => this.addToBag(cur)
+    };
+  }
+  addToBag(p) {
+    const item = { pid: p.id, size: this.state.curSize };
+    this.setState(s => { const bag = s.bag.slice(); bag.push(item); return { bag }; });
+  }
+}
+</script>
+</body></html>

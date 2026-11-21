@@ -1,0 +1,15 @@
+[
+	{"file": "lib/catalogue-omitted.mjs", "find": "if ( ! key || read.has( key ) || 'Identifier' !== prop.value.type ) {", "replace": "if ( ! key || 'Identifier' !== prop.value.type ) {", "why": "a key the basket line reads is also inferred as an omitted choice (a second axis)"},
+	{"file": "lib/catalogue-omitted.mjs", "find": "if ( arraysOf( ctx, src, node ).some( ( a ) => a.node === list.array.node ) ) {", "replace": "if ( true ) {", "why": "a picker over another object's list of the same field name reads as a list on the product record"},
+	{"file": "lib/catalogue-omitted.mjs", "find": "&& readsParam( src, n.value.callee.object, fn ) ) {", "replace": ") {", "why": "a decorated list built from nothing the record holds is a producer"},
+	{"file": "lib/catalogue-omitted.mjs", "find": "if ( unique.length >= 2 ) {", "replace": "if ( unique.length >= 1 ) {", "why": "a record with one option gets an axis"},
+	{"file": "lib/catalogue-omitted.mjs", "find": "earlier.lastIndexOf( '</sc-for>' ) + 9", "replace": "0", "why": "another picker's heading is taken as this picker's"},
+	{"file": "lib/catalogue-omitted.mjs", "find": "swatch: Object.values( fields ).find( ( v ) => 'string' === typeof v && HEX.test( v ) ) || null,", "replace": "swatch: Object.values( fields ).find( ( v ) => 'string' === typeof v ) || null,", "why": "any text field is the swatch"},
+	{"file": "lib/catalogue-omitted.mjs", "find": "case 'LogicalExpression':\n\t\t\treturn [ ...go( node.left ), ...go( node.right ) ];", "replace": "case 'LogicalExpression':\n\t\t\treturn go( node.right );", "why": "a list read as `( cur.tones || [] )` is not followed to its field"},
+	{"file": "lib/catalogue-omitted.mjs", "find": "const at = 'number' === typeof first ? unique[ first ] : unique.find( ( o ) => o.value === first );", "replace": "const at = unique[ 0 ];", "why": "the default is always the first option, not the one the first state value picks"},
+	{"file": "lib/catalogue-read.mjs", "find": ".filter( ( a, i, all ) => all.findIndex( ( x ) => x.slug === a.slug ) === i );", "replace": ";", "why": "an inferred axis labelled like an existing one is a second attribute of the same slug"},
+	{"file": "lib/catalogue-read.mjs", "find": "const omitted = omittedChoices( ctx, lines, list, file );", "replace": "const omitted = [];", "why": "no choice is ever inferred from a picker"},
+	{"file": "lib/catalogue-read.mjs", "find": "n && out.gaps.push( omissionGap( o, n ) );", "replace": "", "why": "the omission is not recorded as a gap row"},
+	{"file": "lib/draft-defects-file.mjs", "find": "...catalogueDefects( readJson( cataloguePath( client, repo ) ), { owner, date } ) ];", "replace": "];", "why": "the draft-defects file never lists the omissions"},
+	{"file": "lib/draft-defects.mjs", "find": "filter( ( g ) => 'draft-omission' === g.kind && g.defect )", "replace": "filter( ( g ) => g.defect )", "why": "any gap row carrying a defect is listed (the kind is not checked)"}
+]

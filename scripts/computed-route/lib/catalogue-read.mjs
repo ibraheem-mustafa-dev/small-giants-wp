@@ -22,6 +22,7 @@ import { embeddedManifest } from './intake-routing.mjs';
 import { UNREAD, catalogueSources, valueOf } from './catalogue-source.mjs';
 import { descriptionField, facetFields, imageFields, recordLists } from './catalogue-records.mjs';
 import { basketLines, keyOptions, lineFor, lineKeys } from './catalogue-options.mjs';
+import { omittedChoices } from './catalogue-omitted.mjs';
 import { readFacets, settleFacets } from './catalogue-facets.mjs';
 
 export const MAX_VARIATIONS = 100;
@@ -118,7 +119,7 @@ export function variesByOf( label, key, pack ) {
 function attributeOf( choice ) {
 	const priced = choice.options.every( ( o ) => 'number' === typeof o.price );
 	const pack = priced && choice.options.every( ( o ) => Number.isInteger( o.value ) && o.value >= 2 ) && choice.options.some( ( o ) => o.price !== o.value );
-	const label = pack ? 'Pack size' : human( choice.name ) || human( choice.key ) || choice.key;
+	const label = pack ? 'Pack size' : choice.label || human( choice.name ) || human( choice.key ) || choice.key;
 	return {
 		key: choice.key, label, slug: pack ? PACK_SLUG : slugify( label ), packSize: pack, variesBy: variesByOf( label, choice.key, pack ), priced,
 		options: choice.options.map( ( o ) => ( { value: o.value, term: String( o.label ?? o.value ), price: priced ? o.price : null, swatch: o.swatch || null, badge: pack ? o.badge || null : null } ) ),
@@ -136,7 +137,7 @@ function combinations( attrs, price ) {
 }
 
 // The choices of one record turned into attributes and gap rows: { attributes, gaps }.
-function choicesOf( ctx, lines, list, record, draftId ) {
+function choicesOf( ctx, lines, list, record, draftId, omitted = [] ) {
 	const gaps = [];
 	const gap = ( kind, detail ) => gaps.push( { draftId, kind, detail } );
 	const found = lineFor( ctx, lines, list, record );
@@ -171,7 +172,8 @@ function choicesOf( ctx, lines, list, record, draftId ) {
 			gap( 'unread-choice', `the basket line reads choice "${ c.key }", whose options the code does not list statically; recorded, not built` );
 		}
 	}
-	let attributes = choices.map( attributeOf );
+	omitted.map( ( o ) => o.optionsFor( record ) ).filter( Boolean ).forEach( ( c ) => choices.push( c ) );
+	let attributes = choices.map( attributeOf ).filter( ( a, i, all ) => all.findIndex( ( x ) => x.slug === a.slug ) === i );
 	const priced = attributes.filter( ( a ) => a.priced );
 	if ( priced.length > 1 ) {
 		gap( 'priced-choices', `${ priced.length } choices each carry a price (${ priced.map( ( a ) => a.key ).join( ', ' ) }) and the code's combined price is not read; the product is made with none of them` );
@@ -189,6 +191,23 @@ function choicesOf( ctx, lines, list, record, draftId ) {
 		gap( 'no-variesby', `no choice (${ attributes.map( ( a ) => `"${ a.key }"` ).join( ', ' ) }) is one of Google's variesBy axes (${ VARIESBY_VALUES.join( ', ' ) }), and SGS's product preflight publishes a variable product only when one of its variation terms maps to one (no_variesby); the product is made and kept a draft` );
 	}
 	return { attributes, gaps };
+}
+
+// The gap row for a choice the basket line omits (lib/catalogue-omitted.mjs) that `n` products got as an axis, with the
+// draft-defect entry lib/draft-defects.mjs lists it by.
+function omissionGap( o, n ) {
+	const label = o.label || human( o.binding ) || o.key;
+	const what = label.toLowerCase();
+	return {
+		draftId: '*', kind: 'draft-omission',
+		detail: `the product page's ${ label } picker writes state key "${ o.key }" over each product's own list "${ o.field }", but the basket line does not read it, so the shopper's pick never reaches the basket; it is made the "${ label }" choice (one variation per option) on ${ n } product${ 1 === n ? '' : 's' } and the omission is listed as a draft defect`,
+		defect: {
+			id: `defect:${ o.file.replace( /(\.dc)?\.html?$/i, '' ) }:basket-line:${ o.key }`,
+			construct: 'basket line',
+			declares: `a ${ what } picker on the product page that writes "${ o.key }" over each product's own list "${ o.field }", so the shopper chooses a ${ what } for the product`,
+			renders: `the basket line (in ${ o.file }) never reads "${ o.key }", so which ${ what } the shopper chose is not in the basket and the line cannot tell one ${ what } of the product from another`,
+		},
+	};
 }
 
 // The asset path of an image value, repo-relative, or a web address.
@@ -239,9 +258,11 @@ export function readCatalogue( { repo, client, rows } ) {
 		out.facets.push( ...facetRead.facets );
 		out.gaps.push( ...facetRead.gaps );
 		const lines = basketLines( ctx, list, file );
+		const omitted = omittedChoices( ctx, lines, list, file );
+		const first = out.products.length;
 		for ( const r of list.records ) {
 			const draftId = String( r[ list.key ] );
-			const { attributes, gaps } = choicesOf( ctx, lines, list, r, draftId );
+			const { attributes, gaps } = choicesOf( ctx, lines, list, r, draftId, omitted );
 			out.gaps.push( ...gaps );
 			const sku = skuOf( draftId );
 			const variations = attributes.length ? combinations( attributes, r[ prices.price ] ).map( ( c ) => ( { sku: `${ sku }-${ c.parts.join( '-' ) }`, options: c.options, price: c.price } ) ) : [];
@@ -259,6 +280,10 @@ export function readCatalogue( { repo, client, rows } ) {
 				variations,
 			} );
 		}
+		omitted.forEach( ( o ) => {
+			const n = out.products.slice( first ).filter( ( p ) => p.attributes.some( ( a ) => a.key === o.key ) ).length;
+			n && out.gaps.push( omissionGap( o, n ) );
+		} );
 	}
 	settleFacets( out );
 	const seen = new Map();

@@ -166,8 +166,20 @@
       "additionalProperties": false,
       "properties": {
         "draftId": { "type": "string", "description": "The product's draft id, or * for the whole catalogue." },
-        "kind": { "enum": ["no-records", "price", "basket-line", "switch", "multi-choice", "gated-choice", "unread-choice", "priced-choices", "open-amount", "too-many-variations", "no-variesby", "facet", "slug"] },
-        "detail": { "type": "string", "minLength": 1 }
+        "kind": { "enum": ["no-records", "price", "basket-line", "switch", "multi-choice", "gated-choice", "unread-choice", "priced-choices", "open-amount", "too-many-variations", "no-variesby", "facet", "slug", "draft-omission"] },
+        "detail": { "type": "string", "minLength": 1 },
+        "defect": {
+          "type": "object",
+          "description": "Only on a draft-omission row: the draft defect it records (a choice the product page offers and the basket line leaves out), in the fields lib/draft-defects.mjs lists a defect by.",
+          "required": ["id", "construct", "declares", "renders"],
+          "additionalProperties": false,
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "construct": { "type": "string", "minLength": 1 },
+            "declares": { "type": "string", "minLength": 1 },
+            "renders": { "type": "string", "minLength": 1 }
+          }
+        }
       }
     }
   }
