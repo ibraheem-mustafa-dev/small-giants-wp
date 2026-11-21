@@ -9,6 +9,7 @@ import { fillTree } from '../lib/fill-resolve.mjs';
 import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
+import { recordDisplay } from '../lib/fill-resolve-state.mjs';
 
 const db = openDb();
 const FIVE = [ 375, 768, 1024, 1440, 1920 ];
@@ -82,4 +83,18 @@ test( 'MUST FAIL before the fix: an inset measured in flow is no baseline for an
 	assert.ok( asked( out, 'top' ) );
 	// Negative control: the node in flow too.
 	assert.equal( childRow( run( { cal, child: { top: '0px' }, position: 'relative', declared: { top: '0px' } } ), 'top' )?.baseline, 'calibrated-default' );
+} );
+
+test( 'recordDisplay keeps the display the clone shows: what the caller names, else the default paint of the block', () => {
+	const st = {};
+	const rec = { index: 3 };
+	const cal = calFor();
+	recordDisplay( st, rec, cal, '', { 375: 'flex', 1440: 'flex' }, ( w ) => ( 1440 === w ? 'block' : undefined ) );
+	// Judged equal to a default of block at 1440 (an equivalent spelling of the draft's flex): the clone shows block; at 375
+	// nothing is named, so the default paint.
+	assert.deepEqual( st.cloneDisplay.get( '3|' ), { 375: 'block', 1440: 'block' } );
+	recordDisplay( st, rec, cal, '', { 768: 'grid' }, ( w ) => ( 768 === w ? 'grid' : undefined ) );
+	assert.deepEqual( st.cloneDisplay.get( '3|' ), { 768: 'grid' } );
+	recordDisplay( st, rec, cal, '', { 768: 'grid' } );
+	assert.deepEqual( st.cloneDisplay.get( '3|' ), { 768: 'block' }, 'a display no setting holds: the default paint' );
 } );

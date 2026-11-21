@@ -172,7 +172,21 @@ export function reportContexts( report, nodes, calFor, schemaOf ) {
 	for ( const r of report.writes || [] ) {
 		'' === r.slot && /^padding-(top|bottom)$/.test( r.prop ) && vertical.add( r.node );
 	}
-	const draftAt = ( ref, slot, prop, w ) => valueAt( rowsAt.get( `${ ref }|${ slot }|${ prop }` ), w );
+	// An equal row shows what it was judged equal to: for a calibrated default, the default paint (an equivalent spelling of the
+	// draft's value, a flex box with nothing to lay out read as block, shows the default).
+	const draftAt = ( ref, slot, prop, w ) => {
+		const r = rowsAt.get( `${ ref }|${ slot }|${ prop }` );
+		const node = byRef.get( ref );
+		if ( 'equal' === r?.reason && 'calibrated-default' === r.baseline && node ) {
+			const cal = calFor( node.name, node );
+			const key = Object.keys( cal?.elements || {} ).find( ( k ) => k.replace( /:nth-of-type\(\d+\)/g, '' ) === String( slot ).replace( /:nth-of-type\(\d+\)/g, '' ) );
+			const v = undefined !== key ? cal.elements[ key ]?.[ String( 1920 === w ? 1440 : w ) ]?.[ prop ] : undefined;
+			if ( undefined !== v ) {
+				return v;
+			}
+		}
+		return valueAt( r, w );
+	};
 	const out = [];
 	for ( const row of report.settled || [] ) {
 		const at = 'calibrated-default' === row.baseline ? row.widths?.[ 0 ] : isObj( row.baseline ) ? ( row.widths || [] ).find( ( w ) => 'calibrated-default' === row.baseline[ w ] ) : undefined;

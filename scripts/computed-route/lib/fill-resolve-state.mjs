@@ -204,11 +204,12 @@ export function baselineFn( st, rec, cal, prop, ownFontPx = () => undefined ) {
 export const BASELINE_SOURCES = [ 'block-own', 'theme', 'own-element', 'parent', 'flex-default', 'fixture-unstyled', 'calibrated-default', 'page-gutter', 'held-setting' ];
 
 // The display the clone shows on each element of a node, recorded as Fill resolves `display` (it is the first property an
-// element resolves, lib/fill-read.mjs::PROPS): the draft's value where it was written or already shown, else the block's
-// default paint. `${ index }|${ slot }` -> { width: value }.
-export function recordDisplay( st, rec, cal, slot, draft, shown ) {
+// element resolves, lib/fill-read.mjs::PROPS): `shownAt( width )` where the caller knows it (the draft's value where it was
+// written, the baseline the draft was judged equal to, which an equivalent spelling of the draft's value may differ from),
+// else the block's default paint. `${ index }|${ slot }` -> { width: value }.
+export function recordDisplay( st, rec, cal, slot, draft, shownAt = null ) {
 	st.cloneDisplay ??= new Map();
-	st.cloneDisplay.set( `${ rec.index }|${ slot }`, Object.fromEntries( Object.keys( draft ).map( ( w ) => [ Number( w ), shown ? draft[ w ] : defaultPaint( cal, slot, Number( w ), 'display' ) ] ) ) );
+	st.cloneDisplay.set( `${ rec.index }|${ slot }`, Object.fromEntries( Object.keys( draft ).map( ( w ) => [ Number( w ), shownAt?.( Number( w ) ) ?? defaultPaint( cal, slot, Number( w ), 'display' ) ] ) ) );
 }
 
 // The node's own context at a slot and width as the clone shows it (lib/equal-context.mjs::contextDiffs's `node`): the

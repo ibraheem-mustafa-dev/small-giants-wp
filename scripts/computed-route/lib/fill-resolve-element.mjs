@@ -300,7 +300,7 @@ export function fillElement( st, rec, ref, cal, target, snaps, layer = null ) {
 		( stated ? [] : notPlain ).forEach( ( row ) => unmapped( st, rec, ref, row ) );
 		// The display the clone shows on this element, for the context its later properties and its children are judged in.
 		if ( ! layer && 'display' === prop ) {
-			recordDisplay( st, rec, cal, target.slot, draft, 'written' === res.status || 'equal' === res.status || 'equal' === eq?.status );
+			recordDisplay( st, rec, cal, target.slot, draft, 'written' === res.status ? ( w ) => draft[ w ] : 'equal' === res.status ? ( w ) => input.baseline( res.slot ?? slot, w ) : null );
 		}
 		if ( 'equal' === res.status || 'equal' === eq?.status ) {
 			// Which baseline made it equal (lib/fill-resolve-state.mjs::equalBaseline), and for a calibrated default the context

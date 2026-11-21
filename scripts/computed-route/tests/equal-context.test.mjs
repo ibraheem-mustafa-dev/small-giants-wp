@@ -84,8 +84,13 @@ test( 'reportContexts flags the calibrated-default rows whose node is in another
 	const flagged = out.filter( ( x ) => x.kinds.length ).map( ( x ) => `${ x.row.node } ${ x.row.property } ${ x.kinds.map( ( k ) => k.kind ).join( ',' ) }` );
 	assert.deepEqual( flagged, [ 'r-1 display held-setting' ] );
 	// The flex row's flex-wrap was measured on a flex box: no difference (negative control); measured on a block box, there is.
-	const block = { ...s, calFor: ( name ) => ( 'sgs/container' === name ? { elements: { '': at( { _parentDisplay: 'block', display: 'block', 'flex-wrap': 'nowrap' } ) } } : s.calFor( name ) ) };
+	// The row's display is written by the residual writer, so the clone shows the draft's flex.
+	const written = s.report.settled.map( ( r ) => ( 'r-0' === r.node && 'display' === r.property ? { ...r, reason: 'residual-css', baseline: undefined } : r ) );
+	const block = { ...s, report: { ...s.report, settled: written }, calFor: ( name ) => ( 'sgs/container' === name ? { elements: { '': at( { _parentDisplay: 'block', display: 'block', 'flex-wrap': 'nowrap' } ) } } : s.calFor( name ) ) };
 	assert.deepEqual( reportContexts( block.report, block.nodes, block.calFor, block.schemaOf ).filter( ( x ) => x.kinds.length ).map( ( x ) => `${ x.row.property } ${ x.kinds[ 0 ].kind }` ), [ 'flex-wrap layout', 'display held-setting' ] );
+	// An equal display shows the default it was judged equal to, not the draft's spelling.
+	const judged = { ...block, report: { ...block.report, settled: block.report.settled.map( ( r ) => ( 'r-0' === r.node && 'display' === r.property ? { ...r, reason: 'equal', baseline: 'calibrated-default' } : r ) ) } };
+	assert.deepEqual( reportContexts( judged.report, judged.nodes, judged.calFor, judged.schemaOf ).filter( ( x ) => x.kinds.length ).map( ( x ) => x.row.property ), [ 'display' ] );
 	// A display the clone does not show (an unmapped row) is not the node's context.
 	const unshown = { ...block, report: { ...block.report, settled: [ ...block.report.settled.filter( ( r ) => ! ( 'r-0' === r.node && 'display' === r.property ) ), { node: 'r-0', block: 'sgs/container', slot: '', property: 'display', value: 'flex', widths: W, reason: 'dimension' } ], unmapped: [ { node: 'r-0', slot: '', property: 'display', value: 'flex', reason: 'no-setting' } ] } };
 	assert.deepEqual( reportContexts( unshown.report, unshown.nodes, unshown.calFor, unshown.schemaOf ).filter( ( x ) => x.kinds.length ).map( ( x ) => x.row.property ), [ 'display' ] );
