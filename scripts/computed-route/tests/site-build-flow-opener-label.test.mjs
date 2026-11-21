@@ -4,7 +4,7 @@
 // nothing. Tests marked MUST FAIL fail on code that writes a guess, writes without reading back or writes a flow the site lacks.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { labelsPlan, planLabels, runOpenerLabels, labelApplyPhp, labelStatePhp, LABEL_ATTR } from '../lib/site-build-flow-opener-label.mjs';
+import { labelsPlan, planLabels, runOpenerLabels, labelApplyPhp, labelStatePhp, LABEL_ATTR, NOTE_FIELD } from '../lib/site-build-flow-opener-label.mjs';
 
 const FLOW = 'choice-flow-add-prescription-lenses';
 const product = ( slug, over = {} ) => ( { slug, postType: 'product', collection: 'live', opensFlow: FLOW, opens: [ { kind: 'flow', slug: FLOW, buyBox: true } ], ...over } );
@@ -138,3 +138,49 @@ test( 'MUST FAIL on bea6be759: a post holding two choice-flow tags is never rewr
 	const php = labelApplyPhp( [ { slug: FLOW, id: 120, to: 'Add my prescription' } ] );
 	assert.ok( php.includes( "if ( null !== $attrs && 1 !== preg_match_all( '#<!--\\s+wp:sgs/choice-flow\\s#', $content ) ) {\n\t\t$attrs = null;" ), 'the write runs only when the post holds one flow tag, so a nested flow never takes the root flow\'s attributes' );
 } );
+
+// The opener's note (the flow's `openerNote`, "from +£59" on Eye Care's lens opener): the same step writes it after the words.
+const noted = ( label, note ) => ( { openers: [ { label, note } ] } );
+
+test( 'MUST FAIL: the flow takes the note of the draft\'s opener, and an opener drawing no note plans an empty one', () => {
+	assert.deepEqual( labelsPlan( ROWS, () => noted( 'Add my prescription', 'from +£59' ), NOTE_FIELD ).flows, [ { slug: FLOW, rows: [ 'product' ], label: 'from +£59' } ] );
+	assert.deepEqual( labelsPlan( ROWS, () => noted( 'Add my prescription', '' ), NOTE_FIELD ).flows[ 0 ].label, '', 'no note drawn: the flow\'s note is cleared, not left as it was' );
+	const unread = labelsPlan( ROWS, () => said( 'Add my prescription' ), NOTE_FIELD );
+	assert.deepEqual( [ unread.flows, unread.notes ], [ [], [] ], 'negative control: an opener whose note was not read plans nothing and says nothing' );
+} );
+
+test( 'MUST FAIL: rows whose openers carry different notes give the flow no note', () => {
+	const rows = [ product( 'a' ), product( 'b' ), flowRow ];
+	const plan = labelsPlan( rows, ( r ) => noted( 'Add my prescription', 'a' === r.slug ? 'from +£59' : 'from +£49' ), NOTE_FIELD );
+	assert.equal( plan.flows[ 0 ].label, null );
+	assert.match( plan.notes.join( '\n' ), /say different opener notes \("from \+£59", "from \+£49"\), so no openerNote is written/ );
+} );
+
+test( 'MUST FAIL: one run writes the words and then the note, each read back on its own attribute', () => {
+	const calls = [];
+	const run = ( code ) => {
+		calls.push( code );
+		if ( code.includes( 'resolve_choice_flow' ) ) {
+			const wrote = ( attr ) => calls.some( ( c ) => c.includes( 'wp_update_post' ) && c.includes( `$attrs['${ attr }']` ) );
+			const reading = code.includes( `['attrs']['openerNote']` ) ? 'openerNote' : 'openerLabel';
+			return JSON.stringify( { [ FLOW ]: { id: 120, label: 'openerNote' === reading ? ( wrote( 'openerNote' ) ? 'from +£59' : '' ) : ( wrote( 'openerLabel' ) ? 'Add my prescription' : 'Choose your options' ) } } );
+		}
+		return JSON.stringify( { set: 1, wrong: [] } );
+	};
+	const l = logs();
+	assert.equal( runOpenerLabels( { rows: ROWS, controlsOf: () => noted( 'Add my prescription', 'from +£59' ), runPhp: run, apply: true, log: l.log, error: l.error } ), 0 );
+	const writes = calls.filter( ( c ) => c.includes( 'wp_update_post' ) );
+	assert.equal( writes.length, 2 );
+	assert.ok( writes[ 0 ].includes( `$attrs['openerLabel']` ) && writes[ 1 ].includes( `$attrs['openerNote']` ), 'the words first, then the note' );
+	assert.match( l.out.log.join( '\n' ), /openerNote "" -> "from \+£59"/ );
+	assert.match( l.out.log.join( '\n' ), /1 opener note\(s\) set/ );
+} );
+
+test( 'negative control: a failed words step stops before the note is touched', () => {
+	const calls = [];
+	const run = ( code ) => ( calls.push( code ), code.includes( 'resolve_choice_flow' ) ? JSON.stringify( { [ FLOW ]: null } ) : '{}' );
+	const l = logs();
+	assert.equal( runOpenerLabels( { rows: ROWS, controlsOf: () => noted( 'Add my prescription', 'from +£59' ), runPhp: run, apply: true, log: l.log, error: l.error } ), 1 );
+	assert.equal( calls.length, 1, 'only the words read ran' );
+} );
+

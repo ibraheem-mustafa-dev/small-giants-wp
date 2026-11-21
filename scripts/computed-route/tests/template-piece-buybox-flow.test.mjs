@@ -169,3 +169,39 @@ test( 'MUST FAIL: the template-piece context carries the page map rows the rule 
 	const none = pieceContext( { repo: fs.mkdtempSync( path.join( os.tmpdir(), 'keep-cart-' ) ), client: 'c', entry: null, inventory: { elements: [] }, pieces: [] } );
 	assert.deepEqual( none.pageRows, [] );
 } );
+
+// The order of the two (sgs/buybox openerBeforeAddToCart): the draft's first innermost opener against its first innermost add
+// control, in document order. The fixture draws "Add my prescription" (5) before "Add frame only" (6), as Eye Care's draft does.
+const reorder = ( list, order ) => order.map( ( tpl ) => list.find( ( e ) => e.tpl === tpl ) );
+
+test( 'MUST FAIL: the draft draws the opener before its add control, so the placed buy box puts the opener first', () => {
+	const c = ctx();
+	assert.equal( keepsAddToCart( c, locateRun( c, 'buybox', 'sgs/buybox' ) ).openerFirst, true );
+	const got = place( ctx(), PIECE );
+	assert.equal( buybox( got ).attributes.openerBeforeAddToCart, true );
+	assert.match( got.notes.join( '\n' ), /draws the flow's opener before its add-to-basket control, so sgs\/buybox puts the opener first \(openerBeforeAddToCart\)/ );
+} );
+
+test( 'negative control: the add control drawn first leaves the opener after it, and the setting is not written', () => {
+	// Add, opener, then the size picker: the buy box's run spans its located parts (picker and add), so the opener stays inside it.
+	const c = ctx( { inventory: { elements: reorder( elements(), [ 1, 2, 3, 6, 5, 4, 7, 8, 9 ] ) } } );
+	const keep = keepsAddToCart( c, locateRun( c, 'buybox', 'sgs/buybox' ) );
+	assert.equal( keep.keep, true, keep.why );
+	assert.equal( keep.openerFirst, false );
+	const got = place( c, PIECE );
+	assert.equal( buybox( got ).attributes.keepAddToCartWithFlow, true );
+	assert.equal( buybox( got ).attributes.openerBeforeAddToCart, undefined );
+} );
+
+test( 'MUST FAIL: a wrapper holding both controls, add first, is set aside for the controls themselves', () => {
+	// main > grid > [ h1, size picker, column (its snippet holds the opener's handler) > [ "Add frame only", "Add my prescription" ] ].
+	const list = elements().map( ( e ) => ( [ 5, 6 ].includes( e.tpl ) ? { ...e, parentKey: 'Root/10#0' } : e ) );
+	const column = { ...el( 10, 2, 'div', '', 'openLens' ) };
+	const ordered = [ ...reorder( list, [ 1, 2, 3, 4 ] ), column, ...reorder( list, [ 6, 5, 7, 8, 9 ] ) ];
+	const c = ctx( { inventory: { elements: ordered } } );
+	const keep = keepsAddToCart( c, locateRun( c, 'buybox', 'sgs/buybox' ) );
+	assert.equal( keep.keep, true );
+	assert.ok( keep.openers.includes( 'Root/10#0' ), 'the column reads as an opener through its snippet' );
+	assert.equal( keep.openerFirst, false, 'the opener itself follows the add control' );
+} );
+

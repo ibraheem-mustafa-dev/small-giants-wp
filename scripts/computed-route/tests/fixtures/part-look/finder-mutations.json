@@ -106,5 +106,7 @@
 		"find": "AMOUNT.test( textOf( el ) ) !== m.hasAmount",
 		"replace": "false",
 		"why": "a card needs no amount"
-	}
+	},
+	{"file": "data/part-locators.json", "find": "\"shopPart\": \"buybox-flow-opener\"\n\t\t\t\t\t},\n\t\t\t\t\t\"rel\": {\n\t\t\t\t\t\t\"childIndex\": 1,", "replace": "\"shopPart\": \"buybox-flow-opener\"\n\t\t\t\t\t},\n\t\t\t\t\t\"rel\": {\n\t\t\t\t\t\t\"childIndex\": 0,", "why": "the note reads the opener's words"},
+	{"file": "data/part-locators.json", "find": "\"flow-opener-note\": {", "replace": "\"flow-opener-note-x\": {", "why": "the note has no locator"}
 ]

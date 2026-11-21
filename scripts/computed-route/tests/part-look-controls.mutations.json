@@ -34,5 +34,10 @@
 		"find": "export const openerShopParts = ( controls ) => ( controls.openers.length ?",
 		"replace": "export const openerShopParts = ( controls ) => ( false ?",
 		"why": "the opener's shop part is never named"
-	}
+	},
+	{"file": "lib/part-look-controls.mjs", "find": "\tif ( ! controls?.keep ) {\n\t\treturn null;\n\t}\n\tconst value = !! controls.openerFirst;", "replace": "\tconst value = !! controls?.openerFirst;", "why": "a buy box that keeps nothing gets an order written"},
+	{"file": "lib/part-look-controls.mjs", "find": "const value = !! controls.openerFirst;", "replace": "const value = true;", "why": "the order write ignores the draft's order"},
+	{"file": "lib/part-look-controls.mjs", "find": "return { attr: 'openerBeforeAddToCart', value,", "replace": "return { attr: 'flowOpenerFirst', value,", "why": "the order lands on a setting the buy box does not read"},
+	{"file": "lib/part-look-controls.mjs", "find": "return textsOf( index, key ).slice( 1 ).join( ' ' );", "replace": "return textsOf( index, key ).join( ' ' );", "why": "the note repeats the opener's words"},
+	{"file": "lib/part-look-controls.mjs", "find": "return [ ...( own ? [ own ] : [] ), ...index.children( key ).flatMap( ( child ) => textsOf( index, child ) ) ];", "replace": "return [ ...( own ? [ own ] : [] ) ];", "why": "a note in a child span is never read"}
 ]

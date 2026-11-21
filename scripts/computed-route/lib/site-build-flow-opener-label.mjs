@@ -1,5 +1,5 @@
-// The words of a flow's opener button (Spec 43 FR-43-25, the button kit's flow opener): the buy box shows the linked choice flow's
-// `openerLabel` (plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_linked_flow_label reads the flow post's root block)
+// The words of a flow's opener button and its note (Spec 43 FR-43-25, the button kit's flow opener): the buy box shows the linked
+// choice flow's `openerLabel`, and its `openerNote` after them, (plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_linked_flow_label reads the flow post's root block)
 // on its opener, and nothing wrote it from the draft, so a cloned opener said "Choose your options" wherever the draft's said something else. This step runs after the product flow links (site-build.mjs calls lib/site-build-flow-links.mjs::runFlowLinks, then this): for every live product
 // row whose buy box opens a flow (lib/site-build-flow-scope.mjs::rowRefusal), the words of the draft's control that opens it
 // (lib/part-look-controls.mjs::flowControls, found from the draft's code, never from its words) become the flow post's `openerLabel`.
@@ -16,6 +16,12 @@ import { surfaceKey } from './manifest-build.mjs';
 export const LABEL_ATTR = 'openerLabel';
 const SLUG = /^[a-z0-9-]+$/;
 
+// A field of the flow's opener the step writes: the flow attribute, how an opener's value is read (null: not read), and the words
+// the notes and log use. The label needs words; the note may be '' (the draft's opener shows none), and an opener whose note was
+// not read (null) is skipped without a note.
+export const LABEL_FIELD = { attr: LABEL_ATTR, of: ( o ) => o.label || null, words: 'opener words', what: 'opener label' };
+export const NOTE_FIELD = { attr: 'openerNote', of: ( o ) => ( 'string' === typeof o.note ? o.note : null ), words: 'opener notes', what: 'opener note', quietUnread: true };
+
 // The control finder of a client's page map: row -> lib/part-look-controls.mjs::flowControls for the surface that row's page is built
 // from (the client's surfaces.json record and skeleton inventory, keyed by the row's surface key).
 export function openerControlsOf( { repo, client } ) {
@@ -30,21 +36,24 @@ export function openerControlsOf( { repo, client } ) {
 // The words each flow's opener should hold, from the page map's rows: { flows: [ { slug, label, rows } ], notes }. `controlsOf( row )` is
 // the control finder ({ openers: [ { label } ], why }). A flow whose rows say different words, or a row whose opener says several, gets
 // no label (`label: null`) and a note naming the wordings.
-export function labelsPlan( rows, controlsOf ) {
+export function labelsPlan( rows, controlsOf, field = LABEL_FIELD ) {
 	const notes = [];
 	const byFlow = new Map();
 	for ( const row of flowLinkRows( rows ).linking.filter( ( r ) => 'live' === r.collection && ! rowRefusal( r ) ) ) {
 		const controls = controlsOf( row );
-		const words = [ ...new Set( ( controls.openers || [] ).map( ( o ) => o.label ).filter( Boolean ) ) ];
+		const words = [ ...new Set( ( controls.openers || [] ).map( field.of ).filter( ( v ) => null !== v ) ) ];
+		if ( ! words.length && field.quietUnread && ( controls.openers || [] ).length ) {
+			continue;
+		}
 		const entry = byFlow.get( row.opensFlow ) || { slug: row.opensFlow, said: [], rows: [] };
 		byFlow.set( row.opensFlow, entry );
 		entry.rows.push( row.slug );
 		if ( ! words.length ) {
-			notes.push( `product row "${ row.slug }": no opener words read for flow "${ row.opensFlow }" (${ controls.why || 'the opener holds no text' })` );
+			notes.push( `product row "${ row.slug }": no ${ field.words } read for flow "${ row.opensFlow }" (${ controls.why || 'the opener holds no text' })` );
 			continue;
 		}
 		if ( words.length > 1 ) {
-			notes.push( `product row "${ row.slug }": its buy box has openers for flow "${ row.opensFlow }" that say different words (${ words.map( ( w ) => JSON.stringify( w ) ).join( ', ' ) }), so no openerLabel is written` );
+			notes.push( `product row "${ row.slug }": its buy box has openers for flow "${ row.opensFlow }" that say different ${ field === LABEL_FIELD ? 'words' : field.words } (${ words.map( ( w ) => JSON.stringify( w ) ).join( ', ' ) }), so no ${ field.attr } is written` );
 			entry.said.push( ...words, null );
 			continue;
 		}
@@ -53,14 +62,14 @@ export function labelsPlan( rows, controlsOf ) {
 	const flows = [ ...byFlow.values() ].map( ( e ) => {
 		const distinct = [ ...new Set( e.said.filter( ( w ) => null !== w ) ) ];
 		const conflict = e.said.includes( null ) || distinct.length > 1;
-		distinct.length > 1 && notes.push( `flow "${ e.slug }": its product rows (${ e.rows.join( ', ' ) }) say different opener words (${ distinct.map( ( w ) => JSON.stringify( w ) ).join( ', ' ) }), so no openerLabel is written` );
+		distinct.length > 1 && notes.push( `flow "${ e.slug }": its product rows (${ e.rows.join( ', ' ) }) say different ${ field.words } (${ distinct.map( ( w ) => JSON.stringify( w ) ).join( ', ' ) }), so no ${ field.attr } is written` );
 		return { slug: e.slug, rows: e.rows, label: conflict || 1 !== distinct.length ? null : distinct[ 0 ] };
 	} );
 	return { flows, notes };
 }
 
-// The PHP that reads each flow post's current `openerLabel`: { slug: { id, label } | null }.
-export function labelStatePhp( slugs ) {
+// The PHP that reads each flow post's current `attr` (`openerLabel` unless named): { slug: { id, label } | null }.
+export function labelStatePhp( slugs, attr = LABEL_ATTR ) {
 	const list = Buffer.from( JSON.stringify( slugs.filter( ( s ) => SLUG.test( s ) ) ) ).toString( 'base64' );
 	return `$slugs = json_decode( base64_decode( '${ list }' ), true );
 $out = array();
@@ -73,7 +82,7 @@ foreach ( $slugs as $slug ) {
 	$label = '';
 	foreach ( parse_blocks( $post->post_content ) as $b ) {
 		if ( 'sgs/choice-flow' === ( $b['blockName'] ?? '' ) ) {
-			$label = (string) ( $b['attrs']['${ LABEL_ATTR }'] ?? '' );
+			$label = (string) ( $b['attrs']['${ attr }'] ?? '' );
 			break;
 		}
 	}
@@ -82,8 +91,9 @@ foreach ( $slugs as $slug ) {
 echo wp_json_encode( $out );`;
 }
 
-// The PHP that sets each planned label on its flow post's root block and reads every one back: { set: n, wrong: [ { slug, label } ] }.
-export function labelApplyPhp( actions ) {
+// The PHP that sets each planned value of `attr` (`openerLabel` unless named) on its flow post's root block and reads every one back:
+// { set: n, wrong: [ { slug, label } ] }.
+export function labelApplyPhp( actions, attr = LABEL_ATTR ) {
 	const list = Buffer.from( JSON.stringify( actions.filter( ( a ) => Number.isInteger( a.id ) && SLUG.test( a.slug ) ).map( ( a ) => [ a.id, a.slug, a.to ] ) ) ).toString( 'base64' );
 	return `$items = json_decode( base64_decode( '${ list }' ), true );
 $set = 0;
@@ -115,7 +125,7 @@ foreach ( $items as $item ) {
 		$attrs = null;
 	}
 	if ( null !== $attrs ) {
-		$attrs['${ LABEL_ATTR }'] = (string) $item[2];
+		$attrs['${ attr }'] = (string) $item[2];
 		// Only the flow's own opening tag is rewritten: every other byte of the post stays as saved.
 		$new = preg_replace_callback(
 			'#<!--\\s+wp:sgs/choice-flow(\\s+\\{.*?\\})?\\s+(/?)-->#s',
@@ -139,7 +149,7 @@ foreach ( $items as $item ) {
 	$now = '';
 	foreach ( parse_blocks( (string) get_post_field( 'post_content', (int) $item[0] ) ) as $b ) {
 		if ( 'sgs/choice-flow' === ( $b['blockName'] ?? '' ) ) {
-			$now = (string) ( $b['attrs']['${ LABEL_ATTR }'] ?? '' );
+			$now = (string) ( $b['attrs']['${ attr }'] ?? '' );
 			break;
 		}
 	}
@@ -163,7 +173,7 @@ const parseJson = ( text, what ) => {
 
 // The actions: { actions: [ { slug, id, from, to, say } ], notes, problems } from the plan and the posts' current labels. With `pending`
 // (a dry run before the flow posts are built) a flow post the site lacks is a note.
-export function planLabels( plan, state, { pending = false } = {} ) {
+export function planLabels( plan, state, { pending = false, attr = LABEL_ATTR } = {} ) {
 	const notes = [ ...plan.notes ];
 	const problems = [];
 	const actions = [];
@@ -173,45 +183,49 @@ export function planLabels( plan, state, { pending = false } = {} ) {
 		}
 		const now = state[ flow.slug ];
 		if ( ! now ) {
-			( pending ? notes : problems ).push( `flow "${ flow.slug }" is no published sgs_choice_flow post on the site, so its opener words are not written` );
+			( pending ? notes : problems ).push( `flow "${ flow.slug }" is no published sgs_choice_flow post on the site, so its ${ LABEL_ATTR === attr ? 'opener words are' : `${ attr } is` } not written` );
 			continue;
 		}
 		if ( now.label === flow.label ) {
 			continue;
 		}
-		actions.push( { slug: flow.slug, id: now.id, from: now.label, to: flow.label, say: `flow "${ flow.slug }" (post ${ now.id }): ${ LABEL_ATTR } ${ JSON.stringify( now.label ) } -> ${ JSON.stringify( flow.label ) } (the draft's opener in ${ flow.rows.join( ', ' ) } says it)` } );
+		actions.push( { slug: flow.slug, id: now.id, from: now.label, to: flow.label, say: `flow "${ flow.slug }" (post ${ now.id }): ${ attr } ${ JSON.stringify( now.label ) } -> ${ JSON.stringify( flow.label ) } (the draft's opener in ${ flow.rows.join( ', ' ) } says it)` } );
 	}
 	return { actions, notes, problems };
 }
 
-// Runs the step: prints the plan and, with `apply`, writes it and reads every label back. Returns the exit code (0 done or nothing to
-// do, 1 a problem or a read-back mismatch). `controlsOf`: the control finder (labelsPlan).
-export function runOpenerLabels( { rows, controlsOf, runPhp, apply, pending = false, log = console.log, error = console.error } ) {
-	const plan = labelsPlan( rows, controlsOf );
+// Runs the step: prints the plan and, with `apply`, writes it and reads every value back, for `field` alone or, by default, the opener's
+// words and then its note (the note step runs only when the words step ends with 0). Returns the exit code (0 done or nothing to do,
+// 1 a problem or a read-back mismatch). `controlsOf`: the control finder (labelsPlan).
+export function runOpenerLabels( { rows, controlsOf, runPhp, apply, pending = false, log = console.log, error = console.error, field = null } ) {
+	if ( ! field ) {
+		return runOpenerLabels( { rows, controlsOf, runPhp, apply, pending, log, error, field: LABEL_FIELD } ) || runOpenerLabels( { rows, controlsOf, runPhp, apply, pending, log, error, field: NOTE_FIELD } );
+	}
+	const plan = labelsPlan( rows, controlsOf, field );
 	const slugs = plan.flows.filter( ( f ) => null !== f.label ).map( ( f ) => f.slug );
-	const state = slugs.length ? parseJson( runPhp( labelStatePhp( slugs ) ), 'the opener label read' ) : {};
-	const result = planLabels( plan, state, { pending: pending && ! apply } );
+	const state = slugs.length ? parseJson( runPhp( labelStatePhp( slugs, field.attr ) ), `the ${ field.what } read` ) : {};
+	const result = planLabels( plan, state, { pending: pending && ! apply, attr: field.attr } );
 	result.notes.forEach( ( n ) => log( `note: ${ n }` ) );
 	if ( result.problems.length ) {
 		result.problems.forEach( ( p ) => error( `STOP ${ p }` ) );
-		error( `FAILED: ${ result.problems.length } problem(s); no opener label was written` );
+		error( `FAILED: ${ result.problems.length } problem(s); no ${ field.what } was written` );
 		return 1;
 	}
 	if ( ! result.actions.length ) {
-		log( 'opener labels: nothing to do' );
+		log( `${ field.what }s: nothing to do` );
 		return 0;
 	}
-	log( 'opener labels:' );
+	log( `${ field.what }s:` );
 	result.actions.forEach( ( a ) => log( `  ${ a.say }` ) );
 	if ( ! apply ) {
-		log( `${ result.actions.length } opener label(s) to set (dry run: re-run with --apply)` );
+		log( `${ result.actions.length } ${ field.what }(s) to set (dry run: re-run with --apply)` );
 		return 0;
 	}
-	const done = parseJson( runPhp( labelApplyPhp( result.actions ) ), 'the opener label write' );
+	const done = parseJson( runPhp( labelApplyPhp( result.actions, field.attr ) ), `the ${ field.what } write` );
 	if ( done.wrong.length ) {
 		error( `FAILED: ${ done.set } set; read back wrong ${ JSON.stringify( done.wrong ) }` );
 		return 1;
 	}
-	log( `${ done.set } opener label(s) set` );
+	log( `${ done.set } ${ field.what }(s) set` );
 	return 0;
 }

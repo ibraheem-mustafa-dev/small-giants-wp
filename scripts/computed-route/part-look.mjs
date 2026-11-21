@@ -31,7 +31,7 @@ import { draftProductSlugs } from './lib/template-live-address.mjs';
 import { reportMarkdown, totalsOf } from './lib/part-look-report.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { applyBuiltinButtons, declaredButtons } from './lib/fill-builtin-button.mjs';
-import { OPENER_PART, flowControls, openerShopParts } from './lib/part-look-controls.mjs';
+import { OPENER_PART, flowControls, openerShopParts, orderWrite } from './lib/part-look-controls.mjs';
 import { blockElementsOf, liveSelectorsFor, readLiveSurface, seedOf, shootLiveSurface, verifySurface } from './lib/part-look-verify.mjs';
 import { READ_PROPS } from './lib/fill-part-look.mjs';
 import { evaluateModes } from './lib/part-look-modes.mjs';
@@ -112,8 +112,9 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		}
 		// The flow opener has no structure to locate it by: the draft's code names it (lib/part-look-controls.mjs).
 		const opensFlow = Object.values( group.parts ).some( ( p ) => [].concat( p.match?.shopPart ?? [] ).includes( OPENER_PART ) );
+		let controls = null;
 		if ( opensFlow && ! entry.noDraft ) {
-			const controls = flowControls( { repo: REPO, client, entry, surface: loc.entryOf || surface, template: loc.template } );
+			controls = flowControls( { repo: REPO, client, entry, surface: loc.entryOf || surface, template: loc.template } );
 			Object.assign( shopParts, openerShopParts( controls ) );
 			controls.why && notes.push( `${ surface }: the flow opener is not located: ${ controls.why }` );
 		}
@@ -151,6 +152,12 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		build.gaps.push( ...modes.gaps );
 		Object.entries( modes.settings ).forEach( ( [ attr, st ] ) => ( build.settings[ attr ] ??= { status: st.code === 'written' ? 'written' : 'not-written', code: st.code, part: null } ) );
 		build.counts.modes = modes.writes.length;
+		// The buy box's order of the flow's opener and Add to Cart, from the draft's order of the two controls.
+		const order = orderWrite( controls );
+		if ( order ) {
+			build.writes.push( order );
+			build.settings[ order.attr ] ??= { status: 'written', code: 'written', part: null };
+		}
 		const withPart = blockRowsOf.filter( ( r ) => r.css_element );
 		const settingsStats = {
 			total: blockRowsOf.length, withPart: withPart.length, withoutPart: blockRowsOf.length - withPart.length,

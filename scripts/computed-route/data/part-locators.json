@@ -1731,6 +1731,16 @@
 						"shopPart": "buybox-flow-opener"
 					}
 				},
+				"flow-opener-note": {
+					"from": "page",
+					"match": {
+						"shopPart": "buybox-flow-opener"
+					},
+					"rel": {
+						"childIndex": 1,
+						"deepest": true
+					}
+				},
 				"sticky-bar": {
 					"from": "page",
 					"match": {

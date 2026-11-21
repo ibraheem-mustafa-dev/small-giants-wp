@@ -70,5 +70,12 @@
 		"find": "if ( null !== $attrs && 1 !== preg_match_all(",
 		"replace": "if ( false && null !== $attrs && 1 !== preg_match_all(",
 		"why": "a post holding two flow tags is rewritten by text"
-	}
+	},
+	{"file": "lib/site-build-flow-opener-label.mjs", "find": "return runOpenerLabels( { rows, controlsOf, runPhp, apply, pending, log, error, field: LABEL_FIELD } ) || runOpenerLabels( { rows, controlsOf, runPhp, apply, pending, log, error, field: NOTE_FIELD } );", "replace": "return runOpenerLabels( { rows, controlsOf, runPhp, apply, pending, log, error, field: LABEL_FIELD } );", "why": "the note is never written"},
+	{"file": "lib/site-build-flow-opener-label.mjs", "find": "return runOpenerLabels( { rows, controlsOf, runPhp, apply, pending, log, error, field: LABEL_FIELD } ) || runOpenerLabels(", "replace": "return runOpenerLabels( { rows, controlsOf, runPhp, apply, pending, log, error, field: LABEL_FIELD } ) + runOpenerLabels(", "why": "the note step runs after a failed words step"},
+	{"file": "lib/site-build-flow-opener-label.mjs", "find": "of: ( o ) => ( 'string' === typeof o.note ? o.note : null )", "replace": "of: ( o ) => o.note || null", "why": "an opener drawing no note leaves a stale note on the flow"},
+	{"file": "lib/site-build-flow-opener-label.mjs", "find": "\t\tif ( ! words.length && field.quietUnread && ( controls.openers || [] ).length ) {\n\t\t\tcontinue;\n\t\t}\n", "replace": "", "why": "an opener whose note was not read is reported as a row with no words"},
+	{"file": "lib/site-build-flow-opener-label.mjs", "find": "const state = slugs.length ? parseJson( runPhp( labelStatePhp( slugs, field.attr ) ),", "replace": "const state = slugs.length ? parseJson( runPhp( labelStatePhp( slugs ) ),", "why": "the note is compared with the flow's label"},
+	{"file": "lib/site-build-flow-opener-label.mjs", "find": "parseJson( runPhp( labelApplyPhp( result.actions, field.attr ) ),", "replace": "parseJson( runPhp( labelApplyPhp( result.actions ) ),", "why": "the note is written into the flow's label"},
+	{"file": "lib/site-build-flow-opener-label.mjs", "find": "so no ${ field.attr } is written` );\n\t\treturn", "replace": "so no openerLabel is written` );\n\t\treturn", "why": "a note conflict is reported as a label conflict"}
 ]

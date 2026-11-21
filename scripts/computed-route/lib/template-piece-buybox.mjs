@@ -16,7 +16,8 @@
 //
 // A flow some buyers skip (Spec 43 FR-43-25): when the run holds a control that adds to the basket and a separate control
 // that opens the flow the product page opens, the node carries `keepAddToCartWithFlow: true` and the block keeps its Add to
-// Cart beside the flow's opener (lib/template-piece-buybox-flow.mjs::keepsAddToCart decides, from the draft's code).
+// Cart beside the flow's opener (lib/template-piece-buybox-flow.mjs::keepsAddToCart decides, from the draft's code), and with
+// `openerBeforeAddToCart: true` where the draft draws the opener first.
 // What Fill needs from the node: its block name (lib/fill-shop-parts.mjs::shopPartWrites writes each part's draft value
 // onto every `sgs/buybox` node; lib/fill-shop-targets.mjs::shopPartTargets adds the located elements as measuring
 // targets of its calibrated part slots) and, for those targets to be read at all, a `draftRef` that resolves to a shown
@@ -133,6 +134,10 @@ export function place( ctx, piece ) {
 	if ( keep.keep ) {
 		box.attributes.keepAddToCartWithFlow = true;
 		notes.push( `${ key }: the buy box keeps its own add-to-basket control (${ keep.adds.join( ', ' ) }) beside the control that opens the flow "${ keep.flow }" (${ keep.openers.join( ', ' ) }), so ${ piece.block } is set to keep Add to Cart with the flow's opener (keepAddToCartWithFlow)` );
+		if ( keep.openerFirst ) {
+			box.attributes.openerBeforeAddToCart = true;
+			notes.push( `${ key }: the draft draws the flow's opener before its add-to-basket control, so ${ piece.block } puts the opener first (openerBeforeAddToCart)` );
+		}
 	}
 	const missing = surface.parts.filter( ( p ) => 'missing' === p.home?.type && locatedKeys( index, p.locators, dcOf( surface.file ) ).some( inRun ) ).map( ( p ) => p.id );
 	missing.length && notes.push( `${ key }: inside the buy box the draft draws what ${ piece.block } has no setting for (${ missing.join( ', ' ) }); each is a missing-features row of shop-parts.json` );

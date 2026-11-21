@@ -259,3 +259,12 @@ test( 'a picker\'s label is the element before the group of repeated option butt
 	const r = await locateIn( html, 'buybox', { shopParts: {}, rootName: 'Product' } );
 	assert.deepEqual( r[ 'picker-label-text' ].map( ( i ) => i.text ), [ '1 · How many' ] );
 } );
+
+test( 'MUST FAIL: the flow opener\'s note is the opener\'s second child; an opener with its words alone has no note', async () => {
+	const opener = ( inner ) => BUY( `<button data-dc-tpl="5" type="button" style="display:flex;justify-content:space-between">${ inner }</button>` );
+	const extra = { shopParts: { 'buybox-flow-opener': [ { dc: 'Product', tpl: '5' } ] }, rootName: 'Product' };
+	const r = await locateIn( opener( '<span>Add my prescription</span><span style="color:#B8B0A4">from +£59</span>' ), 'buybox', extra );
+	assert.deepEqual( r[ 'flow-opener-note' ].map( ( i ) => i.text ), [ 'from +£59' ] );
+	const plain = await locateIn( opener( '<span>Add my prescription</span>' ), 'buybox', extra );
+	assert.deepEqual( plain[ 'flow-opener-note' ], [], 'negative control: no second child, no note' );
+} );

@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { flowControls, openerShopParts, wordsOf, OPENER_PART } from '../lib/part-look-controls.mjs';
+import { flowControls, openerShopParts, wordsOf, OPENER_PART, orderWrite, noteOf } from '../lib/part-look-controls.mjs';
 import { inventoryIndex } from '../lib/template-piece-draft.mjs';
 import { proposePageMap } from '../lib/intake-pagemap.mjs';
 
@@ -80,3 +80,20 @@ test( 'the words are the label without the amount the button carries', () => {
 	const c = flowControls( { repo: FIX, client: 'c', entry: {}, inventory: { elements: els }, contextOf: contextOf() } );
 	assert.equal( c.openers[ 0 ].label, 'Add my prescription' );
 } );
+
+test( 'MUST FAIL: a buy box that keeps Add to Cart gets its order written from the draft order; one that does not gets none', () => {
+	assert.deepEqual( [ orderWrite( { keep: true, openerFirst: true } ).attr, orderWrite( { keep: true, openerFirst: true } ).value ], [ 'openerBeforeAddToCart', true ] );
+	assert.equal( orderWrite( { keep: true, openerFirst: false } ).value, false, 'the opener drawn second writes the default back' );
+	assert.equal( orderWrite( { keep: false, openerFirst: true } ), null, 'negative control: no kept Add to Cart, nothing to order' );
+	assert.equal( orderWrite( null ), null );
+} );
+
+test( 'MUST FAIL: an opener\'s note is every text after its words; a one-text control has none', () => {
+	const item = ( tpl, parent, words = '' ) => ( { key: `Root/${ tpl }#0`, parentKey: `Root/${ parent }#0`, tag: parent ? 'span' : 'button', words } );
+	// "Add my prescription" button > [ span "Add my prescription", span "from +£59" ]; a plain button with its words as its own text.
+	const index = inventoryIndex( { elements: [ item( 1, 0 ), item( 2, 1, 'Add my prescription' ), item( 3, 1, 'from +£59' ), item( 4, 0, 'Add to bag' ) ] } );
+	assert.equal( wordsOf( index, 'Root/1#0' ), 'Add my prescription' );
+	assert.equal( noteOf( index, 'Root/1#0' ), 'from +£59' );
+	assert.equal( noteOf( index, 'Root/4#0' ), '', 'negative control: no second text, no note' );
+} );
+

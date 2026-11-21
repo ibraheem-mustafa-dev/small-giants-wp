@@ -15,5 +15,9 @@
 	{"file": "lib/template-piece-buybox-flow.mjs", "find": " && ! underFixed( found.index, e.key ) )", "replace": " )", "why": "a sticky bar's add button counts as the buy box's own add control"},
 	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( ! keep.keep && ! keep.silent ) {", "replace": "\tif ( false ) {", "why": "a declined keep gives no reason in the notes"},
 	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( ! keep.keep && ! keep.silent ) {", "replace": "\tif ( ! keep.keep ) {", "why": "a draft that draws no flow at all gets a note about the buy box's Add to Cart"},
-	{"file": "lib/template-piece-buybox-flow.mjs", "find": "return { why: 'no product row of the page map opens a choice flow', silent: true };", "replace": "return { why: 'no product row of the page map opens a choice flow' };", "why": "the no-flow decline is not marked silent"}
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": "return { why: 'no product row of the page map opens a choice flow', silent: true };", "replace": "return { why: 'no product row of the page map opens a choice flow' };", "why": "the no-flow decline is not marked silent"},
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": "openerFirst: at( openers ) < at( adds ) }", "replace": "openerFirst: at( openers ) > at( adds ) }", "why": "the order is read backwards"},
+	{"file": "lib/template-piece-buybox-flow.mjs", "find": "const innermost = ( keys ) => keys.filter( ( k ) => ! keys.some( ( o ) => o !== k && found.index.within( o, k ) ) );", "replace": "const innermost = ( keys ) => keys;", "why": "a wrapper holding both controls counts as the opener's place"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\t\tif ( keep.openerFirst ) {\n\t\t\tbox.attributes.openerBeforeAddToCart = true;", "replace": "\t\tif ( keep.openerFirst ) {\n\t\t\tvoid 0;", "why": "the placed buy box never puts the opener first"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\t\tif ( keep.openerFirst ) {", "replace": "\t\tif ( true ) {", "why": "the opener is put first whatever the draft's order"}
 ]

@@ -10,6 +10,7 @@
 //   it OPENS the flow when one of those functions makes every opening write (::handlerFns, ::fnWrites, the same reading the
 //   page map's openers use), and it is an ADD-TO-BASKET control when its handler appends a record to the basket
 //   (lib/shop-parts-logic.mjs::effectOf, the reading shop-parts.mjs finds the add button by);
+// - the order: `openerFirst` when the draft draws its opener before its add control (`sgs/buybox` `openerBeforeAddToCart`);
 // - the rule: at least one control that adds without opening the flow and at least one that opens it. A draft whose add control
 //   is the one that opens the flow (a button that adds only through the flow), a draft with no flow link at all, and a buy box
 //   whose only buttons add are all left as they are: the buy box block then turns its Add to Cart into the flow's opener (the
@@ -80,5 +81,10 @@ export function keepsAddToCart( ctx, found ) {
 	if ( ! adds.length ) {
 		return { keep: false, why: `the buy box has no add-to-basket control apart from the one that opens the flow "${ flow.flow }"`, adds, openers };
 	}
-	return { keep: true, adds, openers, flow: flow.flow };
+	// The draft's order of the two: its first innermost opener against its first innermost add control, in the inventory's
+	// document order (a wrapper's snippet holds its descendants' handlers, lib/draft-link.mjs::elementHandler, so a wrapper of a
+	// control is set aside for the control itself). `openerFirst` is `sgs/buybox` `openerBeforeAddToCart`.
+	const innermost = ( keys ) => keys.filter( ( k ) => ! keys.some( ( o ) => o !== k && found.index.within( o, k ) ) );
+	const at = ( keys ) => Math.min( ...innermost( keys ).map( ( k ) => roles.findIndex( ( r ) => r.key === k ) ) );
+	return { keep: true, adds, openers, flow: flow.flow, openerFirst: at( openers ) < at( adds ) };
 }
