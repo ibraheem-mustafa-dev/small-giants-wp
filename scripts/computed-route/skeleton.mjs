@@ -158,9 +158,13 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	const products = tileProducts( { catalogue, template: target.template ?? pageRows.find( ( row ) => null != target.postId && row.id === target.postId )?.template ?? null, commerce } );
 	const r = propose( { inventory, facts, formLinks, refs, draftLinks: draftLinksFor( { repo, client } ), surface: ctx.slug, surfaceKind: ctx.kind, surfaceName: ctx.name, commerce, products, built: ctx.built, carried: carriedIds( { repo, client, site, rootComponent: served ? ctx.rootComponent : null } ), motion: served ? servedMotion( ctx.motion, ctx.rootComponent ) : ctx.motion, clientDecisions, rootComponent: served ? ctx.rootComponent : null, picks: readPicks( p.picks ), calKeys: calKeysFor( site, cache ), calTags: calTagsFor( site, cache ), calSettings: calSettingsFor( site, cache ), calParts: calPartsFor( site, cache ), states: ctx.states, thresholds: ctx.thresholds, pageMap: ctx.pageMap, surfaceId: ctx.id, surfaceRoute: ctx.route, db } );
 	// A template's working pieces (the buy box, the bound title, the shop's sorting) replace the draft's imitation of them (data/template-pieces.json).
-	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory } );
-	Object.assign( r, { skeleton: pieces.tree, problems: [ ...r.problems, ...pieces.problems ] } );
-	r.proposal.templatePieces = { placed: pieces.placed, problems: pieces.problems, notes: pieces.notes };
+	// Paint conservation is then checked again on the tree with the pieces in it, its lines replacing the proposal's; the paint
+	// inside a piece's replaced draft elements that no located part reads is the piece's missing features (lib/template-pieces-context.mjs::piecesPaint).
+	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory, paint: { problems: r.problems, rows: r.proposal.rows, facts, rootComponent: served ? ctx.rootComponent : null, calibration: calSettingsFor( site, cache ) } } );
+	const paint = pieces.paint;
+	paint && Object.assign( r.proposal, { problems: paint.problems, paintUnread: paint.unread } );
+	Object.assign( r, { skeleton: pieces.tree, problems: [ ...( paint?.problems ?? r.problems ), ...pieces.problems ] } );
+	r.proposal.templatePieces = { placed: pieces.placed, problems: pieces.problems, notes: [ ...pieces.notes, ...( paint?.notes ?? [] ) ], missingFeatures: paint?.missing ?? [] };
 	assertSkeletonPaints( { skeleton: r.skeleton, site, client, what: `skeleton propose ${ surface }`, cache, allow: allowMissingPaint } );
 	json( p.skeleton, r.skeleton );
 	json( p.proposal, r.proposal );

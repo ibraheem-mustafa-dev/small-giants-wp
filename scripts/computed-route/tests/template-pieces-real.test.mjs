@@ -148,8 +148,8 @@ test( 'MUST FAIL: a piece problem joins the proposal\'s problems, which fail the
 	assert.throws( () => proposeDetail( r, { strict: true } ), /single-product: piece "buy-box" \(sgs\/buybox\) is not placed/ );
 	// The wiring in skeleton.mjs::proposeSurface is what puts them there.
 	const src = fs.readFileSync( path.join( REPO, 'scripts', 'computed-route', 'skeleton.mjs' ), 'utf8' );
-	assert.match( src, /Object\.assign\( r, \{ skeleton: pieces\.tree, problems: \[ \.\.\.r\.problems, \.\.\.pieces\.problems \] \} \);/ );
-	assert.match( src, /r\.proposal\.templatePieces = \{ placed: pieces\.placed, problems: pieces\.problems, notes: pieces\.notes \};/ );
+	assert.match( src, /Object\.assign\( r, \{ skeleton: pieces\.tree, problems: \[ \.\.\.\( paint\?\.problems \?\? r\.problems \), \.\.\.pieces\.problems \] \} \);/ );
+	assert.match( src, /r\.proposal\.templatePieces = \{ placed: pieces\.placed, problems: pieces\.problems, notes: \[ \.\.\.pieces\.notes, \.\.\.\( paint\?\.notes \?\? \[\] \) \], missingFeatures: paint\?\.missing \?\? \[\] \};/ );
 } );
 
 test( 'MUST FAIL: whatever a builder places that the skeleton lint refuses is a problem of the pass', () => {

@@ -1,0 +1,9 @@
+[
+	{"file": "skeleton.mjs", "find": "const paint = pieces.paint;", "replace": "const paint = null;", "why": "propose keeps the paint lines of the tree before the pieces"},
+	{"file": "skeleton.mjs", "find": "problems: [ ...( paint?.problems ?? r.problems ), ...pieces.problems ]", "replace": "problems: [ ...r.problems, ...pieces.problems ]", "why": "the result's problems keep the stale paint line"},
+	{"file": "skeleton.mjs", "find": "paint && Object.assign( r.proposal, { problems: paint.problems, paintUnread: paint.unread } );", "replace": "", "why": "the saved proposal's problems keep the stale paint line"},
+	{"file": "skeleton.mjs", "find": "missingFeatures: paint?.missing ?? [] };", "replace": "missingFeatures: [] };", "why": "the missing features are not saved"},
+	{"file": "skeleton.mjs", "find": "notes: [ ...pieces.notes, ...( paint?.notes ?? [] ) ]", "replace": "notes: pieces.notes", "why": "the missing features are not named in the notes"},
+	{"file": "skeleton.mjs", "find": "paint: { problems: r.problems, rows: r.proposal.rows,", "replace": "paint: { problems: [], rows: r.proposal.rows,", "why": "the proposal's other problems are lost"},
+	{"file": "lib/template-pieces-context.mjs", "find": "paint: paint ? piecesPaint(", "replace": "paint: false ? piecesPaint(", "why": "the pass never checks paint again"}
+]
