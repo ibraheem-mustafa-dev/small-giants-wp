@@ -1,0 +1,17 @@
+[
+ { "file": "lib/equal-context.mjs", "find": "\t\tdiffer( 'parent-display', isItemParent, 'parentDisplay', true );", "replace": "\t\tdiffer( 'parent-display', isItemParent, 'parentDisplay', null );", "why": "a blockified display measured on a block's child differs only one way round" },
+ { "file": "lib/equal-context.mjs", "find": "\t\tdiffer( 'position', outOfFlow, 'position', false );", "replace": "\t\tdiffer( 'position', outOfFlow, 'position', null );", "why": "a measured out-of-flow inset is inOwnContext's case, not a difference" },
+ { "file": "lib/equal-context.mjs", "find": "\tif ( INSET.test( prop ) ) {", "replace": "\tif ( false ) {", "why": "an inset of an out-of-flow node is a position difference" },
+ { "file": "lib/equal-context.mjs", "find": "\t\tdiffer( 'layout', isFlex, 'display', false );", "replace": "", "why": "a flex-only property measured on a block box" },
+ { "file": "lib/equal-context.mjs", "find": "const isFlex = ( d ) => ( undefined === keyword( d ) || 'none' === keyword( d ) ? undefined", "replace": "const isFlex = ( d ) => ( undefined === keyword( d ) ? undefined", "why": "a hidden element's display says nothing of its layout" },
+ { "file": "lib/equal-context.mjs", "find": "\tconst k = String( v ?? '' ).replace( /^\"|\"$/g, '' ).trim();", "replace": "\tconst k = String( v ?? '' ).trim();", "why": "a quoted empty display says nothing" },
+ { "file": "lib/equal-context.mjs", "find": "\tif ( '' === slot && SIDE_PADDING.test( prop ) &&", "replace": "\tif ( SIDE_PADDING.test( prop ) &&", "why": "the gutter is the root's side padding only" },
+ { "file": "lib/equal-context.mjs", "find": "\t\tif ( undefined === at || undefined === calibrated || String( at ).trim() === String( calibrated ).trim() ) {", "replace": "\t\tif ( undefined !== at && undefined !== calibrated && String( at ).trim() === String( calibrated ).trim() ) {", "why": "a value calibration never read is no evidence" },
+ { "file": "lib/equal-context.mjs", "find": "\t\tif ( JSON.stringify( value ) === JSON.stringify( dflt ) ) {", "replace": "\t\tif ( false ) {", "why": "the block default is what the fixture measured" },
+ { "file": "lib/equal-context.mjs", "find": "\t\tif ( ! d || undefined === value || covered.has( attr ) ||", "replace": "\t\tif ( ! d || undefined === value ||", "why": "a paint state laid over the default already describes the node" },
+ { "file": "lib/equal-context.mjs", "find": "\t\tband: false !== paint._inBand,", "replace": "\t\tband: true === paint._inBand,", "why": "a paint without _inBand sat in the fixture's band" },
+ { "file": "lib/equal-context.mjs", "find": "\t\tif ( [ 'display', 'position' ].includes( r.property ) && undefined !== r.value && SHOWN.has( r.reason ) ) {", "replace": "\t\tif ( [ 'display', 'position' ].includes( r.property ) && undefined !== r.value ) {", "why": "only a value the clone shows is the node's context" },
+ { "file": "lib/equal-context.mjs", "find": "\t\tif ( 'equal' !== row.reason || undefined === at ) {", "replace": "\t\tif ( 'equal' !== row.reason ) {", "why": "only calibrated-default rows are looked at" },
+ { "file": "tools/equal-context.mjs", "find": "\t\tif ( 'equal' === r.reason ) {", "replace": "\t\tif ( r.reason ) {", "why": "only equal rows are counted" },
+ { "file": "tools/equal-context.mjs", "find": "\t\tfor ( const k of new Set( f.kinds.map( ( x ) => x.kind ) ) ) {", "replace": "\t\tfor ( const k of f.kinds.map( ( x ) => x.kind ) ) {", "why": "a row counts once per kind" }
+]
