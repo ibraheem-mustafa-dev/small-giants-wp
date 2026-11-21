@@ -63,8 +63,10 @@ function run( { reads = readsOf(), presets = EYE_CARE, rows = rowsOf(), buttons,
 }
 
 test( 'the block.json declaration is read: the buy box declares its flow opener', () => {
-	assert.deepEqual( declaredButtons( 'sgs/buybox' ).map( ( b ) => [ b.prefix, b.part ] ), [ [ 'flowOpener', 'flow-opener' ] ] );
-	assert.deepEqual( declaredButtons( 'sgs/container' ), [] );
+	// Other blocks adopt the kit over time (the container's carousel arrows, the buy box's Add to Cart), so the check is that
+	// the opener's declaration is read, and that a block with no built-in button reads as none.
+	assert.ok( declaredButtons( 'sgs/buybox' ).some( ( b ) => 'flowOpener' === b.prefix && 'flow-opener' === b.part ) );
+	assert.deepEqual( declaredButtons( 'sgs/heading' ), [] );
 } );
 
 test( 'MUST FAIL: a draft button that equals a site preset, resting and hovered, writes the preset and drops what the preset gives', () => {
