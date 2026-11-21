@@ -11,9 +11,13 @@
 // changed what it saved); without it the default file is used when it is newer than the Fill run, else the Filled tree is
 // taken as built. --site: a scratch copy (local-mediatest*) named in calibration-targets, or an http address; the ledger
 // only views pages there (no editor, no write).
+// --cache: the calibration cache whose slot maps (<block>.json) say which part of a block paints each setting (default
+// <records' checkout>/scripts/computed-route/cache, the cache the records' Fill run read). --no-hover: the rest look only.
 // Pairing (lib/ledger-pairs.mjs): skeleton node i is the live block printing cr-ref-<surface>-<i>; its draftRef and draftSlots
-// are its draft elements. Comparison (lib/ledger-diff.mjs): the parity walker's collector and comparePair. Stage
-// (lib/ledger-stage.mjs): from the inventory, proposal, Fill report, built tree and apply plan.
+// are its draft elements. Painted element (lib/ledger-paint.mjs::paintSlots): each property is compared on the live part the
+// block paints it on. Comparison (lib/ledger-diff.mjs): the parity walker's collector and comparePair; hover
+// (lib/ledger-hover.mjs). Stage (lib/ledger-stage.mjs): from the inventory, proposal, Fill report, built tree and apply plan.
+// One row per fact (lib/ledger-fold.mjs). ledger.json's rows take the run ledger's row shape (lib/ledger-row.mjs::asRunRow).
 // Writes <out>/ledger.json and <out>/LEDGER.md (default out: <records>/qa/ledger/<surface>/). Exit 0 (a report), 2 usage.
 import fs from 'fs';
 import path from 'path';
@@ -26,6 +30,14 @@ import { mergeWidths, innermostText, summarise, ledgerMarkdown } from '../lib/le
 import { markFollows } from '../lib/ledger-follow.mjs';
 import { PROPS as FILL_PROPS, loadChromium } from '../lib/fill-read.mjs';
 import { serveDraft } from '../lib/draft.mjs';
+import { paintSite } from '../lib/cache.mjs';
+import { paintSlots, paintedRead } from '../lib/ledger-paint.mjs';
+import { hoverPlan, hoverDiffs } from '../lib/ledger-hover.mjs';
+import { oneRowPerFact } from '../lib/ledger-fold.mjs';
+import { asRunRow } from '../lib/ledger-row.mjs';
+import { inventoryHolds } from '../lib/ledger-records.mjs';
+import { LOOK_PROPS } from '../lib/ledger-page.mjs';
+import { sameValue } from '../../parity/lib/compare.mjs';
 import { routeHash } from '../lib/fill-open.mjs';
 import { readTargets, targetOf, siteUrl, SCRATCH_NAME } from '../lib/site-targets.mjs';
 
@@ -48,6 +60,28 @@ const recordsRepo = path.resolve( records, '../../..' );
 const widths = flag( '--widths', '375,768,1440' ).split( ',' ).map( Number );
 const readJson = ( f ) => JSON.parse( fs.readFileSync( f, 'utf8' ) );
 const maybe = ( f ) => ( fs.existsSync( f ) ? readJson( f ) : null );
+const cacheDir = path.resolve( flag( '--cache', path.join( recordsRepo, 'scripts', 'computed-route', 'cache' ) ) );
+const slotMaps = new Map();
+const slotMapOf = ( block ) => {
+	if ( ! slotMaps.has( block ) ) {
+		slotMaps.set( block, maybe( path.join( cacheDir, `${ String( block ).replace( /^sgs\//, '' ) }.json` ) ) );
+	}
+	return slotMaps.get( block );
+};
+const withHover = ! argv.includes( '--no-hover' );
+// The default paint of each block on the site read (cache/<paint site>/<block>.paint.json): --paint <dir>, else the scratch
+// copy's paint folder (lib/cache.mjs::paintSite); none for an http address.
+const paintDir = flag( '--paint' ) ? path.resolve( flag( '--paint' ) ) : ( /^https?:\/\//.test( site ) ? null : path.join( cacheDir, paintSite( site ) ) );
+const paints = new Map();
+const paintOf = ( block ) => {
+	if ( ! paintDir ) {
+		return null;
+	}
+	if ( ! paints.has( block ) ) {
+		paints.set( block, maybe( path.join( paintDir, `${ String( block ).replace( /^sgs\//, '' ) }.paint.json` ) ) );
+	}
+	return paints.get( block );
+};
 
 const started = Date.now();
 const entry = readJson( path.join( records, 'surfaces.json' ) )[ surface ];
@@ -118,6 +152,17 @@ targets.forEach( ( t, n ) => {
 } );
 unpaired.forEach( ( u, i ) => draftItems.push( { n: `u${ i }`, finder: { tpl: u.key } } ) );
 const liveItems = targets.map( ( t, n ) => ( { n, liveRoot: t.liveRoot, liveSlot: t.slot } ) );
+// The part each property is compared on (lib/ledger-paint.mjs::paintSlots), each moved-to part read as a live item `n@part`.
+const nodeWrites = new Map();
+( report.writes || [] ).forEach( ( w ) => ( nodeWrites.get( w.node ) || nodeWrites.set( w.node, [] ).get( w.node ) ).push( w ) );
+const nodeSlots = new Map();
+targets.filter( ( t ) => t.draftFinder ).forEach( ( t ) => ( nodeSlots.get( t.ref ) || nodeSlots.set( t.ref, new Set() ).get( t.ref ) ).add( t.slot || '' ) );
+const moves = targets.map( ( t ) => ( t.draftFinder ? paintSlots( t, nodeWrites.get( t.ref ), slotMapOf( t.block ), { paint: paintOf( t.block ), targetSlots: nodeSlots.get( t.ref ) } ) : new Map() ) );
+moves.forEach( ( m, n ) => [ ...new Set( [ ...m.values() ].map( ( x ) => x.slot ) ) ].forEach( ( slot ) => liveItems.push( { n: `${ n }@${ slot }`, liveRoot: targets[ n ].liveRoot, liveSlot: slot } ) ) );
+const missingSlotMaps = [ ...new Set( targets.map( ( t ) => t.block ) ) ].filter( ( b ) => ! slotMapOf( b ) );
+// The hover reads: the same properties on the paired draft element and the live element.
+const hovers = withHover ? hoverPlan( targets, slotMapOf ) : new Map();
+const hoverItems = [ ...hovers ].map( ( [ n, h ] ) => ( { n, ...h } ) );
 
 const { chromium } = await loadChromium();
 const browser = await chromium.launch();
@@ -125,7 +170,7 @@ const reads = {};
 try {
 	for ( const w of widths ) {
 		const t0 = Date.now();
-		reads[ w ] = { draft: await readPage( browser, draftUrl, w, draftItems ), live: await readPage( browser, liveUrl, w, liveItems ) };
+		reads[ w ] = { draft: await readPage( browser, draftUrl, w, draftItems, { hover: hoverItems } ), live: await readPage( browser, liveUrl, w, liveItems, { hover: hoverItems } ) };
 		console.error( `read ${ w }: ${ Math.round( ( Date.now() - t0 ) / 1000 ) }s` );
 	}
 } finally {
@@ -146,27 +191,42 @@ const parentOf = ( index ) => targets.find( ( t ) => t.index === index && '' ===
 const liveSel = ( t ) => `${ t.liveRoot }${ t.slot ? ` > ${ t.slot }` : '' }`;
 let raw = [];
 const lacks = new Map();
+const paintMissing = new Set();
+const hoverFailed = [];
 for ( const w of widths ) {
 	const { draft, live } = reads[ w ];
+	// Each target's live read on the parts its block paints (lib/ledger-paint.mjs::paintedRead): the enclosing pair's place
+	// is read the same way, so a slot's place is measured inside the part that stands for its node.
+	const paintedAll = targets.map( ( t, n ) => paintedRead( live[ n ], new Map( [ ...new Set( [ ...moves[ n ].values() ].map( ( x ) => x.slot ) ) ].map( ( slot ) => [ slot, live[ `${ n }@${ slot }` ] ] ) ), moves[ n ] ) );
 	targets.forEach( ( t, n ) => {
 		const pn = null === t.parent ? null : ( t.slot ? rootOf.get( t.index ) : rootOf.get( t.parent ) );
 		const d = t.draftFinder ? draft[ n ] : undefined;
-		const l = live[ n ];
+		const painted = paintedAll[ n ];
+		const l = painted.read;
+		painted.missing.forEach( ( slot ) => paintMissing.add( `${ t.ref } ${ slot }` ) );
 		if ( ! t.draftFinder ) {
 			if ( l?.found && l.shown ) {
 				raw.push( { id: t.id, index: t.index, ref: t.ref, block: t.block, slot: t.slot, draftKey: null, kind: 'presence', key: 'element', width: w, draft: 'no draft element', live: 'present', stage: 'no-node', proof: { record: 'skeleton', why: `skeleton node ${ t.index } (${ t.block }) carries no draftRef: the route added it with no draft element`, live: { selector: liveSel( t ), box: l.snap?.box || l.box || null } } } );
 			}
 			return;
 		}
-		const diffs = pairDiffs( d, l, null === pn ? null : draft[ pn ], null === pn ? null : live[ pn ] );
+		const diffs = pairDiffs( d, l, null === pn ? null : draft[ pn ], null === pn ? null : paintedAll[ pn ].read );
+		const hd = draft.__hover?.[ n ];
+		const hl = live.__hover?.[ n ];
+		diffs.push( ...hoverDiffs( hd, hl, ( p, a, b ) => sameValue( p, String( a ), String( b ), TOLERANCE.px ) ) );
+		if ( hd?.why || hl?.why ) {
+			hoverFailed.push( `${ t.ref }${ t.slot ? ` ${ t.slot }` : '' } at ${ w }: ${ hd?.why || hl?.why }` );
+		}
 		const inv = t.draftKey ? ctx.inventory.get( t.draftKey ) : null;
+		const outOfFlow = [ d, l ].every( ( x ) => [ 'absolute', 'fixed' ].includes( x?.snap?.styles?.position ) );
 		for ( const df of diffs ) {
-			if ( inv && 'style' === df.kind && ! df.pseudo && undefined === inv.resolved?.[ w ]?.[ df.key ] ) {
+			if ( inv && 'style' === df.kind && ! df.pseudo && ! df.state && undefined === inv.resolved?.[ w ]?.[ df.key ] ) {
 				lacks.set( df.key, ( lacks.get( df.key ) || 0 ) + 1 );
 			}
-			const liveAt = { selector: liveSel( t ), box: l?.snap?.box || l?.box || null, value: df.live, ...( t.top ? { parent: l?.parent || null } : {} ) };
+			const on = df.pseudo || df.state ? null : ( painted.paintedOn.get( df.key ) ?? ( painted.boxOn && [ 'w', 'h', 'x', 'y' ].includes( df.key ) ? painted.boxOn : null ) );
+			const liveAt = { selector: null === on ? liveSel( t ) : `${ t.liveRoot } ${ on }`, ...( null === on ? {} : { paintedOn: on } ), box: ( null === on ? l : live[ `${ n }@${ on }` ] )?.snap?.box || l?.box || null, value: df.live, ...( t.top ? { parent: l?.parent || null } : {} ) };
 			const { stage, proof } = stageOf( { ...df, width: w }, t, { ...ctx, live: liveAt } );
-			raw.push( { id: t.id, index: t.index, ref: t.ref, block: t.block, slot: t.slot, draftKey: t.draftKey, kind: df.kind, key: df.key, ...( df.pseudo ? { pseudo: df.pseudo } : {} ), ...( l?.byPart ? { byPart: true } : {} ), width: w, draft: df.draft, live: df.live, stage, proof } );
+			raw.push( { id: t.id, index: t.index, ref: t.ref, block: t.block, slot: t.slot, draftKey: t.draftKey, kind: df.kind, key: df.key, ...( df.pseudo ? { pseudo: df.pseudo } : {} ), ...( df.state ? { state: df.state } : {} ), ...( null === on ? {} : { paintedOn: on } ), ...( l?.byPart ? { byPart: true } : {} ), ...( outOfFlow ? { outOfFlow } : {} ), selector: liveAt.selector, ...( liveAt.box ? { box: liveAt.box } : {} ), width: w, draft: df.draft, live: df.live, stage, proof } );
 		}
 	} );
 }
@@ -175,7 +235,20 @@ raw = markFollows( inner.rows, targets );
 if ( inner.dropped ) {
 	notes.push( `${ inner.dropped } words rows of an element whose inner paired element has its own words row were folded into the inner row` );
 }
-const rows = mergeWidths( raw );
+const fact = oneRowPerFact( raw );
+if ( fact.folded ) {
+	notes.push( `${ fact.folded } rows restating another row's difference (a longhand beside its shorthand, a computed width or height beside the box, sides of one family with one stage) were folded into it (\`covers\`)` );
+}
+const rows = mergeWidths( fact.rows );
+const moved = raw.filter( ( r ) => r.paintedOn );
+notes.push( `compared on the part the block paints (lib/ledger-paint.mjs::paintSlots, slot maps in ${ cacheDir }): ${ moved.length } difference rows were read on another part than the paired element${ moved.length ? ` (${ [ ...new Set( moved.map( ( r ) => `${ r.block } ${ r.key } on ${ r.paintedOn }` ) ) ].slice( 0, 12 ).join( '; ' ) })` : '' }` );
+if ( missingSlotMaps.length ) {
+	notes.push( `no slot map for ${ missingSlotMaps.join( ', ' ) }: their properties are compared on the paired element` );
+}
+if ( paintMissing.size ) {
+	notes.push( `a part the slot map names is not printed on the live block, so the paired element was read: ${ [ ...paintMissing ].slice( 0, 12 ).join( '; ' ) }` );
+}
+notes.push( withHover ? `hover: ${ hoverItems.length } targets are painted by a hover setting; each side is hovered where a :hover rule reaches the element; ${ raw.filter( ( r ) => r.state ).length } hover difference rows${ hoverFailed.length ? `; hover failed on ${ hoverFailed.slice( 0, 8 ).join( '; ' ) }` : '' }` : 'hover not read (--no-hover)' );
 const byPart = [ ...new Set( raw.filter( ( r ) => r.byPart ).map( ( r ) => `${ r.ref } ${ r.slot }` ) ) ];
 if ( byPart.length ) {
 	notes.push( `paired by part (the slot path's sibling position is not on the live block, so its first element of the same part is read): ${ byPart.join( '; ' ) }` );
@@ -190,7 +263,7 @@ const unpairedRows = unpaired.map( ( u, i ) => {
 } ).filter( ( u ) => u.widths.length );
 const painted = unpairedRows.filter( ( u ) => u.paints.length );
 for ( const u of painted ) {
-	const live = u.proof.drawnBy ? `not paired: drawn, if at all, inside ${ u.proof.drawnBy.block } ${ u.proof.drawnBy.ref }, which has no part for it` : 'no live element';
+	const live = u.proof.drawnBy ? `not paired: absorbed into ${ u.proof.drawnBy.block } ${ u.proof.drawnBy.ref }, and the skeleton pairs it with no part of that block, so Fill never read its look (the block may still draw it)` : 'no live element';
 	rows.push( { id: `draft:${ u.draftKey }`, ref: null, block: u.proof.drawnBy?.block || u.proof.block || null, slot: '', draftKey: u.draftKey, kind: 'presence', key: 'element', widths: u.widths, draft: `paints ${ u.paints.join( ', ' ) }`, live, stage: u.stage, proof: u.proof } );
 }
 notes.push( `${ unpairedRows.length } draft elements shown at some width are read by no target; ${ painted.length } of them paint something (a row each), ${ unpairedRows.length - painted.length } are layout-only wrappers (listed below, no row)` );
@@ -199,10 +272,16 @@ if ( lacks.size ) {
 }
 notes.push( `tolerances: a colour per channel within 2/255 and alpha 0.02, a length within ${ TOLERANCE.px }px, a box within ${ TOLERANCE.box }px (the parity walker's sameValue and comparePair); x and y are the element's place inside its enclosing pair` );
 
+// What the saved records hold: an inventory too old to hold the draft's look is named, so a run reads it again.
+const inventoryFile = skel( 'inventory' );
+const recordsHeld = { inventory: { file: inventoryFile, written: fs.statSync( inventoryFile ).mtime.toISOString(), ...inventoryHolds( inventory, LOOK_PROPS, widths ) } };
+notes.push( `inventory ${ recordsHeld.inventory.tooOld ? 'TOO OLD' : 'current' }: ${ recordsHeld.inventory.why } (generated ${ recordsHeld.inventory.generated }, file written ${ recordsHeld.inventory.written })` );
+
 const summary = summarise( rows );
 const seconds = Math.round( ( Date.now() - started ) / 1000 );
 const out = path.resolve( flag( '--out', path.join( records, 'qa', 'ledger', surface ) ) );
 fs.mkdirSync( out, { recursive: true } );
-fs.writeFileSync( path.join( out, 'ledger.json' ), JSON.stringify( { client, surface, site: base, liveUrl, draftUrl, widths, seconds, fillRun: fillDir, summary, rows, unpaired: unpairedRows, notes }, null, 1 ) );
+const fillName = path.basename( fillDir );
+fs.writeFileSync( path.join( out, 'ledger.json' ), JSON.stringify( { client, surface, site: base, liveUrl, draftUrl, widths, seconds, fillRun: fillDir, records: recordsHeld, summary, rows: rows.map( ( r ) => asRunRow( r, { surface, fill: fillName } ) ), unpaired: unpairedRows, notes }, null, 1 ) );
 fs.writeFileSync( path.join( out, 'LEDGER.md' ), ledgerMarkdown( { client, surface, site: base, widths, seconds, summary, rows, unpaired: unpairedRows, notes } ) );
 console.log( `${ surface }: ${ rows.length } rows (${ Object.entries( summary.byStage ).map( ( [ s, n ] ) => `${ s } ${ n }` ).join( ', ' ) }); ${ seconds }s; ${ path.join( out, 'LEDGER.md' ) }` );
