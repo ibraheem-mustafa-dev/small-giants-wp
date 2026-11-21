@@ -12,7 +12,8 @@
 //              differs, hand-set only (with the reason) or route only, and counts the hand-written Custom CSS.
 //   --write    patches the settings into those posts with scripts/local-wp/patch-block-attrs.py. It refuses any site that is not a
 //              `local-mediatest-*` scratch copy, a protected target, or a run under SGS_NO_SITE. --only limits the write to the named settings.
-//   --verify   after the writes, opens the scratch copy's own page with the basket filled (--seed <seed.php output>), reads each paired part on the
+//   --verify   after the writes, opens the scratch copy's own page with the basket filled (--seed <seed.php output>; the product surface is
+//              read on a real product instead, linked to a choice flow where the draft draws the flow's opener), reads each paired part on the
 //              live page at the three widths, writes the settings whose live value differs from the draft's (and takes back a write that changed
 //              nothing) and reports what still differs. It needs a `local-mediatest-*` --site; set SGS_SECRETS_ROOT in a worktree.
 //   my-account-in  the account's signed-in views (orders, an order's page, addresses, details): the draft is signed in on its own
@@ -25,7 +26,8 @@ import { fileURLToPath } from 'node:url';
 import { openDb } from './lib/db.mjs';
 import { buildLook, tableSelector } from './lib/fill-part-look.mjs';
 import { compareSettings, faultsOf } from './lib/part-look-compare.mjs';
-import { REPO, assertMayWrite, blockRows, customCssOf, patchBlock, readParts, readSavedBlock, templateIdOf } from './lib/part-look-run.mjs';
+import { REPO, assertMayWrite, blockRows, customCssOf, liveProductPath, patchBlock, readParts, readSavedBlock, templateIdOf } from './lib/part-look-run.mjs';
+import { draftProductSlugs } from './lib/template-live-address.mjs';
 import { reportMarkdown, totalsOf } from './lib/part-look-report.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { applyBuiltinButtons, declaredButtons } from './lib/fill-builtin-button.mjs';
@@ -71,6 +73,10 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	const draftDirOf = ( entry ) => path.resolve( REPO, entry.draftDir );
 	const anyEntry = Object.values( manifest ).find( ( e ) => e.draftDir );
 	const pages = Object.fromEntries( Object.entries( pagesOf( { rows, surfaces: manifest } ) ).filter( ( [ , f ] ) => anyEntry && fs.existsSync( path.join( draftDirOf( anyEntry ), f ) ) ) );
+	// The draft route of a surface (`Product.dc.html?id=zookies` names the product the draft shows), from the intake.
+	const intakeFile = path.join( buildDir, 'intake', 'intake.json' );
+	let intake = null;
+	const draftRouteOf = ( entry ) => ( intake ??= fs.existsSync( intakeFile ) ? readJson( intakeFile ) : {} ).skeletons?.[ entry.intakeSurface ]?.route ?? null;
 	let snapshot = null;
 	let snapshotNote = null;
 	let buttonPresets = {};
@@ -169,12 +175,17 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			}
 		}
 		const base0 = verify || shots ? ( site ? siteUrl( targetOf( site, readTargets() ), REPO ) : null ) : null;
+		const openerDrawn = Object.entries( group.parts ).some( ( [ name, p ] ) => [].concat( p.match?.shopPart ?? [] ).includes( OPENER_PART ) && located( name ) );
+		let productPath = null;
 		const pagePathOf = () => {
 			if ( loc.signedIn ) {
 				return `/?page_id=${ result.postId }`;
 			}
 			if ( loc.basket === false && 'product' === loc.pageRole ) {
-				return seed ? seedOf( fs.readFileSync( seed, 'utf8' ) ).path : '/shop/';
+				// A real product the template shows, and one linked to a flow where the draft draws the flow's opener: never the
+				// seed's fixture product or the shop page, which show no buy box parts the draft drew.
+				productPath ??= liveProductPath( { site, productSlugs: draftProductSlugs( [ draftRouteOf( entry ) ] ), flowLinked: openerDrawn } );
+				return productPath;
 			}
 			const row = rows.find( ( r ) => r.template === loc.template );
 			// A shop archive is read at its own address: its page id redirects to a product on a WooCommerce site.

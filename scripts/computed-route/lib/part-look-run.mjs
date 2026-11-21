@@ -9,7 +9,9 @@ import { openDb } from './db.mjs';
 import { serveDraft } from './draft.mjs';
 import { loadChromium } from './fill-read.mjs';
 import { READ_PROPS, WIDTHS, findPartsInPage } from './fill-part-look.mjs';
-import { SCRATCH_NAME, assertUnprotected, readTargets } from './site-targets.mjs';
+import { SCRATCH_NAME, assertUnprotected, readTargets, targetOf } from './site-targets.mjs';
+import { wpEvalRunner } from './calibration-refs.mjs';
+import { productAddressPhp, readLiveFacts } from './template-live-address.mjs';
 import { assertSiteContact } from './site-contact.mjs';
 import { readHover } from './part-look-hover.mjs';
 
@@ -168,4 +170,16 @@ export function templateIdOf( site, slug ) {
 		throw new Error( `${ site } holds no saved template ${ slug }: the route has not built it there` );
 	}
 	return id;
+}
+
+// The path of the product page a product surface is read on (read-only): the product the draft's route names, else, when the
+// draft draws the flow's opener (`flowLinked`), the first real product linked to a choice flow, else the first real product; never
+// a calibration fixture or a gift card (lib/template-live-address.mjs::productAddressPhp). `runPhp` runs a PHP body on the site.
+export function liveProductPath( { site, productSlugs = [], flowLinked = false, runPhp = null } ) {
+	const run = runPhp || wpEvalRunner( targetOf( site, readTargets() ), site, REPO, { readOnly: true } );
+	const found = readLiveFacts( run( productAddressPhp( { productSlugs, flowLinked } ) ) ).product;
+	if ( ! found ) {
+		throw new Error( `${ site } has no real product to read the single-product template on (calibration fixtures and gift cards are not read)` );
+	}
+	return found;
 }

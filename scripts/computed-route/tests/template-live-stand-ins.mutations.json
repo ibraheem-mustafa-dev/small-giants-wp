@@ -7,5 +7,10 @@
 	{ "file": "lib/template-live-address.mjs", "find": " || 0 === strpos( (string) $p->get_sku(), 'sgs-fixture-' );", "replace": ";", "why": "an sgs-fixture- SKU is not a fixture" },
 	{ "file": "lib/template-live-address.mjs", "find": "false !== stripos( (string) $p->get_type(), 'gift' ) || ", "replace": "", "why": "the plugin's gift card type is a real product" },
 	{ "file": "lib/template-live-address.mjs", "find": "'/gift[\\\\s_-]*card/i'", "replace": "'/gift/i'", "why": "any product named like a gift is a stand-in" },
-	{ "file": "lib/template-live-address.mjs", "find": "1 === preg_match( '/gift[\\\\s_-]*card/i', $p->get_name() . ' ' . $p->get_sku() )", "replace": "false", "why": "a simple product named gift card is a real product" }
+	{ "file": "lib/template-live-address.mjs", "find": "1 === preg_match( '/gift[\\\\s_-]*card/i', $p->get_name() . ' ' . $p->get_sku() )", "replace": "false", "why": "a simple product named gift card is a real product" },
+	{"file": "lib/template-live-address.mjs", "find": "${ flowLinked ? FLOW_LINKED_PICK_PHP : '' }", "replace": "", "why": "a draft that draws the flow's opener is read on the first real product, which shows no opener"},
+	{"file": "lib/template-live-address.mjs", "find": "if ( $sgs_p && $sgs_real( $sgs_p ) && $sgs_linked ) {", "replace": "if ( $sgs_p && $sgs_linked ) {", "why": "a calibration fixture linked to the flow is read in place of a shopper's product"},
+	{"file": "lib/template-live-address.mjs", "find": "if ( $sgs_p && $sgs_real( $sgs_p ) && $sgs_linked ) {", "replace": "if ( $sgs_p && $sgs_real( $sgs_p ) ) {", "why": "a product whose flow link does not resolve is taken as flow-linked"},
+	{"file": "lib/template-live-address.mjs", "find": "${ productPickPhp( { productSlugs, flowLinked } ) }", "replace": "${ productPickPhp( { productSlugs } ) }", "why": "part-look's product address ignores flowLinked"},
+	{"file": "lib/template-live-address.mjs", "find": "${ flowLinked ? FLOW_LINKED_PICK_PHP : '' }if ( null === $sgs_out['product'] ) {", "replace": "${ flowLinked ? FLOW_LINKED_PICK_PHP.replace( \"if ( null === $sgs_out['product'] ) {\", 'if ( true ) {' ) : '' }if ( null === $sgs_out['product'] ) {", "why": "a flow-linked product overrides the product the draft names"}
 ]

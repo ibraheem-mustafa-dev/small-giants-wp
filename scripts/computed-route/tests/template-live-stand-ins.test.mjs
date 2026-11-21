@@ -7,7 +7,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { liveFactsPhp } from '../lib/template-live-address.mjs';
+import { liveFactsPhp, productAddressPhp } from '../lib/template-live-address.mjs';
 
 // The stub shop: WooCommerce's functions over a product list, enough for liveFactsPhp to run outside WordPress.
 const PRELUDE = `
@@ -51,11 +51,12 @@ function wc_load_cart() {}
 function WC() { static $wc = null; if ( ! $wc ) { $wc = (object) array( 'cart' => new SgsStubCart() ); } return $wc; }
 function apply_filters( $hook, $value ) { return $value; }
 function wc_clear_notices() {}
+function get_posts( $args ) { $ids = array(); foreach ( sgs_stub_products() as $d ) { if ( empty( $d['parent'] ) && isset( $d['meta'][ $args['meta_key'] ] ) ) { $ids[] = $d['id']; } } sort( $ids ); return $ids; }
 `;
 
 // The facts liveFactsPhp prints for `products` ({ id, type, name, slug, sku?, meta?, parent?, children? }).
-function factsFor( products, productSlugs = [] ) {
-	const php = liveFactsPhp( { productSlugs } ).replace( /^<\?php/, '' );
+function factsFor( products, productSlugs = [], make = () => liveFactsPhp( { productSlugs } ) ) {
+	const php = make().replace( /^<\?php/, '' );
 	const script = `<?php\n$GLOBALS['sgs_stub'] = json_decode( base64_decode( '${ Buffer.from( JSON.stringify( products ) ).toString( 'base64' ) }' ), true );\n${ PRELUDE }\n${ php }`;
 	const r = spawnSync( 'php', [], { input: script, encoding: 'utf8' } );
 	assert.equal( r.status, 0, `php failed: ${ r.stderr || r.stdout }` );
@@ -100,4 +101,32 @@ test( 'negative control: a shop of only gift cards and fixtures has no product a
 	const f = factsFor( [ GIFT_TYPE, GIFT_NAMED, FIXTURE_META, FIXTURE_SKU, FIXTURE_SKU_VAR, FIXTURE_FX ] );
 	assert.equal( f.product, null );
 	assert.equal( f.basket, null );
+} );
+
+// part-look's product page (productAddressPhp with flowLinked): a draft that draws a choice flow's opener is checked on a real
+// product linked to a flow, never on a calibration fixture that carries the link (Eye Care's copy links its fixtures too).
+const FLOW = { _sgs_choice_flow: 'lens-flow' };
+const FIXTURE_LINKED = { id: 40, type: 'simple', name: 'Fixture simple product', slug: 'fixture-simple-product', sku: 'sgs-fixture-simple', meta: FLOW };
+const REAL_UNLINKED = { id: 41, type: 'simple', name: 'Lens cloth', slug: 'lens-cloth' };
+const REAL_EMPTY_LINK = { id: 39, type: 'simple', name: 'Case', slug: 'case', meta: { _sgs_choice_flow: '' } };
+const REAL_LINKED = { id: 42, type: 'variable', name: 'Aviator Classic', slug: 'aviator-classic', meta: FLOW };
+const addressOf = ( products, opts ) => factsFor( products, [], () => productAddressPhp( opts ) ).product;
+
+test( 'MUST FAIL: with flowLinked the product address is the first real product linked to a flow, not a linked fixture or an unlinked product', () => {
+	assert.equal( addressOf( [ FIXTURE_LINKED, REAL_UNLINKED, REAL_LINKED ], { flowLinked: true } ), '/product/aviator-classic/' );
+	assert.equal( addressOf( [ REAL_EMPTY_LINK, REAL_LINKED ], { flowLinked: true } ), '/product/aviator-classic/', 'an emptied link is no link' );
+} );
+
+test( 'negative control: without flowLinked the product address is the first real product, as the site run reads it', () => {
+	assert.equal( addressOf( [ FIXTURE_LINKED, REAL_UNLINKED, REAL_LINKED ], {} ), '/product/lens-cloth/' );
+} );
+
+test( 'negative control: a product the draft names wins over a flow-linked one, and a shop with no real linked product falls back to the first real product', () => {
+	assert.equal( addressOf( [ REAL_UNLINKED, REAL_LINKED ], { productSlugs: [ 'lens-cloth' ], flowLinked: true } ), '/product/lens-cloth/' );
+	assert.equal( addressOf( [ FIXTURE_LINKED, REAL_UNLINKED ], { flowLinked: true } ), '/product/lens-cloth/' );
+} );
+
+test( 'the product address PHP tries no basket and writes nothing', () => {
+	const php = productAddressPhp( { flowLinked: true } );
+	assert.doesNotMatch( php, /add_to_cart|wc_load_cart|->save\(|update_post_meta|update_option/ );
 } );

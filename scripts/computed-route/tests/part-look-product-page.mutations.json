@@ -1,0 +1,7 @@
+[
+	{ "file": "data/part-live-selectors.json", "find": "\"add-to-cart\": \".sgs-buybox .buybox__add-to-cart:not(.buybox__add-to-cart--flow-opener)\",", "replace": "", "why": "Add to Cart is read through its block.json element, which also finds the opener" },
+	{ "file": "data/part-live-selectors.json", "find": ":not(.buybox__add-to-cart--flow-opener)", "replace": "", "why": "the opener is read as Add to Cart" },
+	{ "file": "data/part-live-selectors.json", "find": ",\n\t\t\t\"flow-opener\": \".buybox__add-to-cart--flow-opener\"", "replace": "", "why": "the opener has no live selector and is never verified" },
+	{ "file": "lib/part-look-run.mjs", "find": "productAddressPhp( { productSlugs, flowLinked } )", "replace": "productAddressPhp( { productSlugs } )", "why": "the product page ignores the draft's opener" },
+	{ "file": "lib/part-look-run.mjs", "find": "\tif ( ! found ) {\n\t\tthrow new Error(", "replace": "\tif ( false ) {\n\t\tthrow new Error(", "why": "a site with no real product is read anyway" }
+]

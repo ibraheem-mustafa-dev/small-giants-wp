@@ -32,7 +32,29 @@ if ( ! function_exists( 'wc_get_products' ) ) { echo wp_json_encode( array( 'sho
 $sgs_rel = static function ( $url ) { return $url ? wp_make_link_relative( $url ) : null; };
 $sgs_shop_id = wc_get_page_id( 'shop' );
 $sgs_out = array( 'shop' => $sgs_shop_id > 0 ? $sgs_rel( get_permalink( $sgs_shop_id ) ) : null, 'product' => null, 'basket' => null );
-$sgs_visible = static function ( $p ) { return $p && 'publish' === $p->get_status() && 'hidden' !== $p->get_catalog_visibility(); };
+${ productPickPhp( { productSlugs } ) }
+$sgs_candidates = array();`.concat( BASKET_PHP );
+}
+
+// The PHP printing one JSON line { product }: the product address liveFactsPhp gives, read-only and without its basket tries.
+// With `flowLinked`, a product the draft does not name is first sought among the real products linked to a choice flow (the
+// `_sgs_choice_flow` link the buy box resolves, plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_resolve_linked_flow),
+// so a draft that draws the flow's opener is read on a page that shows one; else the first real product, as liveFactsPhp.
+export function productAddressPhp( { productSlugs = [], flowLinked = false } = {} ) {
+	return `<?php
+if ( ! function_exists( 'wc_get_products' ) ) { echo wp_json_encode( array( 'product' => null ) ); return; }
+$sgs_rel = static function ( $url ) { return $url ? wp_make_link_relative( $url ) : null; };
+$sgs_out = array( 'product' => null );
+${ productPickPhp( { productSlugs, flowLinked } ) }
+echo wp_json_encode( $sgs_out );
+`;
+}
+
+// The PHP (no opening tag; $sgs_rel and $sgs_out set before it) defining the visibility and stand-in tests and setting
+// $sgs_out['product']: the first visible product `productSlugs` names, else (with `flowLinked`) the first real product linked to
+// a choice flow, else the first real product.
+function productPickPhp( { productSlugs = [], flowLinked = false } ) {
+	return `$sgs_visible = static function ( $p ) { return $p && 'publish' === $p->get_status() && 'hidden' !== $p->get_catalog_visibility(); };
 $sgs_stand_in = static function ( $p ) {
 	$id = $p->get_id();
 	$fixture = '' !== (string) get_post_meta( $id, '_sgs_cr_fixture', true ) || '' !== (string) get_post_meta( $id, '_sgs_fixture', true ) || 0 === strpos( (string) $p->get_sku(), 'sgs-fixture-' );
@@ -44,12 +66,25 @@ foreach ( array( ${ productSlugs.map( phpString ).join( ', ' ) } ) as $sgs_slug 
 	$sgs_p = $sgs_found ? wc_get_product( $sgs_found->ID ) : null;
 	if ( $sgs_visible( $sgs_p ) ) { $sgs_out['product'] = $sgs_rel( get_permalink( $sgs_p->get_id() ) ); break; }
 }
-if ( null === $sgs_out['product'] ) {
+${ flowLinked ? FLOW_LINKED_PICK_PHP : '' }if ( null === $sgs_out['product'] ) {
 	foreach ( wc_get_products( array( 'status' => 'publish', 'limit' => 20, 'orderby' => 'ID', 'order' => 'ASC' ) ) as $sgs_p ) {
 		if ( $sgs_real( $sgs_p ) ) { $sgs_out['product'] = $sgs_rel( get_permalink( $sgs_p->get_id() ) ); break; }
 	}
+}`;
 }
-$sgs_candidates = array();
+
+// The first real product linked to a choice flow whose link resolves (the buy box's own resolver where the plugin is loaded).
+const FLOW_LINKED_PICK_PHP = `if ( null === $sgs_out['product'] ) {
+	foreach ( get_posts( array( 'post_type' => 'product', 'post_status' => 'publish', 'posts_per_page' => 50, 'orderby' => 'ID', 'order' => 'ASC', 'fields' => 'ids', 'meta_key' => '_sgs_choice_flow', 'meta_compare' => 'EXISTS' ) ) as $sgs_id ) {
+		$sgs_p = wc_get_product( $sgs_id );
+		$sgs_linked = function_exists( 'sgs_buybox_resolve_linked_flow' ) ? null !== sgs_buybox_resolve_linked_flow( (int) $sgs_id ) : '' !== (string) get_post_meta( $sgs_id, '_sgs_choice_flow', true );
+		if ( $sgs_p && $sgs_real( $sgs_p ) && $sgs_linked ) { $sgs_out['product'] = $sgs_rel( get_permalink( $sgs_p->get_id() ) ); break; }
+	}
+}
+`;
+
+// liveFactsPhp's basket half: the product a basket accepts, tried in WP-CLI's own basket, emptied and forgotten.
+const BASKET_PHP = `
 foreach ( wc_get_products( array( 'status' => 'publish', 'type' => 'simple', 'stock_status' => 'instock', 'limit' => 20, 'orderby' => 'ID', 'order' => 'ASC' ) ) as $sgs_p ) {
 	if ( $sgs_p->is_purchasable() && $sgs_p->is_in_stock() && $sgs_real( $sgs_p ) ) { $sgs_candidates[] = $sgs_p; }
 }
@@ -102,7 +137,6 @@ if ( function_exists( 'wc_load_cart' ) ) {
 }
 echo wp_json_encode( $sgs_out );
 `;
-}
 
 // The facts from the PHP's output (its last JSON object line), or null facts when it printed none.
 export function readLiveFacts( output ) {

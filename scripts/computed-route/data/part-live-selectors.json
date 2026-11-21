@@ -1,5 +1,5 @@
 {
-	"_comment": "For a Cart or Checkout part whose settings are older than the look table, the look-table row (selectors.json rows) whose selector finds that part on the live page. A part whose name is a row's id with hyphens for underscores needs no entry. The verify pass (lib/part-look-verify.mjs) reads the live page through these selectors; a part with neither a row nor an entry is not verified and says so. `blocks` names, per block, the live selector of a part of the block's own whose block.json element has no selector or prints another selector in the mode the route writes: the signed-in account views, read with ordersRowList and orderDetailLook on (plugins/sgs-blocks/includes/account/helpers-account-orders-list.php::sgs_account_orders_list_html, helpers-account-order-detail.php::sgs_account_order_detail_html), where the orders are a list of rows and an order has its own page.",
+	"_comment": "For a Cart or Checkout part whose settings are older than the look table, the look-table row (selectors.json rows) whose selector finds that part on the live page. A part whose name is a row's id with hyphens for underscores needs no entry. The verify pass (lib/part-look-verify.mjs) reads the live page through these selectors; a part with neither a row nor an entry is not verified and says so. `blocks` names, per block, the live selector of a part of the block's own whose block.json element has no selector or prints another selector in the mode the route writes: the signed-in account views, read with ordersRowList and orderDetailLook on (plugins/sgs-blocks/includes/account/helpers-account-orders-list.php::sgs_account_orders_list_html, helpers-account-order-detail.php::sgs_account_order_detail_html), where the orders are a list of rows and an order has its own page; and the buy box's two built-in buttons, because the flow opener wears Add to Cart's own class `buybox__add-to-cart` (plugins/sgs-blocks/includes/buybox-linked-flow.php::sgs_buybox_flow_opener_html), so the element selector of `add-to-cart` would read the opener first.",
 	"parts": {
 		"line-item": "item",
 		"line-item-image": "item_image_img",
@@ -25,6 +25,10 @@
 		"field-text-input": "field_input"
 	},
 	"blocks": {
+		"sgs/buybox": {
+			"add-to-cart": ".sgs-buybox .buybox__add-to-cart:not(.buybox__add-to-cart--flow-opener)",
+			"flow-opener": ".buybox__add-to-cart--flow-opener"
+		},
 		"sgs/account": {
 			"ordersRows": ".sgs-account__orders-list .sgs-account__order",
 			"order-number": ".sgs-account__orders-list .sgs-account__order-number",
