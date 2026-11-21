@@ -422,7 +422,11 @@
 			},
 			"wholeBlock": "sgs/container",
 			"lone": "sgs/button",
-			"reason": "a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone"
+			"reason": "a back-to-top control is a link whose source is 'top' (the shared link source): a container whose whole box is the link when it holds a label and an icon, a button when it is words alone; a control is one by its words, its handler's name, or what its handler does (it scrolls the page to its top and writes no state: lib/skeleton-scroll-top.mjs, 2026-11-21)",
+			"floating": {
+				"reason": "a back-to-top control fixed to the viewport at every width it shows is the Floating UI panel's back to top, a site option that draws its own button, so the control places no block (2026-11-21)",
+				"handover": "Floating UI back to top: switch it on in the site options (sgs_floating_ui_back_to_top_enabled), with its corner (sgs_floating_ui_back_to_top_position) and its colours (sgs_floating_ui_back_to_top_bg_colour, sgs_floating_ui_back_to_top_icon_colour)"
+			}
 		},
 		"mapEmbed": {
 			"patterns": [

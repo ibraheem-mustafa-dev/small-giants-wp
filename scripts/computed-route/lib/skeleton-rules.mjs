@@ -22,6 +22,7 @@ import { productTiles } from './skeleton-product-tile.mjs';
 import { reviewPlatformRegions } from './skeleton-review-platform.mjs';
 import { pictureTileGrids } from './skeleton-picture-tiles.mjs';
 import { messagingLink } from './skeleton-messaging-link.mjs';
+import { handlerScrollsTop } from './skeleton-scroll-top.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
@@ -307,6 +308,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		return verdicts.get( tk ) ? card : null;
 	};
+	// Whether a control's click handler scrolls the page to its top and writes no state (lib/skeleton-scroll-top.mjs).
+	const scrollsTop = ( e ) => !! handlerOf( e ) && !! view.entry?.( e ) && handlerScrollsTop( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e ).template.component, handler: handlerOf( e ) } );
 	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
 	// A form control (an <input>, <select>, the draft's <sc-raw-select> or a <textarea>) and the field block it becomes,
 	// by its rendered input type; null for anything else.
@@ -656,11 +659,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const laysOut = /grid|flex/.test( st.display || e.display || '' );
 			return ! m.words( e ) && kidsB.length && parentBlock && 'wrapper-shell' !== role && centred && ! ( 'section-root' === role && laysOut ) ? v( 'widthWrapper', { action: 'unwrap' } ) : null;
 		},
-		// A back-to-top control is a link whose source is 'top'.
+		// A back-to-top control is a link whose source is 'top': known by its words, its handler's name or what its handler does
+		// (it scrolls the page to its top and writes no state, lib/skeleton-scroll-top.mjs). Fixed to the viewport at every width
+		// it shows, it is the Floating UI panel's back to top, a site option that draws its own button: a handover, no block.
 		( { e, text, kidsB } ) => {
 			const control = [ 'a', 'button' ].includes( e.tag ) || !! handlerOf( e );
-			if ( ! control || ! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop?.handlers, handlerOf( e ) ) ) ) {
+			if ( ! control || ! R.backToTop || ! ( specHit( R.backToTop, `${ text } ${ e.attrs?.[ 'aria-label' ] || '' }` ) || specHit( R.backToTop.handlers, handlerOf( e ) ) || scrollsTop( e ) ) ) {
 				return null;
+			}
+			const at = Object.entries( e.visible || {} ).filter( ( [ , on ] ) => on ).map( ( [ w ] ) => w );
+			if ( R.backToTop.floating && at.length && at.every( ( w ) => 'fixed' === e.position?.[ w ] ) ) {
+				return v( 'backToTop', { action: 'remove', reason: R.backToTop.floating.reason, handover: { owner: 'behaviour', kind: 'behaviour', detail: R.backToTop.floating.handover } } );
 			}
 			// Words of the control's own beside a glyph (`<button>Back to top <span>↑</span></button>`) are a button's label: a
 			// container keeps only its child blocks, so those words would be lost; the button's glyph part takes the glyph.

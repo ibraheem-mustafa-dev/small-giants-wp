@@ -1,0 +1,15 @@
+[
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "return calls.some( toTop ) && ! calls.some( ( n ) => isThisMember( n.callee, 'setState' ) );", "replace": "return calls.some( toTop );", "why": "a navigation that scrolls is not back to top"},
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "return calls.some( toTop ) && ! calls.some( ( n ) => isThisMember( n.callee, 'setState' ) );", "replace": "return ! calls.some( ( n ) => isThisMember( n.callee, 'setState' ) );", "why": "the handler scrolls to the top"},
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "return ( zero( a ) && zero( b ) ) ||", "replace": "return ( zero( a ) ) ||", "why": "a scroll down the page is not to the top"},
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "&& 'top' === keyName( p ) && zero( p.value ) ) );", "replace": "&& zero( p.value ) ) );", "why": "a left of 0 is not a top of 0"},
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "|| ( 'MemberExpression' === c.type && ! pageScroller( c.object ) ) ) {", "replace": ") {", "why": "scrolling a panel is not the page"},
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "[ 'documentElement', 'body' ].includes( propOf( obj ) ) );", "replace": "[ 'body' ].includes( propOf( obj ) ) );", "why": "the document's root element is the page"},
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "if ( ! [ 'scrollTo', 'scroll' ].includes( named )", "replace": "if ( ! [ 'scrollTo' ].includes( named )", "why": "scroll is a scroll call too"},
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "return name ? fnsNamed( { nodes: d.idx.all }, name, 'member' ).filter( Boolean ) : [];", "replace": "return [];", "why": "a this.<name> member names its function"},
+	{"file": "lib/skeleton-scroll-top.mjs", "find": "return fns.length > 0 && fns.every(", "replace": "return fns.every(", "why": "no function is no scroll"},
+	{"file": "lib/skeleton-rules.mjs", "find": "if ( R.backToTop.floating && at.length && at.every( ( w ) => 'fixed' === e.position?.[ w ] ) ) {", "replace": "if ( false ) {", "why": "a fixed corner control is the Floating UI back to top"},
+	{"file": "lib/skeleton-rules.mjs", "find": "if ( R.backToTop.floating && at.length && at.every( ( w ) => 'fixed' === e.position?.[ w ] ) ) {", "replace": "if ( R.backToTop.floating ) {", "why": "a control in the page flow is the block"},
+	{"file": "lib/skeleton-rules.mjs", "find": "|| specHit( R.backToTop.handlers, handlerOf( e ) ) || scrollsTop( e ) ) ) {", "replace": "|| specHit( R.backToTop.handlers, handlerOf( e ) ) ) ) {", "why": "what the handler does names a back-to-top control"},
+	{"file": "data/skeleton-decisions.json", "find": "\"floating\": {\n\t\t\t\t\"reason\": \"a back-to-top control fixed", "replace": "\"floatingOff\": {\n\t\t\t\t\"reason\": \"a back-to-top control fixed", "why": "the floating case is switched on by its entry"}
+]
