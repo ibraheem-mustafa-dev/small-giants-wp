@@ -1,16 +1,24 @@
 // The answer sheet: a surface the owner built by hand against the same surface the route cloned, block by block and setting
 // by setting. The hand-built side is block markup (a saved-blocks section, lib/block-choice.mjs::parseSavedSections); the
-// clone side is the Fill stage's tree (build/qa/fill/<surface>/<run>/filled.tree.json). Blocks of one name are paired by
-// how alike they are (equal look settings, shared setting names, the same parent block, then document order), never by
-// order alone, so a clone with one container fewer does not shift every later pairing. Each setting row is grouped:
-// `look` (what the block paints), `custom-css` (the block's own scoped CSS, where a hand-built look the settings cannot
-// hold lives) or `content` (printed words, links, pictures and per-site ids, which differ between any two sites).
-// Pure: no file, site or database access; `facts.contentAttrs( name )` comes from the framework database's roles.
+// clone side is the Fill stage's tree (build/qa/fill/<surface>/<run>/filled.tree.json). Blocks are paired top-down by how
+// alike they are (a paired parent, equal look settings, shared setting names, the same parent block name, then document
+// order), never by order alone, so a clone with one container fewer does not shift every later pairing; two blocks with
+// nothing in common are never paired, each is listed on its own side. Each setting row is grouped: `look` (what the block
+// paints), `custom-css` (the block's own scoped CSS, where a hand-built look the settings cannot hold lives) or `content`
+// (printed words, links, pictures and per-site ids, which differ between any two sites).
+// Pure: no file, site or database access. `facts` comes from the framework database: `contentAttrs( block )` (the set of
+// content-bearing settings, or null), and optionally `attrFact( block, attr )` → { tier, def } (`tier` the setting's
+// tier_shape: 'tier_object', 'flat_sibling' or null; `def` its parsed default, undefined when it has none). Without
+// `attrFact` a {desktop, tablet, mobile} object compares device by device and nothing is dropped as a default.
 
 // Per-site identifiers and editor notes: they differ between any two sites by nature, so they are content.
 const SITE_ID = /^(id|ref)$|Id$|ID$|Note$/;
 // The route's own pairing class on a cloned block, never a look.
 const ROUTE_CLASS = /^cr-ref-[\w-]+$/;
+const TIERS = [ 'desktop', 'tablet', 'mobile' ];
+const SIBLING = { tablet: 'Tablet', mobile: 'Mobile' };
+
+const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 
 // A value with every item's `_key` (a per-save id) removed, so two equal item lists compare equal.
 export function withoutKeys( value ) {
@@ -39,10 +47,21 @@ export function settingGroup( block, attr, facts ) {
 	return 'look';
 }
 
-// The comparable settings of a block: className reduced to its look classes (dropped when empty), items without keys.
-export function comparable( attrs ) {
+const factOf = ( facts, block, attr ) => facts?.attrFact?.( block, attr ) ?? null;
+
+// The comparable settings of a block: className reduced to its look classes (dropped when empty), items without keys, a
+// setting at its database default dropped (saved markup leaves a default out while Fill may write it: both paint the same),
+// and a flat-sibling setting (X, XTablet, XMobile, tier_shape 'flat_sibling') folded into one per-device value under X.
+// Returns { attrs, tiered } where `tiered` holds the names that compare device by device.
+export function comparable( attrs, block = null, facts = null ) {
 	const out = {};
-	for ( const [ k, v ] of Object.entries( attrs ?? {} ) ) {
+	const tiered = new Set();
+	const src = attrs ?? {};
+	const folded = new Set();
+	for ( const [ k, v ] of Object.entries( src ) ) {
+		if ( folded.has( k ) ) {
+			continue;
+		}
 		if ( 'className' === k ) {
 			const c = lookClasses( v );
 			if ( c ) {
@@ -50,14 +69,41 @@ export function comparable( attrs ) {
 			}
 			continue;
 		}
-		out[ k ] = withoutKeys( v );
+		const fact = factOf( facts, block, k );
+		if ( fact && 'flat_sibling' === fact.tier && ! /(Tablet|Mobile)$/.test( k ) ) {
+			const tiers = { desktop: withoutKeys( v ) };
+			for ( const [ t, suffix ] of Object.entries( SIBLING ) ) {
+				if ( `${ k }${ suffix }` in src ) {
+					tiers[ t ] = withoutKeys( src[ `${ k }${ suffix }` ] );
+					folded.add( `${ k }${ suffix }` );
+				}
+			}
+			out[ k ] = tiers;
+			tiered.add( k );
+			continue;
+		}
+		const value = withoutKeys( v );
+		if ( fact && undefined !== fact.def && same( value, fact.def ) ) {
+			continue;
+		}
+		out[ k ] = value;
+		if ( ! fact || 'tier_object' === fact.tier ) {
+			tiered.add( k );
+		}
 	}
-	return out;
+	// A sibling whose base is absent stands as its own per-device value.
+	for ( const [ k, v ] of Object.entries( src ) ) {
+		const m = /^(.+)(Tablet|Mobile)$/.exec( k );
+		if ( m && ! folded.has( k ) && ! ( m[ 1 ] in src ) && 'flat_sibling' === factOf( facts, block, k )?.tier ) {
+			const base = out[ m[ 1 ] ] ?? {};
+			base[ 'Tablet' === m[ 2 ] ? 'tablet' : 'mobile' ] = withoutKeys( v );
+			out[ m[ 1 ] ] = base;
+			tiered.add( m[ 1 ] );
+			delete out[ k ];
+		}
+	}
+	return { attrs: out, tiered };
 }
-
-const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
-
-const TIERS = [ 'desktop', 'tablet', 'mobile' ];
 
 // A per-device value ({ desktop, tablet, mobile }, any subset, nothing else) as the value each device shows: a device left
 // out takes the next wider one's. Null for any other value.
@@ -74,37 +120,44 @@ export function perDevice( v ) {
 	return out;
 }
 
-// The devices at which two values differ: [] when they show the same everywhere. Two per-device values compare device by
-// device; any other pair is one value (every device when it differs).
-export function differingDevices( a, b ) {
-	const pa = perDevice( a );
-	const pb = perDevice( b );
+// The devices at which two values differ: [] when they show the same everywhere. A tiered setting's two per-device values
+// compare device by device; any other pair is one value (every device when it differs).
+export function differingDevices( a, b, tiered = true ) {
+	const pa = tiered ? perDevice( a ) : null;
+	const pb = tiered ? perDevice( b ) : null;
 	if ( pa && pb ) {
 		return TIERS.filter( ( t ) => ! same( pa[ t ], pb[ t ] ) );
 	}
 	return same( a, b ) ? [] : [ ...TIERS ];
 }
 
-// Every block of a tree in document order: { name, attrs, parent (the parent block's name or null), order }.
-// Accepts markup trees ({ name, attrs, innerBlocks }) and route trees ({ name, attributes, innerBlocks }).
-export function flatten( roots ) {
+// Every block of a tree in document order: { name, attrs, tiered, parent (the parent block's name or null), parentOrder
+// (the parent's document position or null), depth, order }. Accepts markup trees ({ name, attrs, innerBlocks }) and route
+// trees ({ name, attributes, innerBlocks }).
+export function flatten( roots, facts = null ) {
 	const out = [];
-	const walk = ( nodes, parent ) => {
+	const walk = ( nodes, parent, parentOrder, depth ) => {
 		for ( const b of nodes ?? [] ) {
 			if ( ! b?.name ) {
 				continue;
 			}
-			out.push( { name: b.name, attrs: comparable( b.attrs ?? b.attributes ), parent, order: out.length } );
-			walk( b.innerBlocks, b.name );
+			const { attrs, tiered } = comparable( b.attrs ?? b.attributes, b.name, facts );
+			const order = out.length;
+			out.push( { name: b.name, attrs, tiered, parent, parentOrder, depth, order } );
+			walk( b.innerBlocks, b.name, order, depth + 1 );
 		}
 	};
-	walk( Array.isArray( roots ) ? roots : [ roots ], null );
+	walk( Array.isArray( roots ) ? roots : [ roots ], null, null, 0 );
 	return out;
 }
 
-// How alike two blocks of one name are: equal settings count 2, a setting name both hold 1, the same parent block 3.
-export function likeness( a, b ) {
+// How alike two blocks of one name are: parents already paired with each other 5, the same parent block name 3, an equal
+// setting 2, a setting name both hold 1. Zero means nothing in common.
+export function likeness( a, b, pairedParents = new Set() ) {
 	let score = a.parent === b.parent ? 3 : 0;
+	if ( null !== a.parentOrder && pairedParents.has( `${ a.parentOrder }:${ b.parentOrder }` ) ) {
+		score += 5;
+	}
 	for ( const [ k, v ] of Object.entries( a.attrs ) ) {
 		if ( k in b.attrs ) {
 			score += same( v, b.attrs[ k ] ) ? 2 : 1;
@@ -113,16 +166,17 @@ export function likeness( a, b ) {
 	return score;
 }
 
-// Pairs the blocks of one name: the most alike pair first, ties to the closer document position, then the earlier.
-export function pairBlocks( hand, clone ) {
+// Pairs the blocks of one name: the most alike pair first, ties to the closer document position, then the earlier; a pair
+// with nothing in common (likeness 0) is never made.
+export function pairBlocks( hand, clone, pairedParents = new Set() ) {
 	const cands = [];
-	hand.forEach( ( h, i ) => clone.forEach( ( c, j ) => cands.push( { i, j, score: likeness( h, c ), gap: Math.abs( i / Math.max( hand.length, 1 ) - j / Math.max( clone.length, 1 ) ) } ) ) );
+	hand.forEach( ( h, i ) => clone.forEach( ( c, j ) => cands.push( { i, j, score: likeness( h, c, pairedParents ), gap: Math.abs( i / Math.max( hand.length, 1 ) - j / Math.max( clone.length, 1 ) ) } ) ) );
 	cands.sort( ( x, y ) => y.score - x.score || x.gap - y.gap || x.i - y.i || x.j - y.j );
 	const usedH = new Set();
 	const usedC = new Set();
 	const pairs = [];
 	for ( const c of cands ) {
-		if ( ! usedH.has( c.i ) && ! usedC.has( c.j ) ) {
+		if ( c.score > 0 && ! usedH.has( c.i ) && ! usedC.has( c.j ) ) {
 			usedH.add( c.i );
 			usedC.add( c.j );
 			pairs.push( [ c.i, c.j ] );
@@ -138,7 +192,7 @@ export function settingRows( name, h, c, facts ) {
 		if ( ! ( k in c.attrs ) ) {
 			rows.push( { kind: 'hand-only', attr: k, hand: v, group: settingGroup( name, k, facts ) } );
 		} else {
-			const devices = differingDevices( v, c.attrs[ k ] );
+			const devices = differingDevices( v, c.attrs[ k ], h.tiered.has( k ) || c.tiered.has( k ) );
 			if ( devices.length ) {
 				rows.push( { kind: 'different', attr: k, hand: v, clone: c.attrs[ k ], devices, group: settingGroup( name, k, facts ) } );
 			}
@@ -154,26 +208,31 @@ export function settingRows( name, h, c, facts ) {
 
 // The whole comparison: { counts: { name: [ hand, clone ] }, blocks: [ { name, hand, clone, rows } ] } where hand and clone
 // are the block's document position on each side (null when that side has no partner), in hand-built document order.
+// Block names are paired shallowest first, so a block's parent pair is known when the block is paired.
 export function compareSurface( handRoots, cloneRoots, facts ) {
-	const hand = flatten( handRoots );
-	const clone = flatten( cloneRoots );
-	const names = [ ...new Set( [ ...hand, ...clone ].map( ( b ) => b.name ) ) ].sort();
+	const hand = flatten( handRoots, facts );
+	const clone = flatten( cloneRoots, facts );
+	const depthOf = ( name ) => Math.min( ...[ ...hand, ...clone ].filter( ( b ) => b.name === name ).map( ( b ) => b.depth ) );
+	const names = [ ...new Set( [ ...hand, ...clone ].map( ( b ) => b.name ) ) ].sort( ( a, b ) => depthOf( a ) - depthOf( b ) || a.localeCompare( b ) );
 	const counts = {};
 	const blocks = [];
+	const pairedParents = new Set();
 	for ( const name of names ) {
 		const hs = hand.filter( ( b ) => b.name === name );
 		const cs = clone.filter( ( b ) => b.name === name );
 		counts[ name ] = [ hs.length, cs.length ];
-		const pairs = pairBlocks( hs, cs );
+		const pairs = pairBlocks( hs, cs, pairedParents );
 		for ( const [ i, j ] of pairs ) {
+			pairedParents.add( `${ hs[ i ].order }:${ cs[ j ].order }` );
 			blocks.push( { name, hand: hs[ i ].order, clone: cs[ j ].order, rows: settingRows( name, hs[ i ], cs[ j ], facts ) } );
 		}
 		hs.forEach( ( h, i ) => pairs.some( ( p ) => p[ 0 ] === i ) || blocks.push( { name, hand: h.order, clone: null, rows: [] } ) );
 		cs.forEach( ( c, j ) => pairs.some( ( p ) => p[ 1 ] === j ) || blocks.push( { name, hand: null, clone: c.order, rows: [] } ) );
 	}
 	blocks.sort( ( a, b ) => ( a.hand ?? 1e9 ) - ( b.hand ?? 1e9 ) || ( a.clone ?? 1e9 ) - ( b.clone ?? 1e9 ) );
-	return { counts, blocks };
+	return { counts: Object.fromEntries( Object.entries( counts ).sort( ( a, b ) => a[ 0 ].localeCompare( b[ 0 ] ) ) ), blocks };
 }
+
 
 // The totals a report leads with: look rows by kind, custom-css rows, content rows, unpaired blocks per side.
 export function totals( result ) {

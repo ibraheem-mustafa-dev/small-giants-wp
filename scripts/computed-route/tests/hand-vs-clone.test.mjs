@@ -26,8 +26,58 @@ test( 'groups: custom CSS, content from the database roles and per-site ids, eve
 test( 'comparable: item keys and route pairing classes never count; other classes do', () => {
 	assert.deepEqual( withoutKeys( [ { _key: 'a', label: 'x', sub: { _key: 'b', v: 1 } } ] ), [ { label: 'x', sub: { v: 1 } } ] );
 	assert.equal( lookClasses( 'cr-ref-header-3 is-style-pill' ), 'is-style-pill' );
-	assert.deepEqual( comparable( { className: 'cr-ref-header-3', gap: 1 } ), { gap: 1 } );
-	assert.deepEqual( comparable( { className: 'is-style-pill cr-ref-x-1' } ), { className: 'is-style-pill' } );
+	assert.deepEqual( comparable( { className: 'cr-ref-header-3', gap: 1 } ).attrs, { gap: 1 } );
+	assert.deepEqual( comparable( { className: 'is-style-pill cr-ref-x-1' } ).attrs, { className: 'is-style-pill' } );
+} );
+
+// The database facts the tool reads: tier shapes and defaults (lib/hand-vs-clone.mjs header).
+const DB = {
+	'sgs/site-header-row|layout': { tier: null, def: 'flex' },
+	'sgs/site-header-row|gap': { tier: 'tier_object', def: undefined },
+	'sgs/account|menuFontSize': { tier: 'flat_sibling', def: undefined },
+	'sgs/account|menuFontSizeTablet': { tier: 'flat_sibling', def: undefined },
+	'sgs/account|menuFontSizeMobile': { tier: 'flat_sibling', def: undefined },
+	'sgs/whatsapp-cta|showOn': { tier: null, def: { desktop: true, mobile: true } },
+};
+const dbFacts = { ...facts, attrFact: ( b, a ) => DB[ `${ b }|${ a }` ] ?? null };
+
+test( 'MUST FAIL: a setting at its database default is no row; another value is', () => {
+	const r = compareSurface( [ B( 'sgs/site-header-row', { rowSlot: 'top' } ) ], [ B( 'sgs/site-header-row', { rowSlot: 'top', layout: 'flex' } ) ], dbFacts );
+	assert.deepEqual( r.blocks[ 0 ].rows, [], 'layout flex is the block default: both sides paint the same' );
+	const r2 = compareSurface( [ B( 'sgs/site-header-row', { rowSlot: 'top' } ) ], [ B( 'sgs/site-header-row', { rowSlot: 'top', layout: 'grid' } ) ], dbFacts );
+	assert.deepEqual( r2.blocks[ 0 ].rows.map( ( x ) => [ x.kind, x.attr ] ), [ [ 'clone-only', 'layout' ] ] );
+} );
+
+test( 'MUST FAIL: flat siblings fold into one per-device value, compared device by device', () => {
+	const r = compareSurface( [ B( 'sgs/account', { menuFontSize: '14px' } ) ], [ B( 'sgs/account', { menuFontSize: '14px', menuFontSizeMobile: '14px' } ) ], dbFacts );
+	assert.deepEqual( r.blocks[ 0 ].rows, [], 'a mobile sibling equal to the base shows the same on every device' );
+	const r2 = compareSurface( [ B( 'sgs/account', { menuFontSize: '14px' } ) ], [ B( 'sgs/account', { menuFontSize: '14px', menuFontSizeMobile: '12px' } ) ], dbFacts );
+	assert.deepEqual( r2.blocks[ 0 ].rows.map( ( x ) => [ x.kind, x.attr, x.devices ] ), [ [ 'different', 'menuFontSize', [ 'mobile' ] ] ] );
+	// A sibling alone (its base absent) still stands as a per-device value under the base name.
+	assert.deepEqual( comparable( { menuFontSizeMobile: '12px' }, 'sgs/account', dbFacts ).attrs, { menuFontSize: { mobile: '12px' } } );
+} );
+
+test( 'only a tier_object setting inherits by device; another object compares whole', () => {
+	const r = compareSurface( [ B( 'sgs/whatsapp-cta', { showOn: { desktop: true, mobile: false } } ) ], [ B( 'sgs/whatsapp-cta', { showOn: { desktop: true, tablet: true, mobile: false } } ) ], dbFacts );
+	assert.deepEqual( r.blocks[ 0 ].rows.map( ( x ) => [ x.attr, x.devices.length ] ), [ [ 'showOn', 3 ] ] );
+	const g = compareSurface( [ B( 'sgs/site-header-row', { gap: { desktop: '8px' } } ) ], [ B( 'sgs/site-header-row', { gap: { desktop: '8px', mobile: '8px' } } ) ], dbFacts );
+	assert.deepEqual( g.blocks[ 0 ].rows, [], 'a tier_object still inherits' );
+} );
+
+test( 'MUST FAIL: blocks with nothing in common are never paired; each is listed on its side', () => {
+	const r = compareSurface( [ B( 'sgs/site-header', {}, [ B( 'sgs/container', { gap: '8px', layout: 'grid' } ) ] ) ], [ B( 'sgs/site-header-row', {}, [ B( 'sgs/container', { padding: '4px' } ) ] ) ], facts );
+	const cs = r.blocks.filter( ( b ) => b.name === 'sgs/container' );
+	assert.deepEqual( cs.map( ( b ) => [ b.hand, b.clone ] ), [ [ 1, null ], [ null, 1 ] ] );
+} );
+
+test( 'MUST FAIL: a block pairs with the one under its paired parent, not the one with more settings in common', () => {
+	// Hand-built: a logo row holding text A and a menu row holding text B. The clone's logo-row text shares more settings
+	// with the hand-built menu-row text, but its parent pairs with the hand-built logo row.
+	const hand = [ B( 'sgs/container', { role: 'logo' }, [ B( 'sgs/text', { size: 1 } ) ] ), B( 'sgs/container', { role: 'menu' }, [ B( 'sgs/text', { size: 2, weight: 4, colour: 'x' } ) ] ) ];
+	const clone = [ B( 'sgs/container', { role: 'logo' }, [ B( 'sgs/text', { size: 2, weight: 4, colour: 'y' } ) ] ), B( 'sgs/container', { role: 'menu' }, [ B( 'sgs/text', { size: 9 } ) ] ) ];
+	const r = compareSurface( hand, clone, facts );
+	const texts = r.blocks.filter( ( b ) => b.name === 'sgs/text' ).map( ( b ) => [ b.hand, b.clone ] );
+	assert.deepEqual( texts, [ [ 1, 1 ], [ 3, 3 ] ] );
 } );
 
 test( 'per device: a device left out shows the next wider one, so equal shown values make no row', () => {
@@ -96,14 +146,18 @@ test( 'tool: the section by its @@@ line, the surface names, the newest run hold
 	assert.equal( sectionOf( saved, SECTION_OF.header ).blocks[ 0 ].innerBlocks[ 0 ].name, 'sgs/cart' );
 	assert.equal( sectionOf( saved, SECTION_OF.home ).blocks[ 0 ].name, 'sgs/hero' );
 	assert.equal( sectionOf( saved, 'sgs_active_footer_cpt_id' ), null );
+	// MUST FAIL: whole words only, and an ambiguous needle is an error.
+	const two = '@@@ sgs_active_header_cpt_id 199\n<!-- wp:sgs/cart /-->\n@@@ page 19\n<!-- wp:sgs/hero /-->\n@@@ post 19 sgs_form a\n<!-- wp:sgs/form /-->\n';
+	assert.equal( sectionOf( two, 'page 19' ).blocks[ 0 ].name, 'sgs/hero', '199 does not contain the word 19' );
+	assert.throws( () => sectionOf( two, '19' ), /matches 2 sections/ );
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'hvc-' ) );
-	for ( const [ run, tree ] of [ [ '2026-01-01T00-00-00', true ], [ '2026-01-02T00-00-00', true ], [ '2026-01-03T00-00-00', false ] ] ) {
+	for ( const [ run, tree ] of [ [ '2026-01-01T00-00-00', true ], [ '2026-01-02T00-00-00', true ], [ '2026-01-03T00-00-00', false ], [ 'manual', true ], [ '2026-01-04-0600', true ] ] ) {
 		fs.mkdirSync( path.join( dir, run ) );
 		if ( tree ) {
 			fs.writeFileSync( path.join( dir, run, 'filled.tree.json' ), '[]' );
 		}
 	}
-	assert.equal( path.basename( newestRun( dir ) ), '2026-01-02T00-00-00', 'a newer run without a Fill tree is skipped' );
+	assert.equal( path.basename( newestRun( dir ) ), '2026-01-02T00-00-00', 'a newer run without a Fill tree, and unstamped folders, are skipped' );
 	assert.equal( newestRun( path.join( dir, 'none' ) ), null );
 	fs.rmSync( dir, { recursive: true, force: true } );
 	// The markup parser gives the hand-built side the same shape flatten reads.
