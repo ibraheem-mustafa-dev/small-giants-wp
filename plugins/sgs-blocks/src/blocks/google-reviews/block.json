@@ -1400,11 +1400,12 @@
 		"scrollbarStyle": {
 			"type": "string",
 			"enum": [
+				"default",
 				"thin",
-				"standard"
+				"hidden"
 			],
 			"default": "thin",
-			"description": "The scrollbar's width when pagination is scrollbar: thin, or the browser's standard scrollbar."
+			"description": "The rail's scrollbar when pagination is scrollbar, through the shared scrollbar choice (includes/helpers-scrollbar.php, Spec 02 FR-2-35): default (the site's bar), thin (the site's slim bar at the thin width token) or hidden (the rail still scrolls). Dots or none hide the bar whatever this holds. A value outside the list (the old standard) is reset by WordPress to the default, thin."
 		},
 		"arrowSize": {
 			"type": "object",

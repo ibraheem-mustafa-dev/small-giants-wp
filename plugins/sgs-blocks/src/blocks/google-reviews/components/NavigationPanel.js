@@ -15,6 +15,7 @@ import { __ } from '@wordpress/i18n';
 import { RangeControl, SelectControl } from '@wordpress/components';
 import { DesignTokenPicker, ResponsiveOverride } from '../../../components';
 import { ToggleGroupControl, ToggleGroupControlOption } from '../../../components/primitives';
+import ScrollbarStyleControl from '../../../components/ScrollbarStyleControl';
 import { Section, Row } from './panel-kit';
 import { TierBox, TierLength, BorderField } from './panel-fields';
 import { spacingDefaultsFor } from '../../../utils/spacing-defaults';
@@ -118,17 +119,12 @@ export default function NavigationPanel( { name, attributes, setAttributes } ) {
 			</Row>
 			{ 'scrollbar' === pagination && (
 				<Row label={ __( 'Scrollbar', 'sgs-blocks' ) } attrs={ SCROLLBAR_ATTRS } { ...shared }>
-					<ToggleGroupControl
-						label={ __( 'Scrollbar width', 'sgs-blocks' ) }
-						value={ attributes.scrollbarStyle || 'thin' }
+					<ScrollbarStyleControl
+						value={ attributes.scrollbarStyle }
+						start="thin"
 						onChange={ ( value ) => setAttributes( { scrollbarStyle: value } ) }
-						isBlock
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-					>
-						<ToggleGroupControlOption value="thin" label={ __( 'Thin', 'sgs-blocks' ) } />
-						<ToggleGroupControlOption value="standard" label={ __( 'Standard', 'sgs-blocks' ) } />
-					</ToggleGroupControl>
+						hasOtherWay={ false !== attributes.showArrows || !! attributes.dragToScroll }
+					/>
 					<DesignTokenPicker
 						label={ __( 'Scrollbar colour', 'sgs-blocks' ) }
 						states={ [

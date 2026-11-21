@@ -48,11 +48,7 @@ MECHANISM = {
     'src/utils/scrollbar-style.js',
 }
 # path -> reason. Each path must exist (the self-test asserts it), and every finding in it is exempt.
-EXEMPT = {
-    'src/blocks/google-reviews/render-styles.php': 'held for the owner: scrollbarStyle (thin|standard) means the browser\'s own thin bar, which the shared "thin" does not draw in Chromium; joining needs its values renamed (report of round 5d)',
-    'src/blocks/google-reviews/style.css': 'held with google-reviews::scrollbarStyle (see render-styles.php)',
-    'assets/css/slider-nav.css': 'the shared slider navigation\'s pagination (scrollbar, dots, none): google-reviews is its only user, held with google-reviews::scrollbarStyle',
-}
+EXEMPT = {}
 # (path, substring of the line) -> reason, for one finding inside a file that otherwise follows the rule.
 EXEMPT_LINES = {
     ('includes/helpers-gallery-grid-css.php', "$reset  = 'column-count:auto;column-gap:var(--sgs-gap);scrollbar-width:auto;';"): 'a per-device layout reset: the image grid stops scrolling at this tier, so its scrolling layout\'s scrollbar-width returns to the initial value',
@@ -276,7 +272,9 @@ def self_test():
     expect(len(f) == 2 and all(classify(x)[0] == 'hard-coded' for x in f), 'positive: CSS built in a PHP string is found')
     f = scan_text(php, 'includes/helpers-scrollbar.php', '.php')
     expect(all(classify(x)[0] == 'mechanism' for x in f), 'definition: the helper itself is the mechanism, not a finding')
-    expect(classify({'file': 'src/blocks/google-reviews/style.css', 'text': ''})[0] == 'exempt', 'exempt: a held file is exempt with its reason')
+    gallery_line = next(iter(EXEMPT_LINES))
+    expect(classify({'file': gallery_line[0], 'text': '  ' + gallery_line[1]})[0] == 'exempt', 'exempt: a named line is exempt with its reason')
+    expect(classify({'file': 'src/blocks/google-reviews/style.css', 'text': 'scrollbar-width: thin;'})[0] == 'hard-coded', 'negative control: google-reviews joined the mechanism, so its stylesheet is no longer exempt')
     for p in list(EXEMPT) + [p for p, _ in EXEMPT_LINES] + sorted(MECHANISM):
         expect(os.path.isfile(os.path.join(PLUGIN, p)), f'exempt or mechanism path exists: {p}')
     expect(STYLE_CALL_RE.findall("sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'hidden' )") == ['scrollbarStyle'], 'crosscheck: a helper call is read')

@@ -1,10 +1,11 @@
 <?php
 /**
- * Tests: sgs/google-reviews keeps the browser's own scrollbar when no scrollbar colour is set.
+ * Tests: sgs/google-reviews' rail wears the site's scrollbar (Spec 02 FR-2-35).
  *
- * The theme paints every scroller with the brand scrollbar colour (theme scrollbars.css). A rail with
- * pagination "scrollbar" and an empty `scrollbarColour` prints the opt-out class `sgs-scrollbar-native`
- * on its root; a rail with a colour set does not, so its own colour wins.
+ * The rail's bar goes through the shared scrollbar choice, so it is the site's slim bar (theme scrollbars.css) whether
+ * or not a bar colour is set: the block never prints the opt-out class `sgs-scrollbar-native`. A set `scrollbarColour`
+ * replaces the site's thumb colour on the rail only (--sgs-scrollbar-thumb). Only the scrollbar takes the site's look:
+ * the block's own colours stay Google's (the avatar colour below is unchanged).
  *
  * @package SGS\Blocks\Tests
  */
@@ -13,7 +14,7 @@ declare( strict_types=1 );
 
 use PHPUnit\Framework\TestCase;
 
-final class GoogleReviewsScrollbarNativeTest extends TestCase {
+final class GoogleReviewsScrollbarSiteBarTest extends TestCase {
 
 	/**
 	 * Render the real block in a child process and return its markup.
@@ -52,18 +53,27 @@ final class GoogleReviewsScrollbarNativeTest extends TestCase {
 		return (string) $decoded['html'];
 	}
 
-	public function test_empty_scrollbar_colour_keeps_the_native_bar(): void {
+	public function test_empty_scrollbar_colour_wears_the_sites_bar(): void {
 		$html = $this->render( array( 'layout' => 'slider', 'pagination' => 'scrollbar', 'scrollbarColour' => '' ) );
-		$this->assertMatchesRegularExpression( '/class="[^"]*\bsgs-scrollbar-native\b/', $html );
+		$this->assertStringNotContainsString( 'sgs-scrollbar-native', $html );
+		$this->assertStringNotContainsString( '--sgs-scrollbar-thumb', $html );
+		$this->assertStringContainsString( '.sgs-google-reviews__list::-webkit-scrollbar{width:var(--wp--custom--scrollbar--thin-width,10px);', $html );
 	}
 
-	public function test_a_set_scrollbar_colour_drops_the_opt_out(): void {
+	public function test_a_set_scrollbar_colour_paints_only_the_rails_thumb(): void {
 		$html = $this->render( array( 'layout' => 'slider', 'pagination' => 'scrollbar', 'scrollbarColour' => '#e7d768' ) );
 		$this->assertStringNotContainsString( 'sgs-scrollbar-native', $html );
+		$this->assertMatchesRegularExpression( '/\.sgs-google-reviews__list\{--sgs-scrollbar-thumb:#e7d768;\}/', $html );
 	}
 
-	public function test_a_rail_without_a_scrollbar_indicator_has_no_opt_out(): void {
+	public function test_a_rail_without_a_scrollbar_indicator_hides_the_bar(): void {
 		$html = $this->render( array( 'layout' => 'slider', 'pagination' => 'dots', 'scrollbarColour' => '' ) );
 		$this->assertStringNotContainsString( 'sgs-scrollbar-native', $html );
+		$this->assertStringContainsString( '.sgs-google-reviews__list{scrollbar-width:none;}', $html );
+	}
+
+	public function test_the_blocks_own_colours_stay_googles(): void {
+		$html = $this->render( array( 'layout' => 'slider', 'pagination' => 'scrollbar', 'reviews' => array( array( 'author' => 'A', 'text' => 'Body.', 'rating' => 5, 'avatarColour' => '#1A73E8' ) ) ) );
+		$this->assertStringContainsString( '#1A73E8', $html );
 	}
 }

@@ -229,16 +229,16 @@ final class GoogleReviewsAttrsTest extends TestCase {
 				array(
 					'railPadding'     => $b4( '10px' ),
 					'gap'             => array( 'desktop' => 16 ),
-					// 2026-09-23: `scrollbar` was replaced by `pagination` (default scrollbar) + `scrollbarStyle` (default
-					// thin); `standard` is the value that moves off the default.
-					'scrollbarStyle'  => 'standard',
+					// `scrollbarStyle` is the shared scrollbar choice (default thin); hidden moves off it.
+					'scrollbarStyle'  => 'hidden',
 					'scrollbarColour' => '#DADCE0',
 				),
 				array(
 					"{$r} .sgs-google-reviews__list{padding-top:10px;padding-right:10px;padding-bottom:10px;padding-left:10px;}",
 					"{$r} .sgs-google-reviews__list{gap:16px;}",
-					"{$r} .sgs-google-reviews__list{scrollbar-width:auto;}",
-					"{$r} .sgs-google-reviews__list{--sgs-gr-scrollbar-colour:#DADCE0;}",
+					"{$r} .sgs-google-reviews__list{scrollbar-width:none;}",
+					"{$r} .sgs-google-reviews__list::-webkit-scrollbar{display:none;}",
+					"{$r} .sgs-google-reviews__list{--sgs-scrollbar-thumb:#DADCE0;}",
 				),
 			),
 			'buttons' => array(
@@ -314,44 +314,57 @@ final class GoogleReviewsAttrsTest extends TestCase {
 
 	public function test_an_attribute_left_at_its_default_emits_nothing(): void {
 		$css = $this->render( array() )['css'];
+		// The rail's scrollbar is the shared choice, whose starting value (thin) prints the site's slim bar rules even
+		// unset (pinned by test_the_default_scrollbar_is_the_sites_slim_bar_and_beats_no_look): set them aside here.
+		$css = (string) preg_replace( '/@supports (?:not )?selector\(::-webkit-scrollbar\)\{[^{}]*\{[^}]*\}\}|[^{}]*::-webkit-scrollbar\{[^}]*\}/', '', $css );
 		foreach ( array( 'google-logo', '__stars', 'avatar{', '__review{', '__list{', '__text{', '__aggregate{', 'see-all', '.sgs-google-reviews{padding' ) as $fragment ) {
 			$this->assertStringNotContainsString( $fragment, preg_replace( '/nth-child\(\d+\) \.sgs-google-reviews__avatar-initials\{[^}]*\}/', '', $css ), "nothing for {$fragment}" );
 		}
 	}
 
-	public function test_the_scrollbar_defaults_do_not_beat_a_look(): void {
+	public function test_the_default_scrollbar_is_the_sites_slim_bar_and_beats_no_look(): void {
 		$css = $this->render(
 			array(
 				'pagination'     => 'scrollbar',
-				'scrollbarStyle' => 'thin',
 				'textClampLines' => 8,
 			)
 		)['css'];
+		$list = self::R . ' .sgs-google-reviews__list';
+		// Unset, the rail takes the shared thin choice (includes/helpers-scrollbar.php): the site's slim bar.
+		$this->assertStringContainsString( $list . '::-webkit-scrollbar{width:var(--wp--custom--scrollbar--thin-width,10px);height:var(--wp--custom--scrollbar--thin-width,10px);}', $css );
+		$this->assertStringContainsString( '@supports selector(::-webkit-scrollbar){' . $list . '{scrollbar-color:auto;}}', $css );
 		$this->assertStringNotContainsString( 'opacity:', $css );
-		$this->assertStringNotContainsString( 'scrollbar-width', $css );
 		$this->assertStringNotContainsString( 'line-clamp', $css );
+		$this->assertStringNotContainsString( 'sgs-scrollbar-thumb', $css );
 	}
 
 	public function test_the_scrollbar_settings_are_written_only_while_the_scrollbar_is_the_indicator(): void {
 		$attrs = array(
-			'scrollbarStyle'  => 'standard',
+			'scrollbarStyle'  => 'default',
 			'scrollbarColour' => '#123456',
 		);
 		$css   = $this->render( $attrs )['css'];
-		$this->assertStringContainsString( 'scrollbar-width:auto', $css );
-		$this->assertStringContainsString( '--sgs-gr-scrollbar-colour:#123456', $css );
-		// NEGATIVE CONTROL: with dots (or nothing) the shared layer hides the scrollbar, so its settings emit nothing.
+		// default prints no scrollbar rule (the site's bar); the colour replaces the site's thumb colour on the rail.
+		$this->assertStringNotContainsString( 'scrollbar-width', $css );
+		$this->assertStringContainsString( self::R . ' .sgs-google-reviews__list{--sgs-scrollbar-thumb:#123456;}', $css );
+		// NEGATIVE CONTROL: with dots (or nothing) the rail's bar is hidden through the shared choice, and the scrollbar
+		// settings write nothing.
 		foreach ( array( 'dots', 'none' ) as $pagination ) {
 			$css = $this->render( array_merge( $attrs, array( 'pagination' => $pagination ) ) )['css'];
-			$this->assertStringNotContainsString( 'scrollbar-width', $css, $pagination );
-			$this->assertStringNotContainsString( 'scrollbar-colour', $css, $pagination );
+			$this->assertStringContainsString( self::R . ' .sgs-google-reviews__list{scrollbar-width:none;}', $css, $pagination );
+			$this->assertStringNotContainsString( 'sgs-scrollbar-thumb', $css, $pagination );
 		}
 	}
 
 	public function test_the_scrollbar_colour_property_has_a_stylesheet_reader(): void {
-		// The value is only ever written as a custom property, so style.css must read it (the wiring gate's L5/L6 pair).
-		$css = (string) preg_replace( '#/\*.*?\*/#s', '', (string) file_get_contents( self::BLOCK . '/style.css' ) );
-		$this->assertMatchesRegularExpression( '/scrollbar-color:\s*var\(\s*--sgs-gr-scrollbar-colour\s*\)\s+transparent/', $css );
+		// The value is only ever written as a custom property, so a stylesheet must read it: the theme's scrollbars.css
+		// paints the slim bar's thumb and scrollbar-color from --sgs-scrollbar-thumb.
+		$css = (string) preg_replace( '#/\*.*?\*/#s', '', (string) file_get_contents( dirname( __DIR__, 4 ) . '/theme/sgs-theme/assets/css/scrollbars.css' ) );
+		$this->assertMatchesRegularExpression( '/::-webkit-scrollbar-thumb\s*\{[^}]*background-color:\s*var\(\s*--sgs-scrollbar-thumb\s*\)/', $css );
+		$this->assertMatchesRegularExpression( '/scrollbar-color:\s*var\(\s*--sgs-scrollbar-thumb\s*\)/', $css );
+		// The block's own stylesheet no longer styles the rail's bar.
+		$own = (string) preg_replace( '#/\*.*?\*/#s', '', (string) file_get_contents( self::BLOCK . '/style.css' ) );
+		$this->assertStringNotContainsString( 'scrollbar-', $own );
 	}
 
 	// ── Typography: 12 element families + the block's own ───────────────────────────────────────────────────
@@ -559,9 +572,12 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		$this->assertStringContainsString( self::R . ' .sgs-google-reviews__text{display:block;-webkit-line-clamp:unset;overflow:visible;}', $css );
 	}
 
-	public function test_a_standard_scrollbar_is_written_when_the_author_chose_it(): void {
+	public function test_an_old_standard_value_renders_the_starting_thin_bar(): void {
+		// `standard` left the list when the block joined the shared choice; WordPress resets a saved value outside the
+		// enum to the default (thin), and the helper falls back to the starting value (thin) for anything unknown.
 		$css = $this->render( array( 'scrollbarStyle' => 'standard' ) )['css'];
-		$this->assertStringContainsString( 'scrollbar-width:auto', $css );
+		$this->assertStringContainsString( self::R . ' .sgs-google-reviews__list::-webkit-scrollbar{width:var(--wp--custom--scrollbar--thin-width,10px);', $css );
+		$this->assertStringNotContainsString( 'scrollbar-width:auto', $css );
 	}
 
 	// ── No inline styling, every variant still renders the real reviews ────────────────────────────────────
@@ -725,6 +741,5 @@ final class GoogleReviewsAttrsTest extends TestCase {
 		foreach ( array( '.sgs-google-reviews__avatar', '.sgs-google-reviews__text', '.sgs-google-reviews__arrow' ) as $selector ) {
 			$this->assertStringContainsString( ':where( ' . $selector . ' )', $css, "{$selector} keeps a :where() default" );
 		}
-		$this->assertStringContainsString( ':where( .sgs-google-reviews--slider .sgs-google-reviews__list )', $css );
 	}
 }

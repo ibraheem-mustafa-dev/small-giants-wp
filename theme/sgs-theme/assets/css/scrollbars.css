@@ -28,7 +28,8 @@
 	scrollbar-color: var(--sgs-scrollbar-thumb) var(--sgs-scrollbar-track);
 }
 
-/* The browser's own bar, for a scroller that opts out (the shop filter sheet; a slider with no bar colour set). */
+/* The browser's own bar, for a scroller that opts out by carrying this class (no block prints it today; the shop
+   filter sheet gets the same reset from woocommerce.css). */
 :where(.sgs-scrollbar-native),
 :where(.sgs-scrollbar-native *) {
 	scrollbar-color: auto;

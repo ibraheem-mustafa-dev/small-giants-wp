@@ -156,19 +156,5 @@
 
 /* ─── Progress indicator ─────────────────────────────────────────────────── */
 
-/* The rail's own scrollbar is the default indicator; the block styles it (thin unless it says otherwise). */
-:where( .sgs-slider-nav--pagination-scrollbar .sgs-slider-nav__rail ) {
-	scrollbar-width: thin;
-}
-
-/* Dots or nothing: the scrollbar is hidden, so there is one indicator, never two. */
-.sgs-slider-nav--pagination-dots .sgs-slider-nav__rail,
-.sgs-slider-nav--pagination-none .sgs-slider-nav__rail {
-	scrollbar-width: none;
-	-ms-overflow-style: none;
-}
-
-.sgs-slider-nav--pagination-dots .sgs-slider-nav__rail::-webkit-scrollbar,
-.sgs-slider-nav--pagination-none .sgs-slider-nav__rail::-webkit-scrollbar {
-	display: none;
-}
+/* The rail's scrollbar (the default indicator, hidden under dots or nothing so there is one indicator, never two) is
+   printed by the block through the shared scrollbar choice (includes/helpers-scrollbar.php); nothing here styles it. */

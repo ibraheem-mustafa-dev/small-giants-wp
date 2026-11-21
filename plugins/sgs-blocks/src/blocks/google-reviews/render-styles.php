@@ -269,21 +269,20 @@ if ( false === ( $attributes['textClamp'] ?? true ) ) {
 $gr_list_sel        = $gr_root_sel . ' .sgs-google-reviews__list';
 $gr_responsive_css .= $gr_box_rule( $gr_list_sel, $attributes['railPadding'] ?? null, 'padding', $gr_sides );
 $gr_responsive_css .= $gr_len_rule( $gr_list_sel, $attributes['gap'] ?? null, array( 'gap' ) );
-// The scrollbar is styled only while it is the progress indicator. Dots or none hide it through the shared
-// navigation's pagination class (assets/css/slider-nav.css), so nothing is written here for them.
+// The rail's scrollbar goes through the shared choice (includes/helpers-scrollbar.php, Spec 02 FR-2-35). While it is
+// the progress indicator it takes scrollbarStyle (thin unless set: the site's slim bar) and the site's bar colours;
+// dots or none hide it, so there is one indicator, never two. Only the scrollbar takes the site's look: the block's
+// own colours (stars, mark, avatars, links) stay Google's.
 if ( 'scrollbar' === $gr_pagination ) {
-	$gr_scrollbar_style = sgs_slider_nav_normalise( $attributes['scrollbarStyle'] ?? 'thin', array( 'thin', 'standard' ) );
-	if ( $gr_is_set( 'scrollbarStyle', 'thin' ) ) {
-		$gr_responsive_css .= $gr_list_sel . '{scrollbar-width:' . ( 'thin' === $gr_scrollbar_style ? 'thin' : 'auto' ) . ';}';
-	}
-	// scrollbar-color takes flat colours only, so the thumb colour travels as one custom property (style.css reads it).
-	$gr_scrollbar_decls = sgs_custom_property_gradient_decls( 'sgs-gr-scrollbar-colour', (string) ( $attributes['scrollbarColour'] ?? '' ), '' );
-	if ( array() === $gr_scrollbar_decls ) {
-		// No bar colour set: the rail keeps the browser's own bar instead of the theme's brand scrollbar colour.
-		$gr_extra_classes[] = 'sgs-scrollbar-native';
-	} else {
+	$gr_responsive_css .= sgs_scrollbar_css( $gr_list_sel, sgs_scrollbar_style( $attributes['scrollbarStyle'] ?? null, 'thin' ) );
+	// A set bar colour replaces the site's thumb colour on this rail (theme scrollbars.css reads --sgs-scrollbar-thumb
+	// for the slim bar's thumb and for scrollbar-color).
+	$gr_scrollbar_decls = sgs_custom_property_gradient_decls( 'sgs-scrollbar-thumb', (string) ( $attributes['scrollbarColour'] ?? '' ), '' );
+	if ( array() !== $gr_scrollbar_decls ) {
 		$gr_responsive_css .= $gr_list_sel . '{' . implode( ';', $gr_scrollbar_decls ) . ';}';
 	}
+} else {
+	$gr_responsive_css .= sgs_scrollbar_css( $gr_list_sel, 'hidden' );
 }
 
 // ── Buttons and arrows: box, border, radius, height, width. Type and colour come from the families above. ──

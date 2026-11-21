@@ -624,23 +624,23 @@ describe( 'Navigation', () => {
 	test( 'with the scrollbar: its width and colour show and write, the dot colours do not show', () => {
 		const m = mount( NavigationPanel.default );
 		expect( m.q( '[data-picker="Slider pagination dot colour"]' ) ).toBeNull();
-		m.type( 'select[aria-label="Scrollbar width"]', 'standard' );
+		m.type( 'select[aria-label="Scrollbar"]', 'hidden' );
 		m.click( '[data-picker="Scrollbar colour"]' );
 		m.type( 'input[aria-label="Arrow button size"]', '40px' );
 		m.click( '[data-box="Space around the row of reviews"]' );
 		expect( lastPatch( m ) ).toMatchObject( {
-			scrollbarStyle: 'standard',
+			scrollbarStyle: 'hidden',
 			scrollbarColour: 'primary',
 			arrowSize: { desktop: '40px' },
 			railPadding: { desktop: { top: '4px' } },
 		} );
-		expect( [ ...m.all( 'select[aria-label="Scrollbar width"] option' ) ].map( ( o ) => o.value ).sort() ).toEqual( [ ...SCHEMA.scrollbarStyle.enum ].sort() );
+		expect( [ ...m.all( 'select[aria-label="Scrollbar"] option' ) ].map( ( o ) => o.value ).sort() ).toEqual( [ ...SCHEMA.scrollbarStyle.enum ].sort() );
 		m.unmount();
 	} );
 
 	test( 'with dots: the dot colours show and write, the scrollbar settings do not show', () => {
 		const m = mount( NavigationPanel.default, { pagination: 'dots' } );
-		expect( m.q( 'select[aria-label="Scrollbar width"]' ) ).toBeNull();
+		expect( m.q( 'select[aria-label="Scrollbar"]' ) ).toBeNull();
 		expect( m.q( '[data-picker="Scrollbar colour"]' ) ).toBeNull();
 		m.click( '[data-picker="Slider pagination dot colour"]' );
 		expect( lastPatch( m ) ).toEqual( { dotColour: 'primary' } );
@@ -649,7 +649,7 @@ describe( 'Navigation', () => {
 
 	test( 'with none: neither the scrollbar settings nor the dot colours show', () => {
 		const m = mount( NavigationPanel.default, { pagination: 'none' } );
-		expect( m.q( 'select[aria-label="Scrollbar width"]' ) ).toBeNull();
+		expect( m.q( 'select[aria-label="Scrollbar"]' ) ).toBeNull();
 		expect( m.q( '[data-picker="Slider pagination dot colour"]' ) ).toBeNull();
 		m.unmount();
 	} );
@@ -667,7 +667,7 @@ describe( 'Navigation', () => {
 	} );
 
 	test( 'reset of the scrollbar row restores both the width and the colour', () => {
-		const m = mount( NavigationPanel.default, { scrollbarStyle: 'standard', scrollbarColour: 'primary' } );
+		const m = mount( NavigationPanel.default, { scrollbarStyle: 'hidden', scrollbarColour: 'primary' } );
 		expect( m.q( rowSel( 'Scrollbar' ) ).getAttribute( 'data-has-value' ) ).toBe( 'true' );
 		m.click( '[data-reset="Scrollbar"]' );
 		expect( lastPatch( m ) ).toEqual( { scrollbarStyle: 'thin', scrollbarColour: '' } );
