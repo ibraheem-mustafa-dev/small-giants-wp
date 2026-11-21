@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-read-collect.mjs",
-		"find": "const snap = collect( [ j.finder, props, resolveSrc, null, null, null, paintSrc, pseudoProps, { textOthers: others } ] );",
-		"replace": "const snap = collect( [ j.finder, props, resolveSrc, null, null, null, paintSrc, pseudoProps ] );",
+		"find": "pseudoProps, { textOthers: [ ...others, ...pinned ] } ] );",
+		"replace": "pseudoProps, { textOthers: pinned } ] );",
 		"why": "another node's text would give this node its look again"
 	},
 	{

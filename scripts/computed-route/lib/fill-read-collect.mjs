@@ -38,7 +38,14 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 		// Text inside another node's element is that node's: the walker's text carrier skips it (`textOthers`), so a group read
 		// as one node (a menu whose element also holds a phone link another node draws) never takes that node's look as its own.
 		const others = jobs.filter( ( x ) => x.root && x.owner !== j.owner ).map( ( x ) => x.finder );
-		const snap = collect( [ j.finder, props, resolveSrc, null, null, null, paintSrc, pseudoProps, { textOthers: others } ] );
+		// Text in another read element pinned out of flow inside this one (a count badge part positioned on the bag's corner)
+		// paints over the box, never in it: where the element's own label is hidden at a width, the pinned count would
+		// otherwise be its first text and give the whole element the count's white.
+		const pinned = el ? jobs.filter( ( x ) => x !== j && ! x.stampOnly ).filter( ( x ) => {
+			const p = resolve( x.finder );
+			return !! p && p !== el && el.contains( p ) && [ 'absolute', 'fixed' ].includes( getComputedStyle( p ).position );
+		} ).map( ( x ) => x.finder ) : [];
+		const snap = collect( [ j.finder, props, resolveSrc, null, null, null, paintSrc, pseudoProps, { textOthers: [ ...others, ...pinned ] } ] );
 		if ( ! el || snap.missing ) {
 			out[ j.id ] = { missing: true };
 			continue;

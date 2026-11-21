@@ -1,0 +1,20 @@
+[
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "pseudoProps, { textOthers: [ ...others, ...pinned ] } ] );",
+		"replace": "pseudoProps, { textOthers: others } ] );",
+		"why": "the read before the fix: the pinned count would be the hidden-label element's first text again"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "return !! p && p !== el && el.contains( p ) && [ 'absolute', 'fixed' ].includes( getComputedStyle( p ).position );",
+		"replace": "return !! p && p !== el && el.contains( p );",
+		"why": "a part in flow would be skipped too, so an element would lose its own label's look"
+	},
+	{
+		"file": "lib/fill-read-collect.mjs",
+		"find": "return !! p && p !== el && el.contains( p ) && [ 'absolute', 'fixed' ].includes( getComputedStyle( p ).position );",
+		"replace": "return !! p && p !== el && el.contains( p ) && [ 'fixed' ].includes( getComputedStyle( p ).position );",
+		"why": "an absolutely pinned count would no longer be skipped"
+	}
+]
