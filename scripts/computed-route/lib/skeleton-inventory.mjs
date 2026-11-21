@@ -105,11 +105,36 @@ export function codeItemsOf( e ) {
 	return once.length >= 2 ? once : null;
 }
 
-function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc, resolvedNames, paintInitial = {}, notDraftData = null, currentColour = [] ] ) {
+// The rendered markup of one inline SVG (run in the page): a copy with the paint the draft's CSS gives each drawing element
+// written onto it (a colour equal to the SVG's own as currentColor) and every bound attribute at the value it renders, so
+// an icon whose path the draft fills from a script value (`d="{{ t.icon }}"`) is kept as drawn. The inventory records it as
+// an SVG element's `svg` (a block that keeps a stamped item's icon as its own markup reads it there).
+export function svgMarkupOf( svg ) {
+	const plain = { 'stroke-linecap': 'butt', 'stroke-linejoin': 'miter' };
+	const copy = svg.cloneNode( true );
+	const own = getComputedStyle( svg ).color;
+	const copies = copy.querySelectorAll( '*' );
+	[ ...svg.querySelectorAll( '*' ) ].forEach( ( o, j ) => {
+		[ ...copies[ j ].attributes ].filter( ( a ) => a.name.startsWith( 'data-' ) ).forEach( ( a ) => copies[ j ].removeAttribute( a.name ) );
+		if ( /^(?:path|circle|ellipse|rect|line|polyline|polygon)$/.test( o.localName ) ) {
+			const cs = getComputedStyle( o );
+			for ( const p of [ 'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin' ] ) {
+				const v = cs.getPropertyValue( p ).trim();
+				v && v !== plain[ p ] && copies[ j ].setAttribute( p, v === own ? 'currentColor' : v );
+			}
+		}
+	} );
+	[ ...copy.attributes ].filter( ( a ) => a.name.startsWith( 'data-' ) ).forEach( ( a ) => copy.removeAttribute( a.name ) );
+	return new XMLSerializer().serializeToString( copy );
+}
+
+function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, allTextCap, itemsSrc, resolvedNames, paintInitial = {}, notDraftData = null, currentColour = [], svgSrc = null ] ) {
 	// eslint-disable-next-line no-new-func
 	const keyOf = new Function( `return (${ keySrc });` )();
 	// eslint-disable-next-line no-new-func
 	const codeItems = itemsSrc ? new Function( `return (${ itemsSrc });` )() : () => null;
+	// eslint-disable-next-line no-new-func
+	const svgMarkup = svgSrc ? new Function( `return (${ svgSrc });` )() : null;
 	const lineOf = new Function( `return (${ lineSrc });` )();
 	const root = document.querySelector( rootSelector );
 	if ( ! root ) {
@@ -241,7 +266,7 @@ function collect( [ rootSelector, keySrc, attrNames, lineSrc, strips, holdsSrc, 
 		const box = e.getClientRects().length ? { x: +( r.left + scrollX ).toFixed( 1 ), y: +( r.top + scrollY ).toFixed( 1 ), w: +r.width.toFixed( 1 ), h: +r.height.toFixed( 1 ) } : null;
 		out.push( {
 			i: out.length, key: keyOf( e ), parentKey: p && ! stripRoots.has( e ) ? keyOf( p ) : null, ...( stripRoots.has( e ) ? { strip: stripRoots.get( e ) } : {} ), depth, tag: e.tagName.toLowerCase(), template: tname, tpl: Number( n ), attrs, words: ws( own ), allText: ws( e.textContent ).slice( 0, allTextCap ),
-			...( items ? { codeItems: items } : {} ), srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, resolved, ...( Object.keys( data ).length ? { data } : {} ), box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
+			...( items ? { codeItems: items } : {} ), ...( svgMarkup && 'svg' === e.localName ? { svg: svgMarkup( e ) } : {} ), srcLine: lineOf( window.__dcAnnotatedTemplate( tname ) || '', n ), membership, srcTag, srcOwnText: srcOwn, snippet, resolved, ...( Object.keys( data ).length ? { data } : {} ), box, visible: !! box && box.w > 0 && box.h > 0 && e.checkVisibility( { opacityProperty: true, visibilityProperty: true } ), display: getComputedStyle( e ).display, position: getComputedStyle( e ).position, flexDirection: getComputedStyle( e ).flexDirection,
 		} );
 	} );
 	scrollTo( scrollWas[ 0 ], scrollWas[ 1 ] );
@@ -412,7 +437,7 @@ async function readOnPage( { page, url, root, shotsDir, log, settle: settleAt, s
 		await page.setViewportSize( { width: w, height } );
 		await settleAt( page, w );
 		await page.evaluate( () => document.querySelectorAll( '[data-inv-i]' ).forEach( ( e ) => e.removeAttribute( 'data-inv-i' ) ) );
-		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR ];
+		const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR, svgMarkupOf.toString() ];
 		const res = await page.evaluate( collect, args );
 		if ( res.error ) {
 			throw new Error( `${ res.error } at ${ w }px` );
@@ -454,7 +479,7 @@ export async function readInventory( { url, root, shotsDir, log = () => {}, page
 			await page.goto( url, { waitUntil: 'networkidle', timeout: 90000 } );
 			await applyStateRoute( page );
 			await settle( page, root );
-			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR ];
+			const args = [ root, tplKeyOf.toString(), ATTRS, tplLineOf.toString(), strips, holdsOtherRoot.toString(), ALL_TEXT_CAP, codeItemsOf.toString(), RESOLVED, PAINT_INITIAL, NOT_DRAFT_DATA.source, PAINT_CURRENT_COLOUR, svgMarkupOf.toString() ];
 			const res = await page.evaluate( collect, args );
 			if ( res.error ) {
 				throw new Error( `${ res.error } at ${ w }px` );

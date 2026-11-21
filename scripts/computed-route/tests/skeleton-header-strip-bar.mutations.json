@@ -1,0 +1,50 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( ! S || ! R.headerSlots?.rowBlock || parentBlock !== R.headerSlots.rowBlock || m.words( e ) || [ 'a', 'button' ].includes( e.tag ) || ! inHeaderStrip( e ) ) {",
+		"replace": "if ( ! S || ! R.headerSlots?.rowBlock || parentBlock !== R.headerSlots.rowBlock || m.words( e ) || [ 'a', 'button' ].includes( e.tag ) ) {",
+		"why": "a run of labels in the main bar would be taken for a strip's trust bar"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( ! S || ! R.headerSlots?.rowBlock || parentBlock !== R.headerSlots.rowBlock || m.words( e ) || [ 'a', 'button' ].includes( e.tag ) || ! inHeaderStrip( e ) ) {",
+		"replace": "if ( ! S ) {",
+		"why": "the rule would fire outside a header's rows (a page section)"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const label = ( k ) => ! [ 'a', 'button' ].includes( k.tag ) && ",
+		"replace": "const label = ( k ) => ",
+		"why": "a strip of links would become trust claims"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const labels = kidsB.filter( lettered );",
+		"replace": "const labels = kidsB;",
+		"why": "a separator glyph between labels would become an item (or stop the rule)"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return markup ? keptSvg( markup ) : null;",
+		"replace": "return null;",
+		"why": "the items would lose their icons"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const style = S.style && ( icons === items.length ? S.style.icons : 0 === icons ? S.style.plain : null );",
+		"replace": "const style = S.style && ( icons === items.length ? S.style.plain : 0 === icons ? S.style.icons : null );",
+		"why": "icons would be drawn word-only and plain labels as bare icons"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );",
+		"replace": "firstItem: labels[ 0 ].key } );",
+		"why": "Fill could answer the badge style from the draft's styling and undo the rule's choice"
+	},
+	{
+		"file": "lib/skeleton-write-record.mjs",
+		"find": "if ( drawn.has( text( k ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the phone copy of the run would be built beside the trust bar as width variants"
+	}
+]

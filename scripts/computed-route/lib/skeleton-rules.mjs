@@ -948,6 +948,20 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return false;
 	};
 
+	// A business detail (an open status, opening hours or a Site Info value) has a rule of its own: it is never a trust badge.
+	const businessDetail = ( k ) => !! specHit( R.openStatus, all( k ) ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
+	// Whether an element of a header surface sits in a strip above or below its main bar: the element under the outermost one
+	// on its way up (a child of the header's root, or of a strip root read beside the header) holds no navigation and no logo
+	// (the main bar holds those: lib/skeleton-write-slots.mjs::holdsMain).
+	const inHeaderStrip = ( e ) => {
+		const chain = [];
+		for ( let p = e; p; p = m.byKey[ p.parentKey ] ) {
+			chain.unshift( p );
+		}
+		const top = chain[ 1 ];
+		return 'header' === surface.kind && !! top && ! [ top, ...desc( top ) ].some( ( d ) => 'nav' === d.tag || logoish( d ) );
+	};
+
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
@@ -1091,7 +1105,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const T = R.trustBar;
 			// A badge is a short label that is not a business detail (an open status, hours or a Site Info value have their
 			// own rules); the badges sit side by side, never stacked.
-			const detail = ( k ) => !! specHit( R.openStatus, all( k ) ) || !! specHit( facts.decisions.siteInfoPatterns?.hours, all( k ) ) || hooks.siteInfoKinds( k ).size > 0;
+			const detail = businessDetail;
 			const badge = ( k ) => ! [ 'a', 'button' ].includes( k.tag ) && ! HEADING.test( k.tag ) && !! all( k ) && ! /^\d+$/.test( all( k ) ) && all( k ).split( ' ' ).length <= ( T?.maxWords ?? 4 ) && ! detail( k ) && m.blockKids( k ).every( ( g ) => bare( g ) || iconOnly( g ) || bindingGlyph( g ) );
 			// What makes a badge a trust badge is its meaning: at least one names a capability the framework database records
 			// for the trust bar (accreditation, certification, halal and the like), matched on the word's stem.
@@ -1102,6 +1116,35 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return null;
 			}
 			return v( 'trustBar', { block: T.block, absorb: true, attributes: { items: kidsB.map( ( k ) => ( { label: all( k ) } ) ) } } );
+		},
+		// A run of labels side by side in a header's strip row is one trust bar (rules.headerStripBar): each label an item, the
+		// glyph drawn beside its words the item's icon (the inventory's rendered SVG, lib/skeleton-inventory.mjs::svgMarkupOf), a
+		// glyph with no letter between labels their separator. The items take the bare-icon style when every label draws an
+		// icon and the word-only style when none does (`decided`), and the first label is where Fill reads the items' look.
+		( { e, kidsB, parentBlock } ) => {
+			const S = R.headerStripBar;
+			if ( ! S || ! R.headerSlots?.rowBlock || parentBlock !== R.headerSlots.rowBlock || m.words( e ) || [ 'a', 'button' ].includes( e.tag ) || ! inHeaderStrip( e ) ) {
+				return null;
+			}
+			const lettered = ( k ) => /[\p{L}\p{N}]/u.test( all( k ) );
+			const label = ( k ) => ! [ 'a', 'button' ].includes( k.tag ) && ! HEADING.test( k.tag ) && ! interactive( k ) && ! numberOnly( k ) && all( k ).split( ' ' ).length <= ( S.maxWords ?? 12 ) && ! businessDetail( k ) && m.blockKids( k ).every( ( g ) => bare( g ) || iconOnly( g ) || bindingGlyph( g ) );
+			const labels = kidsB.filter( lettered );
+			if ( labels.length < ( S.minItems ?? 2 ) || ! labels.every( label ) || ! kidsB.every( ( k ) => lettered( k ) || ! m.blockKids( k ).length ) || m.stacked( kidsB ) ) {
+				return null;
+			}
+			const iconOf = ( k ) => {
+				const markup = [ k, ...desc( k ) ].flatMap( ( d ) => m.kids( d ) ).find( ( c ) => 'svg' === c.tag )?.svg;
+				return markup ? keptSvg( markup ) : null;
+			};
+			const texts = onceOfLoop( labels.map( all ) );
+			const items = labels.slice( 0, texts.length ).map( ( k ) => {
+				const svg = iconOf( k );
+				return { [ S.items.text ]: all( k ), ...( svg ? { [ S.items.svg ]: svg } : {} ) };
+			} );
+			const icons = items.filter( ( x ) => x[ S.items.svg ] ).length;
+			const style = S.style && ( icons === items.length ? S.style.icons : 0 === icons ? S.style.plain : null );
+			const decided = style ? { [ S.style.setting ]: style } : null;
+			return v( 'headerStripBar', { block: S.block, absorb: true, attributes: { [ S.items.setting ]: items, ...( decided || {} ) }, ...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );
 		},
 		// The first section of a page holding its h1 is the hero; with an image inside it is the split hero. A page wrapper (the
 		// `<main>`, or an element holding two or more stacked sections) is never the hero: the hero is its first block child

@@ -382,3 +382,69 @@ test( 'MUST FAIL: a grid row merged from width alternatives takes each bar\'s co
 	f.decisions.rules.headerSlots.columnsSetting = 'gap';
 	assert.ok( decisionsProblems( f ).some( ( p ) => /headerSlots\.columnsSetting must name a structural setting/.test( p ) ) );
 } );
+
+// rules.headerStripBar: a strip above the main bar whose track holds labels side by side, each drawing an icon beside its
+// words (`svg`: the rendered markup the inventory keeps, lib/skeleton-inventory.mjs::svgMarkupOf), and a copy of the run the
+// draft draws only on a phone (its marquee loop).
+const ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2 4 5v6"></path></svg>';
+const CLAIMS = [ 'Genuine, supplied direct by the brands', 'Free UK delivery over 75', 'Lenses glazed here in 7 days' ];
+const stripBar = ( { icons = true, tag = 'span', copy = false, attrs = {}, sep = false } = {} ) => {
+	const out = [ stripRoot( 'Root/10#0', 'before' ), el( 'Root/11#0', 'Root/10#0', 'div', '', { depth: 2, display: 'flex' } ) ];
+	const label = ( i, n, only ) => {
+		const key = `Root/${ 20 + n }#0`;
+		const k = el( key, 'Root/11#0', tag, CLAIMS[ i ], { depth: 3, attrs, box: boxes( 0, 20, 300, i * 320 ) } );
+		only && ( k.visible = { 375: true, 768: false, 1440: false } );
+		const kids = icons ? [ { ...el( `Root/${ 60 + n }#0`, key, 'svg', '', { depth: 4 } ), svg: ICON, ...( only ? { visible: { 375: true, 768: false, 1440: false } } : {} ) } ] : [];
+		return [ k, ...kids ];
+	};
+	CLAIMS.forEach( ( c, i ) => out.push( ...( sep && i ? [ el( `Root/${ 40 + i }#0`, 'Root/11#0', 'span', '·', { depth: 3, box: boxes( 0, 20, 10, i * 320 - 10 ) } ) ] : [] ), ...label( i, i ) ) );
+	copy && CLAIMS.forEach( ( c, i ) => out.push( ...label( i, 10 + i, true ) ) );
+	return out;
+};
+const noStripBar = () => {
+	const f = facts();
+	f.decisions = structuredClone( f.decisions );
+	delete f.decisions.rules.headerStripBar;
+	return f;
+};
+
+test( 'MUST FAIL: a run of labels with icons in a header strip is one trust bar in the top row, each label an item with its icon, drawn bare', () => {
+	const r = run( inv( [ ...header(), ...stripBar() ], [ near( 'Root/10#0', 'before' ) ] ) );
+	const top = rows( r )[ 0 ];
+	assert.deepEqual( top.innerBlocks.map( ( n ) => n.name ), [ 'sgs/trust-bar' ], 'one block in the top row' );
+	const bar = top.innerBlocks[ 0 ];
+	assert.equal( bar.draftRef.tpl, 'Root/11#0' );
+	assert.deepEqual( bar.attributes.items.map( ( x ) => x.label ), CLAIMS );
+	assert.ok( bar.attributes.items.every( ( x ) => /<path d="M12 2 4 5v6"/.test( x.iconSvg ) ), 'each item keeps its icon' );
+	assert.deepEqual( [ bar.attributes.badgeStyle, bar.decided ], [ 'icon-bare', { badgeStyle: 'icon-bare' } ] );
+	assert.equal( r.proposal.rows.find( ( x ) => 'Root/11#0' === x.key ).rule, 'headerStripBar' );
+	noRoot( r );
+	const off = run( inv( [ ...header(), ...stripBar() ], [ near( 'Root/10#0', 'before' ) ] ), noStripBar() );
+	assert.ok( ! flat( rows( off )[ 0 ].innerBlocks ).some( ( n ) => 'sgs/trust-bar' === n.name ), 'without the rule the labels stay loose' );
+} );
+
+test( 'MUST FAIL: the copy of the run a header strip draws only on a phone is absorbed by the trust bar, never built beside it', () => {
+	const r = run( inv( [ ...header(), ...stripBar( { copy: true } ) ], [ near( 'Root/10#0', 'before' ) ] ) );
+	const top = rows( r )[ 0 ];
+	assert.deepEqual( top.innerBlocks.map( ( n ) => n.name ), [ 'sgs/trust-bar' ] );
+	assert.equal( top.innerBlocks[ 0 ].attributes.items.length, CLAIMS.length, 'the items once' );
+	assert.ok( [ 30, 31, 32 ].every( ( n ) => 'absorbed' === r.proposal.rows.find( ( x ) => `Root/${ n }#0` === x.key )?.action ), 'the phone copy is absorbed' );
+	assert.equal( top.innerBlocks[ 0 ].widthVariants, undefined, 'and is no width variation' );
+} );
+
+test( 'a header strip of plain labels is a word-only trust bar; links, a page section and the main bar are not this rule', () => {
+	const plain = run( inv( [ ...header(), ...stripBar( { icons: false, sep: true } ) ], [ near( 'Root/10#0', 'before' ) ] ) );
+	const bar = rows( plain )[ 0 ].innerBlocks[ 0 ];
+	assert.deepEqual( [ bar.name, bar.attributes.badgeStyle ], [ 'sgs/trust-bar', 'text-only' ] );
+	assert.ok( bar.attributes.items.every( ( x ) => ! x.iconSvg ) );
+	assert.deepEqual( bar.attributes.items.map( ( x ) => x.label ), CLAIMS, 'a glyph between labels is their separator, never an item' );
+	// Links in the strip are links, not trust claims.
+	const links = run( inv( [ ...header(), ...stripBar( { tag: 'a', attrs: { href: '/x' } } ) ], [ near( 'Root/10#0', 'before' ) ] ) );
+	assert.ok( ! links.proposal.rows.some( ( x ) => 'headerStripBar' === x.rule ) );
+	// The same run on a page (no header, no strip) is not this rule.
+	const page = proposeSkeleton( { inventory: inv( [ el( 'Root/1#0', null, 'section', '', { depth: 0 } ), ...stripBar().slice( 1 ).map( ( x ) => ( 'Root/11#0' === x.key ? { ...x, parentKey: 'Root/1#0', depth: 1 } : x ) ) ] ), facts: facts(), surface: 'home', surfaceKind: 'page', surfaceName: 'Home', db } );
+	assert.ok( ! page.proposal.rows.some( ( x ) => 'headerStripBar' === x.rule ) );
+	// The main bar's own children are never a strip, even a run of plain labels beside its navigation.
+	const bar2 = run( inv( [ ...header(), el( 'Root/6#0', 'Root/2#0', 'div', '', { depth: 2, display: 'flex' } ), el( 'Root/7#0', 'Root/6#0', 'span', 'Family run since 1962', { depth: 3, box: boxes( 100, 20, 100, 0 ) } ), el( 'Root/8#0', 'Root/6#0', 'span', 'Fitted by hand here', { depth: 3, box: boxes( 100, 20, 100, 120 ) } ) ] ) );
+	assert.ok( ! bar2.proposal.rows.some( ( x ) => 'headerStripBar' === x.rule ) );
+} );

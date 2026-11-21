@@ -1,0 +1,14 @@
+[
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "v && v !== plain[ p ] && copies[ j ].setAttribute( p, v === own ? 'currentColor' : v );\n\t\t\t}\n\t\t}\n\t} );\n\t[ ...copy.attributes ]",
+		"replace": "v && v !== plain[ p ] && copies[ j ].setAttribute( p, v );\n\t\t\t}\n\t\t}\n\t} );\n\t[ ...copy.attributes ]",
+		"why": "an icon painted in the text colour would keep a fixed colour instead of currentColor"
+	},
+	{
+		"file": "lib/skeleton-inventory.mjs",
+		"find": "[ ...copies[ j ].attributes ].filter( ( a ) => a.name.startsWith( 'data-' ) ).forEach( ( a ) => copies[ j ].removeAttribute( a.name ) );",
+		"replace": "",
+		"why": "the template's data attributes would be kept in the icon"
+	}
+]

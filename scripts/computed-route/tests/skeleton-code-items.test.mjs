@@ -4,7 +4,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { loadChromium } from '../lib/fill-read.mjs';
-import { codeItemsOf } from '../lib/skeleton-inventory.mjs';
+import { codeItemsOf, svgMarkupOf } from '../lib/skeleton-inventory.mjs';
 
 const WORDS = [ 'boost your milk', 'baked when you order', 'handmade in Birmingham' ];
 const glyphRun = ( n ) => WORDS.slice( 0, n ).map( ( w ) => `<span style="display:inline-flex;gap:28px">${ w }<span style="color:#E86A75">✦</span></span>` ).join( '' );
@@ -58,4 +58,25 @@ test( 'MUST FAIL: each code item carries its child-index path and the words of i
 	assert.deepEqual( r.marquee.map( ( x ) => x.at ), [ [ 0, 0 ], [ 0, 1 ], [ 0, 2 ] ], 'through the one-child track, then the item' );
 	assert.ok( r.marquee.every( ( x ) => '✦' === x.marks ) );
 	assert.ok( r.row.every( ( x ) => '' === x.marks ), 'an icon circle is no glyph mark' );
+} );
+
+test( 'MUST FAIL: a stamped SVG is kept as it renders: its bound path, its paint as declared or currentColor, no template attributes', async () => {
+	const { chromium } = await loadChromium();
+	const browser = await chromium.launch( { headless: true } );
+	try {
+		const page = await browser.newPage();
+		// The template binds the path (`d="{{ t.icon }}"`), so only the rendered element holds it; the stroke is set in CSS.
+		await page.setContent( '<style>#a path{stroke:#9C8B78}</style><div style="color:#FAF8F5"><svg id="a" data-dc-tpl="11" width="15" viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path data-dc-tpl="12" d="M12 2 4 5v6"></path></svg><svg id="b" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"></circle></svg></div>' );
+		const [ a, b ] = await page.evaluate( ( src ) => {
+			// eslint-disable-next-line no-new-func
+			const fn = new Function( `return (${ src });` )();
+			return [ fn( document.getElementById( 'a' ) ), fn( document.getElementById( 'b' ) ) ];
+		}, svgMarkupOf.toString() );
+		assert.match( a, /<path[^>]* d="M12 2 4 5v6"/, 'the path as rendered' );
+		assert.match( a, /stroke="rgb\(156, 139, 120\)"/, 'the CSS stroke written onto the path' );
+		assert.doesNotMatch( a, /data-dc-tpl/, 'no template attribute' );
+		assert.match( b, /<circle[^>]*stroke="currentColor"/, 'a stroke equal to the icon colour is currentColor' );
+	} finally {
+		await browser.close();
+	}
 } );

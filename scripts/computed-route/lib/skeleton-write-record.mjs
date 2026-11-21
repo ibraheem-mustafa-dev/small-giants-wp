@@ -73,7 +73,18 @@ export function makeRecorder( ctx ) {
 		return true;
 	}
 	function absorbWidthKids( e, top, rule, node, parentBlock = null ) {
+		// A width-only child repeating the words of a child the block already draws is that child again, shown where the draft
+		// draws its run twice (a marquee's loop copy on a phone): the block draws its items once, so the copy is absorbed with
+		// them and is no width variation.
+		const text = ( x ) => String( x.allText ?? '' ).replace( /\s+/g, ' ' ).trim();
+		const drawn = new Set( m.blockKids( e ).map( text ).filter( Boolean ) );
 		m.widthKids( e ).forEach( ( k ) => {
+			if ( drawn.has( text( k ) ) ) {
+				const why = `a copy of a child it draws, shown only at ${ m.shownAt( k ).join( ' and ' ) }px (the draft's run drawn twice)`;
+				record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key } );
+				absorbSubtree( k, top, why, rule, node, parentBlock );
+				return;
+			}
 			if ( widthVariant( k, top, node, parentBlock ) ) {
 				return;
 			}
