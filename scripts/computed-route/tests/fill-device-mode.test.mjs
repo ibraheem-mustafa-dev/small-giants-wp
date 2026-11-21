@@ -21,6 +21,8 @@ import { rowValues } from '../lib/fill-regap.mjs';
 import { isLadderRow } from '../lib/fill-width-ladder.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
 import { openDb } from '../lib/db.mjs';
+import { unpairedPart } from '../lib/fill-part-pairing.mjs';
+import { coveredBySetting } from '../lib/fill-held.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const FIXTURES = JSON.parse( fs.readFileSync( path.join( HERE, '..', 'calibration-fixtures.json' ), 'utf8' ) );
@@ -119,4 +121,20 @@ test( 'MUST FAIL: the phone\'s row holds its own width only, is not the width la
 	assert.deepEqual( rowValues( plain, reads, { id: 't' } ), { 375: '1px', 768: '1px', 1440: '1px' }, 'negative control: a plain row reads every width' );
 	assert.deepEqual( modeSpans( { read: W, widths: [ 375 ], values: { 375: '1px' }, series: null } ).ranges, [ { range: [ 0, 768 ], value: '1px' } ] );
 	assert.deepEqual( modeSpans( { read: W, widths: [ 768, 1440 ], values: { 768: '2px', 1440: '2px' }, series: null } ).ranges, [ { range: [ 768, Infinity ], value: '2px' } ] );
+} );
+
+// On the real Eye Care records (offline Fill, run 23) the two passes after the resolver undid the phone's capsule: the part
+// pairing refused iconTriggerRadius because the DB names its part `icon`, whose other settings (the icon's colour) calibration
+// measured on the glyph layer, and the held pass settled the phone's border row as painted by the pill border just written.
+test( 'MUST FAIL: a setting calibration measured painting the read element itself is paired there, whatever the other settings of its DB part paint', () => {
+	const cal = { ...CAL, settings: { ...CAL.settings, iconColour: { ...set( 'color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] }, iconBg: { ...set( 'background-color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] }, iconColourGradient: { ...set( 'color', [ 0, 2, 3 ] ), slot: `${ T }::after`, slots: [ `${ T }::after` ] } } };
+	assert.equal( unpairedPart( { db, block: BLOCK, cal, attr: 'iconTriggerRadius', readSlot: T, prop: 'border-radius', value: '999px' } ), null );
+	assert.match( String( unpairedPart( { db, block: BLOCK, cal, attr: 'iconBg', readSlot: T, prop: 'background-color', value: 'rgb(0, 0, 0)' } ) ), /^unpaired-part/, 'negative control: a setting measured on the glyph layer stays unpaired at the trigger' );
+} );
+
+test( 'MUST FAIL: a phone-only row is never settled by a setting not in force there, though that setting was written with the same value', () => {
+	const row = { slot: T, property: 'border-top-width', state: null, notInForce: [ 'pillBorderRadius', 'pillBorderWidth' ] };
+	const writes = [ { attr: 'pillBorderWidth', how: 'single', after: { top: '1px', right: '1px', bottom: '1px', left: '1px' } } ];
+	assert.equal( coveredBySetting( row, { 375: '1px' }, writes, CAL ), null );
+	assert.match( String( coveredBySetting( { ...row, notInForce: undefined }, { 1440: '1px' }, writes, CAL ) ), /pillBorderWidth was written/, 'negative control: in force, the write covers the row' );
 } );

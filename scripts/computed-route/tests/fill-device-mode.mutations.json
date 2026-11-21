@@ -1,13 +1,80 @@
 [
-	{ "file": "lib/fill-device-mode.mjs", "find": "if ( new Set( Object.values( own ) ).size < 2 ) {", "replace": "if ( true ) {", "why": "no node is drawn in two modes, so the phone is judged in the pill's paint and the pill's settings answer it" },
-	{ "file": "lib/fill-device-mode.mjs", "find": "const hit = CHAIN[ tier ].map( ( t ) => ( 'desktop' === t ? base : attrs?.[ `${ key }${ SUFFIX[ t ] }` ] ) ).find( ( v ) => ! unset( v ) );", "replace": "const hit = base;", "why": "a Mobile sibling is never read, so the phone's icon mode is the desktop's pill" },
-	{ "file": "lib/fill-device-mode.mjs", "find": "return ! Array.isArray( c?.variants ) || ! Array.isArray( mode ) || ! mode.length || mode.some( ( i ) => c.variants.includes( i ) );", "replace": "return true;", "why": "every setting is in force at every width, so the pill's radius and border answer the phone" },
-	{ "file": "lib/paint-state.mjs", "find": "const elements = MODE_WIDTHS.reduce( ( els, w ) => ( at[ w ] ? overlayAt( els, states[ at[ w ] ].elements, w ) : els ), cal.elements || {} );", "replace": "const elements = overlay( cal.elements || {}, states.pill?.elements || {} );", "why": "the pill's paint is laid over every width, so the phone's 999px reads as already held" },
-	{ "file": "lib/resolve.mjs", "find": "return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );", "replace": "return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );", "why": "a setting of the other mode stays a candidate, so the pill's radius ties with the icon's" },
-	{ "file": "lib/fill-prop.mjs", "find": "const perMode = 'no-setting' === r.gap ? byMode( { calibration, included: every, draft, call, sink, log, slot } ) : null;", "replace": "const perMode = null;", "why": "a pill border that cannot hold the phone's width loses the desktop's border too" },
-	{ "file": "lib/fill-prop.mjs", "find": "modeGaps: gaps.map(", "replace": "modeGaps: [].map(", "why": "the phone's width of the border is dropped silently" },
-	{ "file": "lib/fill-regap.mjs", "find": "return Object.fromEntries( Object.entries( own ).filter( ( [ w ] ) => row.modeWidths.includes( Number( w ) ) ) );", "replace": "return own;", "why": "a phone-only row reads the desktop's widths too, and its rule reaches the pill" },
-	{ "file": "lib/fill-width-ladder.mjs", "find": "export const isLadderRow = ( row ) => ! Array.isArray( row.modeWidths ) && (", "replace": "export const isLadderRow = ( row ) => (", "why": "the ladder takes a phone-only row and may write a rule over every width" },
-	{ "file": "lib/fill-residual-css.mjs", "find": "&& ! toggle( h.attr ) && ! off.has( h.attr ) );", "replace": "&& ! toggle( h.attr ) );", "why": "the pill's border reads as the phone's home, so the capsule's border is never written" },
-	{ "file": "lib/fill-residual-css.mjs", "find": "return { ranges: spans.ranges.filter( ( s ) => NONE !== s.value ), snaps: spans.snaps };", "replace": "return widthSpans( { widths, values, series } );", "why": "the phone's rule covers every width" }
+	{
+		"file": "lib/fill-device-mode.mjs",
+		"find": "if ( new Set( Object.values( own ) ).size < 2 ) {",
+		"replace": "if ( true ) {",
+		"why": "no node is drawn in two modes, so the phone is judged in the pill's paint and the pill's settings answer it"
+	},
+	{
+		"file": "lib/fill-device-mode.mjs",
+		"find": "const hit = CHAIN[ tier ].map( ( t ) => ( 'desktop' === t ? base : attrs?.[ `${ key }${ SUFFIX[ t ] }` ] ) ).find( ( v ) => ! unset( v ) );",
+		"replace": "const hit = base;",
+		"why": "a Mobile sibling is never read, so the phone's icon mode is the desktop's pill"
+	},
+	{
+		"file": "lib/fill-device-mode.mjs",
+		"find": "return ! Array.isArray( c?.variants ) || ! Array.isArray( mode ) || ! mode.length || mode.some( ( i ) => c.variants.includes( i ) );",
+		"replace": "return true;",
+		"why": "every setting is in force at every width, so the pill's radius and border answer the phone"
+	},
+	{
+		"file": "lib/paint-state.mjs",
+		"find": "const elements = MODE_WIDTHS.reduce( ( els, w ) => ( at[ w ] ? overlayAt( els, states[ at[ w ] ].elements, w ) : els ), cal.elements || {} );",
+		"replace": "const elements = overlay( cal.elements || {}, states.pill?.elements || {} );",
+		"why": "the pill's paint is laid over every width, so the phone's 999px reads as already held"
+	},
+	{
+		"file": "lib/resolve.mjs",
+		"find": "return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );",
+		"replace": "return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );",
+		"why": "a setting of the other mode stays a candidate, so the pill's radius ties with the icon's"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "const perMode = 'no-setting' === r.gap ? byMode( { calibration, included: every, draft, call, sink, log, slot } ) : null;",
+		"replace": "const perMode = null;",
+		"why": "a pill border that cannot hold the phone's width loses the desktop's border too"
+	},
+	{
+		"file": "lib/fill-prop.mjs",
+		"find": "modeGaps: gaps.map(",
+		"replace": "modeGaps: [].map(",
+		"why": "the phone's width of the border is dropped silently"
+	},
+	{
+		"file": "lib/fill-regap.mjs",
+		"find": "return Object.fromEntries( Object.entries( own ).filter( ( [ w ] ) => row.modeWidths.includes( Number( w ) ) ) );",
+		"replace": "return own;",
+		"why": "a phone-only row reads the desktop's widths too, and its rule reaches the pill"
+	},
+	{
+		"file": "lib/fill-width-ladder.mjs",
+		"find": "export const isLadderRow = ( row ) => ! Array.isArray( row.modeWidths ) && (",
+		"replace": "export const isLadderRow = ( row ) => (",
+		"why": "the ladder takes a phone-only row and may write a rule over every width"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "&& ! toggle( h.attr ) && ! off.has( h.attr ) );",
+		"replace": "&& ! toggle( h.attr ) );",
+		"why": "the pill's border reads as the phone's home, so the capsule's border is never written"
+	},
+	{
+		"file": "lib/fill-residual-css.mjs",
+		"find": "return { ranges: spans.ranges.filter( ( s ) => NONE !== s.value ), snaps: spans.snaps };",
+		"replace": "return widthSpans( { widths, values, series } );",
+		"why": "the phone's rule covers every width"
+	},
+	{
+		"file": "lib/fill-part-pairing.mjs",
+		"find": "if ( '' !== LOOSE( readSlot ) && own?.property && ( own.property === prop || reachedBy( prop ).includes( own.property ) ) &&",
+		"replace": "if ( false &&",
+		"why": "the icon trigger radius measured on the trigger is refused as the glyph part, so the phone capsule keeps square corners"
+	},
+	{
+		"file": "lib/fill-held.mjs",
+		"find": "const c = off.has( w.attr ) ? null : cal?.settings?.[ w.attr ];",
+		"replace": "const c = cal?.settings?.[ w.attr ];",
+		"why": "the pill border written for the desktop settles the phone border row, so no rule draws it"
+	}
 ]

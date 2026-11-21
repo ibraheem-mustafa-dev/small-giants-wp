@@ -137,8 +137,11 @@ export function slugColour( value, palette = [] ) {
 export function coveredBySetting( row, values, writes, cal, contextAt = () => ( {} ), palette = [] ) {
 	const fam = familyOf( row.property );
 	const defaultAt = ( x ) => defaultPaint( cal, row.slot, x, row.property );
+	// A setting not in force at the row's widths (`notInForce`: the block draws another mode there, lib/fill-device-mode.mjs)
+	// paints nothing there, whatever it was written.
+	const off = new Set( row.notInForce || [] );
 	for ( const w of writes ) {
-		const c = cal?.settings?.[ w.attr ];
+		const c = off.has( w.attr ) ? null : cal?.settings?.[ w.attr ];
 		if ( ! c || ( c.state ?? null ) !== ( row.state ?? null ) || ! reaches( c, row, row.slot ) ) {
 			continue;
 		}
