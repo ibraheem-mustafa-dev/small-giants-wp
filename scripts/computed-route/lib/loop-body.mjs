@@ -29,6 +29,22 @@ export function staticIn( facts, tplKey, prop, state = null ) {
 	} );
 }
 
+// Whether a property gives one value across the loop's copies at each read width, though the value may differ between widths
+// (a loop body's padding bound to a script value that is `0 20px` on a phone and `0` above it): no style hole for the property (or
+// for a shorthand it belongs to) answers with more than one distinct value at any one width. staticIn is the stricter test across
+// widths too.
+export function staticAtEachWidth( facts, tplKey, prop, state = null ) {
+	const el = facts?.elements?.[ tplKey ];
+	if ( ! el ) {
+		return false;
+	}
+	const kind = state ? `style-${ state }` : 'style';
+	return ( el.template?.holes || [] ).filter( ( h ) => h.where?.startsWith( `${ kind }:` ) ).every( ( h ) => {
+		const p = h.where.slice( kind.length + 1 );
+		return ( p !== prop && ! prop.startsWith( `${ p }-` ) ) || Object.values( el.logic?.holes?.[ h.id ] || {} ).every( ( a ) => new Set( ( a.v || [] ).map( ( x ) => JSON.stringify( x ) ) ).size <= 1 );
+	} );
+}
+
 // The callback for the hop. facts: the fact record; identityOf( ancestor, path ) -> the template key (`<component>/<n>`) of
 // the draft element behind a measured path, or null when the runtime names none (the origin map, lib/fill-skeleton.mjs::originMap).
 export function loopBodyCheck( { facts, identityOf } ) {

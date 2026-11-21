@@ -287,7 +287,7 @@ export async function fillSurface( o ) {
 		// A per-width difference no single setting holds, then a block's built-in size against the draft's (lib/fill-width-ladder.mjs, lib/fill-dimensions.mjs); their divergence-ledger entries are added to the client's ledger.
 		// The passes that ask the resolver again judge each node against its own per-width view (lib/fill-resolve.mjs::nodeCalFor), as the main pass does.
 		const nodeCal = nodeCalFor( { raw: calFor, flatOf: () => flat, fixtures } );
-		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor: nodeCal, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
+		const ladder = widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped: result.unmapped, calFor: nodeCal, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ), facts, rootComponent: intakeParts.rootComponent } );
 		addEntries( ledgerFile, ladder.ledger );
 		const dims = dimensionWrites( { nodes, flat, refOf, reads, db, unmapped: ladder.unmapped, calFor: nodeCal, snapshot, scope: o.surface, entries: loadLedger( ledgerFile ) } );
 		addEntries( ledgerFile, dims.ledger );

@@ -31,6 +31,7 @@ import { defaultPaint } from './fill-prop.mjs';
 import { sizeOf } from './fill-dimensions.mjs';
 import { initialOf } from './css-families.mjs';
 import { sameCanonical } from './css-equivalence/values.mjs';
+import { copyClassSlot } from './fill-loop-copy.mjs';
 
 // The gap rows this pass reads: the one-value-every-width shape gap, a value the setting's enum does not hold, a keyword a
 // tier-shaped setting's object shape cannot take ("shape: row cannot be held" on a per-device setting), and a property no
@@ -217,12 +218,12 @@ export function restingHeld( { widths, prop, state, base, hasSetting, raw = null
 	return paints.every( ( b ) => undefined !== b && sameCanonical( prop, b, initial ) ) && ( null === raw || ! sameCanonical( prop, raw, initial ) );
 }
 
-export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), resolver } ) {
+export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), facts = null, rootComponent = null, resolver } ) {
 	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [] };
 	const ctx = { reads, db, calFor, snapshot };
 	for ( const row of perNode( unmapped ) ) {
 		const hit = isLadderRow( row ) ? rowTarget( { nodes, flat, refOf }, row ) : null;
-		const done = hit ? ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, resolver } ) : false;
+		const done = hit ? ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, facts, rootComponent, resolver } ) : false;
 		done ? out.answered.push( answer( row, done ) ) : out.unmapped.push( row );
 	}
 	out.unmapped = regroup( out.unmapped );
@@ -231,7 +232,7 @@ export function widthLadderWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 
 // The read widths a row is settled at when it is written or its effect is the block's own (truthy), or false.
 
-function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, resolver } ) {
+function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collapse, facts, rootComponent, resolver } ) {
 	const { rec, target } = hit;
 	const { reads, db } = ctx;
 	const node = flat[ rec.index ];
@@ -345,7 +346,10 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	const resting = restingHeld( { widths, prop, state, raw: raw[ widest ], base: ( w ) => defaultPaint( cal, slot, w, prop ), hasSetting: hasOwn || candidates( db, rec.name, prop, state ).length > 0 } );
 	const held = resting ? ask( Object.fromEntries( widths.map( ( w ) => [ w, raw[ widest ] ] ) ) ) : null;
 	const holds = held && 'written' === held.status;
-	const css = cssRules( { prop, slot, state, widths, values, series, skip: holds ? values[ widest ] : null } );
+	// A part of a loop the draft draws alike in every copy is styled on every copy's class, not on the first copy's position
+	// (lib/fill-loop-copy.mjs::copyClassSlot).
+	const cssSlot = copyClassSlot( { slot, target: home, prop, state, rec, cal, db, facts, rootComponent } );
+	const css = cssRules( { prop, slot: cssSlot, state, widths, values, series, skip: holds ? values[ widest ] : null } );
 	if ( ! css ) {
 		return false;
 	}
@@ -364,6 +368,6 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 		// `state` the look it holds and `widths` the read widths it holds.
 		out.writes.push( { node: row.node, index: rec.index, block: rec.name, slot: '', ...( row.slot ? { readSlot: row.slot } : {} ), prop: x.prop, covers: prop, ...( state ? { state } : {} ), attr: x.attr, before, after, widths: [ ...widths ], how: 'width-gate' } );
 	}
-	out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: no setting holds ${ widths.map( ( w ) => `${ raw[ w ] } at ${ w }` ).join( ', ' ) }; written as ${ holds ? `the setting at ${ widest }px and ` : '' }a scoped @media rule in Additional CSS (${ css.ranges.map( ( s ) => `${ rangeText( s.range ) } ${ s.value }` ).join( ', ' ) })` );
+	out.notes.push( `${ row.node } ${ rec.name }${ slot ? ` (${ slot })` : '' } ${ prop }: no setting holds ${ widths.map( ( w ) => `${ raw[ w ] } at ${ w }` ).join( ', ' ) }; written as ${ cssSlot !== slot ? `a rule on every copy (${ cssSlot }), ` : '' }${ holds ? `the setting at ${ widest }px and ` : '' }a scoped @media rule in Additional CSS (${ css.ranges.map( ( s ) => `${ rangeText( s.range ) } ${ s.value }` ).join( ', ' ) })` );
 	return widths;
 }
