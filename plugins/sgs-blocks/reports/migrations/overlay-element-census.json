@@ -1,0 +1,55 @@
+{
+ "blocks": [
+  {
+   "block": "sgs/container",
+   "state": "missing",
+   "strays": []
+  },
+  {
+   "block": "sgs/hero",
+   "state": "missing",
+   "strays": []
+  },
+  {
+   "block": "sgs/multi-button",
+   "state": "missing",
+   "strays": []
+  },
+  {
+   "block": "sgs/nav-drawer",
+   "state": "missing",
+   "strays": []
+  },
+  {
+   "block": "sgs/physics-canvas",
+   "state": "missing",
+   "strays": []
+  },
+  {
+   "block": "sgs/site-footer",
+   "state": "missing",
+   "strays": []
+  },
+  {
+   "block": "sgs/site-header",
+   "state": "missing",
+   "strays": []
+  },
+  {
+   "block": "sgs/trust-bar",
+   "state": "missing",
+   "strays": [
+    [
+     "wrapper",
+     "attrMap",
+     "css:background-image",
+     "backgroundOverlayColour"
+    ]
+   ]
+  }
+ ],
+ "counts": {
+  "missing": 8,
+  "none": 96
+ }
+}
