@@ -839,7 +839,12 @@
       {
         "flowLayout": "showcase"
       }
-    ]
+    ],
+    "familyPreconditions": {
+      "stepper": {
+        "progressStyle": "circles"
+      }
+    }
   },
   "sgs/choice-flow-question": {
     "attributes": {
