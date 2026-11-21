@@ -215,14 +215,40 @@ final class ButtonKitCssTest extends TestCase {
 			array(
 				'xBorderStyle'  => 'dashed',
 				'xBorderWidth'  => array( 'top' => '2px', 'right' => '2px', 'bottom' => '2px', 'left' => '2px' ),
-				'xBorderRadius' => array( 'topLeft' => '4px' ),
-				'xPadding'      => array( 'top' => '10px', 'right' => '20px', 'bottom' => '10px', 'left' => '20px' ),
+				'xBorderRadius' => array( 'desktop' => array( 'topLeft' => '4px' ) ),
+				'xPadding'      => array( 'desktop' => array( 'top' => '10px', 'right' => '20px', 'bottom' => '10px', 'left' => '20px' ) ),
 				'xWidthType'    => 'full',
 			)
 		);
-		$this->assertStringContainsString( 'border-style:dashed;border-width:2px 2px 2px 2px;border-top-left-radius:4px;padding-top:10px;', $css );
+		$this->assertStringContainsString( 'border-style:dashed;border-width:2px 2px 2px 2px;', $css );
+		$this->assertStringContainsString( 'border-top-left-radius:4px;', $css, 'MUST FAIL: a per-device radius prints' );
+		$this->assertStringContainsString( 'padding-top:10px;', $css, 'MUST FAIL: a per-device padding prints' );
 		$this->assertStringContainsString( 'width:100%;', $css );
 		$this->assertStringContainsString( '.u .btn{--sgs-focus-host-border:2px;}', $css, 'the border width reaches the focus ring' );
+	}
+
+	public function test_the_values_the_panel_writes_print(): void {
+		// tests/fixtures/button-kit/panel-values.json is what tests/js/builtin-button-panel.test.js proves the panel writes.
+		$panel = json_decode( (string) file_get_contents( dirname( __DIR__ ) . '/fixtures/button-kit/panel-values.json' ), true )['values'];
+		$attrs = array();
+		foreach ( $panel as $base => $value ) {
+			$attrs[ 'x' . $base ] = $value;
+		}
+		$css = $this->kit( $attrs );
+		$this->assertStringContainsString( 'padding-top:4px;padding-right:6px;padding-bottom:4px;padding-left:6px;', $css, 'MUST FAIL: the padding the panel writes prints' );
+		$this->assertStringContainsString( 'border-top-left-radius:8px;', $css, 'MUST FAIL: the radius the panel writes prints' );
+		$this->assertStringContainsString( 'border-width:1px 1px 1px 1px;', $css, 'the border width the panel writes prints' );
+
+		$tiers = $this->kit(
+			array(
+				'xPadding'      => array( 'desktop' => $panel['Padding']['desktop'], 'mobile' => array( 'top' => '2px' ) ),
+				'xBorderRadius' => array( 'desktop' => $panel['BorderRadius']['desktop'], 'tablet' => array( 'topLeft' => '2px' ) ),
+			)
+		);
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{\.u \.btn\{padding-top:2px;\}\}/', $tiers, 'a mobile padding side prints under the mobile query only' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*1023\.98px[^{]*\{\.u \.btn\{[^}]*border-top-left-radius:2px;/', $tiers, 'a tablet radius prints under the tablet query' );
+
+		$this->assertSame( '', $this->kit( array( 'xPadding' => array( 'desktop' => array() ), 'xBorderRadius' => array( 'desktop' => array(), 'tablet' => array() ) ) ), 'empty boxes print nothing' );
 	}
 
 	public function test_a_gradient_group_key_prints(): void {

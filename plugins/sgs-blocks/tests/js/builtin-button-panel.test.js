@@ -21,6 +21,8 @@ const { act } = require( 'react' );
 const { getBlockType } = require( '@wordpress/blocks' );
 
 const registry = require( '../../src/components/button-kit/registry.json' );
+// The box values the stand-in controls hand the panel; the PHP test prints the same file (ButtonKitCssTest).
+const panelValues = require( '../fixtures/button-kit/panel-values.json' ).values;
 
 const h = React.createElement;
 
@@ -43,6 +45,7 @@ jest.mock( '@wordpress/block-editor', () => ( {
 	InspectorControls: ( { group, children } ) => require( 'react' ).createElement( 'div', { 'data-inspector-group': group }, children ),
 } ) );
 
+const mockPanelValues = () => require( '../fixtures/button-kit/panel-values.json' ).values;
 const mockBtn = ( props, onClick ) => require( 'react' ).createElement( 'button', { type: 'button', ...props, onClick } );
 
 jest.mock( '../../src/components/ResponsiveOverride', () => ( {
@@ -71,7 +74,7 @@ jest.mock( '../../src/components/SgsLengthControl', () => ( {
 
 jest.mock( '../../src/components/SgsBoxControl', () => ( {
 	__esModule: true,
-	default: ( { label, onChange } ) => mockBtn( { 'data-box': label }, () => onChange( { top: '4px', right: '4px', bottom: '4px', left: '4px' } ) ),
+	default: ( { label, onChange } ) => mockBtn( { 'data-box': label }, () => onChange( mockPanelValues().Padding.desktop ) ),
 } ) );
 
 jest.mock( '../../src/components/ResponsiveBoxControl', () => ( {
@@ -86,11 +89,11 @@ jest.mock( '../../src/components/SgsBorderControl', () => ( {
 		require( 'react' ).createElement(
 			'div',
 			{ 'data-border': 'true', 'data-show-colour': String( props.showColour ) },
-			mockBtn( { 'data-act': 'width' }, () => props.onWidthChange( { top: '1px' } ) ),
+			mockBtn( { 'data-act': 'width' }, () => props.onWidthChange( mockPanelValues().BorderWidth ) ),
 			mockBtn( { 'data-act': 'style' }, () => props.onStyleChange( 'dashed' ) ),
 			mockBtn( { 'data-act': 'colour' }, () => props.colourStates[ 0 ].onChange( 'primary' ) ),
 			mockBtn( { 'data-act': 'hover' }, () => props.colourStates[ 1 ].onChange( 'accent' ) ),
-			mockBtn( { 'data-act': 'radius' }, () => props.onRadiusChange( 'base', { topLeft: '8px' } ) )
+			mockBtn( { 'data-act': 'radius' }, () => props.onRadiusChange( 'base', mockPanelValues().BorderRadius.desktop ) )
 		),
 } ) );
 
@@ -334,6 +337,25 @@ describe( 'BuiltinButtonPanel: colour and typography', () => {
 		const m = await mount( {}, { flowOpenerFontSize: { mobile: 14 } } );
 		m.click( '[data-typography="flowOpener"] [data-act="size"]' );
 		expect( m.setAttributes ).toHaveBeenCalledWith( { flowOpenerFontSize: { mobile: 14, desktop: 18 } } );
+		m.unmount();
+	} );
+} );
+
+describe( 'BuiltinButtonPanel: the box shapes it writes', () => {
+	test( 'padding and radius are written per device, border width as one box of sides (the shapes sgs_button_kit_css reads)', async () => {
+		declare( [ { ...FLOW_OPENER, groups: [ 'border', 'padding' ] } ] );
+		const m = await mount();
+		m.click( '[data-box]' );
+		m.click( '[data-border] [data-act="width"]' );
+		m.click( '[data-border] [data-act="radius"]' );
+		expect( written( m ) ).toEqual( {
+			flowOpenerPadding: panelValues.Padding,
+			flowOpenerBorderWidth: panelValues.BorderWidth,
+			flowOpenerBorderRadius: panelValues.BorderRadius,
+		} );
+		// The registry names the same three as boxes, so the generator can compare a block's own attribute with them.
+		const shapes = Object.fromEntries( Object.values( registry.groups ).flat().map( ( row ) => [ row.base, row.value_shape ] ) );
+		expect( [ shapes.Padding, shapes.BorderWidth, shapes.BorderRadius ] ).toEqual( [ 'device_sides', 'sides', 'device_corners' ] );
 		m.unmount();
 	} );
 } );

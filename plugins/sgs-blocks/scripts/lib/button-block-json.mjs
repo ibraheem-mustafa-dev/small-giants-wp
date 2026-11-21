@@ -37,6 +37,9 @@ export const GENERATED_MARK = 'button-kit';
 export const PRESET_ROLE = 'button-preset';
 export const OVERRIDE_REASON = GENERATORS.find( ( g ) => g.mark === GENERATED_MARK ).reason;
 
+/** What a box attribute stores: one box, or one box per device (sides for padding and widths, corners for a radius). */
+export const BOX_VALUE_SHAPES = [ 'sides', 'corners', 'device_sides', 'device_corners' ];
+
 const PREFIX_RE = /^[a-z][A-Za-z0-9]*$/;
 const PART_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 
@@ -76,6 +79,12 @@ export function validateRegistry( registry ) {
 			}
 			if ( row.tier_shape && 'object' !== row.type ) {
 				problems.push( `base "${ row.base }": tier_shape on a non-object` );
+			}
+			if ( 'box_only' === row.tier_shape && ! BOX_VALUE_SHAPES.includes( row.value_shape ) ) {
+				problems.push( `base "${ row.base }": a box_only row needs a value_shape of ${ BOX_VALUE_SHAPES.join( ', ' ) } (the database labels a flat and a per-device box alike)` );
+			}
+			if ( row.value_shape && 'box_only' !== row.tier_shape ) {
+				problems.push( `base "${ row.base }": value_shape on a row that is not box_only` );
 			}
 		}
 	}
@@ -149,6 +158,52 @@ export function declaredButtons( block, registry ) {
 	return out;
 }
 
+const SIDE_KEYS = [ 'top', 'right', 'bottom', 'left' ];
+const CORNER_KEYS = [ 'topLeft', 'topRight', 'bottomLeft', 'bottomRight' ];
+const DEVICE_KEYS = [ 'desktop', 'tablet', 'mobile' ];
+
+/**
+ * The shape of box a block's own attribute stores, read from its default, else from its description. A default that holds
+ * a key names the shape; an empty default or none falls to a description that spells the shape out (`{ top, right,
+ * bottom, left }`, `{ topLeft, ... }`, `{ desktop, ... }`).
+ *
+ * @param {Object} def The attribute definition from block.json.
+ * @return {string} 'sides', 'corners', 'device_sides', 'device_corners', or 'unknown' when the block says nothing.
+ */
+export function ownBoxShape( def ) {
+	const fromKeys = ( keys, value ) => {
+		const held = keys.filter( ( k ) => Object.prototype.hasOwnProperty.call( value, k ) );
+		return held.length ? held : null;
+	};
+	const def_ = def?.default;
+	if ( def_ && 'object' === typeof def_ && ! Array.isArray( def_ ) ) {
+		if ( fromKeys( DEVICE_KEYS, def_ ) ) {
+			const inner = DEVICE_KEYS.map( ( d ) => def_[ d ] ).find( ( v ) => v && 'object' === typeof v && Object.keys( v ).length );
+			if ( ! inner ) {
+				return 'unknown';
+			}
+			return fromKeys( CORNER_KEYS, inner ) ? 'device_corners' : fromKeys( SIDE_KEYS, inner ) ? 'device_sides' : 'unknown';
+		}
+		if ( fromKeys( CORNER_KEYS, def_ ) ) {
+			return 'corners';
+		}
+		if ( fromKeys( SIDE_KEYS, def_ ) ) {
+			return 'sides';
+		}
+	}
+	const text = String( def?.description || '' );
+	if ( /\{\s*desktop\b/.test( text ) ) {
+		return /corner|radius/i.test( text ) ? 'device_corners' : 'device_sides';
+	}
+	if ( /\{\s*topLeft\b/.test( text ) ) {
+		return 'corners';
+	}
+	if ( /\{\s*top\b/.test( text ) ) {
+		return 'sides';
+	}
+	return 'unknown';
+}
+
 /**
  * The attributes a block's `builtinButtons` declaration produces.
  *
@@ -156,7 +211,7 @@ export function declaredButtons( block, registry ) {
  * @param {Object} registry Validated registry.
  * @param {Object} ownDefs  The attributes the block declares itself, name to definition. A name the kit would also write
  *                          must carry the same type, or this throws naming every such attribute.
- * @param {{kept: string[]}} [report] Receives `block attribute` for each own attribute kept because its type matches.
+ * @param {{kept: string[], unproven?: string[]}} [report] `kept` receives `block attribute` for each own attribute kept because its type matches; `unproven` each kept box whose default and description do not say which shape it stores.
  * @return {Array<{name:string, def:Object, row:Object, part:string, prefix:string, kept:boolean}>} Every member of the
  *         kit's set, in injection order; `kept` marks an own attribute the block.json already holds.
  */
@@ -182,6 +237,17 @@ export function generatedAttributes( block, registry, ownDefs, report ) {
 					if ( ! types.includes( row.type ) ) {
 						clashes.push( `${ block.name }: attribute "${ name }" is declared as ${ JSON.stringify( declaredType ) } but the button kit needs "${ row.type }"` );
 						continue;
+					}
+					if ( row.value_shape ) {
+						// The database labels a flat box and a per-device one alike (box_only), so the shape is compared here.
+						const have = ownBoxShape( own[ name ] );
+						if ( 'unknown' !== have && have !== row.value_shape ) {
+							clashes.push( `${ block.name }: attribute "${ name }" stores a ${ have } box but the button kit's panel and PHP use ${ row.value_shape }; reshape it with a row in scripts/data/builtin-button-renames.json (kind flat-box-to-desktop-object)` );
+							continue;
+						}
+						if ( 'unknown' === have ) {
+							report?.unproven?.push( `${ block.name } ${ name }` );
+						}
 					}
 					kept = true;
 					report?.kept.push( `${ block.name } ${ name }` );

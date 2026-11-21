@@ -6,7 +6,8 @@
     "addToCartMinHeight, ctaFontSize and ctaLineHeight keep their names (the kit's bases are MinHeight, FontSize and LineHeight): they are shape changes, not renames. The note's wording was right; the map records them as reshape-only so --fix never renames them.",
     "loginButtonFullWidth becomes loginButtonWidthType (kit base WidthType, enum fit/full), a boolean-to-string reshape; the note listed it correctly, with true -> full and false -> unset.",
     "registerButton* has no look attributes today beyond registerButtonPreset and the registerButtonIcon* set, so the register button gains the whole kit through the generator; only the preset is renamed.",
-    "No new name collides: none of the new names exists in block_attributes today."
+    "No new name collides: none of the new names exists in block_attributes today.",
+    "The kit stores padding and radius per device ({desktop,tablet,mobile} of sides or corners; registry value_shape device_sides and device_corners) and the border width as one box of sides. A block that stores a padding or a radius as one flat box (buybox addToCartPadding, product-card ctaPadding and ctaBorderRadius, choice-flow backBorderRadius) is reshaped with kind flat-box-to-desktop-object: the generator refuses the attribute until it is. The border widths (product-card ctaBorderWidth, choice-flow backBorderWidth) are flat sides already and need no row. account loginButtonPadding, loginButtonBorderRadius and loginButtonBorderWidth already match; their blocks state no default, so the generator lists them as kept with an unstated shape."
   ],
   "renames": [
     {
@@ -54,6 +55,26 @@
     {
       "block": "sgs/account", "old": "registerButtonPreset", "new": "registerButtonStyle",
       "evidence": "block_attributes: sgs/account string; read by helpers-account-look-css.php, ExtraPanels.js"
+    },
+    {
+      "block": "sgs/buybox", "old": "addToCartPadding", "new": "addToCartPadding",
+      "value": { "kind": "flat-box-to-desktop-object" },
+      "evidence": "block.json: sgs/buybox object, default {}, described as a {top,right,bottom,left} box; the kit's Padding is per device (registry value_shape device_sides)"
+    },
+    {
+      "block": "sgs/product-card", "old": "ctaPadding", "new": "ctaPadding",
+      "value": { "kind": "flat-box-to-desktop-object" },
+      "evidence": "block.json: sgs/product-card object, default {}, described as a {top,right,bottom,left} box; read by edit.js and, by prefix, helpers-button-style.php::sgs_button_element_style_css (the kit's Padding is per device)"
+    },
+    {
+      "block": "sgs/product-card", "old": "ctaBorderRadius", "new": "ctaBorderRadius",
+      "value": { "kind": "flat-box-to-desktop-object" },
+      "evidence": "block.json: sgs/product-card object, default four corners at 10px; read by edit.js and, by prefix, helpers-button-style.php::sgs_button_element_style_css (the kit's BorderRadius is per device, registry value_shape device_corners)"
+    },
+    {
+      "block": "sgs/choice-flow", "old": "backBorderRadius", "new": "backBorderRadius",
+      "value": { "kind": "flat-box-to-desktop-object" },
+      "evidence": "block.json: sgs/choice-flow object, default four corners at 8px; the kit's BorderRadius is per device (registry value_shape device_corners)"
     },
     {
       "block": "sgs/product-card", "old": "ctaFontSize", "new": "ctaFontSize",

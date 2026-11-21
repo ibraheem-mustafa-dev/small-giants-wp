@@ -24,8 +24,10 @@ import {
 	OVERRIDE_REASON,
 	findBlockJsons,
 	loadRegistry,
+	validateRegistry,
 	declaredButtons,
 	generatedAttributes,
+	ownBoxShape,
 	applyGeneratedAttributes,
 	overrideEntry,
 	presetEntries,
@@ -60,6 +62,7 @@ const argBlock = blockFlagAt !== -1
 const rel = ( f ) => path.relative( PLUGIN_DIR, f ).split( path.sep ).join( '/' );
 
 const registry = loadRegistry( REGISTRY_FILE );
+const loadRegistryFrom = validateRegistry;
 
 /**
  * One block.json's new text and the override entries its kit attributes need.
@@ -67,14 +70,14 @@ const registry = loadRegistry( REGISTRY_FILE );
  * @param {string}      text        Current block.json source.
  * @param {Object}      reg         Validated registry.
  * @param {Set<string>} handWritten `slug|attr` keys that already have an override entry the kit does not own.
- * @return {{next: string, entries: Object[], skipped: string[], kept: string[]}} New source, entries, keys left to a hand-written entry, and own attributes kept for a matching type.
+ * @return {{next: string, entries: Object[], skipped: string[], kept: string[], unproven: string[]}} New source, entries, keys left to a hand-written entry, own attributes kept for a matching type, and kept boxes whose shape the block does not state.
  */
 function planBlock( text, reg, handWritten ) {
 	const block = JSON.parse( text );
 	const own = Object.fromEntries(
 		Object.entries( block.attributes || {} ).filter( ( [ , def ] ) => def?._generated !== GENERATED_MARK )
 	);
-	const report = { kept: [] };
+	const report = { kept: [], unproven: [] };
 	const attrs = generatedAttributes( block, reg, own, report );
 	const next = applyGeneratedAttributes( text, attrs );
 	JSON.parse( next ); // refuse to hand back a file that no longer parses
@@ -87,13 +90,13 @@ function planBlock( text, reg, handWritten ) {
 		}
 		entries.push( overrideEntry( block.name, a ) );
 	}
-	return { next, entries, skipped, kept: report.kept };
+	return { next, entries, skipped, kept: report.kept, unproven: report.unproven };
 }
 
 /**
  * What a run would write, without writing it.
  *
- * @return {{files: Map<string,string>, entries: Object[], skipped: string[], kept: string[], overridesText: string}} New block.json texts (changed ones only), override entries, override keys left to a hand-written entry, own attributes kept for a matching type, and the current override file.
+ * @return {{files: Map<string,string>, entries: Object[], skipped: string[], kept: string[], unproven: string[], overridesText: string}} New block.json texts (changed ones only), override entries, override keys left to a hand-written entry, own attributes kept for a matching type, kept boxes whose shape the block does not state, and the current override file.
  */
 function plan() {
 	const overridesText = fs.readFileSync( OVERRIDES_FILE, 'utf8' );
@@ -102,6 +105,7 @@ function plan() {
 	const entries = [];
 	const skipped = [];
 	const kept = [];
+	const unproven = [];
 	const blocks = new Map();
 	for ( const file of findBlockJsons( BLOCKS_DIR ) ) {
 		const text = fs.readFileSync( file, 'utf8' );
@@ -117,11 +121,12 @@ function plan() {
 		entries.push( ...done.entries );
 		skipped.push( ...done.skipped );
 		kept.push( ...done.kept );
+		unproven.push( ...done.unproven );
 	}
 	const presets = presetEntries( registry, blocks, JSON.parse( overridesText ).entries );
 	entries.push( ...presets.entries.filter( ( e ) => ! argBlock || e.slug === argBlock ) );
 	skipped.push( ...presets.skipped.filter( ( s ) => ! argBlock || s.startsWith( `${ argBlock } ` ) ) );
-	return { files, entries, skipped, kept, overridesText };
+	return { files, entries, skipped, kept, unproven, overridesText };
 }
 
 function selfTest() {
@@ -247,6 +252,52 @@ function selfTest() {
 			const m = throws( () => planBlock( JSON.stringify( nameClash, null, '\t' ), registry, new Set() ) );
 			return m.includes( '"xBorderStyle"' ) && m.includes( 'produced by both' );
 		} )()
+	);
+
+	// 4b. A box the block stores in another shape than the panel writes is refused, named, with the way out. The database labels
+	// every box box_only, so the registry's value_shape is the comparison.
+	const boxOwn = ( name, def ) => {
+		const b = JSON.parse( fixText );
+		b.attributes[ name ] = def;
+		return JSON.stringify( b, null, '\t' );
+	};
+	const flatSides = { top: '1px', right: '1px', bottom: '1px', left: '1px' };
+	const flatCorners = { topLeft: '8px', topRight: '8px', bottomLeft: '8px', bottomRight: '8px' };
+	const deviceSides = { desktop: flatSides };
+	const deviceCorners = { desktop: flatCorners };
+	const shapeMessage = ( name, def ) => throws( () => planBlock( boxOwn( name, def ), registry, new Set() ) );
+	ck(
+		'box shape: a flat padding default is refused, naming the attribute, both shapes and the renames file',
+		( () => {
+			const m = shapeMessage( 'flowOpenerPadding', { type: 'object', default: flatSides } );
+			return m.includes( '"flowOpenerPadding"' ) && m.includes( 'stores a sides box' ) && m.includes( 'device_sides' ) && m.includes( 'builtin-button-renames.json' );
+		} )()
+	);
+	ck( 'box shape: a flat radius default is refused', shapeMessage( 'flowOpenerBorderRadius', { type: 'object', default: flatCorners } ).includes( 'stores a corners box' ) );
+	ck( 'box shape: a per-device border width default is refused (the panel writes one box of sides)', shapeMessage( 'flowOpenerBorderWidth', { type: 'object', default: deviceSides } ).includes( 'stores a device_sides box' ) );
+	ck( 'box shape: a per-device padding default and a per-device radius default are kept', ! shapeMessage( 'flowOpenerPadding', { type: 'object', default: deviceSides } ) && ! shapeMessage( 'flowOpenerBorderRadius', { type: 'object', default: deviceCorners } ) );
+	ck( 'box shape: a flat width default is kept', ! shapeMessage( 'flowOpenerBorderWidth', { type: 'object', default: flatSides } ) );
+	ck(
+		'box shape: an empty default falls to the description',
+		shapeMessage( 'flowOpenerPadding', { type: 'object', default: {}, description: 'Padding, a { top, right, bottom, left } box.' } ).includes( 'stores a sides box' ) &&
+			! shapeMessage( 'flowOpenerPadding', { type: 'object', default: {}, description: 'Padding per device, { desktop, tablet, mobile } of sides.' } )
+	);
+	ck(
+		'box shape: a box that states no shape is kept and reported as unproven',
+		( () => {
+			const rep = { kept: [], unproven: [] };
+			const b = JSON.parse( boxOwn( 'flowOpenerPadding', { type: 'object' } ) );
+			generatedAttributes( b, registry, { flowOpenerPadding: { type: 'object' } }, rep );
+			return rep.unproven.includes( 'sgs/kit-fixture flowOpenerPadding' ) && ownBoxShape( { type: 'object' } ) === 'unknown';
+		} )()
+	);
+	ck(
+		'box shape: every box row of the registry names its shape, and no other row does',
+		rows.filter( ( r ) => 'box_only' === r.tier_shape ).every( ( r ) => [ 'sides', 'device_sides', 'device_corners' ].includes( r.value_shape ) ) && rows.filter( ( r ) => r.value_shape ).every( ( r ) => 'box_only' === r.tier_shape )
+	);
+	ck(
+		'box shape: the registry check refuses a box_only row with no value_shape',
+		throws( () => loadRegistryFrom( { defaultGroups: [ 'g' ], groups: { g: [ { base: 'Padding', type: 'object', role: 'layout', tier_shape: 'box_only' } ] } } ) ).includes( 'value_shape' )
 	);
 
 	// 5. Idempotence: a second run changes nothing, in the block.json and in the override file.
@@ -393,7 +444,7 @@ try {
 	process.stderr.write( `[generate-button-attributes] ${ e.message }\n` );
 	process.exit( 1 );
 }
-const { files, entries, skipped, kept, overridesText } = result;
+const { files, entries, skipped, kept, unproven, overridesText } = result;
 files.forEach( ( text, file ) => fs.writeFileSync( file, text, 'utf8' ) );
 const nextOverrides = applyOverrideEntries( overridesText, entries, argBlock );
 if ( nextOverrides !== overridesText ) {
@@ -402,6 +453,11 @@ if ( nextOverrides !== overridesText ) {
 if ( kept.length ) {
 	process.stdout.write(
 		`[generate-button-attributes] ${ kept.length } attribute(s) the block already declares with the same type are kept as the block's own (compare their default and enum by hand): ${ kept.join( ', ' ) }\n`
+	);
+}
+if ( unproven.length ) {
+	process.stdout.write(
+		`[generate-button-attributes] ${ unproven.length } kept box attribute(s) state no shape in their default or description, so the shape the panel writes was not compared: ${ unproven.join( ', ' ) }\n`
 	);
 }
 if ( skipped.length ) {

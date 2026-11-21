@@ -450,32 +450,14 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sgs_button_kit_length_transform' ) ) {
-
-	/**
-	 * Responsive-emitter transform for one built-in-button length (the kit's min height).
-	 *
-	 * SgsLengthControl stores a spacing preset as its bare slug ("30") and a typed length with its unit, so a digits-only
-	 * string goes through sgs_css_single_length_value() (a preset variable for a theme slug, pixels otherwise); a stored
-	 * number is pixels. Anything unsafe returns '' and prints nothing.
-	 *
-	 * @param mixed $raw Stored tier value.
-	 * @return string Safe CSS length, or ''.
-	 */
-	function sgs_button_kit_length_transform( $raw ): string {
-		if ( is_string( $raw ) && 1 === preg_match( '/^\d+$/', $raw ) ) {
-			return sgs_css_single_length_value( $raw );
-		}
-		return is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw );
-	}
-}
-
 if ( ! function_exists( 'sgs_button_kit_look_bases' ) ) {
 
 	/**
 	 * The attribute names (after the prefix) the look step of the built-in button kit reads: colour and hover colour, the
-	 * six gradient colours, the border and the padding and width. The typography, min height and shadow families have their
-	 * own steps and are never handed to the look emitter (its legacy scalar font size would read a tier object as `1px`).
+	 * six gradient colours, the border style and width (one box of sides) and the width type. The radius and padding are
+	 * stored per device and print through their own steps; the typography, min height and shadow families have theirs too.
+	 * None of those is handed to the look emitter, whose flat readers would print nothing for a per-device box, and whose
+	 * legacy scalar font size would read a tier object as `1px`.
 	 *
 	 * @return string[]
 	 */
@@ -495,8 +477,6 @@ if ( ! function_exists( 'sgs_button_kit_look_bases' ) ) {
 			'ColourBorderHoverGradient',
 			'BorderStyle',
 			'BorderWidth',
-			'BorderRadius',
-			'Padding',
 			'WidthType',
 		);
 	}
@@ -513,7 +493,8 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 	 *      names an opted-in site carries). `sgs_button_preset_css()` prints the whole preset (outline included), then
 	 *      `sgs_button_press_rule_for()` its pressed look and `sgs_button_focus_host_border()` the border width the
 	 *      focus ring anchors to (`--sgs-focus-host-border`). An empty or unknown name prints nothing: the block's own CSS stays.
-	 *   2. Look: `sgs_button_element_style_css()` on the colour, gradient, border, padding and width keys only.
+	 *   2. Look: `sgs_button_element_style_css()` on the colour, gradient, border style and width, and width type keys only;
+	 *      then the radius (`sgs_border_element_decls()`) and the padding (`sgs_emit_responsive_css()`), both stored per device.
 	 *   3. Typography: `sgs_typography_css_rule()`, the font size, line height and letter spacing as `{desktop, tablet, mobile}` objects.
 	 *   4. Min height: `sgs_emit_responsive_css()` on `{p}MinHeight`.
 	 *   5. Shadow: `sgs_shadow_decls()` resting, handed to the focus ring as `--sgs-focus-under` (the focus ring replaces
@@ -537,6 +518,7 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 		}
 		// Loaded on first use, not at the top: render-helpers.php loads this file before the button blocks load their own helpers.
 		require_once __DIR__ . '/helpers-border-style.php';
+		require_once __DIR__ . '/helpers-responsive.php';
 		require_once __DIR__ . '/helpers-colour-variants.php';
 		require_once __DIR__ . '/helpers-button-preset.php';
 		require_once __DIR__ . '/helpers-button-press.php';
@@ -565,7 +547,7 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 			$css .= $selector . '{--sgs-focus-host-border:' . $host_border . ';}';
 		}
 
-		// 2. Look: colour, gradient, border, padding and width only.
+		// 2. Look: colour, gradient, border style and width, and width type.
 		$look = array();
 		foreach ( sgs_button_kit_look_bases() as $base ) {
 			if ( isset( $attrs[ $prefix . $base ] ) ) {
@@ -573,6 +555,35 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 			}
 		}
 		$css .= sgs_button_element_style_css( $look, $prefix, $selector, ! empty( $opts['bg_layer'] ), ! empty( $opts['bg_layer_positioned'] ) );
+
+		// 2b. Radius and padding, each stored per device (`{desktop, tablet, mobile}` of corners and of sides): the shared border
+		// resolver and responsive emitter print them, as sgs/account's sign-in button does. The resolver gets the radius alone, under
+		// the literal name `borderRadius` (its gate wants literal names), so the border width and colours print once, from the look step.
+		if ( isset( $attrs[ $prefix . 'BorderRadius' ] ) ) {
+			$border = sgs_border_element_decls( array( 'borderRadius' => $attrs[ $prefix . 'BorderRadius' ] ), '', $selector, array( 'radius' => 'borderRadius' ) );
+			$css   .= $border['base'] ? $selector . '{' . implode( ';', $border['base'] ) . ';}' : '';
+			$css   .= sgs_emit_tier_decls(
+				$selector,
+				array(
+					'tablet' => $border['tablet'],
+					'mobile' => $border['mobile'],
+				)
+			);
+		}
+		$padding = $attrs[ $prefix . 'Padding' ] ?? array();
+		if ( is_array( $padding ) && array() !== $padding ) {
+			$css .= sgs_emit_responsive_css(
+				$selector,
+				array(
+					array(
+						'value' => $padding,
+						'css'   => 'padding',
+						'box'   => true,
+					),
+				),
+				$responsive
+			);
+		}
 
 		// 3. Typography: the tier objects print per device through the shared type rule.
 		$css .= sgs_typography_css_rule(
@@ -595,7 +606,7 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 					array(
 						'value'     => $height,
 						'css'       => 'min-height',
-						'transform' => 'sgs_button_kit_length_transform',
+						'transform' => 'sgs_length_transform',
 					),
 				),
 				$responsive

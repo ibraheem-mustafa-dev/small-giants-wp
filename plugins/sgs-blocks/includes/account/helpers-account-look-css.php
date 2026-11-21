@@ -58,18 +58,13 @@ if ( ! function_exists( 'sgs_account_box_shape_css' ) ) {
 
 if ( ! function_exists( 'sgs_account_length_transform' ) ) {
 	/**
-	 * Responsive-emitter transform for a single CSS length. SgsLengthControl stores a spacing preset as its bare slug
-	 * ("30") and a typed length with its unit, so a digits-only string goes through sgs_css_single_length_value()
-	 * (preset variable for a theme slug, pixels otherwise); a stored number or decimal is pixels.
+	 * Responsive-emitter transform for a single CSS length: the shared `sgs_length_transform()` (helpers-responsive.php).
 	 *
 	 * @param mixed $raw Stored value.
 	 * @return string
 	 */
 	function sgs_account_length_transform( $raw ): string {
-		if ( is_string( $raw ) && 1 === preg_match( '/^\d+$/', $raw ) ) {
-			return sgs_css_single_length_value( $raw );
-		}
-		return is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw );
+		return sgs_length_transform( $raw );
 	}
 }
 

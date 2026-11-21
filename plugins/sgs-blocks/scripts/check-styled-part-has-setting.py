@@ -745,6 +745,12 @@ def shape_json(old_block_text, spec):
         if 'default' in obj:
             d = obj['default']
             obj['default'] = {'desktop': d} if isinstance(d, (int, float)) else {}
+    elif kind == 'flat-box-to-desktop-object':
+        # One box (sides or corners) becomes a per-device box: the stored value moves under `desktop`.
+        obj['type'] = 'object'
+        d = obj.get('default')
+        if isinstance(d, dict) and d and not any(k in d for k in ('desktop', 'tablet', 'mobile')):
+            obj['default'] = {'desktop': d}
     elif kind == 'true-to-full':
         obj['type'] = 'string'
         obj.pop('default', None)
@@ -1828,7 +1834,9 @@ FX_BLOCKJSON = """{
 \t\t\t"type": "string",
 \t\t\t"default": "52px"
 \t\t},
-\t\t"loginButtonFullWidth": { "type": "boolean", "default": false }
+\t\t"loginButtonFullWidth": { "type": "boolean", "default": false },
+\t\t"ctaPadding": { "type": "object", "default": {} },
+\t\t"ctaBorderRadius": { "type": "object", "default": { "topLeft": "10px", "topRight": "10px" } }
 \t}
 }
 """
@@ -1959,6 +1967,12 @@ def self_test():
     check('rename shape: the file stays valid JSON with the other attributes untouched',
           parsed['attributes']['loginButtonFullWidth'] == {'type': 'boolean', 'default': False})
     check('rename shape: every code read of a reshaped attribute is listed for review', len(ps['shape']) >= 3)
+    pf = plan_for(files, fx_rename('ctaBorderRadius', 'ctaBorderRadius', {'kind': 'flat-box-to-desktop-object'}),
+                  fx_rename('ctaPadding', 'ctaPadding', {'kind': 'flat-box-to-desktop-object'}))
+    pf_attrs = json.loads(pf['files']['plugins/sgs-blocks/src/blocks/fx/block.json'][1])['attributes']
+    check('rename shape: a flat box default moves under desktop, an empty one stays empty',
+          pf_attrs['ctaBorderRadius']['default'] == {'desktop': {'topLeft': '10px', 'topRight': '10px'}}
+          and pf_attrs['ctaPadding']['default'] == {} and pf_attrs['ctaPadding']['type'] == 'object')
     check('rename shape: a name-keeping shape change does not rewrite code', 'plugins/sgs-blocks/src/blocks/fx/render.php' not in ps['files'])
     # another block's same-named attribute is not touched
     rn_cta = fx_rename('ctaFontSize', 'ctaFontSize', {'kind': 'number-to-desktop-object'})

@@ -1,0 +1,8 @@
+{
+	"_doc": "The box values the built-in button panel writes, by registry base (attribute = prefix + base): padding and radius per device, border width as one box of sides. tests/js/builtin-button-panel.test.js asserts the panel writes exactly these from its stand-in controls; tests/php/ButtonKitCssTest.php::test_the_values_the_panel_writes_print feeds them to sgs_button_kit_css, so a shape the panel writes and the PHP does not read fails one of the two.",
+	"values": {
+		"Padding": { "desktop": { "top": "4px", "right": "6px", "bottom": "4px", "left": "6px" } },
+		"BorderRadius": { "desktop": { "topLeft": "8px", "topRight": "8px", "bottomLeft": "8px", "bottomRight": "8px" } },
+		"BorderWidth": { "top": "1px", "right": "1px", "bottom": "1px", "left": "1px" }
+	}
+}

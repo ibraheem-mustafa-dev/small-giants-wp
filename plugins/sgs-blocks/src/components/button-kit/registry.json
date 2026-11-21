@@ -1,5 +1,5 @@
 {
-	"_doc": "The built-in button kit's one registry: the attribute set a block gets for each button it declares in block.json supports.sgs.builtinButtons (prefix, part, label, optional groups). Read by scripts/generate-button-attributes.mjs (writes the attributes and the framework-database override rows), by includes/helpers-button-style.php::sgs_button_kit_css and by src/components/BuiltinButtonPanel.js. An attribute is the declared prefix plus `base`. `type` is the block.json type; an object is a box (sides or corners) when `tier_shape` is box_only and a {desktop,tablet,mobile} value when it is tier_object. `role`, `css_property`, `css_state` and `tier_shape` go to the database as written; `css_element` is the declared `part`. A row with no css_property is a setting no stylesheet property names (the preset choice, a unit). `values` lists the accepted strings of an attribute with a closed set. Generated attributes carry no default: unset means the block's own look. Group order here is the order the attributes are written.",
+	"_doc": "The built-in button kit's one registry: the attribute set a block gets for each button it declares in block.json supports.sgs.builtinButtons (prefix, part, label, optional groups). Read by scripts/generate-button-attributes.mjs (writes the attributes and the framework-database override rows), by includes/helpers-button-style.php::sgs_button_kit_css and by src/components/BuiltinButtonPanel.js. An attribute is the declared prefix plus `base`. `type` is the block.json type; an object is a box (sides or corners) when `tier_shape` is box_only and a {desktop,tablet,mobile} value when it is tier_object. The database labels every box `box_only`, a flat box and a per-device one alike (sgs/account's `loginButtonPadding` and `loginButtonBorderWidth` both), so `value_shape` states what the editor panel stores and the PHP reads: `sides` (one {top,right,bottom,left}), `device_sides` ({desktop,tablet,mobile} of sides) or `device_corners` ({desktop,tablet,mobile} of {topLeft,topRight,bottomLeft,bottomRight}). The generator refuses a block's own attribute whose default or description names another shape. `role`, `css_property`, `css_state` and `tier_shape` go to the database as written; `value_shape` does not; `css_element` is the declared `part`. A row with no css_property is a setting no stylesheet property names (the preset choice, a unit). `values` lists the accepted strings of an attribute with a closed set. Generated attributes carry no default: unset means the block's own look. Group order here is the order the attributes are written.",
 	"defaultGroups": [ "preset", "colour", "border", "padding", "width", "minHeight", "shadow", "typography" ],
 	"groups": {
 		"preset": [
@@ -23,11 +23,11 @@
 		],
 		"border": [
 			{ "base": "BorderStyle", "type": "string", "role": "visual", "css_property": "border-style", "css_state": null, "tier_shape": null },
-			{ "base": "BorderWidth", "type": "object", "role": "visual", "css_property": "border-width", "css_state": null, "tier_shape": "box_only" },
-			{ "base": "BorderRadius", "type": "object", "role": "visual", "css_property": "border-radius", "css_state": null, "tier_shape": "box_only" }
+			{ "base": "BorderWidth", "type": "object", "role": "visual", "css_property": "border-width", "css_state": null, "tier_shape": "box_only", "value_shape": "sides" },
+			{ "base": "BorderRadius", "type": "object", "role": "visual", "css_property": "border-radius", "css_state": null, "tier_shape": "box_only", "value_shape": "device_corners" }
 		],
 		"padding": [
-			{ "base": "Padding", "type": "object", "role": "layout", "css_property": "padding", "css_state": null, "tier_shape": "box_only" }
+			{ "base": "Padding", "type": "object", "role": "layout", "css_property": "padding", "css_state": null, "tier_shape": "box_only", "value_shape": "device_sides" }
 		],
 		"width": [
 			{ "base": "WidthType", "type": "string", "role": "select-from-enum", "css_property": "width", "css_state": null, "tier_shape": null, "values": [ "fit", "full" ] }

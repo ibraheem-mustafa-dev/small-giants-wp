@@ -482,6 +482,26 @@ if ( ! function_exists( 'sgs_responsive_sanitise_css_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_length_transform' ) ) {
+	/**
+	 * Responsive-emitter `transform` for one stored length per device (a min height, a width, a gap).
+	 *
+	 * SgsLengthControl stores a spacing preset as its bare slug ("30") and a typed length with its unit, so a digits-only
+	 * string goes through sgs_css_single_length_value() (a preset variable for a theme slug, pixels otherwise); a stored
+	 * number or decimal is pixels. Anything unsafe returns '' and prints nothing. Pass the function's name as a spec's
+	 * `transform` for sgs_emit_responsive_css().
+	 *
+	 * @param mixed $raw Stored tier value.
+	 * @return string Safe CSS length, or ''.
+	 */
+	function sgs_length_transform( $raw ): string {
+		if ( is_string( $raw ) && 1 === preg_match( '/^\d+$/', $raw ) ) {
+			return sgs_css_single_length_value( $raw );
+		}
+		return is_numeric( $raw ) ? (string) (float) $raw . 'px' : sgs_css_single_length_value( $raw );
+	}
+}
+
 if ( ! function_exists( 'sgs_emit_responsive_css' ) ) {
 	/**
 	 * Emit scoped responsive CSS for object-model properties on one selector.
