@@ -6469,13 +6469,6 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "openerNoteColour",
-      "fields": {
-        "css_property": "color"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "pickPricedGap",
       "fields": {
         "css_property": "gap",
