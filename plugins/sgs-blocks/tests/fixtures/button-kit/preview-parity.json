@@ -15,6 +15,7 @@
 		"xLineHeight": { "desktop": 1.4 },
 		"xShadow": "0 4px 12px 0",
 		"xShadowColour": "#112233",
+		"xContentAlign": { "desktop": "space-between" },
 		"xWidthType": "full"
 	},
 	"sizeAttributes": { "xSize": { "desktop": 36 } },
@@ -32,6 +33,7 @@
 		[ "padding-bottom", "10px" ],
 		[ "padding-left", "20px" ],
 		[ "min-height", "48px" ],
+		[ "justify-content", "space-between" ],
 		[ "font-weight", "700" ],
 		[ "text-transform", "uppercase" ],
 		[ "font-size", "18px" ],

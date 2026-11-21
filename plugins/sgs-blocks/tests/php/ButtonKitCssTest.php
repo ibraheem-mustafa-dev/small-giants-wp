@@ -473,4 +473,42 @@ final class ButtonKitCssTest extends TestCase {
 		$this->assertStringNotContainsString( 'min-height', $css, 'an unsafe length is refused' );
 		$this->assertStringNotContainsString( 'box-shadow', $css, 'an unsafe shadow is refused' );
 	}
+
+	public function test_content_align_prints_justify_content_per_device(): void {
+		$css = $this->kit( array( 'xContentAlign' => array( 'desktop' => 'space-between', 'mobile' => 'flex-start' ) ) );
+		$this->assertStringContainsString( '.u .btn{justify-content:space-between;}', $css, 'MUST FAIL: the desktop value prints as justify-content on the button' );
+		$this->assertStringContainsString( '@media(max-width:767.98px){.u .btn{justify-content:flex-start;}}', $css, 'MUST FAIL: and the mobile value in its own media query' );
+		foreach ( array( 'flex-start', 'center', 'flex-end', 'space-between' ) as $value ) {
+			$this->assertStringContainsString( 'justify-content:' . $value . ';', $this->kit( array( 'xContentAlign' => array( 'desktop' => $value ) ) ), 'sgs/button\'s four values all print: ' . $value );
+		}
+		// Negative controls: unset prints nothing, a value outside the list prints nothing, another prefix prints nothing.
+		$this->assertSame( '', $this->kit( array( 'xContentAlign' => array() ) ), 'an empty object prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'xContentAlign' => array( 'desktop' => 'stretch' ) ) ), 'a value outside sgs/button\'s list prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'xContentAlign' => array( 'desktop' => self::BREAKOUT ) ) ), 'an unsafe value prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'otherContentAlign' => array( 'desktop' => 'space-between' ) ) ), 'another prefix prints nothing' );
+	}
+
+	public function test_hover_lift_distance_makes_the_total_hover_movement_the_setting(): void {
+		$css = $this->kit( array( 'xHoverLiftDistance' => '2px' ), self::SEL, null, array( 'state_guard' => ':not([disabled])' ) );
+		$this->assertStringContainsString( '@media (prefers-reduced-motion:no-preference){:where(:root:not(.sgs-touch-input)) .u .btn:not([disabled]):hover{translate:0 -2px}.u .btn:not([disabled]):focus-visible{translate:0 -2px}}', $css, 'MUST FAIL: the movement is `translate`, inside the no-preference media query, behind the touch guard and the state guard, with its keyboard-focus twin' );
+		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input)) .u .btn:not([disabled]):hover{transform:none;}.u .btn:not([disabled]):focus-visible{transform:none;}', $css, 'MUST FAIL: an unconditional rule cancels the stylesheet own `transform`, so the total movement is the setting (and none under reduced motion)' );
+		$this->assertStringContainsString( 'translate:0 -24px}', $this->kit( array( 'xHoverLiftDistance' => '99px' ) ), 'the distance is clamped to the shared 24px ceiling' );
+		$this->assertStringContainsString( 'translate:0 -3px}', $this->kit( array( 'xHoverLiftDistance' => '3' ) ), 'a bare number reads as px' );
+		// Negative controls: unset prints nothing; a value the kit does not understand prints nothing, so the site's own lift stands.
+		$this->assertSame( '', $this->kit( array( 'xHoverLiftDistance' => '' ) ), 'unset prints nothing' );
+		$this->assertSame( '', $this->kit( array() ), 'absent prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'xHoverLiftDistance' => '-2px' ) ), 'a negative distance prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'xHoverLiftDistance' => '2em' ) ), 'another unit prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'xHoverLiftDistance' => self::BREAKOUT ) ), 'an unsafe value prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'otherHoverLiftDistance' => '2px' ) ), 'another prefix prints nothing' );
+	}
+
+	public function test_a_zero_lift_stops_the_movement_a_site_token_adds(): void {
+		$css = $this->kit( array( 'xHoverLiftDistance' => '0px' ), self::SEL, null, array( 'state_guard' => ':not([disabled])' ) );
+		$this->assertStringContainsString( ':where(:root:not(.sgs-touch-input)) .u .btn:not([disabled]):hover{transform:none;translate:none;}', $css, 'MUST FAIL: 0 prints a hover rule that cancels the site\'s transform, behind the touch guard' );
+		$this->assertStringContainsString( '.u .btn:not([disabled]):focus-visible{transform:none;translate:none;}', $css, 'MUST FAIL: and its focus twin' );
+		$this->assertStringNotContainsString( 'prefers-reduced-motion', $css, 'stopping a movement is not itself motion' );
+		$this->assertSame( $css, $this->kit( array( 'xHoverLiftDistance' => '0' ), self::SEL, null, array( 'state_guard' => ':not([disabled])' ) ), 'a bare 0 reads the same' );
+		$this->assertStringNotContainsString( 'translate:0 -', $css, 'no lift prints' );
+	}
 }

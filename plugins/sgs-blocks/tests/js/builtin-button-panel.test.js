@@ -437,3 +437,56 @@ describe( 'BuiltinButtonPanel: the size group (a square control)', () => {
 		m.unmount();
 	} );
 } );
+
+describe( 'BuiltinButtonPanel: content alignment and the hover lift', () => {
+	const ALIGN_SELECT = '[data-tier-control="Content alignment"] select';
+
+	test( 'content alignment shows only when the group is declared, and is not a default group', async () => {
+		declare( [ { ...FLOW_OPENER, groups: [ ...ALL_GROUPS, 'contentAlign' ] } ] );
+		let m = await mount();
+		expect( m.q( ALIGN_SELECT ) ).not.toBeNull();
+		expect( m.all( `${ ALIGN_SELECT } option` ).map( ( o ) => o.value ) ).toEqual( [ '', 'flex-start', 'center', 'flex-end', 'space-between' ] );
+		m.unmount();
+
+		declare( [ FLOW_OPENER ] );
+		m = await mount();
+		expect( m.q( ALIGN_SELECT ) ).toBeNull();
+		expect( registry.defaultGroups ).not.toContain( 'contentAlign' );
+		m.unmount();
+	} );
+
+	test( 'choosing a content alignment writes {prefix}ContentAlign as a {desktop} object, and the empty choice clears it', async () => {
+		declare( [ { ...FLOW_OPENER, groups: [ 'contentAlign' ] } ] );
+		const m = await mount();
+		m.type( ALIGN_SELECT, 'space-between' );
+		expect( m.setAttributes ).toHaveBeenCalledWith( { flowOpenerContentAlign: { desktop: 'space-between' } } );
+		m.type( ALIGN_SELECT, '' );
+		expect( m.setAttributes ).toHaveBeenLastCalledWith( { flowOpenerContentAlign: { desktop: undefined } } );
+		m.unmount();
+	} );
+
+	test( 'the hover lift shows in the default groups, and typing a length writes {prefix}HoverLiftDistance as that string', async () => {
+		declare( [ FLOW_OPENER ] );
+		const m = await mount();
+		expect( m.q( 'input[aria-label="Hover lift"]' ) ).not.toBeNull();
+		expect( registry.defaultGroups ).toContain( 'hoverLift' );
+		m.type( 'input[aria-label="Hover lift"]', '2px' );
+		expect( m.setAttributes ).toHaveBeenCalledWith( { flowOpenerHoverLiftDistance: '2px' } );
+		m.type( 'input[aria-label="Hover lift"]', '0px' );
+		expect( m.setAttributes ).toHaveBeenLastCalledWith( { flowOpenerHoverLiftDistance: '0px' } );
+		m.unmount();
+
+		const set = await mount( {}, { flowOpenerHoverLiftDistance: '2px' } );
+		expect( set.q( 'input[aria-label="Hover lift"]' ).value ).toBe( '2px' );
+		set.type( 'input[aria-label="Hover lift"]', '' );
+		expect( set.setAttributes ).toHaveBeenCalledWith( { flowOpenerHoverLiftDistance: undefined } );
+		set.unmount();
+	} );
+
+	test( 'a declaration that names no hoverLift group (a square arrow) shows no hover lift', async () => {
+		declare( [ { ...FLOW_OPENER, groups: [ 'colour', 'size' ] } ] );
+		const m = await mount();
+		expect( m.q( 'input[aria-label="Hover lift"]' ) ).toBeNull();
+		m.unmount();
+	} );
+} );

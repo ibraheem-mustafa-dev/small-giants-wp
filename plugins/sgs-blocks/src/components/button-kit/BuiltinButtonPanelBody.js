@@ -48,6 +48,33 @@ const TIER_TYPOGRAPHY_BASES = ROWS
 	)
 	.map( ( row ) => row.base );
 
+/** The hover lift is a length in px, at most the ceiling `includes/helpers-hover-lift.php` clamps to (SGS_HOVER_LIFT_MAX_PX). */
+const HOVER_LIFT_UNITS = [ 'px' ];
+const HOVER_LIFT_MAX_PX = 24;
+
+/**
+ * The content alignment choices, sgs/button's own list (its Content alignment control); the empty choice means unset.
+ *
+ * @param {string} tier The device being edited.
+ * @return {Array<{label:string,value:string}>} Select options.
+ */
+const contentAlignOptions = ( tier ) => [
+	{
+		label:
+			'desktop' === tier
+				? __( 'Centre (default)', 'sgs-blocks' )
+				: __( '— inherit —', 'sgs-blocks' ),
+		value: '',
+	},
+	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+	{
+		label: __( 'Spread (label and price at opposite ends)', 'sgs-blocks' ),
+		value: 'space-between',
+	},
+];
+
 const TYPOGRAPHY_TARGET = {
 	fontSizePresets: true,
 	showFontFamily: true,
@@ -312,6 +339,29 @@ export default function BuiltinButtonPanelBody( {
 							) }
 						</ResponsiveOverride>
 					) }
+					{ has( 'contentAlign' ) && (
+						<ResponsiveOverride
+							label={ __( 'Content alignment', 'sgs-blocks' ) }
+							value={ attributes[ attr( 'ContentAlign' ) ] }
+							onChange={ ( obj ) =>
+								setAttributes( {
+									[ attr( 'ContentAlign' ) ]: obj,
+								} )
+							}
+						>
+							{ ( { tier, ownValue, setOwnValue } ) => (
+								<SelectControl
+									value={ ownValue || '' }
+									options={ contentAlignOptions( tier ) }
+									onChange={ ( val ) =>
+										setOwnValue( val || undefined )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
+					) }
 					{ has( 'padding' ) && (
 						<ResponsiveOverride
 							value={ attributes[ attr( 'Padding' ) ] }
@@ -401,6 +451,24 @@ export default function BuiltinButtonPanelBody( {
 							} }
 							// A block that declares `{prefix}ShadowLiftOnHover` (the buy box's Add to Cart) gets its switch here too.
 							liftPrefix={ prefix }
+						/>
+					) }
+					{ has( 'hoverLift' ) && (
+						<SgsLengthControl
+							label={ __( 'Hover lift', 'sgs-blocks' ) }
+							help={ __(
+								'How far the button moves up on hover, in place of any lift the site sets. 0 keeps it still. Empty keeps whatever the site sets.',
+								'sgs-blocks'
+							) }
+							presets={ false }
+							units={ HOVER_LIFT_UNITS }
+							max={ HOVER_LIFT_MAX_PX }
+							value={
+								attributes[ attr( 'HoverLiftDistance' ) ] ?? ''
+							}
+							onChange={ ( val ) =>
+								write( 'HoverLiftDistance', val )
+							}
 						/>
 					) }
 					{ has( 'typography' ) && (

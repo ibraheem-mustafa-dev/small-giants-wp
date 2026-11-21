@@ -52,6 +52,21 @@ describe( 'buttonKitStyle', () => {
 		expect( buttonKitStyle( attributes, 'x' ).paddingTop ).toBe( '10px' );
 	} );
 
+	test( 'content alignment follows the previewed device and takes only the values sgs/button takes', () => {
+		const attributes = { xContentAlign: { desktop: 'space-between', mobile: 'flex-start' } };
+		expect( buttonKitStyle( attributes, 'x' ).justifyContent ).toBe( 'space-between' );
+		expect( buttonKitStyle( attributes, 'x', { tier: 'mobile' } ).justifyContent ).toBe( 'flex-start' );
+		expect( buttonKitStyle( attributes, 'x', { tier: 'tablet' } ).justifyContent ).toBe( 'space-between' );
+		// Negative controls: unset, a value outside the list and another prefix paint nothing.
+		expect( buttonKitStyle( { xContentAlign: {} }, 'x' ) ).toEqual( {} );
+		expect( buttonKitStyle( { xContentAlign: { desktop: 'stretch' } }, 'x' ) ).toEqual( {} );
+		expect( buttonKitStyle( attributes, 'other' ) ).toEqual( {} );
+	} );
+
+	test( 'the hover lift distance is a hover movement, so the canvas paints nothing for it', () => {
+		expect( buttonKitStyle( { xHoverLiftDistance: '2px' }, 'x' ) ).toEqual( {} );
+	} );
+
 	test( 'width: fit is fit-content, full is 100%, unset is nothing', () => {
 		expect( buttonKitStyle( { xWidthType: 'fit' }, 'x' ).width ).toBe( 'fit-content' );
 		expect( buttonKitStyle( { xWidthType: 'full' }, 'x' ).width ).toBe( '100%' );

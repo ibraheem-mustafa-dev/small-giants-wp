@@ -7,7 +7,8 @@
  * (`sgsBorderPreview`), per-device padding (`tierBoxLonghands`), min height and the square `size` (`tierLengthPreview`), type
  * (`typographyPreviewStyle`) and shadow (`composeShadow`). The attribute names are `prefix + base`, the bases taken from
  * `registry.json`, so the canvas can never read a name the generator did not create. The preset choice is not here: the
- * canvas gives the button the preset's class, as the page does. Hover and press states are not previewed.
+ * canvas gives the button the preset's class, as the page does. Hover and press states are not previewed, so `HoverLiftDistance`
+ * (a hover movement) has no canvas twin.
  *
  * `tests/js/button-kit-style.test.js` runs this and the PHP emitter over one fixture (`tests/fixtures/button-kit/preview-parity.json`)
  * and compares what each paints. Inline `style` is allowed in the editor canvas only; the front end prints a stylesheet.
@@ -18,9 +19,13 @@ import registry from './registry.json';
 import { backgroundPaintPreview, textPaintPreview } from '../../utils/background-preview';
 import { sgsBorderPreview } from '../../utils/border-preview';
 import { tierLengthPreview } from '../../utils/cssLength';
+import { tierValueOf } from '../../utils/responsive';
 import { composeShadow } from '../../utils/shadow-layers';
 import { tierBoxLonghands } from '../../utils/spacing-preview';
 import { typographyPreviewStyle } from '../../utils/typography-preview';
+
+/** The `justify-content` values `{prefix}ContentAlign` takes (sgs/button's `contentAlign` list; PHP: SGS_BUTTON_KIT_CONTENT_ALIGN). */
+const CONTENT_ALIGN = [ 'flex-start', 'center', 'flex-end', 'space-between' ];
 
 const BASES = new Set(
 	Object.values( registry.groups )
@@ -71,6 +76,12 @@ export default function buttonKitStyle( attributes, prefix, { tier = 'desktop', 
 	if ( size ) {
 		style.width = size;
 		style.height = size;
+	}
+
+	// The `contentAlign` group: justify-content on the button, from sgs/button's value list, at the previewed device.
+	const align = tierValueOf( attr( 'ContentAlign' ), tier );
+	if ( CONTENT_ALIGN.includes( align ) ) {
+		style.justifyContent = align;
 	}
 
 	const shadow = composeShadow( attr( 'Shadow' ), attr( 'ShadowColour' ) );

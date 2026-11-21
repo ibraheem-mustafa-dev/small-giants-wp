@@ -68,3 +68,53 @@ if ( ! function_exists( 'sgs_hover_lift_rule' ) ) {
 		return '' === $rules ? '' : SGS_HOVER_LIFT_MOTION_MEDIA . '{' . $rules . '}';
 	}
 }
+
+if ( ! function_exists( 'sgs_hover_lift_distance_px' ) ) {
+	/**
+	 * A built-in button's lift distance setting (`{prefix}HoverLiftDistance`) as whole pixels.
+	 *
+	 * The setting is one length in px, stored as a string (`2px`; a bare `2` and a number read the same). Unset (null, ''), a
+	 * negative value, another unit or anything else unreadable is null, so a stored value this does not understand prints nothing
+	 * and the site's own lift stands. A set value is clamped to 0..SGS_HOVER_LIFT_MAX_PX; 0 is a real answer (no movement).
+	 *
+	 * @param mixed $raw Stored attribute value.
+	 * @return int|null Pixels, or null when the setting is unset or unreadable.
+	 */
+	function sgs_hover_lift_distance_px( $raw ): ?int {
+		if ( is_int( $raw ) || is_float( $raw ) ) {
+			$raw = (string) $raw;
+		}
+		if ( ! is_string( $raw ) || 1 !== preg_match( '/^\s*(\d+(?:\.\d+)?)\s*(?:px)?\s*$/i', $raw, $m ) ) {
+			return null;
+		}
+		return sgs_hover_lift_px( (int) floor( (float) $m[1] ) );
+	}
+}
+
+if ( ! function_exists( 'sgs_hover_lift_distance_rule' ) ) {
+	/**
+	 * The hover and keyboard-focus rule that makes a button's total movement exactly the setting, whatever lift the site's button
+	 * token adds.
+	 *
+	 * A distance above 0 prints two rules on the same selector. `transform:none` cancels the stylesheet's own hover `transform` (a
+	 * site's `hover-transform` token, a preset's lift), which would otherwise add to the movement; it is not gated on motion, so a
+	 * visitor who asks for reduced motion gets no movement at all, the site's own included. `translate:0 -Npx` carries the movement,
+	 * inside the no-preference motion media query as every lift does (it uses `translate`, which composes with a hover scale). A
+	 * distance of 0 prints `transform:none;translate:none`, so the button does not move even where the site lifts it. The hover
+	 * half stays behind the touch guard (`sgs_hover_state_rules()`), as the kit's other hover rules do.
+	 *
+	 * @param string $selector Base selector or comma list, with any state guard already chained (no `:hover` suffix).
+	 * @param mixed  $raw      Stored `{prefix}HoverLiftDistance` value.
+	 * @return string The rule pair, or '' when the setting is unset or unreadable.
+	 */
+	function sgs_hover_lift_distance_rule( string $selector, $raw ): string {
+		$px = sgs_hover_lift_distance_px( $raw );
+		if ( null === $px ) {
+			return '';
+		}
+		if ( 0 === $px ) {
+			return sgs_hover_state_rules( $selector, 'transform:none;translate:none;' );
+		}
+		return sgs_hover_state_rules( $selector, 'transform:none;' ) . sgs_hover_lift_rule( $selector, $px );
+	}
+}

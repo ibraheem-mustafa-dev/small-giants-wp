@@ -453,6 +453,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	}
 }
 
+/** The `justify-content` values a built-in button's `{prefix}ContentAlign` accepts (sgs/button's `contentAlign` list). */
+const SGS_BUTTON_KIT_CONTENT_ALIGN = array( 'flex-start', 'center', 'flex-end', 'space-between' );
+
 if ( ! function_exists( 'sgs_builtin_button_attr' ) ) {
 
 	/**
@@ -599,13 +602,17 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 	 *      (`sgs_emit_responsive_css()`), both stored per device.
 	 *   3. Typography: `sgs_typography_css_rule()`, the font size, line height and letter spacing as `{desktop, tablet, mobile}` objects.
 	 *   4. Size and min height: `sgs_emit_responsive_css()` on `{p}Size` (a square control's width and height, the `size` group) and on `{p}MinHeight`.
+	 *   4c. Content alignment: `sgs_emit_responsive_css()` on `{p}ContentAlign` (`justify-content`, one of flex-start, center, flex-end, space-between, per device).
 	 *   5. Shadow: `sgs_shadow_decls()` resting, handed to the focus ring as `--sgs-focus-under` (the focus ring replaces
 	 *      `box-shadow`), and the hover shadow behind the touch guard with its keyboard-focus twin (`sgs_hover_state_rules()`).
+	 *   5b. Hover lift distance: `sgs_hover_lift_distance_rule()` on `{p}HoverLiftDistance` (px): the hovered button moves up by exactly that
+	 *      distance, cancelling the site's own hover transform; 0 stops the movement; unset prints nothing. Behind the touch guard, off
+	 *      under reduced motion, with the same `state_guard` as the colour rules.
 	 *   6. The preset's pressed look, last, so it wins the tie with the hover shadow rule while the button is held.
 	 * Every attribute is unset by default and prints nothing, so a block that calls this with the kit unset renders as before.
 	 *
 	 * The hover lift comes from the preset's `hover-lift` token, then `default`'s, then none (Spec 32 FR-32-19; the path
-	 * `sgs_button_preset_css( ..., $kit )` prints); a part cannot carry its own motion record.
+	 * `sgs_button_preset_css( ..., $kit )` prints); a part cannot carry its own motion record, but a button's own `{p}HoverLiftDistance` (step 5b) replaces that movement with its exact distance.
 	 *
 	 * Weights: the shared preset rule is the minted class doubled plus the element (0,3,0 resting, 0,4,0 hover) and the pressed
 	 * rule the class tripled, so `$selector` should weigh at least 0,3,0 (resting) to out-rank the preset where both set a property;
@@ -643,6 +650,7 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 		require_once __DIR__ . '/helpers-button-preset.php';
 		require_once __DIR__ . '/helpers-button-press.php';
 		require_once __DIR__ . '/helpers-button-focus.php';
+		require_once __DIR__ . '/helpers-hover-lift.php';
 		$parts      = array_values( array_filter( array_map( 'trim', explode( ',', $selector ) ), 'strlen' ) );
 		$responsive = array( 'container' => ! empty( $opts['container'] ) );
 
@@ -765,6 +773,23 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 			);
 		}
 
+		// 4c. Content alignment per device: `justify-content` on the button (a label at one end and a price or note at the other
+		// is `space-between`). The values are sgs/button's own list; another value prints nothing.
+		$align = $attrs[ $prefix . 'ContentAlign' ] ?? array();
+		if ( is_array( $align ) && array() !== $align ) {
+			$css .= sgs_emit_responsive_css(
+				$selector,
+				array(
+					array(
+						'value'     => $align,
+						'css'       => 'justify-content',
+						'transform' => static fn( $raw ) => in_array( $raw, SGS_BUTTON_KIT_CONTENT_ALIGN, true ) ? $raw : '',
+					),
+				),
+				$responsive
+			);
+		}
+
 		// 5. Shadow: resting (also handed to the focus ring) and hover (behind the touch guard).
 		$shadow_map   = sgs_shadow_attr_map( $prefix . 'Shadow', true, true );
 		$shadow_attrs = $attrs;
@@ -786,6 +811,10 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 			// Guarded `:hover` and the keyboard-focus twin, as every other hover look prints.
 			$css .= sgs_hover_state_rules( implode( ',', array_map( static fn( string $part ): string => $part . $guard, $parts ) ), implode( ';', $hover ) . ';' );
 		}
+
+		// 5b. Hover lift distance: the total hover movement is the setting (see sgs_hover_lift_distance_rule()), so it also cancels the
+		// site's own lift; unset prints nothing, 0 stops the movement.
+		$css .= sgs_hover_lift_distance_rule( implode( ',', array_map( static fn( string $part ): string => $part . $guard, $parts ) ), $attrs[ $prefix . 'HoverLiftDistance' ] ?? null );
 
 		// 6. The pressed look, last: it ties in weight with the hover shadow rule above and must win while the button is held.
 		return $css . $shared['press_css'];
