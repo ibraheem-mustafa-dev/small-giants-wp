@@ -88,7 +88,8 @@ $scoped_css[] = sgs_account_scoped_css( $attributes, $root_sel );
 $scoped_css[] = sgs_account_field_css( $attributes, $root_sel );
 $scoped_css[] = sgs_account_look_css( $attributes, $root_sel );
 $scoped_css[] = sgs_account_button_icon_css( $attributes, $root_sel );
-$show_card    = sgs_account_signed_out_card_active( $attributes );
+$scoped_css[] = sgs_account_button_kit_css( $attributes, $root_sel );
+$show_card    =sgs_account_signed_out_card_active( $attributes );
 if ( $show_menu_icons ) {
 	$scoped_css[] = sgs_account_menu_icon_css( $menu_icons, $root_sel );
 }

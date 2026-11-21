@@ -335,7 +335,7 @@ final class Account_Endpoints {
 		if ( '' === $url && function_exists( 'wc_get_page_permalink' ) ) {
 			$url = (string) \wc_get_page_permalink( 'shop' );
 		}
-		return \sgs_account_empty_card_html( $heading, $text, $label, $url );
+		return \sgs_account_empty_card_html( $heading, $text, $label, $url, $attrs );
 	}
 
 	/**

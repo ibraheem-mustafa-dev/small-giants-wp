@@ -3597,7 +3597,11 @@ function checkBlock( blockDir ) {
 	}
 
 	const blockName = meta.name || path.basename( blockDir );
-	const attrs     = Object.keys( meta.attributes || {} );
+	// A built-in button kit attribute (`_generated: "button-kit"`, scripts/generate-button-attributes.mjs) prints through
+	// sgs_button_kit_css() on the one selector the block gives its button, which the block's own CSS names as today's look, kept
+	// when the attribute is unset (Spec 32 FR-32-33). Its name carries no element, so the name-suffix path would read it as owning
+	// every border radius or padding in the block's stylesheet and flag them all; it is left out here.
+	const attrs     = Object.keys( meta.attributes || {} ).filter( ( name ) => 'button-kit' !== meta.attributes[ name ]?._generated );
 
 	// ── E9: Block Selectors API typography detection ─────────────────────────
 	// If block.json declares selectors.typography, WP applies font-size etc.

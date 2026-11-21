@@ -21,5 +21,5 @@ if ( '' === $sgs_url && function_exists( 'wc_get_page_permalink' ) ) {
 // WooCommerce's own orders template fires these around its content; extensions hook them.
 do_action( 'woocommerce_before_account_orders', $has_orders ?? false );
 ?>
-<?php echo function_exists( 'sgs_account_empty_card_html' ) ? sgs_account_empty_card_html( $sgs_heading, $sgs_text, $sgs_label, $sgs_url ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in sgs_account_empty_card_html(). ?>
+<?php echo function_exists( 'sgs_account_empty_card_html' ) ? sgs_account_empty_card_html( $sgs_heading, $sgs_text, $sgs_label, $sgs_url, $sgs_attrs ) : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in sgs_account_empty_card_html(). ?>
 <?php do_action( 'woocommerce_after_account_orders', $has_orders ?? false ); ?>

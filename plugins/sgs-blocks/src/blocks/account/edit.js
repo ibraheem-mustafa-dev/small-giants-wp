@@ -12,6 +12,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 import {
 	ResponsiveControl,
 	SgsBorderControl,
@@ -385,6 +386,17 @@ export default function Edit( { attributes, setAttributes } ) {
 					</ResponsiveControl>
 				</PanelBody>
 			</InspectorControls>
+			{ /* The block's built-in buttons (the built-in button kit's one panel, which mounts its own Styles group): the signed-out
+			     card's two buttons and the button in the empty-state card. The canvas is the server render, so no twin is needed. */ }
+			{ [ 'signedOutSignIn', 'signedOutRegister', 'emptyState' ].map( ( prefix ) => (
+				<BuiltinButtonPanel
+					key={ prefix }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					blockName="sgs/account"
+					prefix={ prefix }
+				/>
+			) ) }
 			<div { ...blockProps }>
 				<SsrPreviewGuard>
 					<ServerSideRender

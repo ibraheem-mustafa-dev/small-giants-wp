@@ -17,6 +17,8 @@ require_once dirname( __DIR__ ) . '/helpers-border-style.php';
 require_once dirname( __DIR__ ) . '/helpers-colour-variants.php';
 require_once dirname( __DIR__ ) . '/helpers-responsive.php';
 require_once dirname( __DIR__ ) . '/helpers-flex-wrap.php';
+require_once dirname( __DIR__ ) . '/helpers-button-preset-names.php';
+require_once dirname( __DIR__ ) . '/helpers-button-style.php';
 require_once dirname( __DIR__ ) . '/helpers-link-source.php';
 require_once __DIR__ . '/helpers-account-render-css.php';
 
@@ -90,18 +92,97 @@ if ( ! function_exists( 'sgs_account_page_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_button_preset' ) ) {
+	/**
+	 * The preset one built-in button of the block wears: the one its `{prefix}Style` setting names (a starter, or a name an
+	 * opted-in site carries), else the fixed preset the button has always worn.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $prefix     Button kit prefix (`signedOutSignIn`, `signedOutRegister`, `emptyState`).
+	 * @param string $fixed      The preset the button wears while the setting is unset.
+	 * @return string Preset slug.
+	 */
+	function sgs_account_button_preset( array $attributes, string $prefix, string $fixed ): string {
+		$name  = $attributes[ $prefix . 'Style' ] ?? '';
+		$named = is_string( $name ) ? sgs_button_preset_resolve( $name ) : '';
+		return '' !== $named ? $named : $fixed;
+	}
+}
+
+if ( ! function_exists( 'sgs_account_button_look_attrs' ) ) {
+	/**
+	 * A button's kit attributes without its preset choice. These buttons are `sgs/button` blocks, which print their own preset
+	 * from `inheritStyle` (see sgs_account_button_preset()), so the kit's shared preset rule would sit on a class the button
+	 * does not wear; the kit prints the look settings only.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $prefix     Button kit prefix.
+	 * @return array Block attributes with `{prefix}Style` removed.
+	 */
+	function sgs_account_button_look_attrs( array $attributes, string $prefix ): array {
+		unset( $attributes[ $prefix . 'Style' ] );
+		return $attributes;
+	}
+}
+
+if ( ! function_exists( 'sgs_account_button_kit_parts' ) ) {
+	/**
+	 * The built-in button kit's look CSS for each of the block's three buttons, keyed by prefix: Sign in and Create account on
+	 * the signed-out card, and the button in the empty-state card (Orders and Saved items share it). Each selector weighs
+	 * (0,4,0), above the rules the button prints for itself (`.{uid}.sgs-button`, (0,2,0)) and the card's
+	 * `.sgs-account__*-actions .sgs-button` rules ((0,3,0)). The card holds one empty-state button, so its doubled `.sgs-button`
+	 * stands in for a hook class and reaches the same weight.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $root_sel   The block's scoped root selector.
+	 * @return array<string,string> CSS text per prefix; '' where nothing is set.
+	 */
+	function sgs_account_button_kit_parts( array $attributes, string $root_sel ): array {
+		$actions = $root_sel . ' .sgs-account__signed-out-actions';
+		return array(
+			'signedOutSignIn'   => sgs_button_kit_css( sgs_account_button_look_attrs( $attributes, 'signedOutSignIn' ), 'signedOutSignIn', $actions . ' .sgs-account__signed-out-sign-in.sgs-button' ),
+			'signedOutRegister' => sgs_button_kit_css( sgs_account_button_look_attrs( $attributes, 'signedOutRegister' ), 'signedOutRegister', $actions . ' .sgs-account__signed-out-register.sgs-button' ),
+			'emptyState'        => sgs_button_kit_css( sgs_account_button_look_attrs( $attributes, 'emptyState' ), 'emptyState', $root_sel . ' .sgs-account__orders-empty-actions .sgs-button.sgs-button' ),
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_account_button_kit_css' ) ) {
+	/**
+	 * The built-in button kit's CSS for the block's three buttons ({@see sgs_account_button_kit_parts()}). The existing
+	 * `signedOutButtonMinHeight` and `signedOutButtonShadow*` settings stay as they are; this prints after them and, per
+	 * button, wins.
+	 *
+	 * @param array  $attributes Block attributes.
+	 * @param string $root_sel   The block's scoped root selector.
+	 * @return string CSS text (may be '').
+	 */
+	function sgs_account_button_kit_css( array $attributes, string $root_sel ): string {
+		return implode( '', sgs_account_button_kit_parts( $attributes, $root_sel ) );
+	}
+}
+
 if ( ! function_exists( 'sgs_account_signed_out_button' ) ) {
 	/**
 	 * One card button, rendered by sgs/button so it takes the site's button
 	 * presets, hover and focus exactly as every other SGS button does.
 	 *
-	 * @param string $label  Visible label.
-	 * @param string $url    Destination.
-	 * @param string $preset sgs/button `inheritStyle` preset.
-	 * @param array  $look   Extra sgs/button attributes (minHeight, boxShadow, boxShadowColour).
+	 * @param string $label      Visible label.
+	 * @param string $url        Destination.
+	 * @param string $preset     sgs/button `inheritStyle` preset.
+	 * @param array  $look       Extra sgs/button attributes (minHeight, boxShadow, boxShadowColour).
+	 * @param array  $attributes The account block's attributes, read for the button's kit settings.
+	 * @param string $prefix     Button kit prefix ('' for a button with none).
+	 * @param string $hook       Class that scopes this button's kit rules, added only while a look setting prints ('' for none).
 	 * @return string Button HTML.
 	 */
-	function sgs_account_signed_out_button( string $label, string $url, string $preset, array $look = array() ): string {
+	function sgs_account_signed_out_button( string $label, string $url, string $preset, array $look = array(), array $attributes = array(), string $prefix = '', string $hook = '' ): string {
+		if ( '' !== $prefix ) {
+			$preset = sgs_account_button_preset( $attributes, $prefix, $preset );
+			if ( '' !== $hook && '' !== ( sgs_account_button_kit_parts( $attributes, '.x' )[ $prefix ] ?? '' ) ) {
+				$look['className'] = $hook;
+			}
+		}
 		return render_block(
 			array(
 				'blockName'    => 'sgs/button',
@@ -126,13 +207,14 @@ if ( ! function_exists( 'sgs_account_empty_card_html' ) ) {
 	 * The empty-state card of an account tab: a heading, a line of text and a button, each printed only while set.
 	 * The Orders and Saved items tabs share it, so one set of look settings (`ordersEmpty*`) paints both.
 	 *
-	 * @param string $heading Card heading.
-	 * @param string $text    Card text (post-level HTML).
-	 * @param string $label   Button label; the button is left out when empty.
-	 * @param string $url     Button link; the button is left out when empty.
+	 * @param string $heading    Card heading.
+	 * @param string $text       Card text (post-level HTML).
+	 * @param string $label      Button label; the button is left out when empty.
+	 * @param string $url        Button link; the button is left out when empty.
+	 * @param array  $attributes The account block's attributes, read for the button's kit settings (`emptyState*`).
 	 * @return string Escaped HTML.
 	 */
-	function sgs_account_empty_card_html( string $heading, string $text, string $label, string $url ): string {
+	function sgs_account_empty_card_html( string $heading, string $text, string $label, string $url, array $attributes = array() ): string {
 		$html = '<div class="sgs-account__orders-empty">';
 		if ( '' !== $heading ) {
 			$html .= '<p class="sgs-account__orders-empty-title">' . esc_html( $heading ) . '</p>';
@@ -141,7 +223,7 @@ if ( ! function_exists( 'sgs_account_empty_card_html' ) ) {
 			$html .= '<p class="sgs-account__orders-empty-text">' . wp_kses_post( $text ) . '</p>';
 		}
 		if ( '' !== $label && '' !== $url ) {
-			$html .= '<div class="sgs-account__orders-empty-actions">' . sgs_account_signed_out_button( $label, esc_url_raw( $url ), 'primary' ) . '</div>';
+			$html .= '<div class="sgs-account__orders-empty-actions">' . sgs_account_signed_out_button( $label, esc_url_raw( $url ), 'primary', array(), $attributes, 'emptyState' ) . '</div>';
 		}
 		return $html . '</div>';
 	}
@@ -188,7 +270,7 @@ if ( ! function_exists( 'sgs_account_signed_out_html' ) ) {
 		$html .= '<h2 class="sgs-account__heading sgs-account__signed-out-heading">' . sgs_rich_text_kses( $heading ) . '</h2>';
 		$html .= '<p class="sgs-account__card-desc sgs-account__signed-out-copy">' . sgs_rich_text_kses( $copy ) . '</p>';
 		$html .= '<div class="sgs-account__signed-out-actions">';
-		$html .= sgs_account_signed_out_button( $sign_in_label, $sign_in_url, 'primary', $look );
+		$html .= sgs_account_signed_out_button( $sign_in_label, $sign_in_url, 'primary', $look, $attributes, 'signedOutSignIn', 'sgs-account__signed-out-sign-in' );
 
 		if ( sgs_account_registration_enabled() ) {
 			$register_label = (string) ( $attributes['signedOutRegisterLabel'] ?? __( 'Create an account', 'sgs-blocks' ) );
@@ -201,7 +283,7 @@ if ( ! function_exists( 'sgs_account_signed_out_html' ) ) {
 					)
 				);
 			}
-			$html .= sgs_account_signed_out_button( $register_label, $register_url, 'secondary', $look );
+			$html .= sgs_account_signed_out_button( $register_label, $register_url, 'secondary', $look, $attributes, 'signedOutRegister', 'sgs-account__signed-out-register' );
 		}
 
 		return $html . '</div></div>';
