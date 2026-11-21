@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "return types( row, schema ).includes( 'string' ) ? STRUCTURE_ROLES.includes( row.role ) : true;",
+		"replace": "return types( row, schema ).includes( 'string' ) ? STRUCTURE_ROLES.includes( row.role ) : false;",
+		"why": "a choice among numbers would again get no presence reading"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "return types( row, schema ).includes( 'string' ) ? STRUCTURE_ROLES.includes( row.role ) : true;",
+		"replace": "return true;",
+		"why": "every string enum would be read for presence whatever its role (the enum-mode negative control)"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "if ( null != row.css_property || ! structureValues( row, schema ).length ) {",
+		"replace": "if ( ! structureValues( row, schema ).length ) {",
+		"why": "a number list that paints a CSS property would be read for presence"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "if ( null != row.css_property || ! structureValues( row, schema ).length ) {",
+		"replace": "if ( null != row.css_property ) {",
+		"why": "a setting with no value list would count as a structure choice"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "const keep = t.includes( 'string' ) ? ( v ) => 'string' === typeof v && '' !== v : ( v ) => number && 'number' === typeof v && Number.isFinite( v );",
+		"replace": "const keep = t.includes( 'string' ) ? ( v ) => '' !== v : ( v ) => number && 'number' === typeof v && Number.isFinite( v );",
+		"why": "a string setting listing numbers would be a structure choice"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "const keep = t.includes( 'string' ) ? ( v ) => 'string' === typeof v && '' !== v : ( v ) => number && 'number' === typeof v && Number.isFinite( v );",
+		"replace": "const keep = t.includes( 'string' ) ? ( v ) => 'string' === typeof v && '' !== v : ( v ) => 'string' === typeof v;",
+		"why": "a number setting's values would be dropped"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "return structureValues( row, schema ).filter( ( v ) => v !== resting );",
+		"replace": "return structureValues( row, schema );",
+		"why": "the value the default instance already renders would be read against itself"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "key: `content-${ kind }-${ row.attr_name }${ undefined === extra.value ? '' : `-${ extra.value }` }`,",
+		"replace": "key: `content-${ kind }-${ row.attr_name }${ extra.value ? `-${ extra.value }` : '' }`,",
+		"why": "a value of 0 would share the setting's plain instance key"
+	},
+	{
+		"file": "lib/fill-unread.mjs",
+		"find": ".all( block ).filter( ( r ) => isStructureRow( r ) ).map( ( r ) => ( { ...r } ) );",
+		"replace": ".all( block ).filter( ( r ) => [].concat( r.attr_type || [] ).includes( 'string' ) && isStructureRow( r ) ).map( ( r ) => ( { ...r } ) );",
+		"why": "Fill would never name an unread number choice"
+	}
+]

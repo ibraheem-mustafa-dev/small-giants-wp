@@ -8,27 +8,19 @@
 //             cannot choose its value.
 // A setting the skeleton sets itself, or that Fill wrote, is never listed. Content settings come from the database's
 // roles (lib/calibrate-content.mjs::contentRowsFor), never a list of names.
-import { contentRowsFor, STRUCTURE_ROLES } from './calibrate-content.mjs';
+import { contentRowsFor, STRUCTURE_ROLES, STRUCTURE_WHERE, isStructureRow, structureValues } from './calibrate-content.mjs';
 import { LOOSE } from './resolve.mjs';
 
 export { STRUCTURE_ROLES };
 
-const COLS = 'attr_name, attr_type, enum_values, role';
+const COLS = 'attr_name, attr_type, enum_values, role, css_property';
 
-// The string values an enum row lists ([] when it will not parse).
-const enumStrings = ( row ) => {
-	try {
-		return [].concat( JSON.parse( row.enum_values ) ).filter( ( v ) => 'string' === typeof v && v );
-	} catch {
-		return [];
-	}
-};
-
-// A block's structure settings: SGS-owned enums with no css_property in a STRUCTURE_ROLES role, of a string type with at
-// least one string value. An enum of another type (an object setting whose enum names its keys) is never read for presence
-// (lib/calibrate-content.mjs::structurePresenceValues), so it is not listed as unread. db: lib/db.mjs::openDb.
+// A block's structure settings, the ones calibration reads value by value (lib/calibrate-content.mjs::isStructureRow):
+// SGS-owned, no css_property, a string enum in a STRUCTURE_ROLES role or a choice among numbers. A setting of another type
+// (an object setting whose enum names its keys) is never read for presence, so it is not listed as unread.
+// db: lib/db.mjs::openDb.
 export function structureRowsFor( db, block ) {
-	return db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND css_property IS NULL AND enum_values IS NOT NULL AND role IN ( ${ STRUCTURE_ROLES.map( () => '?' ).join( ', ' ) } )` ).all( block, ...STRUCTURE_ROLES ).filter( ( r ) => [].concat( r.attr_type || [] ).includes( 'string' ) && enumStrings( r ).length ).map( ( r ) => ( { ...r } ) );
+	return db.prepare( `SELECT ${ COLS } FROM block_attributes WHERE block_slug = ? AND source IN ( 'sgs', 'sgs-ext' ) AND ${ STRUCTURE_WHERE }` ).all( block ).filter( ( r ) => isStructureRow( r ) ).map( ( r ) => ( { ...r } ) );
 }
 
 // One node's unjudged settings. cal: the block's calibration; attributes: the skeleton node's own attributes; slots:
@@ -82,7 +74,7 @@ export function unreadOf( { db, block, cal, attributes = {}, slots = [], written
 		if ( decided( attr ) || presenceKeys.some( ( k ) => k.startsWith( `${ attr }=` ) ) ) {
 			continue;
 		}
-		out.push( { kind: 'structure', slot: '', settings: [ attr ], reason: `calibration has no presence reading for its values (${ enumStrings( row ).join( ', ' ) }), so the draft cannot choose one` } );
+		out.push( { kind: 'structure', slot: '', settings: [ attr ], reason: `calibration has no presence reading for its values (${ structureValues( row ).join( ', ' ) }), so the draft cannot choose one` } );
 	}
 	return out;
 }

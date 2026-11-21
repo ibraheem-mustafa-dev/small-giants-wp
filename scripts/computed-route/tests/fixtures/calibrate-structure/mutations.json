@@ -19,21 +19,21 @@
 	},
 	{
 		"file": "lib/calibrate-content.mjs",
-		"find": "'string' === typeof v && v && v !== resting",
-		"replace": "'string' === typeof v && v",
+		"find": "return structureValues( row, schema ).filter( ( v ) => v !== resting );",
+		"replace": "return structureValues( row, schema );",
 		"why": "the resting value is planned as a marker"
 	},
 	{
 		"file": "lib/calibrate-content.mjs",
-		"find": "'string' === typeof v && v && v !== resting",
-		"replace": "'string' === typeof v && v !== resting",
+		"find": "( v ) => 'string' === typeof v && '' !== v",
+		"replace": "( v ) => 'string' === typeof v",
 		"why": "the empty (unset) value is planned as a marker"
 	},
 	{
 		"file": "lib/calibrate-content.mjs",
-		"find": "row.attr_name === variant?.variantAttr || ! types( row, schema ).includes( 'string' )",
-		"replace": "false",
-		"why": "the variant setting is planned twice and a sizing object takes a string marker"
+		"find": "if ( row.attr_name === variant?.variantAttr ) {",
+		"replace": "if ( false ) {",
+		"why": "the variant setting is planned twice"
 	},
 	{
 		"file": "lib/calibrate-content.mjs",
@@ -52,5 +52,11 @@
 		"find": "add( row, 'presence', { label: `structure-${ value }`, attrs: { [ row.attr_name ]: value }, needle: null }, { value } );",
 		"replace": "add( row, 'presence', { label: `structure-${ value }`, attrs: { [ row.attr_name ]: value }, needle: null } );",
 		"why": "the instance carries no value, so the cache key loses its =value"
+	},
+	{
+		"file": "lib/calibrate-content.mjs",
+		"find": "const keep = t.includes( 'string' ) ?",
+		"replace": "const keep = true ?",
+		"why": "a sizing object takes a string marker"
 	}
 ]
