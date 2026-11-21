@@ -64,5 +64,11 @@
 		"find": "const calibrated = 'calibrated-default' === baseline ? widths[ 0 ] :",
 		"replace": "const calibrated = 'string' === typeof baseline ? widths[ 0 ] :",
 		"why": "a row settled against the parent carries a measured context"
+	},
+	{
+		"file": "lib/fill-resolve-state.mjs",
+		"find": "\tconst widths = draftWidths.filter( ( w ) => TIER_WIDTHS.includes( Number( w ) ) );",
+		"replace": "\tconst widths = draftWidths;",
+		"why": "a draft width the resolver never compared splits the label"
 	}
 ]

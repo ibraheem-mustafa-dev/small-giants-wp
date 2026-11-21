@@ -67,6 +67,17 @@ test( 'equalBaseline gives one name where every width agrees, a map where they d
 	assert.equal( equalBaseline( () => ( { value: 'a', source: 'theme' } ), () => 'a', '', [] ), null, 'no width, no name' );
 } );
 
+test( 'MUST FAIL before the fix: a draft width beside the tiers names no second baseline (the resolver compared the tiers only)', () => {
+	// The draft holds 1024 and 1920 beside the three tiers; only the tiers were judged (lib/fill-prop.mjs::tiersDiffering), so a
+	// baseline that differs at 1920 alone is one cause, named once.
+	const sourceAt = ( slot, w ) => ( 1920 === w || 1024 === w ? { value: '24px', source: 'parent' } : { value: '0px', source: 'calibrated-default' } );
+	const usedAt = ( slot, w ) => sourceAt( slot, w ).value;
+	assert.equal( equalBaseline( sourceAt, usedAt, '', FIVE ), 'calibrated-default' );
+	// Negative control: a difference at a tier width is still named per width, over the tier widths alone.
+	const tierSplit = ( slot, w ) => ( 375 === w ? { value: '1px', source: 'theme' } : sourceAt( slot, w ) );
+	assert.deepEqual( equalBaseline( tierSplit, ( slot, w ) => tierSplit( slot, w ).value, '', FIVE ), { 375: 'theme', 768: 'calibrated-default', 1440: 'calibrated-default' } );
+} );
+
 function run( styles, { child = null, cal = calFor() } = {} ) {
 	const skeleton = [ { name: 'sgs/container', draftRef: '.a', attributes: {}, ...( child ? { innerBlocks: [ { name: 'sgs/container', draftRef: '.b', attributes: {} } ] } : {} ) } ];
 	const tree = cleanTree( skeleton );

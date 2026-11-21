@@ -4,7 +4,7 @@ import { HOVER_PROPS } from '../../parity/lib/collect.mjs';
 import { blockSchema, splitProperty } from './resolve.mjs';
 import { refOf, walk } from './tree.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
-import { INHERITED, CARRIED, FLEX_ONLY, defaultPaint } from './fill-prop.mjs';
+import { INHERITED, CARRIED, FLEX_ONLY, TIER_WIDTHS, defaultPaint } from './fill-prop.mjs';
 import { candidates } from './db.mjs';
 import { calSameBox } from './fill-same-box.mjs';
 import { pageBaseline } from './fill-page.mjs';
@@ -243,10 +243,12 @@ export function baselineSourceFn( st, rec, cal, prop, ownFontPx = () => undefine
 	};
 }
 
-// Which baseline made a draft value equal, for a settled `equal` row: one source name where every width agrees, else
+// Which baseline made a draft value equal, for a settled `equal` row: one source name where every width the resolver compared
+// agrees (the tier widths, lib/fill-prop.mjs::tiersDiffering; a draft width beside them, 1920 or 1024, was never judged), else
 // { width: name }. `sourceAt` is baselineSourceFn's function and `usedAt` the baseline the resolver was given: where the two
 // differ the gutter baseline substituted the page gutter.
-export function equalBaseline( sourceAt, usedAt, slot, widths ) {
+export function equalBaseline( sourceAt, usedAt, slot, draftWidths ) {
+	const widths = draftWidths.filter( ( w ) => TIER_WIDTHS.includes( Number( w ) ) );
 	const names = widths.map( ( w ) => {
 		const s = sourceAt( slot, w );
 		return usedAt( slot, w ) !== s.value ? 'page-gutter' : s.source ?? 'none';
