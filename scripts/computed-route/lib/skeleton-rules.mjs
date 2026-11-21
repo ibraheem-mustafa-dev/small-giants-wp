@@ -21,6 +21,7 @@ import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { productTiles } from './skeleton-product-tile.mjs';
 import { reviewPlatformRegions } from './skeleton-review-platform.mjs';
 import { pictureTileGrids } from './skeleton-picture-tiles.mjs';
+import { messagingLink } from './skeleton-messaging-link.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
 import { linkWrite, siteLinkResolver } from './draft-link.mjs';
 import { choiceFlowModel } from './skeleton-choice-flow.mjs';
@@ -1199,6 +1200,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const style = S.style && ( icons === items.length ? S.style.icons : 0 === icons ? S.style.plain : null );
 			const decided = style ? { [ S.style.setting ]: style } : null;
 			return v( 'headerStripBar', { block: S.block, absorb: true, attributes: { [ S.items.setting ]: items, ...( decided || {} ) }, ...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );
+		},
+		// A link to a messaging app holding the app's mark and words is the app's button block, floating where fixed to the
+		// viewport, its card style for a title over a line; words alone are a text link reading the app's Site Info address
+		// (rules.messagingLink, lib/skeleton-messaging-link.mjs). The block draws the mark and the words, so they are absorbed.
+		( { e } ) => {
+			const hit = R.messagingLink ? messagingLink( { e, m, rule: R.messagingLink } ) : null;
+			return hit ? v( 'messagingLink', { block: hit.block, absorb: true, attributes: hit.attributes, handover: hit.handover, reason: `${ R.messagingLink.reason }; ${ hit.reason }` } ) : null;
 		},
 		// The parent of a loop of titled picture tiles, each one link or control, is one card grid (rules.pictureTileGrid): the
 		// block draws the cards, so the tiles are absorbed; each card's link the draft gives no address for is a handover.

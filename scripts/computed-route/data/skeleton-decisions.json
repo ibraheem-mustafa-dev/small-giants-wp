@@ -201,6 +201,24 @@
 			"linkHandover": "its link: the draft's click goes somewhere by script and names no address, so the card's link is left empty; set it to the page or the shop filter the card opens",
 			"glyphHandover": "the cards draw an inline SVG glyph: upload each card's glyph as its glyph image (glyphImage)"
 		},
+		"messagingLink": {
+			"reason": "a link to a messaging app is that app's button block when it holds the app's mark and its words, a text link reading the app's Site Info address when it holds words alone (the hand-built reference sites: their WhatsApp buttons in a home page and in two footers are sgs/whatsapp-cta, inline in the page and floating where fixed to the corner; a help menu's WhatsApp text link is sgs/button with linkSource whatsapp; a WhatsApp icon alone in a social row stays the social icon); one rule over this app table, so another app is another row; found by the link's address and what it holds (lib/skeleton-messaging-link.mjs), never by its words: fixed to the viewport at every width it shows is the floating style (a label shown only from some width up hidden below it), a title over a line the card style, otherwise the inline style; the number is the site's Site Info address, which the block falls back to, named as a handover; a message the address carries is the block's message, and an address with none opens an empty chat (2026-11-21)",
+			"maxRunWords": 10,
+			"maxLineWords": 24,
+			"messageParam": "text",
+			"variant": { "setting": "variant", "fixed": "floating", "flow": "inline", "card": "card" },
+			"settings": { "label": "label", "title": "cardTitle", "subline": "cardSubline", "message": "message", "hideLabelBelow": "floatingHideLabelBelow" },
+			"apps": [
+				{
+					"name": "WhatsApp",
+					"block": "sgs/whatsapp-cta",
+					"domains": [ "wa.me", "whatsapp.com" ],
+					"schemes": [ "whatsapp:" ],
+					"siteInfoKey": "socials.whatsapp",
+					"textLink": { "block": "sgs/button", "label": "label", "attributes": { "linkSource": "whatsapp" } }
+				}
+			]
+		},
 		"reviewPlatform": {
 			"reason": "a review section that names a review platform is that platform's review block (Bean, 2026-11-21: the Google mark, an overall rating with a review count and see-all or write-a-review links to Google make Google's reviews block, and the rule works for other platforms such as Trustpilot); one rule over this platform table, so another platform is another row; found by structure (lib/skeleton-review-platform.mjs): a loop of reviews in a section whose mark, short words or links name exactly one platform. The block keeps its default source, which shows the reviews the route writes from the draft's loop (Google: dataSource auto shows written reviews before any live ones; Trustpilot: dataSource inline), so the section always renders the draft's reviews; a live source (a Google place ID with an API key, a Trustpilot business unit) is the handover. Reviews in the client's own style stay the testimonial slider (rules.slider): those that name no platform, and those that name or link one without showing its mark (needs: the owner's own review cards with a platform's name after each date are a testimonial slider, the section showing the platform's mark is its block)",
 			"minQuoteWords": 8,

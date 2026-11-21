@@ -1,0 +1,23 @@
+[
+	{"file": "data/skeleton-decisions.json", "find": "\"messagingLink\": {", "replace": "\"messagingLinkOff\": {", "why": "the rule is switched on by its entry"},
+	{"file": "data/skeleton-decisions.json", "find": "\"domains\": [ \"wa.me\", \"whatsapp.com\" ],", "replace": "\"domains\": [ \"whatsapp.com\" ],", "why": "the short link host is the app's"},
+	{"file": "data/skeleton-decisions.json", "find": "\"schemes\": [ \"whatsapp:\" ],", "replace": "\"schemes\": [],", "why": "the app's scheme is the app's"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "( !! host && ( a.domains || [] ).some( ( d ) => host === d || host.endsWith( `.${ d }` ) ) )", "replace": "( !! host && ( a.domains || [] ).some( ( d ) => host === d ) )", "why": "a host below a domain is the app's"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "( !! host && ( a.domains || [] ).some( ( d ) => host === d || host.endsWith( `.${ d }` ) ) )", "replace": "( !! host && ( a.domains || [] ).some( ( d ) => host.includes( d ) ) )", "why": "a look-alike host is not the app's"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "if ( ! rule || 'a' !== e?.tag ) {", "replace": "if ( ! rule ) {", "why": "only a link is decided"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "if ( ! runs.length || runs.length > 2 ||", "replace": "if ( runs.length > 2 ||", "why": "a mark with no words is a social icon"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "if ( ! runs.length || runs.length > 2 ||", "replace": "if ( ! runs.length ||", "why": "three runs of words are not decided here"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "count( m.words( runs[ 0 ] ) ) > rule.maxRunWords ||", "replace": "false ||", "why": "a paragraph is no label"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "( runs[ 1 ] && count( m.words( runs[ 1 ] ) ) > rule.maxLineWords )", "replace": "false", "why": "a paragraph is no card line"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "( runs[ 1 ] && count( m.words( runs[ 1 ] ) ) > rule.maxLineWords )", "replace": "( runs[ 1 ] && count( m.words( runs[ 1 ] ) ) > rule.maxRunWords )", "why": "a card line may run longer than a label"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "const mark = inside.some( ( d ) => 'img' === d.tag ||", "replace": "const mark = inside.some( ( d ) => false ||", "why": "a picture is the mark"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "return 1 === runs.length && app.textLink ?", "replace": "return app.textLink ?", "why": "a text link holds one run"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "if ( ! mark ) {", "replace": "if ( false ) {", "why": "words with no mark are a text link"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "if ( 2 === runs.length ) {", "replace": "if ( false ) {", "why": "a title over a line is the card style"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "const fixed = shownAt.length && shownAt.every( ( w ) => 'fixed' === e.position?.[ w ] );", "replace": "const fixed = false;", "why": "fixed to the viewport is the floating style"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "const hides = fixed && shownAt.some( ( w ) => w < from );", "replace": "const hides = fixed;", "why": "a label shown at every width is never hidden"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "const hides = fixed && shownAt.some( ( w ) => w < from );", "replace": "const hides = false;", "why": "a label shown from a width up is hidden below it"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": ".get( rule.messageParam ) ?? '';", "replace": ".get( 'msg' ) ?? '';", "why": "the address's message is the block's"},
+	{"file": "lib/skeleton-messaging-link.mjs", "find": "const handover = { owner: 'site-info', kind: 'text',", "replace": "const handover = { owner: 'none', kind: 'text',", "why": "the number is a Site Info handover"},
+	{"file": "lib/skeleton-rules.mjs", "find": "const hit = R.messagingLink ? messagingLink( { e, m, rule: R.messagingLink } ) : null;", "replace": "const hit = null;", "why": "the verdict is wired"}
+]
