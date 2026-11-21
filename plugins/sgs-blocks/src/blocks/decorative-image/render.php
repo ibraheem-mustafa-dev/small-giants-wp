@@ -68,8 +68,9 @@ $root_sel = '.' . $uid . '.sgs-decorative-image';
 $sgs_di_is_box_key = static function ( string $name ): bool {
 	return 1 === preg_match( '/^layer((Min|Max)?(Width|Height)|Opacity|Radius|Border(Width|Style|Colour|ColourHover)|BoxShadow.*)$/', $name );
 };
-// The layer root paints the fill itself, with its gradient, so the renderer never writes a second one.
-$sgs_di_unrendered = array( 'layerBackground', 'layerPadding' );
+// The layer root paints the fill itself, with its gradient, so the renderer never writes a second one. The media-padding
+// atom's `layerPadding` does reach the renderer: it pads the picture, so the layer's fill shows round it as a mat.
+$sgs_di_unrendered = array( 'layerBackground' );
 
 // Effects stored on the layer (any element of the motion document), so the renderer prints the helper an effect that paints a layer needs (§7.3).
 $sgs_di_effects = array();

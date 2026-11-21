@@ -48,7 +48,8 @@
                         "sizing",
                         "opacity",
                         "shape",
-                        "shadow"
+                        "shadow",
+                        "media-padding"
                     ]
                 }
             ],
@@ -107,6 +108,20 @@
                         }
                     },
                     "_note": "An empty-string prefix does NOT trigger the default-convention resolver (it's checked with `if (element.prefix)`, and '' is falsy) — so opacity/zIndex are mapped explicitly rather than relying on bare-attribute matching. positionX/positionY are the centre model (a percentage of the section with a centring translate), not CSS offsets, so they stay unmapped; css:top/right/bottom/left map to the edge offsets positionTop/Right/Bottom/Left, which anchor their axis to its edges (includes/helpers-layer-edges.php). No layer field is declared (this is not a composite). The old motion cluster (transition-duration/transition-timing-function) is still deliberately NOT declared here — these are JS-driven scroll-triggered parameters, not CSS transitions, and mapping them there would misrepresent the mechanism."
+                },
+                "picture": {
+                    "selector": ".sgs-media-el",
+                    "label": "Picture",
+                    "layer": "CONTENT",
+                    "order": 2,
+                    "clusters": [
+                        "layout"
+                    ],
+                    "attrMap": {
+                        "css:padding": "layerPadding"
+                    },
+                    "motion": false,
+                    "_note": "The picture the media renderer prints: the layer root itself when the layer is only a picture, the picture inside the box when the layer holds blocks or paints a box (Sgs_Motion_Targets::resolve reads a one-class selector the root carries as the root). layerPadding is the shared media-padding atom: it pads the picture, so the layer's fill shows round it as a mat."
                 }
             }
         }
@@ -232,7 +247,8 @@
     	"layerBorderColourHoverGradient": {"type":"string","_generated":"media-atoms"},
     	"layerBoxShadow": {"type":"string","_generated":"media-atoms"},
     	"layerBoxShadowColour": {"type":"string","_generated":"media-atoms"},
-    	"layerBoxShadowColourHover": {"type":"string","_generated":"media-atoms"}
+    	"layerBoxShadowColourHover": {"type":"string","_generated":"media-atoms"},
+    	"layerPadding": {"type":"object","_generated":"media-atoms"}
     },
     "render": "file:./render.php",
     "editorScript": "file:./index.js",

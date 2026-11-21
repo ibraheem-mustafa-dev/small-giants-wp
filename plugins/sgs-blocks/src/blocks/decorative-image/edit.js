@@ -87,7 +87,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const uid = 'sgs-di-' + clientId.slice( 0, 8 );
 
 	// The media part's CSS is the emitters' own, for the settings the layer root does not paint itself.
-	const mediaAttrs = Object.fromEntries( Object.entries( attributes ).filter( ( [ key ] ) => ! BOX_KEYS.includes( key ) ) );
+	// The layer paints its own fill (render.php's $sgs_di_unrendered), so the media-padding atom's Background never reaches the picture.
+	const mediaAttrs = Object.fromEntries( Object.entries( attributes ).filter( ( [ key ] ) => ! BOX_KEYS.includes( key ) && 'layerBackground' !== key ) );
 	// A radius-drawn shape is the box's corners (layer-preview.js); only a mask shape reaches the picture.
 	const hasMask = Object.values( attributes.layerShape || {} ).some( ( value ) => ! RADIUS_SHAPES.includes( String( value?.shape ?? value ?? '' ) ) );
 	if ( ! hasMask ) {
