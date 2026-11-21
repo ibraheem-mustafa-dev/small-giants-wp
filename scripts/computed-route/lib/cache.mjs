@@ -39,8 +39,10 @@ export function paintOwner( paint, folder, targets = targetsNow() ) {
 	return SCRATCH_NAME.test( String( recorded ) ) && ! Object.hasOwn( targets, recorded ) ? folder : paintSite( recorded, targets );
 }
 
-// The site whose per-site records (the media map's attachments, the menu map's menu ids) `site` reads: a mirror's
-// database is a copy of the test site it mirrors (refreshed from it), so it reads that site's records, never its own.
+// The site whose per-site records (the media map's attachments) `site` reads: a mirror's database is a copy of the test
+// site it mirrors (refreshed from it), so it reads that site's records. The menu map and the catalogue are also read here,
+// under the site's own record first (lib/skeleton-carried.mjs::carriedIds), because the site build records what it made on
+// a mirror under the mirror's own name.
 export const recordSite = paintSite;
 
 // The fields that make up the default paint; every other calibration field belongs to the slot map.

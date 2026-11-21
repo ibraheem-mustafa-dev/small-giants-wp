@@ -1,0 +1,5 @@
+[
+	{"file": "lib/skeleton-carried.mjs", "find": "const menus = Object.assign( {}, ...menuRecords.map( ( r ) => r.menus || {} ) );", "replace": "const menus = Object.assign( {}, ...menuRecords.slice( 0, 1 ).map( ( r ) => r.menus || {} ) );", "why": "a mirror reads only its test site's record (the old reader)"},
+	{"file": "lib/skeleton-carried.mjs", "find": "const menus = Object.assign( {}, ...menuRecords.map( ( r ) => r.menus || {} ) );", "replace": "const menus = Object.assign( {}, ...menuRecords.slice( -1 ).map( ( r ) => r.menus || {} ) );", "why": "a mirror reads only its own record, losing its test site's menus"},
+	{"file": "lib/skeleton-carried.mjs", "find": "const menuRecords = ( site ? [ ...new Set( [ recordSite( site ), site ] ) ] : [] )", "replace": "const menuRecords = ( site ? [ ...new Set( [ site, recordSite( site ) ] ) ] : [] )", "why": "the test site's record wins over the mirror's own"}
+]

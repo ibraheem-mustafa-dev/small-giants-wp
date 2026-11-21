@@ -84,7 +84,11 @@ export function carriedIds( { repo, client, site, rootComponent = null } ) {
 	const build = path.join( repo, 'sites', client, 'build' );
 	const folder = path.join( repo, 'sites', client, 'handoff' );
 	const map = readJson( path.join( build, 'media-map.json' ) );
-	const menus = readJson( path.join( build, 'menu-map.json' ) )?.sites?.[ recordSite( site ) ]?.menus || {};
+	// The site build records the menus it made under the site it ran on (lib/site-build-map.mjs::writeMenuMap), so a mirror's
+	// own record wins, menu by menu, over the record of the test site it mirrors (the same two places the catalogue is read from).
+	const menuSites = readJson( path.join( build, 'menu-map.json' ) )?.sites || {};
+	const menuRecords = ( site ? [ ...new Set( [ recordSite( site ), site ] ) ] : [] ).map( ( x ) => menuSites[ x ] || {} );
+	const menus = Object.assign( {}, ...menuRecords.map( ( r ) => r.menus || {} ) );
 	const sites = readJson( path.join( build, 'catalogue.json' ) )?.sites || {};
 	const records = site ? [ ...new Set( [ site, recordSite( site ) ] ) ].map( ( x ) => sites[ x ]?.attributes ).filter( Boolean ) : [];
 	let maps = null;
