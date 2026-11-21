@@ -24,6 +24,7 @@ import SgsLengthControl from '../SgsLengthControl';
 import ShadowControl from '../ShadowControl';
 import TypographyControls from '../TypographyControls';
 import fillRow from '../colour-variants/fillRow';
+import { builtinButtonAttrName } from '../BuiltinButtonPanel';
 import textRow from '../colour-variants/textRow';
 import { BOX_UNITS, normaliseResponsiveBox } from '../ResponsiveBoxControl';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
@@ -89,7 +90,7 @@ export default function BuiltinButtonPanelBody( {
 				`BuiltinButtonPanel: "${ base }" is not in button-kit/registry.json`
 			);
 		}
-		return prefix + base;
+		return builtinButtonAttrName( prefix, base );
 	};
 	const write = ( base, value ) =>
 		setAttributes( { [ attr( base ) ]: value || undefined } );
@@ -242,6 +243,35 @@ export default function BuiltinButtonPanelBody( {
 								write( 'WidthType', value )
 							}
 						/>
+					) }
+					{ has( 'size' ) && (
+						<ResponsiveOverride
+							label={ __( 'Size', 'sgs-blocks' ) }
+							value={ attributes[ attr( 'Size' ) ] }
+							onChange={ ( obj ) =>
+								setAttributes( { [ attr( 'Size' ) ]: obj } )
+							}
+						>
+							{ ( {
+								ownValue,
+								effectiveValue,
+								inherited,
+								setOwnValue,
+							} ) => (
+								<SgsLengthControl
+									presets
+									label={ __( 'Size', 'sgs-blocks' ) }
+									hideLabelFromVision
+									value={ ownValue ?? '' }
+									placeholder={
+										inherited ? effectiveValue : ''
+									}
+									onChange={ ( val ) =>
+										setOwnValue( val || undefined )
+									}
+								/>
+							) }
+						</ResponsiveOverride>
 					) }
 					{ has( 'minHeight' ) && (
 						<ResponsiveOverride

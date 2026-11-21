@@ -397,3 +397,31 @@ describe( 'BuiltinButtonPanel: names come from the registry', () => {
 		m.unmount();
 	} );
 } );
+
+describe( 'BuiltinButtonPanel: the size group (a square control)', () => {
+	const ARROW = { prefix: 'arrow', part: 'arrow', label: 'Carousel arrows', groups: [ 'colour', 'border', 'size', 'shadow' ] };
+
+	test( 'shows one Size length per device only when the group is declared, and not in the default groups', async () => {
+		declare( [ ARROW ] );
+		let m = await mount( { prefix: 'arrow' } );
+		expect( m.q( 'input[aria-label="Size"]' ) ).not.toBeNull();
+		expect( m.q( 'input[aria-label="Minimum height"]' ) ).toBeNull();
+		m.unmount();
+
+		declare( [ { ...ARROW, groups: undefined } ] );
+		m = await mount( { prefix: 'arrow' } );
+		expect( m.q( 'input[aria-label="Size"]' ) ).toBeNull();
+		expect( registry.defaultGroups ).not.toContain( 'size' );
+		m.unmount();
+	} );
+
+	test( 'typing a size writes {prefix}Size as a {desktop} object', async () => {
+		declare( [ ARROW ] );
+		const m = await mount( { prefix: 'arrow' } );
+		m.type( 'input[aria-label="Size"]', '36px' );
+		expect( m.setAttributes ).toHaveBeenCalledWith( { arrowSize: { desktop: '36px' } } );
+		const base = new Set( Object.values( registry.groups ).flat().map( ( row ) => row.base ) );
+		expect( base.has( 'Size' ) ).toBe( true );
+		m.unmount();
+	} );
+} );

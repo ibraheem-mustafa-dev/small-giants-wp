@@ -4,7 +4,7 @@
  *
  * It composes the shared preview helpers, one for each family `includes/helpers-button-style.php::sgs_button_kit_css()` prints:
  * colour and gradient (`backgroundPaintPreview`, `textPaintPreview`), border width, style, colour and per-device radius
- * (`sgsBorderPreview`), per-device padding (`tierBoxLonghands`), min height (`tierLengthPreview`), type
+ * (`sgsBorderPreview`), per-device padding (`tierBoxLonghands`), min height and the square `size` (`tierLengthPreview`), type
  * (`typographyPreviewStyle`) and shadow (`composeShadow`). The attribute names are `prefix + base`, the bases taken from
  * `registry.json`, so the canvas can never read a name the generator did not create. The preset choice is not here: the
  * canvas gives the button the preset's class, as the page does. Hover and press states are not previewed.
@@ -64,6 +64,13 @@ export default function buttonKitStyle( attributes, prefix, { tier = 'desktop', 
 	const minHeight = tierLengthPreview( attr( 'MinHeight' ), tier );
 	if ( minHeight ) {
 		style.minHeight = minHeight;
+	}
+
+	// The `size` group (a square control: a carousel arrow, a pause button): one length for both sides.
+	const size = tierLengthPreview( attr( 'Size' ), tier );
+	if ( size ) {
+		style.width = size;
+		style.height = size;
 	}
 
 	const shadow = composeShadow( attr( 'Shadow' ), attr( 'ShadowColour' ) );

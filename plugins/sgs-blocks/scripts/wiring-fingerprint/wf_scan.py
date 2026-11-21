@@ -9,7 +9,7 @@ import re
 from collections import Counter
 
 from wf_bugs import root_prefix_bug
-from wf_button_kit import ButtonKit, _declared_buttons
+from wf_button_kit import Kits, declares_kit
 from wf_css import build_css_index, frontend_js, js_cp_reads
 from wf_editor import EditorModel
 from wf_extensions import scan_extensions
@@ -61,7 +61,7 @@ def scan(roots: Roots, inp: Inputs) -> dict:
     ext_attrs = {a for ext in inp.roster for a in (ext.get("attributes") or {})}
     passed = run.result(local)
     media = MediaSystem(inp.media_system, roots.plugin)   # what the shared panels, renderer and canvas give an adopted block
-    kit = ButtonKit(roots.plugin)   # what the built-in button kit's panel and CSS helper give a declared button's attributes
+    kit = Kits(roots.plugin)   # what the built-in button kit and the carousel dots kit (panel, CSS helper, canvas twin) give a declared button's or dots' attributes
     resolver = Resolver(passed, {(r["block_slug"], r["attr_name"]): r for r in inp.rows}, inp.blockjson, inp.dump, css, js, paint, media)
 
     records: list[dict] = []
@@ -74,7 +74,7 @@ def scan(roots: Roots, inp: Inputs) -> dict:
         derived = res.derived
         declared = set((bjson.get("attributes") or {}).keys())
         be = editor.block(bdir.name, bjson, ext_files if declared & ext_attrs else [])
-        kit_called = kit.called_prefixes(fe.block_texts(bdir)[0], index) if _declared_buttons(bjson) else set()
+        kit_called = kit.called_prefixes(fe.block_texts(bdir)[0], index) if declares_kit(bjson) else [set(), set()]
         ctx_of = {a: k for k, a in (bjson.get("providesContext") or {}).items()}
         named_typo = {re.sub(r"FontSize$", "", a) for a in derived if a.endswith("FontSize") and a != "fontSize"}
         root_emitted = any(a in derived for a in ("fontSize", "lineHeight", "fontWeight"))

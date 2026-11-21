@@ -17,6 +17,8 @@
 		"xShadowColour": "#112233",
 		"xWidthType": "full"
 	},
+	"sizeAttributes": { "xSize": { "desktop": 36 } },
+	"sizeDeclarations": [ [ "width", "36px" ], [ "height", "36px" ] ],
 	"declarations": [
 		[ "background-color", "#112233" ],
 		[ "color", "#ffffff" ],

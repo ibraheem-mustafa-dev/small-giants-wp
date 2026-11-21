@@ -815,6 +815,15 @@
     "order": 8
   },
   {
+    "id": "generate-carousel-dots-attributes",
+    "cmd": "node scripts/generate-carousel-dots-attributes.mjs",
+    "tier": "generator",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": null,
+    "order": 9
+  },
+  {
     "id": "check-button-attributes-parity",
     "cmd": "node scripts/generate-button-attributes.mjs --check",
     "tier": "fast",
@@ -822,6 +831,15 @@
     "added_commit": null,
     "budget_ms": 49,
     "order": 87
+  },
+  {
+    "id": "check-carousel-dots-attributes-parity",
+    "cmd": "node scripts/generate-carousel-dots-attributes.mjs --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 49,
+    "order": 89
   },
   {
     "id": "check-media-slot-schema",

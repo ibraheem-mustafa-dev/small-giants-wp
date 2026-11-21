@@ -14,11 +14,38 @@
 import { getBlockType } from '@wordpress/blocks';
 import { Suspense, lazy } from '@wordpress/element';
 
+import registry from './button-kit/registry.json';
+
 const BuiltinButtonPanelBody = lazy( () =>
 	import(
 		/* webpackChunkName: "builtin-button-panel" */ './button-kit/BuiltinButtonPanelBody.js'
 	)
 );
+
+/**
+ * The attribute name for one registry base of a declared button (the twin of PHP `sgs_builtin_button_attr()`).
+ *
+ * @param {string} prefix Button prefix, for example 'arrow'.
+ * @param {string} base   Registry base, for example 'ColourBackground'.
+ * @return {string} `prefix + base`.
+ */
+export function builtinButtonAttrName( prefix, base ) {
+	return prefix + base;
+}
+
+/**
+ * Every attribute name the kit generates for a button's groups.
+ *
+ * @param {string}   prefix Button prefix.
+ * @param {string[]} [groups] Declared groups; omitted means the registry's default groups.
+ * @return {string[]} The attribute names.
+ */
+export function builtinButtonAttrKeys( prefix, groups ) {
+	const shown = Array.isArray( groups ) && groups.length ? groups : registry.defaultGroups;
+	return shown.flatMap( ( group ) =>
+		( registry.groups[ group ] || [] ).map( ( row ) => builtinButtonAttrName( prefix, row.base ) )
+	);
+}
 
 /**
  * A block's declaration for one built-in button, or null.

@@ -192,6 +192,11 @@ final class ButtonKitCssTest extends TestCase {
 		foreach ( $fixture['declarations'] as list( $property, $value ) ) {
 			$this->assertStringContainsString( $property . ':' . $value . ';', $css, 'MUST FAIL: ' . $property . ' prints as the editor twin expects' );
 		}
+		// The `size` group (a square control) prints both sides, apart from the width setting that would share `width`.
+		$sized = $this->kit( $fixture['sizeAttributes'] );
+		foreach ( $fixture['sizeDeclarations'] as list( $property, $value ) ) {
+			$this->assertStringContainsString( $property . ':' . $value . ';', $sized, 'MUST FAIL: the size group prints ' . $property );
+		}
 	}
 
 	public function test_outline_prints_through_the_kit_only(): void {
@@ -267,6 +272,18 @@ final class ButtonKitCssTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{\.u \.btn\{min-height:[^;]*30[^;]*;\}\}/', $css, 'a bare slug is the spacing preset' );
 		$this->assertSame( '', $this->kit( array( 'xMinHeight' => array() ) ), 'an empty object prints nothing' );
 		$this->assertSame( '', $this->kit( array( 'xMinHeight' => '48px' ) ), 'a scalar is not a tier object: nothing' );
+	}
+
+	public function test_size_prints_width_and_height_per_device(): void {
+		$css = $this->kit( array( 'xSize' => array( 'desktop' => 48, 'tablet' => 40, 'mobile' => '2.5rem' ) ) );
+		$this->assertStringContainsString( '.u .btn{width:48px;height:48px;}', $css, 'MUST FAIL: a square control takes one length for both' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*1023\.98px[^{]*\{\.u \.btn\{width:40px;height:40px;\}\}/', $css );
+		$this->assertMatchesRegularExpression( '/@media[^{]*767\.98px[^{]*\{\.u \.btn\{width:2\.5rem;height:2\.5rem;\}\}/', $css );
+		$this->assertStringNotContainsString( 'min-height', $css, 'size is not the minimum height' );
+		$this->assertSame( '', $this->kit( array( 'xSize' => array() ) ), 'an empty object prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'xSize' => '48px' ) ), 'a scalar is not a tier object: nothing' );
+		$this->assertSame( '', $this->kit( array( 'ySize' => array( 'desktop' => 48 ) ) ), 'another prefix prints nothing' );
+		$this->assertSame( '', $this->kit( array( 'xSize' => array( 'desktop' => self::BREAKOUT ) ) ), 'an unsafe length is refused' );
 	}
 
 	public function test_the_shadow_prints_resting_and_hover_and_feeds_the_focus_ring(): void {

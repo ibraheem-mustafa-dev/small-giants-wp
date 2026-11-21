@@ -450,6 +450,20 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_builtin_button_attr' ) ) {
+
+	/**
+	 * The attribute name for one base of a declared built-in button (the twin of JS `builtinButtonAttrName()`).
+	 *
+	 * @param string $prefix Button prefix, for example 'arrow'.
+	 * @param string $base   Registry base, for example 'ColourBackground' (src/components/button-kit/registry.json).
+	 * @return string `$prefix . $base`.
+	 */
+	function sgs_builtin_button_attr( string $prefix, string $base ): string {
+		return $prefix . $base;
+	}
+}
+
 if ( ! function_exists( 'sgs_button_kit_look_bases' ) ) {
 
 	/**
@@ -581,7 +595,7 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 	 *      keys only (and `width:fit-content` for `fit`); then the radius (`sgs_border_element_decls()`) and the padding
 	 *      (`sgs_emit_responsive_css()`), both stored per device.
 	 *   3. Typography: `sgs_typography_css_rule()`, the font size, line height and letter spacing as `{desktop, tablet, mobile}` objects.
-	 *   4. Min height: `sgs_emit_responsive_css()` on `{p}MinHeight`.
+	 *   4. Size and min height: `sgs_emit_responsive_css()` on `{p}Size` (a square control's width and height, the `size` group) and on `{p}MinHeight`.
 	 *   5. Shadow: `sgs_shadow_decls()` resting, handed to the focus ring as `--sgs-focus-under` (the focus ring replaces
 	 *      `box-shadow`), and the hover shadow behind the touch guard with its keyboard-focus twin (`sgs_hover_state_rules()`).
 	 *   6. The preset's pressed look, last, so it wins the tie with the hover shadow rule while the button is held.
@@ -693,7 +707,28 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 			$responsive
 		);
 
-		// 4. Min height per device.
+		// 4a. Size: a square control's width and height per device (the `size` group: a carousel arrow, a pause button).
+		$size = $attrs[ $prefix . 'Size' ] ?? array();
+		if ( is_array( $size ) && array() !== $size ) {
+			$css .= sgs_emit_responsive_css(
+				$selector,
+				array(
+					array(
+						'value'     => $size,
+						'css'       => 'width',
+						'transform' => 'sgs_length_transform',
+					),
+					array(
+						'value'     => $size,
+						'css'       => 'height',
+						'transform' => 'sgs_length_transform',
+					),
+				),
+				$responsive
+			);
+		}
+
+		// 4b. Min height per device.
 		$height = $attrs[ $prefix . 'MinHeight' ] ?? array();
 		if ( is_array( $height ) && array() !== $height ) {
 			$css .= sgs_emit_responsive_css(

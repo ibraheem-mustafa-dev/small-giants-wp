@@ -25,6 +25,15 @@ describe( 'buttonKitStyle', () => {
 		} );
 	} );
 
+	test( 'the size group returns the same width and height the PHP emitter prints, at the previewed device', () => {
+		const style = pairs( buttonKitStyle( fixture.sizeAttributes, 'x' ) );
+		fixture.sizeDeclarations.forEach( ( [ property, value ] ) => {
+			expect( style ).toContainEqual( [ property, value ] );
+		} );
+		const tiered = { xSize: { desktop: 36, mobile: 28 } };
+		expect( buttonKitStyle( tiered, 'x', { tier: 'mobile' } ) ).toMatchObject( { width: '28px', height: '28px' } );
+	} );
+
 	test( 'a set that is empty, or holds only another prefix, gives an empty style', () => {
 		expect( buttonKitStyle( {}, 'x' ) ).toEqual( {} );
 		expect( buttonKitStyle( undefined, 'x' ) ).toEqual( {} );
@@ -71,7 +80,7 @@ describe( 'buttonKitStyle', () => {
 		} );
 		// Every family the registry lists is read (the shared type helper also looks for typography settings the kit never
 		// generates, which stay absent).
-		[ 'ColourBackground', 'ColourText', 'BorderWidth', 'BorderRadius', 'Padding', 'MinHeight', 'Shadow', 'WidthType', 'FontSize' ].forEach( ( base ) => {
+		[ 'ColourBackground', 'ColourText', 'BorderWidth', 'BorderRadius', 'Padding', 'MinHeight', 'Size', 'Shadow', 'WidthType', 'FontSize' ].forEach( ( base ) => {
 			expect( read ).toContain( 'x' + base );
 		} );
 	} );

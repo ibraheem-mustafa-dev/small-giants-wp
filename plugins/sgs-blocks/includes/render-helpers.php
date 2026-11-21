@@ -84,6 +84,10 @@
  *                                     built-in, non-sgs/button CTA element,
  *                                     reading a PREFIXED attribute set)
  *
+ *   helpers-carousel-dots.php       — sgs_carousel_dots_css (the look settings
+ *                                     of a slider's navigation dots, from the
+ *                                     carousel dots kit's prefixed attribute set)
+ *
  *   helpers-link.php                — sgs_link_attributes (turns the shared
  *                                     SgsLinkControl component's
  *                                     {url,opensInNewTab,rel} object attr
@@ -191,6 +195,7 @@ require_once __DIR__ . '/helpers-border-style.php';
 require_once __DIR__ . '/helpers-container.php';
 require_once __DIR__ . '/helpers-svg-kses.php';
 require_once __DIR__ . '/helpers-button-style.php';
+require_once __DIR__ . '/helpers-carousel-dots.php';
 require_once __DIR__ . '/helpers-box.php';
 require_once __DIR__ . '/helpers-link.php';
 require_once __DIR__ . '/helpers-stretched-link.php';

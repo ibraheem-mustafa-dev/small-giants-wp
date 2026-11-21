@@ -509,7 +509,17 @@ def declared_parts(corpus, slug):
     if not bj:
         return set()
     items = (((bj.get('supports') or {}).get('sgs') or {}).get('builtinButtons')) or []
-    return {i.get('part') for i in items if isinstance(i, dict) and i.get('part')}
+    parts = set()
+    # `carouselDots` declares a slider's navigation dots (the carousel dots kit): its part is a declared part too.
+    dots = ((bj.get('supports') or {}).get('sgs') or {}).get('carouselDots')
+    if isinstance(dots, dict) and dots.get('part'):
+        parts.add(dots['part'])
+    for i in items:
+        if isinstance(i, dict) and i.get('part'):
+            parts.add(i['part'])
+            # `elements`: further class elements the same part is printed as (a gallery's carousel-prev and carousel-next).
+            parts.update(e for e in (i.get('elements') or []) if isinstance(e, str))
+    return parts
 
 
 def declared_prefixes(corpus, slug):
@@ -948,8 +958,10 @@ def load_renames():
 # The framework database (read-only), and the shared name rules of the parts and
 # unmapped passes.
 # ----------------------------------------------------------------------------
-FRAMEWORK_DB = os.environ.get('SGS_FRAMEWORK_DB') or os.path.join(
-    os.path.expanduser('~'), '.claude', 'skills', 'sgs-wp-engine', 'sgs-framework.db')
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib'))
+from framework_db import framework_db_path  # noqa: E402  ($SGS_FRAMEWORK_DB when set, else the shared database)
+
+FRAMEWORK_DB = str(framework_db_path())
 ATTR_COLUMNS = ('block_slug', 'attr_name', 'attr_type', 'default_value', 'enum_values', 'role',
                 'css_property', 'css_element', 'source')
 
@@ -1905,6 +1917,23 @@ def self_test():
     kit2 = Corpus(dict(base_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': json.dumps(kit_bj2)}))
     k2sites = [s for s in run_survey(kit2, cfg) if s['kind'] == 'button']
     check('definition: a target rule whose block declares its prefix is on-kit', k2sites and k2sites[0]['category'] == 'on-kit')
+
+    # definition: `elements` makes a part on-kit under another class element; without it the same site stays a target.
+    el_bj = json.loads(FX_BLOCKJSON)
+    el_bj['supports'] = {'sgs': {'builtinButtons': [{'prefix': 'arrow', 'part': 'arrow', 'label': 'x', 'elements': ['flow-opener']}]}}
+    el = Corpus(dict(base_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': json.dumps(el_bj)}))
+    esites = [s for s in run_survey(el, cfg) if s['kind'] == 'button']
+    check('definition: the `elements` list of a part makes that class element on-kit', esites and esites[0]['category'] == 'on-kit')
+    dt_bj = json.loads(FX_BLOCKJSON)
+    dt_bj['supports'] = {'sgs': {'carouselDots': {'prefix': 'dot', 'part': 'flow-opener', 'label': 'x'}}}
+    dt = Corpus(dict(base_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': json.dumps(dt_bj)}))
+    dsites = [s for s in run_survey(dt, cfg) if s['kind'] == 'button']
+    check('definition: a declared carouselDots part is on-kit', dsites and dsites[0]['category'] == 'on-kit')
+    nel_bj = json.loads(FX_BLOCKJSON)
+    nel_bj['supports'] = {'sgs': {'builtinButtons': [{'prefix': 'arrow', 'part': 'arrow', 'label': 'x'}]}}
+    nel = Corpus(dict(base_files, **{'plugins/sgs-blocks/src/blocks/fx/block.json': json.dumps(nel_bj)}))
+    nsites = [s for s in run_survey(nel, cfg) if s['kind'] == 'button']
+    check('negative control: another part with no `elements` leaves the site a target', nsites and nsites[0]['category'] == 'target')
 
     # edge: a legitimate exemption, and an exemption that matches nothing is stale.
     cfg_ex = {'exemptions': [{'id': 'fx-ex', 'files': ['plugins/sgs-blocks/src/blocks/fx/*.php'], 'class': 'flow-opener',

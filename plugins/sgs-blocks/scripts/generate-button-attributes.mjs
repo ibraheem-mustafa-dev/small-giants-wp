@@ -195,6 +195,18 @@ function selfTest() {
 		JSON.stringify( gradNames.sort() ) ===
 			JSON.stringify( [ 'gColourBackgroundGradient', 'gColourBackgroundHoverGradient', 'gColourBorderGradient', 'gColourBorderHoverGradient', 'gColourTextGradient', 'gColourTextHoverGradient' ] )
 	);
+	// The size group is a square control's one {desktop,tablet,mobile} length (a carousel arrow, a pause button).
+	const sized = JSON.parse( fixText );
+	sized.supports.sgs.builtinButtons = [ { prefix: 'arrow', part: 'arrow', label: 'Arrow', groups: [ 'colour', 'border', 'size', 'shadow' ] } ];
+	const sizedPlan = planBlock( JSON.stringify( sized, null, '\t' ), registry, new Set() );
+	const sizedAttr = generatedOf( sizedPlan.next ).find( ( [ n ] ) => 'arrowSize' === n );
+	ck( 'groups: size writes arrowSize as an object', sizedAttr && 'object' === sizedAttr[ 1 ].type );
+	const sizedEntry = sizedPlan.entries.find( ( e ) => 'arrowSize' === e.attr );
+	ck(
+		'groups: arrowSize is described as a tier object on width, in the arrow part',
+		sizedEntry?.fields.css_property === 'width' && sizedEntry.fields.tier_shape === 'tier_object' && sizedEntry.fields.css_element === 'arrow' && sizedEntry.fields.role === 'layout'
+	);
+	ck( 'groups: size is opt-in, so the default groups write no Size', ! registry.defaultGroups.includes( 'size' ) && ! namesOf( done.next ).some( ( n ) => /(?:flowOpener|back)Size$/.test( n ) ) );
 	ck(
 		'groups: an unknown group fails naming it and the known ones',
 		( () => {
@@ -211,6 +223,16 @@ function selfTest() {
 			bad.supports.sgs.builtinButtons = [ { groups: [ 'colour' ] } ];
 			const m = throws( () => declaredButtons( bad, registry ) );
 			return m.includes( '"prefix"' ) && m.includes( '"part"' ) && m.includes( '"label"' );
+		} )()
+	);
+	ck(
+		'declaration: `elements` is optional and must be kebab-case class elements',
+		( () => {
+			const ok = JSON.parse( fixText );
+			ok.supports.sgs.builtinButtons = [ { prefix: 'arrow', part: 'arrow', label: 'Arrow', elements: [ 'carousel-prev', 'carousel-next' ] } ];
+			const bad = JSON.parse( fixText );
+			bad.supports.sgs.builtinButtons = [ { prefix: 'arrow', part: 'arrow', label: 'Arrow', elements: [ 'Carousel Prev' ] } ];
+			return declaredButtons( ok, registry )[ 0 ].elements.length === 2 && declaredButtons( JSON.parse( fixText ), registry )[ 0 ].elements.length === 0 && throws( () => declaredButtons( bad, registry ) ).includes( '"elements"' );
 		} )()
 	);
 	ck(

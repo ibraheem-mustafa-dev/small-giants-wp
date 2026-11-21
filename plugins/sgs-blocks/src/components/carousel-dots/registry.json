@@ -1,0 +1,14 @@
+{
+	"_doc": "The carousel dots kit's one registry: the attribute set a block gets when it declares `supports.sgs.carouselDots` in block.json ({ prefix, part, label }). Read by scripts/generate-carousel-dots-attributes.mjs (writes the attributes and the framework-database override rows), by includes/helpers-carousel-dots.php::sgs_carousel_dots_css and by src/components/CarouselDotsPanel.js. An attribute is the declared prefix plus `base`. `type` is the block.json type; an object is a {desktop,tablet,mobile} length when `tier_shape` is tier_object. `role`, `css_property`, `css_state` and `tier_shape` go to the database as written; `css_element` is the declared `part`. `Size` is the dot's width and height, `ActiveWidth` the current dot's width (a wider current dot makes a pill), `Radius` and `BorderWidth` are one CSS length each. Generated attributes carry no default: unset means the block's own look.",
+	"rows": [
+		{ "base": "Size", "type": "object", "role": "layout", "css_property": "width", "css_state": null, "tier_shape": "tier_object" },
+		{ "base": "ActiveWidth", "type": "object", "role": "layout", "css_property": "width", "css_state": "current", "tier_shape": "tier_object" },
+		{ "base": "Gap", "type": "object", "role": "layout", "css_property": "gap", "css_state": null, "tier_shape": "tier_object" },
+		{ "base": "Colour", "type": "string", "role": "color", "css_property": "background-color", "css_state": null, "tier_shape": null },
+		{ "base": "ColourActive", "type": "string", "role": "color", "css_property": "background-color", "css_state": "current", "tier_shape": null },
+		{ "base": "ColourHover", "type": "string", "role": "color", "css_property": "background-color", "css_state": "hover", "tier_shape": null },
+		{ "base": "BorderWidth", "type": "string", "role": "visual", "css_property": "border-width", "css_state": null, "tier_shape": null },
+		{ "base": "BorderColour", "type": "string", "role": "color", "css_property": "border-color", "css_state": null, "tier_shape": null },
+		{ "base": "Radius", "type": "string", "role": "visual", "css_property": "border-radius", "css_state": null, "tier_shape": null }
+	]
+}

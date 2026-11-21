@@ -7,7 +7,7 @@
  * (`applyGeneratedAttributes`, `applyOverrideEntries`, `findBlockJsons`) are the media generator's, imported from
  * `scripts/lib/media-block-json.mjs`; this file adds only what is the kit's own.
  *
- * A block declares a button in `supports.sgs.builtinButtons`: `{ prefix, part, label, groups? }`. The registry
+ * A block declares a button in `supports.sgs.builtinButtons`: `{ prefix, part, label, groups?, elements? }`. The registry
  * (`src/components/button-kit/registry.json`) lists the attribute set per group; the block gets one attribute per
  * row of each group the declaration names (the default groups when `groups` is omitted), named `{prefix}{Base}`. An
  * attribute the block already declares with the row's type is kept as the block's own (it still gets its override
@@ -118,7 +118,7 @@ export function loadRegistry( file ) {
  *
  * @param {Object} block    Parsed block.json.
  * @param {Object} registry Validated registry.
- * @return {Array<{prefix:string, part:string, label:string, groups:string[]}>} Declared buttons; empty when none.
+ * @return {Array<{prefix:string, part:string, label:string, groups:string[], elements:string[]}>} Declared buttons; empty when none.
  */
 export function declaredButtons( block, registry ) {
 	const declared = block?.supports?.sgs?.builtinButtons;
@@ -145,12 +145,17 @@ export function declaredButtons( block, registry ) {
 		if ( ! entry?.label || 'string' !== typeof entry.label ) {
 			problems.push( `${ at } needs a "label"` );
 		}
+		// `elements` (optional) names further class elements the same button is drawn as, where one part is printed under
+		// several class names (a gallery's `carousel-prev` and `carousel-next` are both its `arrow` part).
+		if ( undefined !== entry?.elements && ( ! Array.isArray( entry.elements ) || entry.elements.some( ( e ) => ! PART_RE.test( e ) ) ) ) {
+			problems.push( `${ at } needs "elements" as a list of kebab-case class elements (${ JSON.stringify( entry.elements ) })` );
+		}
 		const groups = undefined === entry?.groups ? registry.defaultGroups : entry.groups;
 		const unknown = Array.isArray( groups ) ? groups.filter( ( g ) => ! registry.groups[ g ] ) : [ '(groups is not an array)' ];
 		if ( unknown.length || ! groups.length ) {
 			problems.push( `${ at } names unknown or no groups: ${ unknown.join( ', ' ) || 'empty list' }; known: ${ Object.keys( registry.groups ).join( ', ' ) }` );
 		}
-		return { prefix: entry?.prefix, part: entry?.part, label: entry?.label, groups };
+		return { prefix: entry?.prefix, part: entry?.part, label: entry?.label, groups, elements: entry?.elements || [] };
 	} );
 	if ( problems.length ) {
 		throw new Error( problems.join( '; ' ) );
