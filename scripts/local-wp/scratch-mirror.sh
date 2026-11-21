@@ -6,6 +6,7 @@
 # Usage (from Windows):
 #   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh create local-sandybrown local-mediatest-sandybrown 8092
 #   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh drop local-mediatest-sandybrown
+#   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh strip local-mediatest-sandybrown
 #   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh list
 #
 # The name must start local-mediatest; the source must be one of the four mirrors; the port must be free and 8090-8199.
@@ -181,6 +182,42 @@ drop() {
   echo "dropped $name"
 }
 
+# Takes a scratch copy back to a blank foundation, so the foundation command (scripts/computed-route/build-foundation.mjs)
+# can be proved from the handoff alone: the active header, footer and menu drawer pointers, every header, footer and drawer
+# post, the saved global styles, the templates and template parts saved in the database, the classic menus and the theme
+# mods go. Pages, media, products, forms and modals stay: the site build adopts or replaces them. Only a copy this script
+# made (its name matches NAME_RE and its folder holds .scratch-source) is stripped; a real mirror is refused.
+STRIP_POST_TYPES="sgs_header sgs_footer sgs_drawer wp_global_styles wp_template wp_template_part"
+STRIP_OPTIONS="sgs_active_header_cpt_id sgs_active_footer_cpt_id sgs_active_drawer_cpt_id"
+
+strip() {
+  local name="$1" dir="${SCRATCH_WWW_ROOT:-/var/www}/$1" type ids count menus
+  [[ "$name" =~ $NAME_RE ]] || die "name must match $NAME_RE"
+  [ -f "$dir/.scratch-source" ] || die "$name is not a scratch copy this script made (no $dir/.scratch-source)"
+  for opt in $STRIP_OPTIONS; do
+    wp --path="$dir" --allow-root option delete "$opt" >/dev/null 2>&1 || true
+  done
+  for type in $STRIP_POST_TYPES; do
+    ids="$(wp --path="$dir" --allow-root post list --post_type="$type" --post_status=any --format=ids)"
+    count=0
+    if [ -n "$ids" ]; then
+      # shellcheck disable=SC2086
+      wp --path="$dir" --allow-root post delete $ids --force >/dev/null
+      count="$(echo "$ids" | wc -w)"
+    fi
+    echo "stripped $name: $count $type"
+  done
+  menus="$(wp --path="$dir" --allow-root menu list --format=ids)"
+  if [ -n "$menus" ]; then
+    # shellcheck disable=SC2086
+    wp --path="$dir" --allow-root menu delete $menus >/dev/null
+  fi
+  echo "stripped $name: $(echo "$menus" | wc -w) classic menus"
+  wp --path="$dir" --allow-root theme mod remove --all >/dev/null
+  echo "stripped $name: the active header, footer and drawer pointers and the theme mods"
+  sudo -u www-data wp --path="$dir" cache flush >/dev/null 2>&1 || wp --path="$dir" --allow-root cache flush >/dev/null
+}
+
 list() {
   for f in /etc/apache2/sites-available/local-mediatest*.conf; do
     [ -e "$f" ] || continue
@@ -195,6 +232,7 @@ list() {
 case "${1:-}" in
   create) [ $# -eq 4 ] || die "usage: create <source mirror> <local-mediatest-name> <port>"; create "$2" "$3" "$4" ;;
   drop) [ $# -eq 2 ] || die "usage: drop <local-mediatest-name>"; drop "$2" ;;
+  strip) [ $# -eq 2 ] || die "usage: strip <local-mediatest-name>"; strip "$2" ;;
   secrets)
     [ $# -eq 2 ] && [[ "$2" =~ $NAME_RE ]] || die "usage: secrets <local-mediatest-name>"
     s_src="$(cat "/var/www/$2/.scratch-source")"
@@ -212,5 +250,5 @@ case "${1:-}" in
     echo "$3" > "/var/www/$2/.scratch-target"
     echo "$2 now runs the theme.json deployed to $3" ;;
   list) list ;;
-  *) die "usage: create <source> <name> <port> | drop <name> | secrets <name> | target <name> <deploy target> | list" ;;
+  *) die "usage: create <source> <name> <port> | drop <name> | strip <name> | secrets <name> | target <name> <deploy target> | list" ;;
 esac

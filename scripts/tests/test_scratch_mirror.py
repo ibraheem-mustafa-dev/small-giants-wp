@@ -24,6 +24,10 @@ case "$*" in
   *"application-password list"*) printf 'uuid,name\nu-1,route-%s\nu-2,somebody-else\n' "$STUB_NAME" ;;
   *"application-password delete"*) ;;
   *"application-password create"*) [ -n "$STUB_APP" ] && printf '%s\n' "$STUB_APP" ;;
+  *"post list --post_type=sgs_header"*) echo "11 12" ;;
+  *"post list --post_type=wp_global_styles"*) echo "40" ;;
+  *"post list"*) ;;
+  *"menu list"*) echo "7 8" ;;
 esac
 """
 NODE_STUB = """#!/bin/bash
@@ -127,6 +131,41 @@ class ScratchMirror(unittest.TestCase):
         r = self.bash("echo sourced")
         self.assertEqual(r.stdout.strip(), "sourced")
         self.assertEqual(self.log.read_text(encoding="utf-8"), "")
+
+    def strip_copy(self, name=NAME, marked=True):
+        www = Path(self.tmp.name) / "www"
+        (www / name).mkdir(parents=True, exist_ok=True)
+        if marked:
+            (www / name / ".scratch-source").write_text("local-mamas\n", encoding="utf-8")
+        snippet = f'sudo() {{ shift 2; "$@"; }}; SCRATCH_WWW_ROOT="{www.as_posix()}" strip {name}'
+        return self.bash(snippet), www / name
+
+    def test_strip_removes_the_foundation_a_copy_holds_and_keeps_its_pages(self):
+        r, d = self.strip_copy()
+        self.assertEqual(r.returncode, 0, r.stderr)
+        call = self.log.read_text(encoding="utf-8")
+        for opt in ("sgs_active_header_cpt_id", "sgs_active_footer_cpt_id", "sgs_active_drawer_cpt_id"):
+            self.assertIn(f"option delete {opt}", call)
+        for t in ("sgs_header", "sgs_footer", "sgs_drawer", "wp_global_styles", "wp_template", "wp_template_part"):
+            self.assertIn(f"post list --post_type={t} --post_status=any --format=ids", call)
+        self.assertIn("post delete 11 12 --force", call)
+        self.assertIn("post delete 40 --force", call)
+        self.assertIn("menu delete 7 8", call)
+        self.assertIn("theme mod remove --all", call)
+        self.assertNotIn("--post_type=page", call)
+        self.assertNotIn("--post_type=attachment", call)
+        self.assertNotIn("--post_type=product", call)
+        self.assertIn("stripped local-mediatest-acme: 2 sgs_header", r.stdout)
+        self.assertIn(f"--path={d.as_posix()}", call)
+
+    def test_strip_refuses_a_folder_this_script_did_not_make_and_a_real_mirror(self):
+        r, _ = self.strip_copy(marked=False)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("not a scratch copy", r.stderr)
+        r, _ = self.strip_copy(name="local-mamas")
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("name must match", r.stderr)
+        self.assertNotIn("delete", self.log.read_text(encoding="utf-8"))
 
     def test_create_makes_the_password_and_the_registration_in_that_order_and_drop_removes_the_registration(self):
         src = Path(SCRIPT).read_text(encoding="utf-8")
