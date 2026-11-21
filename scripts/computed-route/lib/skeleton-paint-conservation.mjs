@@ -26,7 +26,11 @@ const LAYS_OUT = new Set( [ 'flex', 'inline-flex', 'grid', 'inline-grid' ] );
 const low = ( v ) => String( v ?? '' ).trim().toLowerCase();
 const zero = ( v ) => NONE.has( low( v ) ) || /^(?:0(?:\.0+)?(?:px|rem|em|%)?\s*)+$/.test( low( v ) );
 
-// A `style` attribute's declarations as { property: value }; a `;` inside brackets (a data url) does not split.
+// A declaration's `!important` flag, which says how it wins the cascade and nothing about what it paints.
+const IMPORTANT = /\s*!\s*important\s*$/i;
+
+// A `style` attribute's declarations as { property: value }, each value without its `!important` flag; a `;` inside brackets
+// (a data url) does not split.
 export function styleOf( text ) {
 	const out = {};
 	let depth = 0;
@@ -36,7 +40,7 @@ export function styleOf( text ) {
 		const part = src.slice( start, end );
 		const at = part.indexOf( ':' );
 		if ( at > 0 ) {
-			out[ part.slice( 0, at ).trim().toLowerCase() ] = part.slice( at + 1 ).trim();
+			out[ part.slice( 0, at ).trim().toLowerCase() ] = part.slice( at + 1 ).replace( IMPORTANT, '' ).trim();
 		}
 		start = end + 1;
 	};
@@ -49,9 +53,27 @@ export function styleOf( text ) {
 	return out;
 }
 
+// The space-separated parts of a value, a bracketed part (a calc(), a var()) kept whole.
+const partsOf = ( value ) => {
+	const out = [];
+	let depth = 0;
+	let cur = '';
+	for ( const c of low( value ) ) {
+		depth += { '(': 1, ')': -1 }[ c ] ?? 0;
+		if ( /\s/.test( c ) && 0 === depth ) {
+			cur && out.push( cur );
+			cur = '';
+		} else {
+			cur += c;
+		}
+	}
+	cur && out.push( cur );
+	return out;
+};
+
 // The four sides of a margin or padding shorthand, in top, right, bottom, left order.
 const boxSides = ( value ) => {
-	const p = low( value ).split( /\s+/ ).filter( Boolean );
+	const p = partsOf( value );
 	return [ p[ 0 ], p[ 1 ] ?? p[ 0 ], p[ 2 ] ?? p[ 0 ], p[ 3 ] ?? p[ 1 ] ?? p[ 0 ] ];
 };
 

@@ -21,6 +21,21 @@ test( 'styleOf splits declarations and keeps a semicolon inside brackets', () =>
 	assert.deepEqual( styleOf( null ), {} );
 } );
 
+test( 'styleOf drops the !important flag, and a shorthand splits outside brackets only (MUST FAIL where the flag stays in the value or a calc() splits)', () => {
+	assert.deepEqual( styleOf( 'text-align:center !important; background: none!IMPORTANT' ), { 'text-align': 'center', background: 'none' } );
+	const looks = ( text ) => [ ...declaredLooks( styleOf( text ) ) ].sort();
+	assert.deepEqual( looks( 'text-align:center !important' ), [ 'text-centre' ] );
+	assert.deepEqual( looks( 'background:none !important' ), [], 'a flagged none paints nothing' );
+	// calc( 100% - 2rem ) is one side: the right margin is auto, so the box is centred only where the bracket is kept whole.
+	assert.deepEqual( looks( 'margin: 0 calc( 50% - 10px ) 0 auto' ), [ 'margin-auto' ] );
+	assert.deepEqual( looks( 'margin: calc( 1rem + 2px ) auto' ), [ 'margin-auto' ] );
+	assert.deepEqual( looks( 'border-width: calc( 1px + 0px ) 0 0; border-style: none solid solid' ), [], 'the drawn width sits on the top side, whose style is none' );
+	// Negative controls: a value with no flag and no bracket reads as before.
+	assert.deepEqual( styleOf( 'text-align: center' ), { 'text-align': 'center' } );
+	assert.deepEqual( looks( 'margin: 0 auto' ), [ 'margin-auto' ] );
+	assert.deepEqual( looks( 'margin: 4px 0' ), [] );
+} );
+
 test( 'declaredLooks names each look a declaration paints, and nothing for values that paint nothing', () => {
 	const looks = ( text ) => [ ...declaredLooks( styleOf( text ) ) ].sort();
 	assert.deepEqual( looks( 'background: #F5C2C8' ), [ 'background' ] );

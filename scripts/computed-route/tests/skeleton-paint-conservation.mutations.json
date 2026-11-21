@@ -472,5 +472,29 @@
 		"find": "( r.parts || [] ).map( ( k ) => [ k, r ] )",
 		"replace": "( r.parts || [] ).slice( 1 ).map( ( k ) => [ k, r ] )",
 		"why": "a row's first part is not found"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "out[ part.slice( 0, at ).trim().toLowerCase() ] = part.slice( at + 1 ).replace( IMPORTANT, '' ).trim();",
+		"replace": "out[ part.slice( 0, at ).trim().toLowerCase() ] = part.slice( at + 1 ).trim();",
+		"why": "the !important flag stays in the value"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const IMPORTANT = /\\s*!\\s*important\\s*$/i;",
+		"replace": "const IMPORTANT = /\\s*!\\s*important\\s*$/;",
+		"why": "an upper-case flag stays in the value"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t\tif ( /\\s/.test( c ) && 0 === depth ) {\n\t\t\tcur && out.push( cur );",
+		"replace": "\t\tif ( /\\s/.test( c ) ) {\n\t\t\tcur && out.push( cur );",
+		"why": "a bracketed part splits at its spaces"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\tconst p = partsOf( value );",
+		"replace": "\tconst p = low( value ).split( /\\s+/ ).filter( Boolean );",
+		"why": "the shorthand splits at every space"
 	}
 ]
