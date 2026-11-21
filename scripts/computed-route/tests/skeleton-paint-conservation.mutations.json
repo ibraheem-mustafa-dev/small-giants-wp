@@ -550,5 +550,53 @@
 		"find": "const surfaces = loadClient( { repo, client, dir: dirs[ client ] ?? null, skip, unlisted: unlisted[ client ] } );",
 		"replace": "const surfaces = loadClient( { repo, client, dir: dirs[ client ] ?? null, skip } );",
 		"why": "listAll does not collect the unlisted surfaces"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "const r = conservationRows( { ...s, view, otherSurfaces:",
+		"replace": "const r = conservationRows( { ...s, otherSurfaces:",
+		"why": "listAll passes no fact record view"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "const view = off ? null : built;",
+		"replace": "const view = built;",
+		"why": "a record out of step with the inventory is read"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "const sameElement = ( entry, e ) => entry.template.realTag === String( e.srcTag ?? e.tag ).replace( /^sc-raw-/, '' ) || entry.template.tag === e.srcTag;",
+		"replace": "const sameElement = () => true;",
+		"why": "every record entry is taken as its element"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "rootComponent: isServedInventory( inventory ) ? rootOf( surface ) : null } );",
+		"replace": "rootComponent: null } );",
+		"why": "a served inventory is read with no root component"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "facts[ client ][ s.surface ] = ! record ? why : off ?",
+		"replace": "facts[ client ][ s.surface ] = ! record ? null : off ?",
+		"why": "a surface read without a record is not named"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "\tnoRecord.length && lines.push(",
+		"replace": "\tfalse && lines.push(",
+		"why": "the report does not list the surfaces read without a record"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": ".map( ( k ) => total( client, k ) ).join( ' | ' ) } | ${ factless( client ).length } |` );",
+		"replace": ".map( ( k ) => total( client, k ) ).join( ' | ' ) } | 0 |` );",
+		"why": "the table does not count the surfaces read without a record"
+	},
+	{
+		"file": "tools/paint-conservation.mjs",
+		"find": "\tif ( ! fs.existsSync( factsFile( repo, client ) ) ) {\n\t\treturn { record: null, why: `no fact record (sites/${ client }/build/intake/facts.json)` };\n\t}",
+		"replace": "",
+		"why": "a client with no facts.json is not named"
 	}
 ]

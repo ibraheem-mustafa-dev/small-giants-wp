@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { RECORD_KINDS, RECORDED_CLASSES, INHERITED_LOOKS, lookOfProperty, checkRecords, unreadList, recordsOf, nodesByRef, paintProblems, styleOf, declaredLooks, computedLooks, paintsBox, namedKeys, namedReads, BAND_LOOKS, loopOf, templateOf, identityOf, namedIdentities, heldIdentities, droppedBy, conservationRows, groupRows } from '../lib/skeleton-paint-conservation.mjs';
-import { listAll, loadClient, markdown, main } from '../tools/paint-conservation.mjs';
+import { listAll, loadClient, markdown, main, factRecordOf } from '../tools/paint-conservation.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -381,6 +381,41 @@ test( 'the tool reads a client folder, lists an element once under its narrowest
 	const viaDir = [];
 	assert.equal( main( [ '--client', 'demo', '--root', repo, '--dir', `demo=${ moved }`, '--skip', 'demo/held-out', '--json' ], { log: ( l ) => viaDir.push( l ) } ), 0 );
 	assert.equal( JSON.parse( viaDir[ 0 ] ).rows.length, 5 );
+	fs.rmSync( repo, { recursive: true } );
+} );
+
+test( 'the tool reads each surface\'s declared styles through the fact record view, and names a surface read without a record (MUST FAIL where listAll passes no view)', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'paint-conservation-' ) );
+	const dir = path.join( repo, 'sites', 'demo', 'build', 'skeleton' );
+	fs.mkdirSync( path.join( repo, 'sites', 'demo', 'build', 'intake' ), { recursive: true } );
+	fs.mkdirSync( dir, { recursive: true } );
+	const page = surface();
+	// A box whose centring the template declares (its rendered style attribute and computed read hold none of it).
+	page.inventory.elements.push( el( 'Root/10#0', null, { parentKey: 'Root/1#0' } ) );
+	[ 'inventory', 'proposal', 'skeleton' ].forEach( ( k ) => fs.writeFileSync( path.join( dir, `home.${ k }.json` ), JSON.stringify( page[ k ] ) ) );
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'surfaces.json' ), JSON.stringify( { home: { draftIndex: 'Home.dc.html', intakeSurface: 'page-home' } } ) );
+	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'intake', 'intake.json' ), JSON.stringify( { skeletons: { 'page-home': { inventory: { checks: { rootName: 'Home' } } } } } ) );
+	assert.equal( loadClient( { repo, client: 'demo' } )[ 0 ].rootComponent, 'Home', 'a served inventory\'s root host is the intake skeleton\'s root component' );
+	const record = { elements: { 'Home/10': { template: { tag: 'div', realTag: 'div', realParent: 'Home/1', style: { static: [ [ 'margin-left', 'auto' ], [ 'margin-right', 'auto' ], [ 'max-width', '720px' ] ], holes: [] }, attrs: {}, membership: { scFor: [] } } } } };
+	const withRecord = listAll( { repo, clients: [ 'demo' ], factRecord: () => ( { record, why: null } ) } );
+	const row = withRecord.rows.find( ( r ) => 'Root/10#0' === r.key );
+	assert.deepEqual( Object.keys( row?.looks ?? {} ).sort(), [ 'margin-auto', 'max-width' ] );
+	assert.deepEqual( withRecord.facts, { demo: { home: null } } );
+	assert.doesNotMatch( markdown( withRecord, 'T' ), /Surfaces read with no fact record/ );
+	// Negative control: a client with no record reads the style attribute only, and the report names the surface.
+	const without = listAll( { repo, clients: [ 'demo' ], factRecord: () => ( { record: null, why: 'no facts.json' } ) } );
+	assert.ok( ! without.rows.some( ( r ) => 'Root/10#0' === r.key ) );
+	assert.match( markdown( without, 'T' ), /\| 5 \| 1 \|\n/, 'the table counts the surface read without a record' );
+	assert.deepEqual( without.facts, { demo: { home: 'no facts.json' } } );
+	assert.match( markdown( without, 'T' ), /Surfaces read with no fact record \(the template's declared styles not read\): demo\/home \(no facts\.json\)/ );
+	// A record out of step with the inventory (its entry for the element is another tag: an inventory read from an older draft) is not read.
+	record.elements[ 'Home/10' ].template.realTag = 'button';
+	record.elements[ 'Home/10' ].template.tag = 'button';
+	const stale = listAll( { repo, clients: [ 'demo' ], factRecord: () => ( { record, why: null } ) } );
+	assert.ok( ! stale.rows.some( ( r ) => 'Root/10#0' === r.key ) );
+	assert.deepEqual( stale.facts, { demo: { home: 'the record is out of step with this inventory: 1 of 12 elements are another tag there' } } );
+	// The default loader reads sites/<client>/build/intake/facts.json, and a client without one is named.
+	assert.deepEqual( factRecordOf( { repo, client: 'demo' } ), { record: null, why: 'no fact record (sites/demo/build/intake/facts.json)' } );
 	fs.rmSync( repo, { recursive: true } );
 } );
 
