@@ -1054,6 +1054,35 @@ export default function Edit( {
 						) }
 					</ResponsiveOverride>
 
+					{ /* minWidth is a tier object holding one length string per device: the button grows past it
+					   for a longer label, where a custom width would not. */ }
+					<ResponsiveOverride
+						label={ __( 'Min width', 'sgs-blocks' ) }
+						value={ attributes.minWidth }
+						onChange={ ( obj ) =>
+							setAttributes( { minWidth: obj } )
+						}
+					>
+						{ ( {
+							ownValue,
+							effectiveValue,
+							inherited,
+							setOwnValue,
+						} ) => (
+							<SgsLengthControl
+								presets={ false }
+								label={ __( 'Min width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								value={ ownValue || '' }
+								placeholder={
+									inherited ? effectiveValue || '' : ''
+								}
+								units={ MIN_HEIGHT_UNITS }
+								onChange={ ( raw ) => setOwnValue( raw || '' ) }
+							/>
+						) }
+					</ResponsiveOverride>
+
 					{ /* Content alignment — block.json attributes.contentAlign (tier
 					   object) + render.php (justify-content on the button root).
 					   textAlign cannot move flex content. */ }

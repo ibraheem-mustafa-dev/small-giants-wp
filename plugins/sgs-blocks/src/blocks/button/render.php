@@ -693,6 +693,21 @@ $scoped_css_parts[] = sgs_emit_responsive_css(
 	)
 );
 
+// Min-width — per device on the same selector as min-height, printed only when set (style.css sets none). The
+// repeated uid class keeps it ahead of sgs/container's zero-specificity `min-width:0` backstop on its children.
+if ( isset( $attributes['minWidth'] ) && is_array( $attributes['minWidth'] ) ) {
+	$scoped_css_parts[] = sgs_emit_responsive_css(
+		".{$uid}.{$uid}.sgs-button",
+		array(
+			array(
+				'value'        => $attributes['minWidth'],
+				'css'          => 'min-width',
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+
 // Width — base + tablet + mobile on the SAME selector (Pattern A). Each tier's
 // width derives from its own widthType enum: full → 100%, custom → its length,
 // fit → fit-content (the button is a flex item that a flex-column parent would
