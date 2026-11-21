@@ -1,0 +1,26 @@
+[
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"setting\": \"addToCartShowIcon\",\n\t\t\t\t\t\"value\": false,",
+		"replace": "\"setting\": \"addToCartShowIcon\",\n\t\t\t\t\t\"value\": true,",
+		"why": "an Add to Cart the draft draws without an icon turns the icon on"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"whenAbsent\": \"add-to-cart-icon\"",
+		"replace": "\"whenAbsent\": \"add-to-cart\"",
+		"why": "the icon rule looks for the button itself, so a drawn button reads as a drawn icon"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"whenAbsent\": \"add-to-cart-icon\",\n\t\t\t\t\t\"neighbours\": [\n\t\t\t\t\t\t\"add-to-cart\"\n\t\t\t\t\t]",
+		"replace": "\"whenAbsent\": \"add-to-cart-icon\",\n\t\t\t\t\t\"neighbours\": []",
+		"why": "an Add to Cart the finder did not find still turns its icon off"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"setting\": \"addToCartShowIcon\",",
+		"replace": "\"setting\": \"addToCartShowIconX\",",
+		"why": "the rule names another setting"
+	}
+]

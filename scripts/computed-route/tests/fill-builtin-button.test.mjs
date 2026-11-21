@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 import { buildLook, READ_PROPS } from '../lib/fill-part-look.mjs';
-import { applyBuiltinButtons, declaredButtons, presetReads, kitValueShapes, HOVER_PROPS } from '../lib/fill-builtin-button.mjs';
+import { applyBuiltinButtons, declaredButtons, presetReads, kitValueShapes, translateY, HOVER_PROPS } from '../lib/fill-builtin-button.mjs';
 import { presetMisses } from '../lib/fill-preset.mjs';
 
 const PART = 'flow-opener';
@@ -28,6 +28,9 @@ const ROWS = [
 	row( 'flowOpenerMinHeight', { attr_type: 'object', role: 'layout', css_property: 'min-height', tier_shape: 'tier_object' } ),
 	row( 'flowOpenerFontSize', { attr_type: 'object', role: 'typography', css_property: 'font-size', tier_shape: 'tier_object' } ), row( 'flowOpenerFontSizeUnit', { role: 'typography', css_element: null } ),
 	row( 'flowOpenerFontWeight', { role: 'typography', css_property: 'font-weight' } ), row( 'flowOpenerTextTransform', { role: 'typography', css_property: 'text-transform' } ),
+	// The kit's two newest groups (src/components/button-kit/registry.json: contentAlign, hoverLift). The framework database holds no row for them until its next reseed; the tests use fixture rows.
+	row( 'flowOpenerContentAlign', { attr_type: 'object', role: 'layout', css_property: 'justify-content', tier_shape: 'tier_object' } ),
+	row( 'flowOpenerHoverLiftDistance', { role: 'styling', css_property: 'transform', css_state: 'hover' } ),
 ];
 const db = openDb( fixtureDb( { blocks: [ { slug: BLOCK, title: 'Buy box', category: 'sgs', type: 'dynamic' } ], block_attributes: ROWS } ) );
 const rowsOf = () => ROWS.map( ( r ) => ( { css_property: null, css_state: null, css_tier: null, is_responsive: 0, tier_shape: null, enum_values: null, ...r } ) );
@@ -55,10 +58,10 @@ const EYE_CARE = {
 	outline: { background: 'transparent', text: 'currentColor', border: 'color-mix(in srgb, currentColor 75%, transparent)', 'border-width': '1px', 'border-radius': '0px', padding: '0px 28px 0px 28px', 'font-size': '13px', 'font-weight': '400', 'min-height': '52px', 'hover-background': 'rgba(250, 248, 245, 0.14)', 'hover-text': 'currentColor', 'hover-border': 'currentColor', 'hover-transform': 'matrix(1, 0, 0, 1, 0, -3)' },
 };
 
-function run( { reads = readsOf(), presets = EYE_CARE, rows = rowsOf(), buttons, database = db } = {} ) {
-	const build = buildLook( { block: BLOCK, rows, names: NAMES, locators: { anchors: {}, parts: { [ PART ]: {} } }, reads, snapshot: null } );
+function run( { reads = readsOf(), presets = EYE_CARE, rows = rowsOf(), buttons, database = db, names = NAMES } = {} ) {
+	const build = buildLook( { block: BLOCK, rows, names, locators: { anchors: {}, parts: { [ PART ]: {} } }, reads, snapshot: null } );
 	const before = build.writes.map( ( w ) => w.attr );
-	const out = applyBuiltinButtons( { block: BLOCK, build, rows, names: NAMES, db: database, reads, presets, snapshot: SNAPSHOT, buttons: buttons ?? [ { prefix: 'flowOpener', part: PART } ], schemaOf: () => null } );
+	const out = applyBuiltinButtons( { block: BLOCK, build, rows, names, db: database, reads, presets, snapshot: SNAPSHOT, buttons: buttons ?? [ { prefix: 'flowOpener', part: PART } ], schemaOf: () => null } );
 	return { build, out, before, attrs: build.writes.map( ( w ) => w.attr ), value: ( a ) => build.writes.find( ( w ) => w.attr === a )?.value };
 }
 
@@ -183,4 +186,104 @@ test( 'MUST FAIL: a kit attribute whose registry shape is per device is written 
 test( 'a per-device kit write the draft holds at one value for every width has only a desktop entry (negative control)', () => {
 	const { value } = run( { presets: {} } );
 	assert.deepEqual( value( 'flowOpenerPadding' ), { desktop: { top: '0px', right: '22px', bottom: '0px', left: '22px' } } );
+} );
+
+// The content alignment and the hover lift (the buy box's Add to Cart and flow opener draw a label at one end and a price or note at the
+// other, and rise 2px on hover): `<prefix>ContentAlign` from the computed justify-content, `<prefix>HoverLiftDistance` from the hovered
+// transform's Y translation against the resting one.
+const spread = ( over = {} ) => styles( { display: 'flex', 'justify-content': 'space-between', ...over } );
+
+test( 'MUST FAIL: a draft button that spreads its content (justify-content: space-between) writes {prefix}ContentAlign, a centred one writes none', () => {
+	const centred = run();
+	assert.equal( centred.value( 'flowOpenerContentAlign' ), undefined, 'a centred draft writes nothing (negative control)' );
+	assert.equal( centred.build.settings.flowOpenerContentAlign.status, 'not-written', 'the setting stays unwritten, with a reason' );
+	assert.match( centred.build.settings.flowOpenerContentAlign.reason, /centres the button's content/ );
+	assert.equal( centred.out.buttons[ 0 ].contentAlign, null );
+	const spreadRun = run( { reads: readsOf( spread() ) } );
+	assert.deepEqual( spreadRun.value( 'flowOpenerContentAlign' ), { desktop: 'space-between' } );
+	assert.equal( spreadRun.build.settings.flowOpenerContentAlign.status, 'written' );
+	assert.deepEqual( spreadRun.out.buttons[ 0 ].contentAlign, { desktop: 'space-between' } );
+} );
+
+test( 'a justify-content that is the block\'s own centre (normal, centre, unread) writes no content alignment (negative control)', () => {
+	for ( const own of [ 'normal', 'center', '' ] ) {
+		assert.equal( run( { reads: readsOf( styles( { 'justify-content': own } ) ) } ).value( 'flowOpenerContentAlign' ), undefined, `justify-content: ${ own || '(empty)' }` );
+	}
+} );
+
+test( 'MUST FAIL: content alignment follows the widths: a narrower width is written only where it differs from the one above it, the own centre included', () => {
+	const reads = readsOf( spread() );
+	reads[ PART ][ 375 ] = [ instance( spread( { 'justify-content': 'flex-start' } ), hovered() ) ];
+	assert.deepEqual( run( { reads } ).value( 'flowOpenerContentAlign' ), { desktop: 'space-between', mobile: 'flex-start' } );
+	const back = readsOf( spread() );
+	back[ PART ][ 375 ] = [ instance( styles( { 'justify-content': 'center' } ), hovered() ) ];
+	assert.deepEqual( run( { reads: back } ).value( 'flowOpenerContentAlign' ), { desktop: 'space-between', mobile: 'center' }, 'a mobile centre after a spread desktop is a real value' );
+	const wide = readsOf( styles() );
+	wide[ PART ][ 768 ] = [ instance( spread( { 'justify-content': 'end' } ), hovered() ) ];
+	wide[ PART ][ 375 ] = [ instance( spread( { 'justify-content': 'end' } ), hovered() ) ];
+	assert.deepEqual( run( { reads: wide } ).value( 'flowOpenerContentAlign' ), { tablet: 'flex-end' }, 'a centred desktop is not written; a tablet end is, and mobile follows it' );
+} );
+
+test( 'draft instances of the button that differ in justify-content write no content alignment (negative control)', () => {
+	const reads = readsOf( spread() );
+	reads[ PART ][ 1440 ].push( instance( styles(), hovered() ) );
+	const { value, build } = run( { reads } );
+	assert.equal( value( 'flowOpenerContentAlign' ), undefined );
+	assert.match( build.settings.flowOpenerContentAlign.reason, /differ in justify-content/ );
+} );
+
+test( 'a justify-content the setting cannot hold (space-around) writes nothing', () => {
+	assert.equal( run( { reads: readsOf( spread( { 'justify-content': 'space-around' } ) ) } ).value( 'flowOpenerContentAlign' ), undefined );
+} );
+
+test( 'MUST FAIL: a draft button that rises on hover writes {prefix}HoverLiftDistance as the whole px it moves up, a still one writes none', () => {
+	const rising = run();
+	assert.equal( rising.value( 'flowOpenerHoverLiftDistance' ), '2px', 'the Eye Care opener rises 2px (matrix ty -2)' );
+	assert.equal( rising.build.settings.flowOpenerHoverLiftDistance.status, 'written' );
+	assert.equal( rising.out.buttons[ 0 ].lift, '2px' );
+	const still = run( { reads: readsOf( styles(), hovered( { transform: 'none' } ) ) } );
+	assert.equal( still.value( 'flowOpenerHoverLiftDistance' ), undefined, 'a still button writes no lift (negative control)' );
+	assert.match( still.build.settings.flowOpenerHoverLiftDistance.reason, /does not move up on hover/ );
+	assert.equal( still.out.buttons[ 0 ].lift, null );
+} );
+
+test( 'the lift is the movement against the resting transform: 3px from a resting -1px, none for a sink, a scale or a sub-pixel move', () => {
+	const lift = ( rest, hover ) => run( { reads: readsOf( styles( { transform: rest } ), hovered( { transform: hover } ) ) } ).value( 'flowOpenerHoverLiftDistance' );
+	assert.equal( lift( 'matrix(1, 0, 0, 1, 0, -1)', 'matrix(1, 0, 0, 1, 0, -4)' ), '3px' );
+	assert.equal( lift( 'none', 'matrix(1, 0, 0, 1, 0, 4)' ), undefined, 'a sinking button' );
+	assert.equal( lift( 'none', 'matrix(1.05, 0, 0, 1.05, 0, 0)' ), undefined, 'a scale alone is no lift' );
+	assert.equal( lift( 'none', 'matrix(1, 0, 0, 1, 0, -0.4)' ), undefined, 'a move that rounds to 0px' );
+	assert.equal( lift( 'none', 'matrix(1, 0, 0, 1, 0, -60)' ), '24px', 'capped at the setting\'s 24px ceiling' );
+	assert.equal( lift( 'none', 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -5, 0, 1)' ), '5px', 'a 3D matrix reads its Y translation' );
+	assert.equal( lift( 'none', 'perspective(10px)' ), undefined, 'a transform the route cannot read writes nothing' );
+} );
+
+test( 'translateY reads none, a matrix and a matrix3d, and nothing else', () => {
+	assert.equal( translateY( 'none' ), 0 );
+	assert.equal( translateY( '' ), 0 );
+	assert.equal( translateY( 'matrix(1, 0, 0, 1, 0, -3)' ), -3 );
+	assert.equal( translateY( 'matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 4, -6, 0, 1)' ), -6 );
+	assert.equal( translateY( 'rotate(3deg)' ), null );
+	assert.equal( translateY( 'matrix(1, 0, 0)' ), null );
+} );
+
+test( 'MUST FAIL: both are written whether or not a preset matched (a preset carries no per-button content alignment or lift distance)', () => {
+	const { out, value } = run( { reads: readsOf( spread() ), presets: { ink: INK } } );
+	assert.equal( out.buttons[ 0 ].preset, 'ink', 'the ink preset matches the dark opener' );
+	assert.deepEqual( value( 'flowOpenerContentAlign' ), { desktop: 'space-between' } );
+	assert.equal( value( 'flowOpenerHoverLiftDistance' ), '2px' );
+} );
+
+test( 'the route owns both writes: a write the part-look pass made from the setting\'s own row is replaced, never doubled', () => {
+	const { build, attrs } = run( { reads: readsOf( spread() ) } );
+	assert.equal( attrs.filter( ( a ) => 'flowOpenerContentAlign' === a ).length, 1 );
+	assert.equal( attrs.filter( ( a ) => 'flowOpenerHoverLiftDistance' === a ).length, 1 );
+	assert.equal( build.writes.find( ( w ) => 'flowOpenerContentAlign' === w.attr ).property, 'justify-content' );
+} );
+
+test( 'before the framework database holds the two attributes (until its reseed) nothing is written for them and nothing breaks', () => {
+	const old = new Set( [ ...NAMES ].filter( ( n ) => ! /ContentAlign|HoverLiftDistance/.test( n ) ) );
+	const { attrs, build } = run( { reads: readsOf( spread() ), names: old, rows: rowsOf().filter( ( r ) => ! /ContentAlign|HoverLiftDistance/.test( r.attr_name ) ) } );
+	assert.ok( ! attrs.some( ( a ) => /ContentAlign|HoverLiftDistance/.test( a ) ) );
+	assert.equal( build.settings.flowOpenerContentAlign, undefined );
 } );

@@ -1,0 +1,14 @@
+[
+	{
+		"file": "data/part-locators.json",
+		"find": "\"from\": \"addToCart\",\n\t\t\t\t\t\"match\": {\n\t\t\t\t\t\t\"tag\": [\n\t\t\t\t\t\t\t\"svg\"",
+		"replace": "\"from\": \"addToCart\",\n\t\t\t\t\t\"match\": {\n\t\t\t\t\t\t\"tag\": [\n\t\t\t\t\t\t\t\"span\"",
+		"why": "the icon locator finds spans, not svgs"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"from\": \"addToCart\",",
+		"replace": "\"from\": \"page\",",
+		"why": "the icon locator looks anywhere on the page, not only inside the add-to-cart button"
+	}
+]

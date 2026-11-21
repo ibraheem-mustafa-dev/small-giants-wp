@@ -7,7 +7,12 @@
 //     allows (lib/fill-preset.mjs::matchPreset, the same rule a `sgs/button` follows), `<prefix>Style` is written as that variant
 //     and the look writes the preset already gives are dropped. A variant that differs in any value it holds matches nothing, so a
 //     dark outlined draft button never takes a preset drawn for a dark page;
-//   - the hover look: when no preset matches, the draft's hovered colours go to the part's hover rows (css_state `hover`), the ones equal to the resting colour too.
+//   - the hover look: when no preset matches, the draft's hovered colours go to the part's hover rows (css_state `hover`), the ones equal to the resting colour too;
+//   - the content alignment: `<prefix>ContentAlign` from the button's computed justify-content (a label at one end and a price or note at
+//     the other is space-between), per device, nothing where it is the block's own centre (the draft's `normal` or `center`);
+//   - the hover lift: `<prefix>HoverLiftDistance` from how far the hovered button moves up (the Y translation of its hovered transform
+//     against its resting one), whole px, nothing where the draft does not move up. A preset carries no per-button distance, so both are
+//     written whether or not a preset matched. Each is written only where the block declares the attribute (`names`).
 // A part the draft does not draw, a preset choice the database does not hold for the part, or draft instances that disagree
 // write nothing here. Pure: the block's rows, the part-look build and the reads in, the build adjusted and notes out.
 import fs from 'node:fs';
@@ -56,6 +61,62 @@ function perDeviceWrite( write, row, ctx ) {
 		return write;
 	}
 	return { ...write, value: Object.fromEntries( shaped.map( ( [ k, x ] ) => [ k, x.value ] ) ), widthVaries: undefined };
+}
+
+// The `justify-content` values `<prefix>ContentAlign` takes, by the computed value that names each (the block's own centre is no write).
+const ALIGN_VALUES = { 'flex-start': 'flex-start', start: 'flex-start', 'flex-end': 'flex-end', end: 'flex-end', 'space-between': 'space-between' };
+const ALIGN_OWN = [ 'center', 'normal', '' ];
+// The Y translation of a computed `transform` (px, up is negative): 'none' is 0, a matrix reads its ty, anything else is unreadable (null).
+export function translateY( transform ) {
+	const text = String( transform ?? '' ).trim();
+	if ( '' === text || 'none' === text ) {
+		return 0;
+	}
+	const m = /^matrix(3d)?\(([^)]*)\)$/.exec( text );
+	const n = m ? m[ 2 ].split( ',' ).map( ( v ) => Number.parseFloat( v ) ) : [];
+	const ty = n[ m?.[ 1 ] ? 13 : 5 ];
+	return m && n.length === ( m[ 1 ] ? 16 : 6 ) && Number.isFinite( ty ) ? ty : null;
+}
+
+// The `<prefix>ContentAlign` write of a part: the draft's computed justify-content at each width, as { desktop, tablet?, mobile? } where a
+// narrower width differs from the one above it (part-look's rule for a per-device setting), the block's own centre dropped. { write } or { skip }.
+export function contentAlignWrite( { attr, part, instances } ) {
+	const draft = {};
+	for ( const width of WIDTHS ) {
+		const seen = [ ...new Set( ( instances[ width ] || [] ).map( ( i ) => String( i.styles?.[ 'justify-content' ] ?? '' ).trim() ) ) ];
+		if ( seen.length > 1 ) {
+			return { skip: `the draft's instances of the button differ in justify-content at ${ width }px` };
+		}
+		draft[ width ] = seen[ 0 ];
+	}
+	if ( undefined === draft[ 1440 ] ) {
+		return { skip: `the draft's justify-content was not read at 1440` };
+	}
+	const effective = ( v ) => ALIGN_VALUES[ v ] ?? ( ALIGN_OWN.includes( v ) ? 'center' : null );
+	const tiers = {};
+	let above = 'center';
+	for ( const [ tier, width ] of [ [ 'desktop', 1440 ], [ 'tablet', 768 ], [ 'mobile', 375 ] ] ) {
+		const v = undefined === draft[ width ] ? above : effective( draft[ width ] );
+		if ( null === v ) {
+			return { skip: `the draft's justify-content (${ draft[ width ] }) has no content alignment setting value` };
+		}
+		v !== above && ( tiers[ tier ] = v );
+		above = v;
+	}
+	return Object.keys( tiers ).length ? { write: { attr, value: tiers, part, property: 'justify-content', draft, defaultNotRead: true } } : { skip: `the draft centres the button's content, which is the block's own` };
+}
+
+// The `<prefix>HoverLiftDistance` write of a part: whole px the hovered button moves up from its resting place at 1440. { write } or { skip }.
+export function hoverLiftWrite( { attr, part, instance } ) {
+	if ( ! instance?.hover ) {
+		return { skip: `the draft's hovered look was not read at 1440` };
+	}
+	const [ rest, hover ] = [ translateY( instance.styles?.transform ), translateY( instance.hover.transform ) ];
+	if ( null === rest || null === hover ) {
+		return { skip: 'the hovered transform is not a translation the route reads' };
+	}
+	const up = Math.round( rest - hover );
+	return up >= 1 ? { write: { attr, value: `${ Math.min( up, 24 ) }px`, part, property: 'transform (hover)', draft: { 1440: `${ up }px` }, defaultNotRead: true } } : { skip: `the draft's button does not move up on hover` };
 }
 
 let declaredIndex = null;
@@ -115,7 +176,7 @@ function hoverWrite( { row, instance, snapshot, names, log } ) {
 //   reads: { part: { width: [ { styles, hover } ] } } (the part-look reads, each instance carrying `hover` when hovered);
 //   presets: settings.custom.buttonPresets of the client's raw snapshot; snapshot: the normalised snapshot;
 //   buttons: the declared buttons (declaredButtons; a test passes its own); schemaOf: block.json attributes (lib/fill-preset.mjs).
-// Returns { notes, buttons: [ { prefix, part, preset: variant|null, dropped: [ attr ], hover: [ attr ], misses } ] }.
+// Returns { notes, buttons: [ { prefix, part, preset: variant|null, dropped: [ attr ], hover: [ attr ], misses, contentAlign: value|null, lift: '<n>px'|null } ] }.
 export function applyBuiltinButtons( { block, build, rows, names, db, reads, presets, snapshot, buttons = declaredButtons( block ), schemaOf } ) {
 	const out = { notes: [], buttons: [] };
 	const choices = buttons.length ? ( presetChoices( db, presets || {}, schemaOf )[ block ] || [] ) : [];
@@ -127,11 +188,27 @@ export function applyBuiltinButtons( { block, build, rows, names, db, reads, pre
 			continue;
 		}
 		const choice = choices.find( ( c ) => c.attr === `${ prefix }Style` && c.part === part );
-		const entry = { prefix, part, preset: null, dropped: [], hover: [], misses: {} };
+		const entry = { prefix, part, preset: null, dropped: [], hover: [], misses: {}, contentAlign: null, lift: null };
 		out.buttons.push( entry );
 		// A box the registry stores per device is written per device (a flat box prints nothing there).
 		const shapes = kitValueShapes( prefix );
 		build.writes = build.writes.map( ( w ) => ( w.part === part && ! w.mode && ! w.companionOf && /^device_/.test( shapes[ w.attr ] || '' ) ? perDeviceWrite( w, rows.find( ( r ) => r.attr_name === w.attr ), { names, snapshot, log: [] } ) : w ) );
+		// The content alignment and the hover lift: one owner here, whether or not a preset matches and whether or not the part-look pass
+		// wrote the setting from its own row (the hover row is a state setting it does not read).
+		for ( const [ base, made ] of [ [ 'ContentAlign', contentAlignWrite( { attr: `${ prefix }ContentAlign`, part, instances } ) ], [ 'HoverLiftDistance', hoverLiftWrite( { attr: `${ prefix }HoverLiftDistance`, part, instance: ( instances[ 1440 ] || [] )[ 0 ] } ) ] ] ) {
+			const attr = `${ prefix }${ base }`;
+			if ( ! names.has( attr ) ) {
+				continue;
+			}
+			build.writes = build.writes.filter( ( w ) => w.attr !== attr );
+			if ( made.write ) {
+				build.writes.push( made.write );
+				build.settings[ attr ] = { status: 'written', reason: null, part, code: 'ContentAlign' === base ? 'contentAlign' : 'hoverLift' };
+				entry[ 'ContentAlign' === base ? 'contentAlign' : 'lift' ] = made.write.value;
+			} else {
+				build.settings[ attr ] = { status: 'not-written', reason: made.skip, part, code: 'noDifference' };
+			}
+		}
 		const id = part;
 		const pr = presetReads( instances, id );
 		const held = Object.fromEntries( Object.entries( presets || {} ).filter( ( [ v ] ) => choice?.variants.includes( v ) ) );

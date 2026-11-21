@@ -88,5 +88,77 @@
 		"find": "if ( undefined === value || null === value ) {\n\t\treturn { skip: 'the hovered look paints no value' };",
 		"replace": "if ( undefined === value || null === value || samePrimitive( value, primitive( row.css_property, instance.styles, row ) ) ) {\n\t\treturn { skip: 'the hovered look paints no value' };",
 		"why": "a hovered colour equal to the resting one is not written"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "v !== above && ( tiers[ tier ] = v );",
+		"replace": "( tiers[ tier ] = v );",
+		"why": "a width equal to the one above it (and a centred desktop) is written as a content alignment"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "( ALIGN_OWN.includes( v ) ? 'center' : null )",
+		"replace": "( ALIGN_OWN.includes( v ) ? 'center' : 'space-between' )",
+		"why": "a justify-content the setting cannot hold is written as space-between"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "end: 'flex-end', 'space-between'",
+		"replace": "end: 'center', 'space-between'",
+		"why": "the computed value end does not name flex-end"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "if ( seen.length > 1 ) {",
+		"replace": "if ( false ) {",
+		"why": "instances that differ in justify-content are written anyway"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "build.writes = build.writes.filter( ( w ) => w.attr !== attr );",
+		"replace": "void attr;",
+		"why": "a write the part-look pass made from the setting's own row stays beside the route's"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "if ( ! names.has( attr ) ) {",
+		"replace": "if ( false ) {",
+		"why": "an attribute the block does not declare is written"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "return up >= 1 ? {",
+		"replace": "return up >= 0 ? {",
+		"why": "a button that does not move up writes a 0px lift"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "const up = Math.round( rest - hover );",
+		"replace": "const up = Math.round( -hover );",
+		"why": "the resting transform is ignored: the lift is the hovered translation alone"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "value: `${ Math.min( up, 24 ) }px`",
+		"replace": "value: `${ up }px`",
+		"why": "the lift is not capped at the setting's 24px ceiling"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "const ty = n[ m?.[ 1 ] ? 13 : 5 ];",
+		"replace": "const ty = n[ 5 ];",
+		"why": "a 3D matrix is read at the 2D matrix's position"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "if ( '' === text || 'none' === text ) {\n\t\treturn 0;",
+		"replace": "if ( '' === text || 'none' === text ) {\n\t\treturn null;",
+		"why": "a transform of none is unreadable, so the resting lift is lost"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "build.settings[ attr ] = { status: 'written', reason: null, part, code: 'ContentAlign' === base ? 'contentAlign' : 'hoverLift' };",
+		"replace": "build.settings[ attr ] = { status: 'not-written', reason: null, part, code: 'ContentAlign' === base ? 'contentAlign' : 'hoverLift' };",
+		"why": "a written content alignment or lift is reported as not written"
 	}
 ]

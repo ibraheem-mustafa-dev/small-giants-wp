@@ -85,6 +85,14 @@
 						"hasAmount": "add-to-cart"
 					},
 					"whenFound": "add-to-cart"
+				},
+				{
+					"setting": "addToCartShowIcon",
+					"value": false,
+					"whenAbsent": "add-to-cart-icon",
+					"neighbours": [
+						"add-to-cart"
+					]
 				}
 			]
 		},

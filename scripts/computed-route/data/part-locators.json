@@ -1691,6 +1691,12 @@
 					"match": {
 						"parentOfAnchor": "pickButtons"
 					}
+				},
+				"addToCart": {
+					"from": "page",
+					"match": {
+						"shopPart": "buybox-add-to-basket"
+					}
 				}
 			},
 			"parts": {
@@ -1724,6 +1730,15 @@
 					"match": {
 						"shopPart": "buybox-add-to-basket"
 					}
+				},
+				"add-to-cart-icon": {
+					"from": "addToCart",
+					"match": {
+						"tag": [
+							"svg"
+						]
+					},
+					"pick": "first"
 				},
 				"flow-opener": {
 					"from": "page",

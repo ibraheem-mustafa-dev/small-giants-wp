@@ -268,3 +268,13 @@ test( 'MUST FAIL: the flow opener\'s note is the opener\'s second child; an open
 	const plain = await locateIn( opener( '<span>Add my prescription</span>' ), 'buybox', extra );
 	assert.deepEqual( plain[ 'flow-opener-note' ], [], 'negative control: no second child, no note' );
 } );
+
+test( 'the Add to Cart icon is the svg inside the add-to-cart button and nothing outside it; a button that draws none has none', async () => {
+	const extra = { shopParts: { 'buybox-add-to-basket': [ { dc: 'Product', tpl: '108' } ] }, rootName: 'Product' };
+	const withIcon = await locateIn( BUY( '<svg width="20" height="20"></svg><button data-dc-tpl="108" type="button" style="display:flex"><svg width="16" height="16"></svg><span>Add to basket · £5</span></button>' ), 'buybox', extra );
+	assert.deepEqual( tags( withIcon[ 'add-to-cart-icon' ] ), [ 'svg' ], 'the svg in the button, not the one beside it' );
+	assert.equal( withIcon[ 'add-to-cart' ].length, 1 );
+	const bare = await locateIn( BUY( '<svg width="20" height="20"></svg><button data-dc-tpl="108" type="button">Add to basket · £5</button>' ), 'buybox', extra );
+	assert.deepEqual( bare[ 'add-to-cart-icon' ], [], 'an svg beside the button is no icon of the button (negative control)' );
+	assert.equal( bare[ 'add-to-cart' ].length, 1, 'the button itself is still found' );
+} );

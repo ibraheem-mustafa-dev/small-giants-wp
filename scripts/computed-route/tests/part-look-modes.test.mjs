@@ -68,6 +68,20 @@ test( 'the add button\'s price switch and label come from what the draft\'s butt
 	assert.equal( off.writes.find( ( w ) => 'addToCartShowPrice' === w.attr ).value, false );
 } );
 
+test( 'MUST FAIL: an Add to Cart the draft draws with no icon turns the cart icon off; one that draws an icon leaves it on', () => {
+	const rulesOf = MODES.blocks[ 'sgs/buybox' ].rules.filter( ( r ) => 'addToCartShowIcon' === r.setting );
+	assert.equal( rulesOf.length, 1, 'the buy box has a rule for addToCartShowIcon' );
+	const bare = evaluateModes( { block: 'sgs/buybox', rules: rulesOf, rows: rows( 'addToCartShowIcon' ), reads: { 'add-to-cart': at( [ el( 'Add to basket' ) ] ) } } );
+	assert.deepEqual( bare.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'addToCartShowIcon', false ] ] );
+	assert.match( bare.writes[ 0 ].evidence, /no add-to-cart-icon/ );
+	const drawn = evaluateModes( { block: 'sgs/buybox', rules: rulesOf, rows: rows( 'addToCartShowIcon' ), reads: { 'add-to-cart': at( [ el( 'Add to basket' ) ] ), 'add-to-cart-icon': at( [ el( '' ) ] ) } } );
+	assert.equal( drawn.writes.length, 0, 'a draft Add to Cart with an icon writes nothing (negative control)' );
+	assert.equal( drawn.settings.addToCartShowIcon.code, 'drawn' );
+	const unfound = evaluateModes( { block: 'sgs/buybox', rules: rulesOf, rows: rows( 'addToCartShowIcon' ), reads: {} } );
+	assert.equal( unfound.writes.length, 0, 'an Add to Cart the finder did not find says nothing about its icon (negative control)' );
+	assert.equal( unfound.settings.addToCartShowIcon.code, 'neighboursNotFound' );
+} );
+
 // ---- the majority policy ------------------------------------------------------------------------------------------------
 
 const row = ( attr, property, part ) => ( { attr_name: attr, attr_type: 'string', role: null, css_property: property, css_element: part, css_state: null, css_tier: null, is_responsive: 0, tier_shape: null, enum_values: null, default_value: null } );
