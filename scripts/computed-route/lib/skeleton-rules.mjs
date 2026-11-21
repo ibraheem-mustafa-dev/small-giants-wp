@@ -1232,7 +1232,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const setting = records.flatMap( ( r ) => ( 'setting' === r.kind ? r.looks : [] ) );
 		const inherited = x.kidsB.length ? painted.filter( ( l ) => INHERITED_LOOKS.includes( l ) ) : [];
 		const laid = out.hostLays && painted.includes( 'layout' ) ? [ 'layout' ] : [];
-		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! ( dest.band && BAND_LOOKS.includes( l ) ) );
+		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! ( ( dest.band || dest.sizing ) && BAND_LOOKS.includes( l ) ) );
 		inherited.length && records.push( { kind: 'inherited', looks: inherited } );
 		laid.length && records.push( { kind: 'host-layout', node: out.hostLays, looks: laid } );
 		return { kept: ! left.length, left, conserve: records };

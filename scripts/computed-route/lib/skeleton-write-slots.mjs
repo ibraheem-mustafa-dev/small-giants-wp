@@ -150,14 +150,21 @@ export function makeSlotRows( ctx ) {
 	// What the destination of an unwrap reads of the wrapper's look (the skeleton rules' paint conservation,
 	// lib/skeleton-rules.mjs::ruleFor): { all } when the wrapper becomes its host's draft element at the free calibrated slot of the
 	// verdict's host setting (hostSlot) or is the frame a part slot of the host reads (rules.heroInner.frame), { band } when a
-	// band finder reads its width cap (bandWrapper).
+	// band finder reads its width cap (bandWrapper), { sizing } when the wrapper holds one block that draws the wrapper as a
+	// part of its own and the rule reads it at that part's calibrated slot (rules.<rule>.linkSlots,
+	// lib/skeleton-wrapper-link-slot.mjs: a link round one logo), which reads its width, ceiling and centring and no paint.
 	function unwrapReads( e, r ) {
 		const host = hosts.at( -1 );
 		const setting = r.hostSetting ?? R[ r.rule ]?.hostSetting;
 		const slot = setting && host ? calSettings( host.block )?.[ setting ]?.slot : null;
 		const framed = ctx.framePending.some( ( f ) => f.frame === e );
 		const band = !! host?.e && e.parentKey === host.e.key && !! host.node.draftRef && !! bandSetting( ctx.db, host.block, { settings: calSettings( host.block ) } );
-		return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band };
+		const kids = m.blockKids( e );
+		const sizing = 1 === kids.length && ( R[ r.rule ]?.linkSlots || [] ).some( ( s ) => {
+			const calibrated = calSettings( s.block )?.[ s.setting ];
+			return cls.classify( kids[ 0 ], null ).candidates?.[ 0 ]?.block === s.block && [ calibrated?.slot, ...( calibrated?.slots || [] ) ].includes( s.slot );
+		} );
+		return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band, sizing };
 	}
 	return { buildHeaderRows, buildFooterRows, hostSlot, bandWrapper, unwrapReads };
 }

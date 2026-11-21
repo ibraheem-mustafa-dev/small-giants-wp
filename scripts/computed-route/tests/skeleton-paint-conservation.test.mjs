@@ -136,6 +136,25 @@ test( 'computedLooks reads only the values the inventory recorded, and an inheri
 	assert.deepEqual( looks( undefined ), [] );
 } );
 
+test( 'a declared token that computes to nothing paints nothing where the width holds every side (MUST FAIL where the declaration alone decides)', () => {
+	const zero = { 'padding-top': '0px', 'padding-right': '0px', 'padding-bottom': '0px', 'padding-left': '0px' };
+	const flat = el( 'Root/1#0', 'padding: var(--section) 0', { resolved: { 375: zero, 768: zero, 1440: zero } } );
+	assert.deepEqual( paintsBox( flat ), {}, 'the token resolves to 0px on every side at every width' );
+	// Negative controls: the computed read shows padding; no computed read; a read that holds only some sides; one width only.
+	const padded = el( 'Root/1#0', 'padding: var(--section) 0', { resolved: { 375: { ...zero, 'padding-top': '64px' }, 768: zero, 1440: zero } } );
+	assert.deepEqual( paintsBox( padded ), { padding: [ 375 ] } );
+	assert.deepEqual( paintsBox( el( 'Root/1#0', 'padding: var(--section) 0' ) ), { padding: [ 375, 768, 1440 ] }, 'no computed read: the declaration stands' );
+	const partial = el( 'Root/1#0', 'padding: var(--section) 0', { resolved: { 375: { 'padding-top': '0px' }, 768: { 'padding-top': '0px' }, 1440: { 'padding-top': '0px' } } } );
+	assert.deepEqual( paintsBox( partial ), { padding: [ 375, 768, 1440 ] }, 'a read that does not hold every side does not overrule the declaration' );
+	const oneWidth = el( 'Root/1#0', 'padding: var(--section) 0', { resolved: { 1440: zero } } );
+	assert.deepEqual( paintsBox( oneWidth ), { padding: [ 375, 768 ] }, 'only the width that was read is decided' );
+	// A look the computed read does not decide keeps its declaration: a background beside the refuted padding.
+	assert.deepEqual( paintsBox( el( 'Root/1#0', 'background: red; padding: var(--section) 0', { resolved: { 375: zero, 768: zero, 1440: zero } } ) ), { background: [ 375, 768, 1440 ] } );
+	// Corners: a radius token computing to 0px on every corner is no radius.
+	const square = { 'border-top-left-radius': '0px', 'border-top-right-radius': '0px', 'border-bottom-right-radius': '0px', 'border-bottom-left-radius': '0px' };
+	assert.deepEqual( paintsBox( el( 'Root/1#0', 'border-radius: var(--r)', { resolved: { 375: square, 768: square, 1440: square } } ) ), {} );
+} );
+
 test( 'paintsBox gives each look the widths it shows at, from computed values per width and declarations at every rendered width', () => {
 	assert.deepEqual( paintsBox( el( 'Root/1#0', 'background: red' ) ), { background: [ 375, 768, 1440 ] } );
 	assert.deepEqual( paintsBox( el( 'Root/1#0', 'background: red', { visible: { 375: false, 768: true, 1440: true } } ) ), { background: [ 768, 1440 ] } );

@@ -587,7 +587,7 @@
 				"margin-inline",
 				"margin-block"
 			],
-			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes: the blocks around and inside it align and pad themselves; anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes where nothing is lost: centred text is read at the nodes inside, and a padding or width no reader takes keeps the wrapper as a node (paint conservation, lib/skeleton-rules.mjs::ruleFor's unwrap guard: Bean, 2026-11-20, which replaces the 2026-10-13 ruling that side padding goes with the wrapper); anything that paints, positions or lays out stays (Bean, 2026-10-13)",
 			"siblingGap": {
 				"id": "alignWrapper.siblingGap",
 				"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/79#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
@@ -598,7 +598,7 @@
 			"blockPadding": {
 				"id": "alignWrapper.blockPadding",
 				"scope": "a wrapper that declares padding above or below its content (a page section's padding around its centred column)",
-				"reason": "no block around or inside the wrapper holds the space its top and bottom padding make, so unwrapping it would lose that space; the wrapper stays and carries its own padding, as spacing is carried where the draft declares it (Bean, 2026-10-28, Spec 48 FR-48-101); side padding and alignment still go with the wrapper (Bean, 2026-10-13)"
+				"reason": "no block around or inside the wrapper holds the space its top and bottom padding make, so unwrapping it would lose that space; the wrapper stays and carries its own padding, as spacing is carried where the draft declares it (Bean, 2026-10-28, Spec 48 FR-48-101); the unwrap guard (paint conservation) keeps a padded wrapper too, side padding included, and this entry still decides a wrapper the guard lets through (a hero picture's frame); alignment alone still goes with the wrapper"
 			}
 		},
 		"cardAction": {

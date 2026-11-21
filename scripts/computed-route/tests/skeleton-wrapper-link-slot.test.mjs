@@ -23,6 +23,27 @@ test( 'MUST FAIL: the dissolved link round one logo is the logo node\'s draft sl
 	assert.deepEqual( n.draftSlots[ LINK ], { tpl: 'Root/2#0' }, 'the slot is the link (template 2), not the logo image' );
 } );
 
+test( 'a link that only sizes its logo is dissolved to the link slot; one that also paints a box stays a node (MUST FAIL where the unwrap guard ignores the link slot)', () => {
+	const linked = ( style ) => N( 'section', {}, [ N( 'a', { attrs: { href: '#/' }, style, box: [ 240, 80 ] }, [ N( 'acme-logo', { style: 'width:100%', box: [ 240, 80 ] } ) ] ), N( 'p', { words: 'Body' } ) ] );
+	const outcome = ( style, o = {} ) => {
+		const r = run( linked( style ), 'class Component {}', { calSettings: ( b ) => ( b === logoBlock ? CAL : {} ), ...o } );
+		return { link: r.proposal.rows.find( ( x ) => 'a' === x.tag ), logo: find( r.skeleton, ( x ) => x.name === logoBlock )[ 0 ] };
+	};
+	for ( const style of [ 'width:240px', 'width:240px;max-width:320px', 'width:240px;margin:0 auto' ] ) {
+		const { link, logo } = outcome( style );
+		assert.equal( link.action, 'unwrap', style );
+		assert.deepEqual( logo.draftSlots, { [ LINK ]: { tpl: 'Root/2#0' } }, style );
+	}
+	// Negative controls: a pill round the logo (a background, padding) is paint the link slot does not read, so the link
+	// stays a node and the logo takes no slot; and with no calibrated link slot a sized link stays a node too.
+	const pill = outcome( 'width:240px;background:#fff;padding:8px 10px;border-radius:14px' );
+	assert.equal( pill.link.action, null );
+	assert.equal( pill.link.block, 'sgs/container' );
+	assert.equal( pill.logo.draftSlots, undefined );
+	const unread = outcome( 'width:240px', { calSettings: () => ( { width: { slot: '', slots: [ '' ] } } ) } );
+	assert.equal( unread.link.action, null, 'no calibrated link slot: the width would be read by nothing, so the link stays' );
+} );
+
 test( 'negative control: no rule entry, no calibrated link slot, and a link round several logos give no slot', () => {
 	assert.equal( nodes( page(), { off: [ 'homeLink' ] } )[ 0 ]?.draftSlots, undefined );
 	assert.equal( nodes( page(), { calSettings: () => ( { width: { slot: '', slots: [ '' ] } } ) } )[ 0 ].draftSlots, undefined, 'a block whose width calibration never reached the link reads nothing' );

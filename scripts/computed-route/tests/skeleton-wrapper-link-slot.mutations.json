@@ -34,5 +34,23 @@
 		"find": "( ! facts.attr( x.block, x.setting ) || ! /^\\.\\S/.test( x.slot || '' ) ) &&",
 		"replace": "( false ) &&",
 		"why": "a bad link slot entry passes the check"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "! ( ( dest.band || dest.sizing ) && BAND_LOOKS.includes( l ) ) );",
+		"replace": "! ( dest.band && BAND_LOOKS.includes( l ) ) );",
+		"why": "the unwrap guard ignores the link slot, so a link that sizes its logo stays a container"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "=== s.block && [ calibrated?.slot, ...( calibrated?.slots || [] ) ].includes( s.slot );",
+		"replace": "=== s.block;",
+		"why": "a sized link is dissolved though no calibrated link slot reads its width"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band, sizing };",
+		"replace": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ) || sizing, band, sizing };",
+		"why": "a link that paints a pill round its logo is dissolved and the pill lost"
 	}
 ]

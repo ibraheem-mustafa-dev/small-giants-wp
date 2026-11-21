@@ -688,5 +688,29 @@
 		"find": "export const uaKeyOf = ( e ) => ( 'input' === e?.tag && e.attrs?.type ? `input[type=${ low( e.attrs.type ) }]` : String( e?.tag ?? '' ) );",
 		"replace": "export const uaKeyOf = ( e ) => String( e?.tag ?? '' );",
 		"why": "an input's type is not in its key"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "stated.forEach( ( look ) => refuted( look, w ) || add( look, w ) );",
+		"replace": "stated.forEach( ( look ) => add( look, w ) );",
+		"why": "a declared token that computes to nothing still counts as a look"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "COMPUTED_DECIDES[ look ].every( ( n ) => undefined !== element.resolved[ w ][ n ] );",
+		"replace": "COMPUTED_DECIDES[ look ].some( ( n ) => undefined !== element.resolved[ w ][ n ] );",
+		"why": "a computed read that holds only some sides overrules the declaration"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const COMPUTED_DECIDES = { padding: SIDES.map( ( s ) => `padding-${ s }` ), radius: CORNERS };",
+		"replace": "const COMPUTED_DECIDES = { padding: SIDES.map( ( s ) => `padding-${ s }` ) };",
+		"why": "a radius token computing to square corners still counts as a radius"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "const refuted = ( look, w ) => computed.has( w ) && ! computed.get( w ).has( look ) &&",
+		"replace": "const refuted = ( look, w ) => ! computed.get( w )?.has( look ) &&",
+		"why": "a width with no computed read refutes a declaration"
 	}
 ]

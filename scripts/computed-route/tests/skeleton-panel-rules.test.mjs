@@ -191,15 +191,21 @@ test( 'alignWrapper.siblingGap: a wrapper declaring a margin against its previou
 	assert.equal( wrapper( run( first ) ).action, 'unwrap' );
 } );
 
-test( 'alignWrapper.blockPadding: a wrapper padding above or below its content stays; side padding alone still goes; MUST FAIL without the entry', () => {
+test( 'alignWrapper.blockPadding: a wrapper padding above or below its content stays; one with no padding still goes, and side padding is a look the unwrap guard keeps', () => {
 	const tree = ( pad ) => N( 'section', {}, [ N( 'div', { style: 'display:flex;flex-direction:column' }, [ N( 'p', { words: 'Before' } ), N( 'section', { style: `padding:${ pad }` }, [ N( 'p', { words: 'A' } ), N( 'p', { words: 'B' } ) ] ) ] ) ] );
 	const wrapper = ( r ) => rows( r ).find( ( x ) => 'section' === x.tag && x.depth === 2 );
 	assert.equal( wrapper( run( tree( '72px 40px 104px' ) ) ).action, null, 'the section keeps its top and bottom padding' );
 	assert.equal( wrapper( run( tree( '0 0 64px' ) ) ).action, null, 'bottom padding alone is space too' );
-	assert.equal( wrapper( run( tree( '72px 40px 104px' ), { facts: facts( 'alignWrapper.blockPadding' ) } ) ).action, 'unwrap' );
-	// Negative controls: side padding only, or none, still goes.
-	assert.equal( wrapper( run( tree( '0 40px' ) ) ).action, 'unwrap' );
-	assert.equal( wrapper( run( tree( '0px 40px 0px' ) ) ).action, 'unwrap' );
+	// Without the entry the rule's own verdict is unwrap, and the unwrap guard (paint conservation) refuses it: the padding is
+	// paint no reader takes. The entry and the guard agree on a padded wrapper; the guard alone keeps side padding (below).
+	assert.equal( wrapper( run( tree( '72px 40px 104px' ), { facts: facts( 'alignWrapper.blockPadding' ) } ) ).action, null );
+	// Negative control: no padding, the wrapper still goes.
+	assert.equal( wrapper( run( tree( '0' ) ) ).action, 'unwrap' );
+	assert.equal( wrapper( run( tree( '0px 0px 0px' ) ) ).action, 'unwrap' );
+	// Side padding alone is not this entry's (blockPadding is 0), yet it is paint no reader takes once the wrapper is
+	// dissolved, so the unwrap guard (paint conservation, lib/skeleton-rules.mjs::ruleFor) keeps the wrapper as a node.
+	assert.equal( wrapper( run( tree( '0 40px' ) ) ).action, null );
+	assert.equal( wrapper( run( tree( '0 40px' ) ) ).rule, null, 'kept by the guard, not by the blockPadding entry' );
 } );
 
 test( 'blockPadding reads the shorthand, the block shorthand and the longhands', () => {

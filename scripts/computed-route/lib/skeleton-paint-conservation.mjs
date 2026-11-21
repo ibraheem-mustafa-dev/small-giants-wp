@@ -23,6 +23,8 @@ const TRANSPARENT = /\btransparent\b|rgba\(\s*0,\s*0,\s*0,\s*0\s*\)/;
 const REPLACED = new Set( [ 'img', 'svg', 'video', 'canvas', 'picture' ] );
 // The display values that lay children out as a row, column or grid.
 const LAYS_OUT = new Set( [ 'flex', 'inline-flex', 'grid', 'inline-grid' ] );
+// The computed properties that, all recorded at a width, decide a look there over what a declaration states.
+const COMPUTED_DECIDES = { padding: SIDES.map( ( s ) => `padding-${ s }` ), radius: CORNERS };
 
 const low = ( v ) => String( v ?? '' ).trim().toLowerCase();
 const zero = ( v ) => NONE.has( low( v ) ) || /^(?:0(?:\.0+)?(?:px|rem|em|%)?\s*)+$/.test( low( v ) );
@@ -153,14 +155,16 @@ export function paintsBox( element, { declared = {}, parent = null, children = 0
 	}
 	const stated = new Set( [ ...declaredLooks( declared, element.tag ), ...declaredLooks( styleOf( element.attrs?.style ), element.tag ) ] );
 	const displayAt = ( w ) => ( element.displayAt ? element.displayAt[ w ] : element.display );
+	const paddingBase = undefined === uaPadding ? undefined : uaPadding?.[ uaKeyOf( element ) ] ?? null;
+	const computed = new Map( resolvedWidths( element ).map( ( w ) => [ w, computedLooks( element.resolved[ w ], parent?.resolved?.[ w ], paddingBase ) ] ) );
+	// A width whose computed read holds every side of a look decides that look there: a declared token or binding that
+	// resolves to nothing (`padding: var(--section) 0` computing 0px on every side) paints nothing.
+	const refuted = ( look, w ) => computed.has( w ) && ! computed.get( w ).has( look ) && ( COMPUTED_DECIDES[ look ] ?? [] ).length > 0 && COMPUTED_DECIDES[ look ].every( ( n ) => undefined !== element.resolved[ w ][ n ] );
 	for ( const w of widths ) {
-		stated.forEach( ( look ) => add( look, w ) );
+		stated.forEach( ( look ) => refuted( look, w ) || add( look, w ) );
 		children >= 2 && LAYS_OUT.has( low( displayAt( w ) ) ) && add( 'layout', w );
 	}
-	const paddingBase = undefined === uaPadding ? undefined : uaPadding?.[ uaKeyOf( element ) ] ?? null;
-	for ( const w of resolvedWidths( element ) ) {
-		computedLooks( element.resolved[ w ], parent?.resolved?.[ w ], paddingBase ).forEach( ( look ) => add( look, w ) );
-	}
+	computed.forEach( ( looks, w ) => looks.forEach( ( look ) => add( look, w ) ) );
 	return out;
 }
 
