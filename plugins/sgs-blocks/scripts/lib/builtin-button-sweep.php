@@ -91,6 +91,32 @@ if ( ! function_exists( 'sgs_builtin_button_sweep_value' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_builtin_button_sweep_same_attrs' ) ) {
+	/**
+	 * Whether a block's rewritten attributes equal the attributes parsed back from the written content.
+	 *
+	 * The parser decodes JSON into arrays, so the empty object a cleared value is written as (`{}`) reads back as an empty
+	 * array: both sides are compared as decoded arrays, keys sorted at every level.
+	 *
+	 * @param array $expect The rewrite of the old attributes.
+	 * @param array $parsed The attributes parse_blocks() read from the written content.
+	 * @return bool
+	 */
+	function sgs_builtin_button_sweep_same_attrs( array $expect, array $parsed ): bool {
+		$canon = static function ( $v ) use ( &$canon ) {
+			if ( is_object( $v ) ) {
+				$v = (array) $v;
+			}
+			if ( ! is_array( $v ) ) {
+				return $v;
+			}
+			ksort( $v );
+			return array_map( $canon, $v );
+		};
+		return json_encode( $canon( $expect ) ) === json_encode( $canon( $parsed ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- the library runs outside WordPress in its tests.
+	}
+}
+
 if ( ! function_exists( 'sgs_builtin_button_sweep_attrs' ) ) {
 
 	/**

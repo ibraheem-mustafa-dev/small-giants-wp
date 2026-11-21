@@ -77,12 +77,7 @@ function sgs_sweep_prove( string $before, string $after, array $blocks, array $m
 			return 'block ' . $i . ' ' . $block['name'] . ' became ' . $new[ $i ]['name'];
 		}
 		$expect = in_array( $block['name'], $blocks, true ) ? sgs_builtin_button_sweep_attrs( $block['name'], $block['attrs'], $map ) : $block['attrs'];
-		// An empty object round-trips as an empty array through the parser: compare as JSON, keys sorted.
-		$norm = static function ( array $attrs ): string {
-			ksort( $attrs );
-			return (string) wp_json_encode( $attrs );
-		};
-		if ( $norm( $expect ) !== $norm( $new[ $i ]['attrs'] ) ) {
+		if ( ! sgs_builtin_button_sweep_same_attrs( $expect, $new[ $i ]['attrs'] ) ) {
 			return 'block ' . $i . ' ' . $block['name'] . ' attributes differ from the rewrite';
 		}
 	}

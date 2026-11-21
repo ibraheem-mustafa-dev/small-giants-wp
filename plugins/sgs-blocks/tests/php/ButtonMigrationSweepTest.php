@@ -109,6 +109,26 @@ final class ButtonMigrationSweepTest extends TestCase {
 		$this->assertSame( '<!-- wp:sgs/product-card {"ctaLineHeight":{},"ctaFontSize":{}} /-->', $out['content'], 'an explicit empty overrides the 1.4 default, so it stays saved, as {} and not []' );
 	}
 
+	public function test_the_proof_takes_a_cleared_value_read_back_as_the_rewrite(): void {
+		$out = self::run_cases(
+			array(
+				'cleared' => array( 'fn' => 'same', 'block' => 'sgs/product-card', 'attrs' => array( 'ctaLineHeight' => '', 'ctaFontSize' => '' ) ),
+				'set'     => array( 'fn' => 'same', 'block' => 'sgs/product-card', 'attrs' => array( 'ctaLineHeight' => '1.2' ) ),
+			)
+		);
+		$this->assertTrue( $out['cleared'], 'MUST FAIL on c1a832ea6: {} written is [] parsed back, so the proof refused every post with a cleared value and the run ended in an error' );
+		$this->assertTrue( $out['set'] );
+	}
+
+	public function test_the_proof_still_refuses_a_different_value(): void {
+		$file = dirname( __DIR__, 2 ) . '/scripts/lib/builtin-button-sweep.php';
+		$this->assertStringContainsString( 'function sgs_builtin_button_sweep_same_attrs', (string) file_get_contents( $file ) );
+		require_once $file;
+		$this->assertFalse( sgs_builtin_button_sweep_same_attrs( array( 'a' => array( 'desktop' => '1px' ) ), array( 'a' => array( 'desktop' => '2px' ) ) ) );
+		$this->assertFalse( sgs_builtin_button_sweep_same_attrs( array( 'a' => 1 ), array( 'a' => 1, 'b' => 2 ) ) );
+		$this->assertTrue( sgs_builtin_button_sweep_same_attrs( array( 'b' => 2, 'a' => new stdClass() ), array( 'a' => array(), 'b' => 2 ) ) );
+	}
+
 	public function test_it_is_idempotent_and_a_value_already_swept_is_left_alone(): void {
 		$old = array( 'addToCartBackgroundColour' => 'x', 'addToCartMinHeight' => '64px', 'addToCartPadding' => array( 'top' => '1px' ), 'addToCartStyle' => 'primary' );
 		$one = self::attrs( 'sgs/buybox', $old );
