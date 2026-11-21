@@ -24,6 +24,17 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 	const pick = ( cs, list ) => Object.fromEntries( list.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
 	// The inherited properties the element paints itself: a value that is neither its parent's nor, for a line height,
 	// its parent's ratio of the font size carried to its own font size (a unitless line height inherits as that ratio).
+	// A colour equal to the parent's is the element's own when it stays put while the parent's colour changes (a trust bar's
+	// text colour token that the fixture page's text colour happens to equal): the parent is given a probe colour for the
+	// one read and given back its own style attribute at once.
+	const PROBE = 'rgb(1, 2, 3)';
+	const ownColour = ( el, cs, parent ) => {
+		const before = parent.getAttribute( 'style' );
+		parent.style.setProperty( 'color', PROBE, 'important' );
+		const v = cs.getPropertyValue( 'color' ).trim();
+		null === before ? parent.removeAttribute( 'style' ) : parent.setAttribute( 'style', before );
+		return PROBE !== v;
+	};
 	const ownOf = ( el, cs ) => {
 		const parent = el.parentElement;
 		if ( ! parent ) {
@@ -36,7 +47,7 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 		for ( const p of ownProps ) {
 			const v = cs.getPropertyValue( p ).trim();
 			const pv = pcs.getPropertyValue( p ).trim();
-			if ( v === pv || ( 'line-height' === p && fs && pfs && Math.abs( parseFloat( v ) - ( parseFloat( pv ) / pfs ) * fs ) < 0.05 ) ) {
+			if ( ( v === pv && ! ( 'color' === p && ownColour( el, cs, parent ) ) ) || ( 'line-height' === p && fs && pfs && Math.abs( parseFloat( v ) - ( parseFloat( pv ) / pfs ) * fs ) < 0.05 ) ) {
 				continue;
 			}
 			out[ `_own:${ p }` ] = v;
