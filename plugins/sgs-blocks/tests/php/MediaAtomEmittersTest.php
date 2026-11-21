@@ -283,6 +283,27 @@ final class MediaAtomEmittersTest extends TestCase {
 		$this->assertSame( 'omitted', sgs_media_atom_filter_disclosure( self::attrs( array( 'Colour' => 'white' ) ), 'desktop', 'm' )['Greyscale']['state'] );
 	}
 
+	public function test_filter_prints_the_tone_presets(): void {
+		$css = sgs_media_atom_filter_emit(
+			self::SLOT,
+			self::attrs(
+				array(
+					'Colour' => array(
+						'desktop' => 'deepen',
+						'tablet'  => 'sepia',
+						'mobile'  => 'dim',
+					),
+				)
+			),
+			'u',
+			false
+		);
+		$this->assertSame( '.u{filter:saturate(1.25) contrast(1.2) brightness(0.78);}@media(max-width:1023.98px){.u{filter:sepia(0.6);}}@media(max-width:767.98px){.u{filter:saturate(0.8) brightness(0.82);}}', $css );
+		$this->assertSame( '.u{filter:brightness(1.05) saturate(0.9);}', sgs_media_atom_filter_emit( self::SLOT, self::attrs( array( 'Colour' => 'soften' ) ), 'u', false ) );
+		$this->assertSame( '.u{filter:brightness(1.12) saturate(0.95);}', sgs_media_atom_filter_emit( self::SLOT, self::attrs( array( 'Colour' => 'brighten' ) ), 'u', false ) );
+		$this->assertSame( '', sgs_media_atom_filter_emit( self::SLOT, self::attrs( array( 'Colour' => 'glow' ) ), 'u', false ) );
+	}
+
 	public function test_layout_prints_alignment_and_clamped_order(): void {
 		$css = sgs_media_atom_layout_emit(
 			self::SLOT,

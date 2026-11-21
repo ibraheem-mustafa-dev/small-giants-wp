@@ -1,6 +1,7 @@
 <?php
 /**
- * `filter` atom: the colour treatment (Natural, Black and white with a strength, White), PHP twin of
+ * `filter` atom: the colour treatment (Natural, Black and white with a strength, White, and the tone presets Dim, Deepen,
+ * Soften, Brighten and Sepia), PHP twin of
  * `src/components/media/atoms/filter.js`. It prints one `filter` on the media element and replaces `sgsColourTreatment`.
  *
  * @package SGS\Blocks

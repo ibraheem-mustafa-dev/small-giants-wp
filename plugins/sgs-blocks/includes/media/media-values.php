@@ -251,9 +251,28 @@ if ( ! function_exists( 'sgs_media_blend' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_media_tone_filters' ) ) {
+	/**
+	 * The colour treatment's tone presets, value => `filter` list. Twin of values.js::TONE_FILTERS.
+	 *
+	 * @return array<string,string>
+	 */
+	function sgs_media_tone_filters(): array {
+		return array(
+			'dim'      => 'saturate(0.8) brightness(0.82)',
+			'deepen'   => 'saturate(1.25) contrast(1.2) brightness(0.78)',
+			'soften'   => 'brightness(1.05) saturate(0.9)',
+			'brighten' => 'brightness(1.12) saturate(0.95)',
+			'sepia'    => 'sepia(0.6)',
+		);
+	}
+}
+
 if ( ! function_exists( 'sgs_media_filter' ) ) {
 	/**
-	 * A `filter` value for a colour treatment: `natural` is '', `greyscale` is `grayscale(N%)`, `white` is `brightness(0) invert(1)`.
+	 * A `filter` value for a colour treatment: `natural` is '', `greyscale` is `grayscale(N%)`, `white` is `brightness(0) invert(1)`,
+	 * and the tone presets `dim`, `deepen`, `soften` and `brighten` (sgs/choice-flow-question's photo treatments) and `sepia`
+	 * are fixed filter lists (sgs_media_tone_filters()).
 	 *
 	 * @param mixed $colour   Stored treatment.
 	 * @param mixed $strength Greyscale strength 0 to 100; 100 when unset.
@@ -262,6 +281,10 @@ if ( ! function_exists( 'sgs_media_filter' ) ) {
 	function sgs_media_filter( $colour, $strength ): string {
 		if ( 'white' === $colour ) {
 			return 'brightness(0) invert(1)';
+		}
+		$tones = sgs_media_tone_filters();
+		if ( is_string( $colour ) && isset( $tones[ $colour ] ) ) {
+			return $tones[ $colour ];
 		}
 		if ( 'greyscale' !== $colour ) {
 			return '';

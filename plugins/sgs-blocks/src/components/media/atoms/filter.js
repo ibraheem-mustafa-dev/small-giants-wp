@@ -1,12 +1,13 @@
 /**
- * `filter` atom: the colour treatment (Natural, Black and white with a strength, White), logic half. PHP twin:
+ * `filter` atom: the colour treatment (Natural, Black and white with a strength, White, and the tone presets Dim, Deepen,
+ * Soften, Brighten and Sepia), logic half. PHP twin:
  * `includes/media/atoms/filter.php`. It prints one `filter` on the media element and replaces `sgsColourTreatment`.
  *
  * @package SGS\Blocks
  */
 
 import { DEVICES, add, nodes, resolved, rulesCss } from '../emit/core.js';
-import { mediaFilter } from '../emit/values.js';
+import { TONE_FILTERS, mediaFilter } from '../emit/values.js';
 
 function filterAt( attrs, slot, device ) {
 	return mediaFilter( resolved( attrs, slot, 'Colour', device ), resolved( attrs, slot, 'Greyscale', device ) );
@@ -37,10 +38,10 @@ export function emit( slot, attrs, uid, helper ) {
 
 /**
  * @param {*} value Candidate treatment.
- * @return {string} `natural`, `greyscale` or `white`; `natural` for anything else.
+ * @return {string} `natural`, `greyscale`, `white` or a tone preset; `natural` for anything else.
  */
 export function validate( value ) {
-	return 'greyscale' === value || 'white' === value ? value : 'natural';
+	return 'greyscale' === value || 'white' === value || Object.prototype.hasOwnProperty.call( TONE_FILTERS, value ) ? value : 'natural';
 }
 
 /**

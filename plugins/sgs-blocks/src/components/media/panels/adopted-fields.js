@@ -145,7 +145,7 @@ export function RadiusField( { row, io } ) {
 	);
 }
 
-/** Colour: Natural, Black and white, White. */
+/** Colour: Natural, Black and white, White, and the tone presets (values.js::TONE_FILTERS). */
 export function ColourTreatmentField( { row, io } ) {
 	return (
 		<Chips
@@ -154,6 +154,11 @@ export function ColourTreatmentField( { row, io } ) {
 				{ value: 'natural', label: __( 'Natural', 'sgs-blocks' ) },
 				{ value: 'greyscale', label: __( 'Black and white', 'sgs-blocks' ) },
 				{ value: 'white', label: __( 'White', 'sgs-blocks' ) },
+				{ value: 'dim', label: __( 'Dim', 'sgs-blocks' ) },
+				{ value: 'deepen', label: __( 'Deepen', 'sgs-blocks' ) },
+				{ value: 'soften', label: __( 'Soften', 'sgs-blocks' ) },
+				{ value: 'brighten', label: __( 'Brighten', 'sgs-blocks' ) },
+				{ value: 'sepia', label: __( 'Sepia', 'sgs-blocks' ) },
 			] }
 			value={ io.resolved || 'natural' }
 			onChange={ ( v ) => io.write( 'natural' === v ? '' : v ) }

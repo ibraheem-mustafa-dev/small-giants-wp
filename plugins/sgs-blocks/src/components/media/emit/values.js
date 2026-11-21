@@ -181,6 +181,15 @@ export function mediaBlend( raw ) {
 	return BLENDS.includes( value ) ? value : '';
 }
 
+/** The colour treatment's tone presets, value => `filter` list. Twin of media-values.php::sgs_media_tone_filters(). */
+export const TONE_FILTERS = {
+	dim: 'saturate(0.8) brightness(0.82)',
+	deepen: 'saturate(1.25) contrast(1.2) brightness(0.78)',
+	soften: 'brightness(1.05) saturate(0.9)',
+	brighten: 'brightness(1.12) saturate(0.95)',
+	sepia: 'sepia(0.6)',
+};
+
 /**
  * @param {*} colour   Stored treatment.
  * @param {*} strength Greyscale strength 0 to 100; 100 when unset.
@@ -189,6 +198,9 @@ export function mediaBlend( raw ) {
 export function mediaFilter( colour, strength ) {
 	if ( 'white' === colour ) {
 		return 'brightness(0) invert(1)';
+	}
+	if ( 'string' === typeof colour && Object.prototype.hasOwnProperty.call( TONE_FILTERS, colour ) ) {
+		return TONE_FILTERS[ colour ];
 	}
 	if ( 'greyscale' !== colour ) {
 		return '';

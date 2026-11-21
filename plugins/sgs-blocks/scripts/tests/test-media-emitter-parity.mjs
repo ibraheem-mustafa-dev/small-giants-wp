@@ -84,6 +84,8 @@ const extras = {
 	opacity: { Opacity: T( 100, 40, 0 ), Blend: 'multiply' },
 	filter: { Colour: T( 'greyscale', 'natural', 'white' ), Greyscale: 60 },
 	'filter-default-strength': { Colour: 'greyscale' },
+	'filter-tones': { Colour: T( 'deepen', 'sepia', 'dim' ) },
+	'filter-tones-soft': { Colour: T( 'soften', 'brighten' ) },
 	layout: { Alignment: T( 'center', 'end', 'start' ), Order: T( -3, 25, 4 ) },
 	padding: { Padding: T( { top: 10, left: '2rem' }, { top: '40px' }, {} ), Background: 'primary' },
 	'shape-radius': { Shape: T( { shape: 'circle' }, 'pill', 'none' ), Radius: { desktop: { topLeft: 8, bottomRight: '1rem' } } },
