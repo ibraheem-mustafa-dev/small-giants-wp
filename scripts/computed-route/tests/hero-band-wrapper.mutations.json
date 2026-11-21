@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/skeleton-write-slots.mjs",
-		"find": "e.parentKey !== host.e.key ||",
-		"replace": "",
+		"find": "if ( ! host?.e || e.parentKey !== host.e.key || ! host.node.draftRef || ! bandSetting(",
+		"replace": "if ( ! host?.e || ! host.node.draftRef || ! bandSetting(",
 		"why": "a deeper unwrapped element is recorded too"
 	},
 	{

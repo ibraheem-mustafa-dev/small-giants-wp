@@ -1,0 +1,134 @@
+[
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "const into = ! read.kept || only ? absorbFor( x, read.left ) : null;",
+		"replace": "const into = null;",
+		"why": "no wrapper is ever absorbed: a padded only child stays a container of its own"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "! apart ? v( 'alignWrapper', { action: 'unwrap', ...( holdsSpace ? { onlyIfAbsorbed: true } : {} ) } ) : null;",
+		"replace": "! apart && ! holdsSpace ? v( 'alignWrapper', { action: 'unwrap' } ) : null;",
+		"why": "a wrapper holding space above and below never reaches the parent that would absorb it"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "} else if ( ! read.kept || only ) {",
+		"replace": "} else if ( ! read.kept ) {",
+		"why": "a wrapper holding space its parent cannot carry is dissolved and the space lost"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "if ( ! looks.length || positioned( x.e, x.st ) ) {",
+		"replace": "if ( ! looks.length ) {",
+		"why": "a wrapper that places itself is absorbed and its position lost"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "return clash( { looks, parentLooks, parentLays } ).length ? null : { ...hit, looks };",
+		"replace": "return { ...hit, looks };",
+		"why": "a wrapper's layout overwrites the layout its parent lays its one child out with"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "read.conserve = [ ...read.conserve, { kind: 'absorbed', node: into.node, slot: into.slot, settings: into.settings, looks: into.looks } ];",
+		"replace": "read.conserve = [ ...read.conserve ];",
+		"why": "the absorbed wrapper's row names no parent, so the paint detector cannot tell where its look went"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "if ( ! host?.e || ! host.node.draftRef || ! onlyContent( m, host.e, e ) ) {",
+		"replace": "if ( ! host?.e || ! host.node.draftRef ) {",
+		"why": "a wrapper with a sibling is absorbed, and the parent's padding would squeeze the sibling too"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "return at && ! host.node.draftSlots?.[ at.slot ] ? { node: host.e.key, block: host.block, ...at } : null;",
+		"replace": "return at ? { node: host.e.key, block: host.block, ...at } : null;",
+		"why": "a part another draft element already holds is taken over by the wrapper"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "return !! parent && e.parentKey === parent.key &&",
+		"replace": "return !! parent &&",
+		"why": "a wrapper that is not a child of the block being built is absorbed by it"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "r.absorbedBy && ( host.node.draftAbsorbed = [ ...( host.node.draftAbsorbed || [] ), slot ] );",
+		"replace": "",
+		"why": "Fill is never told the part is an absorbed wrapper, so the two paddings are not summed"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "const slot = r.absorbedBy && host?.e?.key === r.absorbedBy.node ? r.absorbedBy.slot : setting",
+		"replace": "const slot = setting",
+		"why": "the absorbed wrapper is read at no part of its parent"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "const fits = [ ...at.entries() ].filter( ( [ slot, r ] ) => holds( slot ) && looks.every( ( l ) => r.looks.has( l ) ) )",
+		"replace": "const fits = [ ...at.entries() ].filter( ( [ slot, r ] ) => looks.every( ( l ) => r.looks.has( l ) ) )",
+		"why": "a fixture child the calibration puts inside the band is taken as the wrapper's home"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "const fits = [ ...at.entries() ].filter( ( [ slot, r ] ) => holds( slot ) && looks.every( ( l ) => r.looks.has( l ) ) )",
+		"replace": "const fits = [ ...at.entries() ].filter( ( [ slot, r ] ) => holds( slot ) && looks.some( ( l ) => r.looks.has( l ) ) )",
+		"why": "a wrapper whose background no part holds is absorbed because its padding is"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "const holds = ( slot ) => paths.some( ( p ) => p.startsWith( slot ) && /^(?:\\s*>\\s*|\\s+)[^\\s:]/.test( p.slice( slot.length ) ) );",
+		"replace": "const holds = ( slot ) => paths.some( ( p ) => p.startsWith( slot ) && p !== slot );",
+		"why": "the block's root and a pseudo layer of a part are taken as the wrapper's part"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "const look = c && ! c.state ? lookOfProperty( c.property ) : null;",
+		"replace": "const look = c ? lookOfProperty( c.property ) : null;",
+		"why": "a hover setting is taken as holding the wrapper's resting look"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "sort( ( a, b ) => depthOf( a[ 0 ] ) - depthOf( b[ 0 ] ) || a[ 0 ].localeCompare( b[ 0 ] ) );",
+		"replace": "sort( ( a, b ) => depthOf( b[ 0 ] ) - depthOf( a[ 0 ] ) || a[ 0 ].localeCompare( b[ 0 ] ) );",
+		"why": "the innermost qualifying part is chosen over the outermost"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "const drawsBox = ( m, k ) => ! m.isPart( k ) && m.shownAt( k ).some( ( w ) => ( k.box?.[ w ]?.w ?? 0 ) > 0 && ( k.box?.[ w ]?.h ?? 0 ) > 0 );",
+		"replace": "const drawsBox = ( m, k ) => ! m.isPart( k );",
+		"why": "an empty box beside the wrapper counts as content and blocks the absorb"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "return !! parent && e.parentKey === parent.key && ! m.words( parent ) &&",
+		"replace": "return !! parent && e.parentKey === parent.key &&",
+		"why": "a parent printing words of its own beside the wrapper absorbs it"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "return looks.filter( ( l ) => ! ADDITIVE_LOOKS.includes( l ) && (",
+		"replace": "return looks.filter( ( l ) => (",
+		"why": "padding on both the parent and the wrapper is taken as a clash, though the two add"
+	},
+	{
+		"file": "lib/skeleton-absorb-wrapper.mjs",
+		"find": "return ! off( declared.position ) || ! off( e.position ) ||",
+		"replace": "return ! off( e.position ) ||",
+		"why": "a declared position is not seen"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": ": 'absorbed' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] :",
+		"replace": ": 'absorbed' === rec.kind ? true :",
+		"why": "an absorbed record naming no node in the skeleton is taken as delivered"
+	},
+	{
+		"file": "lib/fill-skeleton.mjs",
+		"find": "const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed',",
+		"replace": "const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers',",
+		"why": "the skeleton's draftAbsorbed key is written into the page"
+	}
+]

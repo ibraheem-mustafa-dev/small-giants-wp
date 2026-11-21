@@ -15,6 +15,7 @@ import { templateKey } from './fact-key.mjs';
 import { recordView } from './skeleton-record.mjs';
 import { pxOf, everyWidth, someWidth } from './element-facts.mjs';
 import { paintsBox, lookOfProperty, BAND_LOOKS, INHERITED_LOOKS } from './skeleton-paint-conservation.mjs';
+import { positioned, clash } from './skeleton-absorb-wrapper.mjs';
 import { makePanelRules } from './skeleton-panel-rules.mjs';
 import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
@@ -1234,10 +1235,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// A margin on a wrapper that follows a sibling is the gap between the two blocks, not spacing inside the wrapper:
 			// unwrapping it would lose that gap, so the wrapper stays.
 			const apart = !! R.alignWrapper?.siblingGap && props.some( ( p ) => p.startsWith( 'margin' ) ) && m.blockKids( m.byKey[ e.parentKey ] || { key: null } ).indexOf( e ) > 0;
-			// Padding above or below its content is space no block around or inside it holds: unwrapping it would lose that
-			// space, so the wrapper stays and carries its own padding. Side padding and alignment still go.
+			// Padding above or below its content is space no block around or inside it holds: the wrapper goes only where its
+			// parent absorbs it (`onlyIfAbsorbed`, ruleFor's absorbFor), whose part then carries the space; otherwise it stays
+			// and carries its own padding. Alignment alone still goes.
 			const holdsSpace = !! R.alignWrapper?.blockPadding && ( blockPadding( st ) > 0 || someWidth( e, ( r ) => ( pxOf( r[ 'padding-top' ] ) ?? 0 ) > 0 || ( pxOf( r[ 'padding-bottom' ] ) ?? 0 ) > 0, () => false ) );
-			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) && ! apart && ! holdsSpace ? v( 'alignWrapper', { action: 'unwrap' } ) : null;
+			return parentBlock && ! m.words( e ) && kidsB.length && props.length && props.every( ( p ) => only.has( p ) ) && ! apart ? v( 'alignWrapper', { action: 'unwrap', ...( holdsSpace ? { onlyIfAbsorbed: true } : {} ) } ) : null;
 		},
 		// Inside a hero: its image is the hero's own media slot; its layout wrappers go (the hero lays out its content).
 		( { e, kidsB } ) => {
@@ -1297,27 +1299,54 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const unwrapRead = ( x, out ) => {
 		const painted = Object.keys( paintsBox( x.e, { declared: x.st, parent: m.byKey[ x.e.parentKey ] ?? null, children: m.kids( x.e ).length, uaPadding: m.uaPadding } ) );
 		const dest = hooks.unwrapReads?.( x.e, out ) ?? { all: !! ( out.hostSetting ?? R[ out.rule ]?.hostSetting ), band: true };
-		if ( ! painted.length || dest.all ) {
-			return { kept: true, conserve: out.conserve ?? [] };
-		}
 		const records = [ ...( out.conserve ?? [] ) ];
 		const setting = records.flatMap( ( r ) => ( 'setting' === r.kind ? r.looks : [] ) );
 		const inherited = x.kidsB.length ? painted.filter( ( l ) => INHERITED_LOOKS.includes( l ) ) : [];
 		const laid = out.hostLays && painted.includes( 'layout' ) ? [ 'layout' ] : [];
 		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! ( ( dest.band || dest.sizing ) && BAND_LOOKS.includes( l ) ) );
+		if ( ! painted.length || dest.all ) {
+			return { kept: true, left, conserve: out.conserve ?? [] };
+		}
 		inherited.length && records.push( { kind: 'inherited', looks: inherited } );
 		laid.length && records.push( { kind: 'host-layout', node: out.hostLays, looks: laid } );
 		return { kept: ! left.length, left, conserve: records };
 	};
 
-	// The verdict for one element, or null.
+	// The parent block that absorbs a wrapper whose look no reader takes (lib/skeleton-absorb-wrapper.mjs; Bean, 2026-11-21):
+	// { node, block, slot, settings, looks } when the wrapper places nothing itself, its parent's block paints every look it
+	// leaves at one free part (`hooks.absorbInto( e, looks )`, which also checks that the wrapper is the parent's only content),
+	// and the parent's own element paints none of those looks but padding, which adds; null otherwise.
+	const absorbFor = ( x, looks ) => {
+		if ( ! looks.length || positioned( x.e, x.st ) ) {
+			return null;
+		}
+		const hit = hooks.absorbInto?.( x.e, looks ) ?? null;
+		const parent = hit ? m.byKey[ x.e.parentKey ] : null;
+		if ( ! parent ) {
+			return null;
+		}
+		const parentLooks = Object.keys( paintsBox( parent, { declared: declared( parent, tokens ), parent: m.byKey[ parent.parentKey ] ?? null, children: m.kids( parent ).length, uaPadding: m.uaPadding } ) );
+		const parentLays = m.shownAt( parent ).some( ( w ) => /^(?:inline-)?(?:flex|grid)$/.test( String( ( parent.displayAt ? parent.displayAt[ w ] : parent.display ) ?? '' ).trim() ) );
+		return clash( { looks, parentLooks, parentLays } ).length ? null : { ...hit, looks };
+	};
+
+	// The verdict for one element, or null. An unwrap whose look no reader takes, or that holds space only its parent can carry
+	// (`onlyIfAbsorbed`), goes only where the parent absorbs it: the verdict then names the parent (`absorbedBy`) and records
+	// the looks the parent's settings carry (`conserve` kind absorbed); otherwise the next rule decides.
 	const ruleFor = ( e, parentBlock = null ) => {
 		const x = { e, st: declared( e, tokens ), text: all( e ), kidsB: m.blockKids( e ), parentBlock };
 		for ( const rule of [ ...STRUCTURES, ...RULES ] ) {
 			const out = rule( x );
 			if ( out && 'unwrap' === out.action ) {
 				const read = unwrapRead( x, out );
-				if ( ! read.kept ) {
+				const only = !! out.onlyIfAbsorbed;
+				delete out.onlyIfAbsorbed;
+				const into = ! read.kept || only ? absorbFor( x, read.left ) : null;
+				if ( into ) {
+					out.absorbedBy = { node: into.node, slot: into.slot, settings: into.settings };
+					out.reason = `${ out.reason }; it is its parent's only content and its ${ into.looks.join( ', ' ) } is read at the parent's part "${ into.slot }" (${ into.settings.join( ', ' ) }), so the parent absorbs it`;
+					read.conserve = [ ...read.conserve, { kind: 'absorbed', node: into.node, slot: into.slot, settings: into.settings, looks: into.looks } ];
+				} else if ( ! read.kept || only ) {
 					continue;
 				}
 				read.conserve.length ? ( out.conserve = read.conserve ) : delete out.conserve;

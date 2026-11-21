@@ -212,6 +212,11 @@ export function skeletonProblems( tree ) {
 		if ( undefined !== node.draftBandWrappers && ( ! Array.isArray( node.draftBandWrappers ) || undefined === node.draftRef || node.draftBandWrappers.some( ( f ) => finderProblem( f ) ) ) ) {
 			problems.push( `${ label } draftBandWrappers must be a list of finders on a node with a draftRef` );
 		}
+		// `draftAbsorbed`: the slots whose draft element is a wrapper the block absorbed (lib/skeleton-absorb-wrapper.mjs), nested
+		// inside the draftRef element, whose padding Fill sums with the root's (lib/fill-absorbed.mjs).
+		if ( undefined !== node.draftAbsorbed && ( ! Array.isArray( node.draftAbsorbed ) || node.draftAbsorbed.some( ( s ) => ! node.draftSlots?.[ s ] ) ) ) {
+			problems.push( `${ label } draftAbsorbed must be a list of draftSlots paths` );
+		}
 		if ( undefined !== node.widthAlternatives && ( ! Array.isArray( node.widthAlternatives ) || undefined === node.draftRef || node.widthAlternatives.some( ( a ) => ! parseTplKey( a?.key ) || ! Array.isArray( a.shown ) || ! a.shown.length ) ) ) {
 			problems.push( `${ label } widthAlternatives must be a list of { key, shown } (a draft element key and the widths it is drawn at) on a node with a draftRef` );
 		}
@@ -230,7 +235,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftFingerprint', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftFingerprint', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

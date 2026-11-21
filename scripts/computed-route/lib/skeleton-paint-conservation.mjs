@@ -302,7 +302,10 @@ export const INHERITED_LOOKS = [ 'text-centre' ];
 //                 verified when that node is in the skeleton and holds `setting` among its attributes or its decided settings.
 //   inherited     `looks` are inherited (INHERITED_LOOKS) and a node inside the element reads them from its own computed values.
 //   host-layout   the block at `node` lays the element's children out itself (a hero's split columns): `looks` is layout only.
-//   no-part       the host block `block` draws the element as a part with a fixed look: a missing block setting. The check
+//   absorbed      the parent block at `node` absorbed the element (lib/skeleton-absorb-wrapper.mjs): it is that node's draft
+//                 element at the part `slot`, whose `settings` carry `looks`. Verified when that node is in the skeleton and its
+//                 draftSlots names a finder at `slot`.
+//   no-part      the host block `block` draws the element as a part with a fixed look: a missing block setting. The check
 //                 verifies it against the block's calibration (`calibration( block )`, the slot map `cache/<block>.json`
 //                 named in `checked`): no setting at any slot paints any of `looks`, or the record is refused.
 //   not-calibrated the host block `block` has no calibration to check, so whether a part paints the look is unknown.
@@ -313,6 +316,7 @@ export const RECORD_KINDS = {
 	setting: { needs: [ 'node', 'setting', 'looks' ], delivers: true },
 	inherited: { needs: [ 'looks' ], delivers: true },
 	'host-layout': { needs: [ 'node', 'looks' ], delivers: true },
+	absorbed: { needs: [ 'node', 'slot', 'settings', 'looks' ], delivers: true },
 	'no-part': { needs: [ 'block', 'looks', 'checked' ], delivers: false },
 	'not-calibrated': { needs: [ 'block' ], delivers: false },
 	handover: { needs: [ 'delivers' ], delivers: false },
@@ -370,7 +374,7 @@ export function checkRecords( records, { looks, nodes, below = false, calibratio
 		}
 		const named = [].concat( rec.looks ).filter( ( l ) => looks.includes( l ) );
 		const node = rec.node ? nodes.get( rec.node ) : null;
-		const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] ) : 'inherited' === rec.kind ? below && named.every( ( l ) => INHERITED_LOOKS.includes( l ) ) : !! node && named.every( ( l ) => 'layout' === l );
+		const ok = 'setting' === rec.kind ? !! node && ( undefined !== node.attributes?.[ rec.setting ] || undefined !== node.decided?.[ rec.setting ] ) : 'absorbed' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] : 'inherited' === rec.kind ? below && named.every( ( l ) => INHERITED_LOOKS.includes( l ) ) : !! node && named.every( ( l ) => 'layout' === l );
 		ok ? out.delivered.push( ...named ) : out.bad.push( `${ rec.kind } ${ rec.node ?? '' } ${ rec.setting ?? '' } cannot be verified` );
 	}
 	return out;

@@ -611,7 +611,7 @@
 				"margin-inline",
 				"margin-block"
 			],
-			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes where nothing is lost: centred text is read at the nodes inside, and a padding or width no reader takes keeps the wrapper as a node (paint conservation, lib/skeleton-rules.mjs::ruleFor's unwrap guard: Bean, 2026-11-20, which replaces the 2026-10-13 ruling that side padding goes with the wrapper); anything that paints, positions or lays out stays (Bean, 2026-10-13)",
+			"reason": "a wrapper whose only declared styles align or space its content (text alignment, padding, margin) goes where nothing is lost, and its CSS is never dropped (Bean, 2026-11-21, correcting the reading of his 2026-10-13 ruling that side padding goes with the wrapper, which he calls misconstrued): centred text is read at the nodes inside; a wrapper that is its parent's only content and pads, caps or lays out only as the parent block's settings can is absorbed by the parent, its values read at the part those settings paint and its padding summed with the parent's per side (lib/skeleton-absorb-wrapper.mjs, lib/fill-absorbed.mjs); any other padding or width no reader takes keeps the wrapper as a node (paint conservation, lib/skeleton-rules.mjs::ruleFor's unwrap guard, Bean 2026-11-20); anything that paints, positions or lays out stays (Bean, 2026-10-13)",
 			"siblingGap": {
 				"id": "alignWrapper.siblingGap",
 				"taughtBy": { "client": "indus-foods", "key": "Indus Foods Website v2/79#0", "runtime_sha256": "c60c49083997f51a592df118c0068475337afd20b8cfd8e1cd9d5eb0c7e254f6" },
@@ -622,7 +622,7 @@
 			"blockPadding": {
 				"id": "alignWrapper.blockPadding",
 				"scope": "a wrapper that declares padding above or below its content (a page section's padding around its centred column)",
-				"reason": "no block around or inside the wrapper holds the space its top and bottom padding make, so unwrapping it would lose that space; the wrapper stays and carries its own padding, as spacing is carried where the draft declares it (Bean, 2026-10-28, Spec 48 FR-48-101); the unwrap guard (paint conservation) keeps a padded wrapper too, side padding included, and this entry still decides a wrapper the guard lets through (a hero picture's frame); alignment alone still goes with the wrapper"
+				"reason": "the space a wrapper's top and bottom padding make is never lost (Bean, 2026-10-28, Spec 48 FR-48-101; Bean, 2026-11-21: a wrapper's CSS is never dropped): the wrapper goes only where its parent absorbs it (it is the parent's only content and the parent block's part holds its padding, summed with the parent's own per side: lib/skeleton-absorb-wrapper.mjs, lib/fill-absorbed.mjs); otherwise it stays and carries its own padding. The unwrap guard (paint conservation) keeps any other padded wrapper too, side padding included, and this entry still decides a wrapper the guard lets through (a hero picture's frame); alignment alone still goes with the wrapper"
 			}
 		},
 		"cardAction": {

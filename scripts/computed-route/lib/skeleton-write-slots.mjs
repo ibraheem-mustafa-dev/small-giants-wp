@@ -1,11 +1,12 @@
 // The header's three rows, the footer's three rows and the host slot of an unwrapped element (Spec 48 §3.4, split out of
 // lib/skeleton-propose.mjs::proposeSkeleton): `buildHeaderRows` places the strips beside and inside the header in its top,
 // middle and bottom row (rules.headerSlots, lib/skeleton-header-slots.mjs), `buildFooterRows` builds the footer's rows
-// (rules.footerSlots, lib/skeleton-footer-slots.mjs) and `hostSlot` records a wrapper's draft element as the slot of the
-// setting its rule names.
+// (rules.footerSlots, lib/skeleton-footer-slots.mjs), `hostSlot` records a wrapper's draft element as the slot of the
+// setting its rule names or of the part its parent absorbs it at, and `absorbInto` finds that part.
 // The factory takes the writer's shared context (`ctx`) after the row book and the content settings are in `ctx.w`.
 import { specHit } from './skeleton-facts.mjs';
 import { bandSetting } from './fill-band.mjs';
+import { absorbSlot, onlyContent } from './skeleton-absorb-wrapper.mjs';
 import { besideStrips, insideStrips, mergeWidthAlternatives, slotPlan } from './skeleton-header-slots.mjs';
 import { buildFooterRows as footerRowsOf, sideBySide } from './skeleton-footer-slots.mjs';
 
@@ -127,15 +128,30 @@ export function makeSlotRows( ctx ) {
 	// names one (heroInner: the hero's content column), is the draft element of that setting's calibrated slot on the block it
 	// unwraps into, so Fill reads its width, layout and gaps there. The outermost such wrapper wins; a block whose setting
 	// paints its root gains no slot.
+	// A wrapper its parent absorbs (`absorbedBy`, lib/skeleton-rules.mjs::ruleFor) is the draft element of the part it names, and
+	// the node lists that part in `draftAbsorbed`: the wrapper sits inside the node's own element in the draft, so Fill sums the
+	// two paddings per side at that part (lib/fill-absorbed.mjs::sumAbsorbedPadding).
 	function hostSlot( e, r ) {
 		const setting = r.hostSetting ?? R[ r.rule ]?.hostSetting;
 		const host = hosts.at( -1 );
-		const slot = setting && host ? calSettings( host.block )?.[ setting ]?.slot : null;
+		const slot = r.absorbedBy && host?.e?.key === r.absorbedBy.node ? r.absorbedBy.slot : setting && host ? calSettings( host.block )?.[ setting ]?.slot : null;
 		if ( ! slot || host.node.draftSlots?.[ slot ] ) {
 			return;
 		}
 		host.node.draftSlots = { ...host.node.draftSlots, [ slot ]: finder( e ) };
 		host.row.slots = { ...host.row.slots, [ slot ]: finder( e ) };
+		r.absorbedBy && ( host.node.draftAbsorbed = [ ...( host.node.draftAbsorbed || [] ), slot ] );
+	}
+	// The part of the block being built that absorbs a wrapper whose looks no reader takes (lib/skeleton-absorb-wrapper.mjs):
+	// { node, block, slot, settings } when the wrapper is a direct child of the block's own draft element and its only content,
+	// and the block's calibration paints every look at one part no draft element holds yet; null otherwise.
+	function absorbInto( e, looks ) {
+		const host = hosts.at( -1 );
+		if ( ! host?.e || ! host.node.draftRef || ! onlyContent( m, host.e, e ) ) {
+			return null;
+		}
+		const at = absorbSlot( { looks, settings: calSettings( host.block ) } );
+		return at && ! host.node.draftSlots?.[ at.slot ] ? { node: host.e.key, block: host.block, ...at } : null;
 	}
 	// An element a rule unwraps that is a direct child of the block's own draft element and holds the block's children: the
 	// block does not draw it, so Fill reads it as evidence of the content band's width (draftBandWrappers,
@@ -166,5 +182,5 @@ export function makeSlotRows( ctx ) {
 		} );
 		return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band, sizing };
 	}
-	return { buildHeaderRows, buildFooterRows, hostSlot, bandWrapper, unwrapReads };
+	return { buildHeaderRows, buildFooterRows, hostSlot, bandWrapper, unwrapReads, absorbInto };
 }

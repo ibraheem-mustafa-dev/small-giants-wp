@@ -43,8 +43,8 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "\t\t\t\tif ( ! read.kept ) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}",
-		"replace": "\t\t\t\tif ( false ) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}",
+		"find": "\t\t\t\t} else if ( ! read.kept || only ) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}",
+		"replace": "\t\t\t\t} else if ( false ) {\n\t\t\t\t\tcontinue;\n\t\t\t\t}",
 		"why": "an unwrap whose paint no reader takes is kept"
 	},
 	{

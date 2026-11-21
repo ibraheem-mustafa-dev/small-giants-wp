@@ -67,7 +67,7 @@ export function overrideFor( e, { clientDecisions = {}, picks = {}, facts, surfa
 	return hit ? { block: hit.block || null, remove: 'remove' === hit.action, attributes: hit.attributes, reason: hit.reason, source: `standing decision ${ hit.id }` } : null;
 }
 
-export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey = () => null, motion = new Set(), view = undefined, scope = null, formLinkOf = () => null, siteLink = undefined, unwrapReads = undefined } ) {
+export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey = () => null, motion = new Set(), view = undefined, scope = null, formLinkOf = () => null, siteLink = undefined, unwrapReads = undefined, absorbInto = undefined } ) {
 	const { composition, capsOf, tagMap, decisions } = facts;
 	const minLinks = decisions.structural?.linkList?.minLinks ?? 2;
 	const textBlock = tagMap.p?.core_block_slug || null;
@@ -114,12 +114,12 @@ export function makeClassifier( { m, facts, overrides, surface = {}, blockOfKey 
 		return !! m.words( e ) && 'a' !== e.tag && ! m.blockKids( e ).length && sibs[ 0 ] === e && sibs.slice( 1 ).filter( m.isTextLink ).length >= minLinks;
 	};
 
-	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, unwrapReads, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block, brandOf: ( k ) => brandFor( k )[ 0 ]?.brand?.slug ?? null } } );
+	const rules = makeRules( { m, facts, surface, motion, view, scope, hooks: { siteInfoKinds, isColumnLabel, blockOfKey, formLinkOf, siteLink, unwrapReads, absorbInto, topBlock: ( k ) => classify( k, null ).candidates[ 0 ]?.block, brandOf: ( k ) => brandFor( k )[ 0 ]?.brand?.slug ?? null } } );
 	// A rule verdict in the classifier's result shape (lib/skeleton-rules.mjs).
 	const fromRule = ( r ) => {
 		const base = { rule: r.rule, source: `rule ${ r.rule }`, reason: r.reason, confidence: 1, ...( r.handover ? { handover: r.handover } : {} ), ...( r.decided ? { decided: r.decided } : {} ), ...( r.handovers ? { handovers: r.handovers } : {} ), ...( r.inner ? { inner: r.inner, item: r.item } : {} ), ...( r.closedInner ? { closedInner: r.closedInner } : {} ), ...( r.units ? { units: r.units } : {} ), ...( r.slides ? { slides: r.slides, slideFields: r.slideFields } : {} ), ...( r.codeItem ? { codeItem: r.codeItem } : {} ), ...( r.firstItem ? { firstItem: r.firstItem } : {} ), ...( r.chips ? { chips: r.chips } : {} ), ...( r.glyphNote ? { glyphNote: r.glyphNote } : {} ), ...( r.mediaFrame ? { mediaFrame: r.mediaFrame } : {} ), ...( r.conserve ? { conserve: r.conserve } : {} ), ...( r.split ? { split: r.split } : {} ) };
 		if ( r.action ) {
-			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), ...( r.hostSetting ? { hostSetting: r.hostSetting } : {} ), candidates: [] };
+			return { ...base, action: r.action, ...( r.into ? { into: r.into } : {} ), ...( r.hostSetting ? { hostSetting: r.hostSetting } : {} ), ...( r.absorbedBy ? { absorbedBy: r.absorbedBy } : {} ), candidates: [] };
 		}
 		const C = {};
 		add( C, r.block, 'rule', W.rule, `rule ${ r.rule }: ${ r.reason }`, { attributes: r.attributes, ...( r.wordBound ? { wordBound: r.wordBound } : {} ), ...( r.menu ? { menu: r.menu } : {} ), ...( r.split ? { split: r.split } : {} ) } );

@@ -1,0 +1,56 @@
+[
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "part[ prop ] = `${ round( a + b ) }px`;",
+		"replace": "part[ prop ] = `${ round( b ) }px`;",
+		"why": "the part keeps the wrapper's padding only: the section's own is lost"
+	},
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "root && delete root[ prop ];",
+		"replace": "",
+		"why": "the root keeps its read of a summed side, so the side is asked of another setting and written twice"
+	},
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "if ( ! widths.some( ( w ) => ( px( at( w, p.partId )?.[ prop ] ) ?? 0 ) !== 0 || ( px( at( w, p.rootId )?.[ prop ] ) ?? 0 ) !== 0 ) ) {",
+		"replace": "if ( ! widths.some( ( w ) => ( px( at( w, p.partId )?.[ prop ] ) ?? 0 ) !== 0 ) ) {",
+		"why": "a side only the root pads stays on the root, where no setting reads it"
+	},
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "if ( ! widths.some( ( w ) => ( px( at( w, p.partId )?.[ prop ] ) ?? 0 ) !== 0 || ( px( at( w, p.rootId )?.[ prop ] ) ?? 0 ) !== 0 ) ) {",
+		"replace": "if ( false ) {",
+		"why": "a side neither pads is moved off the root, so the page gutter never judges a section's zero"
+	},
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "return nodes.flatMap( ( rec ) => ( Array.isArray( rec.node?.draftAbsorbed ) ? rec.node.draftAbsorbed : [] ).filter( ( slot ) => rec.targets.some( ( t ) => t.slot === slot ) )",
+		"replace": "return nodes.flatMap( ( rec ) => ( Array.isArray( rec.node?.draftAbsorbed ) ? rec.node.draftAbsorbed : [] )",
+		"why": "a listed part with no target is summed"
+	},
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "[ prop, ...SHORTHANDS ].forEach( ( n ) => delete declared[ p.partId ][ n ] );",
+		"replace": "",
+		"why": "the wrapper's declared form survives beside the summed value"
+	},
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "[ prop, ...SHORTHANDS ].forEach( ( n ) => delete declared[ p.rootId ][ n ] );",
+		"replace": "",
+		"why": "the root's declared padding survives after its side moved to the part"
+	},
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "value: `${ round( byWidth.get( s.width ) + px( s.value ) ) }px` }",
+		"replace": "value: s.value }",
+		"why": "the sweep keeps the wrapper's padding only"
+	},
+	{
+		"file": "lib/fill-absorbed.mjs",
+		"find": "rootSeries && delete reads.sweep[ p.rootId ][ prop ];",
+		"replace": "",
+		"why": "the root's sweep of a summed side survives"
+	}
+]
