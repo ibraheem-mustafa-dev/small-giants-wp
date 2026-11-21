@@ -1711,6 +1711,12 @@
 						"shopPart": "buybox-add-to-basket"
 					}
 				},
+				"flow-opener": {
+					"from": "page",
+					"match": {
+						"shopPart": "buybox-flow-opener"
+					}
+				},
 				"sticky-bar": {
 					"from": "page",
 					"match": {
