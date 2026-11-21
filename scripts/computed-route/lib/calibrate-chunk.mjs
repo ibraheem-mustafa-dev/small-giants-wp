@@ -35,14 +35,38 @@ export function chunkSizeFor( fixture, fallback ) {
 
 export const halveChunk = ( size ) => Math.max( MIN_CHUNK, Math.floor( size / 2 ) );
 
-// Pages of at most `size` non-default instances; every page carries each default and baseline, so a marker is always
-// compared with a default read on the same page load.
-export function planChunks( defaults, others, size ) {
+// The defaults and baselines (`held`) a page of `list` is read against: the baseline each of its instances names
+// (baseKey), and the default of each variant an instance with no baseline is compared with; with `allDefaults` every
+// default (the block's first page, where its default paint is read). In `held`'s order.
+export function heldFor( held, list, allDefaults ) {
+	const bases = new Set( list.map( ( i ) => i.baseKey ).filter( Boolean ) );
+	const variants = new Set( list.filter( ( i ) => ! i.baseKey ).map( ( i ) => i.variant ) );
+	return held.filter( ( h ) => ( h.isDefault && ( allDefaults || variants.has( h.variant ) ) ) || ( h.isBase && bases.has( h.baseKey ) ) );
+}
+
+// Pages of at most `size` non-default instances and at most `cap` instances in all, in order. A page carries only the
+// defaults and baselines its own instances are compared with (heldFor), so a marker is still compared with a default or
+// baseline read on the same page load; a baseline no instance on the page names is not rendered. The first page
+// (`firstPage`) carries every default. A page always holds at least one non-default instance.
+export function planChunks( held, others, size, { cap = Infinity, firstPage = true } = {} ) {
 	const chunks = [];
-	for ( let i = 0; i < others.length; i += size ) {
-		chunks.push( [ ...defaults, ...others.slice( i, i + size ) ] );
+	let page = [];
+	const allDefaults = () => firstPage && ! chunks.length;
+	const close = () => {
+		chunks.push( [ ...heldFor( held, page, allDefaults() ), ...page ] );
+		page = [];
+	};
+	for ( const inst of others ) {
+		const next = [ ...page, inst ];
+		if ( page.length && ( next.length > size || heldFor( held, next, allDefaults() ).length + next.length > cap ) ) {
+			close();
+		}
+		page.push( inst );
 	}
-	return chunks.length ? chunks : [ defaults ];
+	if ( page.length || ! chunks.length ) {
+		close();
+	}
+	return chunks;
 }
 
 // The elements one chunk's reading may hold, counting every instance on the page (its defaults and baselines too): a
@@ -51,32 +75,32 @@ export function planChunks( defaults, others, size ) {
 // stayed near 5 GB through a whole run.
 export const ELEMENT_BUDGET = 50000;
 
-// The non-default instances the next pages may hold once a page's reading shows how many elements each instance draws:
-// the page within ELEMENT_BUDGET with its `defaults` (defaults and baselines, which every page carries), never more than
-// `size` and never fewer than MIN_CHUNK.
-export function sizeForReading( size, perInstance, defaults, budget = ELEMENT_BUDGET ) {
-	return Math.max( MIN_CHUNK, Math.min( size, Math.floor( budget / perInstance ) - defaults ) );
+// The most instances (its defaults and baselines counted) the next pages may hold once a page's reading shows how many
+// elements each instance draws: the page within ELEMENT_BUDGET. An empty reading (0 elements) sets no limit (Infinity).
+export function pageCapFor( perInstance, budget = ELEMENT_BUDGET ) {
+	return Math.floor( budget / perInstance );
 }
 
-// The pages still queued, planned again at `size` non-default instances each (the defaults of the first queued page carried
-// on every one), in the same order.
-export function replanQueue( queue, size ) {
+const isHeld = ( i ) => i.isDefault || i.isBase;
+
+// The pages still queued, planned again (planChunks) at `size` non-default instances and `cap` instances a page, each
+// carrying from `held` (every default and baseline of the block) what its own instances need, in the same order. No queued
+// page is the block's first.
+export function replanQueue( queue, size, held, cap = Infinity ) {
 	if ( ! queue.length ) {
 		return queue;
 	}
-	const defaults = queue[ 0 ].filter( ( i ) => i.isDefault || i.isBase );
-	const others = queue.flatMap( ( list ) => list.filter( ( i ) => ! i.isDefault && ! i.isBase ) );
-	return planChunks( defaults, others, size );
+	return planChunks( held, queue.flatMap( ( list ) => list.filter( ( i ) => ! isHeld( i ) ) ), size, { cap, firstPage: false } );
 }
 
-// A page whose build timed out, split into smaller pages. Returns { size, chunks } with the halved size, or null when
-// the page holds one non-default instance or fewer (nothing left to halve).
-export function splitOnTimeout( list, size ) {
-	const defaults = list.filter( ( i ) => i.isDefault || i.isBase );
-	const others = list.filter( ( i ) => ! i.isDefault && ! i.isBase );
+// A page whose build timed out, split into smaller pages (planChunks over the page's own defaults and baselines; the first
+// piece of the block's first page keeps every default). Returns { size, chunks } with the halved size, or null when the
+// page holds one non-default instance or fewer (nothing left to halve).
+export function splitOnTimeout( list, size, { cap = Infinity, firstPage = false } = {} ) {
+	const others = list.filter( ( i ) => ! isHeld( i ) );
 	if ( others.length <= MIN_CHUNK ) {
 		return null;
 	}
 	const next = halveChunk( Math.min( size, others.length ) );
-	return { size: next, chunks: planChunks( defaults, others, next ) };
+	return { size: next, chunks: planChunks( list.filter( isHeld ), others, next, { cap, firstPage } ) };
 }

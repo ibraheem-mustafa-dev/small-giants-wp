@@ -1,11 +1,12 @@
 // The pages of one block's calibration (FR-47-2): builds each page of instances on the calibration page and reads it at
 // every width, one page at a time. A block with more instances than one page saves reliably is built in pages (the
-// fixture's own `chunk`, else CHUNK); every page carries each variant's default instance, so a marker is always compared
-// with a default read on the same page load. A page whose build times out is halved and rebuilt.
+// fixture's own `chunk`, else CHUNK); every page carries the default and baseline instances its own instances are compared
+// with (lib/calibrate-chunk.mjs::planChunks), so a marker is always compared with a default read on the same page load. A
+// page whose build times out is halved and rebuilt.
 import path from 'path';
 import { spawn } from 'child_process';
 import { writeTree } from './tree.mjs';
-import { CHILD_TIMEOUT_MS, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout, sizeForReading, replanQueue } from './calibrate-chunk.mjs';
+import { CHILD_TIMEOUT_MS, buildSpawnArgs, chunkSizeFor, planChunks, splitOnTimeout, pageCapFor, replanQueue } from './calibrate-chunk.mjs';
 import { WIDTHS, buildTree, slotFor, stateTarget, readAll } from './calibrate.mjs';
 import { readContentAll } from './calibrate-content.mjs';
 import { setBasket, pickPass } from './calibrate-basket.mjs';
@@ -58,6 +59,8 @@ export async function measurePages( block, instances, { fixture, site, target, e
 	const defaults = instances.filter( ( i ) => i.isDefault || i.isBase );
 	const others = instances.filter( ( i ) => ! i.isDefault && ! i.isBase );
 	let size = chunkSizeFor( fixture, CHUNK );
+	// The most instances a page holds, set once a page shows how many elements an instance draws.
+	let cap = Infinity;
 	const queue = planChunks( defaults, others, size );
 	const kept = [];
 	let done = 0;
@@ -69,7 +72,7 @@ export async function measurePages( block, instances, { fixture, site, target, e
 		const where = () => ( done + queue.length ? ` (page ${ done + 1 } of ${ done + queue.length + 1 })` : '' );
 		// Halves the page in hand and puts its pieces first in the queue; false when it cannot be split further.
 		const halve = () => {
-			const split = splitOnTimeout( list, size );
+			const split = splitOnTimeout( list, size, { cap, firstPage: 0 === done } );
 			if ( ! split ) {
 				return false;
 			}
@@ -116,15 +119,15 @@ export async function measurePages( block, instances, { fixture, site, target, e
 		const passes = [ await clock.time( 'read', () => readAll( shared.page, pageUrl, list, { settleGone, owner, extraProps } ) ) ];
 		clock.addReads( passes[ 0 ].timing );
 		// Once a page shows how many elements each instance draws, the pages still queued hold no more than the element budget
-		// (lib/calibrate-chunk.mjs::sizeForReading): a block whose instances draw hundreds of elements reads fewer per page.
+		// (lib/calibrate-chunk.mjs::pageCapFor): a block whose instances draw hundreds of elements reads fewer per page.
 		const drawn = Math.max( 0, ...WIDTHS.map( ( w ) => {
 			const reads = Object.values( passes[ 0 ][ w ] || {} );
 			return reads.length ? reads.reduce( ( a, r ) => a + Object.keys( r || {} ).length, 0 ) / reads.length : 0;
 		} ) );
-		const fits = sizeForReading( size, drawn, list.filter( ( i ) => i.isDefault || i.isBase ).length );
-		if ( fits < size ) {
-			size = fits;
-			queue.splice( 0, queue.length, ...replanQueue( queue, size ) );
+		const fits = pageCapFor( drawn );
+		if ( fits < cap ) {
+			cap = fits;
+			queue.splice( 0, queue.length, ...replanQueue( queue, size, defaults, cap ) );
 		}
 		if ( fixture.basket ) {
 			await setBasket( shared.page, env.url, fixture.basket );
