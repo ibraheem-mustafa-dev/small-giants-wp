@@ -5379,160 +5379,10 @@
     },
     {
       "slug": "sgs/buybox",
-      "attr": "addToCartBorderRadius",
-      "fields": {
-        "css_property": "border-radius"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartBorderStyle",
-      "fields": {
-        "css_property": "border-style"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartBorderWidth",
-      "fields": {
-        "css_property": "border-width"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartColourBackground",
-      "fields": {
-        "css_property": "background-color",
-        "role": "color",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartColourBackgroundHover",
-      "fields": {
-        "css_property": "background-color"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartColourBorder",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartColourBorderHover",
-      "fields": {
-        "css_property": "border-color"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartColourText",
-      "fields": {
-        "css_property": "color"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartColourTextHover",
-      "fields": {
-        "css_property": "color"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartFontFamily",
-      "fields": {
-        "css_property": "font-family"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartFontSize",
-      "fields": {
-        "css_property": "font-size",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartFontStyle",
-      "fields": {
-        "css_property": "font-style"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartFontWeight",
-      "fields": {
-        "css_property": "font-weight",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartLetterSpacing",
-      "fields": {
-        "css_property": "letter-spacing",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartLineHeight",
-      "fields": {
-        "css_property": "line-height"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartMinHeight",
-      "fields": {
-        "css_property": "min-height",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartPadding",
-      "fields": {
-        "css_property": "padding",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
       "attr": "addToCartStyle",
       "fields": {
-        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_property": "box-shadow,transform",
         "css_layer": "OUTER"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartTextDecoration",
-      "fields": {
-        "css_property": "text-decoration"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartTextTransform",
-      "fields": {
-        "css_property": "text-transform",
-        "css_element": "add-to-cart"
-      }
-    },
-    {
-      "slug": "sgs/buybox",
-      "attr": "addToCartWidthType",
-      "fields": {
-        "css_property": "width"
       }
     },
     {
@@ -5585,6 +5435,14 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "flowOpenerStyle",
+      "fields": {
+        "css_property": "border-color,border-radius,border-width,box-shadow,color,font-weight,letter-spacing,rotate,scale,text-transform,transform",
+        "css_layer": "OUTER"
       }
     },
     {
@@ -6599,6 +6457,13 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "notifySubmit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "openerNoteColour",
+      "fields": {
+        "css_property": "color"
       }
     },
     {
@@ -27519,6 +27384,15 @@
     },
     {
       "slug": "sgs/product-card",
+      "attr": "cta2ContentAlign",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "cta"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
       "attr": "cta2FontFamily",
       "fields": {
         "css_property": "font-family",
@@ -27717,6 +27591,15 @@
         "role": "color",
         "css_element": "cta",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "ctaContentAlign",
+      "fields": {
+        "css_property": "justify-content",
+        "css_layer": "GRID",
+        "css_element": "cta"
       }
     },
     {
@@ -38786,6 +38669,64 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "addToCartColourBackground",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartColourBorder",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartMinHeight",
+      "fields": {
+        "css_property": "min-height",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "addToCartShadow",
       "fields": {
         "css_property": "box-shadow",
@@ -38797,6 +38738,14 @@
       "attr": "addToCartShadowColour",
       "fields": {
         "css_property": "box-shadow-color",
+        "css_element": "add-to-cart"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "addToCartTextTransform",
+      "fields": {
+        "css_property": "text-transform",
         "css_element": "add-to-cart"
       }
     },
