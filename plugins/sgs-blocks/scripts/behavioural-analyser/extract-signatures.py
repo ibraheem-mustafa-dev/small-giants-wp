@@ -737,11 +737,22 @@ def _strip_php_comments(src: str) -> str:
     statement boundaries). A single-pass character scanner that tracks whether it
     is currently inside a `'...'`/`"..."` string is the only correct way to strip
     comments without corrupting string content — mirrors `_split_php_statements`'s
-    quote-tracking discipline."""
+    quote-tracking discipline.
+
+    A `//` or `#` comment ends at the newline or at the closing tag `?>`,
+    whichever comes first, as it does in PHP: the tag and the markup after it
+    on the same line are kept (`<div <?php echo $attrs; // phpcs:ignore ?>>`)."""
     out: list[str] = []
     i = 0
     n = len(src)
     quote: "str | None" = None
+
+    def line_comment_end(start: int) -> int:
+        """Where the line comment that starts at `start` stops: the index of its
+        newline or of its closing tag, or -1 when it runs to the end of the text."""
+        ends = [e for e in (src.find("\n", start), src.find("?>", start)) if e != -1]
+        return min(ends) if ends else -1
+
     while i < n:
         ch = src[i]
         if quote:
@@ -760,11 +771,10 @@ def _strip_php_comments(src: str) -> str:
             i += 1
             continue
         if ch == "/" and i + 1 < n and src[i + 1] == "/":
-            j = src.find("\n", i)
+            j = line_comment_end(i)
             if j == -1:
                 break
-            out.append("\n")
-            i = j + 1
+            i = j  # the newline or the closing tag is appended by the next iterations
             continue
         if ch == "/" and i + 1 < n and src[i + 1] == "*":
             j = src.find("*/", i + 2)
@@ -774,10 +784,10 @@ def _strip_php_comments(src: str) -> str:
             i = j + 2
             continue
         if ch == "#" and (not out or out[-1] == "\n" or src[max(0, i - 1)] in " \t"):
-            j = src.find("\n", i)
+            j = line_comment_end(i)
             if j == -1:
                 break
-            i = j  # leave the newline itself for the next loop iteration to append
+            i = j  # the newline or the closing tag is appended by the next iterations
             continue
         out.append(ch)
         i += 1

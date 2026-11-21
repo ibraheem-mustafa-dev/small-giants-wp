@@ -58,6 +58,20 @@ def test_nested_attribute_reference_excluded():
     assert es._attrs_referenced("attributes.tabs.length", {}, {"tab", "tabs"}) == set()
 
 
+def test_line_comment_ends_at_the_closing_tag():
+    src = '<div <?php echo $attrs; // phpcs:ignore Escape ?> data-layout="<?php echo esc_attr( $attributes[\'layout\'] ); ?>">\n'
+    assert es._strip_php_comments(src) == (
+        '<div <?php echo $attrs; ?> data-layout="<?php echo esc_attr( $attributes[\'layout\'] ); ?>">\n'
+    )
+    assert es._strip_php_comments("<?php # note ?><p class=\"a\">\n") == "<?php ?><p class=\"a\">\n"
+
+
+def test_line_comment_without_a_closing_tag_still_ends_at_the_newline():
+    assert es._strip_php_comments("$a = 1; // note\n$b = 2; # note\n$c = 3;") == "$a = 1; \n$b = 2; \n$c = 3;"
+    assert es._strip_php_comments("$u = 'https://x.test/?>'; // gone\n") == "$u = 'https://x.test/?>'; \n"
+    assert es._strip_php_comments("$a = 1; // one\n?>\n<p>") == "$a = 1; \n?>\n<p>"
+
+
 def test_member_access_is_not_a_bare_identifier():
     assert es._attrs_referenced("value={ link.url }", {"url": "url"}, {"url"}) == set()
     assert es._attrs_referenced("value={ url }", {"url": "url"}, {"url"}) == {"url"}
