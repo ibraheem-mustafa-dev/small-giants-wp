@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "\t\tif ( k === key || k.startsWith( `${ key } > ` ) || k.startsWith( `${ key }::` ) ) {",
+		"replace": "\t\tif ( k === key || k.startsWith( `${ key } > ` ) ) {",
+		"why": "the hovered element's ::after layer would keep the first reading's rest paint"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "\t\tif ( k === key || k.startsWith( `${ key } > ` ) || k.startsWith( `${ key }::` ) ) {",
+		"replace": "\t\tif ( k === key || k.startsWith( key ) ) {",
+		"why": "a sibling whose path starts with the hovered one's text, or its parent, would be merged too"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "\tif ( ! base || ! other || ! key ) {",
+		"replace": "\tif ( ! base || ! other ) {",
+		"why": "a root key would merge the whole reading over the first"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "\tconst el = all[ index ];",
+		"replace": "\tconst el = all[ 0 ];",
+		"why": "every reading would hover the first match again"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "\treturn { count: all.length, key: pathOf( el, root ), visible:",
+		"replace": "\treturn { count: all.length, key: pathOf( el, document.body ), visible:",
+		"why": "the key would not be the read's key, so nothing would merge"
+	},
+	{
+		"file": "lib/calibrate-read.mjs",
+		"find": "\tdocument.querySelectorAll( '[data-cr-target]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-target' ) );\n\tel.setAttribute( 'data-cr-target', '1' );\n\tconst r = el.getBoundingClientRect();\n\treturn { count:",
+		"replace": "\tel.setAttribute( 'data-cr-target', '1' );\n\tconst r = el.getBoundingClientRect();\n\treturn { count:",
+		"why": "an earlier match would stay marked and be hovered again"
+	}
+]

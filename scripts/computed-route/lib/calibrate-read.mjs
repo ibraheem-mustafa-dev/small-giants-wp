@@ -180,6 +180,47 @@ export async function readParts( page, count, at ) {
 	return texts.map( ( t ) => ( null === t ? null : JSON.parse( t ) ) );
 }
 
+// The most elements a hover rule names that are hovered one by one in an instance (readUnderTrigger): a menu's links, a
+// list's items. A real pointer hovers one element at a time, so each further match is its own reading.
+export const HOVER_MATCHES_MAX = 8;
+
+// In-page: marks the index-th element inside the instance root that `selector` names with data-cr-target (every other mark
+// cleared) and returns { count (how many it names), key (its read key: its path from the root, as readInstancesInPage keys
+// it), visible }, or null when the instance or the element is not there.
+export function markNthMatchInPage( [ prefix, n, selector, index, pathSrc ] ) {
+	// eslint-disable-next-line no-new-func
+	const pathOf = new Function( `return (${ pathSrc });` )();
+	const root = document.querySelector( `.${ prefix }${ n }` );
+	if ( ! root || ! selector ) {
+		return null;
+	}
+	const all = [ ...( root.matches( selector ) ? [ root ] : [] ), ...root.querySelectorAll( selector ) ];
+	const el = all[ index ];
+	if ( ! el ) {
+		return null;
+	}
+	document.querySelectorAll( '[data-cr-target]' ).forEach( ( e ) => e.removeAttribute( 'data-cr-target' ) );
+	el.setAttribute( 'data-cr-target', '1' );
+	const r = el.getBoundingClientRect();
+	return { count: all.length, key: pathOf( el, root ), visible: r.width > 0 && r.height > 0 && 'hidden' !== getComputedStyle( el ).visibility };
+}
+
+// A hover reading of a further match merged into the first: every element at `key` or inside it, and their ::before and
+// ::after layers, takes that reading's values (it was the hovered element there), every other element keeps the first reading's. The root (an empty key) is
+// never merged. Returns a new read.
+export function mergeHoverRead( base, other, key ) {
+	if ( ! base || ! other || ! key ) {
+		return base;
+	}
+	const out = { ...base };
+	for ( const [ k, v ] of Object.entries( other ) ) {
+		if ( k === key || k.startsWith( `${ key } > ` ) || k.startsWith( `${ key }::` ) ) {
+			out[ k ] = v;
+		}
+	}
+	return out;
+}
+
 // In-page: marks the element a state trigger acts on (the instance's styled element, searched in the instance and its
 // controlled panels; the root when no selector is given) with data-cr-target, and says whether it is visible and whether
 // the instance has a closed panel toggle it could open. A selector that matches nothing marks nothing and returns
@@ -437,6 +478,21 @@ async function readUnderTrigger( page, instances, n, inst, extraProps ) {
 			await page.waitForTimeout( 500 );
 			read = await one();
 			why = read ? null : 'no instance';
+			// A hover rule naming several elements (each link of a menu): each further one is hovered in turn and its reading
+			// merged in, so the setting is read on every element it styles, not only the first.
+			const first = 'focus' !== inst.trigger && read && inst.target && ! opened && ! shown ? await page.evaluate( markNthMatchInPage, [ CAL_PREFIX, n, inst.target, 0, elementPath.toString() ] ) : null;
+			for ( let k = 1; first && k < Math.min( first.count, HOVER_MATCHES_MAX ); k++ ) {
+				const m = await page.evaluate( markNthMatchInPage, [ CAL_PREFIX, n, inst.target, k, elementPath.toString() ] );
+				if ( ! m?.visible ) {
+					continue;
+				}
+				await page.mouse.move( 0, 0 );
+				const next = page.locator( '[data-cr-target]' ).first();
+				await next.scrollIntoViewIfNeeded();
+				await next.hover( { force: true } );
+				await page.waitForTimeout( 500 );
+				read = mergeHoverRead( read, await one(), m.key );
+			}
 		} catch ( e ) {
 			// An element Playwright cannot scroll to or reach (it reported visible but sits where no scroll brings it into
 			// view) leaves this instance unread, listed as missed with the browser's own error, instead of failing the
