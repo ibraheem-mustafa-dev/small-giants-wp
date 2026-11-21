@@ -19,7 +19,7 @@
 	},
 	{
 		"file": "lib/skeleton-propose.mjs",
-		"find": "const link = wrapperLinkSlot( { rule: R[ r.rule ], e, built, calSettings, finder } );",
+		"find": "const link = wrapperLinkSlot( { rule: R[ r.rule ], e, built, calSettings, finder, expected: [].concat( r.conserve || [] ).filter( ( x ) => 'link-slot' === x?.kind ) } );",
 		"replace": "const link = { notes: [] };",
 		"why": "the writer never reads the dissolved link"
 	},
@@ -37,20 +37,80 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "! ( ( dest.band || dest.sizing ) && BAND_LOOKS.includes( l ) ) );",
-		"replace": "! ( dest.band && BAND_LOOKS.includes( l ) ) );",
+		"find": "const linked = painted.filter( ( l ) => ( dest.sizing?.looks || [] ).includes( l ) && ! setting.includes( l ) );",
+		"replace": "const linked = [];",
 		"why": "the unwrap guard ignores the link slot, so a link that sizes its logo stays a container"
 	},
 	{
 		"file": "lib/skeleton-write-slots.mjs",
-		"find": "=== s.block && [ calibrated?.slot, ...( calibrated?.slots || [] ) ].includes( s.slot );",
-		"replace": "=== s.block;",
+		"find": "if ( ! calibrated || ! [ calibrated.slot, ...( calibrated.slots || [] ) ].includes( s.slot ) ) {",
+		"replace": "if ( ! s ) {",
 		"why": "a sized link is dissolved though no calibrated link slot reads its width"
 	},
 	{
 		"file": "lib/skeleton-write-slots.mjs",
-		"find": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band, sizing };",
-		"replace": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ) || sizing, band, sizing };",
+		"find": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band, sizing: linkSizing( e, r, parentBlock, declared ) };",
+		"replace": "return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ) || !! linkSizing( e, r, parentBlock, declared ), band, sizing: linkSizing( e, r, parentBlock, declared ) };",
 		"why": "a link that paints a pill round its logo is dissolved and the pill lost"
+	},
+	{
+		"file": "lib/skeleton-wrapper-link-slot.mjs",
+		"find": ".filter( ( x ) => [ x?.slot, ...( x?.slots || [] ) ].includes( slot ) ).map( ( x ) => lookOfProperty( x?.property ) )",
+		"replace": ".map( ( x ) => lookOfProperty( x?.property ) )",
+		"why": "every calibrated setting's look is taken as read at the link part"
+	},
+	{
+		"file": "lib/skeleton-wrapper-link-slot.mjs",
+		"find": "return !! long && widths.every( ( w ) => low( at[ w ][ long ] ) === low( v ) );",
+		"replace": "return !! long;",
+		"why": "a declared value is read whatever the part paints by default"
+	},
+	{
+		"file": "lib/skeleton-wrapper-link-slot.mjs",
+		"find": "const KEYWORD_LONGHAND = { 'text-decoration': 'text-decoration-line' };",
+		"replace": "const KEYWORD_LONGHAND = {};",
+		"why": "a lone-keyword text-decoration is never compared with the part's line"
+	},
+	{
+		"file": "lib/skeleton-wrapper-link-slot.mjs",
+		"find": "if ( ! at || ! widths.length ) {",
+		"replace": "if ( true ) {",
+		"why": "the part's default paint is never read"
+	},
+	{
+		"file": "lib/skeleton-wrapper-link-slot.mjs",
+		"find": "expected.filter( ( x ) => x?.slot === entry.slot ).forEach(",
+		"replace": "[].forEach(",
+		"why": "a dissolved link no logo took is silent"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "&& ! ( dest.band && BAND_LOOKS.includes( l ) ) && ! linked.includes( l ) );",
+		"replace": "&& ! ( ( dest.band || dest.sizing ) && BAND_LOOKS.includes( l ) ) );",
+		"why": "the link slot waives every band look, read or not"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "linked.length && records.push( { kind: 'link-slot',",
+		"replace": "false && records.push( { kind: 'link-slot',",
+		"why": "the looks the link part takes are recorded nowhere"
+	},
+	{
+		"file": "lib/skeleton-rules.mjs",
+		"find": "kidsB.every( ( k ) => logoish( dissolvedTo( k, parentBlock ) ) )",
+		"replace": "kidsB.every( logoish )",
+		"why": "a logo one dissolved wrapper down is not seen by the home link rule"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "for ( let depth = 0; 1 === kids.length && depth < 4 && 'unwrap' === cls.classify( kids[ 0 ], parentBlock ).action; depth++ ) {",
+		"replace": "for ( let depth = 0; 1 === kids.length && depth < 4 && m.blockKids( kids[ 0 ] ).length; depth++ ) {",
+		"why": "the guard looks through a wrapper the build keeps"
+	},
+	{
+		"file": "lib/skeleton-write-slots.mjs",
+		"find": "const looks = linkSlotLooks( { slot: s.slot, settings, paint: ctx.calParts?.( s.block )?.elements ?? null,",
+		"replace": "const looks = linkSlotLooks( { slot: s.slot, settings, paint: null,",
+		"why": "the guard never reads the part's default paint"
 	}
 ]

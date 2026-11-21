@@ -7,6 +7,9 @@
 import { specHit } from './skeleton-facts.mjs';
 import { bandSetting } from './fill-band.mjs';
 import { absorbSlot, onlyContent } from './skeleton-absorb-wrapper.mjs';
+import { linkSlotLooks } from './skeleton-wrapper-link-slot.mjs';
+import { styleOf } from './skeleton-paint-conservation.mjs';
+import { renderedWidths } from './element-facts.mjs';
 import { besideStrips, insideStrips, mergeWidthAlternatives, slotPlan } from './skeleton-header-slots.mjs';
 import { buildFooterRows as footerRowsOf, sideBySide } from './skeleton-footer-slots.mjs';
 
@@ -166,21 +169,36 @@ export function makeSlotRows( ctx ) {
 	// What the destination of an unwrap reads of the wrapper's look (the skeleton rules' paint conservation,
 	// lib/skeleton-rules.mjs::ruleFor): { all } when the wrapper becomes its host's draft element at the free calibrated slot of the
 	// verdict's host setting (hostSlot) or is the frame a part slot of the host reads (rules.heroInner.frame), { band } when a
-	// band finder reads its width cap (bandWrapper), { sizing } when the wrapper holds one block that draws the wrapper as a
-	// part of its own and the rule reads it at that part's calibrated slot (rules.<rule>.linkSlots,
-	// lib/skeleton-wrapper-link-slot.mjs: a link round one logo), which reads its width, ceiling and centring and no paint.
-	function unwrapReads( e, r ) {
+	// band finder reads its width cap (bandWrapper), { sizing: { node, slot, looks } } when the wrapper holds one block that
+	// draws the wrapper as a part of its own and the rule reads it at that part's calibrated slot (linkSizing).
+	// `parentBlock` is the block the wrapper's children are built under, `declared` the wrapper's declared style.
+	function unwrapReads( e, r, { parentBlock = null, declared = {} } = {} ) {
 		const host = hosts.at( -1 );
 		const setting = r.hostSetting ?? R[ r.rule ]?.hostSetting;
 		const slot = setting && host ? calSettings( host.block )?.[ setting ]?.slot : null;
 		const framed = ctx.framePending.some( ( f ) => f.frame === e );
 		const band = !! host?.e && e.parentKey === host.e.key && !! host.node.draftRef && !! bandSetting( ctx.db, host.block, { settings: calSettings( host.block ) } );
-		const kids = m.blockKids( e );
-		const sizing = 1 === kids.length && ( R[ r.rule ]?.linkSlots || [] ).some( ( s ) => {
-			const calibrated = calSettings( s.block )?.[ s.setting ];
-			return cls.classify( kids[ 0 ], null ).candidates?.[ 0 ]?.block === s.block && [ calibrated?.slot, ...( calibrated?.slots || [] ) ].includes( s.slot );
-		} );
-		return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band, sizing };
+		return { all: framed || ( !! slot && ! host.node.draftSlots?.[ slot ] ), band, sizing: linkSizing( e, r, parentBlock, declared ) };
+	}
+	// The part of the one block a dissolved wrapper holds that reads the wrapper (rules.<rule>.linkSlots,
+	// lib/skeleton-wrapper-link-slot.mjs: a link round one logo is the logo's link part): { node: the block's element key, slot,
+	// looks: the looks the part reads (linkSlotLooks) }, or null. The block is classified as the build classifies it (under
+	// `parentBlock`), and a lone child the build dissolves too (a bare span round the logo) hands on its own lone child, since
+	// the logo's node is then built straight under the link. wrapperLinkSlot checks the prediction once the children are built.
+	function linkSizing( e, r, parentBlock, declared ) {
+		const entries = R[ r.rule ]?.linkSlots || [];
+		let kids = entries.length ? m.blockKids( e ) : [];
+		for ( let depth = 0; 1 === kids.length && depth < 4 && 'unwrap' === cls.classify( kids[ 0 ], parentBlock ).action; depth++ ) {
+			kids = m.blockKids( kids[ 0 ] );
+		}
+		const top = 1 === kids.length ? cls.classify( kids[ 0 ], parentBlock ) : null;		const s = top && ! top.action ? entries.find( ( x ) => top.candidates?.[ 0 ]?.block === x.block ) : null;
+		const settings = s ? calSettings( s.block ) || {} : {};
+		const calibrated = s ? settings[ s.setting ] : null;
+		if ( ! calibrated || ! [ calibrated.slot, ...( calibrated.slots || [] ) ].includes( s.slot ) ) {
+			return null;
+		}
+		const looks = linkSlotLooks( { slot: s.slot, settings, paint: ctx.calParts?.( s.block )?.elements ?? null, declared: { ...styleOf( e.attrs?.style ), ...declared }, widths: renderedWidths( e ) } );
+		return { node: kids[ 0 ].key, slot: s.slot, looks };
 	}
 	return { buildHeaderRows, buildFooterRows, hostSlot, bandWrapper, unwrapReads, absorbInto };
 }

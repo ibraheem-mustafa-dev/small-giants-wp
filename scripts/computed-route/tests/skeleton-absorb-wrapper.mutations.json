@@ -121,8 +121,8 @@
 	},
 	{
 		"file": "lib/skeleton-paint-conservation.mjs",
-		"find": ": 'absorbed' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] :",
-		"replace": ": 'absorbed' === rec.kind ? true :",
+		"find": ": 'absorbed' === rec.kind || 'link-slot' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] :",
+		"replace": ": 'absorbed' === rec.kind || 'link-slot' === rec.kind ? true :",
 		"why": "an absorbed record naming no node in the skeleton is taken as delivered"
 	},
 	{

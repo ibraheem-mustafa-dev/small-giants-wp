@@ -530,6 +530,18 @@ test( 'an inherited look is delivered where a node inside reads it, and a no-par
 	assert.deepEqual( [ conservationRows( t ).rows.find( ( r ) => 'Root/5#1' === r.key ).state, conservationRows( { ...t, calibration: textOnly } ).rows.find( ( r ) => 'Root/5#1' === r.key ).state ], [ 'recorded', 'unrecorded' ], 'not-calibrated holds only where the block has no calibration' );
 } );
 
+test( 'a link-slot record delivers its looks where the block it names holds the dissolved link at that part (MUST FAIL where the kind is unknown or never verified)', () => {
+	const LINK = '.sgs-responsive-logo__link';
+	const rec = [ { kind: 'link-slot', node: 'Root/3#0', slot: LINK, looks: [ 'width' ] } ];
+	const held = new Map( [ [ 'Root/3#0', node( 'sgs/responsive-logo', 'Root/3#0', { draftSlots: { [ LINK ]: { tpl: 'Root/2#0' } } } ) ] ] );
+	assert.deepEqual( checkRecords( rec, { looks: [ 'width', 'margin-auto' ], nodes: held } ), { delivered: [ 'width' ], listed: null, bad: [] } );
+	// Negative controls: the logo built without the part (the guard's prediction failed), no such node, and a record with no slot.
+	const bare = new Map( [ [ 'Root/3#0', node( 'sgs/responsive-logo', 'Root/3#0' ) ] ] );
+	assert.deepEqual( checkRecords( rec, { looks: [ 'width' ], nodes: bare } ).bad, [ 'link-slot Root/3#0  cannot be verified' ] );
+	assert.equal( checkRecords( rec, { looks: [ 'width' ], nodes: new Map() } ).delivered.length, 0 );
+	assert.deepEqual( checkRecords( [ { kind: 'link-slot', node: 'Root/3#0', looks: [ 'width' ] } ], { looks: [ 'width' ], nodes: held } ).bad, [ 'link-slot names no slot' ] );
+} );
+
 test( 'a per-site decision is listed apart, a row inside a removed element takes its remover\'s record, and a kind outside the list is refused', () => {
 	assert.deepEqual( [ ...RECORDED_CLASSES ].sort(), [ 'handover', 'no-part', 'not-calibrated', 'own-surface', 'site-decision' ] );
 	const rows = new Map( [ [ 'Root/1#0', row( 'Root/1#0', { action: 'remove', conserve: { kind: 'handover', delivers: 'the glare effect' } } ) ], [ 'Root/2#0', row( 'Root/2#0', { action: 'remove', reason: 'inside a removed element (Root/1#0)' } ) ] ] );

@@ -140,7 +140,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// The page map's role for the surface: a choice flow, a part another row's block draws, or a part another row holds
 	// (lib/skeleton-surface-role.mjs).
 	const role = surfaceRole( { pageMap, id: surfaceId ?? scope?.id ?? null, kind: surfaceKind, name: surfaceName, route: surfaceRoute, m, view, postType: facts.decisions.rules?.choiceFlow?.postType } );
-	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, products, role, pageMap, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ), splitMenu: splitMenuOf( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r ) => w.unwrapReads( e, r ), absorbInto: ( e, looks ) => w.absorbInto( e, looks ) } );
+	const cls = makeClassifier( { m, facts, overrides, surface: { slug: surface, kind: surfaceKind, name: surfaceName, commerce, products, role, pageMap, megaOpeners: megaOpenerMenus( draftLinks?.menuItems ), splitMenu: splitMenuOf( draftLinks?.menuItems ) }, motion, view, scope, formLinkOf, siteLink, blockOfKey: ( k ) => rowOf[ k ]?.block ?? null, unwrapReads: ( e, r, at ) => w.unwrapReads( e, r, at ), absorbInto: ( e, looks ) => w.absorbInto( e, looks ) } );
 	const R = facts.decisions.rules || {};
 	const rows = [];
 	const finder = ( e ) => m.tplFinder( e );
@@ -158,7 +158,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// innermost last) and `w`, which holds the writer's functions once each module has made them.
 	const w = {};
 	const ctx = {
-		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, draftLinks, surfaceKind, calSettings, db, rows, rowOf, w, siteLink,
+		m, facts, cls, R, view, overrides, base, finder, rootOf, inventory, carried, draftLinks, surfaceKind, calSettings, calParts, db, rows, rowOf, w, siteLink,
 		widthAlternatives: [], variantsOf: new Map(), railIds: null, carryProblems: [], slotProblems: [], wordProblems: [], nodeOfKey: {}, partPending: [], framePending: [], hosts: [], stripRoots: [],
 	};
 	const { widthAlternatives, carryProblems, slotProblems, wordProblems, nodeOfKey, partPending, framePending, hosts } = ctx;
@@ -188,7 +188,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			hostSlot( e, r );
 			bandWrapper( e );
 			const built = buildChildren( e, parentBlock );
-			const link = wrapperLinkSlot( { rule: R[ r.rule ], e, built, calSettings, finder } );
+			const link = wrapperLinkSlot( { rule: R[ r.rule ], e, built, calSettings, finder, expected: [].concat( r.conserve || [] ).filter( ( x ) => 'link-slot' === x?.kind ) } );
 			link.notes.length && row && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...link.notes ] );
 			return built;
 		}

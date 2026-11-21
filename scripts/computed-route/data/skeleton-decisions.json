@@ -365,7 +365,7 @@
 			"groupBlock": "sgs/container",
 			"groupMinLogos": 2,
 			"linkSlots": [ { "block": "sgs/responsive-logo", "setting": "width", "slot": ".sgs-responsive-logo__link" } ],
-			"linkSlotsReason": "the draft sizes a logo by the link round it (a declared width, a ceiling and centring on the link, the image 100% of it); the logo block draws its own link, so the dissolved link is read at the link part's calibrated slot of the width setting (lib/skeleton-wrapper-link-slot.mjs). A link round several logos, or a block the calibration has no such slot for, is read for none",
+			"linkSlotsReason": "the draft sizes a logo by the link round it (a declared width, a ceiling and centring on the link, the image 100% of it); the logo block draws its own link, so the dissolved link is read at the link part's calibrated slot of the width setting (lib/skeleton-wrapper-link-slot.mjs), which reads only the looks of the settings calibrated there (the width) and a look the part paints by default at the link's value (no underline). A ceiling or centring on the link is calibrated at the logo's root, not its link part, so such a link stays a node (Bean, 2026-11-21: a wrapper's CSS is never dropped). A link round several logos, or a block the calibration has no such slot for, is read for none",
 			"reason": "the link around a logo goes: the logo block links home itself. A link around two or more logos (a mark and a wordmark) is kept as a plain container holding them, so the pair stays one item of the row it sits in (a grid or flex row places one cell for it) and keeps the link's own gap and alignment"
 		},
 		"widthWrapper": {

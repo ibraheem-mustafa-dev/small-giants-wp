@@ -228,6 +228,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const numberOnly = ( e ) => /^\d+$/.test( m.words( e ).trim() );
 	const textLeaves = ( e ) => desc( e ).filter( ( k ) => m.words( k ) && ! m.blockKids( k ).length );
 	const logoish = ( k ) => k.tag.endsWith( '-logo' ) || facts.logoBlocks.includes( hooks.topBlock( k ) );
+	// The element a child stands for once the build dissolves it, and each lone child below it that it dissolves too (a div that
+	// only centres a logo inside a home link): the first element on the way down that stays, at most four levels.
+	const dissolvedTo = ( k, parentBlock ) => {
+		let x = k;
+		for ( let depth = 0; depth < 4 && 1 === m.blockKids( x ).length && 'unwrap' === ruleFor( x, parentBlock )?.action; depth++ ) {
+			x = m.blockKids( x )[ 0 ];
+		}
+		return x;
+	};
 	// An element the draft fills from one script value (`{{ arrowIcon }}`) that renders no words: the value is a glyph,
 	// injected unstamped, so the inventory holds no child for it.
 	const bindingGlyph = ( e ) => bare( e ) && /^<[^>]+>\s*\{\{\s*[\w.$]+\s*\}\}\s*<\/[a-z0-9-]+>$/i.test( e.snippet || '' ) && Object.values( e.box || {} ).some( ( b ) => b?.w > 0 );
@@ -633,8 +642,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e, kidsB } ) => ( ! m.words( e ) && kidsB.length >= ( R.logoGrid?.minItems ?? 3 ) && kidsB.every( imageLink ) && ! brandIconRun( kidsB ) ? v( 'logoGrid', { block: R.logoGrid?.block, absorb: true, firstItem: kidsB[ 0 ].key } ) : null ),
 		// The link around a logo goes: the logo block links home itself. Its children are one or more logos (a mark and a
 		// wordmark side by side); a link around several stays as the container holding them (R.homeLink.groupBlock), so the
-		// pair is one item of the row it sits in.
-		( { e, kidsB } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( logoish ) ? ( R.homeLink.groupBlock && kidsB.length >= ( R.homeLink.groupMinLogos ?? 2 ) ? v( 'homeLink', { block: R.homeLink.groupBlock } ) : v( 'homeLink', { action: 'unwrap' } ) ) : null ),
+		// pair is one item of the row it sits in. A child the build dissolves (a div that only centres the logo) stands for the
+		// lone child it holds (dissolvedTo).
+		( { e, kidsB, parentBlock } ) => ( 'a' === e.tag && specHit( R.homeLink, e.attrs?.href || '' ) && kidsB.length && kidsB.every( ( k ) => logoish( dissolvedTo( k, parentBlock ) ) ) ? ( R.homeLink.groupBlock && kidsB.length >= ( R.homeLink.groupMinLogos ?? 2 ) ? v( 'homeLink', { block: R.homeLink.groupBlock } ) : v( 'homeLink', { action: 'unwrap' } ) ) : null ),
 		// A centring width wrapper inside a block that sets its own width (a header or footer, their rows, a section).
 		// Directly under a section root it goes only when it lays nothing out itself: a centred grid or flex there is the
 		// row the root accepts.
@@ -1310,24 +1320,29 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 
 	// Paint conservation of an unwrap (Spec 48 section 3.4): a wrapper whose look (lib/skeleton-paint-conservation.mjs::paintsBox)
 	// reaches no reader once it is dissolved is not dissolved, and the next rule, or the scoring, makes it a node. Its readers:
-	// its destination (`hooks.unwrapReads( e, verdict )`: { all } when the element becomes the draft element of a calibrated
-	// slot of its host, { band } when a band finder reads its width cap, lib/fill-band.mjs; without the hook a declared
-	// `hostSetting` reads it all and a band reads its cap), a setting the verdict records (`conserve`), the host that lays its
-	// children out itself (`hostLays`), and the nodes inside it, which read an inherited look (centred text) from their own
-	// computed values. A kept unwrap's verdict records where each look it dissolves goes (`conserve`).
+	// its destination (`hooks.unwrapReads( e, verdict, { parentBlock, declared } )`: { all } when the element becomes the draft
+	// element of a calibrated slot of its host, { band } when a band finder reads its width cap, lib/fill-band.mjs, { sizing }
+	// when the one block inside draws it as a part that reads `sizing.looks` (a logo's link part, recorded as `link-slot`);
+	// without the hook a declared `hostSetting` reads it all and a band reads its cap), a setting the verdict records
+	// (`conserve`), the host that lays its children out itself (`hostLays`), and the nodes inside it, which read an inherited
+	// look (centred text) from their own computed values. A kept unwrap's verdict records where each look it dissolves goes
+	// (`conserve`).
 	const unwrapRead = ( x, out ) => {
 		const painted = Object.keys( paintsBox( x.e, { declared: x.st, parent: m.byKey[ x.e.parentKey ] ?? null, children: m.kids( x.e ).length, uaPadding: m.uaPadding } ) );
-		const dest = hooks.unwrapReads?.( x.e, out ) ?? { all: !! ( out.hostSetting ?? R[ out.rule ]?.hostSetting ), band: true };
+		const dest = hooks.unwrapReads?.( x.e, out, { parentBlock: x.parentBlock, declared: x.st } ) ?? { all: !! ( out.hostSetting ?? R[ out.rule ]?.hostSetting ), band: true };
 		const records = [ ...( out.conserve ?? [] ) ];
 		const setting = records.flatMap( ( r ) => ( 'setting' === r.kind ? r.looks : [] ) );
 		const inherited = x.kidsB.length ? painted.filter( ( l ) => INHERITED_LOOKS.includes( l ) ) : [];
 		const laid = out.hostLays && painted.includes( 'layout' ) ? [ 'layout' ] : [];
-		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! ( ( dest.band || dest.sizing ) && BAND_LOOKS.includes( l ) ) );
+		// The looks the link part of the block inside reads (dest.sizing.looks): only those, never every band look.
+		const linked = painted.filter( ( l ) => ( dest.sizing?.looks || [] ).includes( l ) && ! setting.includes( l ) );
+		const left = painted.filter( ( l ) => ! setting.includes( l ) && ! inherited.includes( l ) && ! laid.includes( l ) && ! ( dest.band && BAND_LOOKS.includes( l ) ) && ! linked.includes( l ) );
 		if ( ! painted.length || dest.all ) {
 			return { kept: true, left, conserve: out.conserve ?? [] };
 		}
 		inherited.length && records.push( { kind: 'inherited', looks: inherited } );
 		laid.length && records.push( { kind: 'host-layout', node: out.hostLays, looks: laid } );
+		linked.length && records.push( { kind: 'link-slot', node: dest.sizing.node, slot: dest.sizing.slot, looks: linked } );
 		return { kept: ! left.length, left, conserve: records };
 	};
 

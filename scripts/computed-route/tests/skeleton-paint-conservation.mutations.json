@@ -730,5 +730,23 @@
 		"find": "const decides = null === paddingBase ? new Map( resolvedWidths( element ).map( ( w ) => [ w, computedLooks( element.resolved[ w ], parent?.resolved?.[ w ] ) ] ) ) : computed;",
 		"replace": "const decides = null === paddingBase ? new Map() : computed;",
 		"why": "with no baseline a padding computing to zero on every side is no longer refuted"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": ": 'absorbed' === rec.kind || 'link-slot' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] :",
+		"replace": ": 'absorbed' === rec.kind ? !! node?.draftSlots?.[ rec.slot ] :",
+		"why": "a link-slot record is verified as a host-layout record, so a logo built without the part delivers nothing it should"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "\t'link-slot': { needs: [ 'node', 'slot', 'looks' ], delivers: true },\n",
+		"replace": "",
+		"why": "the link-slot kind is unknown"
+	},
+	{
+		"file": "lib/skeleton-paint-conservation.mjs",
+		"find": "'link-slot': { needs: [ 'node', 'slot', 'looks' ], delivers: true },",
+		"replace": "'link-slot': { needs: [ 'node', 'looks' ], delivers: true },",
+		"why": "a link-slot record naming no part passes"
 	}
 ]
