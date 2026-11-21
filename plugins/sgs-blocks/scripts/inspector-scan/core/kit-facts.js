@@ -24,16 +24,31 @@ const cache = new Map();
  * @param {string} blocksDir The `src/blocks` folder being scanned.
  * @return {Object} `{ '<block name>': { '<attribute>': [ 'L2', 'L4', ... ] } }`.
  */
+/** @return {string[]} The Python commands to try, in order: $PYTHON, then the names Windows, Linux and the launcher use. */
+function pythonCandidates() {
+	return [ ...new Set( [ process.env.PYTHON, 'python', 'python3', 'py' ].filter( Boolean ) ) ];
+}
+
 function kitFacts( blocksDir ) {
 	const key = path.resolve( blocksDir );
 	if ( ! cache.has( key ) ) {
 		const plugin = path.resolve( key, '..', '..' );
 		const args = plugin === PLUGIN_DIR ? [ SCRIPT ] : [ SCRIPT, plugin ];
-		const out = execFileSync( process.env.PYTHON || 'python', args, {
-			encoding: 'utf8',
-			maxBuffer: 64 * 1024 * 1024,
-			stdio: [ 'ignore', 'pipe', 'pipe' ],
-		} );
+		let out = null;
+		for ( const python of pythonCandidates() ) {
+			try {
+				out = execFileSync( python, args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
+				break;
+			} catch ( e ) {
+				if ( 'ENOENT' === e.code ) {
+					continue; // no such command on this machine: the next name
+				}
+				throw new Error( `kit_wiring.py failed under ${ python }: ${ String( e.stderr || e.message ).trim().slice( -400 ) }` );
+			}
+		}
+		if ( null === out ) {
+			throw new Error( `kit_wiring.py needs Python: none of ${ pythonCandidates().join( ', ' ) } is on the PATH (set PYTHON)` );
+		}
 		cache.set( key, JSON.parse( out ) );
 	}
 	return cache.get( key );
@@ -54,4 +69,4 @@ function kitRenders( blocksDir, blockName, attr ) {
 	return kitLinks( blocksDir, blockName, attr ).includes( 'L4' );
 }
 
-module.exports = { kitFacts, kitControls, kitRenders };
+module.exports = { kitFacts, kitControls, kitRenders, pythonCandidates };
