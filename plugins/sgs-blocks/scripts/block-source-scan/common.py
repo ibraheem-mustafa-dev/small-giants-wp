@@ -122,5 +122,8 @@ def css_vocab() -> frozenset:
 
 
 def rel(path: Path) -> str:
-    """A path relative to the plugin root, with forward slashes."""
-    return path.relative_to(PLUGIN).as_posix()
+    """A path relative to the plugin root, with forward slashes (absolute when outside it)."""
+    try:
+        return path.relative_to(PLUGIN).as_posix()
+    except ValueError:
+        return path.as_posix()

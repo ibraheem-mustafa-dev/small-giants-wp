@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from common import NON_CLASS_TOKENS, PLUGIN, TOKEN_RE, function_index, owner_of, part_of, rel, strip_php_comments
+from common import NON_CLASS_TOKENS, PLUGIN, TOKEN_RE, function_index, owner_of, part_of, psi, rel, strip_php_comments
 from css_read import parse_css, split_top, subject_of
 from js_lex import js_segments, strip_js_comments
 from php_lex import code_mask, context_at, frames_of, php_segments
@@ -145,7 +145,14 @@ class PartsReader:
                     fn = cands[0]
                 elif cands:
                     self.flag('unresolved-method', label, f'{name}(): instance method on an object whose class the source does not show; {len(cands)} candidates', key=name)
-            if fn is None or fn.name in seen:
+            if fn is None:
+                continue
+            am = re.match(r'[^(]*\(', src[pos:])
+            if am:
+                close = psi.matching_close(src, pos + am.end() - 1, '(', ')')
+                if close > 0:
+                    self.call_sites[fn.name].append((psi.split_top_level_args(src[pos + am.end():close]), label, pos))
+            if fn.name in seen:
                 continue
             body = fn.body
             if not re.search(r'<[a-z]|class|sgs-|\{', body):

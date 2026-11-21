@@ -18,9 +18,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import BLOCKS  # noqa: E402
 from parts import PartsReader  # noqa: E402
 from settings import SettingsReader  # noqa: E402
+from rules import RulesReader  # noqa: E402
 
 
-class Scan(PartsReader, SettingsReader):
+class Scan(PartsReader, SettingsReader, RulesReader):
     def __init__(self, folder: str, blocks_dir: Path = BLOCKS):
         self.folder = folder
         self.dir = blocks_dir / folder
@@ -44,6 +45,10 @@ class Scan(PartsReader, SettingsReader):
         self.css_parts = defaultdict(list)
         self.declared_parts = {}
         self.js_files = []
+        self.call_sites = defaultdict(list)  # function -> [(argument texts, caller label, position)]
+        self.envs = {}
+        self.hints = defaultdict(list)
+        self.conflicts = []
 
     def run(self):
         self.declared()
@@ -53,6 +58,7 @@ class Scan(PartsReader, SettingsReader):
         self.finish_parts()
         self.settings_declared()
         self.settings_traced()
+        self.apply_precedence()
         return self
 
     def to_json(self) -> dict:
@@ -62,6 +68,8 @@ class Scan(PartsReader, SettingsReader):
             'parts': parts,
             'tags': sorted(self.tags),
             'settings': {a: v for a, v in sorted(self.settings.items())},
+            'hints': {a: v for a, v in sorted(self.hints.items())},
+            'conflicts': self.conflicts,
             'selectorRefs': {k: sorted(v) for k, v in sorted(self.selector_refs.items())},
             'unread': self.flags,
             'followed': self.followed,

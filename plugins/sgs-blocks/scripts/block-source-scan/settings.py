@@ -89,30 +89,6 @@ class SettingsReader:
                     if isinstance(a, str) and k.startswith('css:'):
                         self.place(a, d['token'], [k[4:]], 'declared-attrMap', state=st, declaredSelector=d['hasSelector'], element=key)
 
-    def selector_part(self, text: str, vmap_sel: dict):
-        """The part a PHP selector expression names: its last literal class token, else a
-        selector variable's token, else the block root when the text names a root-like variable."""
-        toks = [t for t, _ in TOKEN_RE.findall(text) if t not in ('sgs-blocks', 'sgs-theme')]
-        cand = None
-        for v in re.findall(r'\$(\w+)', text):
-            if v in vmap_sel:
-                cand = vmap_sel[v]
-        if toks:
-            return list(TOKEN_RE.finditer(text))[-1].group(1)
-        if cand:
-            return cand
-        if re.search(r'root|uid|wrapper|scope|\$sel\b|\$selector|block_sel', text):
-            return f'sgs-{self.short}'
-        return None
-
-    def selector_parts(self, text: str, vmap_sel: dict):
-        out = []
-        for piece in split_top(text):
-            p = self.selector_part(piece, vmap_sel)
-            if p and p not in out:
-                out.append(p)
-        return out or [None]
-
     def settings_media_elements(self):
         for me in self.bj.get('supports', {}).get('sgs', {}).get('mediaElements') or []:
             if not isinstance(me, dict) or not me.get('prefix'):
@@ -130,17 +106,12 @@ class SettingsReader:
     def settings_traced(self):
         self.settings_media_elements()
         for label, src, mask, frames, vmap in self.php_texts:
-            vmap_sel = {}
-            for m in re.finditer(r'\$(\w+)\s*=\s*([^;]+);', src):
-                toks = TOKEN_RE.findall(m.group(2))
-                if toks:
-                    vmap_sel[m.group(1)] = toks[-1][0]
             for st_m in re.finditer(r'[^;]+;', mask):
                 stmt = src[st_m.start():st_m.end()]
                 tiers = tiers_of(stmt)
-                self._prefix_helper_calls(stmt, label, vmap_sel, tiers)
-                self._map_helper_calls(stmt, label, vmap_sel, tiers)
-                self._php_css(stmt, label, vmap, vmap_sel, tiers)
+                self._prefix_helper_calls(stmt, st_m.start(), label, tiers)
+                self._map_helper_calls(stmt, st_m.start(), label, tiers)
+            self.rules_in(label, src, mask, tiers_of)
         vocab = css_vocab()
         for label, src, mask, frames, vmap in self.php_texts:
             for a, prop, sel in pp.paint_table_props(src, vocab):
@@ -152,7 +123,7 @@ class SettingsReader:
             for a in rec['conditionAttrs']:
                 self.place(a, tok, [], 'presence-condition', None, None, rec['where'][0] if rec['where'] else None)
 
-    def _prefix_helper_calls(self, stmt, label, vmap_sel, tiers):
+    def _prefix_helper_calls(self, stmt, at, label, tiers):
         helpers = contracts()['prefix_helpers']
         for hm in re.finditer(r'\b(\w+)\s*\(', stmt):
             h = helpers.get(hm.group(1))
@@ -168,7 +139,7 @@ class SettingsReader:
                 continue
             prefix = pm.group(1)
             sel_txt = args[h.selector_index] if h.selector_index is not None and h.selector_index < len(args) else None
-            part = self.selector_part(sel_txt, vmap_sel) if sel_txt is not None else None
+            targets = self.resolve_selector(label, at + hm.start(), sel_txt) if sel_txt is not None else [(None, None, 'the helper takes no selector', None)]
             for a in self.attr_names:
                 if not a.startswith(prefix) or (prefix and len(a) == len(prefix)):
                     continue
@@ -180,9 +151,10 @@ class SettingsReader:
                 props = h.suffix_props.get(suffix)
                 if props:
                     state = h.suffix_states.get(suffix) or ('hover' if 'Hover' in suffix else None)
-                    self.place(a, part, props, f'helper:{hm.group(1)}', state, tiers, label, selector=sel_txt)
+                    for part, sel_state, reason, shown in targets:
+                        self.place(a, part, props, f'helper:{hm.group(1)}', sel_state or state, tiers, label, selector=shown, unknown=reason or None)
 
-    def _map_helper_calls(self, stmt, label, vmap_sel, tiers):
+    def _map_helper_calls(self, stmt, at, label, tiers):
         helpers = contracts()['prefix_helpers']
         index = function_index()[0]
         for hm in re.finditer(r'\b(\w+)\s*\(', stmt):
@@ -198,7 +170,9 @@ class SettingsReader:
                 continue
             args = psi.split_top_level_args(argtxt)
             sel_arg = next((x for x in args if TOKEN_RE.search(x) or re.search(r'\$\w*(sel|selector|scope|root)\w*', x)), None)
-            parts = self.selector_parts(sel_arg, vmap_sel) if sel_arg else [None]
+            if sel_arg is None:
+                continue  # declarations returned to the caller: rules_in places them where they are printed
+            targets = self.resolve_selector(label, at + hm.start(), sel_arg)
             props = helper_props(fname)
             if not props:
                 self.flag('helper-contract-unread', label, f'{fname}() receives settings by name but writes no CSS property the scan can read', key=f'{fname}')
@@ -206,34 +180,8 @@ class SettingsReader:
             for key, a in named:
                 pp_ = ['background-image'] if 'Gradient' in a or 'gradient' in (key or '') else sorted(x for x in props if x != 'background-image') or sorted(props)
                 st = 'hover' if 'hover' in (key or '').lower() or a.endswith('Hover') else ('current' if 'current' in (key or '') else None)
-                for part in parts:
-                    self.place(a, part, pp_, f'map-helper:{fname}', st, tiers, label, selector=sel_arg)
-
-    def _php_css(self, stmt, label, vmap, vmap_sel, tiers):
-        vocab = css_vocab()
-        for dm in CSS_DECL_RE.finditer(stmt):
-            prop = dm.group(1)
-            if prop in ('http', 'https', 'data', 'mailto', 'tel') or (prop.endswith('-') and not prop.startswith('--')):
-                continue
-            if not (prop.startswith('--') or prop in vocab):
-                continue
-            seg = stmt[dm.end():]
-            seg = seg[:re.search(r';|\}|$', seg).start() + 1] if re.search(r';|\}', seg) else seg[:120]
-            found = attrs_in(seg[:200], vmap, self.attr_names)
-            if not found:
-                continue
-            if prop.startswith('--'):
-                for a in found:
-                    self.custom_props[prop].add(a)
-                continue
-            before = stmt[:dm.start()]
-            brace = before.rfind('{')
-            sel_txt = before[max(before.rfind('}', 0, brace) if brace >= 0 else 0, 0):brace] if brace >= 0 else ''
-            part = self.selector_part(sel_txt, vmap_sel) if sel_txt else None
-            state_m = STATE_RE.search(sel_txt or '')
-            for a in found:
-                st = state_m.group(0) if state_m else ('hover' if 'Hover' in a else None)
-                self.place(a, part, [prop], 'php-css', st, tiers, label, selector=sel_txt or None)
+                for part, sel_state, reason, shown in targets:
+                    self.place(a, part, pp_, f'map-helper:{fname}', sel_state or st, tiers, label, selector=shown, unknown=reason or None)
 
     # ------------------------------------------------------------ stylesheet-keyed
     def _custom_properties(self):
