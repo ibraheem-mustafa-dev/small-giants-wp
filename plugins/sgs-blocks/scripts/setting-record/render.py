@@ -22,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 DEFAULT_PLUGIN = HERE.parents[1]
 CACHE_ROOT = Path(os.environ.get('SGS_SETTING_RECORD_CACHE') or HERE / '.cache')
 WORKERS = int(os.environ.get('SGS_SETTING_RECORD_WORKERS') or max(2, os.cpu_count() or 8))
+TIMEOUT = int(os.environ.get('SGS_SETTING_RECORD_TIMEOUT') or 120)  # seconds one render may take
 
 # Stand-ins for the ids and urls a fixture names (an image, a menu post, its first item, a drawer).
 PLACEHOLDERS = {'{{image}}': 9001, '{{image.url}}': 'https://example.test/wp-content/uploads/calibration.jpg',
@@ -140,16 +141,19 @@ class Renderer:
             ifile.write_text(json.dumps(inner), encoding='utf-8')
             cmd += ['--inner-blocks-file', str(ifile)]
         t0 = time.time()
-        p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=str(self.plugin))
         try:
-            res = json.loads(p.stdout[p.stdout.find('{'):]) if '{' in p.stdout else {'ok': False, 'error': p.stderr[-800:] or p.stdout[-800:]}
-        except json.JSONDecodeError:
-            res = {'ok': False, 'error': 'bad json: ' + p.stdout[:300] + p.stderr[-500:]}
+            p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=str(self.plugin), timeout=TIMEOUT)
+        except subprocess.TimeoutExpired:
+            return {'ok': False, 'error': f'the render did not finish in {TIMEOUT} s', 'secs': round(time.time() - t0, 3), 'notices': []}
+        res = last_json(p.stdout)
+        if res is None:
+            res = {'ok': False, 'error': 'no JSON result: ' + (p.stderr[-500:] or p.stdout[-500:])}
         res['secs'] = round(time.time() - t0, 3)
         res['notices'] = [ln for ln in (p.stderr or '').splitlines() if 'Warning' in ln or 'Fatal' in ln or 'Deprecated' in ln][:8]
         if res.get('ok') and self.post:
             res['html'] = apply_post(res.get('html', ''), self.post)
-        cf.write_text(json.dumps(res), encoding='utf-8')
+        if res.get('ok'):
+            cf.write_text(json.dumps(res), encoding='utf-8')  # a failed render is retried next run, never cached
         return res
 
     def render_inner(self, rows):
@@ -174,6 +178,23 @@ class Renderer:
         """{job key: attrs} rendered in parallel; returns {job key: result}."""
         with ThreadPoolExecutor(WORKERS) as ex:
             return dict(zip(jobs, ex.map(lambda a: self.render(slug, a, content, inner), jobs.values())))
+
+
+def last_json(text: str):
+    """The last JSON object printed on stdout (the runner prints one; a PHP notice or a stray brace may come before
+    it), or None."""
+    dec = json.JSONDecoder()
+    tail = text.rstrip()
+    line_starts = [m.start() for m in re.finditer(r'(?m)^\{', tail)]
+    every = [i for i in range(len(tail)) if tail[i] == '{']
+    for i in [*reversed(line_starts), *reversed(every)]:  # an object on its own line first, then any brace
+        try:
+            obj, end = dec.raw_decode(tail, i)
+            if end == len(tail) and isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            pass
+    return None
 
 
 def apply_post(html: str, steps: list) -> str:

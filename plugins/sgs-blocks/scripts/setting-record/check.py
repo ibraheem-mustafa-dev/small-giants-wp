@@ -233,7 +233,7 @@ def check_block(args, block: str) -> int:
         errs = schema_errors(doc, need_kind=not args.no_proof)
         report.update(recordEntries=len(doc['entries']), confirmed=res['confirmed'], add=res['add'], remove=res['remove'], change=res['change'],
                       skippedRunnerCannotSee=[{k: e[k] for k in ('setting', 'part', 'props', 'runner')} for e in res['skipped']], schemaErrors=errs)
-        bad = bool(res['add'] or res['remove'] or res['change'] or parts.get('orderChanged') or errs)
+        bad = bad or bool(res['add'] or res['remove'] or res['change'] or parts.get('orderChanged') or errs)
         # A part block.json declares but nothing prints, or one printed but never declared, is a fault in the block, not
         # in its record: reported always, failing only with --strict-parts (until every block's declarations are whole).
         bad = bad or (args.strict_parts and bool(parts['declaredNotPrinted'] or parts['printedNotDeclared']))
@@ -273,6 +273,8 @@ def main(argv=None):
         ap.error('name a block, or --self-test')
     if len(args.blocks) == 1:
         return check_block(args, args.blocks[0])
+    if args.record or args.write:
+        ap.error('--record and --write name one block file; with several blocks use --record-dir and --write-dir')
     # several blocks: one process each, at once
     base = [a for a in (argv if argv is not None else sys.argv[1:]) if a not in args.blocks]
     import os

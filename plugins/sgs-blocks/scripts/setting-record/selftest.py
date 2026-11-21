@@ -30,6 +30,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import render as RN  # noqa: E402
+sys.path.insert(0, str(HERE.parent / 'lib'))
+import block_source_files as BSF  # noqa: E402
 
 BLOCK = 'sgs/button'
 SHORT = 'button'
@@ -122,7 +124,7 @@ def top_rules(css: str) -> list:
 def written_vars(plugin: Path) -> set:
     """Custom properties the block's PHP names (render.php and the shared helpers): a setting writes these."""
     names = set()
-    files = [plugin / 'src' / 'blocks' / SHORT / 'render.php', *sorted((plugin / 'includes').rglob('*.php'))]
+    files = [*BSF.render_files(plugin / 'src' / 'blocks' / SHORT), *sorted((plugin / 'includes').rglob('*.php'))]
     for f in files:
         if f.is_file():
             names.update(re.findall(r'(--[a-z][a-z0-9-]*)', f.read_text(encoding='utf-8', errors='ignore')))
@@ -231,7 +233,7 @@ def pick_add_declaration(css: str, record: dict, plugin: Path) -> dict:
 
 def pick_drop_part_class(plugin: Path, record: dict) -> dict:
     """A printed part's class taken out of the PHP that prints it: the first record part with exactly one `class="…part…"` in the
-    block's render.php or the plugin's includes/."""
+    block's render.php (with the partials it requires) or the plugin's includes/."""
     files = [plugin / 'src' / 'blocks' / SHORT / 'render.php', *sorted((plugin / 'includes').rglob('*.php'))]
     texts = {f: f.read_text(encoding='utf-8') for f in files if f.is_file()}
     for part in record['parts']:
@@ -364,6 +366,9 @@ def main(args) -> int:
     clean = root / 'clean' / 'plugins' / 'sgs-blocks'
     copy_code(plugin, clean)
     record_file = out / 'self-test.clean-record.json'
+    clean_rep = out / 'clean-check' / f'{SHORT}.check.json'
+    for stale in (record_file, clean_rep):
+        stale.unlink(missing_ok=True)  # a file left by an earlier run must never be judged as this run's
     env = dict(os.environ)
     w = run_one(check_cmd(args, clean, out / 'clean-write', '--write', str(record_file)), env)
     if not record_file.is_file():
@@ -408,9 +413,11 @@ def main(args) -> int:
     def run_fault(f: dict) -> dict:
         fenv = dict(os.environ, SGS_SETTING_RECORD_WORKERS=workers, SGS_SETTING_RECORD_CACHE=str(root / f['fault'] / 'cache'))
         fout = out / 'self-test' / f['fault']
-        r = run_one(check_cmd(args, f['plugin'], fout, '--record', str(record_file)), fenv)
         rep_file = fout / f'{SHORT}.check.json'
-        if not rep_file.is_file():
+        rep_file.unlink(missing_ok=True)
+        started = time.time()
+        r = run_one(check_cmd(args, f['plugin'], fout, '--record', str(record_file)), fenv)
+        if not rep_file.is_file() or rep_file.stat().st_mtime < started - 1:
             return {'fault': f['fault'], 'planted': f"{f['file']}:{f['line']} {f['what']}", 'expected': expected_text(f), 'killed': False,
                     'exit': r['exit'], 'got': {'error': 'no report: ' + (r['stderr'] or r['stdout'])[-400:]}, 'seconds': r['seconds']}
         rep = json.loads(rep_file.read_text(encoding='utf-8'))

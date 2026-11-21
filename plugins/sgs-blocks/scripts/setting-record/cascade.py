@@ -26,8 +26,13 @@ if str(SCAN) not in sys.path:
     sys.path.insert(0, str(SCAN))
 import reference as R  # noqa: E402  (norm_state, STATE_WORDS, ROOT)
 
-DYNAMIC = r'hover|focus-visible|focus-within|focus|active|visited|target|popover-open|open|modal|fullscreen|user-invalid|user-valid|autofill|-webkit-autofill|placeholder-shown|host|checked|indeterminate|playing|paused|state\([^)]*\)'
-PSEUDO_EL = re.compile(r'::?(before|after|first-letter|first-line|marker|placeholder|selection|backdrop|file-selector-button|-webkit-[a-z-]+|-moz-[a-z-]+)\b(\([^)]*\))?')
+DYNAMIC = r'hover|focus-visible|focus-within|focus|active|visited|target|popover-open|open|modal|fullscreen|user-invalid|user-valid|autofill|-webkit-autofill|host|playing|paused|state\([^)]*\)'
+# Pseudo-classes the rendered markup decides (an input's checked or placeholder attribute): left to soupsieve unless held.
+MARKUP_STATES = r'checked|indeterminate|placeholder-shown'
+# A pseudo-element: `::name`, or one of the four legacy names written with one colon. A pseudo-class that starts with
+# the same letters (`:placeholder-shown`, `:-webkit-autofill`) is not one.
+PSEUDO_EL = re.compile(r'(?:::|(?<!:):(?=(?:before|after|first-letter|first-line)(?![\w-])))'
+                       r'(before|after|first-letter|first-line|marker|placeholder|selection|backdrop|file-selector-button|-webkit-[a-z-]+|-moz-[a-z-]+)(?![\w-])(\([^)]*\))?')
 NEVER = ':is(.sgs-trial-never)'
 ALWAYS = ':is(*)'
 
@@ -148,7 +153,24 @@ CONDITIONS = {
     'prefers-color-scheme-dark': re.compile(r'prefers-color-scheme:\s*dark'),
     'prefers-contrast': re.compile(r'prefers-contrast'),
 }
-_PLAIN_CONDITION = re.compile(r'prefers-reduced-motion:\s*reduce|forced-colors:\s*active|prefers-color-scheme:\s*dark|prefers-contrast|\(hover:\s*none\)|pointer:\s*coarse|inverted-colors')
+# Media features and when each holds: (pattern, the condition it tests, whether it holds when that condition is set).
+# A plain screen at rest has none of the conditions, so `forced-colors: none` holds there and `forced-colors: active` fails.
+_FEATURES = (
+    (re.compile(r'forced-colors:\s*active'), 'forced-colors', True),
+    (re.compile(r'forced-colors:\s*none'), 'forced-colors', False),
+    (re.compile(r'prefers-reduced-motion:\s*reduce'), 'prefers-reduced-motion-reduce', True),
+    (re.compile(r'prefers-reduced-motion:\s*no-preference'), 'prefers-reduced-motion-reduce', False),
+    (re.compile(r'\(\s*prefers-reduced-motion\s*\)'), 'prefers-reduced-motion-reduce', True),
+    (re.compile(r'\((?:any-)?hover:\s*none\)'), 'hover-none', True),
+    (re.compile(r'\((?:any-)?hover:\s*hover\)'), 'hover-none', False),
+    (re.compile(r'pointer:\s*coarse'), 'pointer-coarse', True),
+    (re.compile(r'pointer:\s*fine'), 'pointer-coarse', False),
+    (re.compile(r'prefers-color-scheme:\s*dark'), 'prefers-color-scheme-dark', True),
+    (re.compile(r'prefers-color-scheme:\s*light'), 'prefers-color-scheme-dark', False),
+    (re.compile(r'prefers-contrast:\s*(?:more|less|custom)|\(\s*prefers-contrast\s*\)'), 'prefers-contrast', True),
+    (re.compile(r'prefers-contrast:\s*no-preference'), 'prefers-contrast', False),
+)
+_NEVER_FEATURE = re.compile(r'inverted-colors:\s*inverted|scripting:\s*none')
 
 
 def _width_ok(c: str, width: int) -> bool:
@@ -162,37 +184,46 @@ def _width_ok(c: str, width: int) -> bool:
     return ok
 
 
+def _query_holds(q: str, width: int, conditions: frozenset) -> bool:
+    """One media query of a comma list. `not` negates the whole query; the media type is screen unless `print` is in
+    `conditions` (`all` always matches, other types never do); each feature holds as _FEATURES says; widths are
+    checked against `width`."""
+    q = q.strip().lower()
+    if q.startswith('only '):
+        q = q[5:].strip()
+    neg = q.startswith('not ')
+    if neg:
+        q = q[4:].strip()
+    ok = True
+    m = re.match(r'([a-z-]+)\b', q)
+    if m:
+        kind = m.group(1)
+        if kind == 'print':
+            ok = 'print' in conditions
+        elif kind == 'screen':
+            ok = 'print' not in conditions
+        elif kind != 'all':
+            ok = False
+    for rx, name, holds_when_set in _FEATURES:
+        if rx.search(q):
+            ok = ok and ((name in conditions) == holds_when_set)
+    if _NEVER_FEATURE.search(q):
+        ok = False
+    ok = ok and _width_ok(q, width)
+    return not ok if neg else ok
+
+
 def media_holds(conds: tuple, width: int, conditions=frozenset()) -> bool:
-    """Whether every media prelude holds on a screen `width` px wide. A container query never holds. With no
-    `conditions` a print query and every condition query (forced colours, reduced motion, dark scheme, contrast,
-    no hover, coarse pointer) fails, and so does a `not` of one of them. A name in `conditions` makes the query that
-    requires it hold and the `not` of it fail; `print` also makes a screen-only query fail."""
+    """Whether every media prelude holds on a page `width` px wide. A container query never holds. A prelude is a
+    comma list of queries and holds when any one of them does; `not` negates its own query only. With no `conditions`
+    the page is a plain screen at rest (no forced colours, motion allowed, a hovering fine pointer, light scheme); a
+    name in `conditions` (a key of CONDITIONS) makes that condition true, and `print` makes the page print, not screen."""
     conditions = frozenset(conditions)
     for c in conds:
-        c = c.lower()
-        if c.startswith('container'):
+        c = c.strip()
+        if c.lower().startswith('container'):
             return False
-        named = {n for n, rx in CONDITIONS.items() if rx.search(c)}
-        if named & conditions:
-            neg = c.startswith('not ')
-            ok = named <= conditions and _width_ok(c, width)
-            if neg:
-                ok = not ok
-            if not ok:
-                return False
-            continue
-        if 'print' in conditions and re.search(r'\bscreen\b', c) and not c.startswith('not '):
-            return False
-        if 'print' in c and 'screen' not in c:
-            return False
-        if _PLAIN_CONDITION.search(c):
-            if not c.startswith('not '):
-                return False
-        neg = c.startswith('not ')
-        ok = _width_ok(c, width)
-        if neg:
-            ok = not ok
-        if not ok:
+        if not any(_query_holds(q, width, conditions) for q in split_list(c)):
             return False
     return True
 
@@ -270,6 +301,7 @@ def _close(s, i):
 
 _DYNAMIC_RE = re.compile(r':(' + DYNAMIC + r')(?![\w-])')
 _DISABLED_RE = re.compile(r':disabled(?![\w-])')
+_MARKUP_RE = re.compile(r':(' + MARKUP_STATES + r')(?![\w-])')
 _ARIA_RE = re.compile(r'''\[\s*aria-(current|expanded|selected|checked|disabled|pressed)\s*(?:[~|^$*]?=\s*(?:"([^"]*)"|'([^']*)'|([^\]\s]+))\s*[is]?\s*)?\]''')
 _IS_CLASS_RE = re.compile(r'\.is-([a-z][a-z0-9-]*)(?![\w-])')
 _OPEN_ATTR_RE = re.compile(r'''\[\s*open\s*(?:=\s*(?:""|''))?\s*\]''')
@@ -285,7 +317,8 @@ def _state_of(word: str) -> str | None:
 def resting(sel: str, held=()) -> str:
     """The selector as it matches a page at rest, with the states in `held` switched on. A selector token that tests a
     held state becomes :is(*) (always true, so :not(:hover) becomes false when hover is held). A dynamic pseudo-class
-    that is not held never matches. A markup token that is not held (an attribute, an .is- class, a BEM modifier) is
+    that is not held never matches. A markup token that is not held (an attribute, an .is- class, a BEM modifier,
+    :disabled, :checked, :indeterminate, :placeholder-shown) is
     left to match the markup as rendered; aria-*="false" is never replaced, because it describes the markup as it is."""
     held = frozenset(held)
     sel = re.sub(r':dir\(\s*ltr\s*\)', '', sel)
@@ -294,6 +327,7 @@ def resting(sel: str, held=()) -> str:
     sel = re.sub(r':defined\b', '', sel)
     if held:
         sel = _DISABLED_RE.sub(lambda m: ALWAYS if 'disabled' in held else m.group(0), sel)
+        sel = _MARKUP_RE.sub(lambda m: ALWAYS if (m.group(1) in held or _state_of(m.group(1)) in held) else m.group(0), sel)
 
         def aria(m):
             value = next((g for g in m.group(2, 3, 4) if g is not None), None)

@@ -29,10 +29,12 @@ import cascade as C  # noqa: E402
 import computed as CP  # noqa: E402
 import diff as D  # noqa: E402
 import reference as R  # noqa: E402
+sys.path.insert(0, str(HERE.parent / 'lib'))
+import block_source_files as BSF  # noqa: E402
 import soupsieve as sv  # noqa: E402
 
-WIDTHS = (375, 768, 1440)
-TIER_WIDTH = {'desktop': 1440, 'tablet': 768, 'mobile': 375}
+WIDTHS = R.WIDTHS  # the reference's breakpoint widths (block-source-scan/reference.py)
+TIER_WIDTH = dict(zip(('mobile', 'tablet', 'desktop'), sorted(R.WIDTHS)))
 HOLDABLE = {name for name, _ in R.STATE_WORDS}
 
 
@@ -139,7 +141,20 @@ def outside_vars(page, el, pse, names, width, conds, known) -> set:
 
 
 def conditions_of(tiers) -> set:
-    return {name for name, rx in C.CONDITIONS.items() if any(rx.search(t) for t in tiers)}
+    """The conditions to set so each tier holds: for each tier, those named by its first query that names one and is
+    not negated (`not print` needs no condition; `(forced-colors: active), print` needs forced colours only)."""
+    out = set()
+    for t in tiers:
+        body = re.sub(r'^@\w+\s*', '', t.strip())
+        for q in C.split_list(body):
+            q = q.strip().lower()
+            if q.startswith('not '):
+                continue
+            named = {name for name, rx in C.CONDITIONS.items() if rx.search(q)}
+            if named:
+                out |= named
+                break
+    return out
 
 
 def prove(short: str, run: dict):
@@ -194,6 +209,10 @@ def prove(short: str, run: dict):
             if verdict is None:
                 if not seen_part:
                     verdict, evidence = 'blind', f'the part is not in the server render ({printed_where(run["plugin"], short, part)})'
+                elif not matched and unnamed_states(run['selectors'].get(k, ())):
+                    # the rule waits on a state the markup at rest does not have (a filled field) and the record cannot name
+                    unnamed = unnamed_states(run['selectors'].get(k, ()))
+                    verdict, evidence = 'blind', f'the rule holds in a state the record cannot name ({", ".join(unnamed)}), which the proof cannot hold'
                 elif not matched:
                     # the entry's own rule matches no element of the part here: a fixture without that markup, not a wrong entry
                     sels = run['selectors'].get(k, ())
@@ -419,9 +438,11 @@ def printed_where(plugin: Path, short: str, part: str) -> str:
         return 'the block root'
     pat = re.compile(r'(?<![.\w-])' + re.escape(base) + r'(?![\w-])')
     bdir = plugin / 'src' / 'blocks' / short
-    php = list(bdir.glob('*.php')) + list((plugin / 'includes').rglob('*.php'))
+    php = BSF.block_php_files(bdir) + list((plugin / 'includes').rglob('*.php'))
     if any(pat.search(f.read_text(encoding='utf-8', errors='ignore')) for f in php):
         return f'{base} is printed by PHP only under settings or content the fixture leaves off, or at wp_footer'
+    # Every front-end script file, not block_source_files.view_files: that follows static imports only, and a block's
+    # panel code often loads by dynamic import (sgs/cart's view.js imports ./panel-render on first open).
     js = [f for f in bdir.rglob('*.js') if f.name not in ('edit.js', 'index.js', 'save.js') and not f.name[0].isupper()]
     js += list((plugin / 'src' / 'shared').rglob('*.js'))
     if any(pat.search(f.read_text(encoding='utf-8', errors='ignore')) for f in js):

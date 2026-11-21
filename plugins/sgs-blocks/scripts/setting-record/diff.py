@@ -31,7 +31,8 @@ EXCLUDED_SHEET = re.compile(r'editor|admin|inspector')
 def read_css(text: str, media: str = '', out: list | None = None, parent: str | None = None) -> list:
     """Every (selector list, declarations, at-rule) in a stylesheet. Nested rules are unrolled at any depth: a nested
     selector joins its parent (`&` replaced, else a descendant), and an at-rule nested inside a rule keeps its condition
-    for the declarations inside it. The innermost at-rule names the condition. For flat CSS and one level of selector
+    for the declarations inside it. Each at-rule a rule sits in is a condition (joined by TIER_SEP, outermost first);
+    @keyframes, @font-face and the other at-rules that hold no element's style are skipped. For flat CSS and one level of selector
     nesting the output equals block-source-scan/css_read.py::parse_css."""
     out = [] if out is None else out
     text = re.sub(r'/\*.*?\*/', ' ', text, flags=re.S)
@@ -52,13 +53,17 @@ def read_css(text: str, media: str = '', out: list | None = None, parent: str | 
             j += 1
         body = text[b + 1:j - 1]
         if header.startswith('@'):
+            if NON_STYLE_AT.match(header):
+                i = j
+                continue
+            cond = f'{media}{TIER_SEP}{header}' if media else header
             if parent is None:
-                read_css(body, header, out)
+                read_css(body, cond, out)
             else:
                 own = _own_decls(body)
                 if own.strip():
-                    out.append((parent, own, header))
-                read_css(body, header, out, parent)
+                    out.append((parent, own, cond))
+                read_css(body, cond, out, parent)
         elif header:
             full = header if parent is None else _join(parent, header)
             if '{' in body:
@@ -88,8 +93,26 @@ def _own_decls(body: str) -> str:
 
 
 def _join(parent: str, sel: str) -> str:
-    sel = sel.strip()
-    return sel.replace('&', parent) if '&' in sel else f'{parent} {sel}'
+    """A nested selector list joined to its parent's list: every pair, `&` replaced by the parent, else a descendant."""
+    out = []
+    for p in split_top(parent):
+        p = p.strip()
+        for one in split_top(sel):
+            one = one.strip()
+            if one:
+                out.append(one.replace('&', p) if '&' in one else f'{p} {one}')
+    return ', '.join(out)
+
+
+# At-rules that hold no style rules for an element: their blocks are skipped whole.
+NON_STYLE_AT = re.compile(r'@(?:-webkit-|-moz-)?(?:keyframes|font-face|page|property|counter-style|font-feature-values|font-palette-values|view-transition|position-try|import|namespace|charset)\b', re.I)
+# The joiner between two at-rule conditions a rule sits in (one inside the other): each becomes its own tier.
+TIER_SEP = ' &&& '
+
+
+def tiers_of(media: str) -> list:
+    """The tiers a read_css condition string stands for: one per at-rule it sits in, outermost first."""
+    return [t.strip() for t in media.split(TIER_SEP.strip()) if t.strip()] if media else []
 
 
 def decls_of(body: str):
@@ -287,7 +310,7 @@ def attr_test_moves(sel: str, name: str, changes) -> bool:
 
 def placement(sel, prop, media, short, mech, src):
     part, state, why = analyse_selector(sel, short)
-    return {'part': part, 'props': [prop], 'state': state, 'tiers': [media] if media else [], 'mechanism': mech, 'selector': sel, 'where': src,
+    return {'part': part, 'props': [prop], 'state': state, 'tiers': tiers_of(media), 'mechanism': mech, 'selector': sel, 'where': src,
             **({'why': why} if part is None else {})}
 
 

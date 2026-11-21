@@ -20,7 +20,7 @@ import cascade as C
 
 HERE = Path(__file__).resolve().parent
 
-WIDTHS = (375, 768, 1440)
+WIDTHS = C.R.WIDTHS  # the reference's breakpoint widths (block-source-scan/reference.py)
 VIEWPORT_H = 900
 
 UA_CSS = """
