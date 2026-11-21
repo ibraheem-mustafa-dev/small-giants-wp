@@ -1,0 +1,8 @@
+[
+	{"file": "lib/calibrate-read.mjs", "find": "\t\tout.push( asJson ? JSON.stringify( els ) : els );", "replace": "\t\tout.push( els );", "why": "the page returns objects for Playwright to serialise"},
+	{"file": "lib/calibrate-read.mjs", "find": "[ ...Array.from( { length: 9 }, ( _, i ) => readArgs[ i ] ), true ]", "replace": "[ ...Array.from( { length: 9 }, ( _, i ) => readArgs[ i ] ), false ]", "why": "readInstances asks for objects and parses an object"},
+	{"file": "lib/calibrate-read.mjs", "find": "[ ...Array.from( { length: 9 }, ( _, i ) => readArgs[ i ] ), true ]", "replace": "[ ...readArgs, true ]", "why": "a read given fewer than nine arguments puts the JSON flag in the own-paint list"},
+	{"file": "lib/calibrate-read.mjs", "find": "\tout[ w ] = await readInstances( page, args( instances, undefined, extraProps ) );", "replace": "\tout[ w ] = await page.evaluate( readInstancesInPage, args( instances, undefined, extraProps ) );", "why": "the rest read is serialised by Playwright"},
+	{"file": "lib/calibrate-read.mjs", "find": "\tconst one = async () => ( await readInstances( page, args( instances, n, extraProps ) ) )[ n ];", "replace": "\tconst one = async () => ( await page.evaluate( readInstancesInPage, args( instances, n, extraProps ) ) )[ n ];", "why": "a state read is serialised by Playwright"},
+	{"file": "lib/calibrate-read.mjs", "find": "\t\t\tconst all = await readInstances( page, args( instances, undefined, extraProps ) );", "replace": "\t\t\tconst all = await page.evaluate( readInstancesInPage, args( instances, undefined, extraProps ) );", "why": "the scrolled read is serialised by Playwright"}
+]

@@ -17,8 +17,8 @@ export const SCROLL_Y = 600;
 // a minimum size the element declares (`_own:min-height`, `_own:min-width`), and the context a value is judged in beside
 // it: the parent's display as `_parentDisplay` and the element's position as `_position` (lib/fill-prop.mjs::
 // calibratedContext; its direction is a read property). A marked instance carries none of these, so the slot finder
-// never takes them for a setting's change.
-export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProps, textPseudoProps, only, ownProps = [], ownAt = [] ] ) {
+// never takes them for a setting's change. With asJson, each instance's read is returned as its JSON text (readInstances).
+export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProps, textPseudoProps, only, ownProps = [], ownAt = [], asJson = false ] ) {
 	// eslint-disable-next-line no-new-func
 	const pathOf = new Function( `return (${ pathSrc });` )();
 	const pick = ( cs, list ) => Object.fromEntries( list.map( ( p ) => [ p, cs.getPropertyValue( p ).trim() ] ) );
@@ -109,9 +109,18 @@ export function readInstancesInPage( [ count, prefix, props, pathSrc, pseudoProp
 			const scrim = document.querySelector( `.${ uid }-scrim` );
 			scrim && ! root.contains( scrim ) && collect( els, scrim, '@scrim', own );
 		}
-		out.push( els );
+		out.push( asJson ? JSON.stringify( els ) : els );
 	}
 	return out;
+}
+
+// Every instance's read (readInstancesInPage's arguments), carried out of the page as one JSON text per instance and parsed
+// here. Playwright's own return serialiser wraps every property in an object of its own, which for a page of hundreds of
+// elements by 139 properties cost several times the read itself in time and memory; the values are strings either way, so
+// the parsed read is the same.
+export async function readInstances( page, readArgs ) {
+	const texts = await page.evaluate( readInstancesInPage, [ ...Array.from( { length: 9 }, ( _, i ) => readArgs[ i ] ), true ] );
+	return texts.map( ( t ) => ( null === t ? null : JSON.parse( t ) ) );
 }
 
 // In-page: marks the element a state trigger acts on (the instance's styled element, searched in the instance and its
@@ -262,7 +271,7 @@ const args = ( instances, only, extraProps = [] ) => [ instances.length, CAL_PRE
 // mechanism that changes the setting's property (lib/calibrate-probe.mjs). Returns { read }, or { read: null, why } when it could not be read:
 // why is 'hidden', 'no instance' or the error the browser raised.
 async function readUnderTrigger( page, instances, n, inst, extraProps ) {
-	const one = async () => ( await page.evaluate( readInstancesInPage, args( instances, n, extraProps ) ) )[ n ];
+	const one = async () => ( await readInstances( page, args( instances, n, extraProps ) ) )[ n ];
 	if ( 'probe' === inst.trigger ) {
 		const mark = await page.evaluate( markTargetInPage, [ CAL_PREFIX, n, inst.target, inst.companionClass ] );
 		if ( ! mark || mark.missing ) {
@@ -407,7 +416,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		throw new Error( missingDependencyReason( owner.block, owner.site, noticeText ) );
 	}
 	const t1 = Date.now();
-	out[ w ] = await page.evaluate( readInstancesInPage, args( instances, undefined, extraProps ) );
+	out[ w ] = await readInstances( page, args( instances, undefined, extraProps ) );
 	const t2 = Date.now();
 	const calibrationUrl = page.url();
 	for ( const [ n, inst ] of instances.entries() ) {
@@ -433,7 +442,7 @@ async function readWidth( page, url, instances, w, { out, scrolled, scrollMissed
 		const readScrolled = async ( wait ) => {
 			await page.evaluate( ( y ) => window.scrollTo( { top: y, behavior: 'instant' } ), SCROLL_Y );
 			await page.waitForTimeout( wait );
-			const all = await page.evaluate( readInstancesInPage, args( instances, undefined, extraProps ) );
+			const all = await readInstances( page, args( instances, undefined, extraProps ) );
 			const hit = await page.evaluate( ( [ count, prefix ] ) => [ ...Array( count ).keys() ].map( ( n ) => !! document.querySelector( `.${ prefix }${ n } .is-header-scrolled, .${ prefix }${ n }.is-header-scrolled` ) ), [ instances.length, CAL_PREFIX ] );
 			return { all, hit };
 		};
