@@ -7,7 +7,7 @@
 //     allows (lib/fill-preset.mjs::matchPreset, the same rule a `sgs/button` follows), `<prefix>Style` is written as that variant
 //     and the look writes the preset already gives are dropped. A variant that differs in any value it holds matches nothing, so a
 //     dark outlined draft button never takes a preset drawn for a dark page;
-//   - the hover look: when no preset matches, the draft's hovered colours go to the part's hover rows (css_state `hover`).
+//   - the hover look: when no preset matches, the draft's hovered colours go to the part's hover rows (css_state `hover`), the ones equal to the resting colour too.
 // A part the draft does not draw, a preset choice the database does not hold for the part, or draft instances that disagree
 // write nothing here. Pure: the block's rows, the part-look build and the reads in, the build adjusted and notes out.
 import fs from 'node:fs';
@@ -97,16 +97,14 @@ export function presetReads( instances, id ) {
 	return out;
 }
 
-// The hover write of one hover row from the part's first instance at 1440: { write } or { skip: reason }. A colour that equals
-// the resting one, or paints nothing, is not written.
+// The hover write of one hover row from the part's first instance at 1440: { write } or { skip: reason }. A hovered colour that paints
+// nothing is not written; one equal to the resting colour IS: an unset hover row follows the block's own hover look (a secondary
+// button's dark text), so a draft that keeps its text colour on hover still has to say so (measured on a flow opener: the hovered
+// background alone left its cream text dark).
 function hoverWrite( { row, instance, snapshot, names, log } ) {
 	const value = primitive( row.css_property, instance.hover, row );
 	if ( undefined === value || null === value ) {
 		return { skip: 'the hovered look paints no value' };
-	}
-	const rest = primitive( row.css_property, instance.styles, row );
-	if ( samePrimitive( value, rest ) ) {
-		return { skip: 'the hovered look equals the resting one' };
 	}
 	const set = toSetting( row, value, { names, snapshot, log } );
 	return set.why ? { skip: set.why } : { write: { attr: row.attr_name, value: set.value, part: row.css_element, property: `${ row.css_property } (hover)`, draft: { 1440: value }, defaultNotRead: true } };

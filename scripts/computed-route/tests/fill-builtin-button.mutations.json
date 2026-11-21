@@ -25,12 +25,6 @@
 	},
 	{
 		"file": "lib/fill-builtin-button.mjs",
-		"find": "if ( samePrimitive( value, rest ) ) {",
-		"replace": "if ( false ) {",
-		"why": "a hovered colour equal to the resting one is written"
-	},
-	{
-		"file": "lib/fill-builtin-button.mjs",
 		"find": "Object.entries( presets || {} ).filter( ( [ v ] ) => choice?.variants.includes( v ) )",
 		"replace": "Object.entries( presets || {} )",
 		"why": "a preset the choice does not allow is matched"
@@ -88,5 +82,11 @@
 		"find": "undefined !== m && null !== m && ! samePrimitive( m, tiers.tablet ?? d ) && ( tiers.mobile = m );",
 		"replace": "undefined !== m && null !== m && ( tiers.mobile = m );",
 		"why": "a mobile entry is written even where it equals the width above"
+	},
+	{
+		"file": "lib/fill-builtin-button.mjs",
+		"find": "if ( undefined === value || null === value ) {\n\t\treturn { skip: 'the hovered look paints no value' };",
+		"replace": "if ( undefined === value || null === value || samePrimitive( value, primitive( row.css_property, instance.styles, row ) ) ) {\n\t\treturn { skip: 'the hovered look paints no value' };",
+		"why": "a hovered colour equal to the resting one is not written"
 	}
 ]

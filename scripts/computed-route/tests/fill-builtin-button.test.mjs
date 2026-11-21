@@ -85,11 +85,12 @@ test( 'Eye Care: the dark solid opener matches neither the primary preset (52px 
 	assert.equal( value( 'flowOpenerColourBackground' ).toLowerCase(), '#141414' );
 	assert.equal( value( 'flowOpenerColourText' ).toLowerCase(), '#faf8f5' );
 	assert.equal( value( 'flowOpenerColourBackgroundHover' ).toLowerCase(), '#2a2a2a', 'the hovered background is written to the hover row' );
-	assert.ok( ! attrs.includes( 'flowOpenerColourTextHover' ), 'a hovered colour equal to the resting one is not written' );
+	assert.equal( value( 'flowOpenerColourTextHover' ).toLowerCase(), '#faf8f5', 'a hovered colour equal to the resting one is written too: the block own hover look paints dark text otherwise' );
 	assert.equal( build.settings.flowOpenerColourBackgroundHover.status, 'written' );
 	assert.match( out.buttons[ 0 ].misses.primary.join( ' ' ), /padding|min-height|hover-transform/ );
 	assert.match( out.buttons[ 0 ].misses.outline.join( ' ' ), /background: the preset holds transparent/ );
-	assert.deepEqual( out.buttons[ 0 ].hover, [ 'flowOpenerColourBackgroundHover' ] );
+	assert.deepEqual( out.buttons[ 0 ].hover, [ 'flowOpenerColourBackgroundHover', 'flowOpenerColourTextHover' ] );
+	assert.ok( ! attrs.includes( 'flowOpenerColourBorderHover' ), 'a hover border that paints nothing (no border drawn) is not written' );
 } );
 
 test( 'MUST FAIL: Eye Care\'s outline preset (cream text for dark pages) does not match a dark outlined draft button', () => {
