@@ -13,8 +13,10 @@
 //     mask is something the overlay cannot express;
 //   - it paints a gradient at every width it is drawn at (stacked into the overlay's gradient setting), or one flat colour (the
 //     overlay's colour setting); a mix of the two, or more than one flat layer, is no one setting's value;
-//   - it sits above the host's background and below its content in the drawing order: no earlier sibling holds words, and no
-//     later sibling is a wordless box covering the host (a picture drawn over it);
+//   - it sits above the host's background and below its content in the drawing order: every earlier sibling is the host's
+//     background (a wordless box covering the host), another such layer or draws nothing (content, or a decoration that stays
+//     a block and so would be drawn above the overlay, keeps it a block), and no later sibling is a wordless box covering the
+//     host (a picture drawn over it);
 //   - the host block's calibration paints the layer's property (`background-image` for a gradient, `background-color` for a
 //     flat colour) in its resting state at a slot the decisions name as covering the host (`rules.overlayLayer.coverSlots`),
 //     through a setting whose framework-database role is the layer's (`roles`: colour-gradient, color).
@@ -86,6 +88,9 @@ const coversWordless = ( m, k, host ) => ! ws( k.allText ?? k.words ) && m.shown
 	return k.visible?.[ w ] && a && b && a.w >= b.w - 1 && a.h >= b.h - 1;
 } );
 
+// Whether an element draws a box (some width and height) at a width it is shown at.
+const drawsBox = ( m, k ) => [ 375, 768, 1440 ].some( ( w ) => k.visible?.[ w ] && ( k.box?.[ w ]?.w ?? 0 ) > 0 && ( k.box?.[ w ]?.h ?? 0 ) > 0 );
+
 // The host's overlay setting for a kind of layer from its calibration: { slot, setting, property } or null. `settings` is
 // the block's calibrated slot map, `roleOf( attr )` the setting's framework-database role, `coverSlots` the slots that cover
 // their block, `roles` { gradient, colour } the role a setting of each kind carries.
@@ -109,9 +114,12 @@ export function overlayOf( { host, candidates, m, declaredOf, settings, roleOf, 
 	for ( const layer of candidates ) {
 		const why = layerRefusal( { layer, host, st: declaredOf( layer ), m, layerProps: R.layerProps || [] } );
 		const at = kids.indexOf( layer );
-		const above = why ? null : kids.slice( 0, at ).find( ( k ) => ws( k.allText ?? k.words ) );
+		// Drawn before the layer, so beneath it in the draft: only the host's background (a wordless box covering the host),
+		// another candidate layer, or nothing drawn at all. Content, or a decoration that stays a block (it would be drawn
+		// above the host's overlay in the clone), keeps the layer a block of its own.
+		const above = why ? null : kids.slice( 0, at ).find( ( k ) => ! candidates.includes( k ) && ! coversWordless( m, k, host ) && drawsBox( m, k ) );
 		const over = why || above ? null : kids.slice( at + 1 ).find( ( k ) => ! candidates.includes( k ) && coversWordless( m, k, host ) );
-		const reason = why || ( above ? `it is drawn above content (${ above.key })` : over ? `a wordless box covering the host (${ over.key }) is drawn above it` : null );
+		const reason = why || ( above ? `it is drawn above ${ ws( above.allText ?? above.words ) ? 'content' : 'a decoration that stays a block' } (${ above.key })` : over ? `a wordless box covering the host (${ over.key }) is drawn above it` : null );
 		reason ? ( refused[ layer.key ] = reason ) : fit.push( layer );
 	}
 	if ( ! fit.length ) {

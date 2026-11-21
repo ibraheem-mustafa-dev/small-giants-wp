@@ -37,7 +37,7 @@
 	},
 	{
 		"file": "lib/skeleton-overlay-layer.mjs",
-		"find": "const above = why ? null : kids.slice( 0, at ).find( ( k ) => ws( k.allText ?? k.words ) );",
+		"find": "const above = why ? null : kids.slice( 0, at ).find( ( k ) => ! candidates.includes( k ) && ! coversWordless( m, k, host ) && drawsBox( m, k ) );",
 		"replace": "const above = null;",
 		"why": "a layer drawn over the content becomes an overlay beneath it"
 	},
@@ -88,5 +88,11 @@
 		"find": "( Array.isArray( node.draftOverlay?.layers ) ? node.draftOverlay.layers.slice( 0, -1 ) : [] ).forEach(",
 		"replace": "( [] ).forEach(",
 		"why": "the lower layers are never read, so the stack holds the top layer only"
+	},
+	{
+		"file": "lib/skeleton-overlay-layer.mjs",
+		"find": "const above = why ? null : kids.slice( 0, at ).find( ( k ) => ! candidates.includes( k ) && ! coversWordless( m, k, host ) && drawsBox( m, k ) );",
+		"replace": "const above = why ? null : kids.slice( 0, at ).find( ( k ) => ws( k.allText ?? k.words ) );",
+		"why": "a layer drawn over a ring that stays a block becomes an overlay the ring is then drawn above"
 	}
 ]

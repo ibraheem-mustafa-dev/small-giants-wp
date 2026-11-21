@@ -95,6 +95,12 @@ test( 'a layer with a non-zero inset, a radius, content or a place above the con
 	assert.equal( turned.rowOf( turned.layers[ 0 ] ).rule, 'decorationLayer' );
 	const above = runPage( [ { paint: { 1440: GRAD } } ], { contentFirst: true } );
 	assert.equal( above.rowOf( above.layers[ 0 ] ).rule, 'decorationLayer', 'a layer drawn after the content covers it' );
+	// A ring drawn before the glow stays a decorative image, which the clone draws above the host's overlay: the glow stays too.
+	const ringFirst = runPage( [ { style: 'position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216, 202, 80, 0.55)', box: Object.fromEntries( Object.entries( HOST ).map( ( [ w, b ] ) => [ w, { x: b.w - 250, y: b.y - 110, w: 340, h: 340 } ] ) ), radius: '50%' }, { paint: { 1440: GRAD } } ] );
+	assert.equal( ringFirst.rowOf( ringFirst.layers[ 0 ] ).rule, 'decorativeShape' );
+	assert.equal( ringFirst.rowOf( ringFirst.layers[ 1 ] ).rule, 'decorationLayer', 'a layer drawn over a decoration that stays a block' );
+	const ringAfter = runPage( [ { paint: { 1440: GRAD } }, { style: 'position:absolute;right:-90px;top:-110px;width:340px;height:340px;border-radius:50%;border:2px solid rgba(216, 202, 80, 0.55)', box: Object.fromEntries( Object.entries( HOST ).map( ( [ w, b ] ) => [ w, { x: b.w - 250, y: b.y - 110, w: 340, h: 340 } ] ) ), radius: '50%' } ] );
+	assert.equal( ringAfter.rowOf( ringAfter.layers[ 0 ] ).rule, 'overlayLayer', 'a decoration drawn after the layer stays above it in the clone too' );
 	const worded = runPage( [ { words: 'Sale' } ] );
 	assert.notEqual( worded.rowOf( worded.layers[ 0 ] ).rule, 'overlayLayer', 'a layer holding words is content' );
 	assert.equal( worded.host.draftOverlay, undefined );
