@@ -26,21 +26,32 @@ export function partLooks( settings = {}, tags = {} ) {
 	return out;
 }
 
+// The element type a slot step names (`a`, `svg`, `li.item`), or null for a step of classes or pseudo-classes only.
+const TYPE = /^([a-z][a-z0-9-]*)/i;
+
 // The draft element a part slot names, walking its steps down from the block's element: a `:nth-of-type(k)` step is the k-th
-// child, any other step the only child. A step the draft cannot follow (no k-th child, several children for a lone step) is
-// no element. kids( element ) gives the element's children in order.
+// child, any other step the only child, and a step that names an element type lands only on an element of that tag. A step the
+// draft cannot follow (no k-th child, several children for a lone step, another tag) is no element. kids( element ) gives the
+// element's children in order.
 export function walkSlot( slot, from, kids ) {
 	let cur = from;
 	for ( const step of String( slot ).split( ' > ' ) ) {
 		const list = kids( cur );
 		const nth = NTH.exec( step );
 		cur = nth ? list[ Number( nth[ 1 ] ) - 1 ] : 1 === list.length ? list[ 0 ] : null;
-		if ( ! cur ) {
+		const type = TYPE.exec( step.trim() );
+		if ( ! cur || ( type && type[ 1 ].toLowerCase() !== String( cur.tag ).toLowerCase() ) ) {
 			return null;
 		}
 	}
 	return cur === from ? null : cur;
 }
+
+// The part slots that hold a glyph: a calibrated slot whose own child is an <svg> (`<slot> > svg`). A glyph holder draws an
+// icon, never words, so a draft element whose own words hold a letter is not that part (a badge reading "Build your own" is
+// no button icon; an arrow "→" may be).
+export const glyphHolders = ( settings = {} ) => new Set( Object.values( settings || {} ).map( ( s ) => /^(.+) > svg$/i.exec( String( s?.slot ?? '' ) )?.[ 1 ] ).filter( Boolean ) );
+const LETTER = /\p{L}/u;
 
 // One host node's absorbed painted elements. host: the block's own draft element; node: its skeleton node; absorbed:
 // [ { element, looks: [ look ] } ]; settings, tags: the block's calibration settings and slot tags; checked: the calibration
@@ -48,12 +59,14 @@ export function walkSlot( slot, from, kids ) {
 export function absorbedSlots( { host, node, absorbed = [], kids, finder, settings = {}, tags = {}, block, checked } ) {
 	const out = { slots: {}, records: new Map(), unmatched: [] };
 	const parts = partLooks( settings, tags );
+	const glyphs = glyphHolders( settings );
 	const byKey = new Map( absorbed.map( ( a ) => [ a.element.key, a ] ) );
 	const placed = new Set();
 	for ( const [ slot, looks ] of parts ) {
 		const hit = node.draftSlots?.[ slot ] || out.slots[ slot ] ? null : walkSlot( slot, host, kids );
 		const a = hit ? byKey.get( hit.key ) : null;
-		if ( a && ( ! tags[ slot ] || String( tags[ slot ] ).toLowerCase() === a.element.tag ) && a.looks.some( ( l ) => looks.has( l ) ) ) {
+		const worded = !! a && glyphs.has( slot ) && LETTER.test( String( a.element.words ?? '' ) );
+		if ( a && ! worded && ( ! tags[ slot ] || String( tags[ slot ] ).toLowerCase() === a.element.tag ) && a.looks.some( ( l ) => looks.has( l ) ) ) {
 			out.slots[ slot ] = finder( a.element );
 			placed.add( a.element.key );
 		}

@@ -1,10 +1,86 @@
 [
-	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {", "replace": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) ) {", "why": "a hover setting's slot is a part the draft element can be" },
-	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {", "replace": "if ( 'string' !== typeof slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {", "why": "the root is a part" },
-	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "cur = nth ? list[ Number( nth[ 1 ] ) - 1 ] : 1 === list.length ? list[ 0 ] : null;", "replace": "cur = nth ? list[ Number( nth[ 1 ] ) - 1 ] : list[ 0 ];", "why": "a lone step over several children takes the first" },
-	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "const hit = node.draftSlots?.[ slot ] || out.slots[ slot ] ? null : walkSlot( slot, host, kids );", "replace": "const hit = walkSlot( slot, host, kids );", "why": "a slot the node holds is taken again" },
-	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "&& a.looks.some( ( l ) => looks.has( l ) ) ) {", "replace": ") {", "why": "a slot that paints none of the element's looks reads it" },
-	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "( ! tags[ slot ] || String( tags[ slot ] ).toLowerCase() === a.element.tag )", "replace": "true", "why": "the slot's calibrated tag is not checked" },
-	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "const painted = calibratedLooks( settings );", "replace": "const painted = new Set( [ ...parts.values() ].flatMap( ( x ) => [ ...x ] ) );", "why": "no-part is decided over the at-rest parts only" },
-	{ "file": "lib/skeleton-conserve-slots.mjs", "find": "if ( ! calibrated ) {", "replace": "if ( false ) {", "why": "a block with no calibration is recorded no-part" }
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {",
+		"replace": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) ) {",
+		"why": "a hover setting's slot is a part the draft element can be"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "if ( 'string' !== typeof slot || '' === slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {",
+		"replace": "if ( 'string' !== typeof slot || slot.includes( '::' ) || ( s.state && 'current' !== s.state ) ) {",
+		"why": "the root is a part"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "cur = nth ? list[ Number( nth[ 1 ] ) - 1 ] : 1 === list.length ? list[ 0 ] : null;",
+		"replace": "cur = nth ? list[ Number( nth[ 1 ] ) - 1 ] : list[ 0 ];",
+		"why": "a lone step over several children takes the first"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "const hit = node.draftSlots?.[ slot ] || out.slots[ slot ] ? null : walkSlot( slot, host, kids );",
+		"replace": "const hit = walkSlot( slot, host, kids );",
+		"why": "a slot the node holds is taken again"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "&& a.looks.some( ( l ) => looks.has( l ) ) ) {",
+		"replace": ") {",
+		"why": "a slot that paints none of the element's looks reads it"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "( ! tags[ slot ] || String( tags[ slot ] ).toLowerCase() === a.element.tag )",
+		"replace": "true",
+		"why": "the slot's calibrated tag is not checked"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "const painted = calibratedLooks( settings );",
+		"replace": "const painted = new Set( [ ...parts.values() ].flatMap( ( x ) => [ ...x ] ) );",
+		"why": "no-part is decided over the at-rest parts only"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "if ( ! calibrated ) {",
+		"replace": "if ( false ) {",
+		"why": "a block with no calibration is recorded no-part"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "if ( ! cur || ( type && type[ 1 ].toLowerCase() !== String( cur.tag ).toLowerCase() ) ) {",
+		"replace": "if ( ! cur ) {",
+		"why": "a step naming an element type lands on any tag"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "const TYPE = /^([a-z][a-z0-9-]*)/i;",
+		"replace": "const TYPE = /^([a-z])/i;",
+		"why": "a step's type is read as its first letter only"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "const worded = !! a && glyphs.has( slot ) && LETTER.test( String( a.element.words ?? '' ) );",
+		"replace": "const worded = false;",
+		"why": "a glyph holder lands on a worded badge"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "const worded = !! a && glyphs.has( slot ) && LETTER.test( String( a.element.words ?? '' ) );",
+		"replace": "const worded = !! a && LETTER.test( String( a.element.words ?? '' ) );",
+		"why": "every part refuses a worded element, an option chip too"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "const LETTER = /\\p{L}/u;",
+		"replace": "const LETTER = /./u;",
+		"why": "an arrow glyph counts as words"
+	},
+	{
+		"file": "lib/skeleton-conserve-slots.mjs",
+		"find": "map( ( s ) => /^(.+) > svg$/i.exec( String( s?.slot ?? '' ) )?.[ 1 ] )",
+		"replace": "map( ( s ) => /^(.+) > svg/i.exec( String( s?.slot ?? '' ) )?.[ 0 ] )",
+		"why": "the glyph holder is named with its svg step"
+	}
 ]
