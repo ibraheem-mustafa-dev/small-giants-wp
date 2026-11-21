@@ -1,7 +1,6 @@
 /**
  * sgs/choice-flow — every colour row, for the block's one Styles-tab
- * SgsColourPanel (Spec 35 PART O §1 field 4(a) and 9e): progress, Back
- * button, stage and help note, header step name, the option cards' '?'
+ * SgsColourPanel (Spec 35 PART O §1 field 4(a) and 9e): progress, stage and help note, header step name, the option cards' '?'
  * toggle, and the summary panel's help note. The panels that set the rest of
  * each element live on the Settings tab, where a nested Styles fill never
  * renders. A row whose element is not shown is omitted.
@@ -53,27 +52,6 @@ export default function choiceFlowColourRows( { attributes, setAttributes } ) {
 			key: 'eyebrow',
 			label: __( 'Header step name', 'sgs-blocks' ),
 			attrs: { base: 'headerEyebrowColour' },
-			attributes,
-			setAttributes,
-		} ),
-		fillRow( {
-			key: 'back-fill',
-			heading: __( 'Back button', 'sgs-blocks' ),
-			label: __( 'Back button background', 'sgs-blocks' ),
-			attrs: {
-				base: 'backColourBackground',
-				hover: 'backColourBackgroundHover',
-			},
-			attributes,
-			setAttributes,
-		} ),
-		textRow( {
-			key: 'back-text',
-			label: __( 'Back button text', 'sgs-blocks' ),
-			attrs: {
-				base: 'backColourText',
-				hover: 'backColourTextHover',
-			},
 			attributes,
 			setAttributes,
 		} ),

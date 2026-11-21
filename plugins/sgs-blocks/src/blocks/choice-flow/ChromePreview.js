@@ -12,16 +12,18 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 import { colourVar } from '../../utils';
 import { logoUrlFor } from '../../utils/logo-source';
-import { firstQuestionProgress } from './preview-style';
+import { buttonKitPreview, buttonPresetClass, firstQuestionProgress } from './preview-style';
 
 import AuthoredText from '../../components/AuthoredText';
 /**
  * @param {Object} props               Component props.
  * @param {Object} props.attributes    Block attributes.
  * @param {number} props.questionTotal Question steps in the flow.
+ * @param {string} [props.tier]        Previewed device tier, for the Close button's kit look.
+ * @param {Array}  [props.palette]     Theme colour palette.
  * @return {JSX.Element} The preview rows.
  */
-export default function ChromePreview( { attributes, questionTotal } ) {
+export default function ChromePreview( { attributes, questionTotal, tier = 'desktop', palette } ) {
 	const { showHeader, flowLayout, headerLogoSource, headerLogoAlt, headerLogoDecorative, closeStyle, closeLabel, stepCountLabel, progressColour, progressColourGradient, progressStyle: progressVariant, showPricePanel, stageNote } = attributes;
 	const showcase = 'showcase' === flowLayout;
 	const hasHeader = !! showHeader || showcase;
@@ -39,6 +41,9 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 			  )
 			: stepCountText;
 	const logoUrl = logoUrlFor( headerLogoSource, 'desktop' );
+	// The Close button's own kit look (`closeButton*`): the preset's class and the look settings, as the page prints them.
+	const closeClass = buttonPresetClass( attributes, 'closeButton' );
+	const closeLook = buttonKitPreview( attributes, 'closeButton', { tier, palette } );
 	const closeText = closeLabel && closeLabel.trim() ? closeLabel.trim() : __( 'Close', 'sgs-blocks' );
 	const fillColour = colourVar( progressColour );
 	const progressStyle = { '--sgs-choice-flow-progress': firstQuestionProgress( attributes, questionTotal ) };
@@ -77,14 +82,14 @@ export default function ChromePreview( { attributes, questionTotal } ) {
 					) }
 					<span className="sgs-choice-flow__chrome-eyebrow">{ eyebrowText }</span>
 					{ 'text' === closeStyle ? (
-						<span className="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--text">
+						<span className={ `sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--text ${ closeClass }`.trim() } style={ closeLook }>
 							<AuthoredText className="sgs-choice-flow__chrome-close-text" value={ closeText } />
 							<span className="sgs-choice-flow__chrome-close-glyph" aria-hidden="true">
 								&times;
 							</span>
 						</span>
 					) : (
-						<span className="sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--icon">
+						<span className={ `sgs-choice-flow__chrome-close sgs-choice-flow__chrome-close--icon ${ closeClass }`.trim() } style={ closeLook }>
 							<svg
 								className="sgs-choice-flow__chrome-close-icon"
 								viewBox="0 0 24 24"

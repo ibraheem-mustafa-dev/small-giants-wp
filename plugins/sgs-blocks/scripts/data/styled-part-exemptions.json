@@ -234,7 +234,6 @@
     "plugins/sgs-blocks/src/components/*": "Block-editor UI components: printed only inside the editor, never on the front end.",
     "plugins/sgs-blocks/src/blocks/*/edit.js": "Block-editor preview (edit.js): the editor's rendering of the block, not front-end markup.",
     "plugins/sgs-blocks/src/blocks/*/canvas-*.js": "Block-editor canvas mock of the front-end markup: editor only.",
-    "plugins/sgs-blocks/src/blocks/*/preview-style.js": "Block-editor preview styling: editor only.",
     "plugins/sgs-blocks/src/blocks/*/components/*": "Block-editor panels and canvases inside a block's folder: editor only.",
     "plugins/sgs-blocks/src/blocks/extensions/*": "Block-editor extensions (motion, inline formats, device toggle): editor only.",
     "plugins/sgs-blocks/assets/admin/*": "wp-admin screen script: never runs on the front end.",

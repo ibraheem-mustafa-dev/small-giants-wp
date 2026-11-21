@@ -3,6 +3,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 	InspectorControls,
+	useSettings,
 } from '@wordpress/block-editor';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect, useMemo, useRef } from '@wordpress/element';
@@ -10,14 +11,13 @@ import { PanelBody, TextControl, SelectControl, Notice } from '@wordpress/compon
 import {
 	SgsLengthControl,
 	SgsBoxControl,
-	SgsBorderControl,
 	SgsColourPanel,
 	ResponsiveOverride,
 	BOX_UNITS,
 	normaliseResponsiveBox,
 } from '../../components';
 import { usePreviewTier } from '../../utils';
-import { buildWrapperStyle, buildBackButtonPreviewStyle } from './preview-style';
+import { buildWrapperStyle, buildBackButtonPreviewStyle, buttonPresetClass } from './preview-style';
 import ChromePreview from './ChromePreview';
 import PricingSettingsPanel from './PricingSettingsPanel';
 import SummaryPanel from './SummaryPanel';
@@ -25,6 +25,7 @@ import FlowLayoutPanel from './FlowLayoutPanel';
 import ShowcasePanel from './ShowcasePanel';
 import LinkedFlowPanel from './LinkedFlowPanel';
 import ChromePanel from './ChromePanel';
+import BuiltinButtonPanel from '../../components/BuiltinButtonPanel';
 import choiceFlowColourRows from './colour-rows';
 import FlowNavigationPanel from './FlowNavigationPanel';
 
@@ -341,9 +342,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		maxWidth,
 		padding,
 		progressStyle,
-		backBorderWidth,
-		backBorderStyle,
-		backBorderRadius,
 		showPricePanel,
 		pricePanelTitle,
 		flowProductId,
@@ -354,6 +352,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	} = attributes;
 
 	const previewTier = usePreviewTier();
+	const [ palette ] = useSettings( 'color.palette' );
 	const hasHeader = !! attributes.showHeader || 'showcase' === attributes.flowLayout;
 	const blockProps = useBlockProps( {
 		className: `sgs-choice-flow sgs-choice-flow--layout-${ attributes.flowLayout || 'compact' } sgs-choice-flow--close-${ closeStyle || 'icon' }${ hasHeader ? ' sgs-choice-flow--has-header' : '' }`,
@@ -522,40 +521,6 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__next40pxDefaultSize
 					/>
 				</PanelBody>
-				{ /* User-reported gap (2026-09-15) — Back button border (its
-				   colours are rows in colour-rows.js), rendered via the shared
-				   sgs_button_element_style_css()
-				   helper. Defaults are grounded in the real lens-configurator
-				   source, not the theme's 'primary' preset — see the 'back'
-				   element's own block.json _note for the evidence. */ }
-				<PanelBody title={ __( 'Back button', 'sgs-blocks' ) } initialOpen={ false }>
-					<SgsBorderControl
-						widthValues={ backBorderWidth ?? {} }
-						onWidthChange={ ( next ) => setAttributes( { backBorderWidth: next } ) }
-						styleValue={ backBorderStyle }
-						onStyleChange={ ( val ) => setAttributes( { backBorderStyle: val } ) }
-						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-						colourStates={ [
-							{
-								key: 'normal',
-								label: __( 'Normal', 'sgs-blocks' ),
-								value: attributes.backColourBorder,
-								onChange: ( val ) => setAttributes( { backColourBorder: val ?? '' } ),
-								linked: true,
-							},
-							{
-								key: 'hover',
-								label: __( 'Hover', 'sgs-blocks' ),
-								value: attributes.backColourBorderHover,
-								onChange: ( val ) => setAttributes( { backColourBorderHover: val ?? '' } ),
-								linked: true,
-							},
-						] }
-						radiusValues={ { base: backBorderRadius ?? {} } }
-						showRadiusResponsive={ false }
-						onRadiusChange={ ( _tier, next ) => setAttributes( { backBorderRadius: next } ) }
-					/>
-				</PanelBody>
 				<PricingSettingsPanel
 					showPricePanel={ showPricePanel }
 					pricePanelTitle={ pricePanelTitle }
@@ -563,6 +528,44 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					setAttributes={ setAttributes }
 				/>
 			</InspectorControls>
+			{ /* The flow's six built-in buttons (Spec 43 FR-43-28), each one the button kit's panel in the Styles inspector: the
+			     footer's in footer order, then the header's Close. Back's border and colours are in its panel. */ }
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/choice-flow"
+				prefix="back"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/choice-flow"
+				prefix="skip"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/choice-flow"
+				prefix="continue"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/choice-flow"
+				prefix="addToBasket"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/choice-flow"
+				prefix="buyNow"
+			/>
+			<BuiltinButtonPanel
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				blockName="sgs/choice-flow"
+				prefix="closeButton"
+			/>
 			<ChromePanel attributes={ attributes } setAttributes={ setAttributes } />
 			<FlowLayoutPanel attributes={ attributes } setAttributes={ setAttributes } />
 			<ShowcasePanel attributes={ attributes } setAttributes={ setAttributes } />
@@ -581,7 +584,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 			</InspectorControls>
 
 			<div { ...blockProps }>
-				<ChromePreview attributes={ attributes } questionTotal={ questionTotal } />
+				<ChromePreview attributes={ attributes } questionTotal={ questionTotal } tier={ previewTier } palette={ palette } />
 				{ title && (
 					<p className="sgs-choice-flow__title-preview">
 						{ __( 'Flow:', 'sgs-blocks' ) } { title }
@@ -628,8 +631,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				   at runtime, shown/hidden by view.js. */ }
 				<div className="sgs-choice-flow__footer-preview">
 					<span
-						className="sgs-choice-flow__nav-back-preview"
-						style={ buildBackButtonPreviewStyle( attributes ) }
+						className={ `sgs-choice-flow__nav-back-preview ${ buttonPresetClass( attributes, 'back' ) }`.trim() }
+						style={ buildBackButtonPreviewStyle( attributes, previewTier, palette ) }
 					>
 						{ __( '← Back', 'sgs-blocks' ) }
 					</span>

@@ -131,8 +131,8 @@
       "file": "plugins/sgs-blocks/src/blocks/choice-flow/style.css",
       "kind": "css",
       "key": "--button-presets--",
-      "status": "deferred",
-      "reason": "the flow's Continue and Back buttons read primary and secondary; not built (.claude/plans/2026-11-19-general-cloning-work.md Task 5 follow-up)"
+      "status": "framework-default",
+      "reason": "the unset look of the flow's buttons: Continue and Buy now read the primary preset's tokens, Add to basket the secondary's; a button's own preset choice (continueStyle, addToBasketStyle and the rest, includes/choice-flow-buttons.php) prints any name the site carries and out-ranks these rules"
     },
     {
       "file": "theme/sgs-theme/assets/css/woocommerce.css",

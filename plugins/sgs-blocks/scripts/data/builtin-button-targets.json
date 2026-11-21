@@ -18,13 +18,64 @@
       ]
     },
     {
-      "id": "choice-flow-footer-and-chrome",
-      "block": "sgs/choice-flow", "prefix": "continue, addToBasket, buyNow, skip, close, back", "phase": "first mover",
+      "id": "choice-flow-back",
+      "block": "sgs/choice-flow", "prefix": "back", "phase": "first mover",
       "files": [
         "plugins/sgs-blocks/includes/choice-flow-footer.php",
         "plugins/sgs-blocks/includes/choice-flow-chrome.php",
         "plugins/sgs-blocks/src/blocks/choice-flow/style.css"
-      ]
+      ],
+      "class": "__nav-back"
+    },
+    {
+      "id": "choice-flow-skip",
+      "block": "sgs/choice-flow", "prefix": "skip", "phase": "first mover",
+      "files": [
+        "plugins/sgs-blocks/includes/choice-flow-footer.php",
+        "plugins/sgs-blocks/includes/choice-flow-chrome.php",
+        "plugins/sgs-blocks/src/blocks/choice-flow/style.css"
+      ],
+      "class": "__skip-button"
+    },
+    {
+      "id": "choice-flow-continue",
+      "block": "sgs/choice-flow", "prefix": "continue", "phase": "first mover",
+      "files": [
+        "plugins/sgs-blocks/includes/choice-flow-footer.php",
+        "plugins/sgs-blocks/includes/choice-flow-chrome.php",
+        "plugins/sgs-blocks/src/blocks/choice-flow/style.css"
+      ],
+      "class": "__continue"
+    },
+    {
+      "id": "choice-flow-add-to-basket",
+      "block": "sgs/choice-flow", "prefix": "addToBasket", "phase": "first mover",
+      "files": [
+        "plugins/sgs-blocks/includes/choice-flow-footer.php",
+        "plugins/sgs-blocks/includes/choice-flow-chrome.php",
+        "plugins/sgs-blocks/src/blocks/choice-flow/style.css"
+      ],
+      "class": "__add-to-basket"
+    },
+    {
+      "id": "choice-flow-buy-now",
+      "block": "sgs/choice-flow", "prefix": "buyNow", "phase": "first mover",
+      "files": [
+        "plugins/sgs-blocks/includes/choice-flow-footer.php",
+        "plugins/sgs-blocks/includes/choice-flow-chrome.php",
+        "plugins/sgs-blocks/src/blocks/choice-flow/style.css"
+      ],
+      "class": "__buy-now"
+    },
+    {
+      "id": "choice-flow-close",
+      "block": "sgs/choice-flow", "prefix": "closeButton", "phase": "first mover",
+      "files": [
+        "plugins/sgs-blocks/includes/choice-flow-footer.php",
+        "plugins/sgs-blocks/includes/choice-flow-chrome.php",
+        "plugins/sgs-blocks/src/blocks/choice-flow/style.css"
+      ],
+      "class": "__chrome-close"
     },
     {
       "id": "account-signed-out-sign-in",

@@ -7,7 +7,10 @@
  *
  * @package SGS\Blocks
  */
+import { getBlockType } from '@wordpress/blocks';
 import { colourVar, sgsBorderPreview, tierBoxLonghands, tierValueOf } from '../../utils';
+import buttonKitStyle from '../../components/button-kit/button-kit-style';
+import { presetNames } from '../button/preset-names';
 
 /**
  * @param {Object} attributes Block attributes.
@@ -88,34 +91,66 @@ export function mediaSizePreviewStyle( optionMediaSize, tier = 'desktop' ) {
 }
 
 /**
- * Editor canvas preview of the Back button's colour/border styling. The border
- * is the `SgsBorderControl` panel's own values through its twin
- * `sgsBorderPreview()`; the preview pill's stylesheet already paints a 2px
- * solid border (as the front-end `<button>` paints its own), so each chosen
- * part applies on its own.
+ * The preset class a built-in button wears in the canvas: the page gives the button the preset's shared rule, the canvas gives
+ * it `sgs-button sgs-button--<slug>` (as sgs/product-card's CTA does). '' when `{prefix}Style` names no preset.
  *
  * @param {Object} attributes Block attributes.
+ * @param {string} prefix     The button's attribute prefix.
+ * @return {string} Class names.
+ */
+export function buttonPresetClass( attributes, prefix ) {
+	const slug = attributes?.[ `${ prefix }Style` ];
+	return presetNames().includes( slug ) ? `sgs-button sgs-button--${ slug }` : '';
+}
+
+/**
+ * A button's kit look as the canvas paints it (`buttonKitStyle()`, the twin of `sgs_button_kit_css()`). With a preset chosen
+ * every attribute of the prefix still equal to its declared default is dropped first, as `includes/choice-flow-buttons.php::
+ * sgs_choice_flow_button_attrs()` does, so the preset paints in place of Back's default ink-and-paper pair.
+ *
+ * @param {Object} attributes        Block attributes.
+ * @param {string} prefix            The button's attribute prefix.
+ * @param {Object} [options]
+ * @param {string} [options.tier]    Previewed device tier.
+ * @param {Array}  [options.palette] Theme colour palette.
+ * @return {Object} React style fragment.
+ */
+export function buttonKitPreview( attributes, prefix, { tier = 'desktop', palette } = {} ) {
+	let own = attributes;
+	if ( buttonPresetClass( attributes, prefix ) ) {
+		const declared = getBlockType( 'sgs/choice-flow' )?.attributes || {};
+		own = { ...attributes };
+		for ( const name of Object.keys( own ) ) {
+			if ( name.startsWith( prefix ) && 'default' in ( declared[ name ] || {} ) && JSON.stringify( own[ name ] ) === JSON.stringify( declared[ name ].default ) ) {
+				delete own[ name ];
+			}
+		}
+	}
+	return buttonKitStyle( own, prefix, { tier, palette } );
+}
+
+/**
+ * Editor canvas preview of the Back button: its kit look (colour, border and per-device radius, padding, type, shadow), over
+ * the preview pill's own stylesheet. With no preset chosen the pill keeps the front end's transparent resting background and
+ * 2px border (`defaultBorder`); with one, the preset's class paints them (`buttonPresetClass()`).
+ *
+ * @param {Object} attributes Block attributes.
+ * @param {string} [tier]     Previewed device tier.
+ * @param {Array}  [palette]  Theme colour palette.
  * @return {Object} Inline style object for the preview `<span>`.
  */
-export function buildBackButtonPreviewStyle( attributes ) {
-	const {
-		backColourBackground,
-		backColourText,
-		backColourBorder,
-		backBorderStyle,
-		backBorderWidth,
-		backBorderRadius,
-	} = attributes;
-
-	const style = {
+export function buildBackButtonPreviewStyle( attributes, tier = 'desktop', palette ) {
+	const kit = buttonKitPreview( attributes, 'back', { tier, palette } );
+	if ( buttonPresetClass( attributes, 'back' ) ) {
+		return kit;
+	}
+	const { backColourBackground, backColourText, backColourBorder, backBorderStyle, backBorderWidth, backBorderRadius } = attributes;
+	return {
+		...kit,
 		backgroundColor: backColourBackground ? colourVar( backColourBackground ) : 'transparent',
 		color: backColourText ? colourVar( backColourText ) : undefined,
+		...sgsBorderPreview( { widthValues: backBorderWidth ?? {}, styleValue: backBorderStyle, colourValue: backColourBorder, radiusValues: backBorderRadius }, tier, palette, { defaultBorder: true } ),
 	};
-
-	return Object.assign(
-		style,
-		sgsBorderPreview( { widthValues: backBorderWidth ?? {}, styleValue: backBorderStyle, colourValue: backColourBorder, radiusValues: { base: backBorderRadius ?? {} } }, 'desktop', undefined, { defaultBorder: true } )
-	);
 }
 
 /**
