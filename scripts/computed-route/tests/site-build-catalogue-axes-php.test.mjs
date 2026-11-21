@@ -251,3 +251,20 @@ test( 'the write is idempotent: run over a product it already settled, with a pr
 	assert.deepEqual( out.done.filter( ( d ) => /choice|term\(s\)|trashed|private/.test( d ) ), [] );
 	assert.equal( norm( s.state().posts ), norm( settled.posts ) );
 } );
+
+test( 'MUST FAIL: a route-made product\'s existing filter attribute gains the catalogue\'s term on the product itself, not only as an object term', () => {
+	// WooCommerce writes only an attribute list that differs (!==) from the one it holds (the stand-in models this), so the facet
+	// step's edit of an existing attribute must be made on a copy (lib/site-build-catalogue-facets.mjs::facetApplyPhp).
+	const { repo } = setup();
+	const st0 = seed();
+	st0.posts[ 50 ].attrs.pa_origin = { id: 4, name: 'pa_origin', options: [ 31 ], position: 1, visible: false, variation: false };
+	Object.assign( st0.terms, Object.fromEntries( [ term( 30, 'pa_origin', 'hills', 'hills' ), term( 31, 'pa_origin', 'coast', 'coast' ) ] ) );
+	st0.attrs.pa_origin = { id: 4, name: 'Origin' };
+	st0.objterms[ 50 ].pa_origin = [ 31 ];
+	const s = shop( st0 );
+	const done = run( repo, s.runPhp, true );
+	assert.equal( done.code, 0, done.out.join( '\n' ) );
+	const st = s.state();
+	assert.deepEqual( [ ...st.posts[ 50 ].attrs.pa_origin.options ].sort(), [ 30, 31 ], 'the product\'s Origin attribute lists the term it had and the catalogue\'s' );
+	assert.equal( st.posts[ 50 ].attrs.pa_origin.variation, false, 'a filter stays a filter' );
+} );

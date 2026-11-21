@@ -130,5 +130,17 @@
 		"find": "$aterms[ $tax ] = array_values( wc_get_product_terms( $id, $tax, array( 'fields' => 'names' ) ) );",
 		"replace": "$aterms[ $tax ] = array_values( wc_get_product_terms( $id, $tax, array( 'fields' => 'ids' ) ) );",
 		"why": "the read gives the terms as ids, not names"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "$attr = $cur ? clone $cur : new WC_Product_Attribute();",
+		"replace": "$attr = $cur ? $cur : new WC_Product_Attribute();",
+		"why": "an existing attribute is edited in place, which WooCommerce never saves (the filter-only colour stays filter-only)"
+	},
+	{
+		"file": "lib/site-build-catalogue-facets.mjs",
+		"find": "$a = isset( $attrs[ $tax ] ) ? clone $attrs[ $tax ] : new WC_Product_Attribute();",
+		"replace": "$a = isset( $attrs[ $tax ] ) ? $attrs[ $tax ] : new WC_Product_Attribute();",
+		"why": "an existing filter attribute is edited in place, which WooCommerce never saves (its new term is not listed on the product)"
 	}
 ]

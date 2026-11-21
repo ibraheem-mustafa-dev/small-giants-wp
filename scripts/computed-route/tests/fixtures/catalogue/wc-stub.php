@@ -62,15 +62,23 @@ class WC_Product {
 	}
 	public function get_regular_price() { return $this->g( 'price' ); }
 	public function set_regular_price( $v ) { $this->s( 'price', $v ); }
+	// WooCommerce hands back the attribute objects the product holds, and set_prop writes only a value that differs (!==)
+	// from the one it holds: an attribute object edited in place is the object it already holds, so the edit is never saved.
+	// Proved on a scratch copy (2026-11-21): pa_colour set_variation( true ) in place saved is_variation 0; on a clone, 1.
+	private $held = null;
 	public function get_attributes() {
-		$out = array();
-		foreach ( $this->g( 'attrs' ) as $tax => $d ) { $a = new WC_Product_Attribute(); $a->d = $d; $out[ $tax ] = $a; }
-		return $out;
+		if ( null === $this->held ) {
+			$this->held = array();
+			foreach ( $this->g( 'attrs' ) as $tax => $d ) { $a = new WC_Product_Attribute(); $a->d = $d; $this->held[ $tax ] = $a; }
+		}
+		return $this->held;
 	}
 	public function set_attributes( $list ) {
+		if ( null !== $this->held && $list === $this->held ) { return; }
 		$rows = array();
 		foreach ( $list as $tax => $a ) { $rows[ $tax ] = $a->d; }
 		$this->s( 'attrs', $rows );
+		$this->held = $list;
 	}
 	public function get_default_attributes() { return $this->g( 'defaults' ); }
 	public function set_default_attributes( $v ) { $this->s( 'defaults', $v ); }

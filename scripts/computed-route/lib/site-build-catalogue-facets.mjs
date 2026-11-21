@@ -136,7 +136,9 @@ $sgs_assign_facets = function ( $id, $p, $ours ) use ( $facet_tax, &$done ) {
 			if ( $t && ! in_array( (int) $t->term_id, $ids, true ) ) { $ids[] = (int) $t->term_id; }
 		}
 		if ( $ids === $have && isset( $attrs[ $tax ] ) ) { continue; }
-		$a = isset( $attrs[ $tax ] ) ? $attrs[ $tax ] : new WC_Product_Attribute();
+		// A copy: WooCommerce writes only an attribute list that differs (!==) from the one it holds, so an attribute edited in
+		// place is never saved.
+		$a = isset( $attrs[ $tax ] ) ? clone $attrs[ $tax ] : new WC_Product_Attribute();
 		if ( ! isset( $attrs[ $tax ] ) ) {
 			$a->set_id( wc_attribute_taxonomy_id_by_name( $tax ) );
 			$a->set_name( $tax );

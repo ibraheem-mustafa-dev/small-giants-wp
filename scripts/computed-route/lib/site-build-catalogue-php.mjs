@@ -260,7 +260,9 @@ foreach ( $steps as $s ) {
 				if ( $a['default'] === $o['term'] && ! isset( $defaults[ $tax ] ) ) { $defaults[ $tax ] = $t->slug; }
 			}
 			if ( $cur && $cur->get_variation() && ! $grew ) { continue; }
-			$attr = $cur ? $cur : new WC_Product_Attribute();
+			// A copy: WooCommerce writes only an attribute list that differs (!==) from the one it holds, so an attribute edited in
+			// place is never saved.
+			$attr = $cur ? clone $cur : new WC_Product_Attribute();
 			if ( ! $cur ) {
 				$attr->set_id( wc_attribute_taxonomy_id_by_name( $tax ) );
 				$attr->set_name( $tax );
