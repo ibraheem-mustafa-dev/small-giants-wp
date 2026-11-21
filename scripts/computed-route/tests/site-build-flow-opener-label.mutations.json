@@ -64,5 +64,11 @@
 		"find": "\t\tkses_remove_filters();",
 		"replace": "\t\t;",
 		"why": "the save runs through the content filter"
+	},
+	{
+		"file": "lib/site-build-flow-opener-label.mjs",
+		"find": "if ( null !== $attrs && 1 !== preg_match_all(",
+		"replace": "if ( false && null !== $attrs && 1 !== preg_match_all(",
+		"why": "a post holding two flow tags is rewritten by text"
 	}
 ]

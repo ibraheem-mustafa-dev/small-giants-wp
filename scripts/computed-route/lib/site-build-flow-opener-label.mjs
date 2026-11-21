@@ -109,6 +109,11 @@ foreach ( $items as $item ) {
 			break;
 		}
 	}
+	// The rewrite below finds the flow's opening tag by text, so it runs only when the post holds one sgs/choice-flow tag: with
+	// a second (a flow nested in another block) the first tag in the text need not be the root flow the attributes came from.
+	if ( null !== $attrs && 1 !== preg_match_all( '#<!--\\s+wp:sgs/choice-flow\\s#', $content ) ) {
+		$attrs = null;
+	}
 	if ( null !== $attrs ) {
 		$attrs['${ LABEL_ATTR }'] = (string) $item[2];
 		// Only the flow's own opening tag is rewritten: every other byte of the post stays as saved.
