@@ -3,7 +3,7 @@
 // element it copies) to a tree resolved root-down in one pass, before anything is built.
 //   node scripts/computed-route/fill.mjs --client <slug> --surface <name> --skeleton <file>
 //        (--draft-url <url> | --draft-dir <folder> [--draft-index <file>]) --live-url <url>
-//        [--site <target>] [--out <dir>] [--open <regex>] [--cache <dir>] [--no-sweep] [--headed] [--allow-external] [--mirror <url> <file>]...
+//        [--site <target>] [--out <dir>] [--open <regex>] [--cache <dir>] [--no-sweep] [--headed] [--allow-external] [--mirror <url> <file>]... [--run-ledger <run.jsonl>]
 //   --site: the site the run is aimed at (site-run passes its own --site); the paint gate reads and names it. Default: the
 //   surface entry's site in surfaces.json.
 //   node scripts/computed-route/fill.mjs --serve <folder> [--draft-index <file>]    serve a draft folder until Ctrl-C
@@ -30,6 +30,8 @@ import { widthStateKeys } from './lib/state-reach.mjs';
 import { openerRefusals } from './lib/fill-opener-refusals.mjs';
 import { inputHashes, readSetFile } from './lib/census-reads.mjs';
 import { fillTree } from './lib/fill-resolve.mjs';
+import { openRunLedger } from './lib/run-ledger.mjs';
+import { fillRunRows } from './lib/run-ledger-fill.mjs';
 import { fillStates } from './lib/fill-state.mjs';
 import { sampleMotion } from './lib/fill-entrance.mjs';
 import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
@@ -432,6 +434,8 @@ export async function fillSurface( o ) {
 		}
 		put( cfg.baseFile, cfg.baseText );
 		put( cfg.fullFile, cfg.fullText );
+		// The run ledger (--run-ledger, lib/run-ledger.mjs): what Fill did with each draft look, appended after every output above.
+		o.runLedger && openRunLedger( o.runLedger ).append( fillRunRows( { surface: o.surface, run: path.basename( outDir ), nodes, flat, refOf, reads, report: report.json, inventory, stateLedger: states.ledger } ) );
 		return { ...report.json, outDir, tree };
 	} finally {
 		await served?.close();
@@ -451,7 +455,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		} else {
 			const r = await fillSurface( {
 				client: flag( '--client' ), surface: flag( '--surface' ), skeleton: flag( '--skeleton' ), draftUrl: flag( '--draft-url' ), draftDir: flag( '--draft-dir' ), draftIndex: flag( '--draft-index' ),
-				liveUrl: flag( '--live-url' ), livePrime: flag( '--live-prime' ) ? JSON.parse( flag( '--live-prime' ) ) : null, site: flag( '--site' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ), allowMissingPaint: allowMissingPaintArg( argv ),
+				liveUrl: flag( '--live-url' ), livePrime: flag( '--live-prime' ) ? JSON.parse( flag( '--live-prime' ) ) : null, site: flag( '--site' ), out: flag( '--out' ), open: flag( '--open' ), cache: flag( '--cache' ), sweep: ! argv.includes( '--no-sweep' ), headless: ! argv.includes( '--headed' ), external: argv.includes( '--allow-external' ), mirror: parseMirrors( argv ), allowMissingPaint: allowMissingPaintArg( argv ), runLedger: flag( '--run-ledger' ),
 				log: ( m ) => console.log( m ),
 			} );
 			console.log( `fill ${ r.surface }: ${ r.counts.writes } settings written, ${ r.counts.unmapped } UNMAPPED, ${ r.counts.handover } handover, ${ r.counts.fluid } fluid, ${ r.counts.breakpointSteps } breakpoint steps. Report: ${ path.join( r.outDir, 'fill-report.md' ) }` );

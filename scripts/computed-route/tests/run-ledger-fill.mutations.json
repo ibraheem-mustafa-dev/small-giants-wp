@@ -1,0 +1,15 @@
+[
+	{"file": "lib/run-ledger-fill.mjs", "find": "\t\tif ( 'residual-css' === w.how ) {", "replace": "\t\tif ( false ) {", "why": "a residual-css write is its rule's rows"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "\t\tconst answered = ANSWERING_PASSES.includes( s.reason );", "replace": "\t\tconst answered = false;", "why": "a pass that answered a row wrote it"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "\t\t\tif ( ! at.some( ( [ , s ] ) => undefined !== s.styles?.[ p ] ) ) {", "replace": "\t\t\tif ( true ) {", "why": "a property Fill read is not unread"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "\t\tfor ( const p of e ? paintedProperties( e ) : [] ) {", "replace": "\t\tfor ( const p of [] ) {", "why": "unread rows are written"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "\t\tfor ( const k of [ 'x', 'y', 'w', 'h' ] ) {", "replace": "\t\tfor ( const k of [] ) {", "why": "box rows are written"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "[ 'href', ( s ) => s.href ], ", "replace": "", "why": "the link is passed on"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "\t\tconst at = READ_WIDTHS.map( ( w ) => [ w, reads?.widths?.[ w ]?.[ t.id ] ] ).filter( ( [ , s ] ) => s && ! s.missing );", "replace": "\t\tconst at = READ_WIDTHS.map( ( w ) => [ w, reads?.widths?.[ w ]?.[ t.id ] ] ).filter( ( [ , s ] ) => s );", "why": "a missing target reads nothing"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "filter( ( x ) => ! look.rendered?.[ x ] && ! /^transition/.test( x ) )", "replace": "filter( ( x ) => false )", "why": "an unrendered state look is a row"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "\tfor ( const l of stateLedger || [] ) {", "replace": "\tfor ( const l of [] ) {", "why": "fillStates' ledger rows are written"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "\t\tadd( { node: h.node, part: h.slot, property: h.evidence?.key || h.kind || 'content',", "replace": "\t\tfalse && add( { node: h.node, part: h.slot, property: h.evidence?.key || h.kind || 'content',", "why": "handovers are rows"},
+	{"file": "lib/run-ledger-fill.mjs", "find": "const keyOf = ( index, node, slot ) => ( index.byPart.get( `${ node }|${ slot || '' }` ) ??", "replace": "const keyOf = ( index, node, slot ) => ( undefined ??", "why": "a record row's draft element is its target's"},
+	{"file": "lib/fill-state.mjs", "find": "\t\t\trec.targets.forEach( ( t ) => silent( rec, t, `${ rec.name } has no calibration, so no state setting is resolved` ) );", "replace": "", "why": "a block with no calibration names its dropped looks"},
+	{"file": "lib/fill-state.mjs", "find": "\t\t\t\tsilent( rec, target, `\"${ target.slot }\" is no calibrated path of ${ rec.name }, so its state looks are not resolved` );", "replace": "", "why": "an uncalibrated part names its dropped looks"}
+]

@@ -279,7 +279,9 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 	} );
 	const sink = createPatch();
 	const snapOf = ( target ) => targetSnap( reads, target );
-	const out = { writes: [], unmapped: [], held: [] };
+	// `ledger`: the state looks this pass ends with no write, unmapped or held row (lib/run-ledger-fill.mjs writes them to the
+	// run ledger): { node, block, slot, property, state, value, kind: 'dropped' | 'judged-equal', reason }.
+	const out = { writes: [], unmapped: [], held: [], ledger: [] };
 	// The focus-shares-hover rows and the focus looks painted as hover, per node (lib/fill-state-focus.mjs::settleFocusRests).
 	const shares = [];
 	const painted = new Map();
@@ -290,9 +292,12 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 	} catch {
 		mdb = null;
 	}
+	// Every look of a target this pass leaves without a record, as a ledger row with its reason.
+	const silent = ( rec, target, reason ) => stateDrafts( reads, target.id ).forEach( ( d ) => out.ledger.push( { node: refOf( flat[ rec.index ] ), block: rec.name, slot: `${ target.slot }${ d.pseudo }`, property: d.prop, state: d.state, value: JSON.stringify( d.perWidth ), kind: 'dropped', reason } ) );
 	for ( const rec of nodes ) {
 		const cal = rec.targets.length ? calFor( rec.name ) : null;
 		if ( ! cal ) {
+			rec.targets.forEach( ( t ) => silent( rec, t, `${ rec.name } has no calibration, so no state setting is resolved` ) );
 			continue;
 		}
 		// The setting states this block holds: a state another block holds is still a gap here.
@@ -303,6 +308,7 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 		const taken = new Map();
 		for ( const target of rec.targets ) {
 			if ( ! knownPaths( cal ).map( LOOSE ).includes( LOOSE( target.slot ) ) ) {
+				silent( rec, target, `"${ target.slot }" is no calibrated path of ${ rec.name }, so its state looks are not resolved` );
 				continue;
 			}
 			// Transition timings follow CSS direction semantics (lib/fill-timing.mjs), not the one-look-one-state rule below.
@@ -350,6 +356,8 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 					}
 					const shared = 'hover' === state ? focusSharesHover( { drafts, pseudo, prop, snap: snapOf( target ), attrs: res.writes.map( ( w ) => w.attr ) } ) : null;
 					shared && shares.push( { node, ref, rec, row: { node: ref, block: rec.name, slot, property: prop, state: 'focus', value: JSON.stringify( perWidth ), reason: shared } } );
+				} else if ( 'equal' === res.status ) {
+					out.ledger.push( { node: ref, block: rec.name, slot, property: prop, state, value: JSON.stringify( perWidth ), kind: 'judged-equal', reason: `lib/fill-prop.mjs::resolveProperty returned equal: no tier of the draft's ${ state } value differs from what the node shows (lib/fill-prop.mjs::tiersDiffering), so nothing is written` } );
 				} else if ( 'gap' === res.status ) {
 					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: scriptGapReason( script, state, res.detail ? `${ res.gap }: ${ res.detail }` : res.gap ) } );
 				}
