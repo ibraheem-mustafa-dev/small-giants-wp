@@ -42,6 +42,7 @@ import { residualCssWrites, PASS as PASS_RESIDUAL } from './lib/fill-residual-cs
 import { stepRungWrites } from './lib/fill-step-rungs.mjs';
 import { dimensionWrites } from './lib/fill-dimensions.mjs';
 import { layerRotationWrites } from './lib/fill-layer-rotation.mjs';
+import { stickyHeaderWrites } from './lib/fill-header-sticky.mjs';
 import { scrollbarPatch, mergePatch } from './lib/fill-scrollbar.mjs';
 import { motionWrites } from './lib/fill-motion.mjs';
 import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
@@ -351,6 +352,10 @@ export async function fillSurface( o ) {
 		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
+		// A header the draft pins by its own CSS is sticky per tier (lib/fill-header-sticky.mjs).
+		const sticky = stickyHeaderWrites( { nodes, flat, refOf, reads, writes: result.writes } );
+		result.writes.push( ...sticky.writes );
+		result.notes.push( ...sticky.notes );
 		// The resting timing and rest-length rows a motion part's written hover state holds (lib/fill-motion-settle.mjs).
 		const moved = motionSettled( { unmapped: result.unmapped, writes: motion.writes, nodes, flat, refOf, mdb: motionDb( db ), db, calFor, reads, rawSnapshot } );
 		result.settled.push( ...passSettled( result.unmapped, moved.unmapped, 'motion', moved.answered ) );

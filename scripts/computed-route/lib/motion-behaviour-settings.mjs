@@ -31,6 +31,9 @@ function stickyOf( r, ctx ) {
 
 const PINS = /^(?:sticky|fixed)$/;
 
+// The header block and its sticky setting, which headerScrollOf and lib/fill-header-sticky.mjs write.
+export const STICKY_HEADER = { block: 'sgs/site-header', attr: 'headerSticky' };
+
 // Each device tier and the width the draft is read at for it (lib/fill-read.mjs::READ_WIDTHS), widest first: a narrower
 // tier inherits a wider one's value.
 const TIER_WIDTHS = [ [ 'desktop', 1440 ], [ 'tablet', 768 ], [ 'mobile', 375 ] ];

@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/fill-header-sticky.mjs", "find": "for ( const rec of nodes.filter( ( n ) => STICKY_HEADER.block === n.name ) ) {", "replace": "for ( const rec of nodes ) {", "why": "every block takes the header's sticky setting" },
+	{ "file": "lib/fill-header-sticky.mjs", "find": "const root = rec.targets.find( ( t ) => '' === ( t.slot ?? '' ) );", "replace": "const root = rec.targets.at( -1 );", "why": "a part that pins makes the header sticky" },
+	{ "file": "lib/fill-header-sticky.mjs", "find": "if ( ! tiers ) {", "replace": "if ( false ) {", "why": "a header in the flow is written null" },
+	{ "file": "lib/fill-header-sticky.mjs", "find": "if ( writes.some( ( w ) => w.index === rec.index && STICKY_HEADER.attr === w.attr ) ) {", "replace": "if ( false ) {", "why": "a sticky setting another pass wrote is overwritten" },
+	{ "file": "lib/fill-header-sticky.mjs", "find": "if ( ! Object.keys( by ).length ) {", "replace": "if ( false ) {", "why": "a header never read is pinned at desktop by stickyTiers' no-read default" }
+]
