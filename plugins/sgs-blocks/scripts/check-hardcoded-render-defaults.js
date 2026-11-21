@@ -2310,8 +2310,15 @@ function collectControlEmissions( files, resolveVar, declaredAttrs, meta, hasSel
 		return control;
 	};
 
+	// A file that defines one of the control helpers is a shared helper library a block requires, not the block's own
+	// code: a helper call inside it delegates with the caller's prefix parameter (sgs_button_kit_css passing $prefix to
+	// sgs_button_element_style_css), so it names no control of the block and is skipped.
+	const definesHelper = ( src ) => Object.keys( CONTROL_HELPERS ).some( ( fn ) => new RegExp( `function\\s+${ fn }\\s*\\(` ).test( src ) );
 	for ( const [ fnName, spec ] of Object.entries( CONTROL_HELPERS ) ) {
 		for ( const [ fileIdx, f ] of files.entries() ) {
+			if ( definesHelper( f.src ) ) {
+				continue;
+			}
 			const starts  = [];
 			const regions = captureCallRegions( f.src, fnName, starts );
 			for ( const [ ri, region ] of regions.entries() ) {
