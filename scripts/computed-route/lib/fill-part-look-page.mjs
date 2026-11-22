@@ -36,7 +36,8 @@
 // textarea), scope ('page' outside the header, footer and any fixed panel, 'overlay' inside a fixed panel or dialog, 'any'),
 // modal (a dialog: role dialog or alertdialog, aria-modal="true" or a <dialog>), upper (true or false: its computed text-transform is
 // uppercase), square (true or false), noAnchor (an anchor located nothing: the basket drawer's empty state is read where it holds no
-// lines), notPrecedesAnchor (the negation of precedesAnchor), notShopPart (none of the shop parts record's elements for these ids).
+// lines), notPrecedesAnchor (the negation of precedesAnchor), beforeAnchor / afterAnchor (the match comes before / after an anchor's
+// element in the document: words in a box of their own beside a bar), notShopPart (none of the shop parts record's elements for these ids).
 // `spec.pins` maps an anchor to { tpl, host }: the anchor is the shown element the draft stamps with that template number in that
 // component (a second read of the same page in another state takes the drawer the first read found). Each located element is
 // returned with its own { tpl, host } stamp.
@@ -181,6 +182,9 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 	const pinned = ( pin ) => [ ...document.querySelectorAll( `[data-dc-tpl="${ CSS.escape( String( pin.tpl ) ) }"]` ) ].filter( ( el ) => stampOf( el ).host === ( pin.host ?? null ) && shown( el ) );
 	const anchorEls = ( name ) => ( spec.pins?.[ name ] ? pinned( spec.pins[ name ] ) : locate( spec.anchors[ name ], `a:${ name }` ) );
 	const memo = new Map();
+	// Where an element sits against an anchor's element `a` in the document: -1 before it, 1 after it (the locator's `from` scope keeps
+	// the comparison within one box, and `pick` takes the nearest).
+	const sideOf = ( el, a ) => ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1 );
 	// Whether the shop parts record locates the element for one of these part ids (its template key in its own component).
 	const stampedAs = ( el, ids ) => {
 		const keys = [ ...[].concat( ids ).flatMap( ( id ) => spec.shopParts?.[ id ] || [] ) ];
@@ -271,6 +275,12 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return false;
 		}
 		if ( m.notPrecedesAnchor && anchorEls( m.notPrecedesAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement?.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_FOLLOWING ) && ! el.contains( a ) ) ) {
+			return false;
+		}
+		if ( m.beforeAnchor && ! anchorEls( m.beforeAnchor ).some( ( a ) => sideOf( el, a ) < 0 ) ) {
+			return false;
+		}
+		if ( m.afterAnchor && ! anchorEls( m.afterAnchor ).some( ( a ) => sideOf( el, a ) > 0 ) ) {
 			return false;
 		}
 		if ( m.followsAnchor && ! anchorEls( m.followsAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_PRECEDING ) && ! a.contains( el ) ) ) {
@@ -509,6 +519,17 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		const own = Math.abs( parseFloat( tracks[ side ] ) - box( el ).width ) < 1 ? tracks[ side ] : null;
 		return own ? `${ Math.round( parseFloat( own ) * 10 ) / 10 }px` : '';
 	};
+	// The gap a stack puts between its copies: the parent's row gap, when the parent lays its children out in a column (a flex column, or
+	// a grid of one column) and a sibling repeats this element's shape (every copy reads it, the last one too). '' otherwise.
+	const stackGap = ( el ) => {
+		const p = el.parentElement;
+		if ( ! p || ! repeats( el ) ) {
+			return '';
+		}
+		const ps = styleOf( p );
+		const column = ( /flex/.test( ps.display ) && /^column/.test( ps.flexDirection ) ) || ( /grid/.test( ps.display ) && 1 === ps.gridTemplateColumns.split( /\s+/ ).filter( Boolean ).length );
+		return column && parseFloat( ps.rowGap ) > 0 ? ps.rowGap : '';
+	};
 	const pathOf = ( el ) => {
 		const parts = [];
 		for ( let e = el; e && e !== document.body; e = e.parentElement ) {
@@ -526,7 +547,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		out[ name ] = els.map( ( el ) => {
 			const s = styleOf( el );
 			const r = box( el );
-			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 60 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10 }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ) } };
+			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10 }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'stack:gap': stackGap( el ) } };
 		} );
 	}
 	return out;

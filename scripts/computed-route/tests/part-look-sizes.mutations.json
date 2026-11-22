@@ -61,8 +61,8 @@
 	},
 	{
 		"file": "lib/fill-part-look-page.mjs",
-		"find": ", 'track:width': trackWidth( el ) } };",
-		"replace": " } };",
+		"find": ", 'track:width': trackWidth( el ), 'stack:gap'",
+		"replace": ", 'stack:gap'",
 		"why": "the track width is never read in the page"
 	},
 	{
@@ -94,5 +94,41 @@
 		"find": "if ( '100%' === stated.text && ! stated.own && 'max-width' === property ) {",
 		"replace": "if ( '100%' === stated.text && ! stated.own ) {",
 		"why": "a height of 100% is written as a min-height"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( 'margin-bottom' === property && isZero( v ) && px( s( 'stack:gap' ) ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the stack gap between cards is never the space below a card"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( 'margin-bottom' === property && isZero( v ) &&",
+		"replace": "if ( 'margin-bottom' === property &&",
+		"why": "a card's own margin is replaced by the stack gap"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( ! p || ! repeats( el ) ) {",
+		"replace": "if ( ! p ) {",
+		"why": "a lone copy reads the stack gap"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "( /flex/.test( ps.display ) && /^column/.test( ps.flexDirection ) )",
+		"replace": "/flex/.test( ps.display )",
+		"why": "a row of cards reads its gap as the space below each"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "&& 1 === ps.gridTemplateColumns.split( /\\s+/ ).filter( Boolean ).length )",
+		"replace": ")",
+		"why": "a grid of two columns reads its row gap"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "'stack:gap': stackGap( el ) } };",
+		"replace": "} };",
+		"why": "the read carries no stack gap"
 	}
 ]

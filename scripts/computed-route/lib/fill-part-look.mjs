@@ -163,6 +163,10 @@ export function primitive( property, styles, row = {}, keep = false ) {
 			} else {
 				v = px( s( property ) );
 			}
+			// The space below a copy that a stack draws with its gap (a column of cards 16px apart) is that gap.
+			if ( 'margin-bottom' === property && isZero( v ) && px( s( 'stack:gap' ) ) ) {
+				v = px( s( 'stack:gap' ) );
+			}
 			return null === v || ( isZero( v ) && /^(min-|max-)/.test( property ) ) ? null : v;
 		}
 		case 'box': {

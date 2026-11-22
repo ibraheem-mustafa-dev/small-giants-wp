@@ -108,3 +108,28 @@ test( 'MUST FAIL: a height of 100% is no min-height the draft states, and 100% p
 	const wide = run( [ row( 'aWidth', 'width', 'box' ) ], { box: all( { width: '440px', 'track:width': '100%' } ) } );
 	assert.equal( writeOf( wide, 'aWidth' ), undefined );
 } );
+
+// F-21: the space between cards a stack draws with its gap (Mama's basket lines: a flex column with `gap:16px`) is the space below each
+// copy, which the cart's sgsItemGap paints as margin-bottom.
+async function readStack( parent, cards = 2, own = '' ) {
+	const card = `<article style="height:40px;${ own }"><span>a</span><b>b</b></article>`;
+	await page.setContent( `<!doctype html><body style="margin:0"><div style="${ parent }">${ card.repeat( cards ) }<p>after</p></div></body>` );
+	return page.evaluate( findPartsInPage, { spec: { anchors: {}, parts: { card: { from: 'page', match: { tag: [ 'article' ] } } } }, names: [ 'card' ], props: READ_PROPS, pages: {} } );
+}
+
+test( 'MUST FAIL: a copy in a column stack reads the stack\'s gap, and a margin-bottom setting takes it as the space below the copy', async () => {
+	const found = await readStack( 'display:flex;flex-direction:column;gap:16px' );
+	// Every copy reads it, the last one too (the instances must agree).
+	assert.deepEqual( found.card.map( ( c ) => c.styles[ 'stack:gap' ] ), [ '16px', '16px' ] );
+	assert.equal( ( await readStack( 'display:grid;row-gap:12px' ) ).card[ 0 ].styles[ 'stack:gap' ], '12px' );
+	const out = run( [ row( 'itemGap', 'margin-bottom', 'card', { attr_type: 'string', is_responsive: 0, tier_shape: null } ) ], { card: all( { 'stack:gap': '16px' } ) } );
+	assert.equal( writeOf( out, 'itemGap' ).value, '16px' );
+} );
+
+test( 'negative control: a row of copies, a lone copy and a copy with its own margin take no stack gap', async () => {
+	assert.equal( ( await readStack( 'display:flex;gap:16px' ) ).card[ 0 ].styles[ 'stack:gap' ], '' );
+	assert.equal( ( await readStack( 'display:flex;flex-direction:column;gap:16px', 1 ) ).card[ 0 ].styles[ 'stack:gap' ], '' );
+	assert.equal( ( await readStack( 'display:grid;grid-template-columns:1fr 1fr;row-gap:12px' ) ).card[ 0 ].styles[ 'stack:gap' ], '' );
+	const own = run( [ row( 'itemGap', 'margin-bottom', 'card', { attr_type: 'string', is_responsive: 0, tier_shape: null } ) ], { card: all( { 'stack:gap': '16px', 'margin-bottom': '8px' } ) } );
+	assert.equal( writeOf( own, 'itemGap' ).value, '8px' );
+} );

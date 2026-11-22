@@ -28,14 +28,14 @@ const ONE_FILE = ( lines = true ) => `<!doctype html><body style="margin:0;font:
 		<div data-dc-tpl="43" style="display:flex;justify-content:space-between;padding:18px 24px"><span data-dc-tpl="44" style="font-size:22px">Bag <span data-dc-tpl="45" style="font-size:13px">(2)</span></span><button data-dc-tpl="46" aria-label="Close bag" style="min-width:44px;min-height:44px">×</button></div>
 		<div data-dc-tpl="47" style="flex:1;overflow:auto;padding:20px 24px;display:flex;flex-direction:column;gap:18px">
 		${ lines ? [ 'Ray-Ban', 'Gucci' ].map( ( b, i ) => `<div data-dc-tpl="50" style="display:grid;grid-template-columns:96px 1fr;gap:16px">
-			<div data-dc-tpl="51" style="width:96px;height:96px;background:#F3F0EB;font-size:12px">${ b }</div>
+			<div data-dc-tpl="51" style="width:96px;height:96px;background:#F3F0EB;font-size:12px"><span>${ b }</span></div>
 			<div data-dc-tpl="52" style="font-size:14px"><div data-dc-tpl="53" style="display:flex;justify-content:space-between"><span data-dc-tpl="54" style="font-size:11px;text-transform:uppercase">${ b }</span><span data-dc-tpl="55">£${ 139 + i * 100 }</span></div>
 				<div data-dc-tpl="56" style="font-size:15px">Frame ${ i }</div><div data-dc-tpl="57" style="font-size:13px">Lenses ${ i }</div>
 				<div data-dc-tpl="58" style="display:flex;gap:16px"><button data-dc-tpl="59">Add my prescription</button><button data-dc-tpl="60">Remove</button></div></div></div>` ).join( '' ) : '<div data-dc-tpl="48" style="text-align:center;padding:60px 0"><div data-dc-tpl="49" style="font-size:26px">Nothing in here yet.</div><button data-dc-tpl="61">Shop sunglasses</button></div>' }
 		</div>
 		${ lines ? `<div data-dc-tpl="62" style="border-top:1px solid #E6E1DA;padding:18px 24px;background:#fff">
 			<div data-dc-tpl="63" style="display:flex;justify-content:space-between"><span data-dc-tpl="64">Subtotal</span><span data-dc-tpl="65">£378.00</span></div>
-			<div data-dc-tpl="66" style="font-size:12.5px">Free UK delivery on this order</div>
+			<div data-dc-tpl="66" style="font-size:12.5px"><span>Free UK delivery on this order</span></div>
 			<div data-dc-tpl="67" style="height:2px;background:#E6E1DA;margin:10px 0 16px"><div data-dc-tpl="68" style="height:100%;width:100%;background:#9C8B78"></div></div>
 			<button data-dc-tpl="69" style="width:100%;min-height:54px;text-transform:uppercase">Checkout</button>
 			<div data-dc-tpl="70" style="text-align:center;font-size:12.5px">Or 3 payments of £126.00 with Klarna</div>
@@ -66,7 +66,7 @@ const PAGES = ( lines = true ) => `<!doctype html><body style="margin:0;font:16p
 		<div data-dc-tpl="62" style="font-size:14px">Baked fresh for you</div>
 		<a data-dc-tpl="63" href="Checkout.html" style="display:flex;height:56px">Checkout securely</a>
 		<a data-dc-tpl="64" href="Basket.html" style="display:block;padding:12px">View full basket</a>
-	</div>` : `<div data-dc-tpl="65" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:14px"><img data-dc-tpl="66" alt="" style="width:120px;height:40px" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><div data-dc-tpl="67" style="font-size:26px">Your basket is empty</div><p data-dc-tpl="68" style="max-width:300px">New to Zookies? The Taster Trio is 3 cookies for £5.</p><button data-dc-tpl="69">Add a Taster Trio · £5</button><a data-dc-tpl="70" href="Shop.html">Browse the shop</a></div>` }
+	</div>` : `<div data-dc-tpl="65" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:14px"><img data-dc-tpl="66" alt="" style="width:120px;height:40px" src="data:image/gif;base64,R0lGODlhAQABAAAAACw="><div data-dc-tpl="67" style="font-size:26px">Your basket is empty</div><p data-dc-tpl="68" style="max-width:300px">New to Zookies? The Taster Trio is 3 cookies for £5, postage included.</p><button data-dc-tpl="69">Add a Taster Trio · £5</button><a data-dc-tpl="70" href="Shop.html">Browse the shop</a></div>` }
 </aside></div></body>`;
 const PAGES_MAP = { checkout: 'Checkout.html', cart: 'Basket.html' };
 
@@ -114,7 +114,7 @@ test( 'MUST FAIL: a one-file drawer is read from its dialog, not the scroll list
 	assert.deepEqual( texts( r[ 'panel-heading' ] ), [ 'Bag (2)' ] );
 	assert.deepEqual( texts( r.panelCount ), [ '(2)' ] );
 	assert.deepEqual( texts( r.panelClose ), [ '×' ] );
-	// The free-delivery track is the 2px strip, not the picture box holding a placeholder word.
+	// The free-delivery track is the 2px strip, not the picture box holding a placeholder word; its words sit in a box of their own beside it.
 	assert.equal( r.freeDeliveryTrack[ 0 ].tpl, '67' );
 	assert.deepEqual( texts( r.freeDeliveryText ), [ 'Free UK delivery on this order' ] );
 	// The brand eyebrow is its own part, and the line's name and detail are neither it nor the picture box's word.
@@ -169,14 +169,14 @@ test( 'MUST FAIL: Mama\'s drawer: the stepper, the gift tick after the lines, th
 	assert.deepEqual( texts( filled.panelTaxNote ), [ 'Baked fresh for you' ] );
 	assert.deepEqual( filled.panelInstalments, [] );
 	assert.deepEqual( texts( filled.freeDeliveryText ), [ 'Add £8.50 more for free UK delivery' ] );
-	assert.deepEqual( texts( reads.emptyBody[ 1440 ] ), [ 'New to Zookies? The Taster Trio is 3 cookies for £5.' ] );
+	assert.deepEqual( texts( reads.emptyBody[ 1440 ] ), [ 'New to Zookies? The Taster Trio is 3 cookies for £5, postage included.' ] );
 	assert.deepEqual( texts( reads.emptyLink[ 1440 ] ), [ 'Browse the shop' ] );
 	const got = written( modes( reads ) );
 	assert.deepEqual( got, {
 		panelHeading: 'Your basket', panelShowCount: true, itemQtyStyle: 'stepper', itemShowSaveForLater: false, itemRemoveStyle: 'text',
 		viewCartLabel: 'View full basket', checkoutLabel: 'Checkout securely', panelTaxNote: 'Baked fresh for you',
 		freeDeliveryMessage: 'Add %s more for free UK delivery', freeDeliveryHideWhenEmpty: true, panelGiftShow: true, panelGiftLabel: 'This is a gift',
-		panelGiftHelp: 'Add a message. We leave the prices off.', panelGiftPlacement: 'after-items', emptyBody: 'New to Zookies? The Taster Trio is 3 cookies for £5.',
+		panelGiftHelp: 'Add a message. We leave the prices off.', panelGiftPlacement: 'after-items', emptyBody: 'New to Zookies? The Taster Trio is 3 cookies for £5, postage included.',
 	} );
 } );
 

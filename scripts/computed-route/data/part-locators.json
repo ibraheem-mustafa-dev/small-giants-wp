@@ -1528,7 +1528,7 @@
 								"ownText": true,
 								"text": "words",
 								"control": false,
-								"precedesAnchor": "track"
+								"beforeAnchor": "track"
 							},
 							"pick": "last"
 						},
@@ -1538,7 +1538,7 @@
 								"ownText": true,
 								"text": "words",
 								"control": false,
-								"followsAnchor": "track"
+								"afterAnchor": "track"
 							},
 							"pick": "first"
 						}
@@ -1573,7 +1573,10 @@
 						"text": "words",
 						"control": false,
 						"upper": false,
-						"square": false
+						"square": false,
+						"notInside": {
+							"square": true
+						}
 					},
 					"perRoot": true,
 					"pick": {
@@ -1587,7 +1590,10 @@
 						"text": "words",
 						"control": false,
 						"upper": false,
-						"square": false
+						"square": false,
+						"notInside": {
+							"square": true
+						}
 					},
 					"perRoot": true,
 					"pick": {
