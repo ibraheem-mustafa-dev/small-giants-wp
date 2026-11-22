@@ -16,6 +16,9 @@ the source of truth; the DB tables are the runtime query target, FP-1):
                             drops are deleted)
   motion_presets        <- motion-presets.json      (validated against the motion schema first; a bad
                             preset aborts with a non-zero exit; rows the file lacks are deleted)
+  setting_placements,    <- data/setting-records/*.json (one file per block; every file is validated before any
+  block_part_order,         row changes and a bad file aborts with a non-zero exit; a block with no file loses
+  setting_record_blocks     its rows; a missing or empty folder leaves the tables untouched)
 
 Importing this module touches nothing: no database connection, no file read. ``seed_all(db_path)``
 opens its own connection. The table DDL lives in ``dbschema/schema.sql``; a missing table or an
@@ -54,6 +57,7 @@ _ATOMIC_TAG_MAP_FILE = _DATA_DIR / "atomic-tag-map.json"
 _PROPERTY_EQUIVALENTS_FILE = _DATA_DIR / "property-equivalents.json"
 _PROPERTY_EQUIVALENTS_COLUMNS = ("draft_property", "setting_property", "hop", "condition", "note")
 _STATES_FILE = _DATA_DIR / "states.json"
+_SETTING_RECORDS_DIR = _DATA_DIR / "setting-records"
 _STATES_COLUMNS = ("state", "family", "kind", "token", "reach", "call", "note")
 
 
@@ -374,11 +378,202 @@ def _seed_states(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-def seed_all(db_path: Path | str | None = None) -> None:
+# --- setting records ---
+
+class SettingRecordError(Exception):
+    """A setting-record data file is malformed. Not a sqlite3.OperationalError, so seed_all lets it through."""
+
+
+_RECORD_KINDS = ("value", "switched-on")
+_RECORD_BUILT_BY = ("php", "script")
+_RECORD_TABLES = ("setting_placements", "block_part_order", "setting_record_blocks")
+_RECORD_SHRINK_WARN = 0.10
+
+
+def _is_str_list(value: object) -> bool:
+    return isinstance(value, list) and all(isinstance(v, str) for v in value)
+
+
+def _optional_str(where: str, value: object, label: str) -> str | None:
+    if value is not None and not isinstance(value, str):
+        raise SettingRecordError(f"{where}: {label} must be a string or null")
+    return value  # type: ignore[return-value]
+
+
+def _accounted_text(where: str, value: object, label: str) -> str | None:
+    """A string stays as written; a list or object is stored as JSON; null stays NULL."""
+    if value is None or isinstance(value, str):
+        return value  # type: ignore[return-value]
+    if isinstance(value, (list, dict)):
+        return json.dumps(value, ensure_ascii=False)
+    raise SettingRecordError(f"{where}: accounted.{label} must be a string, list, object or null")
+
+
+def _parse_setting_record(path: Path) -> dict:
+    """Validate one data file and return its rows: {block, parts, entries, block_row}. Writes nothing."""
+    name = path.name
+    try:
+        text = path.read_text(encoding="utf-8")
+        data = json.loads(text)
+    except (OSError, ValueError) as exc:
+        raise SettingRecordError(f"{name}: cannot read as JSON ({exc})") from exc
+    if not isinstance(data, dict):
+        raise SettingRecordError(f"{name}: the top level must be an object")
+    block = data.get("block")
+    if block != f"sgs/{path.stem}":
+        raise SettingRecordError(f"{name}: block is {block!r} but the file name says 'sgs/{path.stem}'")
+    version = data.get("schemaVersion")
+    if isinstance(version, bool) or version not in (1, 2):
+        raise SettingRecordError(f"{name}: schemaVersion must be 1 or 2, got {version!r}")
+
+    parts_in = data.get("parts")
+    if not isinstance(parts_in, list):
+        raise SettingRecordError(f"{name}: parts must be a list")
+    parts: list[tuple] = []
+    seen_parts: set[str] = set()
+    for i, item in enumerate(parts_in):
+        if isinstance(item, str):
+            part, tag, parent, built_by = item, None, None, None
+        elif isinstance(item, dict):
+            part = item.get("part")
+            tag = _optional_str(f"{name}: parts[{i}]", item.get("tag"), "tag")
+            parent = _optional_str(f"{name}: parts[{i}]", item.get("parent"), "parent")
+            built_by = item.get("builtBy")
+            if built_by is not None and built_by not in _RECORD_BUILT_BY:
+                raise SettingRecordError(
+                    f"{name}: parts[{i}] builtBy must be one of {_RECORD_BUILT_BY} or null, got {built_by!r}"
+                )
+        else:
+            raise SettingRecordError(f"{name}: parts[{i}] must be a string or an object")
+        if not isinstance(part, str) or not part:
+            raise SettingRecordError(f"{name}: parts[{i}] needs a non-empty part name")
+        if part in seen_parts:
+            raise SettingRecordError(f"{name}: part {part!r} is listed twice")
+        seen_parts.add(part)
+        parts.append((block, i, part, tag, parent, built_by))
+
+    entries_in = data.get("entries")
+    if not isinstance(entries_in, list):
+        raise SettingRecordError(f"{name}: entries must be a list")
+    entries: list[tuple] = []
+    seen_keys: set[tuple] = set()
+    for i, entry in enumerate(entries_in):
+        where = f"{name}: entries[{i}]"
+        if not isinstance(entry, dict):
+            raise SettingRecordError(f"{where} must be an object")
+        if entry.get("runner") is not None:
+            raise SettingRecordError(f"{where} carries a runner ({entry['runner']!r}): it is unchecked and may not be seeded")
+        for key in ("setting", "part"):
+            if not isinstance(entry.get(key), str) or not entry[key]:
+                raise SettingRecordError(f"{where} needs a non-empty string {key}")
+        for key in ("props", "tiers"):
+            if not _is_str_list(entry.get(key)):
+                raise SettingRecordError(f"{where} {key} must be a list of strings")
+        state = _optional_str(where, entry.get("state"), "state") or ""
+        kind = entry.get("kind")
+        if kind is not None and kind not in _RECORD_KINDS:
+            raise SettingRecordError(f"{where} kind must be one of {_RECORD_KINDS} or null, got {kind!r}")
+        unproved = _optional_str(where, entry.get("unproved"), "unproved")
+        selector = _optional_str(where, entry.get("selector"), "selector")
+        values = entry.get("values")
+        if values is not None and not isinstance(values, list):
+            raise SettingRecordError(f"{where} values must be a list or null")
+        symbolic = entry.get("symbolic")
+        if symbolic is not None and not isinstance(symbolic, (dict, list)):
+            raise SettingRecordError(f"{where} symbolic must be an object or null")
+        props = json.dumps(entry["props"], ensure_ascii=False)
+        tiers = json.dumps(entry["tiers"], ensure_ascii=False)
+        key = (entry["setting"], entry["part"], props, state, tiers)
+        if key in seen_keys:
+            raise SettingRecordError(
+                f"{where} repeats an earlier entry (setting {entry['setting']!r}, part {entry['part']!r}, "
+                f"props {props}, state {state!r}, tiers {tiers})"
+            )
+        seen_keys.add(key)
+        entries.append((
+            block, entry["setting"], entry["part"], props, state, tiers, kind, unproved, selector,
+            None if values is None else json.dumps(values, ensure_ascii=False),
+            None if symbolic is None else json.dumps(symbolic, ensure_ascii=False),
+        ))
+
+    stamp = data.get("stamp")
+    if stamp is not None and not isinstance(stamp, dict):
+        raise SettingRecordError(f"{name}: stamp must be an object or null")
+    accounted = data.get("accounted")
+    if accounted is None:
+        accounted = {}
+    if not isinstance(accounted, dict):
+        raise SettingRecordError(f"{name}: accounted must be an object or null")
+    tested = accounted.get("testedNoPaint")
+    if tested is not None and not isinstance(tested, list):
+        raise SettingRecordError(f"{name}: accounted.testedNoPaint must be a list or null")
+    block_row = (
+        block, version,
+        None if stamp is None else json.dumps(stamp, ensure_ascii=False),
+        None if tested is None else json.dumps(tested, ensure_ascii=False),
+        _accounted_text(name, accounted.get("replacesBlock"), "replacesBlock"),
+        _accounted_text(name, accounted.get("unvalued"), "unvalued"),
+        _accounted_text(name, accounted.get("partNotNamed"), "partNotNamed"),
+        text,
+    )
+    return {"block": block, "parts": parts, "entries": entries, "block_row": block_row}
+
+
+def _seed_setting_records(conn: sqlite3.Connection, records_dir: Path | str | None = None) -> None:
+    """Replace the setting record tables' rows with the data files' in ``records_dir`` (default ``data/setting-records``).
+
+    Every file is validated before any row changes; a bad one raises SettingRecordError naming the file. Then, in one
+    transaction, every block's rows are replaced in all three tables (a block with no file loses its rows) and the row
+    counts are checked against the files. A missing or empty folder leaves the tables untouched.
+    """
+    folder = Path(records_dir) if records_dir is not None else _SETTING_RECORDS_DIR
+    files = sorted(folder.glob("*.json")) if folder.is_dir() else []
+    if not files:
+        _warn(f"setting records: no data files in {folder}; the setting record tables are left as they are")
+        return
+    records = [_parse_setting_record(f) for f in files]
+
+    before = {t: conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in _RECORD_TABLES}  # noqa: S608 - fixed names
+    try:
+        for table in _RECORD_TABLES:
+            conn.execute(f"DELETE FROM {table}")  # noqa: S608 - fixed names; every block with a file is re-inserted below
+        conn.executemany(
+            "INSERT INTO setting_record_blocks (block_slug, schema_version, stamp, tested_no_paint, replaces_block, "
+            "unvalued, part_not_named, record_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            [r["block_row"] for r in records],
+        )
+        conn.executemany(
+            "INSERT INTO block_part_order (block_slug, position, part, tag, parent_part, built_by) VALUES (?, ?, ?, ?, ?, ?)",
+            [row for r in records for row in r["parts"]],
+        )
+        conn.executemany(
+            "INSERT INTO setting_placements (block_slug, setting, part, props, state, tiers, kind, unproved, selector, "
+            "setting_values, symbolic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [row for r in records for row in r["entries"]],
+        )
+        expected = {
+            "setting_placements": sum(len(r["entries"]) for r in records),
+            "block_part_order": sum(len(r["parts"]) for r in records),
+            "setting_record_blocks": len(records),
+        }
+        after = {t: conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in _RECORD_TABLES}  # noqa: S608
+        if after != expected:
+            raise SettingRecordError(f"setting records: row counts {after} differ from the files' {expected}; nothing was written")
+    except BaseException:
+        conn.rollback()
+        raise
+    conn.commit()
+    for table in _RECORD_TABLES:
+        if before[table] and after[table] < before[table] * (1 - _RECORD_SHRINK_WARN):
+            _warn(f"setting records: {table} shrank from {before[table]} to {after[table]} rows")
+
+
+def seed_all(db_path: Path | str | None = None, records_dir: Path | str | None = None) -> None:
     """Run every seeder against ``db_path`` (default: ``default_db_path()``) over its own connection.
 
     Order matters: ``property_suffixes`` is seeded before its ``kind_override`` back-fill. Each seeder is independent: one that hits a missing table,
-    a locked or read-only database is reported on stderr and the rest still run.
+    a locked or read-only database is reported on stderr and the rest still run. A malformed setting-record file
+    (SettingRecordError) is not skipped: it propagates after every earlier seeder has run, with no setting-record row changed.
     """
     path = Path(db_path) if db_path else default_db_path()
     if not path.exists():
@@ -395,6 +590,7 @@ def seed_all(db_path: Path | str | None = None) -> None:
             ("property_equivalents", _seed_property_equivalents),
             ("states", _seed_states),
             ("motion_presets", seed_motion_presets),
+            ("setting_records", lambda c: _seed_setting_records(c, records_dir)),
         )
         for label, step in steps:
             try:
@@ -427,6 +623,9 @@ def main(argv: list[str] | None = None) -> int:
         seed_all(args.db)
     except MotionPresetError as exc:
         _warn(f"motion_presets refused: {exc}")
+        return 1
+    except SettingRecordError as exc:
+        _warn(f"setting records refused: {exc}")
         return 1
     return 0
 

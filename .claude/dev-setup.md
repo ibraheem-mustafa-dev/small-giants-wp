@@ -195,6 +195,34 @@ One row per (`block_slug`, `fact`, `value`, `source`): whether the block can sho
 
 - `selector`: A PASSIVE MIRROR of each block.json own selectors key. WordPress reads block.json directly at register_block_type and never consults this table, so editing a row changes nothing at runtime. Its single reader is generate-block-reference.py, a docs generator. Its only writer is sgs-update-v2.py.
 
+**`setting_placements`**, **`block_part_order`** and **`setting_record_blocks`**
+
+The setting record (plan `plans/2026-11-21-setting-record.md`): one data file per block in `plugins/sgs-blocks/scripts/data/setting-records/<block>.json`, seeded by `dbschema/seed_reference_data.py::_seed_setting_records` (the migration `migrations/2026-11-22-setting-record-tables.py` creates the tables). The seeder validates every file first and refuses a bad one (a `kind` outside the two below, a `block` that is not `sgs/<file name>`, an entry carrying a `runner`, a repeated entry key), then replaces every block's rows in all three tables in one transaction and deletes the rows of a block with no file. A missing or empty folder leaves the tables untouched. Only `plugins/sgs-blocks/scripts/setting-record/` writes the files.
+
+- `setting_placements.block_slug`, `setting`: the block and the attribute (setting) that paints.
+- `setting_placements.part`: the block part the setting paints, `ROOT` for the block's own outer element, otherwise a BEM element class of the block (listed in `block_part_order`).
+- `setting_placements.props`: JSON list of the CSS longhands the setting writes on that part.
+- `setting_placements.state`: the pseudo-state the placement applies to (`hover`, `focus`, `open` and so on), or `''` for none. Never NULL, because it is part of the table's unique key; the seeder stores a data file's null state as `''`.
+- `setting_placements.tiers`: JSON list of the media conditions the placement applies under (for example `["@media(max-width:767.98px)"]`); `[]` is the base tier.
+- `setting_placements.kind`: `value` when the property takes the setting's value; `switched-on` when moving the setting off its default turns the declaration on with a value of its own (`scripts/setting-record/README.md`, record schema); NULL when the file gives none.
+- `setting_placements.unproved`: why the entry is blind (the check could not prove it); its `kind` is then only a reading, and a reader that acts on `kind` treats the entry as unproved. NULL when the entry is proved.
+- `setting_placements.selector`: the CSS selector the placement was read from, as a note for people: nothing matches on it.
+- `setting_placements.setting_values`: JSON list of the setting values that produce this entry; NULL when the entry holds for any value.
+- `setting_placements.symbolic`: JSON object the record writer attaches to an entry (schema version 2); the writer's README defines its keys; NULL when the entry has none.
+- `block_part_order.position`: the part's 0-based place in the block's render order, which is the order of the record file's `parts`.
+- `block_part_order.part`: the part's BEM element class (the entries' `part` values; `ROOT` is not listed here).
+- `block_part_order.tag`: the HTML tag the part prints; NULL when the record does not say.
+- `block_part_order.parent_part`: the part that contains it; NULL for a part directly in the block's root or when the record does not say.
+- `block_part_order.built_by`: `php` (the block's `render.php` prints it) or `script` (a view script builds it); NULL when the record does not say.
+- `setting_record_blocks.block_slug`: the block, the primary key; one row per data file.
+- `setting_record_blocks.schema_version`: the data file's `schemaVersion` (1 or 2).
+- `setting_record_blocks.stamp`: JSON object the record writer stamped the file with; NULL when absent.
+- `setting_record_blocks.tested_no_paint`: JSON list of the settings whose renders changed no CSS, class, attribute or style anywhere; NULL when the file has no such list.
+- `setting_record_blocks.replaces_block`: the record's `accounted.replacesBlock`: the settings that remove the block or swap it for other markup (such as a visibility condition), so no placement is read from them (a list as JSON, a string as written); NULL when absent.
+- `setting_record_blocks.unvalued`: the record's `accounted.unvalued`: settings left untested, each with a reason (a list as JSON, a string as written); NULL when absent.
+- `setting_record_blocks.part_not_named`: the record's `accounted.partNotNamed`: placements whose part the selector reader cannot name, kept out of the entries (a list as JSON, a string as written); NULL when absent.
+- `setting_record_blocks.record_json`: the whole data file as written, so a field added to the file later reaches readers without a schema change; read the file's own fields from here, not from the columns above, when a column does not exist yet.
+
 **`motion_presets`**
 
 - `family`: Groups a preset with its Subtle, Standard and Bold intensity rows; the Intensity picker reads `family = ? AND kind = 'intensity'`. Rows of one family share panel, effect, trigger and target (enforced by `validate-motion-presets.mjs` before the seeder writes).

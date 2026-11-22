@@ -241,6 +241,12 @@
       "classification": "DB-MIGRATION",
       "evidence": "sqlite3.connect(DB) then CREATE TABLE block_identity_facts (block_slug, fact, value, state yes/no/unknown, source code/live, evidence; primary key block_slug, fact, value, source). Idempotent: skips the table when present. DB is $SGS_FRAMEWORK_DB when set.",
       "also_writes_files": false
+    },
+    {
+      "filename": "2026-11-22-setting-record-tables.py",
+      "classification": "DB-MIGRATION",
+      "evidence": "sqlite3.connect(DB) then CREATE TABLE setting_placements (block_slug, setting, part, props, state, tiers, kind value/switched-on, unproved, selector, setting_values, symbolic; unique on the first six), block_part_order (block_slug, position, part, tag, parent_part, built_by php/script) and setting_record_blocks (block_slug primary key, schema_version, stamp, accounted lists, record_json), plus two indexes on setting_placements. Idempotent: skips each table and index when present. DB is $SGS_FRAMEWORK_DB when set.",
+      "also_writes_files": false
     }
   ],
   "deleted_2026_08_02": {

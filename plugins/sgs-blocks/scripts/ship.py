@@ -49,6 +49,7 @@ RESEED_TRIGGERS = (
     "plugins/sgs-blocks/scripts/seed-composition-roles.py",
     "plugins/sgs-blocks/scripts/sgs-update-v2.py",
     "plugins/sgs-blocks/scripts/dbschema/",
+    "plugins/sgs-blocks/scripts/data/setting-records/",
 )
 
 
