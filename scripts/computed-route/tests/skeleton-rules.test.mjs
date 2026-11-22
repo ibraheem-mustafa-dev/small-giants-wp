@@ -37,7 +37,7 @@ function inventory( root ) {
 		const words = node.o.words || '';
 		const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: id, attrs, words, allText: words, membership: node.o.membership || [], srcTag: node.tag, srcOwnText: words,
 			snippet: node.o.snippet || `<${ node.tag } data-dc-tpl="${ id }">${ words }</${ node.tag }>`,
-			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, node.o.box || { x: 0, y: node.o.y ?? 0, w: 100, h: 20 } ] ) ),
+			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, node.o.boxes?.[ w ] || node.o.box || { x: 0, y: node.o.y ?? 0, w: 100, h: 20 } ] ) ),
 			visible: node.o.visible || { 375: true, 768: true, 1440: true }, display: node.o.display || 'block', flexDirection: 'row', screenshots: {} };
 		elements.push( el );
 		const texts = node.kids.map( ( k ) => walk( k, key, depth + 1 ) );
@@ -469,16 +469,42 @@ test( 'a control the visitor operates is never a label, a toggle or slider arrow
 	assert.notEqual( row( r, ( x ) => 'button' === x.tag && ! x.words ).rule, 'pillButton', 'a disclosure toggle is not a pill' );
 } );
 
-test( 'cardAction: a card link ending in a call to action is a plain card and the action holds the link (Bean, 2026-10-13); MUST FAIL without the rule', () => {
+test( 'cardAction: a card the draft draws as one link is one whole-card link, the call to action ending it a cue with no link (Bean, 2026-11-22); MUST FAIL on the old rule that put the link on the button', () => {
 	const card = section( [ E( 'a', { attrs: { href: '/food-service' } }, [ E( 'h3', { words: 'Food Service' } ), E( 'p', { words: 'Kitchens that never stop' } ), E( 'div', { words: 'Explore Food Service' }, [ svg() ] ) ] ) ] );
 	const r = run( card );
 	const link = byTag( r, 'a' );
-	assert.deepEqual( [ link.block, link.attributes.sgsBlockLink ], [ 'sgs/container', undefined ], 'the card itself is not linked' );
+	assert.deepEqual( [ link.block, link.rule, link.attributes.sgsBlockLink ], [ 'sgs/container', 'wholeCardLink', '/food-service' ], 'the box of the card is the link' );
 	const action = byWords( r, 'Explore Food Service' );
-	assert.deepEqual( [ action.block, action.rule, action.attributes.url ], [ 'sgs/button', 'cardAction', '/food-service' ] );
+	assert.deepEqual( [ action.block, action.rule, action.attributes.label, action.attributes.visualOnly ], [ 'sgs/button', 'cardAction', 'Explore Food Service', true ], 'the call to action is the button of the card, drawn as a cue' );
+	assert.ok( ! action.attributes.url && ! action.attributes.linkSource, 'a button inside the card link holds no link of its own' );
 	const off = run( card, { facts: facts( 'cardAction' ) } );
 	assert.notEqual( byWords( off, 'Explore Food Service' ).block, 'sgs/button' );
-	assert.equal( byTag( off, 'a' ).attributes.sgsBlockLink, '/food-service', 'without the rule the whole card is the link again' );
+	assert.equal( byTag( off, 'a' ).attributes.sgsBlockLink, '/food-service', 'without the rule no button is made and the card is the link' );
+} );
+
+test( 'cardAction: a card whose address is a script value keeps it on the button for the later order stage, the card unlinked (rules.cardAction.boundLink); MUST FAIL when the card takes the link', () => {
+	const bound = section( [ E( 'a', { attrs: { href: '{{ orderHref }}' } }, [ E( 'span', { words: 'all in one place' } ), E( 'span', { words: 'Follow this order in your account' } ), E( 'span', { words: 'View order →' } ) ] ) ] );
+	const r = run( bound );
+	const link = byTag( r, 'a' );
+	assert.equal( link.block, 'sgs/container' );
+	assert.ok( ! link.attributes.sgsBlockLink && ! link.attributes.sgsBlockLinkSource, 'the card holds no link: the binding is placed on the button' );
+	const action = byWords( r, 'View order →' );
+	assert.equal( action?.rule, 'cardAction' );
+	assert.ok( ! action.attributes.visualOnly, 'the button stays the link, not a cue' );
+	const off = run( bound, { facts: ( () => { const f = facts(); delete f.decisions.rules.cardAction.boundLink; return f; } )() } );
+	assert.equal( byWords( off, 'View order →' ).attributes.visualOnly, true, 'with the flag removed the card is the link and the button a cue' );
+} );
+
+test( 'cardAction negative: a card whose draft links only its button keeps the button as the link; a card with no call to action is one linked container as before', () => {
+	const buttonOnly = section( [ E( 'div', {}, [ E( 'h3', { words: 'Food Service' } ), E( 'p', { words: 'Kitchens that never stop' } ), E( 'a', { words: 'Explore Food Service', attrs: { href: '/food-service' } }, [ svg() ] ) ] ) ] );
+	const r = run( buttonOnly );
+	const button = byTag( r, 'a' );
+	assert.deepEqual( [ button.block, button.attributes.url ], [ 'sgs/button', '/food-service' ], 'the button holds the link of the draft' );
+	assert.ok( ! button.attributes.visualOnly );
+	assert.ok( ! byTag( r, 'div' ).attributes?.sgsBlockLink, 'the card is not linked' );
+	const plain = run( section( [ E( 'a', { attrs: { href: '/about' } }, [ E( 'h3', { words: 'About us' } ), E( 'p', { words: 'Who we are and how we began' } ) ] ) ] ) );
+	assert.deepEqual( [ byTag( plain, 'a' ).block, byTag( plain, 'a' ).attributes.sgsBlockLink ], [ 'sgs/container', '/about' ] );
+	assert.ok( ! row( plain, ( x ) => 'cardAction' === x.rule ), 'no call to action, no button' );
 } );
 
 test( 'cardAction: every copy of one template element takes one verdict, a button only when every copy ends its card in a call to action; MUST FAIL when a copy is judged alone', () => {

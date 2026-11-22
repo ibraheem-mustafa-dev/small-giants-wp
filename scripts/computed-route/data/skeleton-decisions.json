@@ -506,7 +506,7 @@
 		},
 		"wholeCardLink": {
 			"block": "sgs/container",
-			"reason": "a link holding two or more pieces of text, or a heading, is a container; its whole box is the link unless it ends in a call to action, which then holds the link (cardAction); a link that paints a picture itself and holds one label is a picture tile, a container whose whole box is the link, with the label a badge block inside it"
+			"reason": "a link holding two or more pieces of text, or a heading, is a container whose whole box is the link, a call to action that ends it being the card's button drawn as a cue with no link (cardAction); a link that paints a picture itself and holds one label is a picture tile, a container whose whole box is the link, with the label a badge block inside it"
 		},
 		"siteInfoLink": {
 			"reason": "a lone link to a phone number, an email address or a maps host is a button whose link reads Site Info (no typed tel: or mailto:), with its label from Site Info when the words are the value itself",
@@ -770,7 +770,10 @@
 				"←": { "icon": "arrow-left", "iconPosition": "before" }
 			},
 			"typedArrowReason": "an arrow typed as a character in a box of its own after the words of a call to action (the hand-built reference shop's \"Shop gifts\" with its arrow in a filled circle is an sgs/button with icon arrow-right and an icon background) is that button's icon, not a text leaf: the call to action is the element holding the words, the arrow leaf is absorbed into it as its icon part, and the card's link goes on the button (a card whose last text leaf was the arrow had no action, so its link was dropped)",
-			"reason": "a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)"
+			"cue": { "visualOnly": true },
+			"boundLink": true,
+			"boundLinkReason": "a card whose address is a script value (the order's view page) keeps its link on the button for now: the later order stage (lib/template-piece-order.mjs) binds a link on the block inside a card whose own block takes no bound address, and it does not yet set the card's link source (sgsBlockLinkSource 'order-view', already in the plugin), so a card link here would be a fixed address and the bound button a dead cue",
+			"reason": "a card the draft draws as one link (its anchor wraps the whole card) is one whole-card link, whether or not a short call to action (a glyph beside it, or below two other pieces of text) ends it (Bean, 2026-11-22: it is completely dependent on what the draft does); the call to action is the card's button drawn as a cue (visualOnly: a plain span, no link inside a link), its icon and look kept; a card whose draft links only its button (a div card holding one link) keeps the button as the link"
 		},
 		"formControl": {
 			"tags": [

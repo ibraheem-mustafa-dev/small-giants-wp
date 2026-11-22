@@ -43,14 +43,16 @@ const all = ( tree, name, out = [] ) => {
 	return out;
 };
 
-test( 'MUST FAIL: a call to action with a typed arrow beside its words is one button holding the card link, the arrow its icon', () => {
+test( 'MUST FAIL: a call to action with a typed arrow beside its words is one button drawn as the card cue, the arrow its icon', () => {
 	const { skeleton, proposal } = run( page() );
 	const buttons = all( skeleton, 'sgs/button' );
 	assert.equal( buttons.length, 1 );
 	assert.equal( buttons[ 0 ].draftRef?.tpl, 'Root/6#0' );
 	assert.equal( buttons[ 0 ].attributes.label, 'Shop gifts', 'the label is the words alone' );
 	assert.equal( buttons[ 0 ].attributes.icon, 'arrow-right' );
-	assert.ok( buttons[ 0 ].attributes.url, 'the card\'s link is on the button' );
+	assert.equal( buttons[ 0 ].attributes.visualOnly, true, 'the button is the cue of the card' );
+	assert.ok( ! buttons[ 0 ].attributes.url, 'the link of the card is on the card, not the button' );
+	assert.equal( all( skeleton, 'sgs/container' ).find( ( c ) => 'Root/3#0' === c.draftRef?.tpl )?.attributes.sgsBlockLink, 'https://example.com/gifts/' );
 	assert.ok( ! all( skeleton, 'sgs/text' ).some( ( t ) => [ 'Root/6#0', 'Root/7#0' ].includes( t.draftRef?.tpl ) ), 'the call to action is no text' );
 	assert.equal( proposal.rows.find( ( r ) => 'Root/7#0' === r.key )?.action, 'absorbed', 'the arrow is absorbed into the button as its icon' );
 } );

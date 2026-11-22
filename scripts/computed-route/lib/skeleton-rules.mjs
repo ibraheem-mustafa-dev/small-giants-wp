@@ -355,6 +355,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// Whether a control's click handler scrolls the page to its top and writes no state (lib/skeleton-scroll-top.mjs).
 	const scrollsTop = ( e ) => !! handlerOf( e ) && !! view.entry?.( e ) && handlerScrollsTop( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e ).template.component, handler: handlerOf( e ) } );
+	// A link whose address the draft takes from a script value, not a written address.
+	const scriptHref = ( e ) => /\{\{/.test( e.attrs?.href ?? '' );
 	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
 	// A form control (an <input>, <select>, the draft's <sc-raw-select> or a <textarea>) and the field block it becomes,
 	// by its rendered input type; null for anything else.
@@ -799,8 +801,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				if ( 'a' !== e.tag ) {
 					return null;
 				}
-				// A card that ends in a short call to action is a plain card: the action is the button that holds the link.
-				return R.cardAction && ( ( a ) => !! a && !! actionOf( a ) )( cardAction( e ) ) ? v( 'wholeCardLink', { block: R.wholeCardLink?.block, attributes: {} } ) : v( 'wholeCardLink', { block: R.wholeCardLink?.block, ...linkAttrs( e, lk ) } );
+				// The draft draws the card as one link, so the card's box is the link; a call to action that ends it is the card's
+				// button, drawn as a cue with no link of its own (rules.cardAction). An address the draft takes from a script value
+				// (`href="{{ orderHref }}"`) is decided by a later stage that binds it on the button (rules.cardAction.boundLink), so the
+				// button keeps it there and the card is not linked.
+				return v( 'wholeCardLink', { block: R.wholeCardLink?.block, ...( R.cardAction?.boundLink && scriptHref( e ) && ( ( a ) => !! a && !! actionOf( a ) )( cardAction( e ) ) ? { attributes: {} } : linkAttrs( e, lk ) ) } );
 			}
 			// One action with one label (and a glyph): a pill. A toggle or a slider arrow is not; nor is a link with no words.
 			if ( 1 !== texts.length || disclosure( e ) ) {
@@ -865,18 +870,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			return iconOnly( e ) || bindingGlyph( e ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null;
 		},
-		// The call to action that ends a card link is the card's button, holding the card's link.
+		// The call to action that ends a card link is the card's button, drawn as a cue: the link is on the card's box
+		// (rules.wholeCardLink), so the button is the block's plain, non-interactive look (`visualOnly`) and holds no link.
 		( { e } ) => {
 			const card = actionOf( e );
 			if ( ! card ) {
 				return null;
 			}
-			const lk = linkKindOf( card );
-			const link = lk ? { attributes: { linkSource: lk.source } } : realHref( card ) ? siteLinkOf( 'url', card ) : { attributes: {} };
+			// A card whose address is a script value keeps it on the button (rules.cardAction.boundLink).
+			const keep = R.cardAction?.boundLink && scriptHref( card );
+			const lk = keep ? linkKindOf( card ) : null;
+			const link = ! keep ? { attributes: {} } : lk ? { attributes: { linkSource: lk.source } } : realHref( card ) ? siteLinkOf( 'url', card ) : { attributes: {} };
 			// A typed arrow after the words is the button's icon (rules.cardAction.typedArrows), the arrow leaf's own look read at the
 			// icon part once the leaf is absorbed (lib/skeleton-part-pairing.mjs).
 			const arrow = m.blockKids( e ).map( typedArrowOf ).find( Boolean );
-			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: m.words( e ).trim(), ...( arrow ? { ...arrow } : {} ), ...link.attributes } } );
+			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: m.words( e ).trim(), ...( arrow ? { ...arrow } : {} ), ...( keep ? {} : R.cardAction?.cue ?? {} ), ...link.attributes } } );
 		},
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
 		// pill it is a kicker. A control the visitor operates and a bare number are neither.
