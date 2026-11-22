@@ -5,6 +5,7 @@
 // never states is not written. Planted rows and readings, and one planted page for the in-page reads: no site, no draft.
 // Run: SGS_NO_SITE=1 node --test tests/part-look-sizes.test.mjs (from scripts/computed-route)
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import test, { after, before } from 'node:test';
 import { READ_PROPS, buildLook, findPartsInPage } from '../lib/fill-part-look.mjs';
 import { loadChromium } from '../lib/fill-read.mjs';
@@ -110,12 +111,23 @@ test( 'MUST FAIL: a height of 100% is no min-height the draft states, and 100% p
 } );
 
 // F-21: the space between cards a stack draws with its gap (Mama's basket lines: a flex column with `gap:16px`) is the space below each
-// copy, which the cart's sgsItemGap paints as margin-bottom.
-async function readStack( parent, cards = 2, own = '' ) {
+// copy, which the cart's sgsItemGap paints as margin-bottom. Only a part whose locator opts in (`stackGap`, the line items) reads it.
+async function readStack( parent, cards = 2, own = '', optIn = true ) {
 	const card = `<article style="height:40px;${ own }"><span>a</span><b>b</b></article>`;
 	await page.setContent( `<!doctype html><body style="margin:0"><div style="${ parent }">${ card.repeat( cards ) }<p>after</p></div></body>` );
-	return page.evaluate( findPartsInPage, { spec: { anchors: {}, parts: { card: { from: 'page', match: { tag: [ 'article' ] } } } }, names: [ 'card' ], props: READ_PROPS, pages: {} } );
+	return page.evaluate( findPartsInPage, { spec: { anchors: {}, parts: { card: { from: 'page', match: { tag: [ 'article' ] }, ...( optIn ? { stackGap: true } : {} ) } } }, names: [ 'card' ], props: READ_PROPS, pages: {} } );
 }
+
+test( 'MUST FAIL: a part whose locator does not opt in reads no stack gap, so its margin-bottom setting keeps its own 0 (FP-9)', async () => {
+	const found = await readStack( 'display:flex;flex-direction:column;gap:16px', 2, '', false );
+	assert.deepEqual( found.card.map( ( c ) => c.styles[ 'stack:gap' ] ), [ '', '' ] );
+	const out = run( [ row( 'headingSpaceBelow', 'margin-bottom', 'card', { attr_type: 'string', is_responsive: 0, tier_shape: null } ) ], { card: Object.fromEntries( [ 1440, 768, 375 ].map( ( w ) => [ w, found.card ] ) ) } );
+	assert.equal( writeOf( out, 'headingSpaceBelow' ).value, '0px' );
+	// The line items opt in (data/part-locators.json, wc line-item); no other part does.
+	const L = JSON.parse( fs.readFileSync( new URL( '../data/part-locators.json', import.meta.url ), 'utf8' ) );
+	const opted = Object.entries( L.groups ).flatMap( ( [ g, grp ] ) => Object.entries( grp.parts ).filter( ( [ , p ] ) => p.stackGap ).map( ( [ k ] ) => `${ g }.${ k }` ) );
+	assert.deepEqual( opted, [ 'wc.line-item' ] );
+} );
 
 test( 'MUST FAIL: a copy in a column stack reads the stack\'s gap, and a margin-bottom setting takes it as the space below the copy', async () => {
 	const found = await readStack( 'display:flex;flex-direction:column;gap:16px' );

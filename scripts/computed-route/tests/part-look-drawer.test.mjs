@@ -10,7 +10,7 @@ import fs from 'node:fs';
 import test, { after, before } from 'node:test';
 import { findPartsInPage, READ_PROPS } from '../lib/fill-part-look.mjs';
 import { loadChromium } from '../lib/fill-read.mjs';
-import { emptyPins } from '../lib/part-look-run.mjs';
+import { emptyPins, unlocatedParts } from '../lib/part-look-run.mjs';
 import { evaluateModes } from '../lib/part-look-modes.mjs';
 
 const LOCATORS = JSON.parse( fs.readFileSync( new URL( '../data/part-locators.json', import.meta.url ), 'utf8' ) );
@@ -198,6 +198,50 @@ test( 'negative controls: a switch with no evidence either way is not written; a
 	const odd = written( modes( { subtotalValue: at( [ '£100.00' ] ), panelInstalments: at( [ 'Or pay £30.00 a month' ] ) } ) );
 	assert.equal( odd.panelInstalmentsNote, 'Or pay %s a month' );
 	assert.equal( odd.panelInstalmentsCount, undefined );
+} );
+
+test( 'MUST FAIL: with no dialog semantics and no checkout route, the drawer is the largest fixed box holding the lines, never the scroll list', async () => {
+	const r = await read( ONE_FILE().replace( ' role="dialog"', '' ), { ...ONE_SPEC, routeHandlers: {} }, {}, BRIDGE );
+	assert.equal( r.panel[ 0 ].tpl, '40' );
+	assert.deepEqual( texts( r[ 'panel-heading' ] ), [ 'Bag (2)' ] );
+	// Where the panel inside is fixed too, the largest fixed box holding the lines is still the drawer (MERGED F-19), not the inner one.
+	const nested = await read( ONE_FILE().replace( ' role="dialog" style="position:relative;', ' style="position:fixed;right:0;top:0;' ), { ...ONE_SPEC, routeHandlers: {} }, {}, BRIDGE );
+	assert.deepEqual( nested.panel.map( ( p ) => p.tpl ), [ '40' ] );
+	// No panel at all is a refusal of the surface, not a quiet list of unpaired parts.
+	assert.deepEqual( unlocatedParts( G, { panel: { 1440: r.panel } } ), [] );
+	const none = await read( '<!doctype html><body><main><p>No drawer</p></main></body>', ONE_SPEC, {}, BRIDGE );
+	assert.deepEqual( none.panel, [] );
+	assert.deepEqual( unlocatedParts( G, { panel: { 1440: none.panel } } ), [ 'panel' ] );
+	assert.deepEqual( unlocatedParts( { mustLocate: [] }, {} ), [] );
+} );
+
+// The switch-offs need positive evidence: an element of the kind the strict locator cannot place leaves the switch unwritten, as a gap row.
+const variant = ( swap ) => swap.reduce( ( h, [ a, b ] ) => h.replace( a, b ), ONE_FILE() );
+async function modesOf( html ) {
+	const { reads } = await both( html, ONE_FILE( false ), ONE_SPEC, {}, BRIDGE );
+	const m = modes( reads );
+	return { got: written( m ), gaps: m.gaps.map( ( g ) => g.setting ) };
+}
+
+test( 'MUST FAIL: a view link drawn as a button, a quantity select, a save control drawn as a clickable span and a tax note in <small> leave their switches unwritten', async () => {
+	const view = await modesOf( variant( [ [ '<div data-dc-tpl="70"', '<button data-dc-tpl="71">View bag</button><div data-dc-tpl="70"' ] ] ) );
+	assert.equal( view.got.panelShowViewCart, undefined );
+	assert.ok( view.gaps.includes( 'panelShowViewCart' ) );
+	const qty = await modesOf( variant( [ [ /<div data-dc-tpl="57"/g, '<select data-dc-tpl="72"><option>1</option></select><div data-dc-tpl="57"' ] ] ) );
+	assert.equal( qty.got.itemShowQty, undefined );
+	assert.ok( qty.gaps.includes( 'itemShowQty' ) );
+	// A line holding a select and two word buttons is no stepper (the stepper's buttons are glyphs).
+	assert.equal( qty.got.itemQtyStyle, undefined );
+	const save = await modesOf( variant( [ [ /<button data-dc-tpl="60">Remove<\/button>/g, '<button data-dc-tpl="60">Remove</button><span data-dc-tpl="73" style="cursor:pointer">Save for later</span>' ] ] ) );
+	assert.equal( save.got.itemShowSaveForLater, undefined );
+	assert.ok( save.gaps.includes( 'itemShowSaveForLater' ) );
+	const note = await modesOf( variant( [ [ '<button data-dc-tpl="69"', '<small data-dc-tpl="74">Duties included</small><button data-dc-tpl="69"' ] ] ) );
+	assert.equal( note.got.panelTaxNote, undefined );
+	assert.ok( note.gaps.includes( 'panelTaxNote' ) );
+	// Negative control: the drawer as drawn (none of those elements) still switches all four off.
+	const plain = await modesOf( ONE_FILE() );
+	assert.deepEqual( [ plain.got.panelShowViewCart, plain.got.itemShowQty, plain.got.itemShowSaveForLater, plain.got.panelTaxNote ], [ false, false, false, '' ] );
+	assert.deepEqual( plain.gaps, [] );
 } );
 
 test( 'emptyPins pins only an anchor whose part the first read located with a stamp', () => {

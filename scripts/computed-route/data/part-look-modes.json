@@ -455,7 +455,8 @@
 					],
 					"neighbours": [
 						"item"
-					]
+					],
+					"unsure": "itemQtyLoose"
 				},
 				{
 					"setting": "itemShowSaveForLater",
@@ -464,7 +465,8 @@
 					"neighbours": [
 						"item",
 						"itemRemove"
-					]
+					],
+					"unsure": "itemOtherLoose"
 				},
 				{
 					"setting": "itemRemoveStyle",
@@ -477,7 +479,8 @@
 					"whenAbsent": "panelView",
 					"neighbours": [
 						"checkout"
-					]
+					],
+					"unsure": "panelViewLoose"
 				},
 				{
 					"setting": "viewCartLabel",
@@ -508,7 +511,8 @@
 					"neighbours": [
 						"checkout",
 						"subtotal"
-					]
+					],
+					"unsure": "panelTaxNoteLoose"
 				},
 				{
 					"setting": "panelInstalmentsNote",

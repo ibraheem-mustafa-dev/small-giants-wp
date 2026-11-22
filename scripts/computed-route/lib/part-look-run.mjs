@@ -82,6 +82,10 @@ export function emptyPins( spec, reads, width ) {
 	} ) );
 }
 
+// The parts a locator group must locate (`mustLocate`: the basket drawer's panel, which every drawer part is read from) that the read
+// located at no width.
+export const unlocatedParts = ( group, reads ) => ( group?.mustLocate || [] ).filter( ( part ) => ! Object.values( reads?.[ part ] || {} ).some( ( l ) => l?.length ) );
+
 // Reads every part of a locator group from a served draft at each width: { part: { width: [ { key, tag, text, box, styles } ] } }.
 // `files` are tried in order; a part no earlier file located is taken from a later one (the sign-in page's fields for the account).
 // `hover` names the parts whose instances are also hovered (lib/part-look-hover.mjs: each gains `hover`).

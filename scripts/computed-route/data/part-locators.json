@@ -740,7 +740,8 @@
 					}
 				},
 				"line-item": {
-					"sameAs": "lines"
+					"sameAs": "lines",
+					"stackGap": true
 				},
 				"item": {
 					"sameAs": "lines"
@@ -1357,36 +1358,31 @@
 							"from": "page",
 							"match": {
 								"scope": "overlay",
-								"hasAll": [
-									{
-										"childText": [
-											"words",
-											"currency"
-										]
+								"position": [
+									"fixed"
+								],
+								"has": {
+									"repeats": true,
+									"minChildren": 2,
+									"tag": [
+										"div",
+										"li",
+										"article"
+									],
+									"has": {
+										"text": "currency"
 									},
-									{
-										"repeats": true,
-										"minChildren": 2,
-										"tag": [
-											"div",
-											"li",
-											"article"
-										],
-										"has": {
-											"text": "currency"
+									"hasMany": {
+										"match": {
+											"ownText": true,
+											"text": "words",
+											"control": false
 										},
-										"hasMany": {
-											"match": {
-												"ownText": true,
-												"text": "words",
-												"control": false
-											},
-											"atLeast": 2
-										}
+										"atLeast": 2
 									}
-								]
+								}
 							},
-							"smallest": true
+							"largest": true
 						}
 					]
 				},
@@ -1720,7 +1716,8 @@
 							"match": {
 								"tag": [
 									"button"
-								]
+								],
+								"text": "any"
 							},
 							"atLeast": 2
 						}
@@ -2062,11 +2059,74 @@
 					"match": {
 						"followsAnchor": "lines"
 					}
+				},
+				"itemQtyLoose": {
+					"any": [
+						{
+							"from": "lines",
+							"match": {
+								"tag": [
+									"select",
+									"textarea",
+									"input"
+								]
+							},
+							"perRoot": true,
+							"pick": "first"
+						},
+						{
+							"from": "lines",
+							"match": {
+								"ownText": true,
+								"text": "count"
+							},
+							"perRoot": true,
+							"pick": "first"
+						}
+					]
+				},
+				"panelViewLoose": {
+					"from": "drawer",
+					"match": {
+						"clickable": true,
+						"text": "words",
+						"notInAnchor": "lines",
+						"noAnchor": "empty",
+						"lacksAnchor": "checkoutControl"
+					},
+					"pick": "first"
+				},
+				"itemOtherLoose": {
+					"from": "lines",
+					"match": {
+						"clickable": true,
+						"text": "words",
+						"notShopPart": [
+							"drawer-remove",
+							"drawer-add-options"
+						]
+					},
+					"perRoot": true
+				},
+				"panelTaxNoteLoose": {
+					"from": "drawer",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"clickable": false,
+						"precedesAnchor": "checkoutControl",
+						"notPrecedesAnchor": "track",
+						"notInAnchor": "lines"
+					},
+					"pick": "last"
 				}
 			},
 			"emptyPins": {
 				"drawer": "panel"
-			}
+			},
+			"mustLocate": [
+				"panel"
+			]
 		},
 		"buybox": {
 			"anchors": {

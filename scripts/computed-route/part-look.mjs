@@ -21,6 +21,8 @@
 //              --strict exits 1 when any verified surface is not a full match (by default the verdict is printed and the run passes).
 //              A surface whose draft located parts and whose live read compared none of them fails: the report is written, each reason is
 //              printed as VERIFY FAILED and the exit code is 1. A header read whose basket panel stays shut throws (exit 2).
+// A locator group's `mustLocate` part (the basket drawer's panel) the draft read does not locate refuses the surface (REFUSED, exit 1):
+// every other part is read from it, so the read would pair nothing.
 //   my-account-in  the account's signed-in views (orders, an order's page, addresses, details): the draft is signed in on its own
 //              sign-in page and read view by view (lib/part-look-signed-in.mjs); --verify reads the copy signed in as --login <user:pass>
 //              (the seeded customer) on every view its menu links to and the seed's order page.
@@ -34,7 +36,7 @@ import { fileURLToPath } from 'node:url';
 import { openDb } from './lib/db.mjs';
 import { buildLook, lookRowsOf, tableSelector } from './lib/fill-part-look.mjs';
 import { compareSettings, faultsOf } from './lib/part-look-compare.mjs';
-import { REPO, assertMayWrite, blockRows, customCssOf, liveProductPath, patchBlock, readParts, readSavedBlock, templateIdOf } from './lib/part-look-run.mjs';
+import { REPO, assertMayWrite, blockRows, customCssOf, liveProductPath, patchBlock, readParts, readSavedBlock, templateIdOf, unlocatedParts } from './lib/part-look-run.mjs';
 import { draftProductSlugs } from './lib/template-live-address.mjs';
 import { draftLinksFor } from './lib/draft-link.mjs';
 import { signInFilesOf } from './lib/skeleton-commerce-region.mjs';
@@ -218,6 +220,9 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		} else {
 			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
+			// A part every other part of the group is read from (the basket drawer's panel) that the draft read did not locate makes the
+			// surface's whole read empty: a refusal, never a quiet report of unpaired parts.
+			refusals.push( ...unlocatedParts( group, reads ).map( ( part ) => `${ surface }: the draft's ${ part } was not located at any width, so no part read from it is paired and none of its settings is decided` ) );
 		}
 		const build = buildLook( {
 			block: loc.block, rows: blockRowsOf, names, locators: spec, reads, snapshot,

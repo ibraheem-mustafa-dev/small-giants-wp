@@ -4,6 +4,8 @@
 //   whenFound / whenAbsent  a part (named in the block's locators) the draft draws, or does not draw, at any width (whenAbsent may
 //                           list several parts, all of which must be absent)
 //   neighbours              parts that must be found, so an absence is never read from a failed read
+//   unsure                  with whenAbsent: looser parts that find an element of the same kind the strict locator cannot place (a
+//                           view link drawn as a button, a quantity select); one found leaves the setting unwritten as a gap row
 //   whenStyle               { part, style, equals }: every copy of the part the draft draws reads `equals` for that page reading
 //                           (`label:above`: the label's words sit above its field)
 //   from.text               the part's own words (all instances must agree), from.look the part's computed value of a property
@@ -103,6 +105,13 @@ export function evaluateModes( { block, rules, rows, reads, others = null } ) {
 		}
 		if ( rule.whenAbsent && [].concat( rule.whenAbsent ).some( ( part ) => has( reads, part ) ) ) {
 			out.settings[ rule.setting ] = { code: 'drawn' };
+			continue;
+		}
+		const unsure = rule.whenAbsent ? [].concat( rule.unsure || [] ).filter( ( part ) => has( reads, part ) ) : [];
+		if ( unsure.length ) {
+			const list = unsure.flatMap( ( part ) => instances( reads, part ).map( ( i ) => `${ part } ${ JSON.stringify( i.text ?? '' ) }` ) );
+			gap( `the draft draws no ${ [].concat( rule.whenAbsent ).join( ' or ' ) } the locator places, but it draws an element of that kind, so the switch is left unwritten`, list.join( '; ' ) );
+			out.settings[ rule.setting ] = { code: 'unsure' };
 			continue;
 		}
 		let value = rule.value;

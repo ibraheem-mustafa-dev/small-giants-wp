@@ -127,8 +127,20 @@
 	},
 	{
 		"file": "lib/fill-part-look-page.mjs",
-		"find": "'stack:gap': stackGap( el ), 'mark:text-left'",
+		"find": "'stack:gap': loc.stackGap ? stackGap( el ) : '', 'mark:text-left'",
 		"replace": "'mark:text-left'",
 		"why": "the read carries no stack gap"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "'stack:gap': loc.stackGap ? stackGap( el ) : '',",
+		"replace": "'stack:gap': stackGap( el ),",
+		"why": "every part reads the stack gap (FP-9)"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"sameAs\": \"lines\",\n\t\t\t\t\t\"stackGap\": true",
+		"replace": "\"sameAs\": \"lines\"",
+		"why": "the line items do not opt in to the stack gap"
 	}
 ]

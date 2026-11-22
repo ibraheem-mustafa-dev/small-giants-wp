@@ -8,6 +8,9 @@
 //   from      'page' (default) or the name of an anchor; descendants of the anchor's elements are searched
 //   match     the matcher an element must satisfy (keys below, all ANDed)
 //   smallest  keep only matches that hold no other match
+//   largest   keep only matches that no other match holds
+//   stackGap  (a part) read the gap of the column stack its repeated copies sit in, as `stack:gap` (the space between line cards a
+//             setting paints as each card's margin-bottom); every other part reads ''
 //   pick      'all' (default), 'first', 'last', 'allButLast' or { index } (counted after any perRoot grouping)
 //   self      search the anchor's own elements instead of their descendants (with a rel: a field's label)
 //   perRoot   apply smallest and pick to each search root's matches on their own (one result per basket line, say)
@@ -38,7 +41,8 @@
 // uppercase), square (true or false), noAnchor (an anchor located nothing: the basket drawer's empty state is read where it holds no
 // lines), notPrecedesAnchor (the negation of precedesAnchor), beforeAnchor / afterAnchor (the match comes before / after an anchor's
 // element in the document: words in a box of their own beside a bar), firstChild (a matcher its first element child satisfies: a step
-// drawn as a section whose first child is its heading), notShopPart (none of the shop parts record's elements for these ids).
+// drawn as a section whose first child is its heading), clickable (a control, or an element the draft's template gives a click
+// handler, an onclick, role button or a pointer cursor: a quantity or save control drawn as a span), notShopPart (none of the shop parts record's elements for these ids).
 // `spec.pins` maps an anchor to { tpl, host }: the anchor is the shown element the draft stamps with that template number in that
 // component (a second read of the same page in another state takes the drawer the first read found). Each located element is
 // returned with its own { tpl, host } stamp.
@@ -329,6 +333,9 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 				return false;
 			}
 		}
+		if ( undefined !== m.clickable && ( isControl( el ) || !! handlerOfEl( el ) || el.hasAttribute( 'onclick' ) || 'pointer' === styleOf( el ).cursor ) !== m.clickable ) {
+			return false;
+		}
 		if ( undefined !== m.control && isControl( el ) !== m.control ) {
 			return false;
 		}
@@ -427,6 +434,9 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		let out = hits;
 		if ( loc.smallest ) {
 			out = out.filter( ( a ) => ! out.some( ( b ) => b !== a && a.contains( b ) ) );
+		}
+		if ( loc.largest ) {
+			out = out.filter( ( a ) => ! out.some( ( b ) => b !== a && b.contains( a ) ) );
 		}
 		if ( 'first' === loc.pick ) {
 			out = out.slice( 0, 1 );
@@ -584,7 +594,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		out[ name ] = els.map( ( el ) => {
 			const s = styleOf( el );
 			const r = box( el );
-			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10, y: Math.round( r.top + window.scrollY ) }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'stack:gap': stackGap( el ), 'mark:text-left': markTextLeft( el ), 'label:above': labelAbove( el ) } };
+			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10, y: Math.round( r.top + window.scrollY ) }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'stack:gap': loc.stackGap ? stackGap( el ) : '', 'mark:text-left': markTextLeft( el ), 'label:above': labelAbove( el ) } };
 		} );
 	}
 	return out;
