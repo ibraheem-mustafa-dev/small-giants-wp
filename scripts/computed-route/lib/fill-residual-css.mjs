@@ -80,13 +80,13 @@ const LOOSE = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
 // writes on the same part: `inset`, `inset-block` and `inset-inline` stand for the sides they set, `auto` for none. An element
 // whose declared values are not read has them unknown, returned as `(not read)`.
 const SIDES = { top: [ 'top' ], right: [ 'right' ], bottom: [ 'bottom' ], left: [ 'left' ], inset: [ 'top', 'right', 'bottom', 'left' ], 'inset-block': [ 'top', 'bottom' ], 'inset-inline': [ 'left', 'right' ] };
-function offsetsNotWritten( { target, kept, reads, widths } ) {
+export function offsetsNotWritten( { target, kept, reads, widths } ) {
 	const read = widths.map( ( w ) => reads.declared?.[ w ]?.[ target.id ] );
 	if ( read.some( ( d ) => ! d ) ) {
 		return [ '(not read)' ];
 	}
 	const need = new Set( read.flatMap( ( d ) => Object.entries( SIDES ).filter( ( [ name ] ) => undefined !== d[ name ] && 'auto' !== String( d[ name ] ).trim() ).flatMap( ( [ , sides ] ) => sides ) ) );
-	const written = new Set( kept.filter( ( k ) => k.target.slot === target.slot && ! k.row.state ).map( ( k ) => canonicalName( k.row.property ) ) );
+	const written = new Set( kept.filter( ( k ) => k.target.slot === target.slot && ! k.row.state ).flatMap( ( k ) => SIDES[ canonicalName( k.row.property ) ] ?? [ canonicalName( k.row.property ) ] ) );
 	return [ ...need ].filter( ( side ) => ! written.has( side ) );
 }
 
