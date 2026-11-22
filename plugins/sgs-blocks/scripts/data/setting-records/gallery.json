@@ -527,7 +527,8 @@
    "unproved": "part-not-rendered",
    "values": [
     "#13579b"
-   ]
+   ],
+   "accepted": "proved on sgs/google-reviews"
   },
   {
    "setting": "arrowColourBorderHover",
@@ -598,7 +599,8 @@
    "unproved": "part-not-rendered",
    "values": [
     "#13579b"
-   ]
+   ],
+   "accepted": "proved on sgs/google-reviews"
   },
   {
    "setting": "arrowColourBorderHover",
@@ -613,7 +615,8 @@
    "unproved": "part-not-rendered",
    "values": [
     "#13579b"
-   ]
+   ],
+   "accepted": "proved on sgs/google-reviews"
   },
   {
    "setting": "arrowColourText",
@@ -656,7 +659,8 @@
    "unproved": "part-not-rendered",
    "values": [
     "#13579b"
-   ]
+   ],
+   "accepted": "proved on sgs/google-reviews"
   },
   {
    "setting": "arrowColourTextHover",
@@ -727,7 +731,8 @@
    "unproved": "part-not-rendered",
    "values": [
     "#13579b"
-   ]
+   ],
+   "accepted": "proved on sgs/google-reviews"
   },
   {
    "setting": "arrowColourTextHover",
@@ -742,7 +747,8 @@
    "unproved": "part-not-rendered",
    "values": [
     "#13579b"
-   ]
+   ],
+   "accepted": "proved on sgs/google-reviews"
   },
   {
    "setting": "arrowShadow",
@@ -15746,6 +15752,6 @@
    "svg",
    "video"
   ],
-  "check": "1a64b3e98bf83546"
+  "check": "287cd9ad95e2e2be"
  }
 }
