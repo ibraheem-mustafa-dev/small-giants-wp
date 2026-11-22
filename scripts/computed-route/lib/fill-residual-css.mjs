@@ -16,9 +16,12 @@
 // Only `residual` rows reach the writer, which also refuses (and lists, each with its reason): a block with no Custom CSS
 // setting (framework DB); `display`, and a `position` that takes the element out of flow, with the offsets and transform
 // that place it (the block's own markup decides its structure, and an absolute or sticky element is placed against an ancestor
-// the clone does not share; a fixed one is placed against the screen and is written); a layout property the draft does not state at every read width; a state with no CSS pseudo
-// class; a part path naming one copy of a repeated element; a value or element path that is not safe CSS; and anything past
-// the page's byte cap.
+// the clone may not share; a fixed one is placed against the screen and is written, and an absolute block root is written where
+// its containing block is the nearest positioned ancestor block in the draft and in the clone, lib/fill-placement-host.mjs); a
+// layout property the draft does not state at every read width; a state with no CSS pseudo
+// class; a part path naming one copy of a repeated element (a part of a `sc-for` loop the draft draws alike in every copy is
+// written on its class instead, lib/fill-loop-copy.mjs::copyClassSlot); a value or element path that is not safe CSS; and
+// anything past the page's byte cap.
 // Two parts of one block that read one draft element (the same box at every read width) take a property once, on the inner
 // part (then on the one more of the block's own settings paint); the other row is settled as written there.
 // Values per width follow the width ladder's ranges (lib/fill-width-ladder.mjs::widthSpans: the sweep's threshold, snapped to
@@ -33,6 +36,8 @@ import { WIDTHS, rowTarget, rowValues, perNode, regroup, answer } from './fill-r
 import { widthSpans, STATE_PSEUDO, safeCss, effectOf } from './fill-width-ladder.mjs';
 import { mediaRule, scopedCssPuts, snapEntry } from './fill-width-gate.mjs';
 import { setAttr } from './tree.mjs';
+import { copyClassSlot } from './fill-loop-copy.mjs';
+import { placementHost } from './fill-placement-host.mjs';
 import { snapColour, snapFontFamily, snapLength, toPx } from './normalise.mjs';
 
 export const PASS = 'residual-css';
@@ -70,6 +75,20 @@ const PLACED_BY_POSITION = /^(top|right|bottom|left|inset(-.+)?|transform|transl
 
 const holdsAttr = ( db, block, attr ) => !! db?.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
 const LOOSE = ( p ) => String( p ?? '' ).replace( /:nth-of-type\(\d+\)/g, '' );
+
+// The offsets (top, right, bottom, left) the draft declares on an element at any of `widths` that no kept row of the block's pass
+// writes on the same part: `inset`, `inset-block` and `inset-inline` stand for the sides they set, `auto` for none. An element
+// whose declared values are not read has them unknown, returned as `(not read)`.
+const SIDES = { top: [ 'top' ], right: [ 'right' ], bottom: [ 'bottom' ], left: [ 'left' ], inset: [ 'top', 'right', 'bottom', 'left' ], 'inset-block': [ 'top', 'bottom' ], 'inset-inline': [ 'left', 'right' ] };
+function offsetsNotWritten( { target, kept, reads, widths } ) {
+	const read = widths.map( ( w ) => reads.declared?.[ w ]?.[ target.id ] );
+	if ( read.some( ( d ) => ! d ) ) {
+		return [ '(not read)' ];
+	}
+	const need = new Set( read.flatMap( ( d ) => Object.entries( SIDES ).filter( ( [ name ] ) => undefined !== d[ name ] && 'auto' !== String( d[ name ] ).trim() ).flatMap( ( [ , sides ] ) => sides ) ) );
+	const written = new Set( kept.filter( ( k ) => k.target.slot === target.slot && ! k.row.state ).map( ( k ) => canonicalName( k.row.property ) ) );
+	return [ ...need ].filter( ( side ) => ! written.has( side ) );
+}
 
 // The row's value at each width it states ({ width: value }), from its own value only.
 function statedValues( row ) {
@@ -243,7 +262,7 @@ function sizedPart( { db, cal, rec, node, axis } ) {
 // part, state, range, declarations, css, bytes, reason), refused ([ { node, block, slot, property, state, value, reason } ]),
 // gaps (one per written rule, the customCssGaps shape), backlog (one per distinct block, part, property and state: the
 // framework's gap rows), classes ({ residual, route, unneeded, outside } counts, and causes), bytes }.
-export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), cap = PAGE_CAP_BYTES } ) {
+export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, calFor = () => null, snapshot = null, scope = '', entries = [], date = new Date().toISOString().slice( 0, 10 ), cap = PAGE_CAP_BYTES, facts = null, rootComponent = null } ) {
 	const out = { writes: [], unmapped: [], answered: [], notes: [], ledger: [], rules: [], refused: [], gaps: [], backlog: [], classes: { residual: 0, route: 0, unneeded: 0, outside: 0 }, causes: {}, bytes: 0 };
 	const byNode = new Map();
 	for ( const row of perNode( unmapped ) ) {
@@ -263,7 +282,8 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 		out.refused.push( { node: row.node, block: row.block, slot: row.slot ?? '', property: row.property, state: row.state ?? null, value: row.value, reason } );
 		out.unmapped.push( { ...row, reason: `${ row.reason }; residual-css: not written: ${ reason }` } );
 	};
-	for ( const { rec, rows } of byNode.values() ) {
+	// A host block is visited before the blocks inside it, so a position rule written on it is there when they are checked.
+	for ( const { rec, rows } of [ ...byNode.values() ].sort( ( a, b ) => a.rec.index - b.rec.index ) ) {
 		const node = flat[ rec.index ];
 		if ( ! holdsAttr( db, rec.name, 'sgsCustomCss' ) ) {
 			rows.forEach( ( r ) => refuse( r, `${ rec.name } has no Custom CSS setting (sgsCustomCss, framework DB)` ) );
@@ -286,8 +306,30 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			twins.push( { ...lose, sameAs: win } );
 			out.notes.push( `${ lose.row.node } ${ rec.name } ${ lose.row.property }: ${ lose.target.slot || 'the root' } and ${ win.target.slot || 'the root' } read one draft element; written once, on ${ win.target.slot || 'the root' }, the inner of the two` );
 		}
-		// Out-of-flow positions are refused, and with them what only places a positioned element on that part.
-		const unplaced = new Set( kept.filter( ( r ) => 'position' === canonicalName( r.row.property ) && Object.values( statedValues( r.row ) ).some( ( v ) => OUT_OF_FLOW.test( String( v ).trim() ) ) ).map( ( r ) => `${ r.target.slot }|${ r.row.state ?? '' }` ) );
+		// Out-of-flow positions are refused, and with them what only places a positioned element on that part, unless the element is
+		// the block's root, absolute at every width it states, and its containing block is the positioned block above it
+		// (lib/fill-placement-host.mjs::placementHost). `unplaced` maps each refused part and state to the reason.
+		const unplaced = new Map();
+		for ( const r of kept.filter( ( x ) => 'position' === canonicalName( x.row.property ) ) ) {
+			const stated = statedValues( r.row );
+			if ( ! Object.values( stated ).some( ( v ) => OUT_OF_FLOW.test( String( v ).trim() ) ) ) {
+				continue;
+			}
+			const rooted = '' === ( r.target.slot ?? '' ) && ! r.row.state && Object.values( stated ).every( ( v ) => 'absolute' === String( v ).trim() );
+			const host = rooted ? placementHost( { rec, nodes, flat, reads, calFor, widths: Object.keys( stated ).map( Number ) } ) : { why: 'an out-of-flow element is placed against an ancestor the clone does not share' };
+			// The element is placed by its position and the offsets it declares together: a declared offset no row of this pass writes is
+			// held by another setting (or by a setting that does not place the element), so a bare position would place it elsewhere.
+			const loose = host.host ? offsetsNotWritten( { target: r.target, kept, reads, widths: Object.keys( stated ).map( Number ) } ) : [];
+			if ( host.host && loose.length ) {
+				unplaced.set( `${ r.target.slot }|${ r.row.state ?? '' }`, `its ${ loose.join( ', ' ) } ${ 1 === loose.length ? 'is' : 'are' } declared and not written by this rule, so the position alone would place it elsewhere than the draft does` );
+				continue;
+			}
+			if ( host.host ) {
+				out.notes.push( `${ refOf( node ) } ${ rec.name }: position absolute is placed against ${ refOf( flat[ host.host.index ] ) } ${ host.host.name }, positioned in the draft and in the clone` );
+				continue;
+			}
+			unplaced.set( `${ r.target.slot }|${ r.row.state ?? '' }`, host.why );
+		}
 		const decls = [];
 		for ( const r of kept ) {
 			const { row, target } = r;
@@ -319,7 +361,7 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				continue;
 			}
 			if ( 'position' === prop && unplaced.has( where ) ) {
-				refuse( r, `position ${ row.value }: an out-of-flow element is placed against an ancestor the clone does not share` );
+				refuse( r, `position ${ row.value }: ${ unplaced.get( where ) }` );
 				continue;
 			}
 			if ( PLACED_BY_POSITION.test( prop ) && unplaced.has( where ) ) {
@@ -328,10 +370,14 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 			}
 			// A part path naming one copy of a repeated element (`:nth-of-type`) would style that copy alone, while the draft's
 			// copies share the look; the copies' shared look is the loop's to write, not one instance's.
-			if ( /:nth-of-type\(/.test( target.slot ) ) {
+			// lib/fill-loop-copy.mjs::copyClassSlot gives the part's class where the copies are one `sc-for` loop body the draft draws
+			// alike at each width and the block draws the part at every copy; any other copy keeps the refusal.
+			const cssSlot = /:nth-of-type\(/.test( target.slot ) ? copyClassSlot( { slot: target.slot, target, prop, state, rec, cal, db, facts, rootComponent, paint: 'part' } ) : target.slot;
+			if ( /:nth-of-type\(/.test( cssSlot ) ) {
 				refuse( r, `${ target.slot } names one copy of a repeated part; a rule there would style that copy alone` );
 				continue;
 			}
+			cssSlot !== target.slot && out.notes.push( `${ row.node } ${ rec.name } ${ row.property }: ${ target.slot } is one copy of a loop the draft draws alike in every copy; written as a rule on every copy (${ cssSlot })` );
 			if ( undefined === pseudo ) {
 				refuse( r, `the state ${ state } has no CSS pseudo-class` );
 				continue;
@@ -390,7 +436,7 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				}
 			}
 			const values = Object.fromEntries( widths.map( ( w ) => [ w, String( all[ w ] ).trim() ] ) );
-			if ( ! safeCss( prop, target.slot, Object.values( values ) ) ) {
+			if ( ! safeCss( prop, cssSlot, Object.values( values ) ) ) {
 				refuse( r, 'the value or the element path is not safe CSS' );
 				continue;
 			}
@@ -408,7 +454,7 @@ export function residualCssWrites( { nodes, flat, refOf, reads, db, unmapped, ca
 				refs.push( ...t.refs );
 				return { range: s.range, value: t.value };
 			} );
-			decls.push( { r, prop, state, pseudo, slot: target.slot, ranges, widths, refs } );
+			decls.push( { r, prop, state, pseudo, slot: cssSlot, ranges, widths, refs } );
 		}
 		// One rule per part, state and width range.
 		const groups = new Map();

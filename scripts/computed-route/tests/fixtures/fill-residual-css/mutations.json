@@ -13,7 +13,7 @@
 	{"file":"lib/fill-residual-css.mjs","find":"const spans = Array.isArray( row.modeWidths ) ? modeSpans( { read, widths, values, series } ) : widthSpans( { widths, values, series } );","replace":"const spans = { ranges: [ { range: [ 0, Infinity ], value: values[ widths.at( -1 ) ] } ], snaps: [] };","why":"a per-width value would be written as the widest one at every width"},
 	{"file":"lib/fill-residual-css.mjs","find":"JSON.stringify( [ g.block, g.part, property, g.state ?? null ] )","replace":"JSON.stringify( [ g.block, g.part, g.range, property, g.state ?? null ] )","why":"a gap row would repeat per width range"},
 	{"file":"lib/fill-residual-css.mjs","find":"\tif ( same ) {","replace":"\tif ( false ) {","why":"a setting painting the same box on another part would be written over"},
-	{"file":"lib/fill-residual-css.mjs","find":"if ( /:nth-of-type\\(/.test( target.slot ) ) {","replace":"if ( false ) {","why":"one copy of a repeated part would be styled alone"},
+	{"file":"lib/fill-residual-css.mjs","find":"if ( /:nth-of-type\\(/.test( cssSlot ) ) {","replace":"if ( false ) {","why":"one copy of a repeated part would be styled alone"},
 	{"file":"lib/fill-residual-css.mjs","find":"list.some( ( x ) => x.prop === d.prop ) || list.push(","replace":"list.push(","why":"a property would be declared twice in one rule"},
 	{"file":"lib/fill-residual-css.mjs","find":"null !== initial && ! isInherited( canon ) && values.length","replace":"null !== initial && values.length","why":"an inherited property's initial value would be dropped as nothing to paint"},
 	{"file":"lib/fill-residual-css.mjs","find":"if ( leaks.length ) {","replace":"if ( false ) {","why":"an inherited value would pass into the blocks inside that render another"},
