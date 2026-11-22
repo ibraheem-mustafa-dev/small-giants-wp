@@ -12,6 +12,26 @@
     {
       "id": "prefixedTextAlign",
       "match": "^[a-z][A-Za-z0-9]*TextAlign$"
+    },
+    {
+      "id": "justifyContent",
+      "match": "^justifyContent$",
+      "done": true
+    },
+    {
+      "id": "alignContent",
+      "match": "^alignContent$",
+      "done": true
+    },
+    {
+      "id": "justifyItems",
+      "match": "^justifyItems$",
+      "done": true
+    },
+    {
+      "id": "stepGaps",
+      "match": "^(numberGap|stepGap)$",
+      "done": true
     }
   ],
   "valueConversions": {

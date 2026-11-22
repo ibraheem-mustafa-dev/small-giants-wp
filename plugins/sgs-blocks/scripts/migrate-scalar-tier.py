@@ -17,7 +17,7 @@ attributes from each block.json (FP-1), nothing is listed in this file. The tria
   --check             exit 1 when a family marked "done" in the families file still has a scalar attribute.
   --self-test         synthetic blocks incl. a negative control that must stay byte-identical.
 
-Selection: --family <id> (alignItems, textAlign, prefixedTextAlign), --block <sgs/name>.
+Selection: --family <id> (alignItems, textAlign, prefixedTextAlign, justifyContent, alignContent, justifyItems, stepGaps), --block <sgs/name>.
 It never touches render.php, edit.js or saved content: those are the family's own commits, and saved content is rewritten
 by find-scalar-tier-attrs.py --write plus migrate-scalar-tier-live.php (FP-14: no scalar fallback in any render).
 """
@@ -139,7 +139,7 @@ def survey(args):
             shared[f.name] = n
     print(f'\nshared includes that name a bare key: {shared}')
     import subprocess
-    pat = '|'.join(sorted({a for a in keys if a in ("textAlign", "alignItems")} | {'TextAlign'}))
+    pat = '|'.join(sorted({a for a in keys if not a.endswith('TextAlign') or a == 'textAlign'} | ({'TextAlign'} if any(k.endswith('TextAlign') for k in keys) else set())))
     for scope in WRITER_SCOPES:
         out = subprocess.run(['git', 'grep', '-l', '-E', pat, '--', scope], cwd=R.ROOT, capture_output=True, text=True).stdout.split()
         print(f'writers in {scope}: {len(out)} files')
