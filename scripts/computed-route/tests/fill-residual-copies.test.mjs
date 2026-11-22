@@ -191,3 +191,21 @@ test( 'negative controls: a root rule, a bare declaration and a grouped selector
 	w.flat[ 0 ].attributes.sgsCustomCss = '@media (min-width: 900px) { & { position: relative; } }';
 	assert.ok( placementHost( args() ).why );
 } );
+
+// A block between the element and its host that has no read of its own is still checked against the clone's position
+// (lib/fill-placement-host.mjs::placementHost).
+test( 'MUST FAIL: a block between the element and its host with no read of its own that the clone positions is no obstacle-free host', () => {
+	const w = placedWorld( { between: true, middle: 'sgs/box' } );
+	w.nodes[ 1 ].targets = [];
+	const args = ( calFor ) => ( { rec: w.nodes[ w.at ], nodes: w.nodes, flat: w.flat, reads: w.reads, calFor, widths: W } );
+	assert.match( placementHost( args( () => paintOf( 'relative' ) ) ).why, /no read of its own and the clone positions it/ );
+	w.flat[ 1 ].attributes.sgsCustomCss = '& { position: relative; }';
+	assert.match( placementHost( args( ( b ) => paintOf( 'sgs/box' === b ? 'static' : 'relative' ) ) ).why, /no read of its own/, 'its own root rule positions it too' );
+} );
+
+test( 'negative control: a block with no read of its own that the clone leaves static does not stop the host above it', () => {
+	const w = placedWorld( { between: true, middle: 'sgs/text' } );
+	w.nodes[ 1 ].targets = [];
+	const calFor = ( b ) => paintOf( 'sgs/box' === b ? 'relative' : 'static' );
+	assert.equal( placementHost( { rec: w.nodes[ w.at ], nodes: w.nodes, flat: w.flat, reads: w.reads, calFor, widths: W } ).host?.index, 0 );
+} );

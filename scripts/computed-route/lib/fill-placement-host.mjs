@@ -36,6 +36,12 @@ export function placementHost( { rec, nodes, flat, reads, calFor, widths } ) {
 		const up = nodes[ i ];
 		const root = up.targets.find( ( t ) => '' === ( t.slot ?? '' ) );
 		if ( ! root ) {
+			// A block with no read of its own is still a box in the clone: one the clone positions is the element's containing block
+			// whatever the draft draws, so the host above it is not the one the draft names.
+			const cal = calFor( up.name );
+			if ( widths.some( ( w ) => POSITIONED.test( String( defaultPaint( cal, '', w, 'position' ) ?? '' ) ) || cssPositions( flat[ up.index ] ) ) ) {
+				return { why: `${ up.name } above it has no read of its own and the clone positions it, so it would be the containing block instead of the draft's` };
+			}
 			continue;
 		}
 		const drawn = widths.map( ( w ) => reads.widths?.[ w ]?.[ root.id ]?.styles?.position );
