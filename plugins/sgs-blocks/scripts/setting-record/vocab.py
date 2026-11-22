@@ -7,6 +7,7 @@ reference modules they refine (block-source-scan/reference.py and score.py are u
   fold_units      a fooUnit entry merged into foo (re-exported from score).
   fold_prefixed   a `-webkit-X` entry is not an entry of its own when the standard `X` is declared beside it.
   same_element    the one part name of an element that carries two part classes.
+  norm_state      a placement's state as the record names it: the reference's names plus `filled`.
 """
 from __future__ import annotations
 
@@ -22,6 +23,11 @@ import reference as R  # noqa: E402
 import score as S  # noqa: E402
 
 fold_units = S.fold_units
+
+# State names the record has beyond the reference's (block-source-scan/reference.py::STATE_WORDS, shared and read-only):
+# `filled` is an input that holds a value, the rule `:not(:placeholder-shown)`.
+EXTRA_STATES = ('filled',)
+_FILLED = re.compile(r':not\(\s*:placeholder-shown\s*\)')
 
 _NO_PREFERENCE = re.compile(r'@media\(prefers-reduced-motion:no-preference\)')
 
@@ -45,6 +51,16 @@ def plain_tiers(tiers) -> list:
     return [t for t in (tiers or ()) if not is_no_preference(t)]
 
 
+def norm_state(state, selector=None):
+    """A placement's state as the record names it. The reference's names (hover, focus, current, open, disabled,
+    active, checked) and any other token stay as R.norm_state gives them; a placement with no state whose rule waits on
+    `:not(:placeholder-shown)` (a field with a value) is `filled`."""
+    named = R.norm_state(state)
+    if named is None and selector and _FILLED.search(selector):
+        return 'filled'
+    return named
+
+
 def items(placements: list, root_tok: str, aliases=()) -> list:
     """score.scan_items, with this module's canon_props and with no-preference tiers dropped (so two placements that
     differ only by that tier are one item). One item per (part, declared property) of every placement that paints."""
@@ -59,7 +75,7 @@ def items(placements: list, root_tok: str, aliases=()) -> list:
             cps = tuple(sorted(canon_props(prop)))
             if not cps:
                 continue
-            sig = (key, cps, R.norm_state(p.get('state')), tiers, ev)
+            sig = (key, cps, norm_state(p.get('state'), p.get('selector')), tiers, ev)
             if sig in seen:
                 continue
             seen.add(sig)

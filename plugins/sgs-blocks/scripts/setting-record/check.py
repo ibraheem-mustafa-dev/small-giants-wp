@@ -37,8 +37,62 @@ FIXTURES = HERE / 'fixtures.json'
 SCHEMA = HERE / 'record.schema.json'
 
 
+BROWSER_VERDICTS = HERE / 'browser' / 'verdicts'
+# The causes the browser pass settles (browser/README.md): a part the block's script builds, or one another block prints.
+BROWSER_CAUSES = {'script-built-part', 'part-printed-elsewhere'}
+
+
 def key(e: dict) -> tuple:
     return (e['setting'], e['part'], tuple(e['props']), e['state'], tuple(e['tiers']))
+
+
+def script_hash(plugin: Path, short: str) -> str:
+    """What a browser verdict depends on beyond the offline render: the block's own folder (its render, stylesheets and
+    front-end scripts) and src/shared (the scripts and styles blocks share)."""
+    import hashlib
+    h = hashlib.md5()
+    for base in (plugin / 'src' / 'blocks' / short, plugin / 'src' / 'shared'):
+        for f in sorted(p for p in base.rglob('*') if p.is_file()):
+            h.update(f.relative_to(plugin).as_posix().encode())
+            h.update(f.read_bytes().replace(b'\r\n', b'\n'))
+    return h.hexdigest()[:16]
+
+
+def apply_browser_verdicts(short: str, plugin: Path, entries: dict, folder: Path = BROWSER_VERDICTS) -> dict | None:
+    """The browser pass's verdicts (browser/verdicts/<block>.json) applied to the proof's entries, when they were measured
+    on this block's code (scriptHash): a proved entry loses its `unproved` cause and takes the browser's kind, a removed
+    one goes, a re-filed one moves to the part the browser found. Only entries the offline proof left with a browser
+    cause are touched. Stale verdicts (the code changed since) are reported and applied to nothing."""
+    f = folder / f'{short}.json'
+    if not f.is_file():
+        return None
+    doc = json.loads(f.read_text(encoding='utf-8'))
+    now = script_hash(plugin, short)
+    out = {'file': str(f), 'scriptHash': doc.get('scriptHash'), 'currentHash': now, 'proved': 0, 'removed': [], 'refiled': [], 'unmatched': []}
+    if doc.get('scriptHash') != now:
+        out['stale'] = True
+        return out
+    for v in doc.get('entries', []):
+        k = key(v)
+        e = entries.get(k)
+        if e is None or e.get('unproved') not in BROWSER_CAUSES:
+            out['unmatched'].append({x: v[x] for x in ('setting', 'part', 'props', 'state', 'tiers')})
+            continue
+        if v['verdict'] == 'proved':
+            e.pop('unproved', None)
+            e['kind'] = v['kind']
+            out['proved'] += 1
+        elif v['verdict'] == 'removed':
+            entries.pop(k)
+            out['removed'].append({'entry': list(k), 'values': v.get('values')})
+        elif v['verdict'] == 'refiled' and v.get('refiled_to'):
+            entries.pop(k)
+            for part in v['refiled_to']:
+                moved = {**e, 'part': part, 'kind': v.get('kind') or e.get('kind')}
+                moved.pop('unproved', None)
+                entries[key(moved)] = moved
+            out['refiled'].append({'entry': list(k), 'to': v['refiled_to']})
+    return out
 
 
 def place(e: dict) -> tuple:
@@ -208,6 +262,9 @@ def check_block(args, block: str) -> int:
         tp = time.time()
         entries, proof = PR.prove(short, run)
         proof['seconds'] = round(time.time() - tp, 1)
+        browser = apply_browser_verdicts(short, args.plugin, entries)
+        if browser is not None:
+            proof['browser'] = browser
     parts = parts_check(short, args.plugin, run['defaultHtml'])
     record_file = args.record or (args.record_dir / f'{short}.json' if args.record_dir else None)
     out = args.out

@@ -236,7 +236,9 @@ def test_fixtures_switch_every_part_on():
 def test_real_block_plans_without_the_scanner(short):
     plan = I.plan(short, PLUGIN, scan=False)
     assert any(i['isDefault'] for i in plan['instances'])
-    assert {u['setting'] for u in plan['unvalued'] if u['why'] == I.EXTENSION_WHY} >= {'sgsPosition', 'sgsHideOnMobile'}
+    # Extension settings that paint are valued (the runner runs their render_block filters); behaviour ones are listed.
+    assert {'sgsPosition', 'sgsHideOnMobile'} <= {i['attr'] for i in plan['instances']}
+    assert 'sgsConditionLoggedIn' in {u['setting'] for u in plan['unvalued'] if u['why'] == I.EXTENSION_WHY}
 
 
 def test_must_fail_per_device_value_differs_from_baseline_at_every_device():

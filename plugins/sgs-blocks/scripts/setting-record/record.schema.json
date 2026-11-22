@@ -64,7 +64,7 @@
               "string",
               "null"
             ],
-            "description": "null at rest, else hover, focus, current, open, disabled, active, checked, or the selector token naming another state."
+            "description": "null at rest, else hover, focus, current, open, disabled, active, checked, filled (an input that holds a value: :not(:placeholder-shown)), or the selector token naming another state (a class token such as .is-detached is held by giving the element that class)."
           },
           "tiers": {
             "type": "array",
@@ -93,6 +93,7 @@
               "script-built-part",
               "part-not-rendered",
               "part-printed-nowhere",
+              "part-printed-elsewhere",
               "theme-value",
               "same-value-here",
               "rule-needs-absent-markup",

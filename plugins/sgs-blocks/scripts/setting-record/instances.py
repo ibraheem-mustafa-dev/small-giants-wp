@@ -112,7 +112,10 @@ LAYOUT_VALUES = ('flex', 'grid', 'row', 'stack', 'columns', 'inline', 'horizonta
 # How each setting state is reached in a browser (calibrate-instances.mjs::STATE_TRIGGERS); the offline renderer
 # diffs printed CSS, so this is carried for a reader, never needed to see the change.
 STATE_TRIGGERS = {'hover': 'hover', 'focus': 'focus', 'focus-visible': 'focus', 'scrolled': 'scroll', 'shrunk': 'class', 'open': 'open', 'current': 'fixture'}
-EXTENSION_WHY = 'render_block filter: the offline runner cannot run it yet'
+EXTENSION_WHY = 'an extension setting that changes what the block does or shows, not how it paints (extension-roster.json role behaviour or content)'
+# Extension roles that paint: their settings are valued like the block's own (the runner's --render-block-filters runs
+# the render_block filters that print them).
+EXTENSION_PAINT_ROLES = {'layout', 'boolean-visibility', 'styling', 'visual'}
 # The placeholders the renderer fills (probe.py::PLACEHOLDERS).
 IMAGE = {'id': '{{image}}', 'url': '{{image.url}}'}
 
@@ -318,26 +321,32 @@ def declared_props(bj: dict, attrs: dict, plugin: Path) -> dict:
 _SCANS: dict = {}
 
 
-def scanned_props(blocks_dir: Path, folder: str) -> dict:
-    """attr -> {props, state, element, source} from the block source scanner's code reading."""
+def scan_json(blocks_dir: Path, folder: str) -> dict:
+    """The block source scanner's whole reading of one block (scan.py::Scan.to_json): its parts and where they are printed,
+    its dynamic-class families, the modifier classes and data attributes each setting switches. Read once per block."""
     key = (str(blocks_dir), folder)
     if key not in _SCANS:
         if str(SCANNER_DIR) not in sys.path:
             sys.path.insert(0, str(SCANNER_DIR))
         from scan import Scan  # noqa: E402
         with contextlib.redirect_stdout(io.StringIO()):
-            settings = Scan(folder, Path(blocks_dir)).run().to_json().get('settings', {})
-        out = {}
-        for a, pls in settings.items():
-            props = []
-            for p in pls:
-                props += [x for x in p.get('props') or [] if x not in props]
-            if not props:
-                continue
-            lead = next((p for p in pls if p.get('props')), pls[0])
-            out[a] = {'props': props, 'state': _norm_state(lead.get('state')), 'element': lead.get('part'), 'source': 'scanner'}
-        _SCANS[key] = out
+            _SCANS[key] = Scan(folder, Path(blocks_dir)).run().to_json()
     return _SCANS[key]
+
+
+def scanned_props(blocks_dir: Path, folder: str) -> dict:
+    """attr -> {props, state, element, source} from the block source scanner's code reading."""
+    settings = scan_json(blocks_dir, folder).get('settings', {})
+    out = {}
+    for a, pls in settings.items():
+        props = []
+        for p in pls:
+            props += [x for x in p.get('props') or [] if x not in props]
+        if not props:
+            continue
+        lead = next((p for p in pls if p.get('props')), pls[0])
+        out[a] = {'props': props, 'state': _norm_state(lead.get('state')), 'element': lead.get('part'), 'source': 'scanner'}
+    return out
 
 
 def name_prop(attr: str, plugin: Path) -> str | None:
@@ -765,6 +774,51 @@ def _num(v):
         return 0
 
 
+# ---------------------------------------------------------------- completing a render: the setting that prints a missing class
+def switching_attrs(scan: dict, tokens, data_attrs=()) -> list:
+    """The block settings the source scanner finds deciding whether each class (or data attribute) is printed, in the
+    order found. A class decided by a modifier (`sgs-x--has-gap`) or by the family it is assembled from
+    (`sgs-x--field-cols-` + a value) is in `switchClasses`; a part printed under a condition is in the part's
+    `conditionAttrs` and `textAttrs`; a data attribute is in `dataAttrs`."""
+    out = []
+
+    def add(names):
+        for n in names:
+            if n not in out:
+                out.append(n)
+
+    for tok in tokens:
+        sw = scan.get('switchClasses') or {}
+        add(sw.get(tok, ()))
+        add(a for fam in sorted(sw, key=len, reverse=True) if fam.endswith('-') and tok.startswith(fam) for a in sw[fam])
+        part = (scan.get('parts') or {}).get(tok.split('--')[0]) or {}
+        add(part.get('conditionAttrs') or ())
+        add(part.get('textAttrs') or ())
+    for name in data_attrs:
+        add((scan.get('dataAttrs') or {}).get(name, ()))
+    return out
+
+
+@lru_cache(maxsize=None)
+def _shapes(plugin: str, short: str) -> dict:
+    bj = block_json(Path(plugin), short)
+    schema = {k: v for k, v in (bj.get('attributes') or {}).items() if isinstance(v, dict)}
+    return tier_shapes(schema, Path(plugin) / 'src' / 'blocks' / short, Path(plugin))
+
+
+def switching_values(plugin: Path, short: str, attr: str, current: dict) -> list:
+    """The attribute dicts (the setting with its unit companion) that move `attr` off what `current` holds: the test
+    values the plan uses for a setting of that name and type (every enum value, a flipped boolean, a sample string)."""
+    bj = block_json(plugin, short)
+    schema = {k: v for k, v in (bj.get('attributes') or {}).items() if isinstance(v, dict)}
+    d = schema.get(attr)
+    if d is None:
+        return []
+    row = {'attr': attr, 'props': [], 'vprop': name_prop(attr, plugin), 'shape': _shapes(str(plugin), short).get(attr), 'box_family': box_families(bj).get(attr)}
+    got = values_for(row, d, schema, current)
+    return [] if isinstance(got, tuple) else [m['attrs'] for m in got]
+
+
 # ---------------------------------------------------------------- the plan
 def plan_block(bj: dict, fixture: dict | None = None, *, places: dict | None = None, shapes: dict | None = None,
                extensions: dict | None = None, plugin: Path | None = None) -> dict:
@@ -852,8 +906,21 @@ def plan(short: str, plugin: Path = PLUGIN, fixtures: dict | None = None, *, sca
     places = scanned_props(blocks_dir, short) if scan else {}
     places = {**places, **declared_props(bj, schema, plugin)}
     fixture = fixtures.get(bj['name']) or {'attributes': {}, 'variants': [{}]}
-    return plan_block(bj, fixture, places=places, shapes=tier_shapes(schema, blocks_dir / short, plugin),
-                      extensions=extension_attrs(bj, extension_roster(str(plugin))), plugin=plugin)
+    roster = extension_roster(str(plugin))
+    ext = extension_attrs(bj, roster)
+    shapes = tier_shapes(schema, blocks_dir / short, plugin)
+    # The extension settings that paint join the block's own: their definition, place and tier shape from the roster.
+    paint = {a: d for e in roster for a, d in (e.get('attributes') or {}).items()
+             if a in ext and a not in schema and (d.get('role') in EXTENSION_PAINT_ROLES or str(d.get('role', '')).startswith('colour'))}
+    if paint:
+        bj = {**bj, 'attributes': {**{a: {k: v for k, v in d.items() if k in ('type', 'default', 'enum')} for a, d in paint.items()},
+                                   **(bj.get('attributes') or {})}}
+        for a, d in paint.items():
+            if d.get('css_property') and a not in places:
+                places[a] = {'props': [d['css_property']], 'state': None, 'element': None, 'source': 'extension-roster'}
+            shapes.setdefault(a, d.get('tier_shape'))
+    return plan_block(bj, fixture, places=places, shapes=shapes,
+                      extensions={a: x for a, x in ext.items() if a not in paint}, plugin=plugin)
 
 
 def main(argv=None):

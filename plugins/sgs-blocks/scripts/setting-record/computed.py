@@ -382,9 +382,14 @@ class Page:
 
     `sheets` is a list of CSS texts in cascade order (later wins at equal priority); `short` is the block's short name
     (button for sgs/button). `held` are element states that are true (see cascade.resting); `conditions` are media
-    conditions that are true (see cascade.media_holds). Both default to a plain screen at rest."""
+    conditions that are true (see cascade.media_holds). Both default to a plain screen at rest.
 
-    def __init__(self, html: str, sheets: list, short: str, held=(), conditions=frozenset(), base_rules=None):
+    `container_frame` is the width a block's container has at each screen width ({375: px, ...}: the page frame's content width, see
+    proof.frame_widths); a container query is evaluated against it (less the container's own padding and border), and with
+    no frame it never holds. `underlay` is (part, property names): the underlay test (see _apply_underlay). While `filled`
+    is held every text input and textarea has a value, so :placeholder-shown is false on it."""
+
+    def __init__(self, html: str, sheets: list, short: str, held=(), conditions=frozenset(), base_rules=None, underlay=None, container_frame=None):
         frame = ('<html><body><div class="wp-site-blocks"><main class="wp-block-group">'
                  '<div class="entry-content wp-block-post-content is-layout-constrained has-global-padding">' + html + '</div></main></div></body></html>')
         self.soup = BeautifulSoup(frame, 'html.parser')
@@ -407,7 +412,94 @@ class Page:
         # does not, so it is added here as WordPress would.
         if self.root is not None:
             self.root['class'] = list(self.root.get('class', [])) + [f'wp-block-sgs-{short}']
+        self.frame = dict(container_frame or {})
+        self._containers = {}
+        self._measuring = set()
+        if 'filled' in self.held:
+            self._fill_inputs()
+        if underlay:
+            self._apply_underlay(*underlay)
         self.cascade = C.Cascade(self.soup, self.rules, self.held)
+
+    def _fill_inputs(self):
+        """Give every text input and textarea a value: the state `filled` (a field the visitor has typed in)."""
+        for el in self.soup.find_all(['input', 'textarea']):
+            if el.name == 'textarea':
+                if not el.get_text().strip():
+                    el.string = 'x'
+            elif (el.get('type') or 'text').lower() in ('text', 'search', 'url', 'tel', 'email', 'password', 'number') and not el.get('value'):
+                el['value'] = 'x'
+
+    # -- the underlay test
+    UNDERLAY = ('__underlay-part__', '__underlay-ancestor__')
+
+    def _apply_underlay(self, part: str, names) -> None:
+        """Two lowest-priority sentinel rules for the part's properties, one on the part's elements and a different one on
+        their ancestors (and, for a pseudo-element part, on the element itself): a declaration the setting switches on then
+        beats the part's sentinel, or inherits the ancestors', and so differs from the plain page where a declaration that
+        computes to the plain value (an inherit under a root with no radius, `none`, a floor) shows nothing."""
+        elems = self.elements(part)
+        if not elems:
+            return
+        names = sorted({n[1:] if n.startswith('_') else n for n in names if n})
+        mine, anc = self.UNDERLAY
+        sentinel = lambda v: [(n, v, False) for n in names]  # noqa: E731
+        for el, pseudo in elems:
+            el['data-uf-part'] = '1'
+            holders = [el.parent] if not pseudo else [el]
+            for h in holders:
+                while isinstance(h, Tag) and h.name != '[document]':
+                    h['data-uf-anc'] = '1'
+                    h = h.parent
+        pseudos = {pe for _, pe in elems}
+        # origin 0, specificity 0, order -1: beneath every user-agent rule too
+        for pe in pseudos:
+            self.rules.append(C.Rule('[data-uf-part]', pe, sentinel(mine), (), False, 0, -1))
+        self.rules.append(C.Rule('[data-uf-anc]', None, sentinel(anc), (), False, 0, -1))
+
+    # -- container queries
+    def _container_fn(self, width: int):
+        if width not in self.frame:
+            return None
+        return lambda name: self._container_px(name, width)
+
+    def _container_px(self, name, width):
+        """The content width of the container a query names at this screen width: the frame's width less the container's
+        own horizontal padding and border when they resolve to px. The container is found by the stylesheets' own
+        `container` / `container-name` declarations (the nearest one with no name asked for)."""
+        avail = self.frame.get(width)
+        if avail is None:
+            return None
+        if (name, width) in self._measuring:
+            return avail  # the container's own padding is being worked out: its own rules may sit under this query
+        if name not in self._containers:
+            found = None
+            for r in self.rules:
+                if r.origin != 1 or r.pseudo:
+                    continue
+                for prop, value, _ in r.decls:
+                    if (prop == 'container-name' and (name is None or name in value.split())) or (prop == 'container' and (name is None or name in value.split('/')[0].split())):
+                        try:
+                            found = found or self.cascade_select(r.selector)
+                        except Exception:
+                            pass
+            self._containers[name] = found
+        el = self._containers[name]
+        if el is None:
+            return avail
+        self._measuring.add((name, width))
+        try:
+            cv = self.computed(el, None, width)
+            inset = [px(cv[p], 16.0, width) for p in ('padding-left', 'padding-right', 'border-left-width', 'border-right-width')]
+        finally:
+            self._measuring.discard((name, width))
+        return avail - sum(inset) if None not in inset else avail
+
+    def cascade_select(self, selector: str):
+        """The first element a rule's selector matches in this page (at rest), or None."""
+        import soupsieve as sv
+        got = sv.select(C.resting(selector), self.soup, limit=1)
+        return got[0] if got else None
 
     @staticmethod
     def static_rules(sheets: list) -> list:
@@ -456,7 +548,7 @@ class Page:
             parent_custom = self.computed(el.parent, None, width)['_custom']
         else:
             parent_custom = {}
-        decls = self.cascade.declared(el, pseudo, width, self.conditions)
+        decls = self.cascade.declared(el, pseudo, width, self.conditions, self._container_fn(width))
         custom = dict(parent_custom)
         for _, prop, value, _ in decls:
             if prop.startswith('--'):

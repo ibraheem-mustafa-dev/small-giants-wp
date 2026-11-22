@@ -25,6 +25,7 @@ SCAN = HERE.parent / 'block-source-scan'
 if str(SCAN) not in sys.path:
     sys.path.insert(0, str(SCAN))
 import reference as R  # noqa: E402  (norm_state, STATE_WORDS, ROOT)
+import vocab as V  # noqa: E402  (EXTRA_STATES: the state names the reference does not list)
 
 DYNAMIC = r'hover|focus-visible|focus-within|focus|active|visited|target|popover-open|open|modal|fullscreen|user-invalid|user-valid|autofill|-webkit-autofill|host|playing|paused|state\([^)]*\)'
 # Pseudo-classes the rendered markup decides (an input's checked or placeholder attribute): left to soupsieve unless held.
@@ -36,7 +37,7 @@ PSEUDO_EL = re.compile(r'(?:::|(?<!:):(?=(?:before|after|first-letter|first-line
 NEVER = ':is(.sgs-trial-never)'
 ALWAYS = ':is(*)'
 
-STATE_NAMES = {name for name, _ in R.STATE_WORDS}
+STATE_NAMES = {name for name, _ in R.STATE_WORDS} | set(V.EXTRA_STATES)
 
 
 @dataclass
@@ -173,14 +174,23 @@ _FEATURES = (
 _NEVER_FEATURE = re.compile(r'inverted-colors:\s*inverted|scripting:\s*none')
 
 
-def _width_ok(c: str, width: int) -> bool:
+_LEN = r'([\d.]+)(px|rem|em)?'
+_UNIT = {'px': 1, 'rem': 16, 'em': 16, None: 1, '': 1}
+
+
+def _width_ok(c: str, width: float) -> bool:
+    """Whether the width tests in a query text (min-/max-width or -inline-size, range syntax either way round) hold at
+    `width` px. A query with none holds."""
     ok = True
-    for kind, val in re.findall(r'(min|max)-width:\s*([\d.]+)px', c):
-        v = float(val)
+    for kind, num, unit in re.findall(r'(min|max)-(?:width|inline-size):\s*' + _LEN, c):
+        v = float(num) * _UNIT[unit]
         ok = ok and (width >= v if kind == 'min' else width <= v)
-    for op, val in re.findall(r'width\s*(>=|<=|<|>)\s*([\d.]+)px', c):
-        v = float(val)
+    for op, num, unit in re.findall(r'(?:width|inline-size)\s*(>=|<=|<|>)\s*' + _LEN, c):
+        v = float(num) * _UNIT[unit]
         ok = ok and {'>=': width >= v, '<=': width <= v, '<': width < v, '>': width > v}[op]
+    for num, unit, op in re.findall(_LEN + r'\s*(>=|<=|<|>)\s*(?:width|inline-size)', c):
+        v = float(num) * _UNIT[unit]  # `400px <= width` reads width >= 400px
+        ok = ok and {'>=': width <= v, '<=': width >= v, '<': width > v, '>': width < v}[op]
     return ok
 
 
@@ -213,16 +223,56 @@ def _query_holds(q: str, width: int, conditions: frozenset) -> bool:
     return not ok if neg else ok
 
 
-def media_holds(conds: tuple, width: int, conditions=frozenset()) -> bool:
-    """Whether every media prelude holds on a page `width` px wide. A container query never holds. A prelude is a
-    comma list of queries and holds when any one of them does; `not` negates its own query only. With no `conditions`
-    the page is a plain screen at rest (no forced colours, motion allowed, a hovering fine pointer, light scheme); a
-    name in `conditions` (a key of CONDITIONS) makes that condition true, and `print` makes the page print, not screen."""
+CONTAINER_FEATURE = re.compile(r'(?<![\w-])(?:min-|max-)?(?:width|inline-size)(?![\w-])')
+_CONTAINER_OTHER = re.compile(r'style\s*\(|scroll-state\s*\(|(?<![\w-])(?:min-|max-)?(?:height|block-size|aspect-ratio|orientation)(?![\w-])')
+
+
+def container_query(prelude: str):
+    """(container name or None, query text) of a `container [name] (query)` prelude."""
+    body = prelude.strip()[len('container'):].strip()
+    m = re.match(r'([a-zA-Z_][\w-]*)\s+(?=[(a-z])', body)
+    if m and m.group(1).lower() not in ('not', 'and', 'or', 'style'):
+        return m.group(1), body[m.end():].strip()
+    return None, body
+
+
+def container_evaluable(prelude: str) -> bool:
+    """Whether a container prelude only tests the container's width (the one thing a container width gives)."""
+    q = container_query(prelude)[1].lower()
+    return bool(CONTAINER_FEATURE.search(q)) and not _CONTAINER_OTHER.search(q)
+
+
+def _container_holds(prelude: str, container) -> bool:
+    """A `container` prelude against `container(name) -> content width in px or None`. No width, or a query on anything
+    but width, never holds."""
+    if container is None or not container_evaluable(prelude):
+        return False
+    name, q = container_query(prelude)
+    px = container(name)
+    if px is None:
+        return False
+    q = q.lower()
+    ors = re.split(r'\)\s+or\s+\(', q)
+    if len(ors) > 1:
+        return any(_width_ok(o, px) for o in ors)
+    neg = q.startswith('not ')
+    ok = _width_ok(q[4:] if neg else q, px)
+    return not ok if neg else ok
+
+
+def media_holds(conds: tuple, width: int, conditions=frozenset(), container=None) -> bool:
+    """Whether every media prelude holds on a page `width` px wide. A prelude is a comma list of queries and holds when
+    any one of them does; `not` negates its own query only. With no `conditions` the page is a plain screen at rest (no
+    forced colours, motion allowed, a hovering fine pointer, light scheme); a name in `conditions` (a key of CONDITIONS)
+    makes that condition true, and `print` makes the page print, not screen. A container query holds against
+    `container(name)`, the container's content width in px (see _container_holds); with no `container` it never holds."""
     conditions = frozenset(conditions)
     for c in conds:
         c = c.strip()
         if c.lower().startswith('container'):
-            return False
+            if not _container_holds(c, container):
+                return False
+            continue
         if not any(_query_holds(q, width, conditions) for q in split_list(c)):
             return False
     return True
@@ -321,6 +371,9 @@ def resting(sel: str, held=()) -> str:
     :disabled, :checked, :indeterminate, :placeholder-shown) is
     left to match the markup as rendered; aria-*="false" is never replaced, because it describes the markup as it is."""
     held = frozenset(held)
+    for h in held:
+        if h.startswith('.'):  # a class the state is written as (.is-detached): held means the element carries it
+            sel = re.sub(re.escape(h) + r'(?![\w-])', ALWAYS, sel)
     sel = re.sub(r':dir\(\s*ltr\s*\)', '', sel)
     sel = re.sub(r':dir\(\s*rtl\s*\)', NEVER, sel)
     sel = re.sub(r':(?:any-)?link\b', '[href]', sel)
@@ -390,11 +443,11 @@ class Cascade:
 
     PRESENTATION = ('fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin', 'stroke-dasharray', 'opacity', 'fill-opacity', 'stroke-opacity')
 
-    def declared(self, el, pseudo, width, conditions=frozenset()):
+    def declared(self, el, pseudo, width, conditions=frozenset(), container=None):
         """Every declaration that applies to the element (or its pseudo-element) at this width, lowest priority first.
         An SVG presentation attribute is an author declaration of specificity 0 before every stylesheet; a style
         attribute beats every author rule."""
-        rs = [r for r in self.match.get(id(el), []) if r.pseudo == pseudo and media_holds(r.media, width, conditions)]
+        rs = [r for r in self.match.get(id(el), []) if r.pseudo == pseudo and media_holds(r.media, width, conditions, container)]
         out = []
         if pseudo is None:
             for a in self.PRESENTATION:

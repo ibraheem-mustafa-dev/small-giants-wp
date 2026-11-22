@@ -27,6 +27,9 @@ TIMEOUT = int(os.environ.get('SGS_SETTING_RECORD_TIMEOUT') or 120)  # seconds on
 # Stand-ins for the ids and urls a fixture names (an image, a menu post, its first item, a drawer).
 PLACEHOLDERS = {'{{image}}': 9001, '{{image.url}}': 'https://example.test/wp-content/uploads/calibration.jpg',
                 '{{menu}}': 9101, '{{menuItem}}': 9102, '{{drawer}}': 9103}
+# What the setting check alone wants of the runner: the plugin's render_block filters, what wp_footer prints, WordPress's
+# own wrapper classes and spacing styles, and the Interactivity state each render collected (apply_directives reads it).
+RUNNER_FIDELITY_FLAGS = ['--render-block-filters', '--print-footer', '--wp-fidelity', '--interactivity-state']
 CODE_ROOTS = ('src', 'includes', 'assets', 'schemas', 'templates', 'scripts/qa/lib', 'sgs-blocks.php')
 
 
@@ -99,6 +102,7 @@ def harness_args(fixture: dict, fixtures_dir: Path) -> tuple:
     if h.get('attachmentsFile'):
         out += ['--attachments-file', path(h['attachmentsFile'])]
     out.append('--motion-targets')  # the real block types registered, as on a site
+    out += RUNNER_FIDELITY_FLAGS
     return tuple(out)
 
 
@@ -150,6 +154,8 @@ class Renderer:
             res = {'ok': False, 'error': 'no JSON result: ' + (p.stderr[-500:] or p.stdout[-500:])}
         res['secs'] = round(time.time() - t0, 3)
         res['notices'] = [ln for ln in (p.stderr or '').splitlines() if 'Warning' in ln or 'Fatal' in ln or 'Deprecated' in ln][:8]
+        if res.get('ok'):
+            res['html'] = apply_directives(res.get('html', ''), res.get('interactivityState') or {})
         if res.get('ok') and self.post:
             res['html'] = apply_post(res.get('html', ''), self.post)
         if res.get('ok'):
@@ -207,6 +213,152 @@ def apply_post(html: str, steps: list) -> str:
         for el in sv.select(step['select'], soup):
             for k, v in (step.get('set') or {}).items():
                 el[k] = v
+    return str(soup)
+
+
+MISSING = object()
+
+
+def _php_truthy(v) -> bool:
+    """PHP's truthiness, which WordPress's directive processing uses: '' and '0', 0, null, false, [] are false."""
+    if isinstance(v, str):
+        return v not in ('', '0')
+    return bool(v)
+
+
+def _ref_value(ref: str, ns: str, state: dict, ctx: dict):
+    """A directive's reference (`state.a.b`, `context.x`, `!state.x`, `ns::state.x`) evaluated, or MISSING when the path
+    is not in the data (a derived state function the runner's JSON does not hold)."""
+    ref = ref.strip()
+    neg = ref.startswith('!')
+    ref = ref.lstrip('!').strip()
+    if '::' in ref:
+        ns, ref = ref.split('::', 1)
+    parts = ref.split('.')
+    if parts[0] == 'state':
+        cur = state.get(ns, MISSING) if isinstance(state, dict) else MISSING
+    elif parts[0] == 'context':
+        cur = ctx.get(ns, MISSING)
+    else:
+        return MISSING
+    for seg in parts[1:]:
+        if isinstance(cur, dict) and seg in cur:
+            cur = cur[seg]
+        elif isinstance(cur, list) and seg.isdigit() and int(seg) < len(cur):
+            cur = cur[int(seg)]
+        else:
+            return MISSING
+    if cur is MISSING:
+        return MISSING
+    return (not _php_truthy(cur)) if neg else cur
+
+
+def _deep_merge(a, b):
+    if isinstance(a, dict) and isinstance(b, dict):
+        out = dict(a)
+        for k, v in b.items():
+            out[k] = _deep_merge(a[k], v) if k in a else v
+        return out
+    return b
+
+
+def _split_style(text: str) -> list:
+    """A style attribute's declarations as [property, value] pairs (a `;` inside brackets or quotes stays in its value)."""
+    out, cur, depth, quote = [], '', 0, ''
+    for ch in text or '':
+        if quote:
+            quote = '' if ch == quote else quote
+        elif ch in ('"', "'"):
+            quote = ch
+        elif ch == '(':
+            depth += 1
+        elif ch == ')':
+            depth -= 1
+        elif ch == ';' and not depth:
+            out.append(cur)
+            cur = ''
+            continue
+        cur += ch
+    out.append(cur)
+    return [[k.strip(), v.strip()] for k, _, v in (d.partition(':') for d in out if ':' in d)]
+
+
+def _bind(el, attr: str, val) -> None:
+    """`data-wp-bind--<attr>` as WordPress writes it: null or false removes the attribute, true sets it bare, a string
+    sets its value; an aria- or data- attribute takes the words "true" and "false" instead."""
+    if attr[:5] in ('aria-', 'data-') and isinstance(val, bool):
+        el[attr] = 'true' if val else 'false'
+    elif val is None or val is False:
+        el.attrs.pop(attr, None)
+    elif val is True:
+        el[attr] = ''
+    else:
+        el[attr] = val if isinstance(val, str) else json.dumps(val) if isinstance(val, (dict, list)) else str(val)
+
+
+def apply_directives(html: str, state: dict) -> str:
+    """The Interactivity API's server-side directive processing (WP_Interactivity_API::process_directives), offline:
+    inside a `data-wp-interactive` namespace, `data-wp-context` (merged down the tree), `data-wp-bind--<attr>`,
+    `data-wp-class--<name>`, `data-wp-style--<prop>` and `data-wp-text` are evaluated against `state` ({namespace:
+    {key: value}}, what wp_interactivity_state() collected) and written into the markup. A reference whose path the
+    state does not hold (a derived state function) leaves that directive's target untouched."""
+    if 'data-wp-' not in html:
+        return html
+    from bs4 import BeautifulSoup, Tag
+    soup = BeautifulSoup(html, 'html.parser')
+
+    def run(el, ns, ctx):
+        attrs = el.attrs
+        if 'data-wp-interactive' in attrs:
+            raw = attrs['data-wp-interactive']
+            try:
+                parsed = json.loads(raw)
+                ns = parsed.get('namespace', ns) if isinstance(parsed, dict) else (parsed if isinstance(parsed, str) else ns)
+            except ValueError:
+                ns = raw.strip()
+        if 'data-wp-context' in attrs:
+            raw, cns = attrs['data-wp-context'], ns
+            if '::' in raw and not raw.lstrip().startswith(('{', '[')):
+                cns, raw = raw.split('::', 1)
+            try:
+                data = json.loads(raw)
+            except ValueError:
+                data = None
+            if isinstance(data, dict):
+                ctx = {**ctx, cns: _deep_merge(ctx.get(cns, {}), data)}
+        for name in [n for n in list(attrs) if n.startswith('data-wp-')]:
+            kind, _, arg = name[len('data-wp-'):].partition('--')
+            arg = arg.split('---')[0]  # `---suffix` only makes the attribute name unique
+            if kind not in ('bind', 'class', 'style', 'text'):
+                continue
+            val = _ref_value(attrs[name], ns, state, ctx)
+            if val is MISSING:
+                continue
+            if kind == 'bind' and arg:
+                _bind(el, arg, val)
+            elif kind == 'class' and arg:
+                classes = [c for c in (el.get('class') or []) if c != arg]
+                if _php_truthy(val):
+                    classes.append(arg)
+                if classes:
+                    el['class'] = classes
+                else:
+                    el.attrs.pop('class', None)
+            elif kind == 'style' and arg:
+                decls = [d for d in _split_style(el.get('style', '')) if d[0].lower() != arg.lower()]
+                if _php_truthy(val):
+                    decls.append([arg, str(val)])
+                if decls:
+                    el['style'] = '; '.join(f'{k}: {v}' for k, v in decls) + ';'
+                else:
+                    el.attrs.pop('style', None)
+            elif kind == 'text' and isinstance(val, (str, int, float)) and not isinstance(val, bool):
+                el.string = str(val)
+        for child in [c for c in el.children if isinstance(c, Tag)]:
+            run(child, ns, ctx)
+
+    for top in [c for c in soup.children if isinstance(c, Tag)]:
+        run(top, '', {})
     return str(soup)
 
 

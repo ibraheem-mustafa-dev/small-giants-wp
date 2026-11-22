@@ -59,22 +59,28 @@ def test_must_fail_entry_losing_to_a_stronger_rule_is_removed():
     assert verdicts(rep)['removed'] == 1 and key not in out
 
 
-def test_must_fail_part_absent_from_render_is_blind_not_removed():
-    # Breaks if an entry the proof cannot see were deleted: the part is not in the server render (a script builds it).
+def test_must_fail_part_a_script_builds_is_blind_not_removed(tmp_path):
+    # Breaks if an entry the proof cannot see were deleted: the part is not in the server render because the block's
+    # front-end script builds it. (A class no source prints at all is dead CSS and goes: tests/test_lane_d.py.)
+    plugin = tmp_path / 'plugins' / 'sgs-blocks'
+    (plugin / 'src' / 'blocks' / SHORT).mkdir(parents=True)
+    (plugin / 'src' / 'blocks' / SHORT / 'view.js').write_text("panel.className = 'sgs-demo__panel';", encoding='utf-8')
     e = entry(part='sgs-demo__panel')
     run, key = run_of(HTML, '', HTML, '.sgs-demo__panel{color:#123456}', e, '#123456', ['.sgs-demo__panel'])
+    run['plugin'] = plugin
     out, rep = PR.prove(SHORT, run)
     assert verdicts(rep)['blind'] == 1 and key in out
-    assert out[key]['unproved'] == 'part-printed-nowhere'  # nothing here prints it; its kind is a reading, and the record says so
+    assert out[key]['unproved'] == 'script-built-part'  # its kind is a reading, and the record says so
 
 
-def test_must_fail_coincident_inherited_value_is_blind_not_removed():
-    # Breaks if a declaration the setting really switches on were deleted because, in this render, it computes to the
-    # same value (border-radius: inherit from a root with no radius gives 0, as the plain render does).
+def test_coincident_inherited_value_is_proved_over_a_sentinel_underlay():
+    # border-radius: inherit from a root with no radius gives 0, as the plain render does: the first renders show nothing,
+    # but over the underlay the pseudo-element inherits the root's sentinel and the plain page shows its own.
     e = entry(setting='bg', part='ROOT::after', props=('border-radius',))
     run, key = run_of(HTML, '.sgs-demo::after{content:""}', HTML, '.sgs-demo::after{content:"";border-radius:inherit}', e, '#123456', ['.sgs-demo::after'])
     out, rep = PR.prove(SHORT, run)
-    assert verdicts(rep)['blind'] == 1 and key in out
+    assert verdicts(rep)['proved'] == 1 and out[key]['kind'] == 'switched-on'
+    assert 'underlay' in rep['proved'][0]['evidence']
 
 
 def test_theme_custom_property_is_blind():
@@ -122,11 +128,11 @@ def test_must_fail_floor_coincidence_is_not_proved_without_a_second_render():
     assert verdicts(rep)['blind'] == 1 and out[key]['unproved'] == 'same-value-here'
 
 
-def test_must_fail_rule_in_an_unnamed_state_is_blind_not_removed():
-    # Breaks if an entry whose rule holds only in a state the record cannot name were deleted: the floated label rule
-    # needs a filled field (:not(:placeholder-shown)); at rest the placeholder shows and nothing changes.
-    html = '<div class="sgs-demo"><input class="sgs-demo__input" placeholder=" "><span class="sgs-demo__label">x</span></div>'
-    sel = '.sgs-demo:has(.sgs-demo__input:not(:placeholder-shown)) .sgs-demo__label'
+def test_must_fail_rule_in_a_state_nothing_decides_is_blind_not_removed():
+    # Breaks if an entry whose rule holds only in a state the proof cannot hold (a visitor's :user-invalid) were deleted:
+    # at rest the rule never matches and nothing changes.
+    html = '<div class="sgs-demo"><input class="sgs-demo__input"><span class="sgs-demo__label">x</span></div>'
+    sel = '.sgs-demo:has(.sgs-demo__input:user-invalid) .sgs-demo__label'
     e = entry(setting='offset', part='sgs-demo__label', props=('top',))
     css = '.sgs-demo__label{top:1px}'
     run, key = run_of(html, css, html, css + '.sgs-demo{--x:37px}', e, '37px', [sel])

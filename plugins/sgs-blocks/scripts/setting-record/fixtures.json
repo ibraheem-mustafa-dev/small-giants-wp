@@ -420,7 +420,7 @@
 			}
 		],
 		"notes": [
-			"The menu post (fixtures/menu-post.json, ID 9101) holds the Shop submenu (9104) with three sub-links: Sunglasses 9105 featured, Frames 9106 disabled, Cases 9109 current. A child identifier is path-qualified, `id:<parent>>id:<child>` (src/blocks/nav-bar-menu/render.php::from_link, read by includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items).",
+			"The menu post (fixtures/menu-post.json, ID 9101) holds the Shop submenu (9104) with three sub-links: Sunglasses 9105 featured, Frames 9106 disabled, Cases 9109 current. Home and Sunglasses carry a description, which the menu prints as each link's badge (src/blocks/nav-bar-menu/render.php reads `description` as `badge`; includes/nav-menu-markup.php::sgs_nav_shared_badge_html prints `sgs-nav-bar-menu__badge`). A child identifier is path-qualified, `id:<parent>>id:<child>` (src/blocks/nav-bar-menu/render.php::from_link, read by includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items).",
 			"Current is set in the browser by view.js::markCurrentPage (aria-current=\"page\" on the link whose data-sgs-nav-path matches the page), so `post` sets it on the Cases sub-link after render.",
 			"Variant 1 keeps calibration's featured top-level item (Home) beside the featured sub-link; Home stays disabled in the other variants, as in calibration."
 		]

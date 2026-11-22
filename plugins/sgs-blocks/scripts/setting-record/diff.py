@@ -265,13 +265,15 @@ def var_consumers(name, rules, seen=None):
     return out
 
 
-def live_consumers(name, allrules, rm, em, short):
+def live_consumers(name, allrules, rm, em, short, changed=frozenset()):
     """var_consumers kept only where the consumer's element is drawn in the changed render and no other block in it
-    re-sets the same custom property on itself (a child block's own default shadows the inherited value)."""
+    re-sets the same custom property on itself (a child block's own default shadows the inherited value). A rule in
+    `changed` (the setting moved it) is the value's source, never a shadow: a helper part outside the block's class
+    (the scrim, `.sgs-scrim`) that the setting writes the property onto passes it to its own consumers."""
     drawn = {c for e in em.values() for c in e['classes']}
     shadow = set()
     for (m, sel, p), v in rm.items():
-        if p == name:
+        if p == name and (m, sel, p) not in changed:
             part, _, _ = analyse_selector(sel, short)
             if part and part.split('__')[0].split('::')[0] != f'sgs-{short}':
                 shadow.add(part.split('__')[0].split('::')[0])
@@ -308,10 +310,55 @@ def attr_test_moves(sel: str, name: str, changes) -> bool:
     return any(attr_holds(op, want, a) != attr_holds(op, want, b) for op, want in tests for a, b in changes)
 
 
+def _unwrap_where(sel: str) -> str | None:
+    """A selector written whole inside one :where() (zero specificity, `:where(.x:has(.y))`), without it; else None."""
+    sel = sel.strip()
+    if not sel.startswith(':where(') or not sel.endswith(')'):
+        return None
+    depth = 0
+    for i, ch in enumerate(sel[6:], 6):
+        depth += {'(': 1, ')': -1}.get(ch, 0)
+        if depth == 0:
+            return sel[7:-1] if i == len(sel) - 1 and ',' not in sel[7:-1] else None
+    return None
+
+
 def placement(sel, prop, media, short, mech, src):
     part, state, why = analyse_selector(sel, short)
+    if part is None and _unwrap_where(sel):
+        # the selector reader does not look inside a :where() that wraps the whole selector; its content names the part
+        part, state, why = analyse_selector(_unwrap_where(sel), short)
     return {'part': part, 'props': [prop], 'state': state, 'tiers': tiers_of(media), 'mechanism': mech, 'selector': sel, 'where': src,
             **({'why': why} if part is None else {})}
+
+
+_STEP_CLASSES = re.compile(r'(^|> )([a-z0-9-]+)\.[^\[> ]*\[')
+
+
+def element_pairs(eb: dict, em: dict):
+    """(path, plain element, changed element) for every element in both renders. An element's path names its part
+    classes, so a class the setting adds (a utility class such as sgs-hide-mobile) changes its path: an element only in
+    one render is paired with the one only in the other whose path is the same once classes are left out, when exactly
+    one of each has it."""
+    for path in set(eb) & set(em):
+        yield path, eb[path], em[path]
+    only_b, only_m = {}, {}
+    for path in set(eb) - set(em):
+        only_b.setdefault(_STEP_CLASSES.sub(r'\1\2[', path), []).append(path)
+    for path in set(em) - set(eb):
+        only_m.setdefault(_STEP_CLASSES.sub(r'\1\2[', path), []).append(path)
+    for bare, paths in only_b.items():
+        if len(paths) == 1 and len(only_m.get(bare, ())) == 1:
+            yield only_m[bare][0], eb[paths[0]], em[only_m[bare][0]]
+
+
+def element_part(classes, short: str, token: str) -> str:
+    """The part an element is: ROOT for the block root, else its shortest part class (vocab.same_element's rule)."""
+    cls = {c for c in classes if c != token}
+    if f'sgs-{short}' in cls:
+        return 'ROOT'
+    parts = sorted((c for c in cls if c.startswith('sgs-') and '__' in c and '--' not in c), key=lambda c: (len(c), c))
+    return parts[0] if parts else 'ROOT'
 
 
 def diff_placements(base, changed, short, sheets):
@@ -320,23 +367,26 @@ def diff_placements(base, changed, short, sheets):
     out = []
     runtime = [(s, p, v, m, 'runtime') for (m, s, p), v in rm.items()]
     allrules = sheets + runtime
-    consumers = lambda name: live_consumers(name, allrules, rm, em, short)  # noqa: E731
     changed_rules = [k for k in set(rb) | set(rm) if rb.get(k) != rm.get(k) and PROP_RE.fullmatch(k[2])]
+    consumers = lambda name: live_consumers(name, allrules, rm, em, short, frozenset(changed_rules))  # noqa: E731
     for media, sel, prop in changed_rules:
         if prop.startswith('--'):
             for s2, p2, m2, src in consumers(prop):
                 out.append(placement(s2, p2, media or m2, short, 'run-var', src))
         else:
             out.append(placement(sel, prop, media, short, 'run-css', 'runtime'))
-    toks, dattrs = set(), {}
-    for path in set(eb) & set(em):
-        a, b = eb[path], em[path]
-        toks |= (a['classes'] ^ b['classes']) - {'UID'}
+    toks, dattrs, tok_parts, attr_parts = set(), {}, {}, {}
+    for path, a, b in element_pairs(eb, em):
+        moved = (a['classes'] ^ b['classes']) - {'UID'}
+        toks |= moved
+        for t in moved:
+            tok_parts.setdefault(t, set()).add(element_part(b['classes'] | a['classes'], short, t))
         for k in set(a['attrs']) | set(b['attrs']):
             if a['attrs'].get(k) == b['attrs'].get(k):
                 continue
             if k != 'style':
                 dattrs.setdefault(k, set()).add((a['attrs'].get(k), b['attrs'].get(k)))
+                attr_parts.setdefault(k, set()).add(element_part(b['classes'] | a['classes'], short, ''))
                 continue
             sa = dict(re.findall(r'([-\w]+)\s*:\s*([^;]+)', a['attrs'].get(k, '')))
             sb = dict(re.findall(r'([-\w]+)\s*:\s*([^;]+)', b['attrs'].get(k, '')))
@@ -353,7 +403,13 @@ def diff_placements(base, changed, short, sheets):
         pat = re.compile(r'\.' + re.escape(tok) + r'(?![\w-])')
         for sel, p, v, media, src in allrules:
             if pat.search(sel) and not p.startswith('--'):
-                out.append(placement(sel, p, media, short, 'run-class', src))
+                pl = placement(sel, p, media, short, 'run-class', src)
+                utility = '__' not in tok and tok != f'sgs-{short}'
+                if (pl['part'] is None or (utility and pl['part'] == tok)) and len(tok_parts.get(tok, ())) == 1:
+                    # a utility class, not a part (sgs-hide-mobile): the part is the element it was put on
+                    pl['part'] = next(iter(tok_parts[tok]))
+                    pl.pop('why', None)
+                out.append(pl)
             elif pat.search(sel):
                 for s2, p2, m2, src2 in consumers(p):
                     out.append(placement(s2, p2, media or m2, short, 'run-class-var', src2))
@@ -361,7 +417,12 @@ def diff_placements(base, changed, short, sheets):
         pat = re.compile(r'\[' + re.escape(k) + r'(?![\w-])')
         for sel, p, v, media, src in allrules:
             if pat.search(sel) and not p.startswith('--') and attr_test_moves(sel, k, dattrs[k]):
-                out.append(placement(sel, p, media, short, 'run-data', src))
+                pl = placement(sel, p, media, short, 'run-data', src)
+                if pl['part'] is None and len(attr_parts.get(k, ())) == 1 and re.fullmatch(r'(?::where\()?\[[^\]]+\](?::not\(\[[^\]]+\]\))?\)?', sel.strip()):
+                    # a rule on the attribute alone (`[data-sgs-fx~="magnet"]`): the part is the element whose attribute moved
+                    pl['part'] = next(iter(attr_parts[k]))
+                    pl.pop('why', None)
+                out.append(pl)
     uniq, seen = [], set()
     for pl in out:
         sig = json.dumps([pl['part'], pl['props'], pl['state'], pl['tiers']])
