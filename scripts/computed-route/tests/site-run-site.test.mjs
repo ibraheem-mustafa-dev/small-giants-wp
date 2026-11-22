@@ -127,7 +127,7 @@ test( 'MUST FAIL: the commands pass the named site to every child and read secre
 	assert.match( run, /'--env-file', secretsPath\( entry\.envFile, REPO \)/ );
 	assert.match( run, /apply\.mjs', client, '--surfaces', key, '--draft', origin, '--site', site, '--write'/ );
 	assert.match( run, /SGS_LIVE_ORIGIN: new URL\( base \)\.origin, NODE_EXTRA_CA_CERTS: certs/ );
-	assert.match( run, /gate-chain\.mjs', path\.join\( g, 'solve-report\.json' \), '--client', client, '--site', site \]/ );
+	assert.match( run, /gate-chain\.mjs', path\.join\( gateDir, 'solve-report\.json' \), '--client', client, '--site', site, '--tree', tree \]/ );
 	assert.match( run, /env: \{ SGS_LIVE_ORIGIN: new URL\( base \)\.origin \}/ );
 	assert.match( run, /const \{ surfaces, base, target \} = prepareSite\(/ );
 	const gate = source( 'gate-chain.mjs' );

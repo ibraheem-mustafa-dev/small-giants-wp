@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Gate chain command (Spec 48 FR-48-64, FR-48-66): runs G0 to G7 (lib/gate-chain.mjs) on every distinct open issue of a
 // Solve report, prints each row's first failing gate, class and evidence, and writes gaps.json.
-//   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--site <target>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]
+//   node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--site <target>] [--tree <file>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]
 // With --client the surface's tree, state map and site come from sites/<client>/build/surfaces.json; --site names another copy of the
 // site, one that shares its post ids, whose login, address and calibration cache are used instead. The block of each row
 // is read from the tree; without --client G0 fails every row, the block being unknown. The final walk is the highest
@@ -105,10 +105,18 @@ export async function defaultProbes( { s, client, db, surface = null, tmp = fs.m
 	} );
 }
 
-// The tree a surface's run built, which the rows' refs name: a template surface's copy (lib/template-copies.mjs::copyFile,
-// where site-run.mjs writes it), else the surface's recorded tree, else its newest Fill's filled.tree.json (a page run builds
-// that tree, or the part below its template's shell, and records no tree of its own).
-export function surfaceTreeFile( buildDir, surface, s ) {
+// The tree a surface's run built, which the rows' refs name. `treeFile` (--tree; site-run.mjs passes the tree its build used) is
+// read when given, and a missing one throws. Without it: a template surface's copy (lib/template-copies.mjs::copyFile), else the
+// surface's recorded tree, else its newest Fill's filled.tree.json, which nothing ties to the build the report came from, so
+// `log` says which Fill was read. A surface with none of these throws naming the recorded tree.
+export function surfaceTreeFile( buildDir, surface, s, { treeFile = null, log = console.log } = {} ) {
+	if ( treeFile ) {
+		const file = path.resolve( REPO, treeFile );
+		if ( ! fs.existsSync( file ) ) {
+			throw new Error( `--tree ${ treeFile } does not exist: the tree the build used is gone, so no row can be tied to a block` );
+		}
+		return file;
+	}
 	if ( s.copy && s.target?.template ) {
 		return copyFile( buildDir, s.target.template );
 	}
@@ -117,15 +125,19 @@ export function surfaceTreeFile( buildDir, surface, s ) {
 		return recorded;
 	}
 	const fill = fillOutDir( { fillRoot: path.join( buildDir, 'qa', 'fill', surface ), fills: false } );
-	return fill ? path.join( fill, 'filled.tree.json' ) : recorded;
+	if ( ! fill ) {
+		return recorded;
+	}
+	log( `${ surface }: no --tree names the tree the build used, so the newest Fill is read (${ path.relative( REPO, fill ) }); nothing ties it to the build this report came from` );
+	return path.join( fill, 'filled.tree.json' );
 }
 
 // Every input the gates read, built from the report's files; a value that cannot be read is left undefined or throws, and
 // runChain fails that gate closed.
-export function buildContext( { report, walk, surfaces, surface, client, probes, installed, db, intakeFile } ) {
+export function buildContext( { report, walk, surfaces, surface, client, probes, installed, db, intakeFile, treeFile = null, log = console.log } ) {
 	const s = surfaces?.[ surface ] ?? null;
 	const buildDir = client ? path.join( REPO, 'sites', client, 'build' ) : null;
-	const tree = s && buildDir ? readTree( surfaceTreeFile( buildDir, surface, s ) ) : null;
+	const tree = s && buildDir ? readTree( surfaceTreeFile( buildDir, surface, s, { treeFile, log } ) ) : null;
 	const blockOf = ( row ) => ( tree && row.ref ? nodeByRef( tree, row.ref )?.name ?? null : null );
 	const calFor = s?.site ? calibrationForSite( s.site, path.join( REPO, 'scripts', 'computed-route', 'cache' ) ) : () => null;
 	const intake = intakeFile && fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
@@ -224,7 +236,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	};
 	const reportFile = argv.find( ( a, i ) => ! a.startsWith( '--' ) && ( 0 === i || ! argv[ i - 1 ].startsWith( '--' ) ) );
 	if ( ! reportFile ) {
-		console.error( 'usage: node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--site <target>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]' );
+		console.error( 'usage: node scripts/computed-route/gate-chain.mjs <solve-report.json> [--client <slug>] [--site <target>] [--tree <file>] [--probes <module.mjs>] [--out <file>] [--debt-out <file>] [--gaps-out <file>]' );
 		process.exit( 2 );
 	}
 	const report = JSON.parse( fs.readFileSync( reportFile, 'utf8' ) );
@@ -238,7 +250,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	const targets = site ? readTargets() : null;
 	const surfaces = surfacesFile ? surfacesOnSite( JSON.parse( fs.readFileSync( surfacesFile, 'utf8' ) ), site, targets ) : null;
 	site && ( process.env.SGS_LIVE_ORIGIN = liveOrigin( site, targets ) );
-	const ctx = buildContext( { report, walk, surfaces, surface: report.surface, client, probes, installed: await installedVersions(), db: openDb(), intakeFile: client ? path.join( REPO, 'sites', client, 'build', 'intake', 'intake.json' ) : null } );
+	const ctx = buildContext( { report, walk, surfaces, surface: report.surface, client, probes, installed: await installedVersions(), db: openDb(), intakeFile: client ? path.join( REPO, 'sites', client, 'build', 'intake', 'intake.json' ) : null, treeFile: flag( '--tree' ) } );
 	const out = [];
 	for ( const issue of issuesOf( report, report.surface ) ) {
 		const row = { ...issue.rows[ 0 ], solveClass: issue.solveClass };

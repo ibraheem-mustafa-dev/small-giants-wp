@@ -49,8 +49,8 @@
 	},
 	{
 		"file": "site-run.mjs",
-		"find": "'--client', client, '--site', site ], { logFile",
-		"replace": "'--client', client ], { logFile",
+		"find": "'--client', client, '--site', site, '--tree', tree ] : null;",
+		"replace": "'--client', client, '--tree', tree ] : null;",
 		"why": "gate-chain is not told the site"
 	},
 	{

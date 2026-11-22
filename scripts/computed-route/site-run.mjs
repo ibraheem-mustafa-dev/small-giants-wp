@@ -238,6 +238,14 @@ export function fillOutDir( { fillRoot, fills, fresh, exists = fs.existsSync, li
 	return done.length ? path.join( fillRoot, done.at( -1 ) ) : null;
 }
 
+// The gate chain's command line for one ranked surface (after `node`): its Solve report, the client, the site and --tree, the tree
+// the surface's build used this run (`built`: surface key -> repo-relative tree file). Null when nothing was built for it this run:
+// a newer Fill whose build failed, or an older one, would tie the walk's rows to blocks the live page does not hold.
+export function gateChainArgs( { surface, gateDir, client, site, built } ) {
+	const tree = built.get( surface );
+	return tree ? [ 'scripts/computed-route/gate-chain.mjs', path.join( gateDir, 'solve-report.json' ), '--client', client, '--site', site, '--tree', tree ] : null;
+}
+
 // One stage's record in status.json: { ok, seconds, detail? }; a stage that did not run is { ok: true, skipped: <reason>, seconds: 0 }
 // (it did not fail, and it did not run). A stage that has nothing to do by design (`na`: a template copy has no post of its own to
 // apply, WooCommerce keeps its own page's content) also carries `notApplicable: true`, which --strict does not count as a gap.
@@ -395,6 +403,8 @@ export async function main( argv ) {
 	const dir = path.join( build, 'qa', 'site-run', stamp() );
 	fs.mkdirSync( dir, { recursive: true } );
 	const status = {};
+	// The tree each surface's build used this run (gateChainArgs).
+	const builtTrees = new Map();
 	const save = () => fs.writeFileSync( path.join( dir, 'status.json' ), `${ JSON.stringify( status, null, 2 ) }\n` );
 	// `skipped`: why the stage did not run (it is recorded ok, with the reason, and printed `skip`); `na`: it has nothing to do by design.
 	const note = ( key, stage, ok, ms, detail, skipped = null, na = false ) => {
@@ -581,6 +591,9 @@ export async function main( argv ) {
 		} ) ) ) {
 			return;
 		}
+		// The tree the gate chain reads for this surface: the copy a template built, else the Fill this build took (the whole Filled tree,
+		// its shell's nodes included).
+		builtTrees.set( key, slug ? tree : path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) ) );
 		// The applier: set what Fill and the build cannot, from the draft's runtime. It stops the surface like a failed build.
 		if ( ! await applyStage( { ctx, entry, key, slug, step, exec } ) ) {
 			return;
@@ -717,8 +730,12 @@ export async function main( argv ) {
 		const ranking = writeRanking( { runDir: dir, parityOut: path.join( build, 'qa', 'parity', 'out' ), surfaces: keys, limit: TOP_N } );
 		console.log( `ranking: ${ ranking.total } open rows in ${ ranking.causes } causes, top ${ ranking.ranked.length } written to ${ ranking.file }` );
 		for ( const s of ranking.surfaces ) {
-			const g = path.join( dir, 'gate', s );
-			const r = await run( 'node', [ 'scripts/computed-route/gate-chain.mjs', path.join( g, 'solve-report.json' ), '--client', client, '--site', site ], { logFile: path.join( dir, `${ s }.gate-chain.log` ), env: { SGS_LIVE_ORIGIN: new URL( base ).origin } } );
+			const args = gateChainArgs( { surface: s, gateDir: path.join( dir, 'gate', s ), client, site, built: builtTrees } );
+			if ( ! args ) {
+				note( s, 'gate-chain', false, 0, 'no tree was built for it in this run, so its rows cannot be tied to the blocks the live page holds' );
+				continue;
+			}
+			const r = await run( 'node', args, { logFile: path.join( dir, `${ s }.gate-chain.log` ), env: { SGS_LIVE_ORIGIN: new URL( base ).origin } } );
 			note( s, 'gate-chain', 0 === r.code, 0, r.tail );
 		}
 		const fb = await run( 'node', [ 'scripts/computed-route/framework-backlog.mjs' ], { logFile: path.join( dir, 'framework-backlog.log' ) } );
