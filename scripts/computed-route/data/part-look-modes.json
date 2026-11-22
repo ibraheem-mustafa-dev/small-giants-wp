@@ -118,6 +118,96 @@
 					"neighbours": [
 						"wrapper"
 					]
+				},
+				{
+					"setting": "showSwatches",
+					"value": true,
+					"whenFound": "swatch",
+					"note": "the colour dots: the card draws them from the product's own colour terms (includes/product-card-swatches.php)"
+				},
+				{
+					"setting": "showSwatches",
+					"value": false,
+					"whenAbsent": "swatch",
+					"neighbours": [
+						"wrapper",
+						"title",
+						"price"
+					]
+				},
+				{
+					"setting": "showWishlist",
+					"value": true,
+					"whenFound": "wishlist",
+					"note": "the heart on the photo, saved in the visitor's browser"
+				},
+				{
+					"setting": "showWishlist",
+					"value": false,
+					"whenAbsent": "wishlist",
+					"neighbours": [
+						"wrapper",
+						"title",
+						"price"
+					]
+				},
+				{
+					"setting": "showBrandOverlay",
+					"value": true,
+					"whenFound": "brand",
+					"note": "the brand wordmark over the photo; it needs the product's brand (brandName) to print"
+				},
+				{
+					"setting": "showBrandOverlay",
+					"value": false,
+					"whenAbsent": "brand",
+					"neighbours": [
+						"wrapper",
+						"title",
+						"price"
+					]
+				},
+				{
+					"setting": "showSavingBadge",
+					"value": true,
+					"whenFound": "savingBadge",
+					"note": "the saving badge over the photo; its words are the product's own (savingLabel)"
+				},
+				{
+					"setting": "showSavingBadge",
+					"value": false,
+					"whenAbsent": "savingBadge",
+					"neighbours": [
+						"wrapper",
+						"title",
+						"price"
+					]
+				},
+				{
+					"setting": "showAttributeTag",
+					"value": true,
+					"whenFound": "attributeTag",
+					"note": "the small tag beside the title; it prints only for a product holding the chosen attribute term or tag (attributeTagTaxonomy, attributeTagTerm), which the route does not choose"
+				},
+				{
+					"setting": "showAttributeTag",
+					"value": false,
+					"whenAbsent": "attributeTag",
+					"neighbours": [
+						"wrapper",
+						"title",
+						"price"
+					]
+				},
+				{
+					"setting": "showDescriptionTier",
+					"from": {
+						"tiers": "desc"
+					},
+					"neighbours": [
+						"wrapper"
+					],
+					"note": "a description the draft shows at some widths only (hidden on a phone); the tier is written where the width differs from the tier above"
 				}
 			]
 		},

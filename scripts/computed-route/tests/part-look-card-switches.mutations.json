@@ -1,0 +1,110 @@
+[
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "isBoxed( el ) !== m.boxed",
+		"replace": "false",
+		"why": "a badge and a wordmark are not told apart: the brand is read as the tag or the tag as the brand"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "return filled || [ 'Top', 'Right', 'Bottom', 'Left' ].some( ( side ) => drawn( el, side ) );",
+		"replace": "return filled;",
+		"why": "a box drawn only by its border (the attribute tag) is not a box"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": " && ! /^rgba\\([^)]*,\\s*0\\)$/.test( bg );\n\t\treturn filled",
+		"replace": " && true;\n\t\treturn filled",
+		"why": "a transparent fill counts as a fill, so a wordmark on a scrim is a box"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "r.width * r.height <= 0.6 * b.width * b.height && ",
+		"replace": "",
+		"why": "a panel covering the photo counts as a label over it (the brand is read from \"photo to come\")"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "x >= b.left && x <= b.right && y >= b.top && y <= b.bottom;",
+		"replace": "true;",
+		"why": "an element anywhere in the card counts as drawn over the photo (a compare icon is the heart)"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "PERCENT.test( textOf( el ) ) !== m.hasPercent",
+		"replace": "true",
+		"why": "a percent badge is not found, or every element is one"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "! el.contains( a ) && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement );",
+		"replace": "! el.contains( a ) && ( a.parentElement === el.parentElement );",
+		"why": "a tag beside a title wrapped in its link is not beside it"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "if ( states.every( ( st ) => st === states[ 0 ] ) ) {",
+		"replace": "if ( states.every( ( st ) => st === 'x' ) ) {",
+		"why": "a description drawn at every width writes a per-device switch"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "( 0 === i || st !== states[ i - 1 ] ) &&",
+		"replace": "( 0 !== i && st !== states[ i - 1 ] ) &&",
+		"why": "the first tier is not written when it is the one that differs"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "neighbours.every( ( n ) => ( reads[ n ]?.[ w ] || [] ).length ) ?",
+		"replace": "true ?",
+		"why": "a width the card was not read at counts as the description hidden"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "? 'on' : 'off' ) : null ) );",
+		"replace": "? 'off' : 'on' ) : null ) );",
+		"why": "drawn and hidden are swapped"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"boxed\": false,",
+		"replace": "\"boxed\": true,",
+		"why": "the brand is looked for among boxes, so a wordmark on a scrim is no brand"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"hasPercent\": true",
+		"replace": "\"hasPercent\": \"x\"",
+		"why": "a percent badge is not a saving badge"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"besideAnchor\": \"title\"",
+		"replace": "\"besideAnchor\": \"photo\"",
+		"why": "the attribute tag is looked for beside the photo, not the title"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"lacks\": {\n\t\t\t\t\t\t\t\"tag\": [\n\t\t\t\t\t\t\t\t\"img\"\n",
+		"replace": "\"lacks\": {\n\t\t\t\t\t\t\t\"tag\": [\n\t\t\t\t\t\t\t\t\"video\"\n",
+		"why": "a strip of picture thumbnails is read as the colour dots"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"whenFound\": \"wishlist\"",
+		"replace": "\"whenFound\": \"swatch\"",
+		"why": "the heart is never switched on"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( m.not && test( el, m.not ) ) {",
+		"replace": "if ( false ) {",
+		"why": "the brand wordmark is also read as the card's tag"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"not\": {",
+		"replace": "\"nope\": {",
+		"why": "the tag locator no longer excludes the brand wordmark"
+	}
+]

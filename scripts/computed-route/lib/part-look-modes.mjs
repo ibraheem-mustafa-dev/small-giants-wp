@@ -38,6 +38,12 @@
 //   from.placed             { part, of: [parts], within, right, below }: where each copy of `part` sits against the first of `of` that is
 //                           drawn, inside the same `within` box (the line): at the right of it on its own row is `right`, beneath it is
 //                           `below`; a copy whose line draws none of `of` is no evidence; anything else writes nothing
+//   from.tiers              a part the draft draws at some widths and not at others (a description shown on desktop and tablet, hidden on a
+//                           phone): the per-device { desktop, tablet, mobile } of 'on' and 'off', each tier written only where it differs
+//                           from the tier above (the first always), each width read with the rule's neighbours found at that width; every
+//                           width alike writes nothing (the plain show switch says it)
+//   whenLargest             { part, over }: the number the first copy of `part` holds is larger than every number the copies of `over` hold
+//                           (the "all" chip's count against the other chips'); no number on either side writes nothing
 //   value                   the literal to write when the condition holds
 // A rule whose setting the framework database does not hold for the block, whose instances disagree, or whose evidence is missing
 // is a gap row with the draft's evidence, never a guess. Pure: reads and database rows in, writes and gaps out.
@@ -130,6 +136,18 @@ export function evaluateModes( { block, rules, rows, reads, others = null } ) {
 		if ( neighbours.some( ( n ) => ! has( reads, n ) ) ) {
 			out.settings[ rule.setting ] = { code: 'neighboursNotFound' };
 			continue;
+		}
+		if ( rule.whenLargest ) {
+			const numberOf = ( i ) => {
+				const m = /\d+/.exec( String( i?.text || '' ) );
+				return m ? Number( m[ 0 ] ) : null;
+			};
+			const mine = numberOf( instances( reads, rule.whenLargest.part )[ 0 ] );
+			const theirs = instances( reads, rule.whenLargest.over ).map( numberOf ).filter( ( n ) => null !== n );
+			if ( null === mine || ! theirs.length || theirs.some( ( n ) => n >= mine ) ) {
+				out.settings[ rule.setting ] = { code: 'notLargest' };
+				continue;
+			}
 		}
 		if ( rule.whenFound && ! has( reads, rule.whenFound ) ) {
 			out.settings[ rule.setting ] = { code: 'notDrawn' };
@@ -358,6 +376,20 @@ export function evaluateModes( { block, rules, rows, reads, others = null } ) {
 			}
 			value = 'right' === kinds[ 0 ] ? right : below;
 			evidence = `the draft's ${ part } sits ${ 'right' === kinds[ 0 ] ? 'at the right of' : 'beneath' } its line's ${ refPart } on every line (${ kinds.length } read)`;
+		} else if ( rule.from?.tiers ) {
+			const tiers = [ [ 'desktop', 1440 ], [ 'tablet', 768 ], [ 'mobile', 375 ] ];
+			const states = tiers.map( ( [ , w ] ) => ( neighbours.every( ( n ) => ( reads[ n ]?.[ w ] || [] ).length ) ? ( ( reads[ rule.from.tiers ]?.[ w ] || [] ).length ? 'on' : 'off' ) : null ) );
+			if ( states.includes( null ) ) {
+				out.settings[ rule.setting ] = { code: 'neighboursNotFound' };
+				continue;
+			}
+			if ( states.every( ( st ) => st === states[ 0 ] ) ) {
+				out.settings[ rule.setting ] = { code: 'same' };
+				continue;
+			}
+			value = {};
+			states.forEach( ( st, i ) => ( 0 === i || st !== states[ i - 1 ] ) && ( value[ tiers[ i ][ 0 ] ] = st ) );
+			evidence = `the draft draws ${ rule.from.tiers } ${ tiers.map( ( [ name ], i ) => `${ states[ i ] } at ${ name }` ).join( ', ' ) }`;
 		} else if ( rule.from?.pricePrefix ) {
 			const texts = instances( reads, rule.from.pricePrefix ).map( ( i ) => String( i.text || '' ) );
 			value = texts.some( ( t ) => PREFIXED.test( t ) );

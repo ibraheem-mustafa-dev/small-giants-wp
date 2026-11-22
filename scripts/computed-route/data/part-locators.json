@@ -2363,6 +2363,7 @@
 			}
 		},
 		"productcard": {
+			"_comment": "photo: the card's picture link; title: the card's title words. Both anchor the parts below by where they sit (drawn over the photo, in the title's row), never by a class or a word.",
 			"anchors": {
 				"cards": {
 					"from": "page",
@@ -2408,6 +2409,37 @@
 					},
 					"smallest": true,
 					"perRoot": true
+				},
+				"photo": {
+					"from": "cards",
+					"match": {
+						"tag": [
+							"a"
+						],
+						"square": true
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"title": {
+					"from": "cards",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"inside": {
+							"tag": [
+								"a"
+							]
+						},
+						"notInside": {
+							"tag": [
+								"a"
+							],
+							"square": true
+						}
+					},
+					"perRoot": true,
+					"pick": "first"
 				}
 			},
 			"parts": {
@@ -2446,10 +2478,19 @@
 								"a"
 							],
 							"square": true
+						},
+						"hasAmount": false,
+						"hasPercent": false,
+						"not": {
+							"position": [
+								"absolute"
+							],
+							"boxed": false
 						}
 					},
 					"perRoot": true,
-					"pick": "first"
+					"pick": "first",
+					"_comment": "The badge on the photo: a span holding words inside the picture link. A label drawn over the photo with no fill and no border is the brand wordmark (the brand part), and an amount or a percent over it is the saving badge."
 				},
 				"title": {
 					"from": "cards",
@@ -2566,6 +2607,128 @@
 					"from": "cards",
 					"match": {
 						"rating": true
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"brand": {
+					"_comment": "The brand wordmark laid over the photo: words drawn over the picture with no fill of its own and no border (a scrim or nothing behind them) and no amount. A badge (a box) is the tag part; an amount or percent over the photo is the savingBadge part.",
+					"from": "cards",
+					"match": {
+						"tag": [
+							"span",
+							"div",
+							"p"
+						],
+						"text": "words",
+						"position": [
+							"absolute"
+						],
+						"overAnchor": "photo",
+						"control": false,
+						"boxed": false,
+						"hasAmount": false,
+						"hasPercent": false
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"savingBadge": {
+					"_comment": "A saving badge laid over the photo: an element holding an amount (Save £12, -£12) or a percent (20% off, -20%), over a card's picture.",
+					"any": [
+						{
+							"from": "cards",
+							"match": {
+								"tag": [
+									"span",
+									"div",
+									"p"
+								],
+								"position": [
+									"absolute"
+								],
+								"overAnchor": "photo",
+								"control": false,
+								"hasAmount": true
+							},
+							"perRoot": true,
+							"pick": "first"
+						},
+						{
+							"from": "cards",
+							"match": {
+								"tag": [
+									"span",
+									"div",
+									"p"
+								],
+								"position": [
+									"absolute"
+								],
+								"overAnchor": "photo",
+								"control": false,
+								"hasPercent": true
+							},
+							"perRoot": true,
+							"pick": "first"
+						}
+					]
+				},
+				"wishlist": {
+					"_comment": "The heart: a wordless round or square button holding a drawing (svg), drawn over the photo (its middle inside the photo's box, whether it sits in the photo's link or beside it), once per card.",
+					"from": "cards",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"text": "none",
+						"position": [
+							"absolute"
+						],
+						"repeats": false,
+						"square": true,
+						"has": {
+							"tag": [
+								"svg"
+							]
+						},
+						"overAnchor": "photo"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"swatch": {
+					"_comment": "The colour dots: two or more wordless square buttons side by side that hold no picture (a photo strip's thumbnails hold one).",
+					"from": "cards",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"text": "none",
+						"repeats": true,
+						"square": true,
+						"lacks": {
+							"tag": [
+								"img"
+							]
+						}
+					},
+					"perRoot": true
+				},
+				"attributeTag": {
+					"_comment": "The small tag beside the title: a box of its own (fill or border) with words and no amount, in the title's row, that is no link or button and not on the photo.",
+					"from": "cards",
+					"match": {
+						"tag": [
+							"span",
+							"div"
+						],
+						"text": "words",
+						"boxed": true,
+						"hasAmount": false,
+						"control": false,
+						"besideAnchor": "title",
+						"notInAnchor": "photo"
 					},
 					"perRoot": true,
 					"pick": "first"

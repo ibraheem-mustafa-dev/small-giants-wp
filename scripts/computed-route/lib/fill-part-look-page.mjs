@@ -26,6 +26,9 @@
 // parentOfAnchor, holdsAnchor (an anchor's elements: the match is inside, outside, the parent of, or holds one),
 // followsAnchor (the match comes after an anchor's element in the same row or parent), lacksAnchor (holds none of an anchor's elements),
 // ariaExpanded (has an aria-expanded attribute: a disclosure's button), ariaOn (aria-pressed, aria-checked or aria-selected is true),
+// not (a matcher the element must fail), hasPercent (its text holds a number and a percent sign), boxed (a background colour of its own or a drawn border: a badge, not a wordmark
+// on a scrim), firstSibling (the first element of its parent), overAnchor (its middle lies inside an anchor element's box and it takes at most 60% of its area: a label drawn over it, inside
+// it or beside it), besideAnchor (it sits in the same row as an anchor element: they share a parent, or the anchor is one wrapper down),
 // ariaCurrent (carries aria-current, other than "false": a menu's current item), pill (a fill of its own with corners rounded to at
 // least 40% of its height: a status chip),
 // shopPart (an element the client's shop parts record locates for that part id: `spec.shopParts` maps an id to { dc, tpl } template
@@ -52,6 +55,8 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 	// a numeric date.
 	const DATE = /\b\d{1,2}(?:st|nd|rd|th)?\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\b|\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b|\b\d{1,2}\/\d{1,2}\/\d{2,4}\b|\b\d{4}-\d{2}-\d{2}\b/i;
 	// An amount on its own ("£21.50", "-£3", "12,50€"); a sentence that mentions one is words.
+	// A percentage on its own or in a line ("-20%", "20% off").
+	const PERCENT = /\d\s?%/;
 	const CURRENCY = /^[-−+]?\s?([£$€]\s?\d[\d.,]*|\d[\d.,]*\s?[£$€])$/;
 	const norm = ( s ) => String( s || '' ).replace( /\s+/g, ' ' ).trim();
 	const cache = new Map();
@@ -122,6 +127,26 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		const h = box( el ).height;
 		return h > 0 && parseFloat( s.borderTopLeftRadius ) >= 0.4 * h;
 	};
+	// A box: a background colour of its own (not transparent) or a border drawn on any side. A gradient or picture alone is not a fill, so a
+	// wordmark laid over a photo on a fading scrim is not a box, and a badge with a fill or an outline is.
+	const isBoxed = ( el ) => {
+		const bg = styleOf( el ).backgroundColor;
+		const filled = !! bg && 'transparent' !== bg && ! /^rgba\([^)]*,\s*0\)$/.test( bg );
+		return filled || [ 'Top', 'Right', 'Bottom', 'Left' ].some( ( side ) => drawn( el, side ) );
+	};
+	// Whether the middle of an element lies inside an anchor element's box and the element takes no more than 60% of its area, so it is a
+	// label drawn over it (a heart on a photo, whether the heart is inside the photo's link or beside it), never a layer covering it
+	// (a "photo to come" panel).
+	const sitsOver = ( el, a ) => {
+		const r = box( el );
+		const b = box( a );
+		const x = r.left + r.width / 2;
+		const y = r.top + r.height / 2;
+		return r.width > 0 && r.height > 0 && r.width * r.height <= 0.6 * b.width * b.height && x >= b.left && x <= b.right && y >= b.top && y <= b.bottom;
+	};
+	// Whether an element sits in the same row as an anchor element: they share a parent, or the anchor sits one wrapper down (a title
+	// inside its link), and neither holds the other.
+	const isBeside = ( el, a ) => a !== el && ! a.contains( el ) && ! el.contains( a ) && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement );
 	const signature = ( el ) => `${ el.tagName }|${ [ ...el.children ].map( ( c ) => c.tagName ).join( ',' ) }`;
 	const repeats = ( el ) => !! el.parentElement && [ ...el.parentElement.children ].some( ( s ) => s !== el && signature( s ) === signature( el ) );
 	// The last path segment of a link's target, without its query or fragment ("Checkout.dc.html" for "../Checkout.dc.html?x=1").
@@ -280,6 +305,24 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return false;
 		}
 		if ( undefined !== m.hasAmount && AMOUNT.test( textOf( el ) ) !== m.hasAmount ) {
+			return false;
+		}
+		if ( undefined !== m.hasPercent && PERCENT.test( textOf( el ) ) !== m.hasPercent ) {
+			return false;
+		}
+		if ( m.not && test( el, m.not ) ) {
+			return false;
+		}
+		if ( undefined !== m.boxed && isBoxed( el ) !== m.boxed ) {
+			return false;
+		}
+		if ( undefined !== m.firstSibling && ( null === el.previousElementSibling ) !== m.firstSibling ) {
+			return false;
+		}
+		if ( m.overAnchor && ! anchorEls( m.overAnchor ).some( ( a ) => a !== el && sitsOver( el, a ) ) ) {
+			return false;
+		}
+		if ( m.besideAnchor && ! anchorEls( m.besideAnchor ).some( ( a ) => isBeside( el, a ) ) ) {
 			return false;
 		}
 		if ( m.precedesAnchor && ! anchorEls( m.precedesAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement?.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_FOLLOWING ) && ! el.contains( a ) ) ) {
