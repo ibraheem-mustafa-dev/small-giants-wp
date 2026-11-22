@@ -128,6 +128,16 @@ test( 'MUST FAIL: a label hidden on a phone and shown from tablet up is a pill w
 	assert.deepEqual( [ narrow.attributes.triggerStyle, narrow.attributes.triggerStyleTablet, narrow.attributes.triggerStyleMobile ], [ 'pill', 'icon', undefined ] );
 } );
 
+test( 'MUST FAIL: a label drawn only on a phone is read: the trigger is an icon at tablet and up and a pill on a phone', () => {
+	const phone = nodeOf( run( { pill: { labelVisible: { 375: true, 768: false, 1440: false } } } ), 'Root/6#0' );
+	assert.deepEqual( phone.attributes, { displayMode: 'drawer', triggerStyle: 'icon', triggerStyleMobile: 'pill', pillLabel: 'Bag', pillCountStyle: 'bubble', showZero: { desktop: true }, ariaLabel: 'Bag' } );
+	// Negative controls: a label drawn at tablet and phone but not desktop is a pill from tablet; a label drawn nowhere is an icon.
+	const tablet = nodeOf( run( { pill: { labelVisible: { 375: true, 768: true, 1440: false } } } ), 'Root/6#0' );
+	assert.deepEqual( [ tablet.attributes.triggerStyle, tablet.attributes.triggerStyleTablet, tablet.attributes.triggerStyleMobile ], [ 'icon', 'pill', undefined ] );
+	const none = nodeOf( run( { pill: { labelVisible: { 375: false, 768: false, 1440: false } } } ), 'Root/6#0' );
+	assert.deepEqual( [ none.attributes.triggerStyle, none.attributes.pillLabel ], [ 'icon', undefined ] );
+} );
+
 test( 'MUST FAIL: a renderVals returned through Object.assign is read (its handlers and its lists)', () => {
 	const logic = `class Component {
 	renderVals() {

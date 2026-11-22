@@ -1003,17 +1003,23 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		if ( ! T ) {
 			return {};
 		}
-		const leaves = [ ...( m.words( e ) ? [ e ] : [] ), ...textLeaves( e ) ];
+		// The words and the count are read through the control's width-only children too (a label drawn only on a phone is
+		// an alternative of its parent, never one of its block children, lib/skeleton-model.mjs::widthOnly).
+		const leavesOf = ( x ) => m.kids( x ).filter( ( k ) => ! m.isPart( k ) ).flatMap( ( k ) => [ k, ...leavesOf( k ) ] );
+		const leaves = [ ...( m.words( e ) ? [ e ] : [] ), ...leavesOf( e ).filter( ( k ) => m.words( k ) && ! m.kids( k ).some( ( c ) => ! m.isPart( c ) ) ) ];
 		const count = leaves.find( numberOnly ) ?? null;
 		const labelLeaves = leaves.filter( ( k ) => k !== count && m.words( k ).trim() );
-		const label = labelLeaves.map( ( k ) => m.words( k ).trim() ).join( ' ' );
 		const aria = view.attr( e, 'aria-label' );
 		const drawsLabel = ( w ) => labelLeaves.some( ( k ) => k.visible?.[ w ] );
+		// The label is the words drawn at the widest width any label is drawn at.
+		const labelWidth = [ 1440, 768, 375 ].find( drawsLabel ) ?? null;
+		const label = labelLeaves.filter( ( k ) => k.visible?.[ labelWidth ] ).map( ( k ) => m.words( k ).trim() ).join( ' ' );
+		const desktop = drawsLabel( 1440 ) ? T.pill : T.icon;
 		const tablet = drawsLabel( 768 ) ? T.pill : T.icon;
 		const mobile = drawsLabel( 375 ) ? T.pill : T.icon;
 		return {
-			[ T.style ]: label ? T.pill : T.icon,
-			...( label && T.styleTablet && T.pill !== tablet ? { [ T.styleTablet ]: tablet } : {} ),
+			[ T.style ]: label ? desktop : T.icon,
+			...( label && T.styleTablet && desktop !== tablet ? { [ T.styleTablet ]: tablet } : {} ),
 			...( label && T.styleMobile && mobile !== tablet ? { [ T.styleMobile ]: mobile } : {} ),
 			...( label ? { [ T.label ]: label } : {} ),
 			...( count ? { [ T.countStyle ]: view.ownPaint( count ) ? T.bubble : T.plain } : {} ),
