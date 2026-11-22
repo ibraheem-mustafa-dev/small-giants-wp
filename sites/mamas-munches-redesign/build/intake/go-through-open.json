@@ -1,0 +1,26 @@
+{
+ "client": "mamas-munches-redesign",
+ "writtenOn": "2026-11-22",
+ "note": "--apply-review --go-through marked every other row with its proposal (review entries with by: \"go-through\"); these rows had no proposal to take, so they carry no mark and the run did not stop for them. `downstream` is what the route does with each today. Mark a row in review.md and apply again to settle it.",
+ "count": 3,
+ "rows": [
+  {
+   "rowId": "missing:Home:132",
+   "rowType": "missing-feature",
+   "why": "no SGS block or tracked gap is proposed for this missing feature",
+   "downstream": "no stage reads a missing-feature mark: the row stays in intake.json missingFeatures and review.md as a record and nothing is built for it (a row that came from a skeleton element is the unresolved skeleton row of that element, whose subtree the skeleton leaves out)"
+  },
+  {
+   "rowId": "missing:Confirmation:33",
+   "rowType": "missing-feature",
+   "why": "no SGS block or tracked gap is proposed for this missing feature",
+   "downstream": "no stage reads a missing-feature mark: the row stays in intake.json missingFeatures and review.md as a record and nothing is built for it (a row that came from a skeleton element is the unresolved skeleton row of that element, whose subtree the skeleton leaves out)"
+  },
+  {
+   "rowId": "skeleton:page-confirmation-dc-html:Confirmation/33#0",
+   "rowType": "skeleton-block",
+   "why": "no block fits this element and no finaliser pick answered it",
+   "downstream": "the skeleton writer builds nothing for this element or anything inside it (lib/skeleton-propose.mjs::proposeSkeleton returns no node and records the row as unresolved), so the built page lacks it; the same element is a missing-feature row (lib/intake-missing.mjs), which is only a record; no later stage refuses a run for it, and a finaliser pick or a block:<slug> mark in a later apply builds it"
+  }
+ ]
+}

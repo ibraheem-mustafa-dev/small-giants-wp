@@ -106,6 +106,7 @@
   },
   "template-order-confirmation": {
     "tree": "trees/template/order-confirmation.json",
+    "intakeSurface": "page-confirmation-dc-html",
     "envFile": ".claude/secrets/local-mamas.env",
     "envKey": "LOCALMAMAS",
     "site": "local-mamas",
@@ -114,9 +115,13 @@
     },
     "canvas": true,
     "copy": {
-      "from": "page",
-      "unplayed": "template:order-confirmation"
+      "from": "fill",
+      "row": "template:order-confirmation"
     },
+    "walker": "qa/parity/template-order-confirmation.fill-base.mjs",
+    "walkerFull": "qa/parity/template-order-confirmation.fill.mjs",
+    "draftDir": "sites/mamas-munches-redesign/handoff",
+    "draftIndex": "Confirmation.dc.html",
     "states": {
       "resting": null
     }

@@ -10,6 +10,9 @@
     "collection": "static",
     "flags": [],
     "id": 103,
+    "folds": [
+      "SignIn.dc.html"
+    ],
     "parts": [
       {
         "kind": "form",
