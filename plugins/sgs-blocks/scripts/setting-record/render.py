@@ -29,9 +29,13 @@ TIMEOUT = int(os.environ.get('SGS_SETTING_RECORD_TIMEOUT') or 120)  # seconds on
 # render only where that fixture's `harness` hands the runner the file that holds it (fixtures/*.json).
 PLACEHOLDERS = {'{{image}}': 9001, '{{image.url}}': 'https://example.test/wp-content/uploads/calibration.jpg',
                 '{{menu}}': 9101, '{{menuItem}}': 9102, '{{drawer}}': 9103,
-                '{{post2}}': 9201, '{{mega}}': 9202, '{{product}}': 9301}
+                '{{post2}}': 9201, '{{mega}}': 9202, '{{product}}': 9301,
+                '{{product:text}}': '9301'}  # the product id written as text (computed-route lib/fixture-refs.mjs)
 # What the setting check alone wants of the runner: the plugin's render_block filters, what wp_footer prints, WordPress's
 # own wrapper classes and spacing styles, and the Interactivity state each render collected (apply_directives reads it).
+# Loaded before the runner: writes the PHP files a render loaded (get_included_files()) where SGS_SETTING_RECORD_INCLUDED
+# says, printing nothing, so the runner and its output are unchanged (stamp.py reads the list).
+INCLUDED_HOOK = HERE / 'included-files.php'
 RUNNER_FIDELITY_FLAGS = ['--render-block-filters', '--print-footer', '--wp-fidelity', '--interactivity-state']
 CODE_ROOTS = ('src', 'includes', 'assets', 'schemas', 'templates', 'scripts/qa/lib', 'sgs-blocks.php')
 
@@ -91,6 +95,46 @@ def fill(v):
     return v
 
 
+# Stand-ins a fixture's `harness` may carry inline, in the shape tests/fixtures/motion/render-paths.json uses for the
+# same runner (scripts/check-motion-part-render-paths.py::php_render): each is written once to a file named by its
+# content and handed to the runner's flag, so a changed stand-in is a changed render key. `options` (site options the
+# render reads through get_option()) goes to the runner as SGS_QA_OPTIONS (wp-stubs.php).
+INLINE_STANDINS = {'product': '--product-file', 'manifest': '--manifest-file', 'queried': '--queried-file',
+                   'post': '--post-file', 'context': '--context-file', 'attachments': '--attachments-file',
+                   'globalSettings': '--global-settings-file', 'taxonomies': '--taxonomies-file',
+                   'postContent': '--post-content-file'}
+
+
+def standin_file(value, ext: str) -> Path:
+    """The file holding one inline stand-in, named by its content (written once)."""
+    text = value if isinstance(value, str) and ext == 'html' else json.dumps(value, sort_keys=True)
+    f = CACHE_ROOT / 'standins' / f'{hashlib.md5(text.encode()).hexdigest()}.{ext}'
+    if not f.is_file():
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(text, encoding='utf-8')
+    return f
+
+
+def harness_env(fixture: dict) -> dict | None:
+    """The runner's environment for a fixture whose harness names site options, else None (the parent's)."""
+    opts = (fixture.get('harness') or {}).get('options')
+    return {**os.environ, 'SGS_QA_OPTIONS': json.dumps(opts, sort_keys=True)} if opts else None
+
+
+def included_paths(files, plugin: Path) -> list:
+    """The plugin's own files among those a render loaded, relative to the plugin (the runner and its stubs left out:
+    they are the check's, not the block's)."""
+    root = str(Path(plugin).resolve()).replace('\\', '/').rstrip('/') + '/'
+    out = set()
+    for f in files:
+        f = str(f).replace('\\', '/')
+        if f.lower().startswith(root.lower()):
+            rel = f[len(root):]
+            if not rel.startswith(('scripts/', 'vendor/', 'tests/')):
+                out.add(rel)
+    return sorted(out)
+
+
 def harness_args(fixture: dict, fixtures_dir: Path) -> tuple:
     """The runner's extra arguments a fixture's `harness` object asks for; relative files resolve beside fixtures.json."""
     h = fixture.get('harness') or {}
@@ -106,6 +150,11 @@ def harness_args(fixture: dict, fixtures_dir: Path) -> tuple:
         out += ['--product-file', path(h['productFile'])]
     if h.get('attachmentsFile'):
         out += ['--attachments-file', path(h['attachmentsFile'])]
+    for key, flag in INLINE_STANDINS.items():
+        if key in h:
+            if flag in out:
+                raise ValueError(f'harness gives {flag} twice (a file and the inline `{key}`)')
+            out += [flag, str(standin_file(h[key], 'html' if key == 'postContent' else 'json'))]
     out.append('--motion-targets')  # the real block types registered, as on a site
     out += RUNNER_FIDELITY_FLAGS
     return tuple(out)
@@ -132,15 +181,20 @@ class Renderer:
         self.cache = CACHE_ROOT / self.hash
         self.cache.mkdir(parents=True, exist_ok=True)
         self.post = fixture.get('post') or []
+        self.env = harness_env(fixture)
+        self.options = (fixture.get('harness') or {}).get('options')
 
     def render(self, slug: str, attrs: dict, content: str = '', inner=None) -> dict:
-        key = hashlib.md5(json.dumps([slug, attrs, content, inner, list(self.extra), self.post], sort_keys=True).encode()).hexdigest()
+        key_parts = [slug, attrs, content, inner, list(self.extra), self.post] + ([self.options] if self.options else [])
+        key = hashlib.md5(json.dumps(key_parts, sort_keys=True).encode()).hexdigest()
         cf = self.cache / f'{key}.json'
         if cf.is_file():
             return json.loads(cf.read_text(encoding='utf-8'))
         af = self.cache / f'{key}.attrs.json'
         af.write_text(json.dumps(attrs), encoding='utf-8')
-        cmd = ['php', str(self.harness), '--slug', slug, '--attrs-file', str(af), '--render-children', *self.extra]
+        inc = self.cache / f'{key}.included.json'
+        cmd = ['php', '-d', f'auto_prepend_file={INCLUDED_HOOK}', str(self.harness), '--slug', slug, '--attrs-file', str(af),
+               '--render-children', *self.extra]
         if content:
             cfile = self.cache / f'{key}.content.html'
             cfile.write_text(content, encoding='utf-8')
@@ -151,7 +205,8 @@ class Renderer:
             cmd += ['--inner-blocks-file', str(ifile)]
         t0 = time.time()
         try:
-            p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=str(self.plugin), timeout=TIMEOUT)
+            env = {**(self.env or os.environ), 'SGS_SETTING_RECORD_INCLUDED': str(inc)}
+            p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=str(self.plugin), timeout=TIMEOUT, env=env)
         except subprocess.TimeoutExpired:
             return {'ok': False, 'error': f'the render did not finish in {TIMEOUT} s', 'secs': round(time.time() - t0, 3), 'notices': []}
         res = last_json(p.stdout)
@@ -159,6 +214,8 @@ class Renderer:
             res = {'ok': False, 'error': 'no JSON result: ' + (p.stderr[-500:] or p.stdout[-500:])}
         res['secs'] = round(time.time() - t0, 3)
         res['notices'] = [ln for ln in (p.stderr or '').splitlines() if 'Warning' in ln or 'Fatal' in ln or 'Deprecated' in ln][:8]
+        if res.get('ok') and inc.is_file():
+            res['included'] = included_paths(json.loads(inc.read_text(encoding='utf-8')), self.plugin)
         if res.get('ok'):
             res['html'] = apply_directives(res.get('html', ''), res.get('interactivityState') or {})
         if res.get('ok') and self.post:

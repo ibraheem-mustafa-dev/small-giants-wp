@@ -2,6 +2,24 @@
 	"_meta": {
 		"purpose": "Per-block fixtures for the offline setting check (instances.py): the attributes, variants, partner preconditions, children, parents and paint states each block renders with, plus `harness` (the render harness options: stubWoocommerce, renderFile, postFile, productFile, attachmentsFile; paths relative to this folder) and `post` (steps the renderer applies to the rendered markup, standing in for a view script). Seeded from scripts/computed-route/calibration-fixtures.json, with every part switched on (see each block's `notes`)."
 	},
+	"_shared": {
+		"purpose": "Partners and reasons for settings every block receives from a shared extension; a block's own preconditions win.",
+		"preconditions": {
+			"sgsChildWidth": {
+				"sgsChildSizing": {
+					"desktop": "fixed",
+					"tablet": "fixed",
+					"mobile": "fixed"
+				}
+			}
+		},
+		"unvalued": {
+			"sgsCustomCss": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+		},
+		"notes": {
+			"sgsChildWidth": "includes/child-sizing.php returns before reading sgsChildWidth unless sgsChildSizing holds a mode; the width is read by fixed."
+		}
+	},
 	"sgs/button": {
 		"attributes": {
 			"label": "Shop the range",
@@ -492,5 +510,4186 @@
 			"Variant 1 keeps calibration's featured top-level item (Home) beside the featured sub-link; Home stays disabled in the other variants, as in calibration.",
 			"The header row holds a button beside the menu (parents' siblings), so the rules that reach the row's other controls (includes/nav-trigger-surface-css.php: the row's links and buttons raised over the stretched burger) have an element to match."
 		]
+	},
+	"sgs/accordion": {
+		"attributes": {
+			"accordionStyle": "flush",
+			"iconPosition": "right",
+			"iconRotation": 90,
+			"allowMultiple": false,
+			"defaultOpen": 0,
+			"openIcon": "plus",
+			"closeIcon": "x",
+			"categoryEyebrowAlways": true
+		},
+		"inner": [
+			{
+				"name": "sgs/accordion-item",
+				"attributes": {
+					"title": "Open question",
+					"isOpen": true,
+					"category": "Open topic",
+					"showCategoryEyebrow": true
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Open answer."
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/accordion-item",
+				"attributes": {
+					"title": "Closed question",
+					"category": "Closed topic",
+					"showCategoryEyebrow": true
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Closed answer."
+						}
+					}
+				]
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/accordion-item": {
+		"attributes": {
+			"title": "Are these frames genuine?"
+		},
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Answer text."
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/accordion",
+				"attributes": {}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/account": {
+		"attributes": {},
+		"harness": {
+			"stubWoocommerce": true
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): order."
+	},
+	"sgs/audio": {
+		"attributes": {
+			"audioSource": "internal",
+			"audioId": 4089,
+			"audioUrl": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-tone.wav",
+			"audioMimeType": "audio/wav",
+			"title": "Sample sound"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/before-after": {
+		"attributes": {
+			"showLabels": true,
+			"beforeLabel": "Before",
+			"afterLabel": "After",
+			"beforeSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 3459,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+					"mime": "image/jpeg"
+				}
+			},
+			"beforeAlt": "Before",
+			"afterSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 4080,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+					"mime": "image/png"
+				}
+			},
+			"afterAlt": "After"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/brand-strip": {
+		"attributes": {
+			"title": "Brands we stock",
+			"logos": [
+				{
+					"_key": "cal-logo-1",
+					"media": {
+						"id": 3459,
+						"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+						"alt": "Sample image",
+						"type": "image",
+						"mime": "image/jpeg"
+					},
+					"name": "Brand one"
+				},
+				{
+					"_key": "cal-logo-2",
+					"media": {
+						"id": 4080,
+						"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+						"alt": "Second sample image",
+						"type": "image",
+						"mime": "image/png"
+					},
+					"name": "Brand two"
+				}
+			],
+			"source": "manual",
+			"showNames": true
+		},
+		"variants": [
+			{},
+			{
+				"logoLayout": "row"
+			},
+			{
+				"brandDisplay": "text"
+			},
+			{
+				"brandDisplay": "text",
+				"brandTextTile": true
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/breadcrumbs": {
+		"attributes": {
+			"showHome": true,
+			"homeLabel": "Home",
+			"showCurrentCrumb": true,
+			"showArchiveCrumb": false
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/business-info": {
+		"attributes": {
+			"showIcon": true
+		},
+		"variants": [
+			{
+				"displayType": "phone"
+			},
+			{
+				"displayType": "address",
+				"showIcon": false
+			},
+			{
+				"displayType": "hours",
+				"showIcon": false,
+				"hoursLayout": "condensed"
+			},
+			{
+				"displayType": "copyright"
+			},
+			{
+				"displayType": "phone",
+				"showIcon": false,
+				"textBefore": "Call us",
+				"textAfter": "any time"
+			}
+		],
+		"preconditions": {
+			"addressLink": {
+				"displayType": "address"
+			}
+		},
+		"harness": {
+			"options": {
+				"sgs_site_info": {
+					"phone": "0121 000 0000",
+					"opening_hours": {
+						"mon": "9:00-17:00",
+						"tue": "9:00-17:00",
+						"wed": "9:00-17:00",
+						"thu": "9:00-17:00",
+						"fri": "9:00-17:00",
+						"sat": "10:00-14:00",
+						"sun": "Closed"
+					}
+				}
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): chunk."
+	},
+	"sgs/buybox": {
+		"attributes": {
+			"productId": 52,
+			"instalmentsNote": "Or 3 payments of %s",
+			"rrpMetaKey": "_sgs_rrp",
+			"showLadder": false,
+			"gallerySavingBadge": true,
+			"rrpSavingFormat": "amount",
+			"rrpShowPrice": true,
+			"rrpSavingPrefix": "You save",
+			"showStockStatus": true,
+			"stockInStockLabel": "In stock — dispatched next working day",
+			"stickyEnabled": true,
+			"stickyOffset": "24px",
+			"pickerSubLabelMetaKey": "_sgs_size_measure",
+			"pickerShowSelectedTick": false,
+			"addToCartLabel": "Add to bag as they are",
+			"addToCartShowPrice": true,
+			"stockLineHairline": true,
+			"pickerShowSelectedValue": true,
+			"addToCartShowIcon": false,
+			"pickerAlwaysShowAxes": [
+				"pa_cr-size"
+			],
+			"pickerBandAxis": "pa_cr-size",
+			"pickerBandScale": "S:52,M:57,L",
+			"pickerLabelLinkAxis": "pa_cr-size",
+			"pickerLabelLinkText": "Which size am I?",
+			"pickerLabelLinkUrl": "#size-guide",
+			"extrasBeforeCount": 3,
+			"extrasBeforeCartCount": 1,
+			"stickyBar": {
+				"desktop": "after-button"
+			}
+		},
+		"variants": [
+			{},
+			{
+				"pickerStyle": "outlined",
+				"pickerSwatchStyle": "tile"
+			}
+		],
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": ""
+				}
+			},
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"level": "h1",
+					"content": ""
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "woocommerce/product-collection",
+				"attributes": {
+					"queryId": 91,
+					"query": {
+						"perPage": 1,
+						"pages": 1,
+						"offset": 0,
+						"postType": "product",
+						"order": "asc",
+						"orderBy": "title",
+						"search": "",
+						"exclude": [],
+						"inherit": false,
+						"taxQuery": {},
+						"isProductCollectionBlock": true,
+						"featured": false,
+						"woocommerceOnSale": false,
+						"woocommerceStockStatus": [
+							"instock",
+							"outofstock",
+							"onbackorder"
+						],
+						"woocommerceAttributes": [],
+						"woocommerceHandPickedProducts": [
+							"{{product:text}}"
+						]
+					},
+					"tagName": "div"
+				}
+			},
+			{
+				"name": "woocommerce/product-template",
+				"attributes": {}
+			}
+		],
+		"harness": {
+			"product": {
+				"id": 52,
+				"name": "Sample product",
+				"price_html": "<span class=\"woocommerce-Price-amount amount\">£9</span>",
+				"price": "9",
+				"type": "variable",
+				"image_id": 7,
+				"image_url": "https://example.test/single.jpg",
+				"short_description": "A sample product.",
+				"in_stock": true,
+				"average_rating": "4.5",
+				"review_count": 3,
+				"variation_price_min": "9",
+				"variation_price_max": "48",
+				"meta": {
+					"_sgs_rrp": "12",
+					"_sgs_base_price_pence": "1000",
+					"_sgs_base_price_attested": "1"
+				},
+				"attributes": [
+					{
+						"name": "pa_pack-size",
+						"visible": true
+					}
+				]
+			},
+			"manifest": {
+				"decimals": 2,
+				"currencySymbol": "£",
+				"generatedAt": 1767225600,
+				"axes": [
+					{
+						"taxonomy": "pa_pack-size",
+						"label": "Pack size",
+						"variesBy": "",
+						"terms": [
+							{
+								"slug": "single",
+								"label": "Single"
+							},
+							{
+								"slug": "six-pack",
+								"label": "Six pack"
+							}
+						]
+					}
+				],
+				"combos": {
+					"pa_pack-size:single": {
+						"variationId": 61,
+						"priceMinor": 900,
+						"regularMinor": 1000,
+						"saleMinor": 900,
+						"pctOff": 10,
+						"pctDisplay": "",
+						"inStock": true,
+						"imageUrl": "https://example.test/single.jpg",
+						"hasOwnImage": true,
+						"exMinor": 900,
+						"taxMinor": 0,
+						"regularExMinor": 1000,
+						"unitDivisor": 1,
+						"unitLabel": "each",
+						"discountLabel": "",
+						"incMinor": 900,
+						"sku": "SAMPLE-61",
+						"gtin": "",
+						"saleEndDate": "",
+						"gallery": [
+							{
+								"url": "https://example.test/single.jpg",
+								"w": 800,
+								"h": 800,
+								"alt": "Sample product"
+							},
+							{
+								"url": "https://example.test/single-2.jpg",
+								"w": 800,
+								"h": 800,
+								"alt": "Sample product, side"
+							}
+						]
+					},
+					"pa_pack-size:six-pack": {
+						"variationId": 62,
+						"priceMinor": 4800,
+						"regularMinor": 4800,
+						"saleMinor": 0,
+						"pctOff": 0,
+						"pctDisplay": "",
+						"inStock": false,
+						"imageUrl": "https://example.test/six.jpg",
+						"hasOwnImage": true,
+						"exMinor": 4800,
+						"taxMinor": 0,
+						"regularExMinor": 4800,
+						"unitDivisor": 6,
+						"unitLabel": "each",
+						"discountLabel": "",
+						"incMinor": 4800,
+						"sku": "SAMPLE-62",
+						"gtin": "",
+						"saleEndDate": "",
+						"gallery": [
+							{
+								"url": "https://example.test/six.jpg",
+								"w": 800,
+								"h": 800,
+								"alt": "Sample product"
+							},
+							{
+								"url": "https://example.test/six-2.jpg",
+								"w": 800,
+								"h": 800,
+								"alt": "Sample product, side"
+							}
+						]
+					}
+				},
+				"defaultKey": "pa_pack-size:single",
+				"defaultAxes": {
+					"pa_pack-size": "single"
+				}
+			},
+			"context": {
+				"postId": 52
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/card-grid": {
+		"attributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"variant": "overlay",
+			"imageFallback": true,
+			"noImageLabel": "Photo to come",
+			"overlayColour": "#000000",
+			"overlayOpacity": 40,
+			"items": [
+				{
+					"title": "Pilot",
+					"media": null,
+					"link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=pilot&query_type_shape=or",
+					"glyphImage": {
+						"id": 148,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/pilot.png",
+						"alt": ""
+					},
+					"_key": "cal-item-1",
+					"subtitle": "Short subtitle 1"
+				},
+				{
+					"title": "Wayfarer",
+					"media": {
+						"id": 175,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.jpg",
+						"type": "image",
+						"alt": "Wayfarer-style sunglasses"
+					},
+					"link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=wayfarer&query_type_shape=or",
+					"glyphImage": {
+						"id": 149,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/wayfarer.png",
+						"alt": ""
+					},
+					"_key": "cal-item-2",
+					"subtitle": "Short subtitle 2"
+				},
+				{
+					"title": "Round",
+					"media": {
+						"id": 177,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.jpg",
+						"type": "image",
+						"alt": "Round sunglasses"
+					},
+					"link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=round&query_type_shape=or",
+					"glyphImage": {
+						"id": 150,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/round.png",
+						"alt": ""
+					},
+					"_key": "cal-item-3",
+					"subtitle": "Short subtitle 3"
+				},
+				{
+					"title": "Cat-eye",
+					"media": {
+						"id": 178,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cateye.jpg",
+						"type": "image",
+						"alt": "Cat-eye sunglasses"
+					},
+					"link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=cat-eye&query_type_shape=or",
+					"glyphImage": {
+						"id": 151,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/cat-eye.png",
+						"alt": ""
+					},
+					"_key": "cal-item-4",
+					"subtitle": "Short subtitle 4"
+				},
+				{
+					"title": "Square",
+					"media": {
+						"id": 181,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.jpg",
+						"type": "image",
+						"alt": "Square sunglasses"
+					},
+					"link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=square&query_type_shape=or",
+					"glyphImage": {
+						"id": 152,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/square.png",
+						"alt": ""
+					},
+					"_key": "cal-item-5",
+					"subtitle": "Short subtitle 5"
+				},
+				{
+					"title": "Oversized",
+					"media": null,
+					"link": "https://darkcyan-grouse-898606.hostingersite.com/shop/?filter_shape=oversized&query_type_shape=or",
+					"glyphImage": {
+						"id": 153,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/oversized.png",
+						"alt": ""
+					},
+					"_key": "cal-item-6",
+					"subtitle": "Short subtitle 6"
+				}
+			]
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/choice-flow": {
+		"attributes": {
+			"title": "Add prescription lenses",
+			"progressStyle": "bar",
+			"showPricePanel": true,
+			"pricePanelTitle": "",
+			"stickyFooter": true,
+			"showHeader": true,
+			"headerLogoSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 486,
+					"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png",
+					"mime": "image/png"
+				}
+			},
+			"headerLogoDecorative": true,
+			"stepCountLabel": "Question",
+			"summaryBaseLabel": "Frame",
+			"summaryPendingLabel": "Lenses",
+			"summaryPendingText": "not chosen yet",
+			"stageNote": "Not sure which to pick?",
+			"stageNoteLink": {
+				"url": "https://wa.me/440000000000",
+				"text": "Happy to talk it through — message me and we'll choose together."
+			},
+			"skipPrompt": "Frame only?",
+			"skipLabel": "Skip the lenses"
+		},
+		"variants": [
+			{},
+			{
+				"flowLayout": "showcase"
+			}
+		],
+		"familyPreconditions": {
+			"stepper": {
+				"progressStyle": "circles"
+			}
+		},
+		"inner": [
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "What they're for"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"priceGroup": "lens-use",
+							"pricePrefix": "from",
+							"question": "What will you use them for?",
+							"intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
+							"options": [
+								{
+									"label": "Distance",
+									"value": "distance",
+									"nextStepId": "",
+									"helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance.",
+									"description": "Driving, walking about, everyday wear.",
+									"summaryText": "Distance lenses",
+									"source": {
+										"desktop": {
+											"kind": "image",
+											"id": 455,
+											"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-distance.png"
+										}
+									}
+								},
+								{
+									"label": "Reading",
+									"value": "reading",
+									"nextStepId": "",
+									"helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these.",
+									"description": "Close work, in the sun.",
+									"summaryText": "Reading lenses",
+									"source": {
+										"desktop": {
+											"kind": "image",
+											"id": 457,
+											"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-reading.png"
+										}
+									}
+								},
+								{
+									"label": "Varifocal",
+									"value": "varifocal",
+									"nextStepId": "",
+									"helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person.",
+									"description": "Near and far in one lens, no line.",
+									"summaryText": "Varifocal lenses",
+									"source": {
+										"desktop": {
+											"kind": "image",
+											"id": 458,
+											"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png"
+										}
+									}
+								},
+								{
+									"label": "No prescription",
+									"value": "none",
+									"nextStepId": "7",
+									"helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later.",
+									"description": "Keep the lenses they come with.",
+									"addToBagNow": true,
+									"source": {
+										"desktop": {
+											"kind": "image",
+											"id": 456,
+											"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-none.png"
+										}
+									}
+								}
+							]
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "How thin"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/choice-flow-question",
+						"attributes": {
+							"priceGroup": "lens-thickness",
+							"question": "How thin would you like them?",
+							"intro": "Thinner lenses are lighter and sit neater in the frame. If you don't know your numbers, Standard is a safe pick — I'll check when your prescription arrives and tell you if something thinner is worth it.",
+							"options": [
+								{
+									"label": "Standard · 1.5",
+									"value": "std",
+									"nextStepId": "",
+									"helpText": "The standard lens material. Perfectly good for a mild prescription — going thinner would make no visible difference and cost you money for nothing.",
+									"description": "Fine for most prescriptions up to about ±2.00.",
+									"isDefault": true,
+									"badge": "Most people pick this",
+									"source": {
+										"desktop": {
+											"kind": "image",
+											"id": 451,
+											"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-std.png"
+										}
+									}
+								},
+								{
+									"label": "Thin · 1.6",
+									"value": "thin",
+									"nextStepId": "",
+									"helpText": "Noticeably slimmer at the edge and lighter on your nose. The usual choice once your prescription gets past about ±2.00.",
+									"description": "Around 20% thinner. For ±2.00 to ±4.00.",
+									"source": {
+										"desktop": {
+											"kind": "image",
+											"id": 452,
+											"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-thin.png"
+										}
+									}
+								},
+								{
+									"label": "Extra thin · 1.67",
+									"value": "xthin",
+									"nextStepId": "",
+									"helpText": "Worth it for a stronger prescription — it stops the lens edge standing proud of the frame and reduces the way strong lenses distort how your eyes look.",
+									"description": "Around 35% thinner. For ±4.00 to ±6.00.",
+									"source": {
+										"desktop": {
+											"kind": "image",
+											"id": 454,
+											"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-xthin.png"
+										}
+									}
+								},
+								{
+									"label": "Ultra thin · 1.74",
+									"value": "ultra",
+									"nextStepId": "",
+									"helpText": "The thinnest lens material available. If your prescription is strong, this is the difference between glasses you want to wear and glasses you tolerate.",
+									"description": "The thinnest made. For ±6.00 and above.",
+									"source": {
+										"desktop": {
+											"kind": "image",
+											"id": 453,
+											"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/thickness-ultra.png"
+										}
+									}
+								}
+							]
+						}
+					}
+				]
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/choice-flow-question": {
+		"attributes": {
+			"question": "What will you use them for?",
+			"intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
+			"priceGroup": "lens-use",
+			"options": [
+				{
+					"label": "Distance",
+					"value": "distance",
+					"nextStepId": "",
+					"image": {
+						"id": 455,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-distance.png",
+						"alt": ""
+					},
+					"helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance.",
+					"description": "Driving, walking about, everyday wear.",
+					"summaryText": "Distance lenses"
+				},
+				{
+					"label": "Reading",
+					"value": "reading",
+					"nextStepId": "",
+					"image": {
+						"id": 457,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-reading.png",
+						"alt": ""
+					},
+					"helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these.",
+					"description": "Close work, in the sun.",
+					"summaryText": "Reading lenses"
+				},
+				{
+					"label": "Varifocal",
+					"value": "varifocal",
+					"nextStepId": "",
+					"image": {
+						"id": 458,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png",
+						"alt": ""
+					},
+					"helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person.",
+					"description": "Near and far in one lens, no line.",
+					"summaryText": "Varifocal lenses"
+				},
+				{
+					"label": "No prescription",
+					"value": "none",
+					"nextStepId": "7",
+					"image": {
+						"id": 456,
+						"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-none.png",
+						"alt": ""
+					},
+					"helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later.",
+					"description": "Keep the lenses they come with.",
+					"addToBagNow": true
+				}
+			]
+		},
+		"parents": [
+			{
+				"name": "sgs/choice-flow",
+				"attributes": {
+					"title": "Add prescription lenses",
+					"progressStyle": "bar",
+					"flowLayout": "showcase",
+					"showPricePanel": true,
+					"pricePanelTitle": "",
+					"stickyFooter": true,
+					"showHeader": true,
+					"closeStyle": "text",
+					"progressCounts": "current",
+					"stepCountLabel": "Question",
+					"summaryBaseLabel": "Frame",
+					"summaryPendingLabel": "Lenses",
+					"summaryPendingText": "not chosen yet",
+					"stageNote": "Not sure which to pick?",
+					"stageNoteLink": {
+						"url": "https://wa.me/440000000000",
+						"text": "Happy to talk it through — message me and we'll choose together."
+					},
+					"stageNoteIcon": "whatsapp",
+					"skipPrompt": "Frame only?",
+					"skipLabel": "Skip the lenses",
+					"headerLogoSource": {
+						"desktop": {
+							"kind": "image",
+							"id": 486,
+							"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png"
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "What they're for"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/choice-flow-result": {
+		"attributes": {
+			"heading": "Perfect — order now and I'll WhatsApp you a link for it.",
+			"body": "I make the lenses once it arrives, nothing is charged twice, and if you change your mind before I cut them I refund the lenses in full.",
+			"showBuyNow": false,
+			"addToBasketLabel": "Add to bag",
+			"buttonShowsTotal": true
+		},
+		"parents": [
+			{
+				"name": "sgs/choice-flow",
+				"attributes": {
+					"title": "Add prescription lenses",
+					"progressStyle": "bar",
+					"flowLayout": "showcase",
+					"showPricePanel": true,
+					"pricePanelTitle": "",
+					"stickyFooter": true,
+					"showHeader": true,
+					"closeStyle": "text",
+					"progressCounts": "current",
+					"stepCountLabel": "Question",
+					"summaryBaseLabel": "Frame",
+					"summaryPendingLabel": "Lenses",
+					"summaryPendingText": "not chosen yet",
+					"stageNote": "Not sure which to pick?",
+					"stageNoteLink": {
+						"url": "https://wa.me/440000000000",
+						"text": "Happy to talk it through — message me and we'll choose together."
+					},
+					"stageNoteIcon": "whatsapp",
+					"skipPrompt": "Frame only?",
+					"skipLabel": "Skip the lenses",
+					"headerLogoSource": {
+						"desktop": {
+							"kind": "image",
+							"id": 486,
+							"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png"
+						}
+					}
+				}
+			},
+			{
+				"name": "sgs/form-step",
+				"attributes": {
+					"label": "Your prescription"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/collapsible-text": {
+		"attributes": {
+			"text": "<p>A first sample paragraph with a <a href=\"https://example.com/\">link</a>.</p><p>A second sample paragraph with enough words to wrap across more than one line at narrow widths.</p>",
+			"collapsible": true,
+			"collapsedLines": 2
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/commerce-note": {
+		"attributes": {},
+		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+	},
+	"sgs/container": {
+		"attributes": {
+			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+			"backgroundSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/bg.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			},
+			"tagName": "div"
+		},
+		"variants": [
+			{},
+			{
+				"flexWrap": "wrap"
+			},
+			{
+				"layout": "flex"
+			},
+			{
+				"layout": "stack"
+			},
+			{
+				"layout": "grid"
+			}
+		],
+		"paintStates": [
+			{
+				"name": "bg-svg",
+				"when": {
+					"has": [
+						"bgSvgContent"
+					]
+				},
+				"attributes": {
+					"bgSvgContent": "<svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"currentColor\"/></svg>"
+				}
+			}
+		],
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "First child."
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Second child."
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/countdown-timer": {
+		"attributes": {
+			"showDays": true,
+			"showHours": true,
+			"showMinutes": true,
+			"showSeconds": true,
+			"expiredMessage": "This offer has expired.",
+			"targetDate": "2027-12-31T12:00:00"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/counter": {
+		"attributes": {
+			"number": 5000,
+			"prefix": "",
+			"suffix": "+",
+			"label": "Sample count",
+			"duration": 2000
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/decorative-image": {
+		"attributes": {
+			"layerSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 3459,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+					"mime": "image/jpeg"
+				}
+			},
+			"layerAlt": "Sample image"
+		},
+		"variants": [
+			{},
+			{
+				"layerSource": null
+			}
+		],
+		"paintStates": [
+			{
+				"name": "empty",
+				"when": {
+					"inner": false,
+					"lacks": [
+						"layerSource"
+					]
+				},
+				"attributes": {
+					"layerSource": null,
+					"layerWidth": {
+						"desktop": "120px"
+					},
+					"layerHeight": {
+						"desktop": "120px"
+					},
+					"layerBorderWidth": {
+						"top": "2px",
+						"right": "2px",
+						"bottom": "2px",
+						"left": "2px"
+					},
+					"layerBorderStyle": "solid",
+					"layerBorderColour": "#000000"
+				},
+				"inner": [],
+				"props": [
+					"pointer-events",
+					"user-select"
+				]
+			},
+			{
+				"name": "image",
+				"when": {
+					"inner": false,
+					"has": [
+						"layerSource"
+					]
+				},
+				"attributes": {},
+				"inner": []
+			}
+		],
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Layer text."
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/diagram-dimension": {
+		"attributes": {
+			"caption": "Width",
+			"value": "56 mm",
+			"startX": 17.65,
+			"startY": 79.33,
+			"endX": 42.65,
+			"endY": 79.33,
+			"orientation": "horizontal",
+			"extReach": 5,
+			"extOvershoot": 0.88
+		},
+		"parents": [
+			{
+				"name": "sgs/measured-diagram",
+				"attributes": {
+					"drawingSource": {
+						"desktop": {
+							"kind": "image",
+							"id": 4969,
+							"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/10/sgs-sample-diagram.svg"
+						}
+					},
+					"drawingAlt": "Sample drawing"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/feature-grid": {
+		"attributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			}
+		},
+		"inner": [
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Feature one",
+					"description": "A short description."
+				}
+			},
+			{
+				"name": "sgs/info-box",
+				"attributes": {
+					"heading": "Feature two",
+					"description": "A short description."
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/filter-search": {
+		"attributes": {
+			"threshold": 2,
+			"placeholder": "Search brands",
+			"taxonomy": "product_brand",
+			"searchMode": "taxonomy-terms"
+		},
+		"harness": {
+			"taxonomies": {
+				"product_cat": {
+					"label": "Category",
+					"object_types": [
+						"product"
+					],
+					"terms": [
+						{
+							"term_id": 1,
+							"slug": "alpha",
+							"name": "Alpha",
+							"count": 3
+						},
+						{
+							"term_id": 2,
+							"slug": "beta",
+							"name": "Beta",
+							"count": 2
+						},
+						{
+							"term_id": 3,
+							"slug": "gamma",
+							"name": "Gamma",
+							"count": 1
+						}
+					]
+				}
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/form-field-address": {
+		"attributes": {
+			"fieldName": "address",
+			"label": "Address",
+			"required": true
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-checkbox": {
+		"attributes": {
+			"fieldName": "interests",
+			"label": "Which apply?",
+			"options": [
+				"Option one",
+				"Option two"
+			]
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-consent": {
+		"attributes": {
+			"fieldName": "consent",
+			"label": "I agree to the terms."
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-date": {
+		"attributes": {
+			"fieldName": "date",
+			"label": "Preferred date",
+			"required": true
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-email": {
+		"attributes": {
+			"fieldName": "email",
+			"label": "",
+			"placeholder": "Email",
+			"required": true,
+			"width": "half"
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-file": {
+		"attributes": {
+			"fieldName": "rx_photo",
+			"label": "Photo of your prescription",
+			"required": true,
+			"allowedTypes": [
+				"image/jpeg",
+				"image/png",
+				"image/webp"
+			],
+			"maxSize": 10,
+			"uploadText": "Drop a photo or screenshot here",
+			"helpText": "A phone photo of the paper copy is fine, as long as every number is readable."
+		},
+		"variants": [
+			{},
+			{
+				"zoneStyle": "panel"
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-hidden": {
+		"attributes": {
+			"fieldName": "source",
+			"defaultValue": "calibration"
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-number": {
+		"attributes": {
+			"fieldName": "rx_r_sph",
+			"label": "Right SPH",
+			"width": "third",
+			"step": "0.25",
+			"min": "-30",
+			"max": "30",
+			"placeholder": "-2.25",
+			"required": true,
+			"columnHeading": "SPH",
+			"rowHeading": "R"
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-phone": {
+		"attributes": {
+			"fieldName": "phone",
+			"label": "",
+			"placeholder": "Phone (optional)",
+			"required": false,
+			"width": "half"
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-radio": {
+		"attributes": {
+			"fieldName": "heard",
+			"label": "Where did you find us?",
+			"options": [
+				"Option one",
+				"Option two"
+			]
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-select": {
+		"attributes": {
+			"fieldName": "topic",
+			"label": "",
+			"placeholder": "What can I help with?",
+			"required": true,
+			"width": "half",
+			"options": [
+				{
+					"value": "choosing-a-frame",
+					"label": "Choosing a frame"
+				},
+				{
+					"value": "prescription-lenses",
+					"label": "Prescription lenses"
+				},
+				{
+					"value": "an-order",
+					"label": "An order I've placed"
+				},
+				{
+					"value": "eye-test",
+					"label": "Booking an eye test"
+				},
+				{
+					"value": "something-else",
+					"label": "Something else"
+				}
+			]
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-text": {
+		"attributes": {
+			"fieldName": "your_name",
+			"label": "",
+			"placeholder": "Your name",
+			"required": true,
+			"width": "half"
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-textarea": {
+		"attributes": {
+			"fieldName": "message",
+			"label": "",
+			"placeholder": "Your message",
+			"required": true,
+			"width": "full"
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-field-tiles": {
+		"attributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"fieldName": "kind",
+			"label": "Which kind?",
+			"tiles": [
+				{
+					"label": "One",
+					"icon": "star",
+					"iconSource": "lucide"
+				},
+				{
+					"label": "Two",
+					"icon": "heart",
+					"iconSource": "lucide"
+				}
+			]
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/form-review": {
+		"attributes": {
+			"heading": "Review your information"
+		},
+		"parents": [
+			{
+				"name": "sgs/form",
+				"attributes": {
+					"formId": "cr-calibration",
+					"submitLabel": "Send"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/form-step": {
+		"attributes": {
+			"label": "What they're for"
+		},
+		"inner": [
+			{
+				"name": "sgs/choice-flow-question",
+				"attributes": {
+					"priceGroup": "lens-use",
+					"pricePrefix": "from",
+					"question": "What will you use them for?",
+					"intro": "Your prescription tells you which. If there's an “ADD” column on it, varifocal is probably what you're after.",
+					"options": [
+						{
+							"label": "Distance",
+							"value": "distance",
+							"nextStepId": "",
+							"helpText": "Uses the main line of your prescription. This is what most people want in sunglasses — sharp vision looking ahead and into the distance.",
+							"description": "Driving, walking about, everyday wear.",
+							"summaryText": "Distance lenses",
+							"source": {
+								"desktop": {
+									"kind": "image",
+									"id": 455,
+									"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-distance.png"
+								}
+							}
+						},
+						{
+							"label": "Reading",
+							"value": "reading",
+							"nextStepId": "",
+							"helpText": "For reading in the garden or by the pool. Uses the “ADD” value on your prescription. You won't want to drive in these.",
+							"description": "Close work, in the sun.",
+							"summaryText": "Reading lenses",
+							"source": {
+								"desktop": {
+									"kind": "image",
+									"id": 457,
+									"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-reading.png"
+								}
+							}
+						},
+						{
+							"label": "Varifocal",
+							"value": "varifocal",
+							"nextStepId": "",
+							"helpText": "Distance at the top, reading at the bottom, blended in between with no visible line. Usually for over-40s. I take the fitting measurements from a photo or in person.",
+							"description": "Near and far in one lens, no line.",
+							"summaryText": "Varifocal lenses",
+							"source": {
+								"desktop": {
+									"kind": "image",
+									"id": 458,
+									"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-varifocal.png"
+								}
+							}
+						},
+						{
+							"label": "No prescription",
+							"value": "none",
+							"nextStepId": "7",
+							"helpText": "Adds the frame to your bag exactly as the brand made it, with its original tinted lenses. You can always add prescription lenses later.",
+							"description": "Keep the lenses they come with.",
+							"addToBagNow": true,
+							"source": {
+								"desktop": {
+									"kind": "image",
+									"id": 456,
+									"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/use-none.png"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/choice-flow",
+				"attributes": {
+					"title": "Add prescription lenses",
+					"progressStyle": "bar",
+					"flowLayout": "showcase",
+					"showPricePanel": true,
+					"pricePanelTitle": "",
+					"stickyFooter": true,
+					"showHeader": true,
+					"closeStyle": "text",
+					"progressCounts": "current",
+					"stepCountLabel": "Question",
+					"summaryBaseLabel": "Frame",
+					"summaryPendingLabel": "Lenses",
+					"summaryPendingText": "not chosen yet",
+					"stageNote": "Not sure which to pick?",
+					"stageNoteLink": {
+						"url": "https://wa.me/440000000000",
+						"text": "Happy to talk it through — message me and we'll choose together."
+					},
+					"stageNoteIcon": "whatsapp",
+					"skipPrompt": "Frame only?",
+					"skipLabel": "Skip the lenses",
+					"headerLogoSource": {
+						"desktop": {
+							"kind": "image",
+							"id": 486,
+							"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/flow-mark.png"
+						}
+					}
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/free-delivery-bar": {
+		"attributes": {},
+		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+	},
+	"sgs/gallery": {
+		"attributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"showCaptions": true,
+			"mediaItems": [
+				{
+					"id": 3459,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+					"alt": "Sample image",
+					"type": "image",
+					"mime": "image/jpeg",
+					"caption": "Caption 1"
+				},
+				{
+					"id": 4080,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+					"alt": "Second sample image",
+					"type": "image",
+					"mime": "image/png",
+					"caption": "Caption 2"
+				},
+				{
+					"id": 3459,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+					"alt": "Sample image",
+					"type": "image",
+					"mime": "image/jpeg",
+					"caption": "Caption 3"
+				}
+			]
+		},
+		"variants": [
+			{},
+			{
+				"layout": "carousel"
+			}
+		],
+		"harness": {
+			"attachments": {
+				"11": "https://example.test/g1.jpg",
+				"12": "https://example.test/g2.jpg"
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/gift-order": {
+		"attributes": {},
+		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+	},
+	"sgs/google-rating-badge": {
+		"attributes": {
+			"dataSource": "manual",
+			"rating": 4.7,
+			"reviewCount": 15,
+			"listingUrl": "https://example.com/",
+			"showSource": true
+		},
+		"variants": [
+			{},
+			{
+				"badgeStyle": "card"
+			},
+			{
+				"badgeStyle": "stacked"
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/google-reviews": {
+		"attributes": {
+			"dataSource": "placeholder",
+			"showAggregate": true,
+			"showDate": true,
+			"showCardLogo": true,
+			"showReviewLink": true,
+			"reviewLinkLabel": "Read the full review",
+			"reviewRequestUrl": "https://example.com/",
+			"seeAllUrl": "https://example.com/",
+			"sourceLabel": "Google Reviews",
+			"footnote": "Scroll for more — 13 of the 15 reviews left a comment.",
+			"showBreakdown": true,
+			"showArrows": true,
+			"averageRating": 4.7,
+			"cardStyle": "google-card",
+			"reviewCount": 15,
+			"reviews": [
+				{
+					"author": "Reviewer 1",
+					"avatarColour": "",
+					"date": "2 years ago",
+					"meta": "6 reviews",
+					"rating": 5,
+					"text": "Calibration review text: friendly service and a good choice of frames, explained clearly.",
+					"url": "https://example.com/review-1"
+				},
+				{
+					"author": "Reviewer 2",
+					"avatarColour": "",
+					"date": "2 years ago",
+					"meta": "6 reviews",
+					"rating": 5,
+					"text": "Second calibration review: quick turnaround and clear advice.",
+					"url": "https://example.com/review-2"
+				},
+				{
+					"author": "Reviewer 3",
+					"avatarColour": "",
+					"date": "2 years ago",
+					"meta": "6 reviews",
+					"rating": 5,
+					"text": "Third calibration review: would recommend.",
+					"url": "https://example.com/review-3"
+				}
+			],
+			"seeAllLabel": "See all reviews",
+			"writeReviewLabel": "Write a review",
+			"arrowStep": {
+				"desktop": "2",
+				"mobile": "1"
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/heading": {
+		"attributes": {
+			"content": "Calibration heading with a <a href=\"https://example.com/\">link</a>",
+			"level": "h4"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/hero": {
+		"attributes": {
+			"backgroundOverlayColour": "#000000",
+			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+			"splitSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/s.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			},
+			"splitAlt": "A view",
+			"backgroundSource": {
+				"desktop": {
+					"kind": "video",
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/calibration-loop.mp4",
+					"mime": "video/mp4"
+				}
+			},
+			"backgroundOverlayOpacity": {
+				"desktop": 30
+			},
+			"splitWidth": {
+				"desktop": "1200px"
+			}
+		},
+		"paintStates": [
+			{
+				"name": "split",
+				"when": {
+					"equals": {
+						"variant": "split"
+					}
+				},
+				"attributes": {
+					"variant": "split",
+					"backgroundSource": null,
+					"splitSource": {
+						"desktop": {
+							"kind": "image",
+							"id": "{{image}}",
+							"url": "{{image.url}}"
+						}
+					}
+				}
+			}
+		],
+		"inner": [
+			{
+				"name": "sgs/label",
+				"attributes": {
+					"text": "40 designer brands"
+				}
+			},
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"level": "h1",
+					"content": "The same designer shades. A good deal less."
+				}
+			}
+		],
+		"harness": {
+			"attachmentsFile": "fixtures/attachments.json"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/icon": {
+		"attributes": {
+			"iconSource": "lucide",
+			"iconName": "star",
+			"showLabel": true,
+			"labelText": "Rated"
+		},
+		"variants": [
+			{},
+			{
+				"shape": "circle",
+				"showBackground": true
+			},
+			{
+				"linkUrl": "/"
+			},
+			{
+				"shape": "circle",
+				"showBackground": true,
+				"linkUrl": "/"
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/icon-list": {
+		"attributes": {
+			"items": [
+				{
+					"text": "UV400 protection",
+					"description": "A short second line under this item."
+				},
+				{
+					"text": "Anti-scratch hard coat",
+					"description": "A short second line under this item."
+				},
+				{
+					"text": "Anti-reflective back surface, so you don't catch your own eye in the lens",
+					"description": "A short second line under this item."
+				},
+				{
+					"text": "Tint matched to the frame's original lenses"
+				},
+				{
+					"text": "Checked against your prescription by me before it's posted"
+				},
+				{
+					"text": "Two-year guarantee on the lenses"
+				}
+			],
+			"markerType": "none",
+			"source": "typed",
+			"heading": "Why choose us"
+		},
+		"variants": [
+			{},
+			{
+				"markerType": "icon"
+			}
+		],
+		"preconditions": {
+			"itemMotionDuration": {
+				"siblingDimOpacity": 0.4
+			},
+			"itemMotionEasing": {
+				"siblingDimOpacity": 0.4,
+				"itemMotionDuration": 300
+			}
+		},
+		"familyPreconditions": {
+			"linkUnderline": {
+				"linkUnderline": "always",
+				"items": [
+					{
+						"text": "UV400 protection",
+						"url": "/shop/"
+					},
+					{
+						"text": "Anti-scratch hard coat",
+						"url": "/shop/"
+					},
+					{
+						"text": "Two-year guarantee on the lenses",
+						"url": "/shop/"
+					}
+				]
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/image-sequence": {
+		"attributes": {
+			"thumbnailAlt": "Sample image",
+			"desktopFramesUrl": "https://example.test/frames/d-",
+			"desktopFrameCount": 30,
+			"thumbnailSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 3459,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+					"mime": "image/jpeg"
+				}
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/info-box": {
+		"attributes": {
+			"heading": "A sample heading",
+			"description": "A short supporting statement."
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/label": {
+		"attributes": {
+			"text": "40 designer brands"
+		},
+		"preconditions": {
+			"markerIcon": {
+				"dot": true,
+				"markerShape": "icon"
+			},
+			"lineRadius": {
+				"dot": true,
+				"markerShape": "line"
+			}
+		},
+		"familyPreconditions": {
+			"dot": {
+				"dot": true
+			},
+			"linkUnderline": {
+				"text": "40 <a href=\"/shop/\">designer</a> brands",
+				"linkUnderline": "always"
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/language-switch": {
+		"attributes": {
+			"languages": [
+				{
+					"code": "en",
+					"url": "#",
+					"customLabel": ""
+				},
+				{
+					"code": "es",
+					"url": "#",
+					"customLabel": ""
+				}
+			],
+			"separator": "/"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/local-time": {
+		"attributes": {
+			"timeZone": "Europe/London",
+			"label": "London"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/measured-diagram": {
+		"attributes": {
+			"drawingSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 4969,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/10/sgs-sample-diagram.svg",
+					"mime": "image/svg+xml",
+					"width": 680,
+					"height": 300
+				}
+			},
+			"drawingAlt": "Sample drawing"
+		},
+		"inner": [
+			{
+				"name": "sgs/diagram-dimension",
+				"attributes": {
+					"caption": "Width",
+					"value": "56 mm",
+					"startX": 17.65,
+					"startY": 79.33,
+					"endX": 42.65,
+					"endY": 79.33,
+					"orientation": "horizontal",
+					"extReach": 5,
+					"extOvershoot": 0.88
+				}
+			},
+			{
+				"name": "sgs/diagram-dimension",
+				"attributes": {
+					"caption": "Height",
+					"value": "41 mm",
+					"startX": 83.82,
+					"startY": 26.67,
+					"endX": 83.82,
+					"endY": 66.67,
+					"orientation": "vertical",
+					"extReach": -6.76,
+					"extOvershoot": 0.88
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/media": {
+		"attributes": {
+			"caption": "A short caption under the image.",
+			"source": {
+				"desktop": {
+					"kind": "image",
+					"id": "{{image}}",
+					"url": "{{image.url}}"
+				}
+			},
+			"alt": "Person wearing sunglasses outdoors"
+		},
+		"preconditions": {
+			"videoTimeFontSize": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeFontWeight": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeFontStyle": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeFontFamily": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeTextTransform": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeTextDecoration": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeLineHeight": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeLetterSpacing": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeTextWrap": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeTextColumns": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			},
+			"videoTimeWritingMode": {
+				"source": {
+					"desktop": {
+						"kind": "video",
+						"url": "https://calibration.invalid/cr-calibration.mp4",
+						"mime": "video/mp4"
+					}
+				}
+			}
+		},
+		"harness": {
+			"attachmentsFile": "fixtures/attachments.json"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/mega-aside": {
+		"attributes": {},
+		"inner": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"level": "h3",
+					"content": "Featured"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Short supporting text."
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/mega-panel",
+				"attributes": {
+					"variant": "general"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/mega-group": {
+		"attributes": {},
+		"inner": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "div"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"level": "h3",
+							"content": "Most asked for"
+						}
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/card-grid",
+								"attributes": {
+									"variant": "card",
+									"imageFallback": false,
+									"items": [
+										{
+											"title": "",
+											"subtitle": "48 frames",
+											"link": "/shop/?brands=ray-ban",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 571,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-ray-ban.jpg"
+												}
+											},
+											"alt": "Ray-Ban",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "44 frames",
+											"link": "/shop/?brands=gucci",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 572,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-gucci.jpg"
+												}
+											},
+											"alt": "Gucci",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "17 frames",
+											"link": "/shop/?brands=oakley",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 573,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-oakley.jpg"
+												}
+											},
+											"alt": "Oakley",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "12 frames",
+											"link": "/shop/?brands=prada",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 574,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-prada.jpg"
+												}
+											},
+											"alt": "Prada",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "11 frames",
+											"link": "/shop/?brands=versace",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 575,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-versace.jpg"
+												}
+											},
+											"alt": "Versace",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "9 frames",
+											"link": "/shop/?brands=dolce-gabbana",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 576,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-dolce-gabbana.jpg"
+												}
+											},
+											"alt": "Dolce & Gabbana",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "7 frames",
+											"link": "/shop/?brands=balenciaga",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 577,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-balenciaga.jpg"
+												}
+											},
+											"alt": "Balenciaga",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "18 frames",
+											"link": "/shop/?brands=michael-kors",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 578,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-michael-kors.jpg"
+												}
+											},
+											"alt": "Michael Kors",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "12 frames",
+											"link": "/shop/?brands=polaroid",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 579,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-polaroid.jpg"
+												}
+											},
+											"alt": "Polaroid",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "10 frames",
+											"link": "/shop/?brands=police",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 580,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-police.jpg"
+												}
+											},
+											"alt": "Police",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "",
+											"subtitle": "9 frames",
+											"link": "/shop/?brands=carrera",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 581,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/09/brand-logo-carrera.jpg"
+												}
+											},
+											"alt": "Carrera",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										},
+										{
+											"title": "Ferrari Scuderia",
+											"subtitle": "6 frames",
+											"link": "/shop/?brands=ferrari-scuderia",
+											"source": {
+												"desktop": {
+													"kind": "image",
+													"id": 625,
+													"url": "https://darkcyan-grouse-898606.hostingersite.com/wp-content/uploads/2026/10/brand-logo-ferrari-scuderia.svg"
+												}
+											},
+											"alt": "Ferrari Scuderia",
+											"fit": {
+												"desktop": "scale-down"
+											}
+										}
+									]
+								}
+							}
+						]
+					}
+				]
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/mega-panel",
+				"attributes": {
+					"variant": "general",
+					"colourScheme": "light",
+					"style": "columns"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/mega-panel": {
+		"attributes": {
+			"variant": "general",
+			"colourScheme": "light"
+		},
+		"variants": [
+			{},
+			{
+				"style": "cards"
+			},
+			{
+				"variant": "brands",
+				"brandsEyebrow": "Our brands"
+			},
+			{
+				"metadata": {
+					"name": "sgs-cal-mega-drawer"
+				}
+			},
+			{
+				"style": "cards",
+				"metadata": {
+					"name": "sgs-cal-mega-drawer"
+				}
+			},
+			{
+				"drawerCardCompact": true,
+				"metadata": {
+					"name": "sgs-cal-mega-drawer"
+				}
+			}
+		],
+		"inner": [
+			{
+				"name": "sgs/mega-group",
+				"attributes": {},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/text",
+								"attributes": {
+									"text": "01"
+								}
+							},
+							{
+								"name": "sgs/heading",
+								"attributes": {
+									"level": "h3",
+									"content": "Most asked for"
+								}
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								},
+								"innerBlocks": [
+									{
+										"name": "sgs/text",
+										"attributes": {
+											"text": "Link row description"
+										}
+									},
+									{
+										"name": "sgs/icon-list",
+										"attributes": {
+											"markerType": "icon",
+											"items": [
+												{
+													"iconSource": "lucide",
+													"iconName": "check",
+													"text": "First link row",
+													"url": "/one/"
+												},
+												{
+													"iconSource": "lucide",
+													"iconName": "check",
+													"text": "Second link row",
+													"url": "/two/"
+												}
+											]
+										}
+									}
+								]
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "sgs/mega-aside",
+				"attributes": {},
+				"innerBlocks": [
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div",
+							"minHeight": {
+								"desktop": "132px"
+							}
+						}
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/label",
+								"attributes": {
+									"text": "Since 1994"
+								}
+							}
+						]
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Card title"
+						}
+					},
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Aside feature text."
+						}
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/button",
+								"attributes": {
+									"label": "Read our story",
+									"url": "/story/"
+								}
+							}
+						]
+					}
+				]
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/message-preview": {
+		"attributes": {
+			"group": "note",
+			"fields": [
+				{
+					"key": "to",
+					"label": "To",
+					"fieldType": "text",
+					"defaultValue": "Aisha",
+					"maxLength": 30
+				},
+				{
+					"key": "message",
+					"label": "Your message",
+					"fieldType": "textarea",
+					"rows": 3,
+					"defaultValue": "Well done",
+					"maxLength": 200
+				}
+			]
+		},
+		"notes": "Seeded by seed_fixtures.py from no calibration fixture and render-paths.json."
+	},
+	"sgs/message-preview-line": {
+		"attributes": {},
+		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+	},
+	"sgs/modal": {
+		"attributes": {
+			"triggerText": "Which size am I?"
+		},
+		"inner": [
+			{
+				"name": "sgs/heading",
+				"attributes": {
+					"level": "h2",
+					"content": "Calibration modal heading"
+				}
+			},
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Calibration modal text."
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/multi-button": {
+		"attributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+			"backgroundSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/bg.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			}
+		},
+		"inner": [
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"inheritStyle": "custom",
+					"label": "Shop sunglasses",
+					"url": "https://darkcyan-grouse-898606.hostingersite.com/shop/"
+				}
+			},
+			{
+				"name": "sgs/button",
+				"attributes": {
+					"inheritStyle": "outline",
+					"label": "Add your prescription",
+					"url": "https://darkcyan-grouse-898606.hostingersite.com/prescription-lenses/"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/nav-drawer": {
+		"attributes": {
+			"panelSize": {
+				"desktop": "100%"
+			},
+			"submenuModel": "accordion",
+			"chromeSlotText": "MENU",
+			"chromeSlotPlacement": "after-logo",
+			"chromeLogoSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 4080,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
+					"mime": "image/png"
+				}
+			},
+			"chromeSlotType": "label"
+		},
+		"variants": [
+			{},
+			{
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			{
+				"closeStyle": {
+					"desktop": "text-swap",
+					"tablet": "separate-x",
+					"mobile": "separate-x"
+				}
+			}
+		],
+		"preconditions": {
+			"anchorOffset": {
+				"anchor": {
+					"desktop": "trigger",
+					"tablet": "trigger",
+					"mobile": "trigger"
+				}
+			},
+			"chromeRatingColour": {
+				"chromeRating": true
+			},
+			"chromeButtonColourBackground": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonColourBackgroundGradient": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonColourBackgroundHover": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonColourText": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonColourTextGradient": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonColourTextHover": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonColourTextHoverGradient": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonColourBorder": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonColourBorderHover": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonBorderStyle": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonBorderWidth": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonBorderRadius": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			},
+			"chromeButtonPadding": {
+				"chromeSlotType": "button",
+				"chromeSlotUrl": "/shop/"
+			}
+		},
+		"inner": [
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "nav",
+					"ariaLabel": "Shop"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"inheritStyle": "custom",
+							"label": "Sunglasses",
+							"url": "/shop/",
+							"widthType": {
+								"desktop": "full"
+							},
+							"textDecorationHover": "none"
+						}
+					},
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"inheritStyle": "custom",
+							"label": "Brands",
+							"url": "/shop/",
+							"widthType": {
+								"desktop": "full"
+							},
+							"textDecorationHover": "none"
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/container",
+				"attributes": {
+					"tagName": "nav",
+					"ariaLabel": "More"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/icon-list",
+						"attributes": {
+							"markerType": "none",
+							"items": [
+								{
+									"iconSource": "lucide",
+									"iconName": "",
+									"text": "About us",
+									"url": "/about/"
+								},
+								{
+									"iconSource": "lucide",
+									"iconName": "",
+									"text": "Delivery, returns &amp; FAQs",
+									"url": "/help/"
+								},
+								{
+									"iconSource": "lucide",
+									"iconName": "",
+									"text": "Size guide",
+									"url": "#size-guide"
+								},
+								{
+									"iconSource": "lucide",
+									"iconName": "",
+									"text": "Contact",
+									"url": "/contact/"
+								}
+							]
+						}
+					}
+				]
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/nav-drawer-menu": {
+		"attributes": {
+			"ref": 7,
+			"itemOrnament": {
+				"desktop": "index"
+			},
+			"itemMedia": "featured-image",
+			"itemMediaReveal": {
+				"desktop": "always"
+			},
+			"itemMediaWidth": {
+				"desktop": "64px"
+			}
+		},
+		"variants": [
+			{},
+			{
+				"ref": "{{menu}}",
+				"disabledItemIds": [
+					"id:{{menuItem}}"
+				],
+				"itemTrailingIcons": {
+					"id:{{menuItem}}": {
+						"source": "lucide",
+						"name": "arrow-right"
+					}
+				}
+			},
+			{
+				"ref": "{{menu}}",
+				"featuredItemIds": [
+					"id:{{menuItem}}"
+				]
+			}
+		],
+		"preconditions": {
+			"submenuCaretTurnEasingCustom": {
+				"submenuCaretTurnEasing": "custom"
+			},
+			"sweepAngle": {
+				"itemBorderHoverTreatment": "sweep",
+				"itemBorderWidth": {
+					"top": "0px",
+					"right": "0px",
+					"bottom": "3px",
+					"left": "0px"
+				}
+			}
+		},
+		"parents": [
+			{
+				"name": "sgs/nav-drawer",
+				"attributes": {}
+			}
+		],
+		"harness": {
+			"post": [
+				{
+					"ID": 7,
+					"post_type": "wp_navigation",
+					"post_content": "<!-- wp:core/navigation-link {\"label\": \"About\", \"url\": \"https://example.test/about\", \"kind\": \"post-type\", \"type\": \"page\", \"id\": 21} /--><!-- wp:core/navigation-link {\"label\": \"Sale\", \"url\": \"https://example.test/sale\", \"kind\": \"custom\", \"description\": \"New\"} /--><!-- wp:core/navigation-submenu {\"label\": \"Services\", \"url\": \"https://example.test/services\", \"kind\": \"custom\"} --><!-- wp:core/navigation-link {\"label\": \"Design\", \"url\": \"https://example.test/design\", \"kind\": \"custom\"} /--><!-- wp:core/navigation-link {\"label\": \"Build\", \"url\": \"https://example.test/build\", \"kind\": \"custom\"} /--><!-- /wp:core/navigation-submenu --><!-- wp:core/navigation-link {\"label\": \"Closed\", \"url\": \"https://example.test/closed\", \"kind\": \"custom\", \"description\": \"Soon\"} /-->"
+				},
+				{
+					"ID": 21,
+					"post_type": "page",
+					"post_title": "About",
+					"thumbnail_id": 55
+				}
+			],
+			"attachments": {
+				"55": "https://example.test/thumb.jpg"
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/notice-banner": {
+		"attributes": {
+			"text": "A short sample notice.",
+			"variant": "info",
+			"icon": "info"
+		},
+		"variants": [
+			{},
+			{
+				"messageMode": "rotate",
+				"showMessageArrows": true
+			},
+			{
+				"iconStyle": "circle"
+			}
+		],
+		"inner": [
+			{
+				"name": "sgs/notice-message",
+				"attributes": {
+					"label": "Slide 1"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "A short sample notice."
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/notice-message",
+				"attributes": {
+					"label": "Slide 2"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "A second sample notice."
+						}
+					}
+				]
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/notice-message": {
+		"attributes": {
+			"label": "Slide 1"
+		},
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "A short sample notice."
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/notice-banner",
+				"attributes": {
+					"messageMode": "rotate"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/option-picker": {
+		"attributes": {
+			"label": "Size",
+			"optionItems": [
+				{
+					"key": "small",
+					"label": "Small"
+				},
+				{
+					"key": "large",
+					"label": "Large"
+				}
+			],
+			"defaultSelected": "small"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/order-items": {
+		"attributes": {},
+		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+	},
+	"sgs/pay-later-message": {
+		"attributes": {},
+		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+	},
+	"sgs/physics-canvas": {
+		"attributes": {
+			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+			"backgroundSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/bg.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			}
+		},
+		"inner": [
+			{
+				"name": "sgs/label",
+				"attributes": {
+					"text": "One"
+				}
+			},
+			{
+				"name": "sgs/label",
+				"attributes": {
+					"text": "Two"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/post-grid": {
+		"attributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"showImage": true,
+			"showTitle": true,
+			"showExcerpt": true,
+			"showDate": true,
+			"showAuthor": true,
+			"showCategory": true,
+			"showReadMore": true,
+			"pagination": "none",
+			"postsPerPage": 2
+		},
+		"harness": {
+			"post": [
+				{
+					"ID": 101,
+					"post_type": "post",
+					"post_title": "Sample post one",
+					"post_content": "Sample content.",
+					"post_excerpt": "A short sample excerpt.",
+					"post_status": "publish",
+					"thumbnail_id": 201,
+					"categories": [
+						"News"
+					],
+					"post_date": "2026-01-01 09:00:00",
+					"author": {
+						"display_name": "Sam Sample"
+					}
+				},
+				{
+					"ID": 102,
+					"post_type": "post",
+					"post_title": "Sample post two",
+					"post_content": "More sample content.",
+					"post_excerpt": "Another sample excerpt.",
+					"post_status": "publish",
+					"thumbnail_id": 202,
+					"categories": [
+						"News"
+					],
+					"post_date": "2026-01-02 09:00:00",
+					"author": {
+						"display_name": "Sam Sample"
+					}
+				}
+			],
+			"attachments": {
+				"201": "https://example.test/t1.jpg",
+				"202": "https://example.test/t2.jpg"
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/pricing-table": {
+		"attributes": {
+			"plans": [
+				{
+					"name": "Starter",
+					"price": "£9",
+					"priceYearly": "£90",
+					"period": "monthly",
+					"description": "Everything to get started.",
+					"features": [
+						{
+							"text": "5 projects",
+							"included": true
+						},
+						{
+							"text": "Email support",
+							"included": false
+						}
+					],
+					"ctaText": "Get started",
+					"ctaUrl": "https://example.test/start",
+					"highlighted": true,
+					"iconName": "star",
+					"savingsBadgeText": "Save 17%"
+				},
+				{
+					"name": "Team",
+					"price": "£29",
+					"priceYearly": "£290",
+					"period": "monthly",
+					"description": "For growing teams.",
+					"features": [
+						"Unlimited projects",
+						"Priority support"
+					],
+					"ctaText": "Choose Team",
+					"ctaUrl": "https://example.test/team",
+					"highlighted": false,
+					"ribbonText": "Best value",
+					"ribbonColour": "accent",
+					"savingsBadgeText": "Save 17%"
+				}
+			],
+			"columns": 2
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/process-steps": {
+		"attributes": {
+			"steps": [
+				{
+					"number": "1",
+					"title": "Pick a frame, then “Add my prescription”",
+					"description": "A short description of step 1."
+				},
+				{
+					"number": "2",
+					"title": "Tell me what they're for, how thin, what finish",
+					"description": "A short description of step 2."
+				},
+				{
+					"number": "3",
+					"title": "Send your prescription now, or later — no rush",
+					"description": "A short description of step 3."
+				}
+			]
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/product-card": {
+		"attributes": {
+			"variantStyle": "featured",
+			"featuredTag": "New",
+			"overrideElements": [
+				"description"
+			],
+			"showRating": true,
+			"ratingValue": 4.6,
+			"reviewCount": 12,
+			"showBrandOverlay": true,
+			"brandName": "Oakco",
+			"showSavingBadge": true,
+			"savingLabel": "Save 10%",
+			"showWishlist": true,
+			"cta2Text": "Details",
+			"colourSwatches": [
+				{
+					"colour": "#aa0000",
+					"label": "Red"
+				},
+				{
+					"colour": "#00aa00",
+					"label": "Green"
+				},
+				{
+					"colour": "#0000aa",
+					"label": "Blue"
+				},
+				{
+					"colour": "#aaaa00",
+					"label": "Ochre"
+				},
+				{
+					"colour": "#00aaaa",
+					"label": "Teal"
+				}
+			],
+			"swatchMaxVisible": 4,
+			"showAttributeTag": true,
+			"attributeTagSource": "tag",
+			"attributeTagTerm": "cr-tagged",
+			"attributeTagText": "Tagged",
+			"noImageLabel": "Photo to come",
+			"noReviewsText": "No reviews yet",
+			"savingBadgePosition": "bottom-left",
+			"showPickers": false,
+			"showDescription": false,
+			"showCta": false,
+			"rrpMetaKey": "_sgs_rrp",
+			"sourceMode": "wc-product",
+			"productId": "{{product}}",
+			"description": "A short description with a <a href=\"https://example.com/\">link</a>.",
+			"attributeTagTaxonomy": "pa_cr-feature"
+		},
+		"variants": [
+			{},
+			{
+				"sourceMode": "typed",
+				"productId": 0,
+				"productName": "Typed sample frame",
+				"priceLarge": "£49",
+				"showDescription": true,
+				"showCta": true,
+				"ctaUrl": "/shop/"
+			},
+			{
+				"sourceMode": "typed",
+				"productId": 0,
+				"productName": "Typed sample frame",
+				"priceLarge": "£49",
+				"showDescription": true,
+				"showCta": true,
+				"ctaUrl": "/shop/",
+				"variantStyle": "trial",
+				"trialTag": "Free trial"
+			},
+			{
+				"sourceMode": "typed",
+				"productId": 0,
+				"productName": "Typed sample frame",
+				"priceLarge": "£49",
+				"showDescription": true,
+				"showCta": true,
+				"ctaUrl": "/shop/",
+				"variantStyle": "featured",
+				"featuredTag": "Most popular"
+			},
+			{
+				"showPickers": true
+			}
+		],
+		"harness": {
+			"product": {
+				"id": 52,
+				"name": "Oak table",
+				"price_html": "<span class=\"woocommerce-Price-amount amount\">£120</span>",
+				"price": "120",
+				"type": "simple",
+				"image_id": 7,
+				"image_url": "https://example.test/oak.jpg",
+				"short_description": "Solid oak.",
+				"in_stock": true,
+				"average_rating": "4.5",
+				"review_count": 3,
+				"terms": {
+					"product_tag": [
+						"oak"
+					]
+				},
+				"meta": {
+					"_sgs_rrp": "150"
+				}
+			},
+			"manifest": {
+				"decimals": 2,
+				"currencySymbol": "£",
+				"generatedAt": 1767225600,
+				"axes": [
+					{
+						"taxonomy": "pa_pack-size",
+						"label": "Pack size",
+						"variesBy": "",
+						"terms": [
+							{
+								"slug": "single",
+								"label": "Single"
+							},
+							{
+								"slug": "six-pack",
+								"label": "Six pack"
+							}
+						]
+					}
+				],
+				"combos": {
+					"pa_pack-size:single": {
+						"variationId": 61,
+						"priceMinor": 900,
+						"regularMinor": 1000,
+						"saleMinor": 900,
+						"pctOff": 10,
+						"pctDisplay": "",
+						"inStock": true,
+						"imageUrl": "https://example.test/single.jpg",
+						"hasOwnImage": true,
+						"exMinor": 900,
+						"taxMinor": 0,
+						"regularExMinor": 1000,
+						"unitDivisor": 1,
+						"unitLabel": "each",
+						"discountLabel": "",
+						"incMinor": 900,
+						"sku": "SAMPLE-61",
+						"gtin": "",
+						"saleEndDate": "",
+						"gallery": [
+							{
+								"url": "https://example.test/single.jpg",
+								"w": 800,
+								"h": 800,
+								"alt": "Sample product"
+							},
+							{
+								"url": "https://example.test/single-2.jpg",
+								"w": 800,
+								"h": 800,
+								"alt": "Sample product, side"
+							}
+						]
+					},
+					"pa_pack-size:six-pack": {
+						"variationId": 62,
+						"priceMinor": 4800,
+						"regularMinor": 4800,
+						"saleMinor": 0,
+						"pctOff": 0,
+						"pctDisplay": "",
+						"inStock": false,
+						"imageUrl": "https://example.test/six.jpg",
+						"hasOwnImage": true,
+						"exMinor": 4800,
+						"taxMinor": 0,
+						"regularExMinor": 4800,
+						"unitDivisor": 6,
+						"unitLabel": "each",
+						"discountLabel": "",
+						"incMinor": 4800,
+						"sku": "SAMPLE-62",
+						"gtin": "",
+						"saleEndDate": "",
+						"gallery": [
+							{
+								"url": "https://example.test/six.jpg",
+								"w": 800,
+								"h": 800,
+								"alt": "Sample product"
+							},
+							{
+								"url": "https://example.test/six-2.jpg",
+								"w": 800,
+								"h": 800,
+								"alt": "Sample product, side"
+							}
+						]
+					}
+				},
+				"defaultKey": "pa_pack-size:single",
+				"defaultAxes": {
+					"pa_pack-size": "single"
+				}
+			},
+			"post": {
+				"ID": 41,
+				"post_type": "sgs_product",
+				"post_title": "Oak table",
+				"post_excerpt": "Solid oak.",
+				"post_status": "publish",
+				"thumbnail_url": "https://example.test/a.jpg",
+				"terms": {
+					"product_tag": [
+						"oak"
+					]
+				},
+				"meta": {
+					"sgs_price": "120",
+					"sgs_price_note": "per item"
+				},
+				"thumbnail_id": 31
+			},
+			"attachments": {
+				"31": "https://example.test/a.jpg"
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/product-faq": {
+		"attributes": {
+			"heading": "Questions"
+		},
+		"inner": [
+			{
+				"name": "sgs/product-faq-item",
+				"attributes": {
+					"question": "A first question?",
+					"isOpen": true
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "An answer."
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/product-faq-item",
+				"attributes": {
+					"question": "A second question?"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "An answer."
+						}
+					}
+				]
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/product-faq-item": {
+		"attributes": {
+			"question": "A sample question?",
+			"isOpen": true
+		},
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "An answer."
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/product-faq",
+				"attributes": {}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/product-search": {
+		"attributes": {
+			"placeholder": "Search products",
+			"buttonLabel": "Search"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/quote": {
+		"attributes": {
+			"attribution": "Sample Author, <a href=\"https://example.com/source\">Source</a>",
+			"attributionEnabled": true
+		},
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "A sample quotation."
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/responsive-logo": {
+		"attributes": {
+			"logoSource": {
+				"desktop": {
+					"kind": "image",
+					"id": "{{image}}",
+					"url": "{{image.url}}"
+				}
+			},
+			"linkToHome": true
+		},
+		"harness": {
+			"attachmentsFile": "fixtures/attachments.json"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/separator": {
+		"attributes": {},
+		"variants": [
+			{},
+			{
+				"contentMode": "text",
+				"contentText": "Or"
+			},
+			{
+				"contentMode": "icon",
+				"contentIconName": "star"
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/site-footer": {
+		"attributes": {
+			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+			"backgroundSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/bg.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			}
+		},
+		"variants": [
+			{},
+			{
+				"layout": "grid"
+			}
+		],
+		"inner": [
+			{
+				"name": "sgs/site-footer-row",
+				"attributes": {
+					"rowSlot": "columns"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Footer row text."
+						}
+					}
+				]
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/site-footer-row": {
+		"attributes": {
+			"rowSlot": "columns"
+		},
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Footer row text."
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/site-footer",
+				"attributes": {}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/site-header": {
+		"attributes": {
+			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+			"backgroundSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/bg.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			},
+			"headerSticky": {
+				"desktop": "on"
+			},
+			"scrolledOffset": 40
+		},
+		"variants": [
+			{},
+			{
+				"headerShrink": {
+					"desktop": "on",
+					"tablet": "on",
+					"mobile": "on"
+				}
+			}
+		],
+		"inner": [
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "top"
+				}
+			},
+			{
+				"name": "sgs/site-header-row",
+				"attributes": {
+					"rowSlot": "middle",
+					"rowShrink": {
+						"desktop": "on"
+					},
+					"rowShrinkEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/nav-bar-menu",
+						"attributes": {
+							"ref": "{{menu}}",
+							"splitSide": "before",
+							"splitAfterItemId": "id:{{menuItem}}",
+							"disabledItemIds": [
+								"id:{{menuItem}}"
+							],
+							"submenuOpenOn": "hover",
+							"triggerMode": {
+								"desktop": "icon-and-text",
+								"mobile": "icon"
+							},
+							"submenuCaret": false,
+							"drawerRef": "{{drawer}}",
+							"triggerIconPosition": "before",
+							"megaAlign": {
+								"desktop": "full-width"
+							},
+							"burgerBarCount": 2
+						}
+					},
+					{
+						"name": "sgs/container",
+						"attributes": {
+							"tagName": "div"
+						},
+						"innerBlocks": [
+							{
+								"name": "sgs/responsive-logo",
+								"attributes": {
+									"linkToHome": true
+								}
+							},
+							{
+								"name": "sgs/container",
+								"attributes": {
+									"tagName": "div"
+								}
+							}
+						]
+					}
+				]
+			}
+		],
+		"harness": {
+			"postFile": "fixtures/menu-post.json"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/site-header-row": {
+		"attributes": {
+			"rowSlot": "middle"
+		},
+		"preconditions": {
+			"gridTemplateColumns": {
+				"layout": "grid"
+			},
+			"gridAutoRows": {
+				"layout": "grid"
+			},
+			"justifyItems": {
+				"layout": "grid"
+			}
+		},
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Header row text."
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/site-header",
+				"attributes": {
+					"headerSticky": {
+						"desktop": "on"
+					},
+					"scrolledOffset": 40
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/social-icons": {
+		"attributes": {
+			"childIconShowBackground": true,
+			"childIconBorderWidth": {
+				"top": "1px",
+				"right": "1px",
+				"bottom": "1px",
+				"left": "1px"
+			}
+		},
+		"variants": [
+			{},
+			{
+				"childIconShape": "circle"
+			}
+		],
+		"preconditions": {
+			"childIconLabelPosition": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelColour": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelColourGradient": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelColourHover": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelColourHoverGradient": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelFontSize": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelFontSizeUnit": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelFontWeight": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelFontStyle": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelFontFamily": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelTextTransform": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelTextDecoration": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelLineHeight": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelLineHeightUnit": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelLetterSpacing": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelLetterSpacingUnit": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelTextWrap": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelTextStrokeWidth": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelTextStrokeColour": {
+				"childIconShowLabel": true
+			},
+			"childIconLabelTextStrokeColourHover": {
+				"childIconShowLabel": true
+			}
+		},
+		"inner": [
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "brand",
+					"brandName": "facebook",
+					"linkUrl": "https://example.com/",
+					"ariaLabel": "Facebook"
+				}
+			},
+			{
+				"name": "sgs/icon",
+				"attributes": {
+					"iconSource": "brand",
+					"brandName": "instagram",
+					"linkUrl": "https://example.com/",
+					"ariaLabel": "Instagram"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/star-rating": {
+		"attributes": {
+			"rating": 4.5,
+			"maxRating": 5,
+			"label": "4.5 out of 5"
+		},
+		"variants": [
+			{},
+			{
+				"displayMode": "stars-with-value-and-count"
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/store-selector": {
+		"attributes": {
+			"triggerPrefix": "Select store",
+			"stores": [
+				{
+					"label": "Store one",
+					"url": "https://example.com/one/",
+					"flagId": 0,
+					"flagUrl": ""
+				},
+				{
+					"label": "Store two",
+					"url": "https://example.com/two/",
+					"flagId": 0,
+					"flagUrl": ""
+				}
+			]
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/tab": {
+		"attributes": {
+			"label": "Description"
+		},
+		"inner": [
+			{
+				"name": "sgs/text",
+				"attributes": {
+					"text": "Tab content."
+				}
+			}
+		],
+		"parents": [
+			{
+				"name": "sgs/tabs",
+				"attributes": {
+					"hideEmptyTabs": true,
+					"mobileLayout": "row"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/table-of-contents": {
+		"attributes": {
+			"title": "Contents"
+		},
+		"harness": {
+			"postContent": "<!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">First section</h2><!-- /wp:core/heading --><!-- wp:core/paragraph --><p>Text.</p><!-- /wp:core/paragraph --><!-- wp:core/heading {\"level\":3} --><h3 class=\"wp-block-heading\">A subsection</h3><!-- /wp:core/heading --><!-- wp:core/heading {\"level\":2} --><h2 class=\"wp-block-heading\">Second section</h2><!-- /wp:core/heading -->"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): before."
+	},
+	"sgs/tabs": {
+		"attributes": {
+			"hideEmptyTabs": true
+		},
+		"inner": [
+			{
+				"name": "sgs/tab",
+				"attributes": {
+					"label": "First tab"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "First tab content."
+						}
+					}
+				]
+			},
+			{
+				"name": "sgs/tab",
+				"attributes": {
+					"label": "Second tab"
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "Second tab content."
+						}
+					}
+				]
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/team-member": {
+		"attributes": {
+			"name": "Sample Person",
+			"role": "Sample role",
+			"bio": "A short supporting statement.",
+			"socialLinks": [
+				{
+					"platform": "linkedin",
+					"url": "https://example.test/in"
+				},
+				{
+					"platform": "email",
+					"url": "alex@example.test"
+				}
+			],
+			"photoSource": {
+				"desktop": {
+					"kind": "image",
+					"id": 3459,
+					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
+					"mime": "image/jpeg"
+				}
+			},
+			"photoAlt": "Sample image",
+			"photoShape": {
+				"desktop": {
+					"shape": "circle"
+				}
+			},
+			"photoRatio": {
+				"desktop": "1 / 1"
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/testimonial": {
+		"attributes": {
+			"quote": "A sample testimonial quotation with a <a href=\"https://example.com/review\">linked phrase</a>.",
+			"summaryPhrase": "Sample summary phrase",
+			"reviewerName": "Sample Reviewer",
+			"reviewerRole": "Sample role",
+			"orgName": "Sample Organisation",
+			"showRating": true,
+			"ratingType": "stars",
+			"ratingStars": 5,
+			"reviewDate": "2026-01-01",
+			"verified": true,
+			"sourcePlatform": "Google",
+			"avatarSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/a.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			},
+			"avatarAlt": "Sam",
+			"logoSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/l.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			},
+			"logoAlt": "Example Ltd",
+			"workSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/w.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			},
+			"workAlt": "Work"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/testimonial-slider": {
+		"attributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"slidesVisible": 1,
+			"autoplay": false
+		},
+		"inner": [
+			{
+				"name": "sgs/testimonial",
+				"attributes": {
+					"quote": "A first sample quotation.",
+					"reviewerName": "Reviewer one"
+				}
+			},
+			{
+				"name": "sgs/testimonial",
+				"attributes": {
+					"quote": "A second sample quotation.",
+					"reviewerName": "Reviewer two"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/text": {
+		"attributes": {
+			"text": "Calibration text for measuring, with a <a href=\"https://example.com/\">link</a>."
+		},
+		"preconditions": {
+			"firstLetterColour": {
+				"dropCap": true
+			},
+			"firstLetterColourGradient": {
+				"dropCap": true
+			},
+			"firstLetterColourHover": {
+				"dropCap": true
+			},
+			"firstLetterFontSize": {
+				"dropCap": true
+			},
+			"firstLetterFontSizeUnit": {
+				"dropCap": true
+			},
+			"firstLetterFontWeight": {
+				"dropCap": true
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
+	},
+	"sgs/theme-toggle": {
+		"attributes": {
+			"label": "Dark mode"
+		},
+		"variants": [
+			{},
+			{
+				"toggleStyle": "segmented"
+			}
+		],
+		"harness": {
+			"globalSettings": {
+				"custom": {
+					"dark": {
+						"base": "#111111",
+						"contrast": "#eeeeee"
+					}
+				}
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/timeline": {
+		"attributes": {
+			"entries": [
+				{
+					"date": "2018-01-01",
+					"title": "Company founded",
+					"description": "<p>Our story began with a handshake. <a href=\"https://example.com/story\">Read more</a>.</p>",
+					"icon": "building",
+					"image": 0
+				},
+				{
+					"date": "2020-06-01",
+					"title": "First milestone",
+					"description": "<p>Reached an important milestone. <a href=\"https://example.com/milestone\">Details</a>.</p>",
+					"icon": "flag",
+					"image": 0
+				},
+				{
+					"date": "2023-03-15",
+					"title": "National expansion",
+					"description": "<p>Grew our reach across the UK.</p>",
+					"icon": "map",
+					"image": 0
+				}
+			],
+			"rowStripes": true
+		},
+		"variants": [
+			{},
+			{
+				"connectorProgressFill": true
+			},
+			{
+				"orientation": "horizontal"
+			}
+		],
+		"harness": {
+			"attachments": {
+				"21": "https://example.test/t.jpg"
+			}
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/trust-bar": {
+		"attributes": {
+			"contentWidth": {
+				"desktop": "640px"
+			},
+			"bgSvgContent": "<svg viewBox=\"0 0 10 10\"><circle cx=\"5\" cy=\"5\" r=\"4\"/></svg>",
+			"title": "Why shop with us",
+			"items": [
+				{
+					"icon": "shield-check",
+					"label": "100% genuine, supplied direct by the brands"
+				},
+				{
+					"icon": "truck",
+					"label": "Free UK delivery over £75, or collect in store"
+				},
+				{
+					"icon": "glasses",
+					"label": "Prescription lenses glazed here in 7–10 days"
+				},
+				{
+					"icon": "rotate-ccw",
+					"label": "30 days to return, free adjustments for life"
+				}
+			],
+			"backgroundSource": {
+				"desktop": {
+					"kind": "image",
+					"url": "https://example.test/bg.jpg",
+					"width": 1200,
+					"height": 800
+				}
+			}
+		},
+		"variants": [
+			{},
+			{
+				"overflowMode": "drop"
+			},
+			{
+				"badgeStyle": "icon-bare"
+			}
+		],
+		"paintStates": [
+			{
+				"name": "text-only",
+				"when": {
+					"equals": {
+						"badgeStyle": "text-only"
+					}
+				},
+				"attributes": {
+					"badgeStyle": "text-only"
+				}
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/trustpilot-reviews": {
+		"attributes": {
+			"dataSource": "placeholder",
+			"reviews": [
+				{
+					"author": "Alex Sample",
+					"rating": 5,
+					"datePublished": "2026-01-05T10:00:00+00:00",
+					"reviewBody": "Great service.",
+					"title": "Excellent",
+					"isVerified": true
+				},
+				{
+					"author": "Sam Example",
+					"rating": 4,
+					"datePublished": "2026-01-06T10:00:00+00:00",
+					"reviewBody": "Good value.",
+					"title": "Good",
+					"isVerified": true
+				}
+			],
+			"trustScore": 4.6,
+			"trustScoreLabel": "Excellent",
+			"totalReviews": 250,
+			"reviewsAverage": 4.5,
+			"showSourceHeader": true,
+			"showTrustpilotLogo": true,
+			"showVerifiedBadge": true,
+			"showDate": true,
+			"showAuthor": true,
+			"showArrows": true,
+			"showDots": true,
+			"businessUnitUrl": "https://example.test/tp"
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/whatsapp-cta": {
+		"attributes": {
+			"phoneNumber": "447700900000",
+			"message": "Hi, I'd like to know more about your services.",
+			"label": "Message me",
+			"cardTitle": "Chat on WhatsApp",
+			"cardSubline": "We reply within an hour",
+			"variant": "inline"
+		},
+		"variants": [
+			{},
+			{
+				"variant": "card",
+				"cardTitle": "Chat to us",
+				"cardSubline": "We usually reply within the hour"
+			}
+		],
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/wishlist-link": {
+		"attributes": {
+			"label": "Wishlist",
+			"showLabel": true,
+			"showCount": true
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+	},
+	"sgs/wishlist-panel": {
+		"attributes": {
+			"heading": "Saved for later",
+			"showWhenEmpty": true
+		},
+		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json. Calibration-only keys not carried (they set up a live site): settleGone, wishlist."
 	}
 }
