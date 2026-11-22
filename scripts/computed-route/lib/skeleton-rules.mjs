@@ -442,8 +442,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const fieldScope = ( e ) => {
 		const p = m.byKey[ e.parentKey ];
 		const up = p ? m.byKey[ p.parentKey ] : null;
-		return holdsControl( p ) ? p : p && 'label' === p.tag && holdsControl( up ) ? up : null;
+		const scope = holdsControl( p ) ? p : p && 'label' === p.tag && holdsControl( up ) ? up : null;
+		return scope && ( ownsText( scope ) || labelsField( e, scope ) ) ? scope : null;
 	};
+	// Whether an element is a label of the field the wrapper holds: a <label> (or text inside one), or the target of the control's
+	// aria-labelledby.
+	const labelsField = ( k, scope ) => {
+		const p = m.byKey[ k.parentKey ];
+		const control = fieldIn( scope );
+		const named = String( control?.attrs?.[ 'aria-labelledby' ] ?? ( control ? view.attr( control, 'aria-labelledby' ) : '' ) ?? '' ).split( /\s+/ ).filter( Boolean );
+		return 'label' === k.tag || ( p && 'label' === p.tag ) || ( !! k.attrs?.id && named.includes( k.attrs.id ) );
+	};
+	// A wrapper whose texts are its field's own: holding its field (whatever its options) and texts only. A wrapper that also holds a
+	// button or a link, whatever widths it shows at (a results count and a filter button beside a sort select), holds texts of its own
+	// row, not words of the field, so only a label of the field is the field's text there (labelsField).
+	const ownsText = ( scope ) => 'label' === scope.tag || [ ...m.blockKids( scope ), ...m.widthKids( scope ) ].every( ( k ) => 'label' === k.tag || groups.isField( k ) || [ k, ...desc( k ) ].every( ( x ) => ! [ 'button', 'a' ].includes( view.realTag( x ) ) ) );
 	// The element inside a field wrapper that becomes the field block's node: the first control or field group in document order.
 	const fieldIn = ( scope ) => ( scope ? desc( scope ).find( ( k ) => controlBlock( k ) || groups.groupAt( k ) ) ?? null : null );
 	// The words a field's removed texts carried, as the field block's own settings: the label (the <label> naming the field, else
@@ -461,12 +474,13 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const up = p && 'label' === p.tag ? m.byKey[ p.parentKey ] : null;
 		const scope = [ up, p, ...( group ? [ e ] : [] ) ].find( holdsControl ) || null;
 		const drawn = ( t ) => /^\*$/.test( t ) || /^\d+\s*\/\s*\d+$/.test( t );
+		const plain = ! scope || ownsText( scope );
 		const texts = [];
 		const visit = ( k ) => {
 			if ( skip.has( k ) ) {
 				return;
 			}
-			if ( ( k !== scope || 'label' === k.tag || k === e ) && m.words( k ) && ! controlBlock( k ) ) {
+			if ( ( k !== scope || 'label' === k.tag || k === e ) && m.words( k ) && ! controlBlock( k ) && ( plain || labelsField( k, scope ) ) ) {
 				texts.push( { el: k, raw: m.words( k ).trim(), text: m.words( k ).replace( /\s*\*$/, '' ).trim() } );
 			}
 			m.blockKids( k ).forEach( visit );

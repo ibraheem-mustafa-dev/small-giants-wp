@@ -38,7 +38,7 @@ function inventory( root ) {
 		const el = { key, parentKey, depth, tag: node.tag, template: 'Root', tpl: id, attrs, words, allText: words, membership: node.o.membership || [], srcTag: node.tag, srcOwnText: words,
 			snippet: node.o.snippet || `<${ node.tag } data-dc-tpl="${ id }">${ words }</${ node.tag }>`,
 			box: Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, node.o.box || { x: 0, y: node.o.y ?? 0, w: 100, h: 20 } ] ) ),
-			visible: { 375: true, 768: true, 1440: true }, display: node.o.display || 'block', flexDirection: 'row', screenshots: {} };
+			visible: node.o.visible || { 375: true, 768: true, 1440: true }, display: node.o.display || 'block', flexDirection: 'row', screenshots: {} };
 		elements.push( el );
 		const texts = node.kids.map( ( k ) => walk( k, key, depth + 1 ) );
 		el.allText = [ words, ...texts ].filter( Boolean ).join( ' ' );
@@ -645,6 +645,26 @@ test( 'formControl: each control is the field block for its rendered type, its l
 	const off = run( section( [ form ] ), { facts: facts( 'formControl' ) } );
 	assert.ok( off.proposal.rows.filter( ( x ) => 'input' === x.tag ).every( ( x ) => 'formControl' !== x.rule && ! /form-field/.test( x.block || '' ) ) );
 	assert.notEqual( byWords( off, 'Hint for email' ).action, 'remove' );
+} );
+
+test( 'formControl: a text beside a select in a row that also holds a button (a results count; the button shown at one width only) is no label of the select and stays; a <label> or an aria-labelledby target there is; MUST FAIL on the old reading (the count became the label of the select and was removed)', () => {
+	const bar = ( ...kids ) => section( [ E( 'form', {}, [ E( 'div', { style: 'display:flex;gap:10px', y: 0 }, [ ...kids, E( 'button', { words: 'Filter', visible: { 375: true, 768: false, 1440: false } } ), E( 'select', { attrs: { id: 'sort' }, y: 60 } ) ] ) ] ) ] );
+	const count = run( bar( E( 'span', { words: '16 frames' } ) ) );
+	assert.equal( byWords( count, '16 frames' ).action, null, 'the count is no field text' );
+	assert.equal( byWords( count, '16 frames' ).rule, null );
+	assert.equal( byTag( count, 'select' ).block, 'sgs/form-field-select' );
+	assert.equal( byTag( count, 'select' ).attributes.label, undefined, 'the count is not the label of the select' );
+	// Negative controls: a <label> naming the select, and a text the select names with aria-labelledby, are its label even beside a button.
+	const named = run( bar( E( 'label', { words: 'Sort by', attrs: { for: 'sort' } } ) ) );
+	assert.equal( byWords( named, 'Sort by' ).action, 'remove' );
+	assert.equal( byTag( named, 'select' ).attributes.label, 'Sort by' );
+	const labelled = run( section( [ E( 'form', {}, [ E( 'div', { y: 0 }, [ E( 'span', { words: 'Sort by', attrs: { id: 'lab' } } ), E( 'button', { words: 'Filter' } ), E( 'select', { attrs: { 'aria-labelledby': 'lab' }, y: 60 } ) ] ) ] ) ] ) );
+	assert.equal( byWords( labelled, 'Sort by' ).action, 'remove' );
+	assert.equal( byTag( labelled, 'select' ).attributes.label, 'Sort by' );
+	// A wrapper holding only the field and its texts keeps the old reading: a plain text beside the select is its label.
+	const plain = run( section( [ E( 'form', {}, [ E( 'div', { y: 0 }, [ E( 'span', { words: 'Sort by' } ), E( 'select', { y: 60 } ) ] ) ] ) ] ) );
+	assert.equal( byWords( plain, 'Sort by' ).action, 'remove' );
+	assert.equal( byTag( plain, 'select' ).attributes.label, 'Sort by' );
 } );
 
 test( 'formControl fieldIcon: a mark drawn inside a text field box is the field leadingIcon (the nearest Lucide icon) and goes; MUST FAIL without the rule', () => {
