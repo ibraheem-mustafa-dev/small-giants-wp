@@ -190,13 +190,13 @@ export function scriptGapReason( script, state, gap ) {
 }
 
 // Whether an open-panel look is written through the block's hover setting: an opener (an element whose handler shows a panel
-// outside it) shows the look while its panel is open, which a pointer over the opener causes, so where the block holds no open
+// outside it) shows the look while its panel is open, which a pointer over the opener causes (the look's own events include hover: a panel a focus alone opens is no hover look), so where the block holds no open
 // setting for the property but holds a hover one, the hover setting takes it. Not when the draft has a hover look of its own for
 // the property on the element (two looks, one setting), nor when some copy of the repeated element lacks the look (the block-wide
 // hover setting would paint the copies that have no panel). `script`: the look's script record ({ kind, items }); `held`: the
 // block's setting states.
 export function openAsHover( { script, state, held, hasHover, hasOpen, hoverLook } ) {
-	return 'open' === state && 'open-panel' === script?.kind && held.has( 'hover' ) && hasHover && ! hasOpen && ! hoverLook && ( script.items || [] ).every( ( i ) => i.look );
+	return 'open' === state && 'open-panel' === script?.kind && ( script.events || [] ).includes( 'hover' ) && held.has( 'hover' ) && hasHover && ! hasOpen && ! hoverLook && ( script.items || [] ).every( ( i ) => i.look );
 }
 
 // The element a path ends on, without its position or pseudo-element (`.x__item:nth-of-type(3) > .x__link::before` →

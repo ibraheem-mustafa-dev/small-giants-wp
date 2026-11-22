@@ -181,3 +181,18 @@ test( 'negative controls: an open setting the block holds, a copy without the lo
 	const both = fillOne( 'sgs/nav-bar-menu', [ 'itemBorderColourHover' ], [ ...openLook( one ), { states: [ 'hover' ], family: 'stylesheet', selector: 'a:hover', tokens: [], declared: { 'border-bottom-color': 'rgb(1, 2, 3)' }, rendered: { 'border-bottom-color': 'rgb(1, 2, 3)' }, read: 'stylesheet' } ] );
 	assert.deepEqual( both.writes.map( ( w ) => [ w.attr, w.state, w.script ?? null ] ), [ [ 'itemBorderColourHover', 'hover', null ] ] );
 } );
+
+// openAsHover (lib/fill-state-script.mjs): an open-panel look is a hover look only when the draft's handler that opened the panel
+// follows the pointer; a panel a focus alone opens is not shown on hover. No browser: the decision on a script record.
+import { openAsHover } from '../lib/fill-state-script.mjs';
+const asHover = ( events ) => openAsHover( { script: { kind: 'open-panel', events, items: [ { look: true } ] }, state: 'open', held: new Set( [ 'hover' ] ), hasHover: true, hasOpen: false, hoverLook: false } );
+
+test( 'MUST FAIL: an open-panel look opened by focus alone is not written through the hover setting', () => {
+	assert.equal( asHover( [ 'focus' ] ), false );
+} );
+
+test( 'negative controls: a pointer-opened panel, or one both events open, is still a hover look', () => {
+	assert.equal( asHover( [ 'hover' ] ), true );
+	assert.equal( asHover( [ 'hover', 'focus' ] ), true );
+	assert.equal( asHover( undefined ), false );
+} );
