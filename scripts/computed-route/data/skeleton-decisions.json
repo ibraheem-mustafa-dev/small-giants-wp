@@ -883,7 +883,10 @@
 			"taughtBy": { "client": "mamas-munches-redesign", "key": "Shop/21, Help/19, Gifts/17 and Gifts/21", "runtime_sha256": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe" },
 			"scope": "an option set outside a form element whose chips loop a renderVals list, when the draft's logic writes a state key from those chips' handlers and filters another list an sc-for of the same component iterates by that key (lib/skeleton-narrowing.mjs, read from the logic's syntax tree); a computed state key, a list not filtered by the key and a group with static chips narrow nothing",
 			"clients": [ "indus-foods", "mamas-munches-redesign" ],
-			"reason": "a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)"
+			"reason": "a group of pressable chips whose choice narrows a list on the same surface stays the option picker and hands the filter wiring to the site build (Bean, 2026-10-21)",
+			"categoryFilter": {
+				"reason": "on the shop template, a row of chips that narrows the product listing by the catalogue's categories is the shop's category filter: WooCommerce's product_cat taxonomy filter in the chips display style (built from rules.filterRail's category group and choice style), so it filters the listing; the option picker would hand the wiring to a site build that nothing carries out on the shop template (shop-5)"
+			}
 		},
 		"megaGridContainer": {
 			"id": "megaGridContainer",

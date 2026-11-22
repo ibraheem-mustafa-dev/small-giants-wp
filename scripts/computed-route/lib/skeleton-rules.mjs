@@ -864,7 +864,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// Whether the choice a chip makes narrows another list of its component (lib/skeleton-narrowing.mjs): the chip's loop list
 	// is a renderVals key and the draft's logic filters a list that an `sc-for` of the same component iterates by a state key
 	// the chips' handlers write.
-	const narrowsList = ( chip ) => {
+	// `rendered( component )`: the loop lists an sc-for iterates; the component's own by default.
+	const narrowsList = ( chip, rendered = ( component ) => Object.values( view.elements ).filter( ( x ) => x.template.component === component ).flatMap( ( x ) => x.template.membership.scFor.map( ( f ) => f.list ) ) ) => {
 		const t = view.entry( chip )?.template;
 		if ( ! t ) {
 			return false;
@@ -874,7 +875,30 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return false;
 		}
 		const lists = narrowedLists( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: t.component, listKey: own } );
-		return narrowsRenderedList( lists, Object.values( view.elements ).filter( ( x ) => x.template.component === t.component ).flatMap( ( x ) => x.template.membership.scFor.map( ( f ) => f.list ) ) );
+		return narrowsRenderedList( lists, rendered( t.component ) );
+	};
+	// Whether the choice a chip makes narrows the loop of the shop's product listing (the commerce region's items).
+	const narrowsRegionLoop = ( chip ) => !! region?.item && narrowsList( chip, () => ( view.entry( region.item )?.template.membership.scFor ?? [] ).map( ( f ) => f.list ) );
+	// A row of chips that narrows the shop's product listing by the catalogue's categories is the shop template's own category
+	// filter (rules.optionSetFilter.categoryFilter): WooCommerce's taxonomy filter for product_cat in the chips' display style, built
+	// from rules.filterRail's category group and choice display style. At most one chip is no category (the one that clears the choice);
+	// the counts show only when the draft's chips carry a number. Null anywhere else: another surface, a loop that is not the listing's,
+	// or chips that are not the catalogue's categories.
+	const categoryFilter = ( chips ) => {
+		const C = R.optionSetFilter?.categoryFilter;
+		const group = R.filterRail?.groups?.category;
+		const style = R.filterRail?.displayStyles?.choice;
+		if ( ! C || ! group || ! style || 'shop' !== surface.commerce?.role || ! region?.item || ! narrowsRegionLoop( chips[ 0 ] ) ) {
+			return null;
+		}
+		const norm = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim().toLowerCase();
+		const names = new Set( ( surface.commerce.filters?.categories || [] ).map( norm ) );
+		const hits = chips.filter( ( c ) => names.has( norm( m.words( c ) ) ) ).length;
+		if ( hits < 2 || chips.length - hits > 1 ) {
+			return null;
+		}
+		const counted = chips.some( ( c ) => m.blockKids( c ).some( ( k ) => /^\d+$/.test( norm( m.words( k ) ) ) ) );
+		return { name: group.name, attributes: { taxonomy: group.attributes.taxonomy, displayStyle: style, showCounts: counted }, innerBlocks: [ { name: style, attributes: {}, innerBlocks: [] } ], reason: C.reason };
 	};
 
 	// The blocks already proposed for the element's ancestors, nearest first (an unwrapped ancestor has none).
@@ -1157,6 +1181,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				return v( 'optionSetForm', { block: R.optionSetForm.block, attributes: fieldContent( e, R.optionSetForm.block ), absorb: true } );
 			}
 			const filter = R.optionSetFilter && narrowsList( chips[ 0 ] );
+			const shelf = filter ? categoryFilter( chips ) : null;
+			if ( shelf ) {
+				return v( 'optionSetFilter', { block: shelf.name, attributes: shelf.attributes, inner: shelf.innerBlocks, absorb: true, reason: shelf.reason } );
+			}
 			return v( filter ? 'optionSetFilter' : 'optionSet', { block: R.optionSet.block, attributes: R.optionSet.hideLabel ? { [ R.optionSet.hideLabel.setting ]: false } : {}, chips: chips.map( ( k ) => k.key ), absorb: true, ...( filter ? { handover: { owner: 'behaviour', kind: 'behaviour', detail: R.optionSetFilter.handover } } : {} ) } );
 		},
 		// A strip whose own animation loops a translate for ever is a marquee: logos make a brand strip, labels a scrolling

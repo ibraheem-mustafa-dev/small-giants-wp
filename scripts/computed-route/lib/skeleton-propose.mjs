@@ -238,6 +238,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 			delete node.draftRef;
 			delete node.draftFingerprint;
 		}
+		// A row of chips that is the shop's category filter (rules.optionSetFilter.categoryFilter) draws that filter's own inner block.
+		'optionSetFilter' === r.rule && r.inner && ( node.innerBlocks = r.inner.map( ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: [] } ) ) );
 		if ( 'commerceRegion' === r.rule && r.inner ) {
 			const item = r.item ? m.byKey[ r.item ] : null;
 			const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
