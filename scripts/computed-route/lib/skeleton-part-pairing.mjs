@@ -323,9 +323,13 @@ export function draftKind( e, kids ) {
 // that has one) with the block's disclosure summary part, to be called after the ordinary pairing, whose link part a toggle
 // also fills (the settings of the two parts are calibrated apart); calibration: { elements, settings, text }; finder( element ); taken: the slots the node
 // already holds. Returns { slots: { slot: finder }, paired: [ { key, part, slots } ], ambiguous: [ { key, candidates } ],
-// unpainted: [ { key, part, looks } ], pseudo: [ { key, part } ], flat: [ { key, candidates, why } ] }.
-export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false, calibration = {}, finder, taken = {}, summaryRows = false } ) {
-	const out = { slots: {}, paired: [], ambiguous: [], unpainted: [], pseudo: [], flat: [] };
+// unpainted: [ { key, part, looks } ], pseudo: [ { key, part } ], flat: [ { key, candidates, why } ], switches: [ { key, part, switch,
+// value, slots } ] }. switches: the block's part switches (data/part-switches.json, lib/skeleton-part-switch.mjs::switchesFor): a
+// switch that draws one element's look on another part, so an element paired with the target part whose own settings paint none
+// of its looks is read at the look element's calibrated slots when those settings paint them, and the switch is returned for the
+// node to hold.
+export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false, calibration = {}, finder, taken = {}, summaryRows = false, switches = [] } ) {
+	const out = { slots: {}, paired: [], ambiguous: [], unpainted: [], pseudo: [], flat: [], switches: [], siblings: [] };
 	const elements = calibration?.elements || {};
 	if ( ! host || ! absorbed.length || ! Object.keys( elements ).length ) {
 		return out;
@@ -546,6 +550,52 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 	const settings = Object.entries( calibration.settings || {} );
 	const held = new Set( Object.keys( taken || {} ) );
 	const placedAt = new Map();
+	// Each slot reads the draft item at its own position. The element is read where a slot holds it or a loop copy of it
+	// (a loop is filled from its representative), whichever item's pairing placed the slot. Returns the slots that read it.
+	const placeSlots = ( e, slotKeys ) => {
+		const placed = [];
+		const mine = ( x ) => x === e || copylessKey( x.key ) === copylessKey( e.key );
+		for ( const slot of slotKeys ) {
+			const at = instanceOf( e, [ ...slot.matchAll( NTH ) ].map( ( x ) => Number( x[ 1 ] ) ), { chain: chain.get( e ), parent, kids, host, repGroup } );
+			// A loop's other items are read at the element in the same place only when it is the same sort of element (a badge's copy
+			// is another badge, not the arrow beside another row's label; a row's words are its words whether or not a caret follows).
+			if ( at && ( at === e || sameSort( at, e ) ) && ! held.has( slot ) ) {
+				out.slots[ slot ] = finder( at );
+				held.add( slot );
+				placedAt.set( slot, at );
+			}
+			placedAt.has( slot ) && mine( placedAt.get( slot ) ) && placed.push( slot );
+		}
+		return placed;
+	};
+	// The part switch that makes the part group g draw the looks of another element: the switch whose target selector is a step
+	// of the path of one of the group's members (the target is the part or the element round it) and whose look element's calibrated settings paint one of the looks. Returns { switch, slots } (the look
+	// element's calibrated slots, at the repetition level of the target) or null.
+	const stepsOf = ( path ) => String( path ?? '' ).split( ' > ' ).map( ( x ) => x.replace( NTH, '' ) );
+	const lastStep = ( path ) => stepsOf( path ).pop();
+	const switchPaint = ( g, looks ) => {
+		for ( const sw of switches ) {
+			if ( ! g.members.some( ( t ) => stepsOf( t ).includes( sw.targetSelector ) ) ) {
+				continue;
+			}
+			const at = new Map();
+			const named = new Map();
+			for ( const [ name, s ] of settings ) {
+				for ( const slot of [ ...new Set( [ s?.slot, ...( s?.slots || [] ) ] ) ] ) {
+					if ( 'string' === typeof slot && ! slot.includes( '::' ) && lastStep( slot ) === sw.lookSelector ) {
+						const look = lookOfProperty( s.property, model.parts.get( templateOf( slot ) )?.tag ?? '' );
+						const set = at.get( slot ) ?? at.set( slot, new Set() ).get( slot );
+						look && ( ! s.state || 'current' === s.state ) && set.add( look ) && looks.includes( look ) && ( named.get( slot ) ?? named.set( slot, [] ).get( slot ) ).push( name );
+					}
+				}
+			}
+			const paints = new Set( [ ...at.values() ].flatMap( ( x ) => [ ...x ] ) );
+			if ( looks.some( ( l ) => paints.has( l ) ) ) {
+				return { switch: sw, slots: [ ...at.keys() ].sort(), named, looks: looks.filter( ( l ) => paints.has( l ) ) };
+			}
+		}
+		return null;
+	};
 	for ( const { element: e, looks = [] } of absorbed ) {
 		const c = result.get( e );
 		if ( ! c || ! c.length ) {
@@ -576,24 +626,28 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		}
 		const painted = new Set( [ ...slotLooks.values() ].flatMap( ( x ) => [ ...x ] ) );
 		if ( null === looks ? ! slotLooks.size : ! looks.some( ( l ) => painted.has( l ) ) ) {
+			// A part switch of the block draws the look of another element on this part (a circle round each trailing icon is the
+			// caret's own box): the element is that look element's, read at its calibrated slots for this item.
+			const via = null === looks ? null : switchPaint( g, looks );
+			const placedVia = via ? placeSlots( e, via.slots ) : [];
+			if ( placedVia.length ) {
+				out.paired.push( { key: e.key, part: g.head, slots: placedVia } );
+				out.switches.push( { key: e.key, part: g.head, switch: via.switch.switch, value: via.switch.value, slots: placedVia } );
+				continue;
+			}
+			// A draft element that paints exactly what an element of the same sort already read at the look element's slot paints (the
+			// same declared style): the block draws one look for every such element, so that read stands for it.
+			const twin = via && via.slots.map( ( slot ) => [ slot, placedAt.get( slot ) ] ).find( ( [ , r ] ) => r && r !== e && sameSort( r, e ) && r.tag === e.tag && '' !== String( e.attrs?.style ?? '' ).trim() && r.attrs?.style === e.attrs?.style );
+			if ( twin ) {
+				out.paired.push( { key: e.key, part: g.head, slots: [ twin[ 0 ] ] } );
+				out.switches.push( { key: e.key, part: g.head, switch: via.switch.switch, value: via.switch.value, slots: [ twin[ 0 ] ] } );
+				out.siblings.push( { key: e.key, part: g.head, slot: twin[ 0 ], settings: [ ...new Set( via.named.get( twin[ 0 ] ) || [] ) ], looks, readBy: twin[ 1 ].key } );
+				continue;
+			}
 			out.unpainted.push( { key: e.key, part: g.head, looks } );
 			continue;
 		}
-		// Each slot reads the draft item at its own position. The element is read where a slot holds it or a loop copy of it
-		// (a loop is filled from its representative), whichever item's pairing placed the slot.
-		const placed = [];
-		const mine = ( x ) => x === e || copylessKey( x.key ) === copylessKey( e.key );
-		for ( const slot of [ ...slotLooks.keys() ].sort() ) {
-			const at = instanceOf( e, [ ...slot.matchAll( NTH ) ].map( ( x ) => Number( x[ 1 ] ) ), { chain: chain.get( e ), parent, kids, host, repGroup } );
-			// A loop's other items are read at the element in the same place only when it is the same sort of element (a badge's copy
-			// is another badge, not the arrow beside another row's label; a row's words are its words whether or not a caret follows).
-			if ( at && ( at === e || sameSort( at, e ) ) && ! held.has( slot ) ) {
-				out.slots[ slot ] = finder( at );
-				held.add( slot );
-				placedAt.set( slot, at );
-			}
-			placedAt.has( slot ) && mine( placedAt.get( slot ) ) && placed.push( slot );
-		}
+		const placed = placeSlots( e, [ ...slotLooks.keys() ].sort() );
 		placed.length ? out.paired.push( { key: e.key, part: g.head, slots: placed } ) : out.ambiguous.push( { key: e.key, candidates: [ g.head ], why: 'the draft has no element at any of the part\'s calibrated positions, or another finder holds them' } );
 	}
 	return out;

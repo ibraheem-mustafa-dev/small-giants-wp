@@ -42,6 +42,7 @@ import { conservationRows, nodesByRef, paintProblems, unreadList, STRICT_DEFAULT
 import { absorbedSlots } from './skeleton-conserve-slots.mjs';
 import { listUnclaimed } from './skeleton-widgets.mjs';
 import { pairAbsorbed, pairingNotes, unpairedRecords, isSummaryRow, drawsSummaryPart } from './skeleton-part-pairing.mjs';
+import { switchesFor, switchAttributes } from './skeleton-part-switch.mjs';
 import { hostParts } from './skeleton-part-reads.mjs';
 import { copylessKey } from './fact-key.mjs';
 import { slotMapFile } from './cache.mjs';
@@ -574,8 +575,14 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// Where no slot walk lands, the general pairing (lib/skeleton-part-pairing.mjs) decides which measured part each left
 		// element is, and reads it at that part's slots; an element with several fitting parts is a problem naming them.
 		const left = new Set( made.unmatched.map( ( u ) => u.key ) );
-		const pairing = left.size ? pairAbsorbed( { host, absorbed: absorbed.filter( ( a ) => left.has( a.element.key ) ), kids: kidsOf, isNode: ( x ) => refNodes.has( x.key ), calibration: calParts( node.name ), finder, taken: { ...node.draftSlots, ...made.slots } } ) : null;
+		const pairing = left.size ? pairAbsorbed( { host, absorbed: absorbed.filter( ( a ) => left.has( a.element.key ) ), kids: kidsOf, isNode: ( x ) => refNodes.has( x.key ), calibration: calParts( node.name ), finder, taken: { ...node.draftSlots, ...made.slots }, switches: switchesFor( node.name ) } ) : null;
 		const slots = { ...made.slots, ...pairing?.slots };
+		// A part switch a pairing used (a circle round each trailing icon is the caret's box) is a setting the node holds.
+		const switched = switchAttributes( pairing );
+		if ( Object.keys( switched ).length ) {
+			Object.assign( node.attributes ||= {}, switched );
+			rowOf[ hostKey ] && Object.assign( rowOf[ hostKey ].attributes ||= {}, switched );
+		}
 		if ( Object.keys( slots ).length ) {
 			node.draftSlots = { ...node.draftSlots, ...slots };
 			rowOf[ hostKey ] && ( rowOf[ hostKey ].slots = { ...rowOf[ hostKey ].slots, ...slots } );
@@ -583,6 +590,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		made.records.forEach( ( rec, key ) => rowOf[ key ] && ( rowOf[ key ].conserve = [ rec ] ) );
 		// A refused pairing is the element's record, so the conservation check lists it apart and the ledger reads why.
 		unpairedRecords( pairing, node.name ).forEach( ( rec, key ) => rowOf[ key ] && ! rowOf[ key ].conserve && ( rowOf[ key ].conserve = [ rec ] ) );
+		// An element that paints what an element read at the same slot paints is read there too: its row says so.
+		( pairing?.siblings || [] ).forEach( ( sb ) => rowOf[ sb.key ] && ! rowOf[ sb.key ].conserve && ( rowOf[ sb.key ].conserve = [ { kind: 'absorbed', node: hostKey, slot: sb.slot, settings: sb.settings, looks: sb.looks, sameAs: sb.readBy } ] ) );
 		const said = pairingNotes( pairing, node.name );
 		const unmatched = made.unmatched.filter( ( u ) => ! said.paired.has( u.key ) );
 		const notes = [ ...unmatched.filter( ( u ) => ! said.notes.has( u.key ) ).map( ( u ) => [ u.key, 'paints', u.looks.join( '/' ), 'which parts of', node.name, 'paint (', u.parts.join( ' | ' ), '), and no calibrated slot lands on it' ].join( ' ' ) ), ...said.notes.values() ];

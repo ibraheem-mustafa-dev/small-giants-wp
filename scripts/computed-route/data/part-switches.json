@@ -1,0 +1,13 @@
+{
+	"_comment": "Block settings that switch one part's look onto another part: with the switch on, the block draws the look element's settings (its calibrated settings) round the target part as well. A draft element paired with the target part whose own settings paint none of its looks is read at the look element's calibrated slots, and the switch is written on the block (lib/skeleton-part-switch.mjs, lib/skeleton-part-pairing.mjs::pairAbsorbed `switches`). Every entry is checked against the block's block.json and PHP by tests/part-switches.test.mjs: `switch` is a boolean attribute, `lookElement` a supports.sgs.elements entry whose selector is `lookSelector` and which maps settings, `targetSelector` a class the block's PHP prints. A block whose switch is already a decided rule (brand strip's name tile, rules.marquee.labelledLogos.tile) is not listed.",
+	"switches": [
+		{
+			"block": "sgs/nav-drawer-menu",
+			"switch": "caretBoxOnTrailingIcon",
+			"value": true,
+			"lookElement": "caret-box",
+			"lookSelector": ".sgs-nav-drawer-menu__caret",
+			"targetSelector": ".sgs-nav-drawer-menu__trailing-icon"
+		}
+	]
+}

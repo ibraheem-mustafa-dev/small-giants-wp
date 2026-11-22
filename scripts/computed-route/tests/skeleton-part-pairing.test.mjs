@@ -645,3 +645,45 @@ test( 'MUST FAIL (a loop\'s copies of one sort): the words of a row are read at 
 	assert.deepEqual( Object.values( both.slots ).map( ( f ) => f.tpl ).sort(), [ plain.key, caretRow.key ].sort(), 'both rows are read' );
 	assert.deepEqual( Object.values( run( plain, arrow ).slots ).map( ( f ) => f.tpl ), [ plain.key ], 'negative control: the second row holds an arrow, which is not its words' );
 } );
+
+test( 'MUST FAIL (a part switch): a disc round a trailing icon pairs to a part no setting of which paints it, and is read at the switch\'s look element with the switch returned', () => {
+	const T = ( k ) => `.bar > .item:nth-of-type(${ k })`;
+	const MENU = {
+		elements: {
+			'': flat( 'nav', { width: '300px' } ), '.bar': flat( 'div', { width: '300px' } ),
+			[ T( 1 ) ]: flat( 'div', { width: '300px' } ), [ `${ T( 1 ) } > .link` ]: flat( 'a', { width: '200px' } ), [ `${ T( 1 ) } > .link > .trail` ]: flat( 'span', { width: '16px' } ), [ `${ T( 1 ) } > .link > .trail > svg` ]: flat( 'svg', { width: '16px' } ),
+			[ T( 2 ) ]: flat( 'div', { width: '300px' } ), [ `${ T( 2 ) } > .link` ]: flat( 'a', { width: '200px' } ), [ `${ T( 2 ) } > .link > .trail` ]: flat( 'span', { width: '16px' } ), [ `${ T( 2 ) } > .link > .trail > svg` ]: flat( 'svg', { width: '16px' } ),
+			[ `${ T( 1 ) } > .caret` ]: flat( 'span', { width: '40px', 'background-color': 'rgb(1, 2, 3)' } ), [ `${ T( 2 ) } > .caret` ]: flat( 'span', { width: '40px', 'background-color': 'rgb(1, 2, 3)' } ),
+		},
+		settings: {
+			trailPadding: { slot: `${ T( 1 ) } > .link > .trail`, slots: [ `${ T( 1 ) } > .link > .trail` ], property: 'padding' },
+			circleBg: { slot: `${ T( 1 ) } > .caret`, slots: [ `${ T( 1 ) } > .caret`, `${ T( 2 ) } > .caret` ], property: 'background-color' },
+			circleSize: { slot: `${ T( 1 ) } > .caret`, slots: [ `${ T( 1 ) } > .caret`, `${ T( 2 ) } > .caret` ], property: 'width' },
+		},
+		text: {},
+	};
+	const SWITCH = [ { block: 'sgs/x', switch: 'circleOnTrailingIcon', value: true, lookElement: 'circle', lookSelector: '.caret', targetSelector: '.trail' } ];
+	const disc = ( n ) => node( `Root/${ n }#0`, 'span', [], { words: '→', box: { x: 250, y: n * 20, w: 32, h: 32 } } );
+	const discs = [ disc( 12 ), disc( 22 ), disc( 32 ) ];
+	const item = ( n, d ) => node( `Root/${ n }#0`, 'a', [ node( `Root/${ n + 1 }#0`, 'span', [], { words: `Row ${ n }`, box: { x: 0, y: n * 20, w: 150, h: 20 } } ), d ], { box: { x: 0, y: n * 20, w: 300, h: 40 } } );
+	const styled = ( d, style ) => Object.assign( d, { attrs: { style } } );
+	const STYLE = 'width: 32px; height: 32px; border-radius: 999px; background: rgb(255, 250, 240)';
+	discs.forEach( ( d ) => styled( d, STYLE ) );
+	const host = node( 'Root/1#0', 'nav', [ item( 10, discs[ 0 ] ), item( 20, discs[ 1 ] ), item( 30, discs[ 2 ] ) ], { box: { x: 0, y: 0, w: 300, h: 200 } } );
+	const run = ( list, switches, at = host ) => pairAbsorbed( { host: at, absorbed: list.map( ( element ) => ( { element, looks: [ 'background', 'border', 'width' ] } ) ), kids, calibration: MENU, finder, switches } );
+	const withSwitch = run( discs, SWITCH );
+	assert.deepEqual( withSwitch.switches.map( ( s ) => [ s.key, s.switch, s.value ] ), discs.map( ( d ) => [ d.key, 'circleOnTrailingIcon', true ] ), 'every disc names the switch' );
+	assert.deepEqual( withSwitch.slots, { [ `${ T( 1 ) } > .caret` ]: { tpl: 'Root/12#0' }, [ `${ T( 2 ) } > .caret` ]: { tpl: 'Root/22#0' } }, 'the first two discs are read at the circle slots of their own item' );
+	assert.deepEqual( withSwitch.siblings.map( ( s ) => [ s.key, s.slot, s.readBy ] ), [ [ 'Root/32#0', `${ T( 1 ) } > .caret`, 'Root/12#0' ] ], 'a disc painted like the first is read there, by the first' );
+	assert.deepEqual( [ withSwitch.unpainted, withSwitch.ambiguous ], [ [], [] ] );
+	// Negative controls: a block with no such switch keeps the disc listed as unpainted and sets nothing; a disc painted otherwise than the one read stays listed.
+	const without = run( discs, [] );
+	assert.deepEqual( [ without.switches, Object.keys( without.slots ), without.unpainted.length ], [ [], [], 3 ] );
+	const odd = styled( disc( 32 ), 'width: 20px' );
+	const oddHost = node( 'Root/1#0', 'nav', [ item( 10, discs[ 0 ] ), item( 20, discs[ 1 ] ), item( 30, odd ) ], { box: { x: 0, y: 0, w: 300, h: 200 } } );
+	const other = run( [ discs[ 0 ], discs[ 1 ], odd ], SWITCH, oddHost );
+	assert.deepEqual( [ other.switches.length, other.unpainted.map( ( u ) => u.key ) ], [ 2, [ 'Root/32#0' ] ], 'a disc painted differently is not covered by the read of another' );
+	// A trailing icon that paints only what its own part's settings paint (padding) is read at the icon part and no switch comes back.
+	const plainIcon = pairAbsorbed( { host, absorbed: [ { element: discs[ 0 ], looks: [ 'padding' ] } ], kids, calibration: MENU, finder, switches: SWITCH } );
+	assert.deepEqual( [ plainIcon.switches, plainIcon.paired.length ], [ [], 1 ], 'a trailing icon with no disc keeps the switch off' );
+} );
