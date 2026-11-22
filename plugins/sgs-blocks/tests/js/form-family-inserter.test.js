@@ -15,11 +15,12 @@
 jest.mock( '@wordpress/data', () => ( { subscribe: () => () => {}, select: () => ( {} ), dispatch: () => ( {} ) } ) );
 jest.mock( '@wordpress/block-editor', () => ( { BlockControls: () => null, Inserter: () => null } ) );
 jest.mock( '@wordpress/components', () => ( { ToolbarGroup: () => null, ToolbarButton: () => null } ) );
+jest.mock( '@wordpress/blocks', () => ( { createBlock: ( name ) => ( { name } ) } ) );
 
 const { createElement } = require( '@wordpress/element' );
 const FORM = require( '../../src/blocks/form/block.json' );
 const { FORM_FIELDS } = require( '../../src/blocks/form/AddFieldControl' );
-const { fieldContainer } = require( '../../src/blocks/extensions/form-cpt-editor' );
+const { fieldContainer, shouldStartForm } = require( '../../src/blocks/extensions/form-cpt-editor' );
 const { tealBlockIcon, withSgsTeal } = require( '../../src/blocks/extensions/sgs-block-icon' );
 const { SGS_TEAL } = require( '../../src/utils/icons' );
 
@@ -45,6 +46,15 @@ describe( 'the form family in the inserter', () => {
 		expect( fieldContainer( [ flat ] ) ).toBe( flat );
 		expect( fieldContainer( [ { name: 'sgs/form', clientId: 'f3', innerBlocks: [] } ] ) ).toBeNull(); // template not filled yet
 		expect( fieldContainer( [] ) ).toBeNull();
+	} );
+
+	test( 'a new empty form starts with a form block, unless starter patterns exist for forms', () => {
+		expect( shouldStartForm( [], true, [] ) ).toBe( true );
+		expect( shouldStartForm( [], false, [] ) ).toBe( false ); // a saved form is never changed
+		expect( shouldStartForm( [ { name: 'sgs/form' } ], true, [] ) ).toBe( false );
+		const starter = { postTypes: [ 'sgs_form' ], blockTypes: [ 'core/post-content' ] };
+		expect( shouldStartForm( [], true, [ starter ] ) ).toBe( false ); // WordPress's pattern window offers them
+		expect( shouldStartForm( [], true, [ { postTypes: [ 'page' ], blockTypes: [ 'core/post-content' ] } ] ) ).toBe( true );
 	} );
 } );
 
