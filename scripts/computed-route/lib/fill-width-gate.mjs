@@ -6,7 +6,11 @@
 //   2. a boundary at or within 5% of a tier (768, 1024) snaps to the tier, with a `breakpoint-snap` ledger entry (distance in px);
 //   3. a block that draws its own alternative below a threshold holds a numeric breakpoint setting (the framework DB: the nav's
 //      collapsePoint draws its burger under it); when the hidden range is [0, threshold) that setting is written with the
-//      threshold (or left when the node holds it already) and no hiding flag, which would hide the alternative too;
+//      threshold (or left when the node holds it already) and no hiding flag, which would hide the alternative too. A node
+//      the skeleton marks `ownAlternativeBelow` ({ setting, scope: 'theme-mod' }: the filter rail, whose alternative is the
+//      theme's own drawer, opened from the rail's element itself, with its threshold in a theme option) is step 3 as well: no
+//      hiding flag, the draft's own threshold (px, never snapped to a tier) written as `ownAlternativeBelow.value` on the
+//      node for the site build to write to the named theme option, and the node pinned at the desktop tier only;
 //   4. otherwise a hidden range whose boundaries are all tiers writes the conditional-visibility flags (sgsHideOnMobile,
 //      sgsHideOnTablet, sgsHideOnDesktop; the block must hold them, by the framework DB);
 //   5. otherwise a bounded `@media` rule in the block's Additional CSS (`sgsCustomCss`, scoped to the instance by
@@ -20,6 +24,9 @@ import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import { templateKeyOf, templateKeyOfSelector } from './fact-key.mjs';
 import { DECISIONS_FILE } from './skeleton-facts.mjs';
+import { PRESENT } from './fill-read.mjs';
+import { thresholdsOf } from './skeleton-context.mjs';
+import path from 'node:path';
 
 export const TIERS = [ 768, 1024 ];
 export const SNAP_TOLERANCE = 0.05;
@@ -177,6 +184,42 @@ export function ownBreakpoint( db, block, collapse = collapseAttributes() ) {
 // Whether a block holds an attribute, by framework-DB query.
 const holdsAttr = ( db, block, attr ) => !! db.prepare( 'SELECT 1 FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
 
+// The pin setting of a node whose own alternative takes over below a threshold: pinned at the desktop tier only (the
+// alternative, a drawer, is no sticky column); { desktop: <as written>, tablet: 'none', mobile: 'none' }, or null when the node
+// holds no pin to trim.
+export function desktopOnlyPin( pin ) {
+	if ( ! pin || 'object' !== typeof pin || Array.isArray( pin ) || ! Object.keys( pin ).length ) {
+		return null;
+	}
+	const desktop = pin.desktop ?? pin.base ?? [ pin.tablet, pin.mobile ].find( ( v ) => v && 'none' !== v );
+	const out = { ...( desktop && 'none' !== desktop ? { desktop } : {} ), tablet: 'none', mobile: 'none' };
+	return JSON.stringify( out ) === JSON.stringify( pin ) ? null : out;
+}
+
+// The widths the draft's own element, or the nearest ancestor node that has one, goes from not rendered to rendered between, as
+// the read's sweep saw them (every 16px): [ last width without it, first width with it ], or null when no node on the way up shows
+// that one step. nodes: skeletonNodes(); index: the node's tree index.
+export function presenceStep( reads, nodes, index ) {
+	const byIndex = new Map( nodes.map( ( n ) => [ n.index, n ] ) );
+	for ( let n = byIndex.get( index ); n; n = byIndex.get( n.parent ) ) {
+		for ( const t of ( n.targets || [] ).filter( ( x ) => '' === ( x.slot ?? '' ) ) ) {
+			const series = reads?.sweep?.[ t.id ]?.[ PRESENT ] || [];
+			const steps = series.slice( 1 ).map( ( e, i ) => [ series[ i ], e ] ).filter( ( [ a, b ] ) => 'absent' === a.value && 'present' === b.value );
+			if ( 1 === steps.length ) {
+				return [ steps[ 0 ][ 0 ].width, steps[ 0 ][ 1 ].width ];
+			}
+		}
+	}
+	return null;
+}
+
+// The width thresholds the draft's own code uses (intake.json `breakpoints`, lib/skeleton-context.mjs::thresholdsOf); [] when the
+// client has no intake. buildDir: sites/<client>/build.
+export function draftThresholds( buildDir ) {
+	const file = path.join( buildDir, 'intake', 'intake.json' );
+	return fs.existsSync( file ) ? thresholdsOf( JSON.parse( fs.readFileSync( file, 'utf8' ) ).breakpoints ) : [];
+}
+
 // A divergence-ledger entry for one snap (FR-48-50 step 1), numbered after the entries already in the ledger.
 export function snapEntry( { scope, ref, snap, entries, date } ) {
 	const reason = `the draft's width threshold ${ snap.draft }px snapped to the ${ snap.tier }px tier (distance ${ snap.distance }px, within 5% of the tier)`;
@@ -323,7 +366,7 @@ export function placedChildWidening( nodes, facts, rootComponent = null, reads =
 // ref; facts: the fact record (null: nothing written); db: the framework DB; scope: the surface; entries: the ledger's
 // entries (the snap entries continue its numbering). Returns { writes, unmapped, notes, ledger } in the shapes
 // lib/fill-resolve.mjs uses; `ledger` holds the new snap entries.
-export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, reads = null, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes() } ) {
+export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, reads = null, entries = [], rootComponent = null, date = new Date().toISOString().slice( 0, 10 ), collapse = collapseAttributes(), writes: made = [], thresholds = [] } ) {
 	const out = { writes: [], unmapped: [], notes: [], ledger: [] };
 	if ( ! facts && ! reads && ! nodes.some( ( n ) => n.node.widthShown || n.node.widthVariants ) ) {
 		return out;
@@ -332,11 +375,19 @@ export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, reads =
 	for ( const n of nodes ) {
 		const at = gate.get( n.index );
 		const up = null === n.parent ? null : gate.get( n.parent );
+		const node = flat[ n.index ];
+		const mark = n.node.ownAlternativeBelow ?? node.ownAlternativeBelow;
+		const ref = refOf( node );
+		// The alternative (a drawer) is no sticky column: a marked node is pinned at the desktop tier only, gated or not.
+		const pin = mark ? desktopOnlyPin( node.attributes?.pinEdge ) : null;
+		if ( pin ) {
+			const { before, after } = setAttr( node, { attr: 'pinEdge', value: pin } );
+			made.filter( ( w ) => w.node === ref && 'pinEdge' === w.attr ).forEach( ( w ) => ( w.after = after ) );
+			out.writes.push( { node: ref, index: n.index, block: n.name, slot: '', prop: `own alternative below ${ mark.setting }: pinned at desktop only`, attr: 'pinEdge', before, after, widths: [], how: 'width-gate' } );
+		}
 		if ( ! at || ( up && JSON.stringify( up.shown ) === JSON.stringify( at.shown ) ) ) {
 			continue;
 		}
-		const node = flat[ n.index ];
-		const ref = refOf( node );
 		const put = ( attr, value, prop ) => {
 			const { before, after } = setAttr( node, { attr, value } );
 			out.writes.push( { node: ref, index: n.index, block: n.name, slot: '', prop, attr, before, after, widths: [], how: 'width-gate' } );
@@ -348,6 +399,27 @@ export function widthGateWrites( { nodes, flat, refOf, facts, db, scope, reads =
 		}
 		if ( ! at.shown.length ) {
 			out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'width gate', value: via, reason: `width-gate: the draft's conditions (${ via }) hold at no width, so the content is never shown; nothing is written` } );
+			continue;
+		}
+		// A node the skeleton marks as drawing its own alternative below a theme option's threshold (the filter rail) is never
+		// hidden by a flag: the draft's own threshold goes on the node, unsnapped.
+		if ( mark ) {
+			const raw = complement( at.shown );
+			const below = 1 === raw.length && 0 === raw[ 0 ][ 0 ] && Infinity > raw[ 0 ][ 1 ] ? raw[ 0 ][ 1 ] : null;
+			// The draft's logic states the threshold exactly (an sc-if on a width). A gate the read made (the element is drawn at some
+			// read widths and not at others) knows only a tier: the threshold is then the one width the draft's code uses (intake's
+			// thresholds) between the last swept width without the element and the first with it.
+			let t = shownOfNode( n.node, facts, rootComponent ) ? below : null;
+			let how = "the draft's condition";
+			if ( ! t ) {
+				const step = below ? presenceStep( reads, nodes, n.index ) : null;
+				const found = step ? [ ...new Set( thresholds ) ].filter( ( v ) => v > step[ 0 ] && v <= step[ 1 ] ) : [];
+				t = 1 === found.length ? found[ 0 ] : null;
+				how = `the draft's code threshold, found between ${ step?.join( ' and ' ) }px by the width sweep`;
+			}
+			node.ownAlternativeBelow = { ...mark, ...( t ? { value: t } : {} ) };
+			t || out.unmapped.push( { node: ref, block: n.name, slot: '', property: 'width gate', value: via, reason: `width-gate: ${ n.name } draws its own alternative below ${ mark.setting }, but the draft's own threshold is not known (${ below ? "the read shows it hidden below a tier only, and the width sweep and the draft's code thresholds do not name one width" : `the draft's conditions (${ via }) hide it at ${ raw.map( ( [ lo, hi ] ) => `${ lo }-${ Infinity === hi ? 'up' : hi - 1 }` ).join( ', ' ) }, not below one width` }); no threshold is written` } );
+			out.notes.push( `${ ref } ${ n.name }: ${ via } is its own alternative below ${ mark.setting }${ t ? ` = ${ t }px (${ how }, not snapped)` : '' }; no hiding flag is written` );
 			continue;
 		}
 		for ( const s of snaps ) {
