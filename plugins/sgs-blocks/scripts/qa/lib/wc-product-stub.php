@@ -160,7 +160,7 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		public function get_attributes() {
 			$out = array();
 			foreach ( (array) ( $this->data['attributes'] ?? array() ) as $attr ) {
-				$out[ (string) ( $attr['name'] ?? '' ) ] = new WC_Product_Attribute( (string) ( $attr['name'] ?? '' ), (bool) ( $attr['visible'] ?? true ) );
+				$out[ (string) ( $attr['name'] ?? '' ) ] = new WC_Product_Attribute( (string) ( $attr['name'] ?? '' ), (bool) ( $attr['visible'] ?? true ), $attr, $this->data );
 			}
 			return $out;
 		}
@@ -171,14 +171,58 @@ if ( ! class_exists( 'WC_Product' ) ) {
 	}
 }
 
+// --wp-fidelity: the rest of WC_Product_Attribute's accessors the configurator's groups read (class-configurator-groups.php).
+// Without the flag the trait is empty, so a call to one is the undefined-method error it always was.
+if ( ! trait_exists( 'SGS_QA_WC_Attribute_Fidelity', false ) ) {
+	if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+		/**
+		 * `variation` (default: true when the product's manifest names the attribute as a variation axis, as WooCommerce
+		 * marks the attributes a variable product varies by; else false), `options` (default: the manifest axis's term
+		 * slugs, else none) and `position` from the product file's attribute row.
+		 */
+		trait SGS_QA_WC_Attribute_Fidelity {
+			private array $row = array();
+			private function sgs_qa_axis(): array {
+				foreach ( (array) ( $GLOBALS['sgs_qa_manifest']['axes'] ?? array() ) as $axis ) {
+					if ( (string) ( $axis['taxonomy'] ?? '' ) === $this->name ) {
+						return (array) $axis;
+					}
+				}
+				return array();
+			}
+			public function get_variation() {
+				return (bool) ( $this->row['variation'] ?? array() !== $this->sgs_qa_axis() );
+			}
+			public function get_options() {
+				if ( isset( $this->row['options'] ) ) {
+					return (array) $this->row['options'];
+				}
+				return array_values( array_map( static fn( $term ) => (string) ( $term['slug'] ?? '' ), (array) ( $this->sgs_qa_axis()['terms'] ?? array() ) ) );
+			}
+			public function get_position() {
+				return (int) ( $this->row['position'] ?? 0 );
+			}
+			public function get_id() {
+				return (int) ( $this->row['id'] ?? 0 );
+			}
+		}
+	} else {
+		trait SGS_QA_WC_Attribute_Fidelity {
+			private array $row = array();
+		}
+	}
+}
+
 if ( ! class_exists( 'WC_Product_Attribute' ) ) {
 	/** A taxonomy product attribute: its name (`pa_*`) and whether it shows on the product page. */
 	class WC_Product_Attribute {
+		use SGS_QA_WC_Attribute_Fidelity;
 		private string $name;
 		private bool $visible;
-		public function __construct( string $name = '', bool $visible = true ) {
+		public function __construct( string $name = '', bool $visible = true, array $row = array(), array $product = array() ) {
 			$this->name    = $name;
 			$this->visible = $visible;
+			$this->row     = $row;
 		}
 		public function get_name() {
 			return $this->name;
@@ -238,5 +282,45 @@ if ( ! function_exists( 'wc_placeholder_img_src' ) ) {
 if ( ! function_exists( 'wc_price' ) ) {
 	function wc_price( $price, $args = array() ) {
 		return '<span class="woocommerce-Price-amount amount">' . esc_html( (string) $price ) . '</span>';
+	}
+}
+
+// --wp-fidelity: the taxonomy-attribute reads the configurator's groups make (class-configurator-groups.php): an
+// attribute's label, a product's terms for it and a term's meta. The product's manifest axis for the attribute (its
+// label and term slugs, --manifest-file) is the only taxonomy data a render has; an attribute the manifest does not name
+// has no terms, and its label is the name with `pa_` removed and words capitalised, as WooCommerce falls back to.
+if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+	if ( ! function_exists( 'wc_attribute_label' ) ) {
+		function wc_attribute_label( $name, $product = '' ) {
+			foreach ( (array) ( $GLOBALS['sgs_qa_manifest']['axes'] ?? array() ) as $axis ) {
+				if ( (string) ( $axis['taxonomy'] ?? '' ) === (string) $name && '' !== (string) ( $axis['label'] ?? '' ) ) {
+					return (string) $axis['label'];
+				}
+			}
+			return ucwords( str_replace( array( '-', '_' ), ' ', (string) preg_replace( '/^pa_/', '', (string) $name ) ) );
+		}
+	}
+	if ( ! function_exists( 'wc_get_product_terms' ) ) {
+		function wc_get_product_terms( $product_id, $taxonomy, $args = array() ) {
+			$terms = array();
+			foreach ( (array) ( $GLOBALS['sgs_qa_manifest']['axes'] ?? array() ) as $axis ) {
+				if ( (string) ( $axis['taxonomy'] ?? '' ) !== (string) $taxonomy ) {
+					continue;
+				}
+				foreach ( array_values( (array) ( $axis['terms'] ?? array() ) ) as $index => $term ) {
+					$terms[] = (object) array(
+						'term_id' => $index + 1,
+						'slug'    => (string) ( $term['slug'] ?? '' ),
+						'name'    => (string) ( $term['label'] ?? '' ),
+					);
+				}
+			}
+			return $terms;
+		}
+	}
+	if ( ! function_exists( 'get_term_meta' ) ) {
+		function get_term_meta( $term_id, $key = '', $single = false ) {
+			return $single ? '' : array(); // The harness holds no term meta, as core answers for an unset key.
+		}
 	}
 }

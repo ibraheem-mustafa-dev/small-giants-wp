@@ -264,6 +264,9 @@ if ( ! function_exists( 'wp_style_engine_get_styles' ) ) {
 				'fontWeight'    => 'font-weight',
 				'fontStyle'     => 'font-style',
 			);
+			if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+				$map['fontFamily'] = 'font-family'; // --wp-fidelity: the style engine writes the family too.
+			}
 			foreach ( $map as $key => $prop ) {
 				if ( isset( $styles['typography'][ $key ] ) && '' !== $styles['typography'][ $key ] ) {
 					$decls[] = $prop . ':' . $styles['typography'][ $key ];
@@ -314,6 +317,23 @@ if ( ! function_exists( 'wp_style_engine_get_styles' ) ) {
 
 		$selector = $options['selector'] ?? '';
 		$css      = $selector . '{' . implode( ';', $decls ) . ';}';
+		// --wp-fidelity: core's `declarations` are property => value (the callers read them that way), and a
+		// `var:preset|font-size|large` value is written as its custom property, as the style engine does.
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+			$declarations = array();
+			foreach ( $decls as $decl ) {
+				list( $property, $value )  = explode( ':', $decl, 2 );
+				$declarations[ $property ] = sgs_qa_style_engine_value( $value );
+			}
+			$css = $selector . '{';
+			foreach ( $declarations as $property => $value ) {
+				$css .= $property . ':' . $value . ';';
+			}
+			return array(
+				'css'          => $css . '}',
+				'declarations' => $declarations,
+			);
+		}
 		return array(
 			'css'          => $css,
 			'declarations' => $decls,
@@ -892,7 +912,10 @@ if ( ! function_exists( 'wp_get_global_settings' ) ) {
 if ( ! function_exists( 'wp_enqueue_style' ) ) {
 	function wp_enqueue_style( string $handle, string $src = '', array $deps = array(), $ver = false, string $media = 'all' ): void {
 		// No-op — matches do_action()'s convention (harness has no registered
-		// asset queue to append to).
+		// asset queue to append to). --wp-fidelity keeps the handle, so wp_style_is() can answer for it.
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+			$GLOBALS['sgs_qa_styles_enqueued'][ $handle ] = true;
+		}
 	}
 }
 
@@ -915,6 +938,16 @@ if ( ! function_exists( 'wp_add_inline_style' ) ) {
 
 if ( ! function_exists( 'wp_style_is' ) ) {
 	function wp_style_is( string $handle, string $status = 'enqueued' ): bool {
+		// --wp-fidelity: a handle the run registered itself (wp_register_style()) is `enqueued` only once wp_enqueue_style()
+		// saw it, as core answers; every other handle (the theme's and plugin's sheets the runner does not model, such as
+		// `global-styles`) stays registered and enqueued, as below.
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) && isset( $GLOBALS['sgs_qa_styles_registered'][ $handle ] ) && 'enqueued' === $status ) {
+			return isset( $GLOBALS['sgs_qa_styles_enqueued'][ $handle ] );
+		}
+		// --wp-fidelity: an editor-only sheet (`sgs-extensions-editor`) is never enqueued on the front end the runner stands for.
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) && 'enqueued' === $status && str_ends_with( $handle, '-editor' ) ) {
+			return isset( $GLOBALS['sgs_qa_styles_enqueued'][ $handle ] );
+		}
 		// Every handle counts as registered, matching wp_enqueue_style()'s no-op.
 		return true;
 	}
@@ -1707,4 +1740,183 @@ function sgs_qa_wrapper_attributes_as_wordpress( array $extra ): string {
 		$parts[] = esc_attr( (string) $key ) . '="' . esc_attr( (string) $value ) . '"';
 	}
 	return implode( ' ', $parts );
+}
+
+/*
+ * --wp-fidelity: WordPress functions and classes the plugin's own code calls and a plain render never needed. Each is
+ * defined only under the flag, so without it a call to one is the undefined-function error it always was.
+ */
+if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+	if ( ! function_exists( 'wp_get_attachment_url' ) ) {
+		/**
+		 * Core's contract: the URL of an attachment's file, false for an ID with no attachment. The harness has no media
+		 * library, so an ID resolves only through --attachments-file (ID => URL) or a --product-file image (`image_id` +
+		 * `image_url`), the same two sources wp_get_attachment_image_url() reads.
+		 *
+		 * @param int $attachment_id Attachment ID.
+		 * @return string|false
+		 */
+		function wp_get_attachment_url( $attachment_id = 0 ) {
+			$url = wp_get_attachment_image_url( $attachment_id, 'full' );
+			return '' !== $url ? $url : false;
+		}
+	}
+
+	if ( ! function_exists( 'get_attached_file' ) ) {
+		/**
+		 * Core's contract: the attachment's file path, false when it has none. The harness holds no uploads folder, so
+		 * no attachment has a file (a caller that inlines an SVG file takes its own "not a readable file" path).
+		 *
+		 * @param int $attachment_id Attachment ID.
+		 * @return string|false
+		 */
+		function get_attached_file( $attachment_id = 0 ) {
+			return false;
+		}
+	}
+
+	if ( ! function_exists( 'wp_get_registered_image_subsizes' ) ) {
+		/**
+		 * Core's default image sizes (what wp_get_registered_image_subsizes() returns on a site that registers none of its
+		 * own): name => width, height, crop.
+		 *
+		 * @return array<string,array{width:int,height:int,crop:bool}>
+		 */
+		function wp_get_registered_image_subsizes(): array {
+			return array(
+				'thumbnail'    => array( 'width' => 150, 'height' => 150, 'crop' => true ),
+				'medium'       => array( 'width' => 300, 'height' => 300, 'crop' => false ),
+				'medium_large' => array( 'width' => 768, 'height' => 0, 'crop' => false ),
+				'large'        => array( 'width' => 1024, 'height' => 1024, 'crop' => false ),
+				'1536x1536'    => array( 'width' => 1536, 'height' => 1536, 'crop' => false ),
+				'2048x2048'    => array( 'width' => 2048, 'height' => 2048, 'crop' => false ),
+			);
+		}
+	}
+
+	if ( ! function_exists( 'untrailingslashit' ) ) {
+		function untrailingslashit( $value ) {
+			return rtrim( (string) $value, "/\\" );
+		}
+	}
+
+	if ( ! function_exists( 'get_queried_object' ) ) {
+		/**
+		 * The request's queried object: the --queried-file post (the same record is_singular() and get_queried_object_id()
+		 * answer from) as the post it names, null when the request has none or that post is not in the harness.
+		 *
+		 * @return object|null
+		 */
+		function get_queried_object() {
+			$queried = $GLOBALS['sgs_qa_queried'] ?? null;
+			return is_array( $queried ) ? sgs_qa_find_post( (int) ( $queried['id'] ?? 0 ) ) : null;
+		}
+	}
+
+	if ( ! function_exists( 'wp_get_global_styles' ) ) {
+		/**
+		 * The site's global styles at a path: the `styles` of the --global-settings-file tree when it has one, else the
+		 * framework theme's own theme.json `styles` (the theme every site starts from; a site's saved snapshot sits over it
+		 * and is not offline). Raw values, as core returns them (a `var:preset|...` reference stays).
+		 *
+		 * @param array $path    Path into `styles`.
+		 * @param array $context Ignored.
+		 * @return mixed
+		 */
+		function wp_get_global_styles( $path = array(), $context = array() ) {
+			static $theme_styles = null;
+			$styles = $GLOBALS['sgs_qa_global_settings']['styles'] ?? null;
+			if ( ! is_array( $styles ) ) {
+				if ( null === $theme_styles ) {
+					$file         = dirname( __DIR__, 5 ) . '/theme/sgs-theme/theme.json';
+					$decoded      = is_file( $file ) ? json_decode( (string) file_get_contents( $file ), true ) : null;
+					$theme_styles = is_array( $decoded ) && is_array( $decoded['styles'] ?? null ) ? $decoded['styles'] : array();
+				}
+				$styles = $theme_styles;
+			}
+			foreach ( (array) $path as $segment ) {
+				if ( ! is_array( $styles ) || ! array_key_exists( $segment, $styles ) ) {
+					return array();
+				}
+				$styles = $styles[ $segment ];
+			}
+			return $styles;
+		}
+	}
+
+	if ( ! function_exists( 'wp_salt' ) ) {
+		function wp_salt( $scheme = 'auth' ) {
+			return 'sgs-qa-salt-' . $scheme;
+		}
+	}
+
+	if ( ! class_exists( 'WP_Block_List', false ) ) {
+		/** Core's WP_Block_List: the object a WP_Block holds its inner blocks in (countable, iterable, indexable). */
+		class WP_Block_List implements ArrayAccess, Iterator, Countable { // phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound -- opt-in stand-in.
+			/** @var array */
+			private $blocks;
+			public function __construct( $blocks = array() ) {
+				$this->blocks = array_values( (array) $blocks );
+			}
+			public function offsetExists( $offset ): bool {
+				return isset( $this->blocks[ $offset ] );
+			}
+			#[\ReturnTypeWillChange]
+			public function offsetGet( $offset ) {
+				return $this->blocks[ $offset ] ?? null;
+			}
+			public function offsetSet( $offset, $value ): void {
+				if ( null === $offset ) {
+					$this->blocks[] = $value;
+				} else {
+					$this->blocks[ $offset ] = $value;
+				}
+			}
+			public function offsetUnset( $offset ): void {
+				unset( $this->blocks[ $offset ] );
+			}
+			#[\ReturnTypeWillChange]
+			public function rewind() {
+				reset( $this->blocks );
+			}
+			#[\ReturnTypeWillChange]
+			public function current() {
+				return current( $this->blocks );
+			}
+			#[\ReturnTypeWillChange]
+			public function key() {
+				return key( $this->blocks );
+			}
+			#[\ReturnTypeWillChange]
+			public function next() {
+				return next( $this->blocks );
+			}
+			public function valid(): bool {
+				return null !== key( $this->blocks );
+			}
+			public function count(): int {
+				return count( $this->blocks );
+			}
+		}
+	}
+
+	if ( ! function_exists( 'did_action' ) ) {
+		/**
+		 * How many times the runner fired an action (`$GLOBALS['sgs_qa_did_action']`, kept by sgs_qa_fire_action()): code
+		 * that queues its work for a hook that has not fired yet asks this, as WordPress's own callers do.
+		 *
+		 * @param string $hook_name Action name.
+		 * @return int
+		 */
+		function did_action( $hook_name ) {
+			return (int) ( $GLOBALS['sgs_qa_did_action'][ (string) $hook_name ] ?? 0 );
+		}
+	}
+
+	if ( ! function_exists( 'wp_register_style' ) ) {
+		function wp_register_style( $handle, $src = '', $deps = array(), $ver = false, $media = 'all' ): bool {
+			$GLOBALS['sgs_qa_styles_registered'][ (string) $handle ] = true;
+			return true;
+		}
+	}
 }

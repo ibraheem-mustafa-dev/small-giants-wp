@@ -62,16 +62,25 @@
  *                                 get_queried_object_id() answer as on that post's own page
  *
  *   Opt-in WordPress behaviour, used by the setting check (scripts/setting-record/); without them the output is unchanged:
- *   --render-block-filters        add_filter()/add_action() keep a hook table, the plugin's render_block filters that
- *                                 change a block's own markup are loaded (SGS_QA_RENDER_BLOCK_FILTER_FILES), and the
- *                                 render passes through `render_block_<name>` then `render_block`, as WP_Block::render does
- *                                 (sgs/* children rendered in this process too); what those files' wp_enqueue_scripts
- *                                 listeners attach with wp_add_inline_style() joins `css`
+ *   --render-block-filters        add_filter()/add_action() keep a hook table; every plugin file that registers a render_block,
+ *                                 render_block_data or render_block_<name> filter is loaded (sgs_qa_render_block_filter_files(),
+ *                                 less the files SGS_QA_RENDER_BLOCK_FILTER_SKIPPED says cannot apply offline); the block
+ *                                 passes through `render_block_data` (its frames open), then `render_block` (its frames close
+ *                                 on the block's own root tag) and `render_block_<name>`, as WP_Block::render() does (sgs/*
+ *                                 children rendered in this process too); what the page's asset hooks (wp_enqueue_scripts,
+ *                                 enqueue_block_assets, and anything the render queued for them) attach with
+ *                                 wp_add_inline_style() joins `css`
  *   --print-footer                do_action( 'wp_footer' ) runs after the render and its listeners' output (a scrim, a
  *                                 detached menu chip) is appended to `html`, its <style> to `css`; `footerHtml` holds it alone
  *   --wp-fidelity                 get_block_wrapper_attributes() adds the generated wp-block-<name> class, className and
  *                                 align (wp-stubs.php::sgs_qa_wrapper_attributes_as_wordpress), wp_style_engine_get_styles()
- *                                 writes padding and margin, and $block->parsed_block carries the saved attributes
+ *                                 writes padding and margin, and $block->parsed_block carries the saved attributes; WordPress
+ *                                 functions and classes the plugin calls that a plain render never needed are defined
+ *                                 (wp_get_attachment_url, wp_get_registered_image_subsizes, get_attached_file,
+ *                                 untrailingslashit, get_queried_object, wp_get_global_styles, did_action, wp_register_style,
+ *                                 WP_Block_List for $block->inner_blocks, a style registry behind wp_style_is(); the product
+ *                                 stub gains the attribute and term reads of the configurator's groups); the plugin's
+ *                                 Wishlist_Cards_Rest and Product_Field_Variations classes are loaded
  *   --interactivity-state         the JSON gains `interactivityState`: every namespace's state wp_interactivity_state()
  *                                 collected during the render (closures, which WordPress derives in the browser, left out)
  *
@@ -284,7 +293,7 @@ if ( ! isset( $attributes['source'] ) ) {
 class SGS_QA_Stub_Inner_Block {
 	public string $name;
 	public array $attributes;
-	public array $inner_blocks = array();
+	public $inner_blocks = array(); // a list; a WP_Block_List under --wp-fidelity
 	public array $parsed_block = array();
 	private string $html;
 	public function __construct( string $name, array $attributes, string $html ) {
@@ -299,7 +308,7 @@ class SGS_QA_Stub_Inner_Block {
 
 class SGS_QA_Stub_Block {
 	public array $parsed_block;
-	public array $inner_blocks = array();
+	public $inner_blocks = array(); // a list; a WP_Block_List under --wp-fidelity
 	public array $attributes;
 	public array $context;
 	public ?object $block_type;
@@ -388,6 +397,17 @@ if ( isset( $args['inner-blocks-file'] ) ) {
 	}
 }
 
+// --wp-fidelity: WP_Block holds its children in a WP_Block_List (countable, iterable), at every depth, empty included.
+if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+	$sgs_qa_block_list = static function ( object $parent ) use ( &$sgs_qa_block_list ): void {
+		foreach ( $parent->inner_blocks as $child ) {
+			$sgs_qa_block_list( $child );
+		}
+		$parent->inner_blocks = new WP_Block_List( $parent->inner_blocks );
+	};
+	$sgs_qa_block_list( $block );
+}
+
 // --product-file: one minimal WooCommerce product for wc_get_product() (wc-product-stub.php documents its limits).
 if ( isset( $args['product-file'] ) ) {
 	if ( ! is_file( $args['product-file'] ) ) {
@@ -437,6 +457,10 @@ require_once __DIR__ . '/tag-processor-stub.php';
 // file's matching product as the current product. Without it render_block() prints a placeholder comment.
 if ( isset( $args['render-children'] ) ) {
 	$GLOBALS['sgs_qa_render_child'] = static function ( array $parsed_block ) use ( $sgs_blocks_dir ): string {
+		// --render-block-filters: render_block() passes the child through `render_block_data` first (its frames open there).
+		if ( isset( $GLOBALS['sgs_qa_render_block_filters'] ) ) {
+			$parsed_block = sgs_qa_render_block_data( $parsed_block );
+		}
 		$child_slug = (string) ( $parsed_block['blockName'] ?? '' );
 		$child_path = harness_resolve_render_path( $child_slug, $sgs_blocks_dir );
 		if ( ! str_starts_with( $child_slug, 'sgs/' ) || ! is_file( $child_path ) ) {
@@ -611,7 +635,16 @@ $harness_elements = null !== $block_type && is_array( $block_meta['supports']['s
 // its panel post through it (get_post() must answer a WP_Post of type `sgs_mega_menu`, status publish: a --post-file post).
 // register() is not called, so no hook is added.
 if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+	// The plugin's version constant (sgs-blocks.php defines it): the stylesheet handles the asset hooks register carry it.
+	if ( ! defined( 'SGS_BLOCKS_VERSION' ) && preg_match( "/define\(\s*'SGS_BLOCKS_VERSION',\s*'([^']+)'/", (string) file_get_contents( $sgs_blocks_dir . '/sgs-blocks.php' ), $sgs_qa_version ) ) {
+		define( 'SGS_BLOCKS_VERSION', $sgs_qa_version[1] );
+	}
 	require_once $sgs_blocks_dir . '/includes/class-sgs-mega-menu-cpt.php';
+	// Real SGS classes the plugin bootstrap loads (sgs-blocks.php, class-sgs-blocks.php) and a render calls by name:
+	// sgs/wishlist-panel signs its card template with Wishlist_Cards_Rest, sgs/buybox asks Product_Field_Variations to
+	// request a bound field's per-variation values. register() is not called, so no hook is added.
+	require_once $sgs_blocks_dir . '/includes/wishlist/class-wishlist-cards-rest.php';
+	require_once $sgs_blocks_dir . '/includes/class-product-field-variations.php';
 }
 
 // --wp-fidelity: the block as WP_Block holds it (its saved attributes, children and content), and the block
@@ -632,13 +665,49 @@ if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
 	);
 }
 
-// --render-block-filters: the plugin's render_block filters that change a block's own markup (each loads standalone).
-// Left out: filters that only deliver or enqueue assets (class-sgs-css-registry.php lifts <style> to the head,
-// configurator-asset-optimiser.php, class-sgs-motion-registry.php, class-sgs-blocks.php's inline-format enqueue) and
-// class-sgs-focus-rests.php, whose frame this runner opens and closes itself below.
-const SGS_QA_RENDER_BLOCK_FILTER_FILES = array(
+// --render-block-filters: every plugin file that registers a `render_block`, `render_block_data` or
+// `render_block_<name>` filter is loaded (sgs_qa_render_block_filter_files() finds them), so a filter added to the plugin
+// is on the page of every render without an edit here. The files below are left out because they cannot change a block's
+// markup or CSS in an offline render, or because they move what the render prints:
+//   asset delivery, not markup: class-sgs-css-registry.php (lifts a block's <style> into the head: the check reads the
+//     <style> where the block prints it), class-sgs-motion-registry.php and configurator-asset-optimiser.php (enqueue or
+//     dequeue script and style handles), motion/class-sgs-motion-loop-assets.php (enqueues the loop module);
+//   the plugin's bootstrap: class-sgs-blocks.php (registers every REST route, admin screen and block; its one
+//     render_block hook, the inline-format sheet, is added below from helpers-inline-formats.php);
+//   WooCommerce core blocks only (they never name an sgs/* block): gift-card/class-gift-card-purchase.php,
+//     sgs-order-confirmation-messages.php, product-collection-card-min.php, product-filter-chips-gap.php,
+//     product-filter-look.php, woocommerce/ (checkout-*, commerce-look/, stripe-appearance.php);
+//   core blocks only: post-content-lists.php (core/post-content), post-time-to-read-short.php (core/post-time-to-read);
+//   JSON-LD only: review-schema.php (appends a <script type="application/ld+json">, no paint);
+//   needs a hook the runner never fires: media/hidden-render.php (enters on `pre_render_block`; its `render_block`
+//     listener only leaves), class-sgs-header-rules.php and class-sgs-footer-rules.php (`pre_render_block`, template parts).
+const SGS_QA_RENDER_BLOCK_FILTER_SKIPPED = array(
+	'class-sgs-css-registry.php',
+	'class-sgs-motion-registry.php',
+	'configurator-asset-optimiser.php',
+	'motion/class-sgs-motion-loop-assets.php',
+	'class-sgs-blocks.php',
+	'gift-card/class-gift-card-purchase.php',
+	'sgs-order-confirmation-messages.php',
+	'product-collection-card-min.php',
+	'product-filter-chips-gap.php',
+	'product-filter-look.php',
+	'woocommerce/',
+	'post-content-lists.php',
+	'post-time-to-read-short.php',
+	'review-schema.php',
+	'media/hidden-render.php',
+	'class-sgs-header-rules.php',
+	'class-sgs-footer-rules.php',
+);
+// Files a registering file asks for, loaded first (not themselves registering): conditional-visibility.php asks
+// sgs_collection_has_results() (sgsConditionCollectionQueryId), the fx-*.php filters ask the token matcher and the root
+// locator (class-sgs-blocks.php loads those two before them). The order is the one the hand list had, then the fx helpers.
+const SGS_QA_RENDER_BLOCK_FILTER_FIRST = array(
+	'fx-token-match.php',
+	'fx-root-offset.php',
 	'conditional-visibility.php',
-	'product-collection-empty-detection.php', // sgs_collection_has_results(), which conditional-visibility.php asks (sgsConditionCollectionQueryId).
+	'product-collection-empty-detection.php',
 	'device-visibility.php',
 	'child-sizing.php',
 	'custom-css.php',
@@ -647,11 +716,88 @@ const SGS_QA_RENDER_BLOCK_FILTER_FILES = array(
 	'hover-effects/block-link.php',
 	'fx-magnet.php',
 );
+
+/**
+ * The files under includes/ and src/ that register a render_block, render_block_data or render_block_<name> filter,
+ * less SGS_QA_RENDER_BLOCK_FILTER_SKIPPED. The SGS_QA_RENDER_BLOCK_FILTER_FIRST files lead, in that order; the rest
+ * follow sorted by path.
+ *
+ * @param string $blocks_dir plugins/sgs-blocks absolute path.
+ * @return string[] Absolute paths.
+ */
+function sgs_qa_render_block_filter_files( string $blocks_dir ): array {
+	$relative = array();
+	foreach ( array( 'includes', 'src' ) as $root ) {
+		if ( ! is_dir( $blocks_dir . '/' . $root ) ) {
+			continue;
+		}
+		$walk = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $blocks_dir . '/' . $root, FilesystemIterator::SKIP_DOTS ) );
+		foreach ( $walk as $file ) {
+			if ( 'php' !== $file->getExtension() ) {
+				continue;
+			}
+			$rel = str_replace( '\\', '/', substr( $file->getPathname(), strlen( $blocks_dir ) + 1 ) );
+			if ( false !== strpos( $rel, '/tests/' ) || false !== strpos( $rel, '/vendor/' ) ) {
+				continue;
+			}
+			if ( ! preg_match( '/\badd_filter\(\s*[\'"]render_block(?:_data|_[A-Za-z0-9_\/-]+)?[\'"]/', (string) file_get_contents( $file->getPathname() ) ) ) {
+				continue;
+			}
+			$key = 0 === strpos( $rel, 'includes/' ) ? substr( $rel, 9 ) : $rel;
+			foreach ( SGS_QA_RENDER_BLOCK_FILTER_SKIPPED as $skip ) {
+				if ( $key === $skip || ( '/' === substr( $skip, -1 ) && 0 === strpos( $key, $skip ) ) ) {
+					continue 2;
+				}
+			}
+			$relative[ $key ] = $rel;
+		}
+	}
+	ksort( $relative, SORT_STRING );
+	$ordered = array();
+	foreach ( SGS_QA_RENDER_BLOCK_FILTER_FIRST as $first ) {
+		$ordered[] = $blocks_dir . '/includes/' . $first;
+		unset( $relative[ $first ] );
+	}
+	foreach ( $relative as $rel ) {
+		$ordered[] = $blocks_dir . '/' . $rel;
+	}
+	return $ordered;
+}
+
 if ( isset( $args['render-block-filters'] ) ) {
 	$GLOBALS['sgs_qa_render_block_filters'] = true;
-	foreach ( SGS_QA_RENDER_BLOCK_FILTER_FILES as $filter_file ) {
-		require_once $sgs_blocks_dir . '/includes/' . $filter_file;
+	$GLOBALS['sgs_qa_inline_styles']        = array(); // wp_add_inline_style() text: what the render and the enqueue hooks below attach.
+	$GLOBALS['sgs_qa_did_action']           = array();
+	// A <style> or <script> a block prints first is lifted into the head by the CSS registry on a site (a filter this
+	// runner leaves out), so the root tag the last-priority listeners see (the focus-rests, layout-width and motion
+	// frames close on it) is the block's own. This listener, just before them, sets the leading ones aside;
+	// sgs_qa_render_block_filters() puts them back.
+	$GLOBALS['sgs_qa_lead_assets'] = '';
+	add_filter(
+		'render_block',
+		static function ( $html ) {
+			$GLOBALS['sgs_qa_lead_assets'] = '';
+			while ( is_string( $html ) && preg_match( '/^\s*<(style|script)\b[^>]*>.*?<\/\1>/is', $html, $lead ) ) {
+				$GLOBALS['sgs_qa_lead_assets'] .= $lead[0];
+				$html                           = substr( $html, strlen( $lead[0] ) );
+			}
+			return $html;
+		},
+		PHP_INT_MAX - 1
+	);
+	foreach ( sgs_qa_render_block_filter_files( $sgs_blocks_dir ) as $filter_file ) {
+		require_once $filter_file;
 	}
+	// The registrations the plugin bootstrap makes outside a file's own top level:
+	if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+		\Sgs_Layout_Width::register(); // sgs-blocks.php: the `sizes` frame (render_block_data opens it, render_block closes it).
+	}
+	// helpers-inline-formats.php: class-sgs-blocks.php hooks its sheet loader and registers the sheet on `init`.
+	require_once $sgs_blocks_dir . '/includes/helpers-inline-formats.php';
+	add_filter( 'render_block', 'sgs_inline_formats_maybe_enqueue', 10, 2 );
+	// lottie-render.php: sgs-blocks.php adds the Lottie layer's source after the motion renderer wrote the layer.
+	require_once $sgs_blocks_dir . '/includes/lottie-render.php';
+	add_filter( 'render_block', 'sgs_lottie_layer_add_source', 100 );
 	// The motion renderer (required above; this flag's hook table holds its render_block filters) writes a block's
 	// `sgsMotion` document into its markup (data-sgs-mc, data-sgs-mh and the rules for them) through the rest of the
 	// motion model, which the plugin bootstrap loads through includes/motion-loader.php (the same order: the folder,
@@ -669,7 +815,7 @@ if ( isset( $args['render-block-filters'] ) ) {
 }
 
 /**
- * A block's output through `render_block_<name>` then `render_block`, as WP_Block::render() passes it.
+ * A block's output through `render_block` then `render_block_<name>`, as WP_Block::render() passes it.
  *
  * @param string $html         The block's output.
  * @param array  $parsed_block The parsed block.
@@ -679,11 +825,44 @@ if ( isset( $args['render-block-filters'] ) ) {
 function sgs_qa_render_block_filters( string $html, array $parsed_block, object $block ): string {
 	$name                         = (string) ( $parsed_block['blockName'] ?? '' );
 	$fire                         = $GLOBALS['sgs_qa_hook_fire'];
-	$GLOBALS['sgs_qa_hook_fire'] = array_merge( $fire, array( 'render_block_' . $name, 'render_block' ) );
-	$html                         = (string) apply_filters( 'render_block_' . $name, $html, $parsed_block, $block );
+	$GLOBALS['sgs_qa_hook_fire'] = array_merge( $fire, array( 'render_block', 'render_block_' . $name ) );
 	$html                         = (string) apply_filters( 'render_block', $html, $parsed_block, $block );
+	$html                         = (string) apply_filters( 'render_block_' . $name, $html, $parsed_block, $block );
 	$GLOBALS['sgs_qa_hook_fire'] = $fire;
+	// The leading <style>/<script> the listener before the closing priority set aside go back on (a site's CSS registry
+	// would have lifted them into the head; the runner keeps them in the markup for the check to read).
+	$html                         = ( $GLOBALS['sgs_qa_lead_assets'] ?? '' ) . $html;
+	$GLOBALS['sgs_qa_lead_assets'] = '';
 	return $html;
+}
+
+/**
+ * A parsed block through `render_block_data`, as WP_Block's caller (render_block()) passes it before the block renders:
+ * the filters that open a render frame (focus rests, layout width, the motion renderer, a loop's context) and those that
+ * fill a missing attribute (time-text fallback words) run here.
+ *
+ * @param array $parsed_block The parsed block ({blockName, attrs, innerBlocks, innerHTML}).
+ * @return array The filtered parsed block.
+ */
+function sgs_qa_render_block_data( array $parsed_block ): array {
+	$fire                         = $GLOBALS['sgs_qa_hook_fire'];
+	$GLOBALS['sgs_qa_hook_fire'] = array_merge( $fire, array( 'render_block_data' ) );
+	$filtered                     = apply_filters( 'render_block_data', $parsed_block, $parsed_block, null );
+	$GLOBALS['sgs_qa_hook_fire'] = $fire;
+	return is_array( $filtered ) ? $filtered : $parsed_block;
+}
+
+/**
+ * Fires an action the way the runner does for a page (its listeners run, did_action() counts it), then stops firing it.
+ *
+ * @param string $tag Action name.
+ * @return void
+ */
+function sgs_qa_fire_action( string $tag ): void {
+	$GLOBALS['sgs_qa_hook_fire'][] = $tag;
+	do_action( $tag );
+	$GLOBALS['sgs_qa_hook_fire']   = array_values( array_diff( $GLOBALS['sgs_qa_hook_fire'], array( $tag ) ) );
+	$GLOBALS['sgs_qa_did_action'][ $tag ] = ( $GLOBALS['sgs_qa_did_action'][ $tag ] ?? 0 ) + 1;
 }
 
 $html  = '';
@@ -696,24 +875,10 @@ $harness_block = array(
 	'blockName' => $harness_slug,
 	'attrs'     => is_array( $attributes ?? null ) ? $attributes : array(),
 );
-\SGS\Blocks\Sgs_Focus_Rests::open_frame( $harness_block );
-ob_start();
-try {
-	// $attributes / $content / $block are the three variables every SGS
-	// render.php declares via its @var docblock and reads directly — this is
-	// the same calling convention WordPress's own block renderer uses.
-	require $render_path;
-} catch ( \Throwable $e ) {
-	$error = $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine();
-}
-$html = ob_get_clean();
-$html = (string) \SGS\Blocks\Sgs_Focus_Rests::close_frame( $html, $harness_block );
-
-if ( null !== $error ) {
-	harness_fail( $error );
-}
-
 if ( isset( $args['render-block-filters'] ) ) {
+	// render_block() runs `render_block_data` before the block renders: the frames open from the plugin's own listeners
+	// (Sgs_Focus_Rests, Sgs_Layout_Width, the motion renderer) and close on `render_block` below, after the filters
+	// that change the markup, as on a site.
 	$harness_parsed = array_merge(
 		array(
 			'blockName'   => $harness_slug,
@@ -724,13 +889,42 @@ if ( isset( $args['render-block-filters'] ) ) {
 		isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ? $block->parsed_block : array(),
 		array( 'blockName' => $harness_slug )
 	);
+	$harness_parsed = sgs_qa_render_block_data( $harness_parsed );
+	if ( is_array( $harness_parsed['attrs'] ?? null ) ) {
+		$attributes = array_merge( $attributes, array_diff_key( $harness_parsed['attrs'], array( 'anchor' => 1 ) ) );
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+			$block->parsed_block['attrs'] = $harness_parsed['attrs'];
+		}
+	}
+} else {
+	\SGS\Blocks\Sgs_Focus_Rests::open_frame( $harness_block );
+}
+ob_start();
+try {
+	// $attributes / $content / $block are the three variables every SGS
+	// render.php declares via its @var docblock and reads directly — this is
+	// the same calling convention WordPress's own block renderer uses.
+	require $render_path;
+} catch ( \Throwable $e ) {
+	$error = $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine();
+}
+$html = ob_get_clean();
+if ( ! isset( $args['render-block-filters'] ) ) {
+	$html = (string) \SGS\Blocks\Sgs_Focus_Rests::close_frame( $html, $harness_block );
+}
+
+if ( null !== $error ) {
+	harness_fail( $error );
+}
+
+if ( isset( $args['render-block-filters'] ) ) {
 	$html = sgs_qa_render_block_filters( $html, $harness_parsed, $block );
-	// What those filters' own wp_enqueue_scripts listeners attach to a stylesheet (device-visibility.php's media
-	// queries) is on the page too: collected here and added to `css`.
-	$GLOBALS['sgs_qa_inline_styles'] = array();
-	$GLOBALS['sgs_qa_hook_fire'][]   = 'wp_enqueue_scripts';
-	do_action( 'wp_enqueue_scripts' );
-	$GLOBALS['sgs_qa_hook_fire'] = array_values( array_diff( $GLOBALS['sgs_qa_hook_fire'], array( 'wp_enqueue_scripts' ) ) );
+	// What the page's asset hooks attach to a stylesheet with wp_add_inline_style() is on the page too, added to `css`:
+	// the filters' own wp_enqueue_scripts listeners (device-visibility.php's media queries), those a render queued for it
+	// (Heading_Look::enqueue() puts the drawer title's heading look on `global-styles`) and `enqueue_block_assets`
+	// (the named button presets, the dark shadow sheet, the inline-format palette).
+	sgs_qa_fire_action( 'wp_enqueue_scripts' );
+	sgs_qa_fire_action( 'enqueue_block_assets' );
 }
 
 $footer_html = null;
