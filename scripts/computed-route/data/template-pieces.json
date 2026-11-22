@@ -55,7 +55,8 @@
 			"dataBranches": true,
 			"pieces": [
 				{ "id": "order-number", "binds": { "source": "sgs/order", "key": "number" }, "required": true, "once": false, "kind": "order", "find": "order-values", "bind": "sgs/order" },
-				{ "id": "order-items", "block": "sgs/order-items", "required": false, "kind": "order", "find": "order-lines" }
+				{ "id": "order-items", "block": "sgs/order-items", "required": false, "kind": "order", "find": "order-lines" },
+				{ "id": "order-access", "block": "woocommerce/order-confirmation-status", "required": true, "kind": "order", "find": "order-access", "heading": "Find your order" }
 			]
 		},
 		"404": {

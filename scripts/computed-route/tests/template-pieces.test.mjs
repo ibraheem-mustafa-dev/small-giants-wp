@@ -143,9 +143,9 @@ test( 'MUST FAIL: a piece named by its binding counts the blocks bound to that s
 	// A binding with no source or key is refused; a piece with neither a block nor a binding is too.
 	const bad = { templates: { x: { pieces: [ { id: 'a', binds: { source: 'sgs/order' }, required: true, kind: 'rule' }, { id: 'b', required: true, kind: 'rule' } ] } } };
 	assert.deepEqual( pieceMapProblems( bad ), [ 'templates.x piece "a": binds needs a source (a block binding source name) and a key', 'templates.x piece "b": block "" is not a block name' ] );
-	// The committed map's order confirmation names the bound number and the order items.
+	// The committed map's order confirmation names the bound number, the order items and the order access card, placed last.
 	const committed = piecesFor( 'order-confirmation', loadPieces() );
-	assert.deepEqual( committed.map( ( p ) => [ p.id, p.block ?? null, p.binds?.key ?? null, p.required ] ), [ [ 'order-number', null, 'number', true ], [ 'order-items', 'sgs/order-items', null, false ] ] );
+	assert.deepEqual( committed.map( ( p ) => [ p.id, p.block ?? null, p.binds?.key ?? null, p.required ] ), [ [ 'order-number', null, 'number', true ], [ 'order-items', 'sgs/order-items', null, false ], [ 'order-access', 'woocommerce/order-confirmation-status', null, true ] ] );
 } );
 
 test( 'the committed map names the product page\'s buy box and bound title and the shop\'s sorting and count, each with its builder', () => {

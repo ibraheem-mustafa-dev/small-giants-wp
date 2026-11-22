@@ -408,7 +408,7 @@ test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift not
 	assert.equal( ( s.match( /"name":"sgs\/order-items"/g ) || [] ).length, 1 );
 	const binds = got.placed.filter( ( p ) => p.key ).map( ( p ) => `${ p.block } ${ p.attribute } ${ p.key } ${ p.format ?? '' }`.trim() );
 	assert.deepEqual( binds, [ 'sgs/text text number Order %s. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.', 'sgs/text text gift_to Dear %s,', 'sgs/text text gift_message', 'sgs/button url view_url', 'sgs/text text fact:bake_arrive Baking on {fact:bake_date} · with you from %s', 'sgs/text text fact:bake_date Zainab bakes it fresh on %s' ] );
-	assert.deepEqual( got.placed.filter( ( p ) => p.rule ).map( ( p ) => `${ p.at } ${ p.rule }` ), [ 'Confirmation/42 order-has-gift', 'Confirmation/49 order-no-gift', 'Confirmation/55 order-owner', 'Confirmation/61 order-guest', 'Confirmation/14 order-viewable', 'Confirmation/18 order-viewable', 'Confirmation/27 order-viewable', 'Confirmation/57 order-account-created', 'Confirmation/57 order-account-existing', 'Confirmation/29 order-viewable' ] );
+	assert.deepEqual( got.placed.filter( ( p ) => p.rule ).map( ( p ) => `${ p.at } ${ p.rule }` ), [ 'Confirmation/42 order-has-gift', 'Confirmation/49 order-no-gift', 'Confirmation/55 order-owner', 'Confirmation/61 order-guest', 'Confirmation/14 order-viewable', 'Confirmation/18 order-viewable', 'Confirmation/27 order-viewable', 'Confirmation/57 order-account-created', 'Confirmation/57 order-account-existing', 'Confirmation/29 order-viewable', 'Confirmation/8 order-not-viewable', 'Confirmation/9 order-viewable', 'Confirmation/20 order-viewable' ] );
 	// The eyebrow chosen by createAccount stands once per phrase in the view-order card, each with its account rule (F-12).
 	const eyebrows = nodesIn( got.tree ).filter( ( n ) => 'Root/57#0' === n.draftRef?.tpl ).map( ( n ) => `${ n.name } ${ n.attributes.content } | ${ n.attributes.sgsConditionLoggedIn }` );
 	assert.deepEqual( eyebrows, [ 'sgs/heading your account is ready | order-account-created', 'sgs/heading all in one place | order-account-existing' ] );
@@ -454,6 +454,12 @@ test( "Eye Care's confirmation: the reference written as fixed words equals the 
 		'Root/848#0 order-account-existing It is saved in My accoun',
 		'Root/852#0 order-owner View my orders',
 	] );
+	// F-43: the order access card stands first in the confirmation's main, and every other top-level block shows only to a visitor
+	// who may view the order (or to the narrower rule it already holds).
+	assert.deepEqual( main.innerBlocks[ 0 ].innerBlocks.map( ( n ) => n.name ), [ 'sgs/heading', 'woocommerce/order-confirmation-status' ] );
+	assert.equal( main.innerBlocks[ 0 ].attributes.sgsConditionLoggedIn, 'order-not-viewable' );
+	assert.deepEqual( main.innerBlocks.slice( 1 ).map( ( n ) => n.attributes.sgsConditionLoggedIn ), [ 'order-viewable', 'order-viewable', 'order-collect', 'order-delivery', 'order-account-created', 'order-account-existing', 'order-viewable' ] );
+	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
 	assert.ok( got.notes.some( ( n ) => /"EC-10482" as fixed words in <h1> Eye Care Birmingham\/845; they equal the id of the record the draft's order action creates/.test( n ) ) );
 } );
 
@@ -846,4 +852,29 @@ test( 'MUST FAIL: place stands a choice\'s block once per phrase with its rule; 
 	assert.equal( ruled.tree[ 0 ].innerBlocks.filter( ( n ) => n.draftRef.tpl === ref( p( 'how2' ) ).tpl ).length, 1 );
 	const other = place( { ...ctx, tree: tree( { text: 'Something else' } ) }, { id: 'order-number', find: 'order-values' } );
 	assert.ok( other.problems.some( ( x ) => /\{\{ how2 \}\}.*holds neither phrase in its words/.test( x ) ) );
+} );
+
+// F-43: a visitor who may not view the order (a guest past WooCommerce's grace time, a wrong key, a member's order signed out)
+// sees WooCommerce's order status block under a heading of its own, and none of the draft's thank-you page.
+test( 'MUST FAIL: the order access piece puts the status block in a not-viewable card first in the confirmation and the viewable rule on each top-level block no order rule holds', () => {
+	const { record, draft } = plant();
+	const access = { id: 'order-access', block: 'woocommerce/order-confirmation-status', kind: 'order', find: 'order-access', heading: 'Find your order' };
+	const tree = plantedTree( record );
+	tree[ 0 ].innerBlocks[ 1 ].attributes = { sgsConditionLoggedIn: 'order-owner' };
+	const ctx = { key: 'order-confirmation', factRecord: record, rootComponent: 'Page', draft, db: fakeDb( [ ...ROWS, { id: 99, block_slug: 'sgs/heading', attr_name: 'level', attr_type: 'integer', role: null, enum_values: null } ] ), plugin: PLUGIN, orderFacts: FACTS };
+	const got = place( { ...ctx, tree }, access );
+	const main = got.tree[ 0 ];
+	assert.deepEqual( main.innerBlocks[ 0 ], { name: 'sgs/container', attributes: { sgsConditionLoggedIn: 'order-not-viewable' }, innerBlocks: [ { name: 'sgs/heading', attributes: { content: 'Find your order', level: 1 }, innerBlocks: [] }, { name: 'woocommerce/order-confirmation-status', attributes: {}, innerBlocks: [] } ] } );
+	// Every top-level block takes the viewable rule, except the one already shown only for the order's owner.
+	assert.deepEqual( main.innerBlocks.slice( 1 ).map( ( n ) => n.attributes.sgsConditionLoggedIn ), [ 'order-viewable', 'order-owner', ...Array( main.innerBlocks.length - 3 ).fill( 'order-viewable' ) ] );
+	assert.equal( main.attributes.sgsConditionLoggedIn, undefined );
+	assert.equal( tree[ 0 ].innerBlocks[ 0 ].attributes.sgsConditionLoggedIn, undefined, 'the tree handed in is not changed' );
+	// Negative controls: two top drafted blocks give the card no one place, and nothing changes.
+	const two = [ ...plantedTree( record ), ...plantedTree( record ) ];
+	const refused = place( { ...ctx, tree: two }, access );
+	assert.match( refused.problems[ 0 ], /2 top drafted blocks in the tree, so woocommerce\/order-confirmation-status has no one place/ );
+	assert.equal( refused.tree, two );
+	// A database with no not-viewable rule on the container places nothing.
+	const noRule = place( { ...ctx, tree: plantedTree( record ), db: fakeDb( ROWS.map( ( r ) => ( 'sgsConditionLoggedIn' === r.attr_name ? { ...r, enum_values: JSON.stringify( [ 'none', 'order-viewable' ] ) } : r ) ) ) }, access );
+	assert.match( noRule.problems[ 0 ], /holds no Show-to setting with order-not-viewable/ );
 } );

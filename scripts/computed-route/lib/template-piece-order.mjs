@@ -12,6 +12,8 @@
 //     `sgs_order_fact` filter) and noted as a "site-supplied fact"; the words around it, the draft's and the ones its logic
 //     joins to it, are the binding's `format`, and a second fact in the same words is a `{fact:<name>}` token in it, so the
 //     whole line is one binding that renders nothing until every fact is supplied (an sgs/text with no words renders nothing).
+//   - `find: "order-access"`: WooCommerce's order status block in a card for a visitor who may not view the order, and the
+//     viewable rule on the draft's top-level blocks (placeAccess).
 // What cannot be done right is a problem row naming the draft element (a value no key fits, a block with no attribute a
 // binding can write, a branch the skeleton does not hold); what is lost on the way is a note (inline formatting a bound
 // plain value cannot keep). The tree comes in as a copy (lib/template-pieces.mjs::placePieces) and its nodes name
@@ -365,6 +367,43 @@ function splitChoices( { order, facts, plugin, db, byKey, keyOf, holderOf, ruleO
 	}
 }
 
+// The order access piece (F-43): what a visitor who may not view the order sees (a guest after WooCommerce's grace time, a wrong
+// order key, a member's order while signed out). WooCommerce's order-confirmation-status block, which holds its own email check
+// form and sign-in link, stands in a container shown only for `order-not-viewable` at the top of the draft's confirmation, under
+// a level-one heading in the framework's own words (`piece.heading`: no draft draws this state, so the visitor's page needs a
+// heading of its own); every top-level block of the draft's confirmation that no order rule holds yet takes the viewable rule,
+// so the thank-you page reads as one only to a visitor who may view the order. Runs after the order values piece, whose branch
+// rules a viewable rule would otherwise block. The root is the tree's top drafted node; a tree with none is a problem row.
+function placeAccess( ctx, piece, r ) {
+	const { facts, db } = r;
+	const at = ( k ) => `${ ctx.key }: ${ k }`;
+	const tree = structuredClone( ctx.tree );
+	const roots = walk( tree ).filter( ( w ) => factKeyOf( w.node, ctx.rootComponent ) && ! w.up.some( ( u ) => factKeyOf( u, ctx.rootComponent ) ) ).map( ( w ) => w.node );
+	if ( 1 !== roots.length ) {
+		return { tree: ctx.tree, problems: [ at( `${ roots.length ? `${ roots.length } top drafted blocks` : 'no drafted block' } in the tree, so ${ piece.block } has no one place at the top of the confirmation` ) ] };
+	}
+	const root = roots[ 0 ];
+	const hidden = 'order-not-viewable';
+	const wrapAttr = ruleAttr( db, 'sgs/container', hidden );
+	const level = settingType( db, 'sgs/heading', 'level' );
+	const words = boundAttr( db, r.plugin.supported, 'sgs/heading', 'text-content' );
+	if ( ! wrapAttr || ! words ) {
+		return { tree: ctx.tree, problems: [ at( `${ wrapAttr ? 'sgs/heading holds no words setting' : `sgs/container holds no Show-to setting with ${ hidden }` }, so the order access card is not placed` ) ] };
+	}
+	const heading = { name: 'sgs/heading', attributes: { [ words ]: piece.heading || '', ...( level ? { level: 1 } : {} ) }, innerBlocks: [] };
+	const card = { name: 'sgs/container', attributes: { [ wrapAttr ]: hidden }, innerBlocks: [ ...( piece.heading ? [ heading ] : [] ), { name: piece.block, attributes: {}, innerBlocks: [] } ] };
+	const placed = [ { id: piece.id, block: piece.block, at: factKeyOf( root, ctx.rootComponent ), rule: hidden } ];
+	for ( const node of root.innerBlocks || [] ) {
+		const attr = facts.viewable ? ruleAttr( db, node.name, facts.viewable ) : null;
+		if ( attr && ! orderRuleOn( db, node ) && ( ! node.attributes?.[ attr ] || 'none' === node.attributes[ attr ] ) ) {
+			node.attributes = { ...( node.attributes || {} ), [ attr ]: facts.viewable };
+			placed.push( { id: piece.id, block: node.name, at: factKeyOf( node, ctx.rootComponent ), rule: facts.viewable } );
+		}
+	}
+	root.innerBlocks = [ card, ...( root.innerBlocks || [] ) ];
+	return { tree, placed, notes: [ at( `${ piece.block } stands at the top of the confirmation for a visitor who may not view the order${ piece.heading ? `, under the heading "${ piece.heading }" (no draft draws this state)` : '' }` ) ] };
+}
+
 // Places one order piece (see the header). `ctx`: { key, tree, factRecord, rootComponent, handoffDir, db?, draft?,
 // orderFacts?, plugin? }.
 export function place( ctx, piece ) {
@@ -378,5 +417,8 @@ export function place( ctx, piece ) {
 	if ( 'order-values' === piece.find ) {
 		return placeValues( ctx, piece, r );
 	}
-	return { problems: [ `${ ctx.key }: piece "${ piece.id }" names find "${ piece.find ?? '' }", which the order builder does not know (order-lines, order-values)` ] };
+	if ( 'order-access' === piece.find ) {
+		return placeAccess( ctx, piece, r );
+	}
+	return { problems: [ `${ ctx.key }: piece "${ piece.id }" names find "${ piece.find ?? '' }", which the order builder does not know (order-lines, order-values, order-access)` ] };
 }

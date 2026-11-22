@@ -96,5 +96,14 @@
 	{"file": "lib/template-piece-order.mjs", "find": "list.splice( list.indexOf( node ), 1, ...copies );", "replace": "", "why": "the choice's block is not split"},
 	{"file": "lib/template-piece-order.mjs", "find": "[ attrs[ i ] ]: p.rule } } ) );", "replace": "} } ) );", "why": "a phrase's block takes no rule"},
 	{"file": "lib/template-piece-order.mjs", "find": ": had && had !== facts.viewable && ! ( c.within || [] ).includes( had ) ? `already shows only for ${ had }` : null;", "replace": ": null;", "why": "a block under another order rule is split over it"},
-	{"file": "lib/template-piece-order.mjs", "find": "const why = ! attr ? 'holds no words setting' : 1 !== resting.length ?", "replace": "const why = ! attr ? 'holds no words setting' : 1 < resting.length ?", "why": "words holding neither phrase are split"}
+	{"file": "lib/template-piece-order.mjs", "find": "const why = ! attr ? 'holds no words setting' : 1 !== resting.length ?", "replace": "const why = ! attr ? 'holds no words setting' : 1 < resting.length ?", "why": "words holding neither phrase are split"},
+	{"file": "lib/template-piece-order.mjs", "find": "if ( 1 !== roots.length ) {", "replace": "if ( ! roots.length ) {", "why": "two top drafted blocks still take the access card"},
+	{"file": "lib/template-piece-order.mjs", "find": "const roots = walk( tree ).filter( ( w ) => factKeyOf( w.node, ctx.rootComponent ) && ! w.up.some( ( u ) => factKeyOf( u, ctx.rootComponent ) ) ).map( ( w ) => w.node );", "replace": "const roots = walk( tree ).filter( ( w ) => factKeyOf( w.node, ctx.rootComponent ) ).slice( 0, 1 ).map( ( w ) => w.node );", "why": "the first drafted block is taken whatever stands beside it"},
+	{"file": "lib/template-piece-order.mjs", "find": "if ( attr && ! orderRuleOn( db, node ) && ( ! node.attributes?.[ attr ] || 'none' === node.attributes[ attr ] ) ) {", "replace": "if ( attr ) {", "why": "a block already ruled for the owner is overwritten with viewable"},
+	{"file": "lib/template-piece-order.mjs", "find": "root.innerBlocks = [ card, ...( root.innerBlocks || [] ) ];", "replace": "root.innerBlocks = [ ...( root.innerBlocks || [] ), card ];", "why": "the access card stands last"},
+	{"file": "lib/template-piece-order.mjs", "find": "const card = { name: 'sgs/container', attributes: { [ wrapAttr ]: hidden },", "replace": "const card = { name: 'sgs/container', attributes: {},", "why": "the access card shows to everyone"},
+	{"file": "lib/template-piece-order.mjs", "find": "...( level ? { level: 1 } : {} )", "replace": "...( level ? { level: 2 } : {} )", "why": "the access heading is not the page's h1"},
+	{"file": "lib/template-piece-order.mjs", "find": "if ( ! wrapAttr || ! words ) {", "replace": "if ( ! words ) {", "why": "a container with no not-viewable rule takes the card"},
+	{"file": "lib/template-piece-order.mjs", "find": "const tree = structuredClone( ctx.tree );\n\tconst roots", "replace": "const tree = ctx.tree;\n\tconst roots", "why": "the tree handed in is changed"},
+	{"file": "lib/template-piece-order.mjs", "find": "if ( 'order-access' === piece.find ) {", "replace": "if ( false ) {", "why": "the access piece is not placed"}
 ]
