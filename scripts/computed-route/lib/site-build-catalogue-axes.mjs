@@ -11,6 +11,7 @@
 // A product the route did not make is never changed this way: its missing choices are a note. Pure: the catalogue's product
 // and the site's read of it in, what it lacks and what is done out. The write is lib/site-build-catalogue-php.mjs.
 import { SKU_PREFIX } from './catalogue-read.mjs';
+import { decodeName } from './site-build-catalogue-facets.mjs';
 
 const taxOf = ( slug ) => `pa_${ slug }`;
 const skuList = ( rows ) => rows.map( ( r ) => r.sku || `#${ r.id }` ).join( ', ' );
@@ -30,7 +31,7 @@ export function axisChanges( p, s ) {
 	const held = s.attributeTerms || {};
 	const names = ( a ) => a.options.map( ( o ) => o.term );
 	const axes = p.attributes.filter( ( a ) => ! have.has( taxOf( a.slug ) ) ).map( ( a ) => ( { slug: a.slug, label: a.label, all: names( a ) } ) );
-	const terms = p.attributes.filter( ( a ) => have.has( taxOf( a.slug ) ) ).map( ( a ) => ( { slug: a.slug, label: a.label, names: names( a ).filter( ( n ) => ! ( held[ taxOf( a.slug ) ] || [] ).includes( n ) ) } ) ).filter( ( x ) => x.names.length );
+	const terms = p.attributes.filter( ( a ) => have.has( taxOf( a.slug ) ) ).map( ( a ) => ( { slug: a.slug, label: a.label, names: names( a ).filter( ( n ) => ! ( held[ taxOf( a.slug ) ] || [] ).map( decodeName ).includes( decodeName( n ) ) ) } ) ).filter( ( x ) => x.names.length );
 	// Only with a variation the catalogue holds: a product left with none of the catalogue's is never swept bare.
 	const old = p.variations.length ? ( s.variationRows || [] ).filter( ( r ) => ! p.attributes.every( ( a ) => r.options?.[ taxOf( a.slug ) ] ) ) : [];
 	return { axes, terms, trash: old.filter( ( r ) => 'private' !== r.status && ! r.ordered ), priv: old.filter( ( r ) => 'private' !== r.status && r.ordered ), kept: old.filter( ( r ) => 'private' === r.status ) };

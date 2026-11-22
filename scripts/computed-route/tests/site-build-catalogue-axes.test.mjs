@@ -96,3 +96,15 @@ test( 'MUST FAIL: an old variation that misses a choice does not hold the place 
 	} ) );
 	assert.match( plan.actions[ 0 ].say, / 4 of 4 variations; trashes 1 old variation\(s\) that miss a choice \(sgs-draft-jar-12\)$/ );
 } );
+
+// WordPress stores a term name holding `&` as `&amp;` (its name sanitiser escapes it), so the site's read of a product's terms gives
+// the escaped form while the catalogue holds the draft's own words: the two are compared decoded.
+test( 'MUST FAIL: a term WordPress stores escaped (&amp;) is the catalogue\'s term, so it is not planned as missing on every run', () => {
+	const { jar } = setup();
+	const amp = { ...jar, attributes: jar.attributes.map( ( a ) => ( 'grain' === a.slug ? { ...a, options: [ ...a.options, { ...a.options[ 0 ], term: 'Salt & honey' } ] } : a ) ) };
+	const site = whole( jar, { attributeTerms: { 'pa_pack-size': [ '6', '12' ], pa_grain: [ 'Fine set', 'Coarse set', 'Salt &amp; honey' ] } } );
+	assert.deepEqual( axisChanges( amp, site ).terms, [] );
+	// Negative control: a term the site does not hold at all is still missing, and one escaped differently is not taken for it.
+	const missing = whole( jar, { attributeTerms: { 'pa_pack-size': [ '6', '12' ], pa_grain: [ 'Fine set', 'Coarse set', 'Salt and honey' ] } } );
+	assert.deepEqual( axisChanges( amp, missing ).terms.map( ( t ) => t.names ), [ [ 'Salt & honey' ] ] );
+} );

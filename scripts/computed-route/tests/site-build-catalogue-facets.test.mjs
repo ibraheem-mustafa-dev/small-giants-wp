@@ -134,3 +134,20 @@ test( 'recordSite records each facet\'s attribute id; an apply that leaves a fac
 	// The write is handed the catalogue's facets (an empty list encodes as W10=).
 	assert.match( writes[ 0 ], /\$facet_defs = json_decode\( base64_decode\( '(?!W10=)/ );
 } );
+
+// WordPress stores a term name holding `&` as `&amp;`, so the site read gives the escaped form: a facet's terms and a product's
+// filter terms are compared decoded, else a term with `&` is planned as missing on every run.
+test( 'MUST FAIL: a facet term or a product filter term WordPress stores escaped (&amp;) is held, not planned again', () => {
+	const { catalogue } = setup();
+	const amp = { ...catalogue, facets: catalogue.facets.map( ( f ) => ( 'shade' === f.slug ? { ...f, terms: [ ...f.terms, { name: 'Salt & pepper', swatch: '#999999' } ] } : f ) ) };
+	amp.products = catalogue.products.map( ( p, i ) => ( 0 === i ? { ...p, facets: { ...p.facets, shade: [ ...p.facets.shade, 'Salt & pepper' ] } } : p ) );
+	const [ cap ] = amp.products;
+	const facets = allFacets( catalogue, { shade: { terms: { ...allFacets( catalogue ).shade.terms, 'Salt &amp; pepper': '#999999' } } } );
+	const plan = planCatalogue( amp, site( [ found( cap, { facets: { ...cap.facets, shade: [ 'Ink', 'Sand', 'Moss', 'Salt &amp; pepper' ] } } ) ], { facets } ) );
+	assert.equal( plan.facets.find( ( a ) => 'shade' === a.slug ).action, 'exists' );
+	assert.equal( plan.actions[ 0 ].action, 'exists' );
+	// Negative controls: a term the site does not hold is still added, and a product without it still lacks it.
+	const none = planCatalogue( amp, site( [ found( cap, { facets: { ...cap.facets, shade: [ 'Ink', 'Sand', 'Moss' ] } } ) ], { facets: allFacets( catalogue ) } ) );
+	assert.equal( none.facets.find( ( a ) => 'shade' === a.slug ).say, 'complete attribute pa_shade (id 11): add term(s) Salt & pepper' );
+	assert.match( none.actions[ 0 ].say, /lacks filter Shade Salt & pepper$/ );
+} );

@@ -136,5 +136,11 @@
 		"find": "[ lack.length && `lacks ${ lack.join( ', ' ) }`, ...acts ]",
 		"replace": "[ lack.length && `lacks ${ lack.join( ', ' ) }` ]",
 		"why": "the plan does not name the old variations to trash"
+	},
+	{
+		"file": "lib/site-build-catalogue-axes.mjs",
+		"find": "( held[ taxOf( a.slug ) ] || [] ).map( decodeName ).includes( decodeName( n ) )",
+		"replace": "( held[ taxOf( a.slug ) ] || [] ).includes( n )",
+		"why": "a choice term WordPress stores escaped (&amp;) is planned as missing on every run"
 	}
 ]

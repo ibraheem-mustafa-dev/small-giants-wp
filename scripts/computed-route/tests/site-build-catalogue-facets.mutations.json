@@ -1,0 +1,5 @@
+[
+	{ "file": "lib/site-build-catalogue-facets.mjs", "find": "Object.entries( s.terms || {} ).map( ( [ k, v ] ) => [ decodeName( k ), v ] )", "replace": "Object.entries( s.terms || {} )", "why": "a facet term WordPress stores escaped (&amp;) is planned as a term to add on every run" },
+	{ "file": "lib/site-build-catalogue-facets.mjs", "find": "const have = ( s.facets?.[ f.slug ] || [] ).map( decodeName );", "replace": "const have = s.facets?.[ f.slug ] || [];", "why": "a product's filter term WordPress stores escaped is planned as missing on every run" },
+	{ "file": "lib/site-build-catalogue-facets.mjs", "find": "/&(?:amp|quot|apos|lt|gt|#0?38|#0?39);/g", "replace": "/&(?:quot|apos|lt|gt|#0?38|#0?39);/g", "why": "the escaped ampersand is not decoded" }
+]
