@@ -420,11 +420,15 @@ def check_changed(args) -> int:
             blocks.append(b)
         else:
             print(f'{b}: a file every block loads changed; its renders are the same')
-    if not blocks:
+    worst = 0
+    if blocks:
+        args.record_dir, args.blocks = records_dir, [b.split('/', 1)[1] for b in blocks]
+        worst = check_block(args, args.blocks[0]) if len(blocks) == 1 else check_many(args)
+    else:
         print(f'setting record: no block touched ({len(CH.load_records(records_dir))} records)')
-        return 1 if p['problems'] else 0
-    args.record_dir, args.blocks = records_dir, [b.split('/', 1)[1] for b in blocks]
-    worst = check_block(args, args.blocks[0]) if len(blocks) == 1 else check_many(args)
+    if getattr(args, 'restamp', False) and p['canary'] and worst == 0:
+        # the canaries carried the core change without a finding: every record's core inputs are current again
+        print(f'core change accepted on {", ".join(p["canary"])}: {len(ST.refresh_core(args.plugin, records_dir))} stamps refreshed')
     return max(worst, 1 if p['problems'] else 0)
 
 

@@ -167,16 +167,41 @@ def _selector_reaches(selector: str, classes: set, tags: set) -> bool:
     return True
 
 
+def core_files(stamps: dict) -> set:
+    """The PHP files outside any block folder that every stamped block's renders loaded (never a fixture or a stylesheet:
+    those are always the block's own), and only over a real library of stamps (CORE_MIN)."""
+    sets = [{k for k in s['inputs'] if k.endswith('.php') and not k.startswith('src/blocks/')}
+            for s in stamps.values() if s.get('inputs')]
+    return set.intersection(*sets) if len(sets) >= CORE_MIN else set()
+
+
+def refresh_core(plugin: Path, records_dir: Path) -> list:
+    """Brings every record's core inputs and check hash to the files as they are now, once the canaries have shown that
+    the core change moves nothing (check.py --changed --restamp). Returns the records rewritten."""
+    plugin = Path(plugin)
+    files = sorted(Path(records_dir).glob('*.json'))
+    docs = {f: json.loads(f.read_text(encoding='utf-8')) for f in files}
+    core = core_files({f: d.get('stamp') or {} for f, d in docs.items()})
+    now_check = check_hash(plugin)
+    out = []
+    for f, d in docs.items():
+        st = d.get('stamp')
+        if not st or not st.get('inputs'):
+            continue
+        new = dict(st, check=now_check, inputs={k: (file_hash(plugin / k) if k in core else h) for k, h in st['inputs'].items()})
+        if new != st:
+            d['stamp'] = new
+            f.write_text(json.dumps(d, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
+            out.append(f.name)
+    return out
+
+
 def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, theme: str) -> dict:
     """{block: {'own': [reasons], 'core': [reasons]}} for every record a change touches (blocks with no record, or a
     record with no stamp, are named with the reason; the caller decides what each tier runs)."""
     plugin = Path(plugin)
     stamps = {b: (doc.get('stamp') or {}) for b, doc in records.items()}
-    # the core: the PHP files outside any block folder that every stamped block's renders loaded (never a fixture or a
-    # stylesheet: those are always the block's own), and only over a real library of stamps
-    sets = [{k for k in s['inputs'] if k.endswith('.php') and not k.startswith('src/blocks/')}
-            for s in stamps.values() if s.get('inputs')]
-    core = set.intersection(*sets) if len(sets) >= CORE_MIN else set()
+    core = core_files(stamps)
     now_theme = theme_rules(theme)
     now_check = check_hash(plugin)
     out = {}

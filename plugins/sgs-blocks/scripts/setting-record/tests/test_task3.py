@@ -473,3 +473,23 @@ def test_a_tier_that_does_not_follow_the_value_is_not_marked():
     words = [_bp('a', '@media(max-width:2.98px)', props=('top',)), _bp('b', '@media(max-width:767.98px)', props=('top',))]
     CK.symbolic_tiers(fixed + same + words)
     assert not any('symbolic' in e for e in fixed + same + words)
+
+
+
+def test_a_core_change_the_canaries_carried_is_stamped_into_every_record(tmp_path, monkeypatch):
+    plugin = tmp_path / 'plugin'
+    (plugin / 'includes').mkdir(parents=True)
+    boot = plugin / 'includes' / 'boot.php'
+    boot.write_text('<?php // v1', encoding='utf-8')
+    rd = tmp_path / 'records'
+    rd.mkdir()
+    monkeypatch.setattr(ST, 'CORE_MIN', 2)
+    for b in ('a', 'b'):
+        inputs = {'includes/boot.php': ST.file_hash(boot), 'src/blocks/%s/render.php' % b: 'r'}
+        (rd / f'{b}.json').write_text(json.dumps({'block': f'sgs/{b}', 'stamp': {'inputs': inputs, 'check': 'old'}}), encoding='utf-8')
+    boot.write_text('<?php // v2', encoding='utf-8')
+    assert sorted(ST.refresh_core(plugin, rd)) == ['a.json', 'b.json']
+    for b in ('a', 'b'):
+        st = json.loads((rd / f'{b}.json').read_text(encoding='utf-8'))['stamp']
+        assert st['inputs']['includes/boot.php'] == ST.file_hash(boot) and st['check'] == ST.check_hash(plugin)
+        assert st['inputs'][f'src/blocks/{b}/render.php'] == 'r'  # an own input is never refreshed here
