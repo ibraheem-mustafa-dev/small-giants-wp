@@ -132,17 +132,32 @@ function StepEditor( { step, index, showBackground, onChange, onRemove } ) {
 				onChange={ ( { name } ) => update( 'icon', name ) }
 				sources={ [ 'lucide' ] }
 			/>
+			{ /* A step's own number colours. `linked` stores the palette slug, as every other colour row does, so the colour follows the brand token (render.php resolves it through sgs_colour_value()). */ }
 			{ showBackground && (
 				<DesignTokenPicker
 					label={ __( 'Number background (this step)', 'sgs-blocks' ) }
-					value={ step.numberBackground || '' }
-					onChange={ ( val ) => update( 'numberBackground', val || '' ) }
+					states={ [
+						{
+							key: 'normal',
+							label: __( 'Normal', 'sgs-blocks' ),
+							value: step.numberBackground || '',
+							onChange: ( val ) => update( 'numberBackground', val || '' ),
+							linked: true,
+						},
+					] }
 				/>
 			) }
 			<DesignTokenPicker
 				label={ __( 'Number colour (this step)', 'sgs-blocks' ) }
-				value={ step.numberColour || '' }
-				onChange={ ( val ) => update( 'numberColour', val || '' ) }
+				states={ [
+					{
+						key: 'normal',
+						label: __( 'Normal', 'sgs-blocks' ),
+						value: step.numberColour || '',
+						onChange: ( val ) => update( 'numberColour', val || '' ),
+						linked: true,
+					},
+				] }
 			/>
 			<Button
 				variant="secondary"
