@@ -29,10 +29,20 @@
 //   from.fills              { part, against }: the part as wide (within 1px) as the widest of `against`: `value`, else nothing
 //   from.sameLook           { part, other: { surface, part }, props }: the part shares those computed values with a part another surface
 //                           of the same run read (`others`, the surface's reads): `value`, else nothing; that surface unread is a gap
+//   from.paint              { part, box, bare }: the part's own paint. A border on any side or a fill makes it a box (`box`), the
+//                           bare word is `bare`; every copy must agree, an unreadable fill writes nothing (an underlined link with a
+//                           border is a box)
+//   from.arranged           { parts: [a, b], row, column }: where two parts sit at each width they are both drawn: side by side (their
+//                           boxes share a row, no overlap across) is `row`, one below the other is `column`; boxes that cross, or a
+//                           width that disagrees with another, write nothing
+//   from.placed             { part, of: [parts], within, right, below }: where each copy of `part` sits against the first of `of` that is
+//                           drawn, inside the same `within` box (the line): at the right of it on its own row is `right`, beneath it is
+//                           `below`; a copy whose line draws none of `of` is no evidence; anything else writes nothing
 //   value                   the literal to write when the condition holds
 // A rule whose setting the framework database does not hold for the block, whose instances disagree, or whose evidence is missing
 // is a gap row with the draft's evidence, never a guess. Pure: reads and database rows in, writes and gaps out.
 import { WIDTHS, primitive } from './fill-part-look.mjs';
+import { parseColour } from './normalise.mjs';
 
 const AMOUNT = /\s*[·•|–-]?\s*[£$€]\s?\d[\d.,]*|\s*\d[\d.,]*\s?[£$€]/;
 const has = ( reads, part ) => WIDTHS.some( ( w ) => ( reads[ part ]?.[ w ] || [] ).length );
@@ -68,6 +78,35 @@ export function aspectOf( list ) {
 	const r = rs[ 0 ];
 	const near = SIMPLE.find( ( [ w, h ] ) => Math.abs( r / ( w / h ) - 1 ) <= 0.02 );
 	return near ? `${ near[ 0 ] } / ${ near[ 1 ] }` : `${ Math.round( list[ 0 ].box.w ) } / ${ Math.round( list[ 0 ].box.h ) }`;
+}
+
+// Whether a read's styles draw a box (a visible border on any side, or a fill) or a bare word; null when the fill cannot be read.
+export function paintOf( styles ) {
+	const sides = [ 'top', 'right', 'bottom', 'left' ];
+	if ( sides.some( ( s ) => parseFloat( styles?.[ `border-${ s }-width` ] ) > 0 && ! /^(none|hidden)$/.test( String( styles?.[ `border-${ s }-style` ] ?? 'none' ) ) ) ) {
+		return 'box';
+	}
+	const fill = String( styles?.[ 'background-color' ] ?? '' ).trim();
+	if ( ! fill || 'transparent' === fill ) {
+		return fill ? 'bare' : null;
+	}
+	const c = parseColour( fill );
+	return c ? ( c.a > 0 ? 'box' : 'bare' ) : null;
+}
+
+// The boxes this reads place by: drawn (a size) and with a position (a read from before the position was kept has none).
+const drawn = ( i ) => i?.box && i.box.w > 0 && i.box.h > 0 && Number.isFinite( i.box.x ) && Number.isFinite( i.box.y );
+// Where box b sits against box a: 'right' or 'left' (they share a row, overlapping by half the smaller height or more, with b clear of a
+// across), 'below' (b starts where a ends), or null (they cross, or b is above a).
+export function placeOf( a, b ) {
+	const overlap = Math.min( a.y + a.h, b.y + b.h ) - Math.max( a.y, b.y );
+	if ( overlap >= Math.min( a.h, b.h ) / 2 ) {
+		if ( b.x >= a.x + a.w - 1 ) {
+			return 'right';
+		}
+		return a.x >= b.x + b.w - 1 ? 'left' : null;
+	}
+	return b.y >= a.y + a.h - 1 ? 'below' : null;
 }
 
 // The label of a button without the amount it carries ("Add to basket · £21.50" is "Add to basket").
@@ -255,6 +294,70 @@ export function evaluateModes( { block, rules, rows, reads, others = null } ) {
 				continue;
 			}
 			evidence = `the draft's ${ part } shares the ${ other.surface } ${ other.part }'s ${ props.join( ', ' ) }`;
+		} else if ( rule.from?.paint ) {
+			const { part, box, bare } = rule.from.paint;
+			const seen = WIDTHS.flatMap( ( w ) => ( reads[ part ]?.[ w ] || [] ).filter( drawn ).map( ( i ) => paintOf( i.styles ) ) );
+			if ( ! seen.length || seen.includes( null ) ) {
+				out.settings[ rule.setting ] = { code: seen.length ? 'unreadable' : 'notDrawn' };
+				continue;
+			}
+			if ( new Set( seen ).size > 1 ) {
+				gap( 'the copies of the part are painted differently and the block holds one value for all of them', `${ part }: ${ JSON.stringify( [ ...new Set( seen ) ] ) }` );
+				continue;
+			}
+			value = 'box' === seen[ 0 ] ? box : bare;
+			evidence = `the draft's ${ part } is ${ 'box' === seen[ 0 ] ? 'drawn as a box (a border or a fill)' : 'a bare word (no border, no fill)' }`;
+		} else if ( rule.from?.arranged ) {
+			const { parts: [ a, b ], row, column } = rule.from.arranged;
+			const at = WIDTHS.map( ( w ) => [ w, ( reads[ a ]?.[ w ] || [] ).find( drawn ), ( reads[ b ]?.[ w ] || [] ).find( drawn ) ] ).filter( ( [ , x, y ] ) => x && y );
+			if ( ! at.length ) {
+				out.settings[ rule.setting ] = { code: 'notDrawn' };
+				continue;
+			}
+			const kinds = at.map( ( [ w, x, y ] ) => {
+				const p = placeOf( x.box, y.box );
+				return [ w, 'right' === p || 'left' === p ? row : ( 'below' === p || 'below' === placeOf( y.box, x.box ) ? column : null ) ];
+			} );
+			if ( kinds.some( ( [ , k ] ) => null === k ) ) {
+				out.settings[ rule.setting ] = { code: 'notPlaced' };
+				continue;
+			}
+			if ( new Set( kinds.map( ( [ , k ] ) => k ) ).size > 1 ) {
+				gap( 'the two parts sit differently at different widths and the block holds one value for all of them', `${ a } and ${ b }: ${ JSON.stringify( Object.fromEntries( kinds ) ) }` );
+				continue;
+			}
+			[ [ , value ] ] = kinds;
+			evidence = `the draft's ${ a } and ${ b } sit ${ value === row ? 'side by side' : 'one below the other' } at ${ kinds.map( ( [ w ] ) => w ).join( ', ' ) }`;
+		} else if ( rule.from?.placed ) {
+			const { part, of, within, right, below } = rule.from.placed;
+			const lines = ( p ) => WIDTHS.map( ( w ) => [ w, ( reads[ p ]?.[ w ] || [] ).filter( drawn ) ] ).filter( ( [ , l ] ) => l.length );
+			const refPart = [].concat( of ).find( ( p ) => lines( p ).length );
+			const own = lines( part );
+			if ( ! refPart || ! own.length || ! lines( within ).length ) {
+				out.settings[ rule.setting ] = { code: 'notDrawn' };
+				continue;
+			}
+			// Each copy is set against the reference inside the same line (the innermost `within` box holding it), by the elements' paths.
+			const inside = ( outer, el ) => String( el.key ).startsWith( `${ outer.key }>` );
+			const kinds = own.flatMap( ( [ w, list ] ) => list.map( ( i ) => {
+				const box = ( reads[ within ]?.[ w ] || [] ).filter( ( l ) => inside( l, i ) ).sort( ( x, y ) => String( y.key ).length - String( x.key ).length )[ 0 ];
+				const ref = box && ( reads[ refPart ]?.[ w ] || [] ).filter( drawn ).find( ( r ) => inside( box, r ) );
+				return ref ? placeOf( ref.box, i.box ) : undefined;
+			} ) ).filter( ( k ) => undefined !== k );
+			if ( ! kinds.length ) {
+				out.settings[ rule.setting ] = { code: 'notDrawn' };
+				continue;
+			}
+			if ( kinds.includes( null ) || ! ( 'right' === kinds[ 0 ] || 'below' === kinds[ 0 ] ) ) {
+				out.settings[ rule.setting ] = { code: 'notPlaced' };
+				continue;
+			}
+			if ( kinds.some( ( k ) => k !== kinds[ 0 ] ) ) {
+				gap( 'the copies of the part sit differently and the block holds one value for all of them', `${ part } against ${ refPart }: ${ JSON.stringify( [ ...new Set( kinds ) ] ) }` );
+				continue;
+			}
+			value = 'right' === kinds[ 0 ] ? right : below;
+			evidence = `the draft's ${ part } sits ${ 'right' === kinds[ 0 ] ? 'at the right of' : 'beneath' } its line's ${ refPart } on every line (${ kinds.length } read)`;
 		} else if ( rule.from?.pricePrefix ) {
 			const texts = instances( reads, rule.from.pricePrefix ).map( ( i ) => String( i.text || '' ) );
 			value = texts.some( ( t ) => PREFIXED.test( t ) );

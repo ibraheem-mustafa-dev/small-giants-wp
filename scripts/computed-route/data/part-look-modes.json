@@ -418,7 +418,7 @@
 			}
 		},
 		"sgs/cart": {
-			"_comment": "The basket drawer (surface header): what the panel shows and says, from the parts the drawer group locates in the draft, its empty state read with the basket emptied (part-look.json `empty`). A switch the draft gives no evidence for either way stays at the block default. Not decided here: the view link's style and the actions' stacking (they need the parts' places, which the read does not keep), Remove's place in the line, and the success words of the free-delivery bar (drawn only once the threshold is met).",
+			"_comment": "The basket drawer (surface header): what the panel shows and says, from the parts the drawer group locates in the draft, its empty state read with the basket emptied (part-look.json `empty`). A switch the draft gives no evidence for either way stays at the block default. The view link's style, the actions' layout and Remove's place come from the parts' boxes and paint (a box or a bare word; side by side or one below the other; at the right of the quantity or beneath it), each written only where the parts are drawn and agree at every width. Not decided here: the success words of the free-delivery bar (drawn only once the threshold is met).",
 			"rules": [
 				{
 					"setting": "panelHeading",
@@ -474,6 +474,22 @@
 					"whenFound": "itemRemove"
 				},
 				{
+					"setting": "itemRemovePlacement",
+					"from": {
+						"placed": {
+							"part": "itemRemove",
+							"of": [
+								"item-stepper",
+								"itemQtyInput"
+							],
+							"within": "item",
+							"right": "inline-end",
+							"below": "under"
+						}
+					},
+					"whenFound": "itemRemove"
+				},
+				{
 					"setting": "panelShowViewCart",
 					"value": false,
 					"whenAbsent": "panelView",
@@ -486,6 +502,31 @@
 					"setting": "viewCartLabel",
 					"from": {
 						"text": "panelView"
+					},
+					"whenFound": "panelView"
+				},
+				{
+					"setting": "panelViewStyle",
+					"from": {
+						"paint": {
+							"part": "panelView",
+							"box": "outline",
+							"bare": "text-link"
+						}
+					},
+					"whenFound": "panelView"
+				},
+				{
+					"setting": "panelActionsLayout",
+					"from": {
+						"arranged": {
+							"parts": [
+								"checkout",
+								"panelView"
+							],
+							"row": "row",
+							"column": "stacked"
+						}
 					},
 					"whenFound": "panelView"
 				},

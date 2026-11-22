@@ -171,10 +171,11 @@ test( 'MUST FAIL: Mama\'s drawer: the stepper, the gift tick after the lines, th
 	assert.deepEqual( texts( filled.freeDeliveryText ), [ 'Add £8.50 more for free UK delivery' ] );
 	assert.deepEqual( texts( reads.emptyBody[ 1440 ] ), [ 'New to Zookies? The Taster Trio is 3 cookies for £5, postage included.' ] );
 	assert.deepEqual( texts( reads.emptyLink[ 1440 ] ), [ 'Browse the shop' ] );
+	// Remove sits under the price in the third column here, on no row of the stepper's: no place is written (tests/part-look-drawer-places.test.mjs holds the places).
 	const got = written( modes( reads ) );
 	assert.deepEqual( got, {
 		panelHeading: 'Your basket', panelShowCount: true, itemQtyStyle: 'stepper', itemShowSaveForLater: false, itemRemoveStyle: 'text',
-		viewCartLabel: 'View full basket', checkoutLabel: 'Checkout securely', panelTaxNote: 'Baked fresh for you',
+		viewCartLabel: 'View full basket', panelViewStyle: 'text-link', panelActionsLayout: 'stacked', checkoutLabel: 'Checkout securely', panelTaxNote: 'Baked fresh for you',
 		freeDeliveryMessage: 'Add %s more for free UK delivery', freeDeliveryHideWhenEmpty: true, panelGiftShow: true, panelGiftLabel: 'This is a gift',
 		panelGiftHelp: 'Add a message. We leave the prices off.', panelGiftPlacement: 'after-items', emptyBody: 'New to Zookies? The Taster Trio is 3 cookies for £5, postage included.',
 	} );

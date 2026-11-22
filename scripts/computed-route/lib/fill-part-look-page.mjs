@@ -603,7 +603,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		out[ name ] = els.map( ( el ) => {
 			const s = styleOf( el );
 			const r = box( el );
-			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10, y: Math.round( r.top + window.scrollY ) }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'ua:font': uaFont( el ), 'stack:gap': loc.stackGap ? stackGap( el ) : '', 'mark:text-left': markTextLeft( el ), 'label:above': labelAbove( el ) } };
+			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10, x: Math.round( r.left + window.scrollX ), y: Math.round( r.top + window.scrollY ) }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'ua:font': uaFont( el ), 'stack:gap': loc.stackGap ? stackGap( el ) : '', 'mark:text-left': markTextLeft( el ), 'label:above': labelAbove( el ) } };
 		} );
 	}
 	return out;
