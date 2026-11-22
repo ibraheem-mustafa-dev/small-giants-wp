@@ -120,6 +120,24 @@
 				}
 			]
 		},
+		"woocommerce/product-filter-chips": {
+			"_comment": "The shop's filter chips (F-6): a count drawn inside a chip is the chips block's count pill. Which chip is the 'all' choice and whether one chip is pressed at a time are not read here (the rail rule's segmented row decides the one-choice look).",
+			"rules": [
+				{
+					"setting": "sgsChipCountPill",
+					"value": true,
+					"whenFound": "chip-count"
+				},
+				{
+					"setting": "sgsChipCountPill",
+					"value": false,
+					"whenAbsent": "chip-count",
+					"neighbours": [
+						"chip-list"
+					]
+				}
+			]
+		},
 		"sgs/buybox": {
 			"rules": [
 				{

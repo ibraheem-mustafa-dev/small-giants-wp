@@ -46,6 +46,24 @@
 			"template": "archive-product",
 			"basket": false,
 			"instances": "majority"
+		},
+		"shop-chips": {
+			"_comment": "The shop's filter chips (F-6): WooCommerce's chips block, its look settings (sgsChip*, data rows seeded from src/blocks/extensions/extension-roster.json's filterLook and chipGap) read from the draft's row of pressable chips on the shop page. Every chips block of the shop template takes the one look.",
+			"group": "shopchips",
+			"block": "woocommerce/product-filter-chips",
+			"pageRole": "shop",
+			"template": "archive-product",
+			"basket": false,
+			"entryOf": "shop"
+		},
+		"shop-sort": {
+			"_comment": "The shop's sort select (F-6): WooCommerce's catalog sorting block, its sgsSort* look settings read from the draft's sort select on the shop page.",
+			"group": "shopsort",
+			"block": "woocommerce/catalog-sorting",
+			"pageRole": "shop",
+			"template": "archive-product",
+			"basket": false,
+			"entryOf": "shop"
 		}
 	},
 	"groups": {
@@ -2391,6 +2409,93 @@
 					"smallest": true,
 					"pick": "last",
 					"view": "detail"
+				}
+			}
+		},
+		"shopchips": {
+			"_comment": "A row of three or more pressable chips (buttons carrying aria-pressed, one pressed): the row is chip-list, a chip not pressed is chip, the pressed one chip-selected, and a count drawn inside a chip is chip-count. Parts are keyed by the css_element of the chips block's rows.",
+			"anchors": {
+				"chipRow": {
+					"from": "page",
+					"match": {
+						"hasAll": [
+							{
+								"tag": [
+									"button"
+								],
+								"ariaOn": true
+							}
+						],
+						"hasMany": {
+							"match": {
+								"tag": [
+									"button"
+								],
+								"repeats": true,
+								"text": "words"
+							},
+							"atLeast": 3
+						}
+					},
+					"smallest": true
+				}
+			},
+			"parts": {
+				"chip-list": {
+					"sameAs": "chipRow"
+				},
+				"chip": {
+					"from": "chipRow",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"repeats": true,
+						"ariaOn": false
+					},
+					"pick": "first"
+				},
+				"chip-selected": {
+					"from": "chipRow",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"ariaOn": true
+					},
+					"pick": "first"
+				},
+				"chip-count": {
+					"from": "chipRow",
+					"match": {
+						"text": "count",
+						"inside": {
+							"tag": [
+								"button"
+							]
+						}
+					},
+					"pick": "first"
+				}
+			}
+		},
+		"shopsort": {
+			"_comment": "The shop's sort select: the first select on the shop page (a select inside a product card is the card's own choice, not the sort).",
+			"anchors": {},
+			"parts": {
+				"sort-select": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"select"
+						],
+						"notInside": {
+							"tag": [
+								"article"
+							]
+						}
+					},
+					"pick": "first"
 				}
 			}
 		}

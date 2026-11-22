@@ -1,0 +1,8 @@
+[
+	{"file": "data/part-locators.json", "find": "\"atLeast\": 3", "replace": "\"atLeast\": 2", "why": "a row of two buttons is taken for the chips"},
+	{"file": "data/part-locators.json", "find": "\t\t\t\t\t\t\t\t\"button\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"ariaOn\": true\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t],", "replace": "\t\t\t\t\t\t\t\t\"button\"\n\t\t\t\t\t\t\t\t]\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t],", "why": "a row with no pressed chip is taken for the chips"},
+	{"file": "data/part-locators.json", "find": "\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\"ariaOn\": false\n", "replace": "\t\t\t\t\t\t\"repeats\": true\n", "why": "the pressed chip is read as the plain chip"},
+	{"file": "data/part-locators.json", "find": "\t\t\t\t\t\t\"text\": \"count\",\n\t\t\t\t\t\t\"inside\": {", "replace": "\t\t\t\t\t\t\"text\": \"words\",\n\t\t\t\t\t\t\"inside\": {", "why": "the chip's words are read as its count"},
+	{"file": "data/part-locators.json", "find": "\t\t\t\t\t\t\"notInside\": {\n\t\t\t\t\t\t\t\"tag\": [\n\t\t\t\t\t\t\t\t\"article\"\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t}\n", "replace": "\t\t\t\t\t\t\"notInside\": {\n\t\t\t\t\t\t\t\"tag\": [\n\t\t\t\t\t\t\t\t\"nav\"\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t}\n", "why": "a card's own select is taken for the sort"},
+	{"file": "data/part-look-modes.json", "find": "\t\t\t\t\t\"setting\": \"sgsChipCountPill\",\n\t\t\t\t\t\"value\": false,", "replace": "\t\t\t\t\t\"setting\": \"sgsChipCountPill\",\n\t\t\t\t\t\"value\": true,", "why": "chips with no count still turn the pill on"}
+]

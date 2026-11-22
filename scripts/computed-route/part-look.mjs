@@ -2,7 +2,7 @@
 // Reads a client's shop look from its draft and says which settings of the Cart, Checkout, `sgs/account` and `sgs/cart` blocks it
 // would write (template-rework Task 4, Spec 48 FR-48-87).
 //
-//   node scripts/computed-route/part-look.mjs --client <slug> [--surface cart|checkout|my-account|header] [--site <scratch copy>]
+//   node scripts/computed-route/part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|my-account-in] [--site <scratch copy>]
 //                                             [--compare] [--write [--only <attr,attr>] [--dry-run]] [--out <dir>] [--headed]
 //
 // It serves the client's draft itself, opens each surface at 1440, 768 and 375, locates each part of the block by the structure
@@ -48,7 +48,7 @@ import { readTargets, siteUrl, targetOf } from './lib/site-targets.mjs';
 import { readLiveSignedIn, readSignedInParts, shootLiveSignedIn, signedInSeedOf } from './lib/part-look-signed-in.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'my-account-in' ];
+const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'shop-chips', 'shop-sort', 'my-account-in' ];
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 const SELECTOR_TABLE = path.join( REPO, 'plugins', 'sgs-blocks', 'includes', 'woocommerce', 'commerce-look', 'selectors.json' );
 
@@ -346,7 +346,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	try {
 		const client = flag( '--client' );
 		if ( ! client ) {
-			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|my-account-in] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>] [--strict]] [--out <dir>] [--headed]' );
+			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|my-account-in] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>] [--strict]] [--out <dir>] [--headed]' );
 		}
 		const surface = flag( '--surface' );
 		if ( surface && ! SURFACES.includes( surface ) ) {
