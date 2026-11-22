@@ -249,7 +249,8 @@ test( 'MUST FAIL (state target: guessed class): a state marker hovers the elemen
 	const { stateTarget } = await import( '../lib/calibrate-instances.mjs' );
 	// post-grid's read-more element is declared as .sgs-post-grid__readmore; .sgs-post-grid__read-more does not exist.
 	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'read-more' } ), '.sgs-post-grid__readmore' );
-	assert.equal( stateTarget( 'sgs/gallery', { css_element: 'image' } ), '.sgs-gallery__img' );
+	// The gallery's picture is the shared media element inside each image wrapper; .sgs-gallery__img no longer exists.
+	assert.equal( stateTarget( 'sgs/gallery', { css_element: 'image' } ), '.sgs-gallery__img-wrap .sgs-media-el' );
 	// An element the manifest does not declare keeps its BEM name; the wrapper is the instance root.
 	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'not-declared' } ), '.sgs-post-grid__not-declared' );
 	assert.equal( stateTarget( 'sgs/post-grid', { css_element: 'wrapper' } ), null );
