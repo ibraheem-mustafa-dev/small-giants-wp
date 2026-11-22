@@ -51,6 +51,10 @@ Each part is read on every element carrying its class inside the block (`main .s
 - `refiled`: the scan finds the property differing on another element; `refiled_to` names its classes.
 - `unproven`: the part is on no element, or the page could not be opened; `reason` says which.
 
+## Kept verdicts
+
+`--write-verdicts` writes `verdicts/<block>.json` for each block measured, with `check.py::script_hash` of the checkout (the block's front end: its scripts, render, stylesheets, block.json and `src/shared`) and the commit the scratch site's plugin was built from. A later edit to that front end makes the block's verdicts stale: `apply_verdicts.py` refuses them and `check.py --changed` reports them (`changed.py::stale_verdicts`), so the block needs the pass again. The driver looks up the stand-in image only after the `--setup` steps, so `--setup` works on a fresh site.
+
 ## Negative controls
 
 `controls/` holds two record files whose entries a correct pass must NOT prove: a setting paired with the wrong part (`freeDeliveryTrackColour` on the bar's text, `reviewTermFontFamily` on the review detail: expected `refiled` to the track and the term), a setting that changes no colour (`itemGap` on `color`: expected `removed`), a part no element carries (expected `unproven`), and one real hover entry (expected `proved`). Run `python prove_script_parts.py --out DIR --records-dir controls --block cart,form --tabs 6` (the controls hold those two blocks only).

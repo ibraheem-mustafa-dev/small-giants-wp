@@ -688,7 +688,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_preselect_axes_from_url` | `function sgs_preselect_axes_from_url( array $axes ): array` | The requested term slug per axis, keyed by taxonomy. | no markup |
 | `sgs_preselect_apply_to_manifest` | `function sgs_preselect_apply_to_manifest( array $manifest ): array` | Point a manifest's default at the combination the URL asks for. | no markup |
 
-#### `includes/helpers-responsive.php` — 17 function(s)
+#### `includes/helpers-responsive.php` — 19 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -703,6 +703,8 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_length_transform` | `function sgs_length_transform( $raw ): string` | Responsive-emitter `transform` for one stored length per device (a min height, a width, a gap). | no markup |
 | `sgs_emit_responsive_css` | `function sgs_emit_responsive_css( $selector, array $prop_map, array $opts = array() )` | Emit scoped responsive CSS for object-model properties on one selector. | no markup |
 | `sgs_emit_tier_decls` | `function sgs_emit_tier_decls( string $selector, array $tiers ): string` | Print READY per-tier declaration lists on one selector. | no markup |
+| `sgs_keyword_tiers` | `function sgs_keyword_tiers( $raw, array $allowed, string $default = '' ): array` | The per-device keyword choices of one layout setting (justify-content, justify-items, align-content, align-items). | no markup |
+| `sgs_emit_keyword_tier_overrides` | `function sgs_emit_keyword_tier_overrides( string $selector, string $css_prop, array $tiers, bool…` | Print the tablet and mobile overrides of one keyword layout setting; the desktop value is the caller's own rule. | no markup |
 | `sgs_canonicalise_responsive_attrs` | `function sgs_canonicalise_responsive_attrs( array $attrs )` | Canonicalisation ORACLE for object-model responsive attributes. | no markup |
 | `sgs_resolve_tier` | `function sgs_resolve_tier( $value, $tier = 'desktop', $default = null )` | Canonical tier-resolver — generalised cascade for both tri-state enums and scalar/null-marker values. Implements the contract: desktop… | no markup |
 | `sgs_emit_tier_rules` | `function sgs_emit_tier_rules( $uid_selector, $value, $css_on, $css_off = '', $default = 'off' )` | Emit scoped per-tier CSS rules (base + tablet + mobile) for a tri-state ('inherit'\|'on'\|'off') responsive behaviour attribute, resolved… | no markup |
@@ -1111,7 +1113,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**111 files, 541 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**111 files, 543 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -1119,7 +1121,6 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 
 | File | Exports | Purpose |
 |---|---|---|
-| `AlignItemsTierControl.js` | `AlignItemsTierControl (default)` | AlignItemsTierControl - the per-breakpoint cross-axis alignment row (FW-F). |
 | `AuthoredText.js` | `AuthoredText (default)` | AuthoredText — the editor canvas's print of a typed rich value (a setting edited with `SgsFreeTextField type="rich"`), the twin… |
 | `BooleanResponsiveControl.js` | `BooleanResponsiveControl (default)` | BooleanResponsiveControl — a single ToggleControl on Desktop, a 3-way Inherit/On/Off switch on Tablet/Mobile, driven by the… |
 | `BorderStyleControl.js` | `BorderStyleControl (default)` | BorderStyleControl — thin SGS wrapper matching WP core's native `BorderControlStylePicker` exactly (Bean-directed, 2026-08-19). |
@@ -1183,6 +1184,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SweepAngleControl.js` | `SweepAngleControl (default)` | SweepAngleControl — the directional sweep angle: one preset SelectControl (UI sugar) plus core's own AnglePickerControl, both… |
 | `TextAlignTierControl.js` | `TextAlignTierControl (default)`, `SGS_TEXT_ALIGN_OPTIONS` | TextAlignTierControl - the per-breakpoint text alignment row (FW-F). |
 | `TierBorderControl.js` | `TierBorderControl (default)` | TierBorderControl: one border (width, style, colour) per device, stored as `{desktop\|tablet\|mobile: {width, style, colour}}`.… |
+| `TierSelectControl.js` | `TierSelectControl (default)` | TierSelectControl - a per-breakpoint select for one keyword layout setting (cross-axis alignment, justify content, justify items… |
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 | `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 

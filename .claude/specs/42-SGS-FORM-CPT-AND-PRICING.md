@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 42
-spec_version: 2.3.0
+spec_version: 2.3.1
 status: active
 owner: framework
 created: 2026-09-14
@@ -85,7 +85,7 @@ WordPress's own closest structural analogue to this proposal — Synced Patterns
 
 **Owner-directed (Bean, 2026-09-14):** every form goes through the CPT-backed system — there is no "simple form stays inline" exception. Reasoning given: a genuinely one-off form is rare, and the whole point of a unified form setup is consistent analytics tracking and A/B testing across every form on a site, which an opt-out path would fragment.
 
-**FR-42-9:** the mandate is enforced in the editor (owner decision 2026-09-26). Outside a `sgs_form` post, `sgs/form` is an embed (`plugins/sgs-blocks/src/blocks/form/FormEmbedEdit.js`): pick a saved form, create one by name (published and linked in one step), or, for an inline form (older content or clone output), "Save as reusable form" moves its fields into a new saved form and links it. Fields are built only inside the saved form, whose settings show its Form ID as the slug. A linked form renders with `formId` set to the saved form's slug, whatever the definition stores, so submissions and rate limits always key on the slug (§2).
+**FR-42-9:** the mandate is enforced in the editor (owner decision 2026-09-26). Outside a `sgs_form` post, `sgs/form` is an embed (`plugins/sgs-blocks/src/blocks/form/FormEmbedEdit.js`): pick a saved form, create one by name (published and linked in one step), or, for an inline form (older content or clone output), "Save as reusable form" moves its fields into a new saved form and links it. Fields are built only inside the saved form, whose settings show its Form ID as the slug. A linked form renders with `formId` set to the saved form's slug, whatever the definition stores, so submissions and rate limits always key on the slug (§2). Inside a `sgs_form` post the editor makes fields easy to find (2026-11-22): the form's editor reads the allowed children from `block.json`'s `allowedBlocks` (every field type is offered, including date, number, hidden and address), an "Add field" toolbar button on the form and on each step (`src/blocks/form/AddFieldControl.js`) opens the inserter inside the step (the last step when the form is selected) with the form fields listed first, a saved form opens with its first step selected and the inserter open (`src/blocks/extensions/form-cpt-editor.js`), and a new empty form starts with a form block unless starter patterns exist for forms (WordPress then offers its pattern window). Nothing a page renders changes.
 
 ## 10. Known cross-cutting gap -- not resolved here
 

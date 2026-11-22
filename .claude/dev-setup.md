@@ -222,7 +222,7 @@ The setting record (plan `plans/2026-11-21-setting-record.md`): one data file pe
 - `setting_record_blocks.replaces_block`: the record's `accounted.replacesBlock`: the settings that remove the block or swap it for other markup (such as a visibility condition), so no placement is read from them (a list as JSON, a string as written); NULL when absent.
 - `setting_record_blocks.unvalued`: the record's `accounted.unvalued`: settings left untested, each with a reason (a list as JSON, a string as written); NULL when absent.
 - `setting_record_blocks.part_not_named`: the record's `accounted.partNotNamed`: placements whose part the selector reader cannot name, kept out of the entries (a list as JSON, a string as written); NULL when absent.
-- `setting_record_blocks.record_json`: the whole data file as written, so a field added to the file later reaches readers without a schema change; read the file's own fields from here, not from the columns above, when a column does not exist yet.
+- `setting_record_blocks.record_json`: the whole data file as written, it includes `proofCache` (per entry key: the proof's outcome and the fingerprint of what it read, so a rewrite re-proves only entries whose inputs moved), which has no column of its own; a field added to the file later reaches readers without a schema change; read the file's own fields from here, not from the columns above, when a column does not exist yet.
 
 **`motion_presets`**
 

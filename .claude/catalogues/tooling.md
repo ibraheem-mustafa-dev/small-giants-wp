@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1677 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 975 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 1685 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 980 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -28,7 +28,7 @@ Worktrees under `.claude/worktrees/` mirror this tree — never cite them as a s
 
 ### The prebuild gate chain — what actually blocks a build
 
-Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars`, `check-render-undefined-vars-selftest`, `inspector-scan-run`, `audit-block-file-consistency`, `wiring-fingerprint-tests`, `wiring-fingerprint-mutation-proof`, `survey-spacing-defaults`, `survey-spacing-defaults-selftest`, `run-motion-gates`, `migrate-core-blocks-tests`, `check-fx-off-switch-css`, `check-tap-area-fits-shape`, `block-identity-facts-check`, `test-media-adoption-selftest`, `assert-gate-wiring`, `test-media-base-css`, `test-scrim-state` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is what `npm run build` runs first, and what every `/handoff` and deploy relies on. Each entry's purpose is quoted from the script's own header.
+Derived from `package.json`'s `prebuild` PLUS `scripts/gates.json`, in execution order. ⛔ **These are TWO tiers, not one chain.** The five generators and the `fast` tier run on every build. The `full` tier — `check-dead-api-calls`, `check-render-undefined-vars`, `check-render-undefined-vars-selftest`, `inspector-scan-run`, `audit-block-file-consistency`, `wiring-fingerprint-tests`, `wiring-fingerprint-mutation-proof`, `survey-spacing-defaults`, `survey-spacing-defaults-selftest`, `run-motion-gates`, `migrate-core-blocks-tests`, `check-fx-off-switch-css`, `check-tap-area-fits-shape`, `block-identity-facts-check`, `test-media-adoption-selftest`, `assert-gate-wiring`, `test-media-base-css`, `test-scrim-state`, `setting-record-changed-proof` — was measured at 76.1% of the old chain's time and now runs PRE-DEPLOY only, via `build-deploy.py`'s `step_gate_full()`. Every gate that blocked before still blocks; only the timing changed. Run `npm run gate:list` for each gate's tier and measured cost, and `npm run gate:wired` to prove the `full` tier is still reachable. This chain is what `npm run build` runs first, and what every `/handoff` and deploy relies on. Each entry's purpose is quoted from the script's own header.
 
 | # | Script | Purpose (from its own header) |
 |---|---|---|
@@ -102,7 +102,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 868 scripts
+#### `plugins/sgs-blocks/scripts/` — 873 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -277,6 +277,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `check-text-stroke-routing.py` | manifest+npm | Gate: every `*TextStroke*` (text outline) attribute must be routable by the cloning resolver. |
 | `check-tier-object-cast.py` | manifest+npm+script-call | Tier-object-cast gate — never coerce a whole object-typed attribute to a string. |
 | `check-tier-storage-shape.py` | manifest+script-call | Find per-device attribute families that are HALF-MIGRATED between storage shapes. |
+| `check-typography-family-has-part.py` | — | Gate: every typography family and paint-table setting a block paints has a part (`css_element`). |
 | `check-undeclared-attrs.py` | manifest+npm+script-call | Find block attributes destructured in edit.js that WordPress silently DISCARDS. |
 | `check-undefined-refs.js` | manifest+npm+script-call | THE GAP THIS CLOSES. On 2026-08-22 three blocks shipped broken editors: sgs/text, sgs/quote and sgs/testimonial referenced `borderColourHover` /… |
 | `check-undefined-refs.selftest.js` | script-call | Self-test for check-undefined-refs.js. |
@@ -824,18 +825,22 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `seed-composition-roles.py` | script-call+skill+test-import | idempotent corrections to block_composition.composition_role. |
 | `seed-motion-fx-registry.py` | script-call+skill | idempotent editorial seeder for the Spec 38 motion system. |
 | `seed_motion_fx_data.py` | manifest+script-call+skill | the data seed-motion-fx-registry.py writes: FX_EFFECTS (one row per fx_effects effect) |
+| `setting-record/accept.py` | manifest+script-call+skill+test-import | Entries accepted because the same shape is proved on another block (Bean, 2026-11-22: the certainty an entry needs). |
+| `setting-record/browser/apply_verdicts.py` | — | Apply the browser pass's verdicts (browser/verdicts/<block>.json) to the committed records, without re-running the offline proof. |
 | `setting-record/browser/prove_script_parts.py` | script-call | Settle every `script-built-part` record entry in a real browser, on a local scratch WordPress site. |
+| `setting-record/browser/wp_content_fixtures.php` | script-call | Scratch fixtures for the browser pass on the blocks that read the site's own content (browser/README.md): four published posts, each with a featured… |
 | `setting-record/browser/wp_fixtures.php` | script-call | Scratch fixtures for the browser pass: a branded simple product (20) and a variable product whose one variation costs 10, both purchasable. |
 | `setting-record/browser/wp_nav_fixtures.php` | script-call | Scratch fixtures for the browser pass on sgs/nav-bar-menu: the stand-in posts of ../fixtures/menu-post.json (the menu, its mega panel, a page) at the… |
 | `setting-record/browser/wp_pages.php` | script-call | $spec = json_decode( file_get_contents( $args[0] ?? '/mnt/e/sgs-tmp/setting-record-task2/lane-c/pages.json' ), true ); $out = array(); foreach (… |
 | `setting-record/cascade.py` | script-call | A small CSS cascade: flatten stylesheets (nesting, @media, @supports, @layer, @container), match rules to elements |
+| `setting-record/changed.py` | manifest+script-call | Which blocks the setting check runs on in a build gate (check.py --changed): only those a change can touch, never the |
 | `setting-record/check.py` | manifest+script-call | The setting-record check: run a block's real render code offline for every setting and compare what changes with the |
 | `setting-record/computed.py` | manifest+script-call | Compute a property's value on an element of a rendered page, offline: the cascade (cascade.py), inheritance, var() |
 | `setting-record/diff.py` | hook+manifest+script-call+test-import | What one setting changes: a plain render and a changed render of the same block compared, as placements. |
 | `setting-record/included-files.php` | script-call | Loaded before the offline runner (php -d auto_prepend_file=...) by the setting check's renderer (render.py::Renderer): when the render ends it writes… |
 | `setting-record/instances.py` | manifest+script-call | The renders an offline block check needs to see what every setting of one block changes. |
 | `setting-record/leaf_values.py` | script-call | Test values for the settings `instances.py` cannot value from a type and a name alone, read from the block's own code. |
-| `setting-record/proof.py` | script-call | Prove each placement the run found with the cascade, and decide its kind. |
+| `setting-record/proof.py` | manifest+script-call | Prove each placement the run found with the cascade, and decide its kind. |
 | `setting-record/render.py` | manifest+script-call+skill+test-import | Render a block offline through the plugin's own runner (scripts/qa/lib/render-css-harness.php), with a cache. |
 | `setting-record/scriptsets.py` | script-call | What a front-end script sets on the page after the server render: the classes and attributes only a browser shows. |
 | `setting-record/seed_fixtures.py` | manifest+script-call | Give every block a fixture in fixtures.json from the two curated sources that already exist, never by hand per block. |
@@ -975,7 +980,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_table.py` | script-call | The names the Cart and Checkout look table builds (`includes/woocommerce/commerce-look/selectors.json`). |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 838 scripts
+#### `scripts/` — 841 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1406,6 +1411,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/media/write.mjs` | manifest+script-call+skill | Spec 49 section 11, Stage B: the route's writer. The draft's visible media at 375, 768 and 1440 (lib/fill-read-collect.mjs `media`) becomes one… |
 | `computed-route/lib/media-stock.mjs` | script-call | Stock previews for the media upload (Spec 48 FR-48-58, FR-48-33): the stock-host images a draft paints are found in the draft's own source… |
 | `computed-route/lib/media-upload.mjs` | manifest+script-call+skill | Media upload to an ID map (Spec 48 FR-48-58): every image under the export's `assets/` and the client's own images under `sites/<client>/assets/`… |
+| `computed-route/lib/menu-soon-entry.mjs` | script-call | A menu entry that says it is coming soon (data/skeleton-decisions.json `rules.navigation.briefOnlyEntry`; Bean, 2026-10-09: "there's no point of… |
 | `computed-route/lib/motion-behaviour-settings.mjs` | script-call | The settings behaviours (Spec 48 FR-48-77): a draft's script behaviours that SGS expresses as block settings rather than motion layers (the header's… |
 | `computed-route/lib/motion-behaviours.mjs` | manifest+script-call | The effect recogniser (Spec 48 FR-48-77, delivery unit U13): a draft's effects that its own script builds, recognised by their mechanism and never by… |
 | `computed-route/lib/motion-channels.mjs` | manifest+script-call | CSS values as the motion schema's channels (Spec 38A §6.2): a length, an angle, a transform list, a filter list or a property's value split into… |
@@ -1447,6 +1453,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/part-look-controls.mjs` | manifest+script-call | The buy box's controls by what they do, never by their words (Spec 43 FR-43-25, the button kit's flow opener). A product page draws a control that… |
 | `computed-route/lib/part-look-hover.mjs` | manifest+script-call | The hovered look of located draft parts (the part-look reader's browser half for a built-in button, lib/fill-builtin-button.mjs). |
 | `computed-route/lib/part-look-modes.mjs` | manifest+script-call | The content and mode settings of a block that choose what a part shows (template-rework Task 4, product page and shop listing): whether a card draws… |
+| `computed-route/lib/part-look-press.mjs` | manifest+script-call | Whether a row of pressable chips presses one chip at a time (the shop chips block's one-at-a-time switch, shop investigation F-6). |
 | `computed-route/lib/part-look-report.mjs` | manifest+script-call | The part-look report (part-look.mjs): report.json holds every number and list, report.md the same for a person. Pure: the per-surface results go in… |
 | `computed-route/lib/part-look-run.mjs` | manifest+script-call | The effects of the part-look command (part-look.mjs): the framework database rows, the browser read of a served draft, the read of a site's saved… |
 | `computed-route/lib/part-look-signed-in.mjs` | manifest+script-call | The signed-in views of an account surface for the part-look command (template-rework Task 7): the orders list, an order's page, the addresses and the… |
@@ -1570,6 +1577,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/skeleton-part-pairing.mjs` | manifest+script-call | The general pairing of paint conservation (Spec 48 section 3.4): which of a block's measured parts an absorbed draft element is, decided by what the… |
 | `computed-route/lib/skeleton-part-reads.mjs` | script-call | The draft elements a block draws as its own parts, whatever they paint (Spec 48 FR-48-6, paint conservation section 3.4). |
 | `computed-route/lib/skeleton-part-slots.mjs` | manifest+script-call | The draftSlots of a draft element a drawing block absorbs that is one of the block's own parts (Spec 48 FR-48-6): the control that opens the drawer… |
+| `computed-route/lib/skeleton-part-switch.mjs` | manifest+script-call | The block settings that switch one part's look onto another part (data/part-switches.json): which switches a block has, for… |
 | `computed-route/lib/skeleton-picture-tiles.mjs` | manifest+script-call | A grid of picture tiles, each a titled link or control (data/skeleton-decisions.json `rules.pictureTileGrid`), is one card grid whose cards are the… |
 | `computed-route/lib/skeleton-product-tile.mjs` | manifest+script-call | Product tiles on a page that is not the shop (data/skeleton-decisions.json `rules.productTile`): a loop of tiles that show a price, each naming one… |
 | `computed-route/lib/skeleton-propose.mjs` | manifest+script-call+skill | Skeleton writer step 2 (Spec 48 §3.4): the inventory (lib/skeleton-inventory.mjs) to a Fill skeleton and a proposal. |
