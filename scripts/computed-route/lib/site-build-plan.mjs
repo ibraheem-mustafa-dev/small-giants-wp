@@ -259,7 +259,9 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	// The templates a manifest surface builds (the site run's copies). A copy file under trees/template/ with no surface
 	// here is a stale tree and is never read, so a template the manifest stopped building is not recreated.
 	const surfaces = readSurfaces( repo, client );
-	const surfaced = new Set( Object.values( surfaces ).map( ( e ) => e?.target?.template ).filter( Boolean ) );
+	// A WooCommerce template the draft does not draw is no surface's copy, even while surfaces.json still lists its unplayed
+	// entry, so a copy the clone saved earlier is removed below and WooCommerce's own template stands.
+	const surfaced = new Set( Object.values( surfaces ).map( ( e ) => e?.target?.template ).filter( ( slug ) => slug && ! undrawnWooTemplate( slug, rows, surfaces ) ) );
 	for ( const slug of servedTemplates( rows ) ) {
 		if ( undrawnWooTemplate( slug, rows, surfaces ) ) {
 			notes.push( `template:${ slug }: no draft surface plays the ${ slug } template, so WooCommerce's own template stands and the site build makes no copy of it (FR-48-87)` );

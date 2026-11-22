@@ -81,3 +81,11 @@ test( 'undrawnWooTemplate: only cart and checkout; a row with no noDraft page su
 	assert.equal( undrawnWooTemplate( 'cart', [], {} ), false, 'no row names the template' );
 	assert.equal( undrawnWooTemplate( 'cart', ROWS( { cart: 7 } ), { other: { target: { postId: 99 }, noDraft: 'x' } } ), false, 'another row\'s noDraft says nothing about this one' );
 } );
+
+test( 'MUST FAIL: a cart copy the clone saved earlier is removed once the draft draws no cart, even while surfaces.json still lists the unplayed surface', () => {
+	const st = { ...state(), customTemplates: [ 'cart' ], templateHashes: { cart: 'abc123' }, templateIds: { cart: 55 } };
+	const p = planBuild( { rows: ROWS(), state: st, repo: repoWith( { 'sites/c/build/surfaces.json': { 'template-cart': UNPLAYED_CART } } ), client: 'c' } );
+	assert.deepEqual( p.actions.filter( ( a ) => 'template-remove' === a.type ).map( ( a ) => a.template ), [ 'cart' ] );
+	const played = planBuild( { rows: ROWS(), state: st, repo: repoWith( { 'sites/c/build/surfaces.json': { 'template-cart': PLAYED( 'cart' ) }, 'sites/c/build/trees/template/cart.json': WITH_REGION } ), client: 'c' } );
+	assert.deepEqual( played.actions.filter( ( a ) => 'template-remove' === a.type ), [], 'negative control: a drawn cart copy is never removed' );
+} );

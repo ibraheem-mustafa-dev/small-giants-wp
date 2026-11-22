@@ -8,5 +8,6 @@
 	{"file": "lib/site-build-plan.mjs", "find": "( Number.isInteger( r.id ) && e?.target?.postId === r.id ) || k === r.slug", "replace": "k === r.slug", "why": "a row's page surface is no longer found by its post id"},
 	{"file": "lib/site-build-plan.mjs", "find": "( Number.isInteger( r.id ) && e?.target?.postId === r.id ) || k === r.slug", "replace": "( Number.isInteger( r.id ) && e?.target?.postId === r.id ) || true", "why": "any entry is taken as the row's page surface"},
 	{"file": "lib/site-build-plan.mjs", "find": "return mine.length > 0 && mine.every( ( r ) => pageEntry( r )?.noDraft );", "replace": "return mine.every( ( r ) => pageEntry( r )?.noDraft );", "why": "a template no row names is taken as undrawn"},
-	{"file": "lib/site-build-plan.mjs", "find": "return mine.length > 0 && mine.every( ( r ) => pageEntry( r )?.noDraft );", "replace": "return mine.length > 0;", "why": "a row whose page surface is drawn is taken as undrawn"}
+	{"file": "lib/site-build-plan.mjs", "find": "return mine.length > 0 && mine.every( ( r ) => pageEntry( r )?.noDraft );", "replace": "return mine.length > 0;", "why": "a row whose page surface is drawn is taken as undrawn"},
+	{"file": "lib/site-build-plan.mjs", "find": ".filter( ( slug ) => slug && ! undrawnWooTemplate( slug, rows, surfaces ) ) );", "replace": ".filter( Boolean ) );", "why": "an undrawn template still counts as surfaced, so a copy the clone saved earlier is never removed"}
 ]
