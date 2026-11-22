@@ -35,7 +35,9 @@ const EYE = { 1440: [ tab( 'Orders', { count: '3', top: 0, parts: [ 'ordersRows'
 const menuOf = ( tabs ) => Object.fromEntries( accountMenuModes( { tabs, menu: MENU, rows: ROWS, stringKeys: KEYS } ).writes.map( ( w ) => [ w.attr, w.value ] ) );
 
 test( 'MUST FAIL: the menu follows the views the draft\'s tabs open: order, hidden views, words, counts, tick, no icons, side or row per width', () => {
-	assert.deepEqual( menuOf( MAMA ), {
+	// Every tab told (the plans tab left out): the views no tab opens are hidden, with the dashboard's parts.
+	const told = Object.fromEntries( Object.entries( MAMA ).map( ( [ w, list ] ) => [ w, list.filter( ( t ) => 'Subscriptions' !== t.label ) ] ) );
+	assert.deepEqual( menuOf( told ), {
 		menuOrder: [ 'orders', 'edit-address', 'edit-account' ],
 		hiddenEndpoints: [ 'dashboard', 'downloads', 'payment-methods', 'saved-items' ],
 		showQuickCards: false, showLatestOrder: false,
@@ -45,14 +47,28 @@ test( 'MUST FAIL: the menu follows the views the draft\'s tabs open: order, hidd
 		showMenuIcons: false,
 		navLayout: { desktop: 'sidebar', tablet: 'tabs', mobile: 'tabs' },
 	} );
-	const eye = menuOf( EYE );
+	const eye = menuOf( { 1440: EYE[ 1440 ].filter( ( t ) => 'Subscriptions' !== t.label ) } );
 	assert.deepEqual( eye.menuOrder, [ 'orders', 'edit-address', 'saved-items', 'edit-account' ] );
 	assert.deepEqual( eye.hiddenEndpoints, [ 'dashboard', 'downloads', 'payment-methods' ] );
 	assert.equal( eye[ 'strings.savedItems' ], 'Wishlist' );
 	assert.equal( eye.menuAddressesCount, false, 'a tab with no number turns its count off' );
 	assert.equal( eye.menuAccountTick, false );
-	const gaps = accountMenuModes( { tabs: EYE, menu: MENU, rows: ROWS, stringKeys: KEYS } ).gaps;
-	assert.ok( gaps.some( ( g ) => /already opens/.test( g.what ) && /Subscriptions/.test( g.evidence ) ), 'a second view marking orders opens nothing and is a gap' );
+} );
+
+test( 'MUST FAIL: while a tab\'s view is not told, the menu hides nothing: a Downloads tab the reader cannot mark keeps downloads in the menu', () => {
+	const withDownloads = { 1440: [ ...MAMA[ 1440 ].filter( ( t ) => 'Subscriptions' !== t.label ), tab( 'Downloads', { top: 340, parts: [] } ) ] };
+	const r = accountMenuModes( { tabs: withDownloads, menu: MENU, rows: ROWS, stringKeys: KEYS } );
+	const set = Object.fromEntries( r.writes.map( ( w ) => [ w.attr, w.value ] ) );
+	assert.deepEqual( set.menuOrder, [ 'orders', 'edit-address', 'edit-account' ], 'the told tabs still set the order' );
+	assert.equal( set.hiddenEndpoints, undefined );
+	assert.equal( set.showQuickCards, undefined, 'the dashboard is not hidden, so its parts stay' );
+	const gap = r.gaps.find( ( g ) => 'hiddenEndpoints' === g.setting );
+	assert.match( gap.what, /\["Downloads"\]/ );
+	assert.match( gap.what, /downloads/ );
+	// Both drafts draw a plans tab no view holds, so they hide nothing either.
+	assert.equal( menuOf( MAMA ).hiddenEndpoints, undefined );
+	assert.equal( menuOf( EYE ).hiddenEndpoints, undefined );
+	assert.ok( accountMenuModes( { tabs: EYE, menu: MENU, rows: ROWS, stringKeys: KEYS } ).gaps.some( ( g ) => /already opens/.test( g.what ) && /Subscriptions/.test( g.evidence ) ), 'a second view marking orders opens nothing and is a gap' );
 } );
 
 test( 'negative controls: a tab that did not open writes no menu; a tab opening no view is a gap; icons keep the default; a key the wording class lacks is a gap', () => {

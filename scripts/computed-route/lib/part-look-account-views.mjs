@@ -7,8 +7,9 @@
 // WooCommerce endpoint, the part that marks its view (`part`) or a view listing another component's cards (`list`), the wording key
 // its label goes to, and its count or tick switch. An endpoint is taken by the first tab whose view marks it; a later tab whose view
 // marks a taken endpoint, and a tab whose view marks none (a subscriptions list the site has no view for), opens no endpoint and is a
-// gap row with its words. `served` lists the endpoints the block's menu can show; each one no tab opens is hidden (the sign-out link is
-// never hidden). With the dashboard hidden, its quick cards and latest order are switched off too. Pure: tab records in, writes and gaps out.
+// gap row with its words. `served` lists the endpoints the block's menu can show; when every tab's view is told, each one no tab opens is hidden (the
+// sign-out link is never hidden), and while any tab's view is not told none is (that tab may be any endpoint left), with a gap row.
+// With the dashboard hidden, its quick cards and latest order are switched off too. Pure: tab records in, writes and gaps out.
 
 const WIDTH_TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
 const STRINGS = /^strings\.(.+)$/;
@@ -40,9 +41,11 @@ export function accountMenuModes( { block = 'sgs/account', tabs = {}, menu = {},
 	// Which endpoint each tab opens, in the draft's order.
 	const taken = new Map();
 	const open = [];
+	const unread = [];
 	for ( const t of wide ) {
 		const e = ( menu.endpoints || [] ).find( ( x ) => ( x.part ? t.parts.includes( x.part ) : !! ( x.list && t.list ) ) );
 		if ( ! e || taken.has( e.endpoint ) ) {
+			unread.push( t.label );
 			out.gaps.push( { block, setting: menu.order, what: e ? `the tab's view marks ${ e.endpoint }, which an earlier tab already opens; the site has no second view for it` : 'the tab\'s view is none the block draws (no WooCommerce view holds it), so the menu has no tab for it', evidence: `the draft's tab ${ JSON.stringify( t.label ) }` } );
 			continue;
 		}
@@ -53,8 +56,15 @@ export function accountMenuModes( { block = 'sgs/account', tabs = {}, menu = {},
 		return out;
 	}
 	write( menu.order, open.map( ( x ) => x.e.endpoint ), `the draft's tabs open ${ open.map( ( x ) => `${ JSON.stringify( x.t.label ) } (${ x.e.endpoint })` ).join( ', ' ) }` );
-	const hidden = ( menu.served || [] ).filter( ( e ) => ! taken.has( e ) );
-	write( menu.hidden, hidden, `no tab of the draft opens ${ hidden.join( ', ' ) || 'any other view' }` );
+	// An endpoint is hidden only on positive evidence: every tab of the draft is told. A tab whose view is not told may be the view
+	// of any endpoint left (a downloads list the locators do not mark), so with one the menu hides nothing and says so.
+	const hidden = unread.length ? [] : ( menu.served || [] ).filter( ( e ) => ! taken.has( e ) );
+	if ( unread.length ) {
+		const left = ( menu.served || [] ).filter( ( e ) => ! taken.has( e ) );
+		out.gaps.push( { block, setting: menu.hidden, what: `the draft's tabs ${ JSON.stringify( unread ) } open no view the reader tells, and one may be any endpoint no tab opens, so none is hidden: ${ left.join( ', ' ) } stay in the menu`, evidence: `the draft's tabs ${ JSON.stringify( wide.map( ( t ) => t.label ) ) }` } );
+	} else {
+		write( menu.hidden, hidden, `no tab of the draft opens ${ hidden.join( ', ' ) || 'any other view' }` );
+	}
 	if ( hidden.includes( 'dashboard' ) ) {
 		for ( const s of menu.dashboardParts || [] ) {
 			write( s, false, 'the draft draws no dashboard, so its parts are off' );
