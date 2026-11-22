@@ -1,0 +1,4496 @@
+{
+ "block": "sgs/google-reviews",
+ "scriptHash": "b413bae4582aca28",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "accentColour",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-color"
+   ],
+   "state": "active",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(210, 227, 252)"
+     },
+     "changed": {
+      "background-color": "color(srgb 0.814902 0.868235 0.921569)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(210, 227, 252)"
+     },
+     "changed": {
+      "background-color": "color(srgb 0.814902 0.868235 0.921569)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(210, 227, 252)"
+     },
+     "changed": {
+      "background-color": "color(srgb 0.814902 0.868235 0.921569)"
+     }
+    }
+   },
+   "tested": [
+    "accentColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "accentColour",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "active",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(23, 101, 204)"
+     },
+     "changed": {
+      "border-color": "color(srgb 0.0821569 0.309412 0.537843)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(23, 101, 204)"
+     },
+     "changed": {
+      "border-color": "color(srgb 0.0821569 0.309412 0.537843)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(23, 101, 204)"
+     },
+     "changed": {
+      "border-color": "color(srgb 0.0821569 0.309412 0.537843)"
+     }
+    }
+   },
+   "tested": [
+    "accentColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackground-hex-v0",
+    "arrowColourBackground-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackground-hex-v0",
+    "arrowColourBackground-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    },
+    "768": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    },
+    "375": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackground-hex-v0",
+    "arrowColourBackground-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackground-hex-v0",
+    "arrowColourBackground-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackground-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackground-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "768": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "375": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackground-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackground-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackground-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackground-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackground",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    },
+    "768": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    },
+    "375": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackground-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    },
+    "768": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    },
+    "375": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "768": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "375": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    },
+    "768": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    },
+    "375": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    },
+    "768": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    },
+    "375": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0",
+    "arrowColourBackgroundHover-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0",
+    "arrowColourBackgroundHover-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "768": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "375": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHover",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    },
+    "768": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    },
+    "375": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    },
+    "768": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    },
+    "375": {
+     "plain": {
+      "isolation": "isolate"
+     },
+     "changed": {
+      "isolation": "isolate"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "768": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "375": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBackgroundHoverGradient",
+   "part": "sgs-google-reviews__pause::after",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    },
+    "768": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    },
+    "375": {
+     "plain": {
+      "z-index": "auto"
+     },
+     "changed": {
+      "z-index": "-1"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBackgroundHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorder",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBorder-hex-v0",
+    "arrowColourBorder-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourBorder",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBorder-hex-v0",
+    "arrowColourBorder-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourBorder",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(218, 220, 224)"
+     },
+     "changed": {
+      "border-color": "rgb(155, 19, 87)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(218, 220, 224)"
+     },
+     "changed": {
+      "border-color": "rgb(155, 19, 87)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(218, 220, 224)"
+     },
+     "changed": {
+      "border-color": "rgb(155, 19, 87)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorder-hex-v0"
+   ],
+   "note": "found by the scan of every element of the block"
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgb(26, 115, 232)",
+      "background-image": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgb(26, 115, 232)",
+      "background-image": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgb(26, 115, 232)",
+      "background-image": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgb(26, 115, 232)",
+      "background-image": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgb(26, 115, 232)",
+      "background-image": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgb(26, 115, 232)",
+      "background-image": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "768": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "375": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    },
+    "768": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    },
+    "375": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    },
+    "768": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    },
+    "375": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    },
+    "768": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    },
+    "375": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHover",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHover",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "padding-box"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "position"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "position"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "relative"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-mask": "none"
+     },
+     "changed": {
+      "-webkit-mask": "linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) content-box exclude, linear-gradient(rgb(255, 255, 255) 0px, rgb(255, 255, 255) 0px) exclude"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "none"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)",
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-radius": "0px"
+     },
+     "changed": {
+      "border-radius": "50%"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "content"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "768": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "375": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "content"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "768": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "375": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "inset"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "inset"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "0px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "margin"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    },
+    "768": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    },
+    "375": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "margin"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    },
+    "768": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    },
+    "375": {
+     "plain": {
+      "margin": "0px"
+     },
+     "changed": {
+      "margin": "-2px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    },
+    "768": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    },
+    "375": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    },
+    "768": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    },
+    "375": {
+     "plain": {
+      "mask-composite": "add"
+     },
+     "changed": {
+      "mask-composite": "exclude, exclude"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "padding"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    },
+    "768": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    },
+    "375": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "padding"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    },
+    "768": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    },
+    "375": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "2px"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "position"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourBorderHoverGradient",
+   "part": "sgs-google-reviews__pause::before",
+   "props": [
+    "position"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourBorderHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourText",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourText-hex-v0",
+    "arrowColourText-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourText",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourText-hex-v0",
+    "arrowColourText-hex-v0#second"
+   ]
+  },
+  {
+   "setting": "arrowColourText",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourText-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourTextGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "border-color": "rgb(26, 115, 232)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "arrowColourTextGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHover",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHover",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "arrowColourTextHoverGradient",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(26, 115, 232)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "arrowColourTextHoverGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "theme",
+   "part": "sgs-google-reviews__dot::before",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(95, 99, 104)"
+     },
+     "changed": {
+      "background-color": "rgb(154, 160, 166)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(95, 99, 104)"
+     },
+     "changed": {
+      "background-color": "rgb(154, 160, 166)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(95, 99, 104)"
+     },
+     "changed": {
+      "background-color": "rgb(154, 160, 166)"
+     }
+    }
+   },
+   "tested": [
+    "theme-enum-dark-v0",
+    "theme-enum-transparent-v0"
+   ]
+  },
+  {
+   "setting": "theme",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "background-color"
+   ],
+   "state": "active",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(210, 227, 252)"
+     },
+     "changed": {
+      "background-color": "rgb(61, 74, 99)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(210, 227, 252)"
+     },
+     "changed": {
+      "background-color": "rgb(61, 74, 99)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(210, 227, 252)"
+     },
+     "changed": {
+      "background-color": "rgb(61, 74, 99)"
+     }
+    }
+   },
+   "tested": [
+    "theme-enum-dark-v0",
+    "theme-enum-transparent-v0"
+   ]
+  },
+  {
+   "setting": "theme",
+   "part": "sgs-google-reviews__pause",
+   "props": [
+    "border-color"
+   ],
+   "state": "active",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(23, 101, 204)"
+     },
+     "changed": {
+      "border-color": "rgb(174, 203, 250)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(23, 101, 204)"
+     },
+     "changed": {
+      "border-color": "rgb(174, 203, 250)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(23, 101, 204)"
+     },
+     "changed": {
+      "border-color": "rgb(174, 203, 250)"
+     }
+    }
+   },
+   "tested": [
+    "theme-enum-dark-v0",
+    "theme-enum-transparent-v0"
+   ]
+  }
+ ]
+}

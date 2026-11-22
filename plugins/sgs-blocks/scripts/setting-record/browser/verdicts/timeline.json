@@ -1,0 +1,211 @@
+{
+ "block": "sgs/timeline",
+ "scriptHash": "b5d5b17d4259fad5",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-fx-motion-path",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [375] on both pages",
+   "values": {
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-fx-motion-path",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [375] on both pages",
+   "values": {
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-generative-background__canvas",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [375] on both pages",
+   "values": {
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-generative-background__webgl-canvas",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [375] on both pages",
+   "values": {
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-grid-dots__canvas",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "display": "block"
+     },
+     "changed": null
+    }
+   },
+   "tested": [
+    "scrollEffect-enum-scrub-v0@sgs-grid-dots__canvas",
+    "scrollEffect-enum-pinned-journey-v0@sgs-grid-dots__canvas",
+    "scrollEffect-enum-pinned-horizontal-v0@sgs-grid-dots__canvas"
+   ]
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-lottie-layer svg",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [375] on both pages",
+   "values": {
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-lottie-layer",
+   "props": [
+    "visibility"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [375] on both pages",
+   "values": {
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-particles__canvas",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "display": "block"
+     },
+     "changed": null
+    }
+   },
+   "tested": [
+    "scrollEffect-enum-scrub-v0@sgs-particles__canvas",
+    "scrollEffect-enum-pinned-journey-v0@sgs-particles__canvas",
+    "scrollEffect-enum-pinned-horizontal-v0@sgs-particles__canvas"
+   ]
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-wave-gradient__canvas",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [375] on both pages",
+   "values": {
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "scrollEffect",
+   "part": "sgs-webgl-surface",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [375] on both pages",
+   "values": {
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  }
+ ]
+}

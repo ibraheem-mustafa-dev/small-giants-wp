@@ -10843,38 +10843,6 @@
    ]
   },
   {
-   "setting": "submenuCaret",
-   "part": "sgs-nav-bar-menu__mega::after",
-   "props": [
-    "height"
-   ],
-   "state": "open",
-   "tiers": [],
-   "selector": ".sgs-nav-bar-menu .sgs-nav-bar-menu__mega:has([data-sgs-mega-trigger][aria-expanded=\"true\"])::after",
-   "kind": "switched-on",
-   "unproved": "script-set-token",
-   "values": [
-    false,
-    true
-   ]
-  },
-  {
-   "setting": "submenuCaret",
-   "part": "sgs-nav-bar-menu__submenu-root::after",
-   "props": [
-    "height"
-   ],
-   "state": "open",
-   "tiers": [],
-   "selector": ".sgs-nav-bar-menu .sgs-nav-bar-menu__submenu-root:has([data-sgs-mega-trigger][aria-expanded=\"true\"])::after",
-   "kind": "switched-on",
-   "unproved": "script-set-token",
-   "values": [
-    false,
-    true
-   ]
-  },
-  {
    "setting": "submenuCaretGap",
    "part": "sgs-nav-bar-menu__link",
    "props": [

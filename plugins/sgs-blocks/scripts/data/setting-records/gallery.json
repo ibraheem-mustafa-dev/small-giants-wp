@@ -2725,7 +2725,6 @@
    "tiers": [],
    "selector": ".sgs-gallery.wp-block-sgs-gallery .sgs-gallery__dot",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2739,8 +2738,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-gallery.wp-block-sgs-gallery .sgs-gallery__dot",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "37px"
    ]
@@ -2755,22 +2753,6 @@
    "tiers": [],
    "selector": ".sgs-gallery.wp-block-sgs-gallery .sgs-gallery__dot",
    "kind": "value",
-   "unproved": "script-built-part",
-   "values": [
-    "37px"
-   ]
-  },
-  {
-   "setting": "dotBorderWidth",
-   "part": "sgs-gallery__dot",
-   "props": [
-    "box-sizing"
-   ],
-   "state": null,
-   "tiers": [],
-   "selector": ".sgs-gallery.wp-block-sgs-gallery .sgs-gallery__dot",
-   "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "37px"
    ]
@@ -2785,7 +2767,6 @@
    "tiers": [],
    "selector": ".sgs-gallery.wp-block-sgs-gallery .sgs-gallery__dot:not(.sgs-gallery__dot--active)",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2814,7 +2795,6 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-gallery.wp-block-sgs-gallery .sgs-gallery__dot--active:hover",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2829,7 +2809,6 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-gallery.wp-block-sgs-gallery .sgs-gallery__dot:not(.sgs-gallery__dot--active):hover",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2905,7 +2884,6 @@
    "tiers": [],
    "selector": ".sgs-gallery.wp-block-sgs-gallery .sgs-gallery__dot",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "37px"
    ]

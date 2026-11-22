@@ -2189,7 +2189,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2204,7 +2203,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2219,7 +2217,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "dashed"
    ]
@@ -2233,8 +2230,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     {
      "top": "11px",
@@ -2254,7 +2250,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "top": "11px",
@@ -2276,7 +2271,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -2312,7 +2306,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -2346,7 +2339,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -2390,7 +2382,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-track",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -2426,7 +2417,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-track",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -2460,7 +2450,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-track",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -2502,7 +2491,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-fill",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2517,7 +2505,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2534,7 +2521,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -2555,7 +2541,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -2574,7 +2559,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -2596,7 +2580,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -2613,7 +2596,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -2634,7 +2616,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -2653,7 +2634,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -2675,7 +2655,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-track",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2692,7 +2671,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-track",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -2713,7 +2691,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-track",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -2732,7 +2709,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-track",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -2754,7 +2730,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__free-delivery-track",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "37px"
    ]
@@ -4398,7 +4373,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-add-options",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -4413,7 +4387,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-save-for-later",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -4428,7 +4401,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-add-options",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -4443,7 +4415,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-save-for-later",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -4460,7 +4431,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-action",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4481,7 +4451,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-action",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4500,7 +4469,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-action",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4522,7 +4490,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-actions",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "nowrap",
     "wrap"
@@ -4538,7 +4505,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-brand",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -4555,7 +4521,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-brand",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4576,7 +4541,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-brand",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4595,7 +4559,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-brand",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4619,7 +4582,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-brand",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4640,7 +4602,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-brand",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4659,7 +4620,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-brand",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4681,7 +4641,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-brand",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "uppercase"
    ]
@@ -4696,7 +4655,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-details",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -4713,7 +4671,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-details",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4734,7 +4691,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-details",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4753,7 +4709,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-details",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4777,7 +4732,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-details",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4798,7 +4752,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-details",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4817,7 +4770,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-details",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4906,7 +4858,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "Georgia, serif"
    ]
@@ -4923,7 +4874,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4944,7 +4894,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4963,7 +4912,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -4985,7 +4933,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -5002,7 +4949,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5023,7 +4969,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5042,7 +4987,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5066,7 +5010,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-price",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5087,7 +5030,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-price",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5106,7 +5048,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-price",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5128,7 +5069,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-price",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -5145,7 +5085,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5166,7 +5105,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5185,7 +5123,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5207,7 +5144,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper .sgs-cart__item-qty-input",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -5222,7 +5158,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -5239,7 +5174,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper .sgs-cart__item-qty-input",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -5260,7 +5194,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper .sgs-cart__item-qty-input",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -5279,7 +5212,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper .sgs-cart__item-qty-input",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -5303,7 +5235,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper .sgs-cart__item-qty-input",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -5324,7 +5255,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper .sgs-cart__item-qty-input",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -5343,7 +5273,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper .sgs-cart__item-qty-input",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -5365,7 +5294,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-stepper",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "37px"
    ]
@@ -5380,7 +5308,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -5395,7 +5322,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -5412,7 +5338,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5433,7 +5358,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5452,7 +5376,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5476,7 +5399,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5497,7 +5419,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5516,7 +5437,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5540,7 +5460,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -5576,7 +5495,6 @@
    ],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -5610,7 +5528,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": {
@@ -5651,8 +5568,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove.sgs-cart__item-remove--text",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "line-through",
     "none",
@@ -5669,7 +5585,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-remove--text",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "line-through",
     "none",
@@ -5686,7 +5601,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-thumb",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -5701,7 +5615,6 @@
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__item-thumb",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "37px"
    ]
@@ -10631,8 +10544,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-cart.sgs-cart__panel .sgs-cart__panel-items > .sgs-cart__item",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     {
      "row": {

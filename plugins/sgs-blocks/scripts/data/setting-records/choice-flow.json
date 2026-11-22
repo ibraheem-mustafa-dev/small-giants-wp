@@ -12287,7 +12287,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__progress-badge",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14777,7 +14776,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-circle",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14792,7 +14790,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-circle",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14807,7 +14804,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-circle",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14822,7 +14818,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-circle",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14837,7 +14832,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__stepper-item.is-complete .sgs-choice-flow__stepper-label",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14852,7 +14846,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__stepper-item.is-current .sgs-choice-flow__stepper-label",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14867,7 +14860,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__stepper-item:not(.is-current):not(.is-complete) .sgs-choice-flow__stepper-circle",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14882,7 +14874,6 @@
    "tiers": [],
    "selector": ".sgs-choice-flow.wp-block-sgs-choice-flow .sgs-choice-flow__stepper-item:not(.is-current):not(.is-complete) .sgs-choice-flow__stepper-label",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]

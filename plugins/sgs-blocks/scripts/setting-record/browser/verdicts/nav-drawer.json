@@ -1,0 +1,59 @@
+{
+ "block": "sgs/nav-drawer",
+ "scriptHash": "95083860064fc785",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "anchor",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the value is written by a script when the visitor acts (the drawer opens); this pass did not take that action, so an unchanged value proves nothing"
+  },
+  {
+   "setting": "anchor",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the value is written by a script when the visitor acts (the drawer opens); this pass did not take that action, so an unchanged value proves nothing"
+  },
+  {
+   "setting": "anchorOffset",
+   "part": "ROOT",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the value is written by a script when the visitor acts (the drawer opens); this pass did not take that action, so an unchanged value proves nothing"
+  },
+  {
+   "setting": "anchorOffset",
+   "part": "ROOT",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "unproven",
+   "reason": "the value is written by a script when the visitor acts (the drawer opens); this pass did not take that action, so an unchanged value proves nothing"
+  }
+ ]
+}

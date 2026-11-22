@@ -5752,7 +5752,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "Georgia, serif"
    ]
@@ -5769,7 +5768,6 @@
    ],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5790,7 +5788,6 @@
    ],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5809,7 +5806,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5831,7 +5827,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "italic"
    ]
@@ -5846,7 +5841,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -5863,7 +5857,6 @@
    ],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5884,7 +5877,6 @@
    ],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5903,7 +5895,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5927,7 +5918,6 @@
    ],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5948,7 +5938,6 @@
    ],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5967,7 +5956,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -5989,7 +5977,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     3
    ]
@@ -6004,7 +5991,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "line-through",
     "none",
@@ -6021,7 +6007,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -6036,7 +6021,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn:focus-visible",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -6051,7 +6035,6 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn:hover",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -6068,7 +6051,6 @@
    ],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -6089,7 +6071,6 @@
    ],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -6108,7 +6089,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -6130,7 +6110,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "capitalize",
     "lowercase",
@@ -6148,7 +6127,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "balance",
     "nowrap",
@@ -6167,7 +6145,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid.wp-block-sgs-post-grid .sgs-post-grid__page-btn",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "horizontal-tb",
     "vertical-lr",
@@ -8019,22 +7996,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid__page-btn:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
    "kind": "switched-on",
-   "unproved": "script-built-part",
-   "values": [
-    true
-   ]
-  },
-  {
-   "setting": "sgsFocusRests",
-   "part": "sgs-post-grid__page-btn",
-   "props": [
-    "color"
-   ],
-   "state": "focus",
-   "tiers": [],
-   "selector": ".sgs-post-grid__page-btn:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
-   "kind": "switched-on",
-   "unproved": "script-built-part",
    "values": [
     true
    ]
@@ -8426,7 +8387,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid-media",
    "kind": "switched-on",
-   "unproved": "script-built-part",
    "values": [
     false
    ]
@@ -8441,7 +8401,6 @@
    "tiers": [],
    "selector": ".sgs-post-grid-media",
    "kind": "switched-on",
-   "unproved": "script-built-part",
    "values": [
     false
    ]

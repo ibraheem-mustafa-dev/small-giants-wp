@@ -3513,7 +3513,6 @@
    "tiers": [],
    "selector": ".sgs-video:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-video__bar",
    "kind": "switched-on",
-   "unproved": "script-built-part",
    "values": [
     true
    ]
@@ -3528,7 +3527,6 @@
    "tiers": [],
    "selector": ".sgs-video:focus-within:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-video__bar",
    "kind": "switched-on",
-   "unproved": "script-built-part",
    "values": [
     true
    ]
@@ -3605,7 +3603,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "Georgia, serif"
    ]
@@ -3622,7 +3619,6 @@
    ],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3643,7 +3639,6 @@
    ],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3662,7 +3657,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3684,7 +3678,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "italic"
    ]
@@ -3699,7 +3692,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -3716,7 +3708,6 @@
    ],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3737,7 +3728,6 @@
    ],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3756,7 +3746,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3780,7 +3769,6 @@
    ],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3801,7 +3789,6 @@
    ],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3820,7 +3807,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -3842,7 +3828,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     3
    ]
@@ -3857,7 +3842,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "line-through",
     "none",
@@ -3874,7 +3858,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -3889,7 +3872,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time:focus-visible",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -3904,7 +3886,6 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-media .sgs-video__time:hover",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -3921,7 +3902,6 @@
    ],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -3942,7 +3922,6 @@
    ],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -3961,7 +3940,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -3983,7 +3961,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "capitalize",
     "lowercase",
@@ -4001,7 +3978,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "balance",
     "nowrap",
@@ -4020,7 +3996,6 @@
    "tiers": [],
    "selector": ".sgs-media .sgs-video__time",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "horizontal-tb",
     "vertical-lr",

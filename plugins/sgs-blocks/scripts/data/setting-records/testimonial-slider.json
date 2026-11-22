@@ -4738,7 +4738,6 @@
    ],
    "selector": ".sgs-testimonial-slider.wp-block-sgs-testimonial-slider .sgs-testimonial-slider__list",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -4759,7 +4758,6 @@
    ],
    "selector": ".sgs-testimonial-slider.wp-block-sgs-testimonial-slider .sgs-testimonial-slider__list",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -4778,7 +4776,6 @@
    "tiers": [],
    "selector": ".sgs-testimonial-slider.wp-block-sgs-testimonial-slider .sgs-testimonial-slider__list",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",

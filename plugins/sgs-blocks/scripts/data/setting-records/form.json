@@ -13017,7 +13017,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "Georgia, serif"
    ]
@@ -13034,7 +13033,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13055,7 +13053,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13074,7 +13071,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13096,7 +13092,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "italic"
    ]
@@ -13111,7 +13106,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -13128,7 +13122,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13149,7 +13142,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13168,7 +13160,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13192,7 +13183,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13213,7 +13203,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13232,7 +13221,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -13256,7 +13244,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "center",
@@ -13277,7 +13264,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "center",
@@ -13296,7 +13282,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "center",
@@ -13318,7 +13303,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     3
    ]
@@ -13333,7 +13317,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "line-through",
     "none",
@@ -13350,7 +13333,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -13365,7 +13347,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail:focus-visible",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -13380,7 +13361,6 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-form .sgs-form-review__detail:hover",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -13397,7 +13377,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -13418,7 +13397,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -13437,7 +13415,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -13459,7 +13436,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "capitalize",
     "lowercase",
@@ -13477,7 +13453,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "balance",
     "nowrap",
@@ -13496,7 +13471,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__detail",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "horizontal-tb",
     "vertical-lr",
@@ -13983,7 +13957,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "Georgia, serif"
    ]
@@ -14000,7 +13973,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14021,7 +13993,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14040,7 +14011,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14062,7 +14032,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "italic"
    ]
@@ -14077,7 +14046,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "700"
    ]
@@ -14094,7 +14062,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14115,7 +14082,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14134,7 +14100,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14158,7 +14123,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14179,7 +14143,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14198,7 +14161,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": 37,
@@ -14222,7 +14184,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "center",
@@ -14243,7 +14204,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "center",
@@ -14262,7 +14222,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "center",
@@ -14284,7 +14243,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     3
    ]
@@ -14299,7 +14257,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "line-through",
     "none",
@@ -14316,7 +14273,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14331,7 +14287,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term:focus-visible",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14346,7 +14301,6 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-form .sgs-form-review__term:hover",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -14363,7 +14317,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -14384,7 +14337,6 @@
    ],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -14403,7 +14355,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "37px",
@@ -14425,7 +14376,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "capitalize",
     "lowercase",
@@ -14443,7 +14393,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "balance",
     "nowrap",
@@ -14462,7 +14411,6 @@
    "tiers": [],
    "selector": ".sgs-form .sgs-form-review__term",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "horizontal-tb",
     "vertical-lr",

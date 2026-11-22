@@ -1,0 +1,789 @@
+{
+ "block": "sgs/audio",
+ "scriptHash": "f49292a74bfaae30",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 1023.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "768": {
+     "plain": null,
+     "changed": {
+      "clip": "rect(0px, 0px, 0px, 0px)"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "clip": "rect(0px, 0px, 0px, 0px)"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": null,
+     "changed": {
+      "clip": "rect(0px, 0px, 0px, 0px)"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": null,
+     "changed": {
+      "clip": "rect(0px, 0px, 0px, 0px)"
+     }
+    },
+    "768": {
+     "plain": null,
+     "changed": {
+      "clip": "rect(0px, 0px, 0px, 0px)"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "clip": "rect(0px, 0px, 0px, 0px)"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "clip-path"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 1023.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "768": {
+     "plain": null,
+     "changed": {
+      "clip-path": "inset(50%)"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "clip-path": "inset(50%)"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "clip-path"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": null,
+     "changed": {
+      "clip-path": "inset(50%)"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "clip-path"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": null,
+     "changed": {
+      "clip-path": "inset(50%)"
+     }
+    },
+    "768": {
+     "plain": null,
+     "changed": {
+      "clip-path": "inset(50%)"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "clip-path": "inset(50%)"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 1023.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "768": {
+     "plain": null,
+     "changed": {
+      "height": "1px"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "height": "1px"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": null,
+     "changed": {
+      "height": "1px"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": null,
+     "changed": {
+      "height": "1px"
+     }
+    },
+    "768": {
+     "plain": null,
+     "changed": {
+      "height": "1px"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "height": "1px"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 1023.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "768": {
+     "plain": null,
+     "changed": {
+      "overflow": "hidden"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "overflow": "hidden"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": null,
+     "changed": {
+      "overflow": "hidden"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": null,
+     "changed": {
+      "overflow": "hidden"
+     }
+    },
+    "768": {
+     "plain": null,
+     "changed": {
+      "overflow": "hidden"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "overflow": "hidden"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 1023.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "768": {
+     "plain": null,
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": null,
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": null,
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": null,
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 1023.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "768": {
+     "plain": null,
+     "changed": {
+      "white-space": "nowrap"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "white-space": "nowrap"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": null,
+     "changed": {
+      "white-space": "nowrap"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": null,
+     "changed": {
+      "white-space": "nowrap"
+     }
+    },
+    "768": {
+     "plain": null,
+     "changed": {
+      "white-space": "nowrap"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "white-space": "nowrap"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 1023.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "768": {
+     "plain": null,
+     "changed": {
+      "width": "1px"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "width": "1px"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": null,
+     "changed": {
+      "width": "1px"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__toggle-label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": null,
+     "changed": {
+      "width": "1px"
+     }
+    },
+    "768": {
+     "plain": null,
+     "changed": {
+      "width": "1px"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "width": "1px"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  },
+  {
+   "setting": "playerStyle",
+   "part": "sgs-audio__transport",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": null,
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    },
+    "768": {
+     "plain": null,
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    },
+    "375": {
+     "plain": null,
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    }
+   },
+   "tested": [
+    "playerStyle-enum-waveform-v0",
+    "playerStyle-enum-spectrum-v0",
+    "playerStyle-enum-radial-v0",
+    "playerStyle-enum-oscilloscope-v0",
+    "playerStyle-enum-gradient-pulse-v0",
+    "playerStyle-enum-hidden-v0",
+    "playerStyle-enum-toggle-v0"
+   ]
+  }
+ ]
+}

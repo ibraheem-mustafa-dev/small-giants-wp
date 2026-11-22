@@ -1,0 +1,91 @@
+{
+ "block": "sgs/testimonial",
+ "scriptHash": "1b9e6ff3e5fc755e",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "workFit",
+   "part": "sgs-testimonial-work",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "object-fit": "cover"
+     },
+     "changed": {
+      "object-fit": "contain"
+     }
+    }
+   },
+   "tested": [
+    "workFit-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "workFit",
+   "part": "sgs-testimonial-work",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "object-fit": "cover"
+     },
+     "changed": {
+      "object-fit": "contain"
+     }
+    }
+   },
+   "tested": [
+    "workFit-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "workFit",
+   "part": "sgs-testimonial-work",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "object-fit": "cover"
+     },
+     "changed": {
+      "object-fit": "contain"
+     }
+    },
+    "375": {
+     "plain": {
+      "object-fit": "cover"
+     },
+     "changed": {
+      "object-fit": "contain"
+     }
+    }
+   },
+   "tested": [
+    "workFit-tiers-value-v0"
+   ]
+  }
+ ]
+}

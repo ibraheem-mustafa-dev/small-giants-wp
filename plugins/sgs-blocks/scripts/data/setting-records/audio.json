@@ -777,8 +777,7 @@
     "@media ( max-width: 1023.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-tablet=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -794,8 +793,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-mobile=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -809,8 +807,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-audio--toggle[data-toggle-show-label=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -826,8 +823,7 @@
     "@media ( max-width: 1023.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-tablet=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -843,8 +839,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-mobile=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -858,8 +853,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-audio--toggle[data-toggle-show-label=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -875,8 +869,7 @@
     "@media ( max-width: 1023.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-tablet=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -892,8 +885,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-mobile=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -907,8 +899,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-audio--toggle[data-toggle-show-label=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -924,8 +915,7 @@
     "@media ( max-width: 1023.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-tablet=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -941,8 +931,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-mobile=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -956,8 +945,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-audio--toggle[data-toggle-show-label=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -973,8 +961,7 @@
     "@media ( max-width: 1023.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-tablet=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -990,8 +977,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-mobile=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -1005,8 +991,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-audio--toggle[data-toggle-show-label=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -1022,8 +1007,7 @@
     "@media ( max-width: 1023.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-tablet=\"0\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -1039,8 +1023,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-mobile=\"0\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -1054,8 +1037,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-audio--toggle[data-toggle-show-label=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -1071,8 +1053,7 @@
     "@media ( max-width: 1023.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-tablet=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -1088,8 +1069,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-audio--toggle[data-toggle-show-label-mobile=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -1103,8 +1083,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-audio--toggle[data-toggle-show-label=\"1\"] .sgs-audio__toggle-label",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "toggle"
    ]
@@ -1118,8 +1097,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-audio--gradient-pulse .sgs-audio__transport",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "gradient-pulse"
    ]

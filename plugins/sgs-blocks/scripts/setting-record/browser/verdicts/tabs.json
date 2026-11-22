@@ -1,0 +1,71 @@
+{
+ "block": "sgs/tabs",
+ "scriptHash": "08715d978579b9c9",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "orientation",
+   "part": "sgs-tabs__nav::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "inset": "auto auto 0px 0px"
+     },
+     "changed": {
+      "inset": "44.3906px 223.609px 0px 0px"
+     }
+    }
+   },
+   "tested": [
+    "orientation-enum-vertical-v0",
+    "orientation-enum-vertical-mobileLayout-row-v0",
+    "orientation-enum-vertical-layout-flex-v0",
+    "orientation-enum-vertical-layout-stack-v0",
+    "orientation-enum-vertical-layout-grid-v0",
+    "orientation-enum-vertical-flexDirection-row-v0",
+    "orientation-enum-vertical-flexDirection-column-v0"
+   ]
+  },
+  {
+   "setting": "orientation",
+   "part": "sgs-tabs__nav::after",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media ( max-width: 767.98px )"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "width": "375px"
+     },
+     "changed": {
+      "width": "0px"
+     }
+    }
+   },
+   "tested": [
+    "orientation-enum-vertical-v0",
+    "orientation-enum-vertical-mobileLayout-row-v0",
+    "orientation-enum-vertical-layout-flex-v0",
+    "orientation-enum-vertical-layout-stack-v0",
+    "orientation-enum-vertical-layout-grid-v0",
+    "orientation-enum-vertical-flexDirection-row-v0",
+    "orientation-enum-vertical-flexDirection-column-v0"
+   ]
+  }
+ ]
+}

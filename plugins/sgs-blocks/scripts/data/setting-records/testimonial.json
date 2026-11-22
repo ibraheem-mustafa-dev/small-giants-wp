@@ -6149,7 +6149,6 @@
    ],
    "selector": ".sgs-testimonial-work",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "contain",
@@ -6170,7 +6169,6 @@
    ],
    "selector": ".sgs-testimonial-work",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "contain",
@@ -6189,7 +6187,6 @@
    "tiers": [],
    "selector": ".sgs-testimonial-work",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     {
      "desktop": "contain",

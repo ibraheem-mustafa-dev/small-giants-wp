@@ -21,7 +21,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__bar",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -36,7 +35,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__guest-prompt",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -51,7 +49,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__bar",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -66,7 +63,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__guest-prompt",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -81,7 +77,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__move-to-basket",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -96,7 +91,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__move-to-basket",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -111,7 +105,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__move-to-basket",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -243,7 +236,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -257,8 +249,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-name",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -273,7 +264,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-name",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -287,8 +277,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-name",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -445,8 +434,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": ".sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "cards",
     "list",
@@ -463,8 +451,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--list .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "list",
     "strip"
@@ -481,8 +468,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": ".sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "cards",
     "list",
@@ -499,8 +485,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--strip .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "strip"
    ]
@@ -514,8 +499,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--list .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "list"
    ]
@@ -531,8 +515,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": ".sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "cards",
     "list",
@@ -549,8 +532,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--strip .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "strip"
    ]
@@ -566,8 +548,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": ".sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "cards",
     "list",
@@ -584,8 +565,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--strip .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "strip"
    ]
@@ -601,8 +581,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": ".sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "cards",
     "list",
@@ -619,8 +598,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--strip .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "strip"
    ]
@@ -634,8 +612,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--strip .sgs-wishlist-panel__row",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "strip"
    ]
@@ -649,8 +626,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--list .sgs-wishlist-panel__row-actions",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "list"
    ]
@@ -666,8 +642,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": ".sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row-actions",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "cards",
     "list",
@@ -684,8 +659,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--strip .sgs-wishlist-panel__row-actions",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "strip"
    ]
@@ -701,8 +675,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--list .sgs-wishlist-panel__row-info",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "list"
    ]
@@ -718,8 +691,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": ".sgs-wishlist-panel--mobile-rows .sgs-wishlist-panel__row-link",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "cards",
     "list",
@@ -736,8 +708,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--strip .sgs-wishlist-panel__row-link",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "strip"
    ]
@@ -751,8 +722,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--list .sgs-wishlist-panel__row-thumb",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "list"
    ]
@@ -766,8 +736,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel--list .sgs-wishlist-panel__row-thumb",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "list"
    ]
@@ -782,7 +751,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__notify-toggle",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -797,7 +765,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__remove",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -842,7 +809,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__notify-toggle:focus-visible",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -857,7 +823,6 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__notify-toggle:hover",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -872,7 +837,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__remove:focus-visible",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -887,7 +851,6 @@
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__remove:hover",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -901,8 +864,7 @@
    "state": null,
    "tiers": [],
    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__remove",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "#13579b"
    ]
@@ -917,7 +879,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-price",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -931,8 +892,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-price",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -947,7 +907,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-price",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -961,8 +920,7 @@
    "state": null,
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-price",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
    ]
@@ -977,7 +935,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-price-drop",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -992,7 +949,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-actions",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "nowrap",
     "wrap"
@@ -2106,7 +2062,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__share-controls",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "nowrap",
     "wrap"
@@ -2122,7 +2077,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__share-field",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2137,7 +2091,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__share-field",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2152,7 +2105,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-stock",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -2167,7 +2119,6 @@
    "tiers": [],
    "selector": ".sgs-wishlist-panel.wp-block-sgs-wishlist-panel .sgs-wishlist-panel__row-stock",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]

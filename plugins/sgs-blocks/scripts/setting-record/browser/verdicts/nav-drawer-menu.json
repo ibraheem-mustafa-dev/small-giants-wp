@@ -1,0 +1,987 @@
+{
+ "block": "sgs/nav-drawer-menu",
+ "scriptHash": "65a2a119202f45e3",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "drillBackFontFamily",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    }
+   },
+   "tested": [
+    "drillBackFontFamily-kw-Georgia-serif-v0"
+   ]
+  },
+  {
+   "setting": "drillBackFontSize",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "font-size": "16px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "16px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackFontSize",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "font-size": "16px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackFontSize",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-size": "16px"
+     },
+     "changed": {
+      "font-size": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-size": "16px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "16px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackFontStyle",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    }
+   },
+   "tested": [
+    "drillBackFontStyle-kw-italic-v0"
+   ]
+  },
+  {
+   "setting": "drillBackFontWeight",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    }
+   },
+   "tested": [
+    "drillBackFontWeight-weight-700-v0"
+   ]
+  },
+  {
+   "setting": "drillBackLetterSpacing",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackLetterSpacing",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackLetterSpacing",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackLineHeight",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "line-height": "24.8px"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "line-height": "24.8px"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "24.8px"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackLineHeight-length-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextAlign",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "768": {
+     "plain": {
+      "justify-content": "normal"
+     },
+     "changed": {
+      "justify-content": "flex-end"
+     }
+    },
+    "375": {
+     "plain": {
+      "justify-content": "normal"
+     },
+     "changed": {
+      "justify-content": "flex-start"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextAlign",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "justify-content": "normal"
+     },
+     "changed": {
+      "justify-content": "flex-start"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextAlign",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "justify-content": "normal"
+     },
+     "changed": {
+      "justify-content": "center"
+     }
+    },
+    "768": {
+     "plain": {
+      "justify-content": "normal"
+     },
+     "changed": {
+      "justify-content": "flex-end"
+     }
+    },
+    "375": {
+     "plain": {
+      "justify-content": "normal"
+     },
+     "changed": {
+      "justify-content": "flex-start"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextAlign",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "right"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextAlign",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextAlign",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "center"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "right"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextColumns",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "768": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "375": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextColumns-count-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextDecoration",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextDecoration-kw-underline-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextStrokeColour",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextStrokeColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextStrokeColourHover",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextStrokeColourHover",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextStrokeWidth",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextStrokeWidth",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextStrokeWidth",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextTransform",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextTransform-kw-uppercase-v0"
+   ]
+  },
+  {
+   "setting": "drillBackTextWrap",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "balance"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "balance"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "balance"
+     }
+    }
+   },
+   "tested": [
+    "drillBackTextWrap-kw-balance-v0"
+   ]
+  },
+  {
+   "setting": "drillBackWritingMode",
+   "part": "sgs-nav-drawer-menu__drill-back-btn",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "768": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "375": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    }
+   },
+   "tested": [
+    "drillBackWritingMode-kw-vertical-rl-v0"
+   ]
+  }
+ ]
+}

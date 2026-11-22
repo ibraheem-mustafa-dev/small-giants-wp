@@ -1821,8 +1821,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__nav::after",
-   "kind": "value",
-   "unproved": "script-set-token",
+   "kind": "switched-on",
    "values": [
     "vertical"
    ]
@@ -1889,8 +1888,7 @@
     "@media ( max-width: 767.98px )"
    ],
    "selector": ".sgs-tabs--vertical.sgs-tabs--style-underline .sgs-tabs__nav::after",
-   "kind": "value",
-   "unproved": "script-set-token",
+   "kind": "switched-on",
    "values": [
     "vertical"
    ]

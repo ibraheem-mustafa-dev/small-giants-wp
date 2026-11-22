@@ -1,0 +1,946 @@
+{
+ "block": "sgs/choice-flow",
+ "scriptHash": "6dc6637b5c9cf218",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-question__option-photo",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-question__option-photo",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-question__option-photo",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-question__option-photo",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-question__option-photo",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-question__option-photo",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-result",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-result",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow-result",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__step",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__step",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__step",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-choice-flow__summary-effect",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "flowLayout",
+   "part": "sgs-form-field__input",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "progressBadgeColour",
+   "part": "sgs-choice-flow__progress-badge",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "progressBadgeColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-form__button",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "stepperActiveColour",
+   "part": "sgs-choice-flow__stepper-circle",
+   "props": [
+    "border-color"
+   ],
+   "state": ".is-complete",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stepperActiveColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "stepperActiveColour",
+   "part": "sgs-choice-flow__stepper-circle",
+   "props": [
+    "border-color"
+   ],
+   "state": "current",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stepperActiveColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "stepperActiveColour",
+   "part": "sgs-choice-flow__stepper-circle",
+   "props": [
+    "color"
+   ],
+   "state": ".is-complete",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stepperActiveColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "stepperActiveColour",
+   "part": "sgs-choice-flow__stepper-circle",
+   "props": [
+    "color"
+   ],
+   "state": "current",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stepperActiveColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "stepperActiveColour",
+   "part": "sgs-choice-flow__stepper-label",
+   "props": [
+    "color"
+   ],
+   "state": ".is-complete",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stepperActiveColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "stepperActiveColour",
+   "part": "sgs-choice-flow__stepper-label",
+   "props": [
+    "color"
+   ],
+   "state": "current",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stepperActiveColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "stepperColour",
+   "part": "sgs-choice-flow__stepper-circle",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stepperColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "stepperColour",
+   "part": "sgs-choice-flow__stepper-label",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stepperColour-hex-v0"
+   ]
+  }
+ ]
+}

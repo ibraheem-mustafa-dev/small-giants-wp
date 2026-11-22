@@ -1,0 +1,393 @@
+{
+ "block": "sgs/gift-order",
+ "scriptHash": "2ea37cb4762757b1",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "fieldBorderColour",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(118, 118, 118)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(118, 118, 118)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(118, 118, 118)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "fieldBorderColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "fieldBorderWidth",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-style": "inset"
+     },
+     "changed": {
+      "border-style": "solid"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-style": "inset"
+     },
+     "changed": {
+      "border-style": "solid"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-style": "inset"
+     },
+     "changed": {
+      "border-style": "solid"
+     }
+    }
+   },
+   "tested": [
+    "fieldBorderWidth-box-v0"
+   ]
+  },
+  {
+   "setting": "fieldShadow",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "box-shadow": "none"
+     },
+     "changed": {
+      "box-shadow": "rgb(19, 87, 155) 0px 0px 0px 3px"
+     }
+    },
+    "768": {
+     "plain": {
+      "box-shadow": "none"
+     },
+     "changed": {
+      "box-shadow": "rgb(19, 87, 155) 0px 0px 0px 3px"
+     }
+    },
+    "375": {
+     "plain": {
+      "box-shadow": "none"
+     },
+     "changed": {
+      "box-shadow": "rgb(19, 87, 155) 0px 0px 0px 3px"
+     }
+    }
+   },
+   "tested": [
+    "fieldShadow-kw-0-0-0-3px-13579b-v0"
+   ]
+  },
+  {
+   "setting": "fieldShadow",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "verdict": "unproven",
+   "reason": "tier condition ['@media (forced-colors:active)'] is not a max-width/min-width this pass can hold"
+  },
+  {
+   "setting": "fieldShadow",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "verdict": "unproven",
+   "reason": "tier condition ['@media (forced-colors:active)'] is not a max-width/min-width this pass can hold"
+  },
+  {
+   "setting": "fieldShadowColour",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "box-shadow": "color(srgb 0.227451 0.164706 0.133333 / 0.1) 0px 4px 12px 0px"
+     },
+     "changed": {
+      "box-shadow": "rgb(19, 87, 155) 0px 4px 12px 0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "box-shadow": "color(srgb 0.227451 0.164706 0.133333 / 0.1) 0px 4px 12px 0px"
+     },
+     "changed": {
+      "box-shadow": "rgb(19, 87, 155) 0px 4px 12px 0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "box-shadow": "color(srgb 0.227451 0.164706 0.133333 / 0.1) 0px 4px 12px 0px"
+     },
+     "changed": {
+      "box-shadow": "rgb(19, 87, 155) 0px 4px 12px 0px"
+     }
+    }
+   },
+   "tested": [
+    "fieldShadowColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "giftFieldPadding",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "padding": "8px 12px"
+     },
+     "changed": {
+      "padding": "21px 23px 25px 27px"
+     }
+    },
+    "375": {
+     "plain": {
+      "padding": "8px 12px"
+     },
+     "changed": {
+      "padding": "3px 5px 7px 9px"
+     }
+    }
+   },
+   "tested": [
+    "giftFieldPadding-box-tiers-v0"
+   ]
+  },
+  {
+   "setting": "giftFieldPadding",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "padding": "8px 12px"
+     },
+     "changed": {
+      "padding": "3px 5px 7px 9px"
+     }
+    }
+   },
+   "tested": [
+    "giftFieldPadding-box-tiers-v0"
+   ]
+  },
+  {
+   "setting": "giftFieldPadding",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "padding": "8px 12px"
+     },
+     "changed": {
+      "padding": "11px 13px 17px 19px"
+     }
+    },
+    "768": {
+     "plain": {
+      "padding": "8px 12px"
+     },
+     "changed": {
+      "padding": "21px 23px 25px 27px"
+     }
+    },
+    "375": {
+     "plain": {
+      "padding": "8px 12px"
+     },
+     "changed": {
+      "padding": "3px 5px 7px 9px"
+     }
+    }
+   },
+   "tested": [
+    "giftFieldPadding-box-tiers-v0"
+   ]
+  },
+  {
+   "setting": "giftInputMinHeight",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "min-height": "44px"
+     },
+     "changed": {
+      "min-height": "123px"
+     }
+    },
+    "375": {
+     "plain": {
+      "min-height": "44px"
+     },
+     "changed": {
+      "min-height": "107px"
+     }
+    }
+   },
+   "tested": [
+    "giftInputMinHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "giftInputMinHeight",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "min-height": "44px"
+     },
+     "changed": {
+      "min-height": "107px"
+     }
+    }
+   },
+   "tested": [
+    "giftInputMinHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "giftInputMinHeight",
+   "part": "sgs-gift-order__input",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "min-height": "44px"
+     },
+     "changed": {
+      "min-height": "137px"
+     }
+    },
+    "768": {
+     "plain": {
+      "min-height": "44px"
+     },
+     "changed": {
+      "min-height": "123px"
+     }
+    },
+    "375": {
+     "plain": {
+      "min-height": "44px"
+     },
+     "changed": {
+      "min-height": "107px"
+     }
+    }
+   },
+   "tested": [
+    "giftInputMinHeight-tiers-v0"
+   ]
+  }
+ ]
+}

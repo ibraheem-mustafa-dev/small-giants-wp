@@ -1,7 +1,7 @@
 {
  "block": "sgs/nav-bar-menu",
- "scriptHash": "eaf67df2cda45b11",
- "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8a9276450, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "scriptHash": "85a19fefd4407e26",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
  "entries": [
   {
    "setting": "submenuCaret",

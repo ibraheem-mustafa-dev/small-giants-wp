@@ -1,0 +1,2034 @@
+{
+ "block": "sgs/wishlist-panel",
+ "scriptHash": "ee5903327ac4a489",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "barBackgroundColour",
+   "part": "sgs-wishlist-panel__bar",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "barBackgroundColour-hex-v0",
+    "barBackgroundColour-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "barBackgroundColour",
+   "part": "sgs-wishlist-panel__guest-prompt",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "barBackgroundColour-hex-v0",
+    "barBackgroundColour-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "barBackgroundColourGradient",
+   "part": "sgs-wishlist-panel__bar",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "barBackgroundColourGradient-gradient-v0",
+    "barBackgroundColourGradient-gradient-v0/member"
+   ]
+  },
+  {
+   "setting": "barBackgroundColourGradient",
+   "part": "sgs-wishlist-panel__guest-prompt",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "barBackgroundColourGradient-gradient-v0",
+    "barBackgroundColourGradient-gradient-v0/member"
+   ]
+  },
+  {
+   "setting": "buttonBackgroundColour",
+   "part": "sgs-wishlist-panel__move-to-basket",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(238, 128, 136)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(238, 128, 136)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(238, 128, 136)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "buttonBackgroundColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "buttonBackgroundColourGradient",
+   "part": "sgs-wishlist-panel__move-to-basket",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "buttonBackgroundColourGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "buttonTextColour",
+   "part": "sgs-wishlist-panel__move-to-basket",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "buttonTextColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "itemNameColour",
+   "part": "sgs-wishlist-panel__row-name",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "itemNameColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "itemNameColourGradient",
+   "part": "sgs-wishlist-panel__row-name",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    }
+   },
+   "tested": [
+    "itemNameColourGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "itemNameColourGradient",
+   "part": "sgs-wishlist-panel__row-name",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "itemNameColourGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "itemNameColourGradient",
+   "part": "sgs-wishlist-panel__row-name",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "itemNameColourGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "align-items"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "align-items": "start"
+     },
+     "changed": {
+      "align-items": "center"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "align-items"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "align-items": "normal"
+     },
+     "changed": {
+      "align-items": "center"
+     }
+    },
+    "768": {
+     "plain": {
+      "align-items": "normal"
+     },
+     "changed": {
+      "align-items": "center"
+     }
+    },
+    "375": {
+     "plain": {
+      "align-items": "start"
+     },
+     "changed": {
+      "align-items": "center"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "display": "grid"
+     },
+     "changed": {
+      "display": "flex"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "display": "flex"
+     },
+     "changed": {
+      "display": "grid"
+     }
+    },
+    "768": {
+     "plain": {
+      "display": "flex"
+     },
+     "changed": {
+      "display": "grid"
+     }
+    },
+    "375": {
+     "plain": {
+      "display": "grid"
+     },
+     "changed": {
+      "display": "flex"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "flex-direction"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "flex-direction": "column"
+     },
+     "changed": {
+      "flex-direction": "row"
+     }
+    },
+    "768": {
+     "plain": {
+      "flex-direction": "column"
+     },
+     "changed": {
+      "flex-direction": "row"
+     }
+    },
+    "375": {
+     "plain": {
+      "flex-direction": "column"
+     },
+     "changed": {
+      "flex-direction": "row"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "gap": "8px 12px"
+     },
+     "changed": {
+      "gap": "8px"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "gap": "8px"
+     },
+     "changed": {
+      "gap": "8px 12px"
+     }
+    },
+    "768": {
+     "plain": {
+      "gap": "8px"
+     },
+     "changed": {
+      "gap": "8px 12px"
+     }
+    },
+    "375": {
+     "plain": {
+      "gap": "8px 12px"
+     },
+     "changed": {
+      "gap": "8px"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "grid-template-columns": "80px 257px"
+     },
+     "changed": {
+      "grid-template-columns": "none"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "grid-template-columns": "none"
+     },
+     "changed": {
+      "grid-template-columns": "64px 186px"
+     }
+    },
+    "768": {
+     "plain": {
+      "grid-template-columns": "none"
+     },
+     "changed": {
+      "grid-template-columns": "64px 143.328px"
+     }
+    },
+    "375": {
+     "plain": {
+      "grid-template-columns": "80px 257px"
+     },
+     "changed": {
+      "grid-template-columns": "none"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "padding": "12px"
+     },
+     "changed": {
+      "padding": "16px"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "padding": "16px"
+     },
+     "changed": {
+      "padding": "12px"
+     }
+    },
+    "768": {
+     "plain": {
+      "padding": "16px"
+     },
+     "changed": {
+      "padding": "12px"
+     }
+    },
+    "375": {
+     "plain": {
+      "padding": "12px"
+     },
+     "changed": {
+      "padding": "16px"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row",
+   "props": [
+    "scroll-snap-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "scroll-snap-align": "none"
+     },
+     "changed": {
+      "scroll-snap-align": "start"
+     }
+    },
+    "768": {
+     "plain": {
+      "scroll-snap-align": "none"
+     },
+     "changed": {
+      "scroll-snap-align": "start"
+     }
+    },
+    "375": {
+     "plain": {
+      "scroll-snap-align": "none"
+     },
+     "changed": {
+      "scroll-snap-align": "start"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row-actions",
+   "props": [
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-shrink": "0"
+     }
+    },
+    "768": {
+     "plain": {
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-shrink": "0"
+     }
+    },
+    "375": {
+     "plain": {
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-shrink": "0"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row-actions",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "grid-column": "2"
+     },
+     "changed": {
+      "grid-column": "auto"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row-actions",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "grid-column": "auto"
+     },
+     "changed": {
+      "grid-column": "2"
+     }
+    },
+    "768": {
+     "plain": {
+      "grid-column": "auto"
+     },
+     "changed": {
+      "grid-column": "2"
+     }
+    },
+    "375": {
+     "plain": {
+      "grid-column": "2"
+     },
+     "changed": {
+      "grid-column": "auto"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row-info",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "flex-basis": "auto",
+      "flex-grow": "0",
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-basis": "0%",
+      "flex-grow": "1",
+      "flex-shrink": "1"
+     }
+    },
+    "768": {
+     "plain": {
+      "flex-basis": "auto",
+      "flex-grow": "0",
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-basis": "0%",
+      "flex-grow": "1",
+      "flex-shrink": "1"
+     }
+    },
+    "375": {
+     "plain": {
+      "flex-basis": "auto",
+      "flex-grow": "0",
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-basis": "0%",
+      "flex-grow": "1",
+      "flex-shrink": "1"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row-link",
+   "props": [
+    "grid-row"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "375": {
+     "plain": {
+      "grid-row": "1 / span 2"
+     },
+     "changed": {
+      "grid-row": "auto"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row-link",
+   "props": [
+    "grid-row"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "grid-row": "auto"
+     },
+     "changed": {
+      "grid-row": "1 / span 2"
+     }
+    },
+    "768": {
+     "plain": {
+      "grid-row": "auto"
+     },
+     "changed": {
+      "grid-row": "1 / span 2"
+     }
+    },
+    "375": {
+     "plain": {
+      "grid-row": "1 / span 2"
+     },
+     "changed": {
+      "grid-row": "auto"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row-thumb",
+   "props": [
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-shrink": "0"
+     }
+    },
+    "768": {
+     "plain": {
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-shrink": "0"
+     }
+    },
+    "375": {
+     "plain": {
+      "flex-shrink": "1"
+     },
+     "changed": {
+      "flex-shrink": "0"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "sgs-wishlist-panel__row-thumb",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "width": "314px"
+     },
+     "changed": {
+      "width": "80px"
+     }
+    },
+    "768": {
+     "plain": {
+      "width": "211.328px"
+     },
+     "changed": {
+      "width": "80px"
+     }
+    },
+    "375": {
+     "plain": {
+      "width": "80px"
+     },
+     "changed": {
+      "width": "64px"
+     }
+    }
+   },
+   "tested": [
+    "layout-enum-list-v0",
+    "layout-enum-strip-v0",
+    "layout-enum-cards-v0",
+    "layout-enum-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "linkColour",
+   "part": "sgs-wishlist-panel__notify-toggle",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "linkColour-hex-v0",
+    "linkColour-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "linkColour",
+   "part": "sgs-wishlist-panel__remove",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "linkColour-hex-v0",
+    "linkColour-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "linkColourHover",
+   "part": "sgs-wishlist-panel__notify-toggle a",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "linkColourHover",
+   "part": "sgs-wishlist-panel__notify-toggle a",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "unproven",
+   "reason": "the part is on no element at width(s) [1440, 768, 375] on both pages",
+   "values": {
+    "1440": {
+     "plain": {},
+     "changed": {}
+    },
+    "768": {
+     "plain": {},
+     "changed": {}
+    },
+    "375": {
+     "plain": {},
+     "changed": {}
+    }
+   }
+  },
+  {
+   "setting": "linkColourHover",
+   "part": "sgs-wishlist-panel__notify-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "linkColourHover-hex-v0",
+    "linkColourHover-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "linkColourHover",
+   "part": "sgs-wishlist-panel__notify-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "linkColourHover-hex-v0",
+    "linkColourHover-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "linkColourHover",
+   "part": "sgs-wishlist-panel__remove",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "linkColourHover-hex-v0",
+    "linkColourHover-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "linkColourHover",
+   "part": "sgs-wishlist-panel__remove",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "linkColourHover-hex-v0",
+    "linkColourHover-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "linkColourHover",
+   "part": "sgs-wishlist-panel__remove",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    }
+   },
+   "tested": [
+    "linkColourHover-hex-v0",
+    "linkColourHover-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "priceColour",
+   "part": "sgs-wishlist-panel__row-price",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "priceColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "priceColourGradient",
+   "part": "sgs-wishlist-panel__row-price",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-clip": "border-box"
+     },
+     "changed": {
+      "background-clip": "text"
+     }
+    }
+   },
+   "tested": [
+    "priceColourGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "priceColourGradient",
+   "part": "sgs-wishlist-panel__row-price",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-image": "none"
+     },
+     "changed": {
+      "background-image": "linear-gradient(90deg, rgb(19, 87, 155) 0%, rgb(155, 19, 87) 100%)"
+     }
+    }
+   },
+   "tested": [
+    "priceColourGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "priceColourGradient",
+   "part": "sgs-wishlist-panel__row-price",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "priceColourGradient-gradient-v0"
+   ]
+  },
+  {
+   "setting": "priceDropColour",
+   "part": "sgs-wishlist-panel__row-price-drop",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "priceDropColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "rowActionsFlexWrap",
+   "part": "sgs-wishlist-panel__row-actions",
+   "props": [
+    "flex-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "flex-wrap": "wrap"
+     },
+     "changed": {
+      "flex-wrap": "nowrap"
+     }
+    },
+    "768": {
+     "plain": {
+      "flex-wrap": "wrap"
+     },
+     "changed": {
+      "flex-wrap": "nowrap"
+     }
+    },
+    "375": {
+     "plain": {
+      "flex-wrap": "wrap"
+     },
+     "changed": {
+      "flex-wrap": "nowrap"
+     }
+    }
+   },
+   "tested": [
+    "rowActionsFlexWrap-enum-nowrap-v0",
+    "rowActionsFlexWrap-enum-nowrap-layout-list-v0",
+    "rowActionsFlexWrap-enum-nowrap-layout-strip-v0",
+    "rowActionsFlexWrap-enum-nowrap-layout-cards-v0",
+    "rowActionsFlexWrap-enum-nowrap-layout-product-cards-v0",
+    "rowActionsFlexWrap-enum-wrap-v0",
+    "rowActionsFlexWrap-enum-wrap-layout-list-v0",
+    "rowActionsFlexWrap-enum-wrap-layout-strip-v0",
+    "rowActionsFlexWrap-enum-wrap-layout-cards-v0",
+    "rowActionsFlexWrap-enum-wrap-layout-product-cards-v0"
+   ]
+  },
+  {
+   "setting": "shareControlsFlexWrap",
+   "part": "sgs-wishlist-panel__share-controls",
+   "props": [
+    "flex-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "flex-wrap": "wrap"
+     },
+     "changed": {
+      "flex-wrap": "nowrap"
+     }
+    },
+    "768": {
+     "plain": {
+      "flex-wrap": "wrap"
+     },
+     "changed": {
+      "flex-wrap": "nowrap"
+     }
+    },
+    "375": {
+     "plain": {
+      "flex-wrap": "wrap"
+     },
+     "changed": {
+      "flex-wrap": "nowrap"
+     }
+    }
+   },
+   "tested": [
+    "shareControlsFlexWrap-enum-nowrap-v0",
+    "shareControlsFlexWrap-enum-nowrap-v0/member",
+    "shareControlsFlexWrap-enum-nowrap-layout-list-v0",
+    "shareControlsFlexWrap-enum-nowrap-layout-list-v0/member",
+    "shareControlsFlexWrap-enum-nowrap-layout-strip-v0",
+    "shareControlsFlexWrap-enum-nowrap-layout-strip-v0/member",
+    "shareControlsFlexWrap-enum-nowrap-layout-cards-v0",
+    "shareControlsFlexWrap-enum-nowrap-layout-cards-v0/member",
+    "shareControlsFlexWrap-enum-nowrap-layout-product-cards-v0",
+    "shareControlsFlexWrap-enum-nowrap-layout-product-cards-v0/member",
+    "shareControlsFlexWrap-enum-wrap-v0",
+    "shareControlsFlexWrap-enum-wrap-v0/member",
+    "shareControlsFlexWrap-enum-wrap-layout-list-v0",
+    "shareControlsFlexWrap-enum-wrap-layout-list-v0/member",
+    "shareControlsFlexWrap-enum-wrap-layout-strip-v0",
+    "shareControlsFlexWrap-enum-wrap-layout-strip-v0/member",
+    "shareControlsFlexWrap-enum-wrap-layout-cards-v0",
+    "shareControlsFlexWrap-enum-wrap-layout-cards-v0/member",
+    "shareControlsFlexWrap-enum-wrap-layout-product-cards-v0",
+    "shareControlsFlexWrap-enum-wrap-layout-product-cards-v0/member"
+   ]
+  },
+  {
+   "setting": "shareFieldBackgroundColour",
+   "part": "sgs-wishlist-panel__share-field",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(251, 243, 220)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(251, 243, 220)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(251, 243, 220)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "shareFieldBackgroundColour-hex-v0",
+    "shareFieldBackgroundColour-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "shareFieldTextColour",
+   "part": "sgs-wishlist-panel__share-field",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "shareFieldTextColour-hex-v0",
+    "shareFieldTextColour-hex-v0/member"
+   ]
+  },
+  {
+   "setting": "stockChipBackgroundColour",
+   "part": "sgs-wishlist-panel__row-stock",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(255, 250, 240)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stockChipBackgroundColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "stockChipTextColour",
+   "part": "sgs-wishlist-panel__row-stock",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "stockChipTextColour-hex-v0"
+   ]
+  }
+ ]
+}

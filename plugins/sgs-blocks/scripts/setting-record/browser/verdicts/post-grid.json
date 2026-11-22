@@ -1,0 +1,1006 @@
+{
+ "block": "sgs/post-grid",
+ "scriptHash": "fda7be6e17c9ecee",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "pageButtonFontFamily",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonFontFamily-kw-Georgia-serif-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonFontSize",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "font-size": "14px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "14px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonFontSize",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "font-size": "14px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonFontSize",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-size": "14px"
+     },
+     "changed": {
+      "font-size": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-size": "14px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "14px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonFontStyle",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonFontStyle-kw-italic-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonFontWeight",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonFontWeight-weight-700-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonLetterSpacing",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonLetterSpacing",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonLetterSpacing",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonLineHeight",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "line-height": "normal"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "normal"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonLineHeight",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "line-height": "normal"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonLineHeight",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "line-height": "normal"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "line-height": "normal"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "normal"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextColumns",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "768": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "375": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextColumns-count-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextDecoration",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextDecoration-enum-none-v0",
+    "pageButtonTextDecoration-enum-underline-v0",
+    "pageButtonTextDecoration-enum-line-through-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextStrokeColour",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextStrokeColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextStrokeColourHover",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextStrokeColourHover",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextStrokeWidth",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextStrokeWidth",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextStrokeWidth",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextTransform",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextTransform-enum-none-v0",
+    "pageButtonTextTransform-enum-uppercase-v0",
+    "pageButtonTextTransform-enum-lowercase-v0",
+    "pageButtonTextTransform-enum-capitalize-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonTextWrap",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonTextWrap-enum-wrap-v0",
+    "pageButtonTextWrap-enum-nowrap-v0",
+    "pageButtonTextWrap-enum-balance-v0",
+    "pageButtonTextWrap-enum-pretty-v0",
+    "pageButtonTextWrap-enum-stable-v0"
+   ]
+  },
+  {
+   "setting": "pageButtonWritingMode",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "768": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "375": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    }
+   },
+   "tested": [
+    "pageButtonWritingMode-enum-horizontal-tb-v0",
+    "pageButtonWritingMode-enum-vertical-rl-v0",
+    "pageButtonWritingMode-enum-vertical-lr-v0"
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     }
+    }
+   },
+   "tested": [
+    "sgsFocusRests-bool-v0"
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-post-grid__page-btn",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(58, 42, 34)"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "sgsFocusRests-bool-v0"
+   ]
+  },
+  {
+   "setting": "showImage",
+   "part": "sgs-post-grid-media",
+   "props": [
+    "aspect-ratio"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "aspect-ratio": "16 / 9"
+     },
+     "changed": null
+    },
+    "768": {
+     "plain": {
+      "aspect-ratio": "16 / 9"
+     },
+     "changed": null
+    },
+    "375": {
+     "plain": {
+      "aspect-ratio": "16 / 9"
+     },
+     "changed": null
+    }
+   },
+   "tested": [
+    "showImage-bool-v0"
+   ]
+  },
+  {
+   "setting": "showImage",
+   "part": "sgs-post-grid-media",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "width": "305px"
+     },
+     "changed": null
+    },
+    "768": {
+     "plain": {
+      "width": "305px"
+     },
+     "changed": null
+    },
+    "375": {
+     "plain": {
+      "width": "335px"
+     },
+     "changed": null
+    }
+   },
+   "tested": [
+    "showImage-bool-v0"
+   ]
+  }
+ ]
+}

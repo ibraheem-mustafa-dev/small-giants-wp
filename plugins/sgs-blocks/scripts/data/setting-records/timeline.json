@@ -10732,8 +10732,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": "[data-sgs-fx~=\"grid-dots\"][data-sgs-fx-disable-mobile] .sgs-grid-dots__canvas",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "pinned-journey",
     "scrub"
@@ -10804,8 +10803,7 @@
     "@media (max-width: 767.98px)"
    ],
    "selector": "[data-sgs-fx~=\"particles\"][data-sgs-fx-disable-mobile] .sgs-particles__canvas",
-   "kind": "value",
-   "unproved": "script-built-part",
+   "kind": "switched-on",
    "values": [
     "pinned-journey",
     "scrub"

@@ -1,0 +1,133 @@
+{
+ "block": "sgs/business-info",
+ "scriptHash": "29aebe6c0218a873",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "hoursTodayBackground",
+   "part": "sgs-business-info__hours-row",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "hoursTodayBackground-hex-v0"
+   ]
+  },
+  {
+   "setting": "hoursTodayColour",
+   "part": "sgs-business-info__hours-row",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "hoursTodayColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "hoursTodayWeight",
+   "part": "sgs-business-info__hours-row",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "300"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "300"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "300"
+     }
+    }
+   },
+   "tested": [
+    "hoursTodayWeight-enum-300-v0",
+    "hoursTodayWeight-enum-400-v0",
+    "hoursTodayWeight-enum-500-v0",
+    "hoursTodayWeight-enum-600-v0",
+    "hoursTodayWeight-enum-700-v0",
+    "hoursTodayWeight-enum-800-v0",
+    "hoursTodayWeight-enum-900-v0"
+   ]
+  }
+ ]
+}

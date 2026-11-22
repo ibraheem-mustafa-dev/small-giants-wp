@@ -1,0 +1,107 @@
+{
+ "block": "sgs/testimonial-slider",
+ "scriptHash": "418581eb7a0e16a2",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "slideGap",
+   "part": "sgs-testimonial-slider__list",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "gap": "8px"
+     },
+     "changed": {
+      "gap": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "gap": "8px"
+     },
+     "changed": {
+      "gap": "7px"
+     }
+    }
+   },
+   "tested": [
+    "slideGap-tiers-v0"
+   ]
+  },
+  {
+   "setting": "slideGap",
+   "part": "sgs-testimonial-slider__list",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "gap": "8px"
+     },
+     "changed": {
+      "gap": "7px"
+     }
+    }
+   },
+   "tested": [
+    "slideGap-tiers-v0"
+   ]
+  },
+  {
+   "setting": "slideGap",
+   "part": "sgs-testimonial-slider__list",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "gap": "8px"
+     },
+     "changed": {
+      "gap": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "gap": "8px"
+     },
+     "changed": {
+      "gap": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "gap": "8px"
+     },
+     "changed": {
+      "gap": "7px"
+     }
+    }
+   },
+   "tested": [
+    "slideGap-tiers-v0"
+   ]
+  }
+ ]
+}

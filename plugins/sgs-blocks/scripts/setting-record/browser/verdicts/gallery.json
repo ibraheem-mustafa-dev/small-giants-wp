@@ -1,0 +1,328 @@
+{
+ "block": "sgs/gallery",
+ "scriptHash": "b5048ff9a48adcd8",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "dotBorderColour",
+   "part": "sgs-gallery__dot",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(0, 0, 0)"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "dotBorderColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "dotBorderWidth",
+   "part": "sgs-gallery__dot",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-style": "none"
+     },
+     "changed": {
+      "border-style": "solid"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-style": "none"
+     },
+     "changed": {
+      "border-style": "solid"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-style": "none"
+     },
+     "changed": {
+      "border-style": "solid"
+     }
+    }
+   },
+   "tested": [
+    "dotBorderWidth-length-v0"
+   ]
+  },
+  {
+   "setting": "dotBorderWidth",
+   "part": "sgs-gallery__dot",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-width": "0px"
+     },
+     "changed": {
+      "border-width": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-width": "0px"
+     },
+     "changed": {
+      "border-width": "37px"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-width": "0px"
+     },
+     "changed": {
+      "border-width": "37px"
+     }
+    }
+   },
+   "tested": [
+    "dotBorderWidth-length-v0"
+   ]
+  },
+  {
+   "setting": "dotBorderWidth",
+   "part": "sgs-gallery__dot",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "box-sizing": "border-box"
+     },
+     "changed": {
+      "box-sizing": "border-box"
+     }
+    },
+    "768": {
+     "plain": {
+      "box-sizing": "border-box"
+     },
+     "changed": {
+      "box-sizing": "border-box"
+     }
+    },
+    "375": {
+     "plain": {
+      "box-sizing": "border-box"
+     },
+     "changed": {
+      "box-sizing": "border-box"
+     }
+    }
+   },
+   "shown_at_every_width": true,
+   "tested": [
+    "dotBorderWidth-length-v0",
+    "dotBorderWidth-length-v0#second"
+   ]
+  },
+  {
+   "setting": "dotColour",
+   "part": "sgs-gallery__dot",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0.25)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0.25)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0.25)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "dotColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "dotColourActive",
+   "part": "sgs-gallery__dot",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgb(249, 207, 110)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "dotColourActive-hex-v0"
+   ]
+  },
+  {
+   "setting": "dotColourHover",
+   "part": "sgs-gallery__dot",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0.25)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0.25)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "background-color": "rgba(0, 0, 0, 0.25)"
+     },
+     "changed": {
+      "background-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "dotColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "dotRadius",
+   "part": "sgs-gallery__dot",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-radius": "50%"
+     },
+     "changed": {
+      "border-radius": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-radius": "50%"
+     },
+     "changed": {
+      "border-radius": "37px"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-radius": "50%"
+     },
+     "changed": {
+      "border-radius": "37px"
+     }
+    }
+   },
+   "tested": [
+    "dotRadius-length-v0"
+   ]
+  }
+ ]
+}

@@ -1523,7 +1523,6 @@
    "tiers": [],
    "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -1568,7 +1567,6 @@
    "tiers": [],
    "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "#13579b"
    ]
@@ -1625,7 +1623,6 @@
    "tiers": [],
    "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today",
    "kind": "value",
-   "unproved": "script-built-part",
    "values": [
     "300",
     "400",

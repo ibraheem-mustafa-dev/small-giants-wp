@@ -1,0 +1,938 @@
+{
+ "block": "sgs/media",
+ "scriptHash": "08e539c6905b843f",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8f4bdc6f6, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-video__bar",
+   "props": [
+    "opacity"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "opacity": "1"
+     },
+     "changed": {
+      "opacity": "0"
+     }
+    },
+    "768": {
+     "plain": {
+      "opacity": "1"
+     },
+     "changed": {
+      "opacity": "0"
+     }
+    },
+    "375": {
+     "plain": {
+      "opacity": "1"
+     },
+     "changed": {
+      "opacity": "0"
+     }
+    }
+   },
+   "tested": [
+    "sgsFocusRests-bool-v0"
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-video__bar",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "transform": "none"
+     },
+     "changed": {
+      "transform": "matrix(1, 0, 0, 1, 0, 8)"
+     }
+    },
+    "768": {
+     "plain": {
+      "transform": "none"
+     },
+     "changed": {
+      "transform": "matrix(1, 0, 0, 1, 0, 8)"
+     }
+    },
+    "375": {
+     "plain": {
+      "transform": "none"
+     },
+     "changed": {
+      "transform": "matrix(1, 0, 0, 1, 0, 8)"
+     }
+    }
+   },
+   "tested": [
+    "sgsFocusRests-bool-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeFontFamily",
+   "part": "sgs-video__time",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeFontFamily-kw-Georgia-serif-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeFontSize",
+   "part": "sgs-video__time",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "font-size": "12px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "12px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeFontSize",
+   "part": "sgs-video__time",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "font-size": "12px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeFontSize",
+   "part": "sgs-video__time",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-size": "12px"
+     },
+     "changed": {
+      "font-size": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-size": "12px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "12px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeFontStyle",
+   "part": "sgs-video__time",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeFontStyle-kw-italic-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeFontWeight",
+   "part": "sgs-video__time",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeFontWeight-weight-700-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeLetterSpacing",
+   "part": "sgs-video__time",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeLetterSpacing",
+   "part": "sgs-video__time",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeLetterSpacing",
+   "part": "sgs-video__time",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeLineHeight",
+   "part": "sgs-video__time",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "line-height": "12px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "12px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeLineHeight",
+   "part": "sgs-video__time",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "line-height": "12px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeLineHeight",
+   "part": "sgs-video__time",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "line-height": "12px"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "line-height": "12px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "12px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextColumns",
+   "part": "sgs-video__time",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "768": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "375": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextColumns-count-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextDecoration",
+   "part": "sgs-video__time",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextDecoration-enum-none-v0",
+    "videoTimeTextDecoration-enum-underline-v0",
+    "videoTimeTextDecoration-enum-line-through-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextStrokeColour",
+   "part": "sgs-video__time",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextStrokeColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextStrokeColourHover",
+   "part": "sgs-video__time",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextStrokeColourHover",
+   "part": "sgs-video__time",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(255, 255, 255)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextStrokeWidth",
+   "part": "sgs-video__time",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextStrokeWidth",
+   "part": "sgs-video__time",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextStrokeWidth",
+   "part": "sgs-video__time",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextTransform",
+   "part": "sgs-video__time",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextTransform-enum-none-v0",
+    "videoTimeTextTransform-enum-uppercase-v0",
+    "videoTimeTextTransform-enum-lowercase-v0",
+    "videoTimeTextTransform-enum-capitalize-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeTextWrap",
+   "part": "sgs-video__time",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-wrap": "nowrap"
+     },
+     "changed": {
+      "text-wrap": "wrap"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-wrap": "nowrap"
+     },
+     "changed": {
+      "text-wrap": "wrap"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-wrap": "nowrap"
+     },
+     "changed": {
+      "text-wrap": "wrap"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeTextWrap-enum-wrap-v0",
+    "videoTimeTextWrap-enum-nowrap-v0",
+    "videoTimeTextWrap-enum-balance-v0",
+    "videoTimeTextWrap-enum-pretty-v0",
+    "videoTimeTextWrap-enum-stable-v0"
+   ]
+  },
+  {
+   "setting": "videoTimeWritingMode",
+   "part": "sgs-video__time",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "768": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "375": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    }
+   },
+   "tested": [
+    "videoTimeWritingMode-enum-horizontal-tb-v0",
+    "videoTimeWritingMode-enum-vertical-rl-v0",
+    "videoTimeWritingMode-enum-vertical-lr-v0"
+   ]
+  }
+ ]
+}
