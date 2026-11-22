@@ -8,10 +8,8 @@
 //     (`metadata.bindings.<attribute>` to the `sgs/order` source with the key, and the words around the value as `format`);
 //     each branch that tests the order takes its Show-to rule on the blocks it holds; a bound block outside every order
 //     branch takes the `viewable` rule, so the draft's sample order never shows to a visitor who may not view the order.
-//     A value no key holds that reads the order is bound to `fact:<name>` for the site to supply (the plugin's
-//     `sgs_order_fact` filter) and noted as a "site-supplied fact"; the words around it, the draft's and the ones its logic
-//     joins to it, are the binding's `format`, and a second fact in the same words is a `{fact:<name>}` token in it, so the
-//     whole line is one binding that renders nothing until every fact is supplied (an sgs/text with no words renders nothing).
+//     A value no key holds that reads the order (a bake date) keeps the draft's sample words, as Bean ruled (D-2): its block is
+//     left as the skeleton has it and noted, and a bound value in the same words takes those sample words into its format.
 //   - `find: "order-access"`: WooCommerce's order status block in a card for a visitor who may not view the order, and the
 //     viewable rule on the draft's top-level blocks (placeAccess).
 // What cannot be done right is a problem row naming the draft element (a value no key fits, a block with no attribute a
@@ -48,7 +46,7 @@ function readsFor( ctx ) {
 	const plugin = ctx.plugin || pluginFacts();
 	const db = ctx.db || openDb();
 	const draft = ctx.draft || draftOf( ctx.handoffDir, ctx.rootComponent );
-	const order = readOrder( { record: ctx.factRecord, tops: topKeys( ctx.tree, ctx.rootComponent ), draft, facts, plugin } );
+	const order = readOrder( { record: ctx.factRecord, tops: topKeys( ctx.tree, ctx.rootComponent ), draft, facts } );
 	return { facts, plugin, db, draft, order, factProblems: orderFactsProblems( { facts, plugin, db } ) };
 }
 
@@ -225,14 +223,15 @@ function placeValues( ctx, piece, r ) {
 	const branches = ( k ) => ( record[ k ]?.template?.membership?.scIf || [] ).map( ( s ) => s.key );
 	const holderOf = ( h ) => ancestorsOf( h.el ).find( ( k ) => byKey.has( k ) && branches( h.el ).every( ( b ) => branches( k ).includes( b ) ) );
 	const boundNodes = [];
-	// A value no key holds is a fact the site supplies; one block binds one key, so a block with several of them takes the first
-	// as its key and the others as `{fact:<name>}` tokens in its words. Built-in keys go first, so a key is never the token.
-	const taken = new Set();
+	// A value no key holds keeps the draft's sample words (Bean's D-2, 2026-11-22: the draft invented facts the business does not
+	// keep, such as a bake date, so every order shows the same words): its block is left as the skeleton has it, and a bound value
+	// beside it in the same words takes those words into its format.
 	const sameStep = ( a, b ) => a.instance === b.instance;
-	// What the owner must supply for a fact: shown in the run report beside the other notes.
-	const factNote = ( x, holder ) => `site-supplied fact ${ x.key }: {{ ${ x.expr } }} in ${ holder } reads the order's ${ x.paths.map( ( p ) => p.join( '.' ) ).join( ', ' ) }, which no key of ${ plugin.source } holds, so the site supplies it through the ${ plugin.factFilter } filter (name ${ x.key.slice( plugin.factPrefix.length ) }); the value is empty, and the block shows nothing, until it does`;
-	for ( const h of [ ...order.holes ].sort( ( a, b ) => Number( !! a.fact ) - Number( !! b.fact ) ) ) {
-		if ( h.absorbed || h.choice || taken.has( h ) ) {
+	for ( const h of order.holes.filter( ( x ) => x.fixed ) ) {
+		notes.push( `{{ ${ h.expr } }} (${ h.el }) reads the order's ${ h.paths.map( ( p ) => p.join( '.' ) ).join( ', ' ) }, which no key of ${ plugin.source } holds: it keeps the draft's sample words${ h.sample ? ` ("${ h.sample }")` : '' }, the same on every order` );
+	}
+	for ( const h of order.holes ) {
+		if ( h.absorbed || h.choice || h.fixed ) {
 			continue;
 		}
 		if ( h.problem ) {
@@ -252,9 +251,6 @@ function placeValues( ctx, piece, r ) {
 			problems.push( `the value {{ ${ h.expr } }} (${ h.el }, ${ h.key }) is not in the skeleton: it is the step ${ h.instance } of its loop, and the proposal holds no such step` );
 			continue;
 		}
-		// The facts folded into a block's words are marked taken once every target is done, so each block that holds the element
-		// takes them as tokens, not only the first.
-		const used = new Set();
 		for ( const { node: held } of targets ) {
 			// A link drawn as a card whose block takes no bound address is followed by the one block inside it that does (the
 			// card's action button): that block carries the link.
@@ -268,7 +264,6 @@ function placeValues( ctx, piece, r ) {
 			node !== held && notes.push( `the link to the order (${ holder }, {{ ${ h.expr } }}) is a ${ held.name } with no address a binding can write; its address is bound on the ${ node.name } inside it (${ keyOf( node ) }), so only that block links to the order` );
 			const existing = node.attributes?.metadata?.bindings?.[ attr ];
 			let format = null;
-			const others = [];
 			if ( 'text-content' === role ) {
 				const text = sourceText( draft, record[ holder ] );
 				// A reference the draft writes as fixed words (`literal`, lib/template-piece-order-read.mjs::createdReference) is found as those words.
@@ -278,16 +273,11 @@ function placeValues( ctx, piece, r ) {
 					problems.push( `the words around {{ ${ h.expr } }} in ${ holder } cannot be read from the draft source, so the order's ${ h.key } is not bound` );
 					continue;
 				}
-				// The words the logic joins to a fact (`'Baked on ' + bake.date`) are the value's own words, and a fact has no other
-				// place to keep them.
-				let sentence = text.replace( hole, () => ( h.fact && h.logicFormat ? h.logicFormat : '%s' ) );
-				// Another site-supplied fact in the same words is a token of the format, naming the fact the plugin reads there.
+				let sentence = text.replace( hole, () => '%s' );
+				// A value beside it that keeps the draft's sample words (D-2) is those words in the format.
 				for ( const m of [ ...sentence.matchAll( /\{\{\s*([^}]+?)\s*\}\}/g ) ] ) {
-					const o = order.holes.find( ( x ) => x !== h && x.fact && ! x.problem && ! taken.has( x ) && x.expr === m[ 1 ] && sameStep( x, h ) && ancestorsOf( x.el ).includes( holder ) );
-					if ( o ) {
-						sentence = sentence.replace( m[ 0 ], () => `{${ o.key }}` );
-						others.push( o );
-					}
+					const o = order.holes.find( ( x ) => x.fixed && x.sample && x.expr === m[ 1 ] && sameStep( x, h ) && ancestorsOf( x.el ).includes( holder ) );
+					o && ( sentence = sentence.replace( m[ 0 ], () => o.sample.replace( /%/g, '%%' ) ) );
 				}
 				if ( /\{\{/.test( sentence ) ) {
 					problems.push( `${ holder } holds another value beside {{ ${ h.expr } }} ("${ text }"): one binding shows one order fact, so the order's ${ h.key } is not bound there` );
@@ -302,14 +292,11 @@ function placeValues( ctx, piece, r ) {
 			node.attributes = { ...( node.attributes || {} ), metadata: { ...( node.attributes?.metadata || {} ), bindings: { ...( node.attributes?.metadata?.bindings || {} ), [ attr ]: { source: plugin.source, args: { key: h.key, ...( format ? { format } : {} ) } } } } };
 			placed.push( { id: piece.id, block: node.name, at: holder, attribute: attr, key: h.key, ...( format ? { format } : {} ) } );
 			boundNodes.push( { node, holder } );
-			others.forEach( ( o ) => used.add( o ) );
-			[ h, ...others ].filter( ( x ) => x.fact ).forEach( ( x ) => notes.push( factNote( x, holder ) ) );
 			if ( holder !== h.el ) {
 				const tags = ancestorsOf( h.el ).slice( 0, ancestorsOf( h.el ).indexOf( holder ) ).map( ( k ) => `<${ record[ k ]?.template?.tag }>` );
 				notes.push( `the order's ${ h.key } in ${ holder } sat inside ${ tags.join( ' inside ' ) } (${ h.el }); a bound value is plain text, so that formatting is lost` );
 			}
 		}
-		used.forEach( ( o ) => taken.add( o ) );
 	}
 
 	// A bound block outside every order branch shows only while the visitor may view the order.

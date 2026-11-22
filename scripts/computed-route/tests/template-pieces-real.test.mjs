@@ -134,9 +134,9 @@ test( 'MUST FAIL: Mama\'s order confirmation through the pass: one sgs/order-ite
 	assert.equal( number.length, 1 );
 	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
 	assert.deepEqual( placedLint( tree, got.tree, openDb() ), [] );
-	// What no order key holds is a site-supplied fact, bound and noted, when it reads the order; the eyebrow that picks fixed words by the order stands once per phrase with its rule (F-12), so no problem row is left.
+	// What no order key holds keeps the draft's sample words and is noted (Bean's D-2); the eyebrow that picks fixed words by the order stands once per phrase with its rule (F-12), so no problem row is left.
 	assert.deepEqual( got.problems, [] );
-	assert.equal( got.notes.filter( ( n ) => /site-supplied fact/.test( n ) ).length, 3 );
+	assert.equal( got.notes.filter( ( n ) => /keeps the draft's sample words/.test( n ) ).length, 3 );
 } );
 
 test( 'MUST FAIL: the fact record is read only for a template with a piece whose builder reads it, and the draft file names the root component', () => {
