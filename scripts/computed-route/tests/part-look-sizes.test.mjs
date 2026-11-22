@@ -94,3 +94,17 @@ test( 'negative control: fixed columns, one column or no grid give no track', as
 	assert.equal( ( await readSide( '600px 500px' ) ).side[ 0 ].styles[ 'track:width' ], '' );
 	assert.equal( ( await readSide( '1fr' ) ).side[ 0 ].styles[ 'track:width' ], '' );
 } );
+
+test( 'MUST FAIL: equal fractions, a fixed track beside a fluid one and the larger fraction\'s column give no track', async () => {
+	assert.equal( ( await readSide( '1fr 1fr' ) ).side[ 0 ].styles[ 'track:width' ], '', 'two equal columns are no sidebar' );
+	assert.equal( ( await readSide( '80px 1fr' ) ).side[ 0 ].styles[ 'track:width' ], '', 'a fluid content column beside a fixed one states no width' );
+	assert.equal( ( await readSide( '1fr 1.35fr' ) ).side[ 0 ].styles[ 'track:width' ], '', 'the larger fraction is the main column, not the side one' );
+	assert.equal( ( await readSide( '2fr 1fr 1fr' ) ).side[ 0 ].styles[ 'track:width' ], '', 'three columns are no sidebar split' );
+} );
+
+test( 'MUST FAIL: a height of 100% is no min-height the draft states, and 100% passes through only to a max-width setting', () => {
+	const tall = run( [ row( 'aButtonMinHeight', 'min-height', 'button' ) ], { button: all( { height: '66px', 'decl:height': '100%' } ) } );
+	assert.equal( writeOf( tall, 'aButtonMinHeight' ), undefined );
+	const wide = run( [ row( 'aWidth', 'width', 'box' ) ], { box: all( { width: '440px', 'track:width': '100%' } ) } );
+	assert.equal( writeOf( wide, 'aWidth' ), undefined );
+} );

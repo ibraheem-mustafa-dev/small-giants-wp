@@ -31,7 +31,7 @@
 	},
 	{
 		"file": "lib/fill-part-look.mjs",
-		"find": "if ( '100%' === stated.text && ! stated.own ) {",
+		"find": "if ( '100%' === stated.text && ! stated.own && 'max-width' === property ) {",
 		"replace": "if ( false ) {",
 		"why": "the full-viewport width is refused as no px length"
 	},
@@ -55,18 +55,6 @@
 	},
 	{
 		"file": "lib/fill-part-look-page.mjs",
-		"find": "if ( ! p || ! /grid/.test( styleOf( p ).display ) || ! /\\dfr\\b/.test( declared( p, 'grid-template-columns' ) ) ) {",
-		"replace": "if ( ! p || ! /grid/.test( styleOf( p ).display ) ) {",
-		"why": "fixed grid columns are taken for the draft's ratio"
-	},
-	{
-		"file": "lib/fill-part-look-page.mjs",
-		"find": "const own = 2 === tracks.length ? tracks.find(",
-		"replace": "const own = tracks.length ? tracks.find(",
-		"why": "a one-column grid's track is taken for a side column"
-	},
-	{
-		"file": "lib/fill-part-look-page.mjs",
 		"find": "'max-width', 'flex-basis', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];",
 		"replace": "'max-width', 'flex-basis' ];",
 		"why": "the padding the draft states is never read"
@@ -76,5 +64,35 @@
 		"find": ", 'track:width': trackWidth( el ) } };",
 		"replace": " } };",
 		"why": "the track width is never read in the page"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( 2 !== fr.length || fr.some( ( n ) => undefined === n ) || parseFloat( fr[ 0 ] ) === parseFloat( fr[ 1 ] ) ) {",
+		"replace": "if ( 2 !== fr.length || parseFloat( fr[ 0 ] ) === parseFloat( fr[ 1 ] ) ) {",
+		"why": "a fixed track beside a fluid one is taken for the draft's ratio"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( 2 !== fr.length || fr.some( ( n ) => undefined === n ) || parseFloat( fr[ 0 ] ) === parseFloat( fr[ 1 ] ) ) {",
+		"replace": "if ( 2 !== fr.length || fr.some( ( n ) => undefined === n ) ) {",
+		"why": "two equal fractions are taken for a sidebar"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( 2 !== fr.length || fr.some( ( n ) => undefined === n ) || parseFloat( fr[ 0 ] ) === parseFloat( fr[ 1 ] ) ) {",
+		"replace": "if ( fr.some( ( n ) => undefined === n ) || parseFloat( fr[ 0 ] ) === parseFloat( fr[ 1 ] ) ) {",
+		"why": "a one-column grid is read as a split"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "const side = parseFloat( fr[ 0 ] ) < parseFloat( fr[ 1 ] ) ? 0 : 1;",
+		"replace": "const side = parseFloat( fr[ 0 ] ) < parseFloat( fr[ 1 ] ) ? 1 : 0;",
+		"why": "the main column takes the side column's width"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( '100%' === stated.text && ! stated.own && 'max-width' === property ) {",
+		"replace": "if ( '100%' === stated.text && ! stated.own ) {",
+		"why": "a height of 100% is written as a min-height"
 	}
 ]

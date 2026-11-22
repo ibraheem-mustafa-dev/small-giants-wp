@@ -146,7 +146,7 @@ export function primitive( property, styles, row = {}, keep = false ) {
 				if ( ! stated ) {
 					return null;
 				}
-				if ( '100%' === stated.text && ! stated.own ) {
+				if ( '100%' === stated.text && ! stated.own && 'max-width' === property ) {
 					return '100%';
 				}
 				if ( ! PX.test( stated.text ) ) {

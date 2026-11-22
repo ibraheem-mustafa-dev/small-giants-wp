@@ -462,16 +462,21 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		return '';
 	};
 	const SIZES = [ 'width', 'height', 'min-width', 'min-height', 'max-width', 'flex-basis', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];
-	// The element's own track of a two-track grid whose declared columns hold a fraction (`1.35fr 1fr`): the column width the draft's
-	// ratio gives it at this width ('' where the grid is one column, the columns are fixed, or the element spans both tracks).
+	// The side column of a two-column grid the draft splits by unequal fractions (`1.35fr 1fr`): the width the ratio gives the smaller
+	// fraction's track at this width. '' for anything else: one column, equal fractions (`1fr 1fr`), a fixed track beside a fluid one
+	// (`80px 1fr`), the larger fraction's column, or an element spanning both tracks.
 	const trackWidth = ( el ) => {
 		const p = el.parentElement;
-		if ( ! p || ! /grid/.test( styleOf( p ).display ) || ! /\dfr\b/.test( declared( p, 'grid-template-columns' ) ) ) {
+		if ( ! p || ! /grid/.test( styleOf( p ).display ) ) {
+			return '';
+		}
+		const fr = declared( p, 'grid-template-columns' ).trim().split( /\s+/ ).map( ( t ) => /^(\d*\.?\d+)fr$/.exec( t )?.[ 1 ] );
+		if ( 2 !== fr.length || fr.some( ( n ) => undefined === n ) || parseFloat( fr[ 0 ] ) === parseFloat( fr[ 1 ] ) ) {
 			return '';
 		}
 		const tracks = styleOf( p ).gridTemplateColumns.split( /\s+/ ).filter( ( t ) => /^[\d.]+px$/.test( t ) );
-		const w = box( el ).width;
-		const own = 2 === tracks.length ? tracks.find( ( t ) => Math.abs( parseFloat( t ) - w ) < 1 ) : null;
+		const side = parseFloat( fr[ 0 ] ) < parseFloat( fr[ 1 ] ) ? 0 : 1;
+		const own = Math.abs( parseFloat( tracks[ side ] ) - box( el ).width ) < 1 ? tracks[ side ] : null;
 		return own ? `${ Math.round( parseFloat( own ) * 10 ) / 10 }px` : '';
 	};
 	const pathOf = ( el ) => {
