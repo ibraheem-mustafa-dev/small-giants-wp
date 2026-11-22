@@ -64,6 +64,12 @@ $level        = $attributes['level'] ?? 'h2';
 $sub_tag      = $attributes['subTag'] ?? 'p';
 $anchor       = $attributes['anchor'] ?? '';
 
+// Soft-fail: nothing to render if the heading has no words (as sgs/text), so a binding that resolves to '' leaves no
+// empty element and no scoped style behind.
+if ( '' === trim( wp_strip_all_tags( $content ) ) ) {
+	return;
+}
+
 // Validate enums.
 if ( ! in_array( $heading_role, array( 'heading', 'subheading' ), true ) ) {
 	$heading_role = 'heading';
