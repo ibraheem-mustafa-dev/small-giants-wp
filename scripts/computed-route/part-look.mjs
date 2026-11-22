@@ -47,7 +47,8 @@ import { OPENER_PART, flowControls, openerShopParts, orderWrite } from './lib/pa
 import { blockElementsOf, liveSelectorsFor, readLiveSurface, seedOf, shootLiveSurface, verifySurface } from './lib/part-look-verify.mjs';
 import { READ_PROPS } from './lib/fill-part-look.mjs';
 import { evaluateModes } from './lib/part-look-modes.mjs';
-import { accountMenuModes } from './lib/part-look-account-views.mjs';
+import { accountViewModes } from './lib/part-look-account-views.mjs';
+import { loadDraft } from './lib/intake-ast.mjs';
 import { ACCOUNT_PARTS_FILE, phpListKeys } from './lib/template-piece-account.mjs';
 import { readTargets, siteUrl, targetOf } from './lib/site-targets.mjs';
 import { readLiveSignedIn, readSignedInParts, shootLiveSignedIn, signedInSeedOf } from './lib/part-look-signed-in.mjs';
@@ -238,10 +239,11 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		// The account menu: which view each of the draft's tabs opens (lib/part-look-account-views.mjs).
 		const menuData = modesData.blocks?.[ loc.block ]?.menu;
 		if ( signedTabs && menuData ) {
-			const menu = accountMenuModes( { block: loc.block, tabs: signedTabs, menu: menuData, rows: blockRowsOf, stringKeys: accountStringKeys() } );
-			modes.writes.push( ...menu.writes );
-			modes.gaps.push( ...menu.gaps );
-			Object.assign( modes.settings, menu.settings );
+			// The menu from each tab's own view, and the order status words from the draft's own status table (Bean's D-7).
+			const account = accountViewModes( { block: loc.block, tabs: signedTabs, menu: menuData, idx: loadDraft( path.resolve( REPO, entry.draftDir ), mainFile ).idx, reads, rows: blockRowsOf, stringKeys: accountStringKeys() } );
+			modes.writes.push( ...account.writes );
+			modes.gaps.push( ...account.gaps );
+			Object.assign( modes.settings, account.settings );
 		}
 		build.writes.push( ...modes.writes );
 		build.gaps.push( ...modes.gaps );

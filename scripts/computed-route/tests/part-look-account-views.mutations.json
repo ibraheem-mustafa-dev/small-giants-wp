@@ -30,5 +30,12 @@
 	{"file":"lib/part-look-modes.mjs","find":"if ( '' === heads[ 0 ] ) {","replace":"if ( false ) {","why":"a bare number writes an empty prefix"},
 	{"file":"lib/part-look-account-views.mjs","find":"const hidden = unread.length ? [] : ( menu.served || [] ).filter( ( e ) => ! taken.has( e ) );","replace":"const hidden = ( menu.served || [] ).filter( ( e ) => ! taken.has( e ) );","why":"the dashboard parts are switched off while a tab is not told"},
 	{"file":"lib/part-look-account-views.mjs","find":"if ( unread.length ) {","replace":"if ( false ) {","why":"a Downloads tab the reader cannot mark has downloads hidden"},
-	{"file":"lib/part-look-account-views.mjs","find":"\t\t\tunread.push( t.label );\n","replace":"","why":"an untold tab leaves the hidden list as if every tab were told"}
+	{"file":"lib/part-look-account-views.mjs","find":"\t\t\tunread.push( t.label );\n","replace":"","why":"an untold tab leaves the hidden list as if every tab were told"},
+	{"file":"lib/part-look-account-views.mjs","find":"if ( steps.some( ( s ) => 'number' !== typeof s ) || new Set( steps ).size !== steps.length ) {","replace":"if ( false ) {","why":"a table with no progress order is mapped in the order it is written"},
+	{"file":"lib/part-look-account-views.mjs","find":"new Set( steps ).size !== steps.length","replace":"false","why":"two statuses sharing a place are mapped anyway"},
+	{"file":"lib/part-look-account-views.mjs","find":"const ordered = [ ...entries ].sort( ( a, b ) => a.step - b.step );","replace":"const ordered = [ ...entries ];","why":"the statuses are mapped in written order, not progress order"},
+	{"file":"lib/part-look-account-views.mjs","find":"if ( 1 !== tables.length ) {","replace":"if ( ! tables.length ) {","why":"two candidate tables: the first is taken"},
+	{"file":"lib/part-look-account-views.mjs","find":"&& entries.some( ( e ) => shown.has( e.label.trim().toLowerCase() ) ) );","replace":");","why":"a table naming no status the order parts show is taken"},
+	{"file":"lib/part-look-account-views.mjs","find":"if ( ! shown.size ) {","replace":"if ( false ) {","why":"with no status shown, any table is taken"},
+	{"file":"lib/part-look-account-views.mjs","find":", orderStatusModes( { block, idx, reads, rows } ) ];","replace":" ];","why":"part-look never writes the status words"}
 ]

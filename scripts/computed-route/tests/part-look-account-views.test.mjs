@@ -10,7 +10,12 @@ import test, { after, before } from 'node:test';
 import { findPartsInPage, READ_PROPS } from '../lib/fill-part-look.mjs';
 import { loadChromium } from '../lib/fill-read.mjs';
 import { evaluateModes, isLine, bareOf } from '../lib/part-look-modes.mjs';
-import { accountMenuModes } from '../lib/part-look-account-views.mjs';
+import { accountMenuModes, accountViewModes, orderStatusModes } from '../lib/part-look-account-views.mjs';
+import { loadDraft } from '../lib/intake-ast.mjs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
 import { menuInPage, partsOfView, tabRecord, viewInPage } from '../lib/part-look-signed-in.mjs';
 import { mergeKeyWrites } from '../part-look.mjs';
 
@@ -195,4 +200,50 @@ test( 'MUST FAIL: the new parts: the details form\'s name fields and display nam
 	assert.deepEqual( list[ 'order-view' ].map( ( i ) => i.text ), [ 'View order →', 'View order →' ] );
 	const detail = await locate( MAIN( `<button>Back</button><div><h2>Order <span>MM-1</span></h2><span style="${ PILL }">Done</span></div><div>Placed <span>Sat</span></div>` ), 'detail' );
 	assert.deepEqual( detail[ 'od-title' ].map( ( i ) => i.text ), [ 'Order MM-1' ] );
+} );
+
+const draftWith = ( dir, body ) => {
+	fs.writeFileSync( path.join( dir, 'A.dc.html' ), `<!DOCTYPE html>\n<html>\n<body>\n<x-dc>\n<div>{{ x }}</div>\n</x-dc>\n<script type="text/x-dc" data-dc-script>\nclass Component extends DCLogic {\n  renderVals() {\n    ${ body }\n    return { x: 1 };\n  }\n}\n</script>\n</body>\n</html>\n` );
+	return loadDraft( dir, 'A.dc.html' ).idx;
+};
+const shown = ( text, part = 'order-status' ) => ( { [ part ]: { 1440: [ { text } ] } } );
+const STATUS_ROWS = [ { attr_name: 'orderStatusLabels' } ];
+
+test( 'MUST FAIL: the draft\'s status words in its own progress order are WooCommerce\'s processing and completed (D-7): Mama\'s "Baking soon" and "Posted"', () => {
+	const mama = loadDraft( path.join( REPO, 'sites', 'mamas-munches-redesign', 'handoff' ), 'Account.dc.html' ).idx;
+	const r = orderStatusModes( { idx: mama, reads: shown( 'Delivered' ), rows: STATUS_ROWS } );
+	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value ] ), [ [ 'orderStatusLabels', { processing: 'Baking soon', completed: 'Posted' } ] ] );
+	assert.match( r.writes[ 0 ].evidence, /\["Delivered"\] has no WooCommerce status of its own/ );
+	// Eye Care's statuses are its progress steps' names, not a table of status words: nothing is written, and it says why.
+	const eye = loadDraft( path.join( REPO, 'sites', 'eye-care-ward-end', 'handoff' ), 'Eye Care Birmingham.dc.html' ).idx;
+	const e = orderStatusModes( { idx: eye, reads: shown( 'Ready', 'chip' ), rows: STATUS_ROWS } );
+	assert.deepEqual( e.writes, [] );
+	assert.equal( e.gaps.length, 1 );
+} );
+
+test( 'negative controls: a table whose statuses share a place or have none, two tables, no shown status and a block without the setting write nothing', () => {
+	const dir = fs.mkdtempSync( path.join( process.env.TEMP || process.env.TMPDIR || '/tmp', 'status-' ) );
+	try {
+		const run = ( body, reads = shown( 'Sent' ), rows = STATUS_ROWS ) => orderStatusModes( { idx: draftWith( dir, body ), reads, rows } );
+		const good = run( "const ST = { b: ['Sent', '#fff', 3], a: ['Packing', '#000', 1] };" );
+		assert.deepEqual( good.writes[ 0 ].value, { processing: 'Packing', completed: 'Sent' }, 'the progress order, not the written order' );
+		assert.match( run( "const ST = { a: ['Packing', '#000', 2], b: ['Sent', '#fff', 2] };" ).gaps[ 0 ].what, /its own place/ );
+		assert.match( run( "const ST = { a: ['Packing', '#000'], b: ['Sent', '#fff'] };" ).gaps[ 0 ].what, /its own place/ );
+		assert.match( run( "const ST = { a: ['Packing', 1], b: ['Sent', 2] }; const U = { c: ['Sent', 1], d: ['Gone', 2] };" ).gaps[ 0 ].what, /2 tables/ );
+		assert.match( run( "const ST = { a: ['Packing', 1], b: ['Sent', 2] };", {} ).gaps[ 0 ].what, /no status words/ );
+		assert.match( run( "const ST = { a: ['Packing', 1], b: ['Other', 2] };" ).gaps[ 0 ].what, /holds no table/, 'a table naming no shown status is not the status table' );
+		assert.deepEqual( run( "const ST = { a: ['Packing', 1], b: ['Sent', 2] };", shown( 'Sent' ), [] ), { writes: [], gaps: [], settings: {} } );
+	} finally {
+		fs.rmSync( dir, { recursive: true, force: true } );
+	}
+} );
+
+test( 'MUST FAIL: the signed-in read\'s account settings are the menu and the status words together', () => {
+	const mama = loadDraft( path.join( REPO, 'sites', 'mamas-munches-redesign', 'handoff' ), 'Account.dc.html' ).idx;
+	const r = accountViewModes( { tabs: MAMA, menu: MENU, idx: mama, reads: shown( 'Delivered' ), rows: [ ...ROWS, ...STATUS_ROWS ], stringKeys: KEYS } );
+	const set = Object.fromEntries( r.writes.map( ( w ) => [ w.attr, w.value ] ) );
+	assert.deepEqual( set.menuOrder, [ 'orders', 'edit-address', 'edit-account' ] );
+	assert.deepEqual( set.orderStatusLabels, { processing: 'Baking soon', completed: 'Posted' } );
+	assert.equal( r.settings.orderStatusLabels.code, 'written' );
+	assert.ok( r.gaps.some( ( g ) => 'hiddenEndpoints' === g.setting ), 'the menu\'s gaps come through' );
 } );
