@@ -32,7 +32,8 @@
 // newest Fill (fillOutDir), so a timed-out build is retried with --stages build,apply.
 // The apply stage (apply.mjs for that surface with --write, run one at a time like a build: it writes the site's database and the
 // shared verify.json) sets the existing block settings the Fill and build cannot see, from the draft's runtime, on a local
-// mirror (a page or post surface only: a template copy and a Hostinger target are skipped with a note). Its failure stops the
+// mirror (a page or post surface only: a template copy and a Hostinger target are skipped with a note; a template copy's tree instead takes
+// the rules that read only the draft element, lib/site-run-template-apply.mjs, before it is written). Its failure stops the
 // surface like any stage; the stage result names the ops written and any no-setting row naming a setting the block has
 // (apply-gate's `unresolved`, which the applier's own exit code fails only on a whole run).
 // The run ledger (lib/run-ledger.mjs): every surface's stages append what they did with each draft look to
@@ -70,6 +71,7 @@ import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
 import { inventoryRootFor, partsOf, writePart } from './lib/template-frame.mjs';
+import { applyTemplateRules } from './lib/site-run-template-apply.mjs';
 import { openRunLedger, runLedgerFileOfFill } from './lib/run-ledger.mjs';
 import { applyRunRows, buildRunRows } from './lib/run-ledger-build.mjs';
 import { ledgerTargets } from './lib/ledger-pairs.mjs';
@@ -709,7 +711,11 @@ export async function main( argv ) {
 		// Between the passes: every template copy's tree, from this run's Filled trees and the shells recorded before.
 		const filled = Object.fromEntries( ready.filter( ( c ) => c.filled ).map( ( c ) => [ c.key, c.filled ] ) );
 		copies = copyTrees( { surfaces, keys, filled, buildDir: build } );
+		// A template copy has no post for the apply stage, so the rules that read only the draft element (the heading level) run on its tree here.
+		const origins = Object.assign( {}, ...fs.readdirSync( build ).filter( ( f ) => f.endsWith( '.origin.json' ) ).map( ( f ) => readJson( path.join( build, f ) ) ) );
 		for ( const [ slug, c ] of Object.entries( copies ) ) {
+			const applied = applyTemplateRules( { tree: c.tree, origins } );
+			applied.writes.length && console.log( `copy ${ slug }: ${ applied.writes.length } apply rule write${ 1 === applied.writes.length ? '' : 's' } (${ [ ...new Set( applied.writes.map( ( w ) => w.attr ) ) ].join( ', ' ) })` );
 			writeCopy( build, slug, c.tree, c.shell );
 			console.log( `copy ${ slug }: ${ path.relative( REPO, copyFile( build, slug ) ) }${ c.shell ? ` (shell of ${ c.shell.chain.length } wrapper${ 1 === c.shell.chain.length ? '' : 's' })` : '' }` );
 		}
