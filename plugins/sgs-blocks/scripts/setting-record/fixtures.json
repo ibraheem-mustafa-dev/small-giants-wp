@@ -114,7 +114,8 @@
 			"panelInstalmentsNote": "Or 3 payments of %s with Klarna",
 			"panelInstalmentsCount": 3,
 			"panelSlideEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)",
-			"displayMode": "flyout"
+			"displayMode": "flyout",
+			"emptyProductId": "{{product}}"
 		},
 		"variants": [
 			{},
@@ -150,7 +151,8 @@
 			"productFile": "fixtures/product.json"
 		},
 		"notes": [
-			"panelTaxNote holds text and panelShowViewCart is true, so the tax note and the View basket link render (both off in calibration's fixture)."
+			"panelTaxNote holds text and panelShowViewCart is true, so the tax note and the View basket link render (both off in calibration's fixture).",
+			"emptyProductId names the product stand-in, so the empty basket's add button (sgs-cart__panel-empty-cta, printed by includes/helpers-cart-panel-extras.php::sgs_cart_empty_state_html only for a published product, cart/render.php) renders."
 		]
 	},
 	"sgs/form": {
@@ -454,7 +456,16 @@
 						"desktop": "on"
 					},
 					"rowShrinkEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)"
-				}
+				},
+				"siblings": [
+					{
+						"name": "sgs/button",
+						"attributes": {
+							"label": "Call us",
+							"url": "/contact/"
+						}
+					}
+				]
 			}
 		],
 		"companionClass": "is-detached",
@@ -474,7 +485,8 @@
 		"notes": [
 			"The menu post (fixtures/menu-post.json, ID 9101) holds the Shop submenu (9104) with three sub-links: Sunglasses 9105 featured, Frames 9106 disabled, Cases 9109 current, Lenses 9110 plain (each special sub-link has its own colour rule, so a setting that colours ordinary sub-links shows only on a plain one). Home and Sunglasses carry a description, which the menu prints as each link's badge (src/blocks/nav-bar-menu/render.php reads `description` as `badge`; includes/nav-menu-markup.php::sgs_nav_shared_badge_html prints `sgs-nav-bar-menu__badge`). A child identifier is path-qualified, `id:<parent>>id:<child>` (src/blocks/nav-bar-menu/render.php::from_link, read by includes/nav-menu-markup.php::sgs_nav_bar_menu_render_items).",
 			"Current is set in the browser by view.js::markCurrentPage (aria-current=\"page\" on the link whose data-sgs-nav-path matches the page), so `post` sets it on the Cases sub-link after render.",
-			"Variant 1 keeps calibration's featured top-level item (Home) beside the featured sub-link; Home stays disabled in the other variants, as in calibration."
+			"Variant 1 keeps calibration's featured top-level item (Home) beside the featured sub-link; Home stays disabled in the other variants, as in calibration.",
+			"The header row holds a button beside the menu (parents' siblings), so the rules that reach the row's other controls (includes/nav-trigger-surface-css.php: the row's links and buttons raised over the stretched burger) have an element to match."
 		]
 	}
 }
