@@ -1,7 +1,7 @@
 ---
 doc_type: spec
 spec_id: 35
-spec_version: "3.3"
+spec_version: "3.4"
 title: SGS Block Inspector UX, Control-Completeness & Capability Standard
 project: small-giants-wp
 status: active
@@ -504,7 +504,7 @@ Every link field also offers the shared link source (built 2026-10-13): a typed 
 
 > ### ⭐ The wrapper is responsive GENERICALLY — read before acting on this section
 >
-> **The shared wrapper is responsive GENERICALLY**: fix the wrapper once so every block that uses it needs no individual fixes that require forking. Six layout properties (`alignContent`, `justifyContent`, `justifyItems`, `flexDirection`, `flexWrap`, `gridAutoRows`) are tier-capable as **six array rows**, not new code: `sgs_emit_responsive_css()` is generic (atoms → tier cascade → tier-diff). Adding another property is one row.
+> **The shared wrapper is responsive GENERICALLY**: fix the wrapper once so every block that uses it needs no individual fixes that require forking. Six layout properties (`alignContent`, `justifyContent`, `justifyItems`, `flexDirection`, `flexWrap`, `gridAutoRows`) are tier-capable as **six array rows**, not new code: `sgs_emit_responsive_css()` is generic (atoms → tier cascade → tier-diff). Adding another property is one row. `justifyContent`, `justifyItems` and `alignContent` are stored as `{desktop, tablet, mobile}` objects and edited as one per-device select row (`TierSelectControl`), as are `sgs/process-steps` `stepGap` and `numberGap` (Spec 02 FR-2-44).
 >
 > **No conflict with this spec's purpose.** "Make every property responsive" does not contradict Spec 35's goal of shrinking the control surface, **because of the one global device toggle**: a `<ResponsiveControl>` renders ONE control at a time, so a tier adds **zero** visible controls. The surface only grows if tiers render side by side — the banned lookalike in field 3 below. ⛔ Do not re-litigate this as a cost/benefit.
 >

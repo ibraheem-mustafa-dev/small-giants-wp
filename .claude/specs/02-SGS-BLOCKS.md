@@ -1,13 +1,14 @@
 ---
 doc_type: spec
 spec_id: 2
-spec_version: "1.30"
+spec_version: "1.31"
 project: small-giants-wp
 title: SGS Blocks — Custom Gutenberg Block Library
 status: active
 last_verified: 2026-11-21
 authors: Bean + Claude
 status_history:
+  - 2026-11-22: v1.31, the layout distribution settings (`justifyContent`, `justifyItems`, `alignContent`) and `sgs/process-steps` `stepGap` and `numberGap` are per-device objects (FR-2-44)
   - 2026-11-22: v1.30, plugin round 6 part b: `sgs/label` takes the shared float position (FR-2-40), the carousel arrow takes position and edge offsets through the button kit's `float` group (FR-2-41), `sgs/process-steps` takes per-part spacing (FR-2-42), and the help note icon disc size is a length (FR-2-34).
   - 2026-11-22: v1.29, a span prints only at the devices that hold it (FR-2-36), the background overlay's hover look shows (FR-2-37), the scrollbar choice joins the layout family (FR-2-35), `sgs/social-icons` `childIconShapeSize` maps height as well as width, and `sgs/nav-drawer-menu` takes a row gap (FR-2-39)
   - 2026-11-21: v1.28, the background overlay settings declare what they paint on the overlay span (FR-2-37, a detector keeps every block that holds them declared); a media slot may name the settings its block edits with its own control, so the decorative image shows one Fill control (FR-2-38); `sgs/google-reviews` joins the shared scrollbar choice (FR-2-35).
@@ -1413,3 +1414,7 @@ Features the client drafts use that no block setting reproduced (the CSS equival
 - **FR-2-43 — A heading or text with no words renders nothing, and a picture or icon counts as content.** `sgs/heading` and `sgs/text` print no element and no scoped style when their content has no words, so a heading bound to a value that resolves to nothing (an unanswered order fact, an empty customer field) leaves no empty `h2`. `includes/helpers-inline-formats.php::sgs_rich_text_has_content` is the one rule both blocks' `render.php` call: words, or an `img`, `svg`, `picture` or `video` element, count as content; whitespace and tags that wrap nothing stay empty, so an icon-only heading and an inline photo alone still print.
 
   Status: built (2026-11-22, `73c2cef7c` and `a07825ef9`); `tests/php/HeadingEmptyContentTest.php` 11 cases (the empty-heading cases and the old check's icon-only and photo-only misses fail on the old code). Render-scope: any page holding an `sgs/heading` or `sgs/text` with empty content or only a picture or icon.
+
+- **FR-2-44 — The layout distribution settings are one value per device.** `justifyContent`, `justifyItems` and `alignContent` on the layout blocks that hold them (the container, hero, feature grid, rows, trust bar, gallery and drawer menu among them; `scripts/migrate-scalar-tier.py` lists the set) and `sgs/process-steps` `stepGap` and `numberGap` are `{desktop, tablet, mobile}` objects, a non-empty old default staying as the desktop tier (`stretch`). The desktop tier prints with the layout declarations as before; tablet and mobile print as overrides only where they differ and only where the layout applies the property (`includes/helpers-responsive.php::sgs_keyword_tiers`, `sgs_emit_keyword_tier_overrides`), so `justify-items` never prints on a flex row. One row in the inspector edits each (`src/components/TierSelectControl.js`, the generalised `AlignItemsTierControl`). Saved content is swept by `scripts/migrate-scalar-tier-live.php` with the rules `find-scalar-tier-attrs.py --rules --no-box` writes, and two detectors keep a scalar out (`migrate-scalar-tier.py --check`, `find-scalar-tier-attrs.py --check --no-box`).
+
+  Status: built and on `main`; `tests/php/LayoutDistributionTiersTest.php` 12 tests. Nothing deployed; every instance of a migrated block gets a new class-name hash.
