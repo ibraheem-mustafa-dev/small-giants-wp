@@ -218,7 +218,7 @@
 			]
 		},
 		"sgs/account": {
-			"_comment": "The signed-in account views (surface my-account-in). Each switch turns on the block's own view the draft draws: its orders as a list of cards (not a table), each card's thumbnails, an order's own page, and the details form's phone field and marketing tick. The menu's per-tab counts are not decided here: which tab is the orders tab would be read from its words.",
+			"_comment": "The signed-in account views (surface my-account-in) and the sign-in forms (surface my-account). Each switch turns on the block's own view the draft draws: its orders as a list of cards (not a table), each card's thumbnails, an order's own page, the details form's phone field and marketing tick, its two columns and its password card, the address cards. `menu` is read by lib/part-look-account-views.mjs::accountMenuModes: which WooCommerce view each of the draft's tabs opens, told by the part its own view locates (or a view listing another component's cards), the endpoints the block's menu serves (each no tab opens is hidden), and the dashboard's parts switched off when it is hidden. The words rules write the draft's own words for the order page and the orders list, with the order number put back as {order}; the order numbers' shared prefix is the block's number prefix (Bean's D-7).",
 			"rules": [
 				{
 					"setting": "ordersRowList",
@@ -247,8 +247,175 @@
 					"setting": "accountShowMarketingOptIn",
 					"value": true,
 					"whenFound": "detailsOptIn"
+				},
+				{
+					"setting": "accountFormColumns",
+					"value": "2",
+					"from": {
+						"sameRow": [
+							"detailsGiven",
+							"detailsFamily"
+						]
+					},
+					"neighbours": [
+						"accountForm"
+					]
+				},
+				{
+					"setting": "accountDisplayFromNames",
+					"value": true,
+					"whenAbsent": "detailsDisplayName",
+					"neighbours": [
+						"accountForm"
+					]
+				},
+				{
+					"setting": "accountDetailsCards",
+					"value": true,
+					"whenFound": "detailsPasswordCard",
+					"neighbours": [
+						"accountForm"
+					]
+				},
+				{
+					"setting": "addressEditor",
+					"value": true,
+					"whenFound": "addressCard",
+					"note": "the draft draws its addresses as cards, which is the block's address editor (one card per address, edited in place); off is WooCommerce's list and separate form"
+				},
+				{
+					"setting": "menuActiveIndicatorStyle",
+					"value": "line",
+					"from": {
+						"line": "menuActive"
+					},
+					"whenFound": "menuActive"
+				},
+				{
+					"setting": "loginButtonScope",
+					"value": "all-forms",
+					"from": {
+						"sameLook": {
+							"part": "accountSave",
+							"other": {
+								"surface": "my-account",
+								"part": "loginButton"
+							},
+							"props": [
+								"background-color",
+								"color",
+								"border-top-left-radius",
+								"text-transform",
+								"border-top-width"
+							]
+						}
+					},
+					"whenFound": "accountSave"
+				},
+				{
+					"setting": "ordersNumberPrefix",
+					"from": {
+						"prefix": "order-number"
+					},
+					"whenFound": "order-number",
+					"note": "Bean's D-7: the draft's order numbers are the client's own"
+				},
+				{
+					"setting": "orderDetailTitle",
+					"from": {
+						"words": {
+							"part": "od-title",
+							"tokens": {
+								"order": "order-number"
+							}
+						}
+					},
+					"whenFound": "od-title"
+				},
+				{
+					"setting": "orderDetailBackLabel",
+					"from": {
+						"text": "od-back"
+					},
+					"whenFound": "od-back"
+				},
+				{
+					"setting": "ordersRowViewLabel",
+					"from": {
+						"text": "order-view",
+						"bare": true
+					},
+					"whenFound": "order-view"
+				},
+				{
+					"setting": "loginButtonWidthType",
+					"value": "full",
+					"from": {
+						"fills": {
+							"part": "loginButton",
+							"against": "fieldInput"
+						}
+					},
+					"whenFound": "loginButton"
+				},
+				{
+					"setting": "registerButtonWidthType",
+					"value": "full",
+					"from": {
+						"fills": {
+							"part": "registerButton",
+							"against": "fieldInput"
+						}
+					},
+					"whenFound": "registerButton"
 				}
-			]
+			],
+			"menu": {
+				"_comment": "lib/part-look-account-views.mjs::accountMenuModes. endpoints: per WooCommerce endpoint, the part its view locates (`part`) or a view listing another component's cards (`list`), the wording key its tab label goes to, the setting its view's heading goes to, and its count or tick switch. served: the endpoints the block's menu can show (the sign-out link is never hidden).",
+				"order": "menuOrder",
+				"hidden": "hiddenEndpoints",
+				"icons": "showMenuIcons",
+				"layout": "navLayout",
+				"endpoints": [
+					{
+						"endpoint": "saved-items",
+						"list": true,
+						"label": "strings.savedItems"
+					},
+					{
+						"endpoint": "orders",
+						"part": "ordersRows",
+						"label": "strings.orders",
+						"heading": "ordersTabHeading",
+						"count": "menuOrdersCount"
+					},
+					{
+						"endpoint": "edit-address",
+						"part": "addressCard",
+						"label": "strings.addresses",
+						"count": "menuAddressesCount"
+					},
+					{
+						"endpoint": "edit-account",
+						"part": "accountForm",
+						"label": "strings.accountDetails",
+						"tick": "menuAccountTick"
+					}
+				],
+				"served": [
+					"dashboard",
+					"orders",
+					"downloads",
+					"edit-address",
+					"payment-methods",
+					"edit-account",
+					"saved-items"
+				],
+				"dashboardParts": [
+					"showQuickCards",
+					"showLatestOrder"
+				]
+			}
 		},
 		"sgs/cart": {
 			"_comment": "The basket drawer (surface header): what the panel shows and says, from the parts the drawer group locates in the draft, its empty state read with the basket emptied (part-look.json `empty`). A switch the draft gives no evidence for either way stays at the block default. Not decided here: the view link's style and the actions' stacking (they need the parts' places, which the read does not keep), Remove's place in the line, and the success words of the free-delivery bar (drawn only once the threshold is met).",

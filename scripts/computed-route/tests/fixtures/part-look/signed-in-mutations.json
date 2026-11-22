@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/part-look-signed-in.mjs",
-		"find": "if ( ! list?.length || ( filled[ part ] && filled[ part ] !== view ) ) {",
-		"replace": "if ( ! list?.length ) {",
+		"find": "if ( ! list?.length || ( filled[ part ] && filled[ part ] !== view ) || ( anchor && filled[ anchor ] !== view ) ) {",
+		"replace": "if ( ! list?.length || ( anchor && filled[ anchor ] !== view ) ) {",
 		"why": "a later view overwrites the view that located a part first"
 	},
 	{
@@ -160,5 +160,29 @@
 		"find": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"button\",\n\t\t\t\t\t\t\t\t\t\"a\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true,",
 		"replace": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"span\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true,",
 		"why": "a whole-row button is not an order card"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\t\t\t\t\t\t\"lacks\": {\n\t\t\t\t\t\t\t\"control\": true\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\"pick\": \"first\"\n\t\t\t\t}\n\t\t\t},",
+		"replace": "\t\t\t\t\t\t\"lacks\": {\n\t\t\t\t\t\t\t\"tag\": [ \"video\" ]\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\t\t\t\t\t\"pick\": \"first\"\n\t\t\t\t}\n\t\t\t},",
+		"why": "a view wrapper holding the back control is taken for the order page heading row, so its back control precedes nothing"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"pill\": false,\n\t\t\t\t\t\t\t\t\"notInside\": {",
+		"replace": "\"notInside\": {",
+		"why": "a status chip inside the heading row is read as the placed line"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "if ( ! list?.length || ( filled[ part ] && filled[ part ] !== view ) || ( anchor && filled[ anchor ] !== view ) ) {",
+		"replace": "if ( ! list?.length || ( filled[ part ] && filled[ part ] !== view ) ) {",
+		"why": "a plan card's button stands for an order card's"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": ".sort( ( [ a ], [ b ] ) => Number( !! parts[ a ]?.sameViewAs ) - Number( !! parts[ b ]?.sameViewAs ) )",
+		"replace": "",
+		"why": "a list part found before its list in the same view is dropped"
 	}
 ]

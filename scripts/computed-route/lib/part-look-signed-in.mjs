@@ -8,7 +8,10 @@
 // current-password field (any identity and password; the draft's own logic seeds its sample account) and submits it through the
 // form's own submit, then opens the account page in the same browser context (the draft keeps the account in its own storage).
 // Each view is then opened by the draft's own controls: every repeated control of the account menu in turn (a tab), and the
-// item page through the first listed item's own control (a repeated card that holds an amount). Nothing is told by its words.
+// item page through the first listed item's own control (a repeated card that holds an amount). Nothing is told by its words. Each
+// tab is also described (menuInPage 'describe': its label, count, glyph, icon and place) with the parts its own view located and
+// whether that view lists another component's cards (viewInPage), so the account's menu modes can tell which view each tab opens
+// (lib/part-look-account-views.mjs).
 //
 // Which parts a view reads: a part of the locator group with `view: "detail"` is read only on the item page (its locators would
 // find the list's own elements on a tab); every other part is read on the tabs. The first view that locates a part keeps it.
@@ -30,9 +33,13 @@ export function partsOfView( parts, view ) {
 
 // Adds one view's finds at one width to `reads` ({ part: { width: [ instance ] } }). A part another view located first keeps that
 // view (`filled` maps a part to the view that located it); an empty find adds nothing.
-export function mergeViewReads( { reads, filled, found, width, view } ) {
-	for ( const [ part, list ] of Object.entries( found || {} ) ) {
-		if ( ! list?.length || ( filled[ part ] && filled[ part ] !== view ) ) {
+// A part whose locator names `sameViewAs` (a part read inside a list: an order card's number or button) is kept only from the view that
+// keeps that part, so a later view's list of another kind (a plan list) never stands in for it.
+export function mergeViewReads( { reads, filled, found, width, view, parts = {} } ) {
+	const entries = Object.entries( found || {} ).sort( ( [ a ], [ b ] ) => Number( !! parts[ a ]?.sameViewAs ) - Number( !! parts[ b ]?.sameViewAs ) );
+	for ( const [ part, list ] of entries ) {
+		const anchor = parts[ part ]?.sameViewAs;
+		if ( ! list?.length || ( filled[ part ] && filled[ part ] !== view ) || ( anchor && filled[ anchor ] !== view ) ) {
 			continue;
 		}
 		filled[ part ] = view;
@@ -77,7 +84,10 @@ export function signInInPage( { identity, password } ) {
 // In-page: the account menu's view controls, or does one thing with them. The menu is the navigation landmark (a nav, or an element
 // of role navigation or tablist) inside the main content that holds two or more repeated controls (buttons or links sharing their
 // shape); its view controls are those repeated controls, so a lone control beside them (sign out) is not one.
-// { action: 'count' } returns how many; { action: 'open', index } clicks that one and returns whether it could.
+// { action: 'count' } returns how many; { action: 'open', index } clicks that one and returns whether it could; { action: 'describe' }
+// returns each one's parts, told by structure: [ { label, count, glyph, icon, top, left } ]: `count` the words of a descendant holding only
+// digits, `glyph` those of one holding one or two characters that are neither letters nor digits (a tick), `label` the control's words
+// without them, `icon` whether it holds an svg or img, `top`/`left` its box's place (controls side by side share a top).
 export function menuInPage( { action, index = 0 } ) {
 	const isControl = ( el ) => [ 'BUTTON', 'A' ].includes( el.tagName ) || 'button' === el.getAttribute( 'role' ) || 'tab' === el.getAttribute( 'role' );
 	const signature = ( el ) => `${ el.tagName }|${ [ ...el.children ].map( ( c ) => c.tagName ).join( ',' ) }`;
@@ -92,11 +102,59 @@ export function menuInPage( { action, index = 0 } ) {
 	if ( 'count' === action ) {
 		return controls.length;
 	}
+	if ( 'describe' === action ) {
+		const norm = ( s ) => String( s || '' ).replace( /\s+/g, ' ' ).trim();
+		return controls.map( ( c ) => {
+			const leaves = [ ...c.querySelectorAll( '*' ) ].filter( ( el ) => ! el.children.length && shown( el ) && norm( el.textContent ) );
+			const count = leaves.find( ( el ) => /^\d+$/.test( norm( el.textContent ) ) );
+			const glyph = leaves.find( ( el ) => /^[^\p{L}\p{N}\s]{1,2}$/u.test( norm( el.textContent ) ) );
+			const label = [ ...c.childNodes ].map( ( n ) => ( [ count, glyph ].some( ( x ) => x && ( n === x || n.contains?.( x ) ) && norm( n.textContent ) === norm( x.textContent ) ) ? '' : n.textContent ) ).join( ' ' );
+			const r = c.getBoundingClientRect();
+			return { label: norm( label ), count: count ? norm( count.textContent ) : null, glyph: glyph ? norm( glyph.textContent ) : null, icon: !! c.querySelector( 'svg, img' ), top: Math.round( r.top ), left: Math.round( r.left ) };
+		} );
+	}
 	if ( ! controls[ index ] ) {
 		return false;
 	}
 	controls[ index ].click();
 	return true;
+}
+
+// In-page: what the shown view of the account beside its menu is made of, from the draft's own template: { list } is true when the view's
+// template mounts another component inside a loop (a list of cards drawn by the draft's own card component, such as saved products),
+// whether or not the loop holds anything now (an empty saved list shows its empty state). The view is each shown element after the
+// menu in the menu's row; its template is the stamped template of the component it renders in (window.__dcAnnotatedTemplate, the
+// data-dc-tpl number). Returns { list: false } when the page has no menu or no stamped template.
+export function viewInPage() {
+	const shown = ( el ) => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height > 0;
+	const main = document.querySelector( 'main' ) || document.body;
+	const nav = [ ...main.querySelectorAll( 'nav, [role=navigation], [role=tablist]' ) ].find( ( n ) => shown( n ) && ! n.closest( 'header, footer' ) );
+	if ( ! nav || 'function' !== typeof window.__dcAnnotatedTemplate ) {
+		return { list: false };
+	}
+	const docs = new Map();
+	const templateOf = ( el ) => {
+		const n = el.getAttribute( 'data-dc-tpl' );
+		const host = el.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' );
+		const comp = ! host || 'Root' === host ? ( 'function' === typeof window.__dcRootName ? window.__dcRootName() : null ) : host;
+		if ( ! n || ! comp ) {
+			return null;
+		}
+		if ( ! docs.has( comp ) ) {
+			const t = document.createElement( 'template' );
+			t.innerHTML = window.__dcAnnotatedTemplate( comp ) || '';
+			docs.set( comp, t.content );
+		}
+		return docs.get( comp ).querySelector( `[data-dc-tpl="${ CSS.escape( n ) }"]` );
+	};
+	const after = [];
+	for ( let s = nav.nextElementSibling; s; s = s.nextElementSibling ) {
+		shown( s ) && after.push( s );
+	}
+	// The content beside the menu holds every view's branch in its template, so a view is its shown child (or the element itself when it
+	// has none).
+	const views = after.flatMap( ( s ) => ( ( kids ) => ( kids.length ? kids : [ s ] ) )( [ ...s.children ].filter( shown ) ) );
+	return { list: views.some( ( v ) => !! templateOf( v )?.querySelector( 'sc-for dc-import' ) ) };
 }
 
 // In-page: opens the first listed item's own page: the first of two or more repeated cards outside the account menu that each hold
@@ -181,7 +239,15 @@ export async function signInDraft( { page, mainFile, signinFile = null, signinRo
 	return where;
 }
 
-// Reads the signed-in views of a served draft at each width: { reads, filled, views, notes }. `mainFile` is the account page,
+// One tab's record from its own view's finds: { opened, parts (the parts it located), texts (each located part's first words), list
+// (its view lists another component's cards, viewInPage) }.
+export function tabRecord( found, list = false ) {
+	const hit = Object.entries( found || {} ).filter( ( [ , l ] ) => l?.length );
+	return { opened: true, parts: hit.map( ( [ name ] ) => name ), texts: Object.fromEntries( hit.map( ( [ name, l ] ) => [ name, String( l[ 0 ].text ?? '' ) ] ) ), list: !! list };
+}
+
+// Reads the signed-in views of a served draft at each width: { reads, filled, views, notes, tabs }. `tabs` maps a width to each menu
+// tab's description (menuInPage 'describe') with its tabRecord, or `opened: false` where it did not open. `mainFile` is the account page,
 // `signinFile` the draft's sign-in page, or `signinRoute` the sign-in route of a one-file draft (no sign-in file); `spec` the locator
 // group's spec as readParts takes it; `parts` the group's parts (for their `view`). Each width opens a fresh browser context, signs in,
 // opens the account page and reads every view.
@@ -196,10 +262,12 @@ export async function readSignedInParts( { draftDir, mainFile, signinFile = null
 	const filled = {};
 	const views = {};
 	const notes = [];
+	const tabs = {};
 	const read = async ( page, width, view, names ) => {
 		const found = await page.evaluate( findPartsInPage, { spec, names, props: READ_PROPS, pages } );
-		mergeViewReads( { reads, filled, found, width, view } );
+		mergeViewReads( { reads, filled, found, width, view, parts } );
 		( views[ view ] ??= {} )[ width ] = Object.values( found ).filter( ( l ) => l.length ).length;
+		return found;
 	};
 	try {
 		for ( const width of WIDTHS ) {
@@ -214,12 +282,14 @@ export async function readSignedInParts( { draftDir, mainFile, signinFile = null
 					},
 					openRoute: ( route ) => runOpeningSteps( page, { route } ),
 				} );
-				const tabs = await page.evaluate( menuInPage, { action: 'count' } );
-				if ( ! tabs ) {
+				const count = await page.evaluate( menuInPage, { action: 'count' } );
+				if ( ! count ) {
 					throw new Error( `${ mainFile } shows no account menu after signing in on ${ where }: the draft did not sign in` );
 				}
+				const described = await page.evaluate( menuInPage, { action: 'describe' } );
+				tabs[ width ] = described.map( ( d ) => ( { ...d, opened: false, parts: [], texts: {}, list: false } ) );
 				await readTabViews( {
-					tabs,
+					tabs: count,
 					width,
 					notes,
 					open: async ( i ) => {
@@ -227,7 +297,10 @@ export async function readSignedInParts( { draftDir, mainFile, signinFile = null
 						await page.waitForTimeout( 700 );
 						return opened;
 					},
-					read: ( i ) => read( page, width, `tab ${ i + 1 }`, partsOfView( parts, 'tab' ) ),
+					read: async ( i ) => {
+						const found = await read( page, width, `tab ${ i + 1 }`, partsOfView( parts, 'tab' ) );
+						tabs[ width ][ i ] && Object.assign( tabs[ width ][ i ], tabRecord( found, ( await page.evaluate( viewInPage ) ).list ) );
+					},
 				} );
 				// The item page opens from the first tab's list.
 				await readItemView( {
@@ -245,7 +318,7 @@ export async function readSignedInParts( { draftDir, mainFile, signinFile = null
 					},
 					read: () => read( page, width, 'detail', partsOfView( parts, 'detail' ) ),
 				} );
-				log( `read ${ mainFile } signed in at ${ width }px: ${ tabs } tabs and ${ views.detail?.[ width ] !== undefined ? 'the item page' : 'no item page' }` );
+				log( `read ${ mainFile } signed in at ${ width }px: ${ count } tabs and ${ views.detail?.[ width ] !== undefined ? 'the item page' : 'no item page' }` );
 			} finally {
 				await ctx.close();
 			}
@@ -254,7 +327,7 @@ export async function readSignedInParts( { draftDir, mainFile, signinFile = null
 		await browser.close();
 		await served.close();
 	}
-	return { reads, filled, views, notes };
+	return { reads, filled, views, notes, tabs };
 }
 
 // The customer the seed made and the order page it gave them, from seed.php's output (its last JSON line): { login, orderView }.

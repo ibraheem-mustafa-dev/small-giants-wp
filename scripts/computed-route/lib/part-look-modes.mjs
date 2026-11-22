@@ -18,6 +18,15 @@
 //                           for free delivery"), false only words holding none; a part whose words do not fit is not written
 //   from.ratio              [ total part, share part ]: the whole number of shares the total is, within 2% (the number of payments
 //                           an instalments line splits the subtotal into), from their amounts
+//   from.prefix             a part whose every copy reads the same characters before a number ("MM-1031", "MM-1012"): those characters
+//   from.words              { part, tokens }: the part's first words, each token part's words found in them put back as {token}
+//                           ("Order MM-1031" with { order: "order-number" } is "Order {order}"); words still holding a number or an
+//                           amount are a gap
+//   from.sameRow            parts that share a row (their tops within 2px) at the widest width: `value`, else nothing
+//   from.line               a part marked by a line on one edge (an inset box-shadow offset on one axis): `value`, else nothing
+//   from.fills              { part, against }: the part as wide (within 1px) as the widest of `against`: `value`, else nothing
+//   from.sameLook           { part, other: { surface, part }, props }: the part shares those computed values with a part another surface
+//                           of the same run read (`others`, the surface's reads): `value`, else nothing; that surface unread is a gap
 //   value                   the literal to write when the condition holds
 // A rule whose setting the framework database does not hold for the block, whose instances disagree, or whose evidence is missing
 // is a gap row with the draft's evidence, never a guess. Pure: reads and database rows in, writes and gaps out.
@@ -32,7 +41,21 @@ const amountOf = ( text ) => {
 };
 const instances = ( reads, part ) => reads[ part ]?.[ 1440 ] || WIDTHS.map( ( w ) => reads[ part ]?.[ w ] ).find( ( l ) => l?.length ) || [];
 
-const PREFIXED = /^[^£$€\d]*[A-Za-z][^£$€\d]*[£$€]\s?\d/;
+// Words without the glyphs that open or close them ("View order →" is "View order"): `from.text` with `bare`, for a setting whose
+// glyph is a setting of its own.
+export const bareOf = ( text ) => String( text ?? '' ).replace( /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '' );
+const AMOUNT_ANY =/[£$€]\s?\d|\d\s?[£$€]/;
+// Whether a computed box-shadow is one line on one edge: inset, no blur or spread, offset on one axis only.
+export function isLine( shadow ) {
+	const s = String( shadow || '' );
+	if ( ! /\binset\b/.test( s ) || s.includes( '),' ) ) {
+		return false;
+	}
+	const n = ( s.replace( /rgba?\([^)]*\)/g, '' ).match( /-?[\d.]+px/g ) || [] ).map( parseFloat );
+	return n.length >= 2 && ( 0 === n[ 0 ] ) !== ( 0 === n[ 1 ] ) && ! n.slice( 2 ).some( ( v ) => v !== 0 );
+}
+
+const PREFIXED =/^[^£$€\d]*[A-Za-z][^£$€\d]*[£$€]\s?\d/;
 const SIMPLE = [ [ 1, 1 ], [ 4, 3 ], [ 3, 4 ], [ 3, 2 ], [ 2, 3 ], [ 16, 9 ], [ 9, 16 ], [ 4, 5 ], [ 5, 4 ], [ 2, 1 ], [ 1, 2 ] ];
 // The shape the copies of a part share (`W / H`), or null when they differ by more than 2% or have no size.
 export function aspectOf( list ) {
@@ -48,7 +71,7 @@ export function aspectOf( list ) {
 // The label of a button without the amount it carries ("Add to basket · £21.50" is "Add to basket").
 export const labelOf = ( text ) => String( text ).replace( AMOUNT, '' ).replace( /[\s·•|–-]+$/, '' ).trim();
 
-export function evaluateModes( { block, rules, rows, reads } ) {
+export function evaluateModes( { block, rules, rows, reads, others = null } ) {
 	const out = { writes: [], gaps: [], settings: {} };
 	const known = new Set( rows.map( ( r ) => r.attr_name ) );
 	for ( const rule of rules || [] ) {
@@ -89,7 +112,7 @@ export function evaluateModes( { block, rules, rows, reads } ) {
 				const tail = rule.from.minus ? instances( reads, rule.from.minus ).map( ( i ) => String( i.text || '' ) ).find( ( x ) => x && String( t ).endsWith( x ) ) : null;
 				return tail ? String( t ).slice( 0, -tail.length ).trim() : t;
 			};
-			let texts = [ ...new Set( instances( reads, rule.from.text ).map( ( i ) => cut( rule.from.label ? labelOf( i.text ) : i.text ) ) ) ];
+			let texts = [ ...new Set( instances( reads, rule.from.text ).map( ( i ) => cut( rule.from.label ? labelOf( i.text ) : i.text ) ).map( ( t ) => ( rule.from.bare ? bareOf( t ) : t ) ) ) ];
 			if ( undefined !== rule.from.amount ) {
 				texts = texts.filter( ( t ) => AMOUNT_IN.test( t ) === rule.from.amount ).map( ( t ) => ( rule.from.amount ? t.replace( AMOUNT_IN, '%s' ) : t ) );
 				if ( ! texts.length ) {
@@ -152,6 +175,77 @@ export function evaluateModes( { block, rules, rows, reads } ) {
 			}
 			value = n;
 			evidence = `the draft's ${ rule.from.ratio[ 0 ] } ${ total } is ${ n } times its ${ rule.from.ratio[ 1 ] } ${ share }`;
+		} else if ( rule.from?.prefix ) {
+			const texts = instances( reads, rule.from.prefix ).map( ( i ) => String( i.text || '' ).trim() );
+			const heads = [ ...new Set( texts.map( ( t ) => /^(\D*?)\d+$/.exec( t )?.[ 1 ] ?? null ) ) ];
+			if ( ! texts.length || 1 !== heads.length || null === heads[ 0 ] ) {
+				gap( 'the copies of the part do not all read one prefix followed by a number', `${ rule.from.prefix }: ${ JSON.stringify( texts ) }` );
+				continue;
+			}
+			if ( '' === heads[ 0 ] ) {
+				out.settings[ rule.setting ] = { code: 'noPrefix' };
+				continue;
+			}
+			[ value ] = heads;
+			evidence = `the draft's ${ rule.from.prefix } reads ${ JSON.stringify( texts.slice( 0, 3 ) ) }`;
+		} else if ( rule.from?.words ) {
+			const { part, tokens = {} } = rule.from.words;
+			let text = String( instances( reads, part )[ 0 ]?.text ?? '' ).replace( /\s+/g, ' ' ).trim();
+			for ( const [ token, from ] of Object.entries( tokens ) ) {
+				const live = instances( reads, from ).map( ( i ) => String( i.text || '' ).trim() ).filter( Boolean ).find( ( t ) => text.includes( t ) );
+				live && ( text = text.replace( live, `{${ token }}` ) );
+			}
+			if ( AMOUNT_ANY.test( text ) || /\d/.test( text.replace( /\{[a-z]+\}/g, '' ) ) ) {
+				gap( 'the draft\'s words carry a live value (a number or an amount) no token of the setting holds', `${ part }: ${ JSON.stringify( text ) }` );
+				continue;
+			}
+			value = text;
+			evidence = `the draft's ${ part } says ${ JSON.stringify( text ) }`;
+		} else if ( rule.from?.sameRow ) {
+			const tops = rule.from.sameRow.map( ( part ) => instances( reads, part )[ 0 ]?.box?.y );
+			if ( tops.some( ( t ) => undefined === t ) ) {
+				out.settings[ rule.setting ] = { code: 'notDrawn' };
+				continue;
+			}
+			if ( Math.max( ...tops ) - Math.min( ...tops ) > 2 ) {
+				out.settings[ rule.setting ] = { code: 'notSameRow' };
+				continue;
+			}
+			evidence = `the draft's ${ rule.from.sameRow.join( ' and ' ) } share a row at the widest width`;
+		} else if ( rule.from?.line ) {
+			const shadow = String( instances( reads, rule.from.line )[ 0 ]?.styles?.[ 'box-shadow' ] ?? '' );
+			if ( ! isLine( shadow ) ) {
+				out.settings[ rule.setting ] = { code: 'noLine' };
+				continue;
+			}
+			evidence = `the draft's ${ rule.from.line } is marked by a line on one edge (${ shadow })`;
+		} else if ( rule.from?.fills ) {
+			const own = instances( reads, rule.from.fills.part )[ 0 ]?.box?.w;
+			const widths = instances( reads, rule.from.fills.against ).map( ( i ) => i.box?.w ).filter( ( w ) => w > 0 );
+			if ( ! ( own > 0 ) || ! widths.length || Math.abs( own - Math.max( ...widths ) ) > 1 ) {
+				out.settings[ rule.setting ] = { code: 'notFull' };
+				continue;
+			}
+			evidence = `the draft's ${ rule.from.fills.part } is as wide as its ${ rule.from.fills.against } (${ Math.round( own ) }px)`;
+		} else if ( rule.from?.sameLook ) {
+			const { part, other, props } = rule.from.sameLook;
+			const theirs = others?.[ other.surface ];
+			if ( ! theirs ) {
+				gap( `the ${ other.surface } surface was not read in this run, so the look the two buttons share is unknown`, null );
+				continue;
+			}
+			const a = instances( reads, part )[ 0 ]?.styles;
+			const b = instances( theirs, other.part )[ 0 ]?.styles;
+			if ( ! a || ! b ) {
+				out.settings[ rule.setting ] = { code: 'notDrawn' };
+				continue;
+			}
+			const differ = props.filter( ( p ) => String( a[ p ] ?? '' ) !== String( b[ p ] ?? '' ) );
+			if ( differ.length ) {
+				out.settings[ rule.setting ] = { code: 'lookDiffers' };
+				continue;
+			}
+			evidence = `the draft's ${ part } shares the ${ other.surface } ${ other.part }'s ${ props.join( ', ' ) }`;
 		} else if ( rule.from?.pricePrefix ) {
 			const texts = instances( reads, rule.from.pricePrefix ).map( ( i ) => String( i.text || '' ) );
 			value = texts.some( ( t ) => PREFIXED.test( t ) );

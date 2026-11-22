@@ -45,6 +45,8 @@ import { OPENER_PART, flowControls, openerShopParts, orderWrite } from './lib/pa
 import { blockElementsOf, liveSelectorsFor, readLiveSurface, seedOf, shootLiveSurface, verifySurface } from './lib/part-look-verify.mjs';
 import { READ_PROPS } from './lib/fill-part-look.mjs';
 import { evaluateModes } from './lib/part-look-modes.mjs';
+import { accountMenuModes } from './lib/part-look-account-views.mjs';
+import { ACCOUNT_PARTS_FILE, phpListKeys } from './lib/template-piece-account.mjs';
 import { readTargets, siteUrl, targetOf } from './lib/site-targets.mjs';
 import { readLiveSignedIn, readSignedInParts, shootLiveSignedIn, signedInSeedOf } from './lib/part-look-signed-in.mjs';
 
@@ -156,6 +158,8 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	const outDir = out || path.join( buildDir, 'qa', 'part-look', stamp );
 	fs.mkdirSync( outDir, { recursive: true } );
 	const results = {};
+	// Each surface's draft reads, for a rule that compares a part with one another surface of the same run read (from.sameLook).
+	const readsOf = {};
 	const failures = [];
 	const refusals = [];
 	const notes = snapshotNote ? [ snapshotNote ] : [];
@@ -200,6 +204,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const noDraft = entry.noDraft ? String( entry.noDraft ) : null;
 		log( `${ surface }: ${ noDraft ? `no draft page (${ noDraft })` : `reading ${ mainFile }${ also.length ? ` and ${ also.join( ', ' ) }` : '' }` }` );
 		let reads = {};
+		let signedTabs = null;
 		if ( noDraft ) {
 			reads = {};
 		} else if ( loc.signedIn && ! pages.signin && ! logicRouteOf( cfg.route ) ) {
@@ -209,6 +214,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			const signinRoute = pages.signin ? null : logicRouteOf( cfg.route );
 			const signed = await readSignedInParts( { draftDir: path.resolve( REPO, entry.draftDir ), mainFile, signinFile: pages.signin ?? null, signinRoute, spec, parts: group.parts, pages, headed, log } );
 			reads = signed.reads;
+			signedTabs = signed.tabs;
 			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		} else {
 			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
@@ -222,7 +228,16 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const builtinResult = applyBuiltinButtons( { block: loc.block, build, rows: blockRowsOf, names, db, reads, presets: buttonPresets, snapshot, buttons: builtin } );
 		notes.push( ...builtinResult.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		// Content and mode settings (what a card draws, what its button says): rules over the located parts.
-		const modes = evaluateModes( { block: loc.block, rules: modesData.blocks?.[ loc.block ]?.rules, rows: blockRowsOf, reads } );
+		readsOf[ surface ] = reads;
+		const modes = evaluateModes( { block: loc.block, rules: modesData.blocks?.[ loc.block ]?.rules, rows: blockRowsOf, reads, others: readsOf } );
+		// The account menu: which view each of the draft's tabs opens (lib/part-look-account-views.mjs).
+		const menuData = modesData.blocks?.[ loc.block ]?.menu;
+		if ( signedTabs && menuData ) {
+			const menu = accountMenuModes( { block: loc.block, tabs: signedTabs, menu: menuData, rows: blockRowsOf, stringKeys: accountStringKeys() } );
+			modes.writes.push( ...menu.writes );
+			modes.gaps.push( ...menu.gaps );
+			Object.assign( modes.settings, menu.settings );
+		}
 		build.writes.push( ...modes.writes );
 		build.gaps.push( ...modes.gaps );
 		Object.entries( modes.settings ).forEach( ( [ attr, st ] ) => ( build.settings[ attr ] ??= { status: st.code === 'written' ? 'written' : 'not-written', code: st.code, part: null } ) );
@@ -245,7 +260,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		const result = {
 			surface, block: loc.block, settingsStats, template: loc.template ?? null, postId: loc.template && site ? templateIdOf( site, loc.template ) : ( entry.target?.postId ?? null ), draftFile: noDraft ? `none (${ noDraft })` : mainFile, alsoRead: also, pages,
 			rowsPaired: { tableRows: { present: tableParts.length, paired: tableParts.filter( located ).length }, parts: { withSettings: partNames.length, paired: partNames.filter( located ).length } },
-			build, located: Object.fromEntries( Object.entries( reads ).map( ( [ part, byWidth ] ) => [ part, Object.fromEntries( Object.entries( byWidth ).map( ( [ w, l ] ) => [ w, l.map( ( i ) => ( { text: i.text, tag: i.tag, box: i.box } ) ) ] ) ) ] ) ),
+			build, ...( signedTabs ? { tabs: signedTabs } : {} ), located: Object.fromEntries( Object.entries( reads ).map( ( [ part, byWidth ] ) => [ part, Object.fromEntries( Object.entries( byWidth ).map( ( [ w, l ] ) => [ w, l.map( ( i ) => ( { text: i.text, tag: i.tag, box: i.box } ) ) ] ) ) ] ) ),
 		};
 		if ( compare || write ) {
 			const saved = readSavedBlock( { site, postId: result.postId, block: loc.block } );
@@ -293,7 +308,8 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			await shootLiveSurface( { base: base0, pagePath: pagePathOf(), product: false === loc.basket || ! seed ? null : seedOf( fs.readFileSync( seed, 'utf8' ) ), file: result.shots.before } );
 		}
 		if ( write ) {
-			const set = Object.fromEntries( build.writes.filter( ( w ) => ! only || only.includes( w.attr ) || only.includes( w.companionOf ) ).map( ( w ) => [ w.attr, w.value ] ) );
+			const picked = build.writes.filter( ( w ) => ! only || only.includes( w.attr ) || only.includes( w.companionOf ) );
+			const set = mergeKeyWrites( picked, picked.some( ( w ) => w.attr.includes( '.' ) ) ? readSavedBlock( { site, postId: result.postId, block: loc.block } ).attrs : {} );
 			result.written = { site, count: Object.keys( set ).length, output: Object.keys( set ).length ? patchBlock( { site, postId: result.postId, block: loc.block, set, file: path.join( outDir, `patch-${ surface }.json` ), dryRun } ) : 'nothing to write on this surface' };
 		}
 		if ( verifies ) {
@@ -325,6 +341,29 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	fs.writeFileSync( path.join( outDir, 'report.json' ), `${ JSON.stringify( report, null, '\t' ) }\n` );
 	fs.writeFileSync( path.join( outDir, 'report.md' ), reportMarkdown( { client, site, compare, generated: report.generated, surfaces: results, totals, notes, refusals, failures } ) );
 	return { outDir, totals, report, failures, refusals };
+}
+
+// The keys the account block's wording class supports (data/account-parts.json stringsSource).
+function accountStringKeys() {
+	const parts = readJson( ACCOUNT_PARTS_FILE );
+	const file = path.join( REPO, parts.stringsSource?.file || '' );
+	return fs.existsSync( file ) ? phpListKeys( fs.readFileSync( file, 'utf8' ), parts.stringsSource.list ) : [];
+}
+
+// The settings a write sets: { attr: value }. A write to one key of an object setting (`strings.orders`) is merged into that setting's
+// saved object (`saved`, the block's saved settings) with the other writes to it, because a write replaces a setting whole.
+export function mergeKeyWrites( writes, saved = {} ) {
+	const set = {};
+	for ( const w of writes ) {
+		const dot = w.attr.indexOf( '.' );
+		if ( dot < 0 ) {
+			set[ w.attr ] = w.value;
+			continue;
+		}
+		const top = w.attr.slice( 0, dot );
+		set[ top ] = { ...( set[ top ] ?? ( saved?.[ top ] && 'object' === typeof saved[ top ] && ! Array.isArray( saved[ top ] ) ? saved[ top ] : {} ) ), [ w.attr.slice( dot + 1 ) ]: w.value };
+	}
+	return set;
 }
 
 // The surfaces a --strict verify fails: every verified surface that is not a full match (a part with settings not verified, a pair

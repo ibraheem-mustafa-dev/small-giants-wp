@@ -114,6 +114,20 @@ test( 'the order page: the control before its heading, the line after it, the pi
 	assert.deepEqual( list[ 'od-placed' ], [] );
 } );
 
+test( 'MUST FAIL: an order page whose back control and heading row sit inside one view wrapper: the back control, the placed line inside the heading row, the title', async () => {
+	const wrapped = page( `<div><button style="height:44px">All orders</button><div style="display:flex;justify-content:space-between"><div><h2>Order <span>EC-1047</span></h2><p>Placed 12 Oct · Collect</p></div><span style="background:#EFEAE2;padding:5px 9px">Ready</span></div><div><div>Item</div><div>£185.00</div></div><a href="#" style="display:flex"><span style="display:inline-block;width:36px;height:36px;border-radius:50%;background:#25D366"></span><span>Questions?</span></a></div>` );
+	const r = await locate( wrapped, 'detail' );
+	assert.deepEqual( texts( r[ 'od-back' ] ), [ 'All orders' ] );
+	assert.deepEqual( texts( r[ 'od-placed' ] ), [ 'Placed 12 Oct · Collect' ] );
+	assert.deepEqual( texts( r[ 'od-title' ] ), [ 'Order EC-1047' ] );
+	assert.deepEqual( r.chip, [], 'a round icon further down the page is not the status chip' );
+	const chipFirst = await locate( page( `<div><button style="height:44px">All orders</button><div><h2>Order <span>EC-1</span></h2><div style="${ PILL }">Ready</div><p>Placed 12 Oct</p></div><div>£5.00</div></div>` ), 'detail' );
+	assert.deepEqual( texts( chipFirst[ 'od-placed' ] ), [ 'Placed 12 Oct' ], 'a status chip before the placed line is not it' );
+	// The flat order page keeps its reads.
+	const flat = await locate( DETAIL, 'detail' );
+	assert.deepEqual( [ texts( flat[ 'od-back' ] ), texts( flat[ 'od-placed' ] ), texts( flat.chip ) ], [ [ 'Back' ], [ 'Placed Sat 7 Nov' ], [ 'Done' ] ] );
+} );
+
 test( 'a view reads only its own parts, and the first view to locate a part keeps it', () => {
 	const parts = { a: {}, b: { view: 'detail' } };
 	assert.deepEqual( partsOfView( parts, 'tab' ), [ 'a' ] );
@@ -127,6 +141,23 @@ test( 'a view reads only its own parts, and the first view to locate a part keep
 	assert.equal( reads.a[ 375 ][ 0 ].text, 'narrow' );
 	assert.equal( reads.b[ 1440 ][ 0 ].text, 'b' );
 	assert.equal( filled.b, 'tab 2' );
+} );
+
+test( 'MUST FAIL: a part read inside a list is kept only from the view whose list was kept, so a plan card\'s button never stands for an order card\'s', () => {
+	const parts = { ordersRows: {}, 'order-view': { from: 'orderCards', sameViewAs: 'ordersRows' } };
+	const reads = {};
+	const filled = {};
+	mergeViewReads( { reads, filled, found: { ordersRows: [ { text: 'EC-1' } ], 'order-view': [] }, width: 1440, view: 'tab 1', parts } );
+	mergeViewReads( { reads, filled, found: { 'order-view': [ { text: 'Cancel plan' } ], ordersRows: [ { text: 'Plan' } ] }, width: 1440, view: 'tab 2', parts } );
+	assert.equal( reads[ 'order-view' ], undefined );
+	assert.equal( reads.ordersRows[ 1440 ][ 0 ].text, 'EC-1' );
+	// Negative control: found in the list's own view, it is kept, whatever order the finds come in.
+	const own = {};
+	mergeViewReads( { reads: own, filled: {}, found: { 'order-view': [ { text: 'View order' } ], ordersRows: [ { text: 'MM-1' } ] }, width: 1440, view: 'tab 1', parts } );
+	assert.equal( own[ 'order-view' ][ 1440 ][ 0 ].text, 'View order' );
+	for ( const name of [ 'order-number', 'order-status', 'order-date', 'order-total', 'order-row-thumbs', 'order-view', 'cardBox', 'ordersNumber', 'ordersPill', 'ordersDate', 'ordersTotal' ] ) {
+		assert.equal( GROUP.parts[ name ].sameViewAs, 'ordersRows', `${ name } is read in the orders list's own view` );
+	}
 } );
 
 test( 'the draft is signed in through the form with a current-password field, its values set and the form submitted', async () => {

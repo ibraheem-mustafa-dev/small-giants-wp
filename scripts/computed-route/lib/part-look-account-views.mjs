@@ -1,0 +1,78 @@
+// The account menu's settings from the draft's signed-in read (shop investigation F-39, account-6): which WooCommerce view each of the
+// draft's menu tabs opens, in the draft's order, which views the site serves that no tab opens (hidden), each tab's words, its count or
+// tick, whether the tabs carry icons, and whether the menu runs down the side or along a row at each width.
+//
+// Each tab is told by what its own view holds, never by its words (lib/part-look-signed-in.mjs records, per tab, the parts its view
+// located and whether the view lists another component's cards): `data/part-look-modes.json` `sgs/account.menu.endpoints` names, per
+// WooCommerce endpoint, the part that marks its view (`part`) or a view listing another component's cards (`list`), the wording key
+// its label goes to, and its count or tick switch. An endpoint is taken by the first tab whose view marks it; a later tab whose view
+// marks a taken endpoint, and a tab whose view marks none (a subscriptions list the site has no view for), opens no endpoint and is a
+// gap row with its words. `served` lists the endpoints the block's menu can show; each one no tab opens is hidden (the sign-out link is
+// never hidden). With the dashboard hidden, its quick cards and latest order are switched off too. Pure: tab records in, writes and gaps out.
+
+const WIDTH_TIER = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
+const STRINGS = /^strings\.(.+)$/;
+
+// The menu's settings: { writes, gaps, settings } in lib/part-look-modes.mjs::evaluateModes' shape. `tabs` maps a width to the tab
+// records (lib/part-look-signed-in.mjs::readSignedInParts); `menu` the data; `rows` the block's database rows; `stringKeys` the keys the
+// block's wording class supports.
+export function accountMenuModes( { block = 'sgs/account', tabs = {}, menu = {}, rows = [], stringKeys = [] } ) {
+	const out = { writes: [], gaps: [], settings: {} };
+	const known = new Set( rows.map( ( r ) => r.attr_name ) );
+	const holds = ( setting ) => ( STRINGS.test( setting ) ? known.has( 'strings' ) && stringKeys.includes( STRINGS.exec( setting )[ 1 ] ) : known.has( setting ) );
+	const write = ( setting, value, evidence ) => {
+		if ( ! holds( setting ) ) {
+			out.gaps.push( { block, setting, what: 'the framework database holds no such setting for this block (or the wording class no such key)', evidence } );
+			return;
+		}
+		out.writes.push( { attr: setting, value, part: null, property: '(content)', mode: true, evidence, draft: { 1440: value } } );
+		out.settings[ setting ] = { code: 'written' };
+	};
+	const wide = tabs[ 1440 ] || [];
+	if ( ! wide.length ) {
+		return out;
+	}
+	const unopened = wide.filter( ( t ) => ! t.opened );
+	if ( unopened.length ) {
+		out.gaps.push( { block, setting: menu.order, what: 'a tab of the draft\'s menu did not open, so which view it shows is unknown and the menu is not written', evidence: JSON.stringify( unopened.map( ( t ) => t.label ) ) } );
+		return out;
+	}
+	// Which endpoint each tab opens, in the draft's order.
+	const taken = new Map();
+	const open = [];
+	for ( const t of wide ) {
+		const e = ( menu.endpoints || [] ).find( ( x ) => ( x.part ? t.parts.includes( x.part ) : !! ( x.list && t.list ) ) );
+		if ( ! e || taken.has( e.endpoint ) ) {
+			out.gaps.push( { block, setting: menu.order, what: e ? `the tab's view marks ${ e.endpoint }, which an earlier tab already opens; the site has no second view for it` : 'the tab\'s view is none the block draws (no WooCommerce view holds it), so the menu has no tab for it', evidence: `the draft's tab ${ JSON.stringify( t.label ) }` } );
+			continue;
+		}
+		taken.set( e.endpoint, t );
+		open.push( { e, t } );
+	}
+	if ( ! open.length ) {
+		return out;
+	}
+	write( menu.order, open.map( ( x ) => x.e.endpoint ), `the draft's tabs open ${ open.map( ( x ) => `${ JSON.stringify( x.t.label ) } (${ x.e.endpoint })` ).join( ', ' ) }` );
+	const hidden = ( menu.served || [] ).filter( ( e ) => ! taken.has( e ) );
+	write( menu.hidden, hidden, `no tab of the draft opens ${ hidden.join( ', ' ) || 'any other view' }` );
+	if ( hidden.includes( 'dashboard' ) ) {
+		for ( const s of menu.dashboardParts || [] ) {
+			write( s, false, 'the draft draws no dashboard, so its parts are off' );
+		}
+	}
+	for ( const { e, t } of open ) {
+		t.label && e.label && write( e.label, t.label, `the draft's ${ e.endpoint } tab says ${ JSON.stringify( t.label ) }` );
+		e.heading && t.texts?.heading && write( e.heading, t.texts.heading, `the draft's ${ e.endpoint } view is headed ${ JSON.stringify( t.texts.heading ) }` );
+		e.count && write( e.count, null !== t.count, `the draft's ${ e.endpoint } tab ${ null !== t.count ? `carries the number ${ t.count }` : 'carries no number' }` );
+		e.tick && write( e.tick, null === t.count && null !== t.glyph, `the draft's ${ e.endpoint } tab ${ t.glyph ? `carries the glyph ${ t.glyph }` : 'carries no glyph' }` );
+	}
+	wide.every( ( t ) => ! t.icon ) && write( menu.icons, false, 'no tab of the draft carries an icon' );
+	// Side by side (every tab on one row) is a row of tabs; else the menu runs down the side.
+	const layout = {};
+	for ( const [ w, tier ] of Object.entries( WIDTH_TIER ) ) {
+		const list = tabs[ w ] || [];
+		list.length > 1 && ( layout[ tier ] = list.every( ( t ) => Math.abs( t.top - list[ 0 ].top ) <= 2 ) ? 'tabs' : 'sidebar' );
+	}
+	Object.keys( layout ).length && write( menu.layout, layout, `the draft's tabs sit ${ Object.entries( layout ).map( ( [ k, v ] ) => `${ 'tabs' === v ? 'in a row' : 'down the side' } on ${ k }` ).join( ', ' ) }` );
+	return out;
+}

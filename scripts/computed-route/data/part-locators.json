@@ -2657,6 +2657,7 @@
 					"pick": "first"
 				},
 				"detailHead": {
+					"_comment": "The order page heading row: the first element holding a heading and no control (a view wrapper holding the back control is not it).",
 					"from": "content",
 					"match": {
 						"has": {
@@ -2665,6 +2666,9 @@
 								"h2",
 								"h3"
 							]
+						},
+						"lacks": {
+							"control": true
 						}
 					},
 					"pick": "first"
@@ -2720,10 +2724,12 @@
 					"sameAs": "orderCards"
 				},
 				"cardBox": {
-					"sameAs": "orderCards"
+					"sameAs": "orderCards",
+					"sameViewAs": "ordersRows"
 				},
 				"order-number": {
 					"from": "orderCards",
+					"sameViewAs": "ordersRows",
 					"match": {
 						"ownText": true,
 						"text": "words",
@@ -2737,10 +2743,12 @@
 					"pick": "first"
 				},
 				"ordersNumber": {
-					"sameAs": "order-number"
+					"sameAs": "order-number",
+					"sameViewAs": "ordersRows"
 				},
 				"order-status": {
 					"from": "orderCards",
+					"sameViewAs": "ordersRows",
 					"match": {
 						"pill": true
 					},
@@ -2748,10 +2756,12 @@
 					"pick": "first"
 				},
 				"ordersPill": {
-					"sameAs": "order-status"
+					"sameAs": "order-status",
+					"sameViewAs": "ordersRows"
 				},
 				"order-date": {
 					"from": "orderCards",
+					"sameViewAs": "ordersRows",
 					"match": {
 						"ownText": true,
 						"minChildren": 1,
@@ -2762,10 +2772,12 @@
 					"pick": "first"
 				},
 				"ordersDate": {
-					"sameAs": "order-date"
+					"sameAs": "order-date",
+					"sameViewAs": "ordersRows"
 				},
 				"order-total": {
 					"from": "orderCards",
+					"sameViewAs": "ordersRows",
 					"match": {
 						"text": "currency"
 					},
@@ -2773,10 +2785,12 @@
 					"perRoot": true
 				},
 				"ordersTotal": {
-					"sameAs": "order-total"
+					"sameAs": "order-total",
+					"sameViewAs": "ordersRows"
 				},
 				"order-row-thumbs": {
 					"from": "orderCards",
+					"sameViewAs": "ordersRows",
 					"match": {
 						"minChildren": 1,
 						"allChildren": {
@@ -2878,12 +2892,43 @@
 					"view": "detail"
 				},
 				"od-placed": {
-					"from": "content",
-					"match": {
-						"ownText": true,
-						"followsAnchor": "detailHead"
-					},
-					"pick": "first",
+					"_comment": "The line under the order page title: a line inside the heading row (beside the title), else the first words after the row.",
+					"any": [
+						{
+							"from": "detailHead",
+							"match": {
+								"ownText": true,
+								"tag": [
+									"p",
+									"div"
+								],
+								"pill": false,
+								"notInside": {
+									"tag": [
+										"h1",
+										"h2",
+										"h3"
+									]
+								},
+								"lacks": {
+									"tag": [
+										"h1",
+										"h2",
+										"h3"
+									]
+								}
+							},
+							"pick": "first"
+						},
+						{
+							"from": "content",
+							"match": {
+								"ownText": true,
+								"followsAnchor": "detailHead"
+							},
+							"pick": "first"
+						}
+					],
 					"view": "detail"
 				},
 				"chip": {
@@ -2917,6 +2962,83 @@
 					},
 					"smallest": true,
 					"pick": "last",
+					"view": "detail"
+				},
+				"detailsGiven": {
+					"from": "detailsForm",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"autocomplete": [
+							"given-name"
+						]
+					},
+					"pick": "first"
+				},
+				"detailsFamily": {
+					"from": "detailsForm",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"autocomplete": [
+							"family-name"
+						]
+					},
+					"pick": "first"
+				},
+				"detailsDisplayName": {
+					"from": "detailsForm",
+					"match": {
+						"tag": [
+							"input"
+						],
+						"autocomplete": [
+							"nickname",
+							"username"
+						]
+					},
+					"pick": "first"
+				},
+				"detailsPasswordCard": {
+					"from": "content",
+					"match": {
+						"tag": [
+							"form"
+						],
+						"has": {
+							"autocomplete": [
+								"new-password"
+							]
+						},
+						"lacks": {
+							"autocomplete": [
+								"given-name"
+							]
+						}
+					},
+					"pick": "first"
+				},
+				"order-view": {
+					"from": "orderCards",
+					"sameViewAs": "ordersRows",
+					"match": {
+						"control": true
+					},
+					"perRoot": true,
+					"pick": "last"
+				},
+				"od-title": {
+					"from": "detailHead",
+					"match": {
+						"tag": [
+							"h1",
+							"h2",
+							"h3"
+						]
+					},
+					"pick": "first",
 					"view": "detail"
 				}
 			}
