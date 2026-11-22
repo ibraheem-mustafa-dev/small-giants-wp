@@ -464,7 +464,10 @@ def diff_placements(base, changed, short, sheets):
             for s2, p2, m2, src in consumers(prop):
                 out.append(placement(s2, p2, media or m2, short, 'run-var', src))
         else:
-            out.append(placement(sel, prop, media, short, 'run-css', 'runtime'))
+            # which render holds the rule: only the plain one (the setting's change took it away), only the changed one,
+            # or both with another value; check.py::entry_values reads the producing value from it
+            side = 'base' if (media, sel, prop) not in rm else 'changed' if (media, sel, prop) not in rb else 'both'
+            out.append({**placement(sel, prop, media, short, 'run-css', 'runtime'), 'side': side})
     toks, dattrs, tok_parts, attr_parts = set(), {}, {}, {}
     for path, a, b in element_pairs(eb, em):
         moved = (a['classes'] ^ b['classes']) - {'UID'}

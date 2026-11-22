@@ -199,7 +199,7 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
     aliases = sorted({c for c in (rc.group(1).split() if rc else []) if c.startswith('sgs-') and '__' not in c and '--' not in c
                       and not D.UID_RE.fullmatch(c) and c != f'sgs-{short}'})
     attrs = RN.block_json(plugin, short).get('attributes', {})
-    entries, pairs, sels, unnamed = {}, {}, {}, []
+    entries, pairs, sels, unnamed, sides = {}, {}, {}, [], {}
     for a, placements in V.fold_units(attrs, settings).items():
         its, _twins = V.fold_prefixed(V.items(placements, f'sgs-{short}', tuple(aliases)))
         for it in its:
@@ -214,6 +214,7 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
             for it in V.items([p], f'sgs-{short}', tuple(aliases)):
                 k = (a, it['part'], tuple(it['props']), it['state'], tuple(it['tiers']))
                 pairs.setdefault(k, set()).add(p['_pair'])
+                sides.setdefault(k, set()).add((p['_pair'], p.get('side') or 'changed'))
                 if p.get('selector'):
                     sels.setdefault(k, set()).add(p['selector'])
     errors = sorted({(results[k].get('error') or '')[:200] for k in results if not results[k].get('ok')})
@@ -235,18 +236,28 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
              'noPaintButPlaced': sorted((tested - recorded - replaced) & set(pl.get('rows') or [])),
              'coverage': {'defaultRendered': bool(d0.get('ok')), 'defaultEmpty': not (d0.get('html') or '').strip(),
                           'rootPrinted': root_printed}}
-    return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'selectors': sels, 'results': results, 'children': children, 'plugin': plugin, 'jobs': jobs, 'defaultHtml': d0.get('html', ''), 'stats': stats,
+    return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'sides': sides, 'selectors': sels, 'results': results, 'children': children, 'plugin': plugin, 'jobs': jobs, 'defaultHtml': d0.get('html', ''), 'stats': stats,
             'log': log, 'aliases': aliases, 'sheets': sheets, 'renderer': rn, 'plan': pl, 'slug': slug, 'content': content, 'inner': inner, 'sheetFiles': sheet_files}
 
 
 def entry_values(run: dict) -> dict:
-    """{entry key: the setting values whose renders produced it}, from each placement's render pair."""
+    """{entry key: the setting values whose renders produced it}, from each placement's render pair: the changed render's
+    value, or for a rule only the plain render holds (diff.py::diff_placements `side` base) the plain render's value, its
+    block.json default when the plain render leaves the setting unset."""
     out = {}
+    jobs = run.get('jobs') or {}
+    schema = {}
+    if run.get('plugin') and run.get('slug'):
+        schema = RN.block_json(run['plugin'], run['slug'].split('/', 1)[1]).get('attributes') or {}
     for k, pairs in (run.get('pairs') or {}).items():
         vals = []
-        for _b, c in pairs:
-            a = (run.get('jobs') or {}).get(c) or {}
-            v = a.get(k[0])
+        sided = (run.get('sides') or {}).get(k) or {(p, 'changed') for p in pairs}
+        for (b, c), side in sorted(sided, key=lambda x: json.dumps(x)):
+            if side == 'base':
+                a = jobs.get(b) or {}
+                v = a.get(k[0], (schema.get(k[0]) or {}).get('default'))
+            else:
+                v = (jobs.get(c) or {}).get(k[0])
             if v is not None and v not in vals:
                 vals.append(v)
         if vals:

@@ -533,3 +533,24 @@ def test_a_shape_the_proof_removed_anywhere_is_not_accepted():
     assert AC.mark(b, *AC.library({'sgs/a': a, 'sgs/c': c})) == 0 and 'accepted' not in b['entries'][0]
     b['entries'][0]['accepted'] = 'stale'
     assert AC.mark(b, *AC.library({'sgs/c': c})) == 0 and 'accepted' not in b['entries'][0]  # a stale mark is cleared
+
+
+
+# ---------------------------------------------------------------- the value a rule comes from
+def test_a_rule_only_the_plain_render_holds_takes_the_plain_value(monkeypatch):
+    monkeypatch.setattr(CK.RN, 'block_json', lambda plugin, short: {'attributes': {'collapsePoint': {'type': 'number', 'default': 768}}})
+    k_new = ('collapsePoint', 'ROOT', ('display',), None, ('@media(max-width:2.98px)',))
+    k_old = ('collapsePoint', 'ROOT', ('display',), None, ('@media(max-width:767.98px)',))
+    run = {'plugin': PLUGIN, 'slug': 'sgs/demo', 'jobs': {'base': {}, 'test': {'collapsePoint': 3}},
+           'pairs': {k_new: {('base', 'test')}, k_old: {('base', 'test')}},
+           'sides': {k_new: {(('base', 'test'), 'changed')}, k_old: {(('base', 'test'), 'base')}}}
+    vals = CK.entry_values(run)
+    assert vals[k_new] == [3] and vals[k_old] == [768]
+
+
+def test_the_diff_says_which_render_holds_a_rule():
+    rb = {('@media(max-width:767.98px)', '.sgs-demo', 'display'): 'none'}
+    rm = {('@media(max-width:2.98px)', '.sgs-demo', 'display'): 'none'}
+    pls, _info = D.diff_placements((rb, {}), (rm, {}), 'demo', [])
+    sides = {p['tiers'][0]: p['side'] for p in pls if p.get('mechanism') == 'run-css'}
+    assert sides == {'@media(max-width:767.98px)': 'base', '@media(max-width:2.98px)': 'changed'}
