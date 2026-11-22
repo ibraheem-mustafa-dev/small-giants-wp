@@ -263,6 +263,7 @@ class ResetShopPagesWorker(unittest.TestCase):
         for page in ("101", "102", "103"):
             self.assertIn(f"META {page} _sgs_site_build_tree", r.stdout)
             self.assertIn(f"META {page} _sgs_site_build_content", r.stdout)
+            self.assertIn(f"META {page} _sgs_checkout_content", r.stdout)
         self.assertIn("reset local-mediatest-acme: checkout page 102 holds WooCommerce's default content", r.stdout)
 
     def test_an_option_naming_no_page_stops_the_run(self):

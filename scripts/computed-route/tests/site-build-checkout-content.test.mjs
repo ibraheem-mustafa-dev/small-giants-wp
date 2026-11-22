@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GIFT, NOTE, PAY_LATER, REMINDER_OPTION, SIGNUP_OPTION, WC, applyCheckoutPlan, checkoutDraft, checkoutPlanFor, outlineContent, planCheckoutContent, readCheckoutArtefacts, runCheckoutContent } from '../lib/site-build-checkout-content.mjs';
+import { CHECKOUT_MARKER, GIFT, NOTE, PAY_LATER, REMINDER_OPTION, SIGNUP_OPTION, WC, applyCheckoutPlan, checkoutDraft, checkoutPlanFor, outlineContent, planCheckoutContent, readCheckoutArtefacts, runCheckoutContent, escHtml, safeLink } from '../lib/site-build-checkout-content.mjs';
 import { blocksOf, parseContent, removeBlock, serializeAttrs, serializeContent } from '../lib/checkout-content-markup.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -175,40 +175,104 @@ test( 'negative controls: what the draft does not draw is left as WooCommerce ha
 	assert.equal( draft.gift, null );
 } );
 
-test( 'the run reads the page, writes only with --apply, reads it back and fails when the site holds other markup', () => {
-	const calls = [];
-	let page = DEFAULT;
-	let options = { [ SIGNUP_OPTION ]: 'no', [ REMINDER_OPTION ]: 'yes' };
-	let drop = false;
-	const runPhp = ( php ) => {
-		calls.push( php );
-		if ( php.includes( 'wp_update_post' ) ) {
-			const b64 = /base64_decode\( '([^']+)' \)/.exec( php )[ 1 ];
-			page = drop ? DEFAULT : Buffer.from( b64, 'base64' ).toString( 'utf8' );
+// A fake site for the run: the checkout page, its CHECKOUT_MARKER and the two options; `drop` makes a write keep the old markup.
+function fakeSite( { page = DEFAULT, marker = '', options = { [ SIGNUP_OPTION ]: 'no', [ REMINDER_OPTION ]: 'yes' } } = {} ) {
+	const site = { page, marker, options, drop: false, calls: [] };
+	site.runPhp = ( php ) => {
+		site.calls.push( php );
+		if ( php.includes( 'update_post_meta' ) ) {
+			const b64 = /base64_decode\( '([^']+)' \)/.exec( php )?.[ 1 ];
+			b64 && ! site.drop && ( site.page = Buffer.from( b64, 'base64' ).toString( 'utf8' ) );
+			site.marker = site.noMarker ? site.marker : new RegExp( `update_post_meta\\( 8, '${ CHECKOUT_MARKER }', '([0-9a-f]{64})' \\)` ).exec( php )?.[ 1 ] ?? site.marker;
 			for ( const m of php.matchAll( /update_option\( '([a-z_]+)', '([a-z]+)' \)/g ) ) {
-				options = { ...options, [ m[ 1 ] ]: m[ 2 ] };
+				site.options = { ...site.options, [ m[ 1 ] ]: m[ 2 ] };
 			}
 			return '{"ok":true,"error":""}';
 		}
-		return JSON.stringify( { id: 8, content: Buffer.from( page ).toString( 'base64' ), options } );
+		return JSON.stringify( { id: 8, content: Buffer.from( site.page ).toString( 'base64' ), marker: site.marker, options: site.options } );
 	};
+	return site;
+}
+const writes = ( site ) => site.calls.filter( ( c ) => c.includes( 'update_post_meta' ) );
+
+test( 'the run reads the page, writes only with --apply, marks the page, reads it back and fails when the site holds other markup', () => {
+	const site = fakeSite();
 	const log = [];
-	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp, apply: false, log: ( l ) => log.push( l ) } ), 0 );
-	assert.ok( ! calls.some( ( c ) => c.includes( 'wp_update_post' ) ), 'a dry run writes nothing' );
+	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp: site.runPhp, apply: false, log: ( l ) => log.push( l ) } ), 0 );
+	assert.deepEqual( writes( site ), [], 'a dry run writes nothing' );
 	assert.ok( log.some( ( l ) => l.includes( `option ${ SIGNUP_OPTION }: "no" -> yes` ) ) );
 	assert.ok( ! log.some( ( l ) => l.includes( `option ${ REMINDER_OPTION }` ) ), 'an option the site already holds is not planned' );
-	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp, apply: true, log: () => {} } ), 0 );
-	assert.match( calls.find( ( c ) => c.includes( 'wp_update_post' ) ), /^kses_remove_filters\(\);/ );
-	assert.match( page, /"placeOrderButtonLabel":"Pay now"/ );
-	assert.equal( options[ SIGNUP_OPTION ], 'yes' );
-	calls.length = 0;
-	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp, apply: true, log: () => {} } ), 0 );
-	assert.ok( ! calls.some( ( c ) => c.includes( 'wp_update_post' ) ), 'a page already written is not written again' );
-	page = DEFAULT;
-	drop = true;
+	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp: site.runPhp, apply: true, log: () => {} } ), 0 );
+	assert.match( writes( site )[ 0 ], /^kses_remove_filters\(\); \$r = wp_update_post\(/ );
+	assert.match( site.page, /"placeOrderButtonLabel":"Pay now"/ );
+	assert.equal( site.options[ SIGNUP_OPTION ], 'yes' );
+	assert.match( site.marker, /^[0-9a-f]{64}$/, 'the page records the step\'s first run' );
+	site.calls.length = 0;
+	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp: site.runPhp, apply: true, log: () => {} } ), 0 );
+	assert.deepEqual( writes( site ), [], 'a page already written is not written again' );
+	// A first run with nothing to change still marks the page, without saving its content.
+	const done = fakeSite( { page: site.page, options: { [ SIGNUP_OPTION ]: 'yes', [ REMINDER_OPTION ]: 'yes' } } );
+	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp: done.runPhp, apply: true, log: () => {} } ), 0 );
+	assert.equal( writes( done ).length, 1 );
+	assert.doesNotMatch( writes( done )[ 0 ], /wp_update_post/ );
+	assert.match( done.marker, /^[0-9a-f]{64}$/ );
+	site.page = DEFAULT;
+	site.drop = true;
 	const errors = [];
-	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp, apply: true, log: () => {}, error: ( e ) => errors.push( e ) } ), 1 );
+	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp: site.runPhp, apply: true, log: () => {}, error: ( e ) => errors.push( e ) } ), 1 );
 	assert.match( errors[ 0 ], /holds other markup than was written/ );
+	// A site that kept the markup but not the marker fails the read-back.
+	const unmarked = fakeSite();
+	unmarked.noMarker = true;
+	const missed = [];
+	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp: unmarked.runPhp, apply: true, log: () => {}, error: ( e ) => missed.push( e ) } ), 1 );
+	assert.match( missed[ 0 ], new RegExp( `the page carries no ${ CHECKOUT_MARKER }` ) );
+	// A page with no Checkout block (a classic shortcode checkout) gets nothing, options included.
+	const classic = fakeSite( { page: '<!-- wp:shortcode -->[woocommerce_checkout]<!-- /wp:shortcode -->' } );
+	assert.equal( runCheckoutContent( { repo: REPO, client: EC, runPhp: classic.runPhp, apply: true, log: () => {} } ), 0 );
+	assert.deepEqual( writes( classic ), [] );
+} );
+
+test( 'MUST FAIL: a rerun keeps the client\'s own changes: a put-back order note, the terms moved above the button, an option turned off', () => {
+	// The first run, then the client's edits on the site.
+	const site = fakeSite();
+	assert.equal( runCheckoutContent( { repo: REPO, client: MM, runPhp: site.runPhp, apply: true, log: () => {} } ), 0 );
+	assert.doesNotMatch( site.page, /checkout-order-note-block/ );
+	const note = '<!-- wp:woocommerce/checkout-order-note-block -->\n<div class="wp-block-woocommerce-checkout-order-note-block"></div>\n<!-- /wp:woocommerce/checkout-order-note-block -->\n\n';
+	const terms = /<!-- wp:woocommerce\/checkout-terms-block [^]*?<!-- \/wp:woocommerce\/checkout-terms-block -->/.exec( site.page )[ 0 ];
+	site.page = site.page.replace( `\n\n${ terms }`, '' ).replace( '<!-- wp:woocommerce/checkout-actions-block', `${ note }${ terms }\n\n<!-- wp:woocommerce/checkout-actions-block` );
+	site.options = { ...site.options, [ SIGNUP_OPTION ]: 'no' };
+	const edited = site.page;
+	const log = [];
+	site.calls.length = 0;
+	assert.equal( runCheckoutContent( { repo: REPO, client: MM, runPhp: site.runPhp, apply: true, log: ( l ) => log.push( l ) } ), 0 );
+	assert.equal( site.page, edited, 'the client\'s page is left as they made it' );
+	assert.deepEqual( writes( site ), [] );
+	assert.equal( site.options[ SIGNUP_OPTION ], 'no' );
+	assert.ok( log.some( ( l ) => /checkout-order-note-block: the page holds it after the step's first run .*kept/.test( l ) ) );
+	assert.ok( log.some( ( l ) => /checkout-terms-block: the page holds it above woocommerce\/checkout-actions-block .*kept/.test( l ) ) );
+	assert.ok( log.some( ( l ) => l.includes( `note: option ${ SIGNUP_OPTION } reads "no" after the step's first run` ) ) );
+	// The same edits on a page the step has not run on yet (no marker) are the first run's to make.
+	const fresh = applyCheckoutPlan( edited, checkoutPlanFor( { repo: REPO, client: MM } ).plan, { firstRun: true } );
+	assert.ok( fresh.changes.some( ( c ) => c.includes( 'checkout-order-note-block removed' ) ) );
+	assert.ok( fresh.changes.some( ( c ) => c.includes( 'checkout-terms-block moved after' ) ) );
+} );
+
+test( 'MUST FAIL: the terms link is escaped for its attribute, and a script or data address keeps WooCommerce\'s terms', () => {
+	const a = readCheckoutArtefacts( { repo: REPO, client: MM } );
+	const draftWith = ( href ) => checkoutDraft( { inventory: a.inventory, source: a.source.replace( 'href="Help.dc.html#legal"', `href='${ href }'` ), link: ( h ) => ( 'Help.dc.html#allergens' === h ? '/help/#allergens' : h ) } );
+	const quoted = draftWith( 'https://example.test/terms?a="b" onmouseover="x' );
+	assert.equal( quoted.terms.text, 'By placing your order you agree to our <a href="https://example.test/terms?a=&quot;b&quot; onmouseover=&quot;x">terms</a>.' );
+	for ( const bad of [ 'javascript:alert(1)', 'JavaScript:alert(1)', 'data:text/html,x', '//evil.test/x' ] ) {
+		const d = draftWith( bad );
+		assert.equal( d.terms, null, bad );
+		assert.ok( d.gaps.some( ( g ) => /WooCommerce's terms words are kept/.test( g ) ), bad );
+	}
+	for ( const good of [ 'mailto:hello@example.test', 'tel:+441234', '#legal', '/help/#legal', 'http://example.test/t' ] ) {
+		assert.ok( draftWith( good ).terms?.text.includes( `href="${ good }"` ), good );
+	}
+	assert.equal( safeLink( ' javascript:x' ), null );
+	assert.equal( escHtml( `a"b'c<d>&e&amp;` ), 'a&quot;b&#39;c&lt;d&gt;&amp;e&amp;' );
 } );
 
 test( 'the site build runs the step alone, against a saved page, and last in a whole build', () => {

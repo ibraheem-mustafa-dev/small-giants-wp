@@ -9,7 +9,8 @@
  *     protected), so the content follows the WooCommerce version the copy runs;
  *   - account: WooCommerce's default account page, its account shortcode in a shortcode block (WC_Install::create_pages).
  * Each page is the one WooCommerce's page option names. Its revision history keeps the content it held. The site build's record of
- * having built the page (`_sgs_site_build_tree`, `_sgs_site_build_content`) is deleted, so the next site build treats it as unbuilt
+ * having built the page (`_sgs_site_build_tree`, `_sgs_site_build_content`) and the checkout content step's record of having written
+ * it (`_sgs_checkout_content`, so the step's next run is a first run again) are deleted, so the next site build treats it as unbuilt
  * (the account page is then built from its tree) instead of stopping on a page edited after it was built. Each page is read back;
  * any page that cannot be reset stops the run with an error.
  *
@@ -63,6 +64,7 @@ foreach ( $sgs_pages as $sgs_option => $sgs_page ) {
 	}
 	delete_post_meta( $sgs_id, '_sgs_site_build_tree' );
 	delete_post_meta( $sgs_id, '_sgs_site_build_content' );
+	delete_post_meta( $sgs_id, '_sgs_checkout_content' );
 	clean_post_cache( $sgs_id );
 	if ( get_post_field( 'post_content', $sgs_id, 'raw' ) !== $sgs_content ) {
 		WP_CLI::error( "{$sgs_copy}: the {$sgs_what} page {$sgs_id} holds other content than WooCommerce's default after the save." );

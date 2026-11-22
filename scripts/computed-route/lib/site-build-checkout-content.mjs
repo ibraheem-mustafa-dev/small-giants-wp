@@ -31,6 +31,7 @@
 // not placed twice. Only words, modes and blocks are written: the look is part-look's.
 // `site-build.mjs --checkout-content [--apply]` runs it alone (`--content <file>` plans against a saved page instead of the
 // site); a whole build runs it after the shop options. Pure apart from readCheckoutArtefacts and runCheckoutContent.
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { below, inventoryTree, tagAttrs } from './template-piece-account-read.mjs';
@@ -72,6 +73,11 @@ const AMOUNT_IN = /[£$€]\s?\d|\d\s?[£$€]/;
 const LETTER = /\p{L}/u;
 const live = ( s ) => /\{\{/.test( String( s ?? '' ) );
 const shownAt = ( e, w ) => Boolean( e?.visible?.[ w ] );
+// A link this step may write into saved HTML: a web, mail or phone address, a path on the site or an anchor. Anything else (a
+// `javascript:` or `data:` address, an unresolved link) is null, and the part keeps WooCommerce's words or loses its link.
+export const safeLink = ( url ) => ( 'string' === typeof url && /^(https?:\/\/|mailto:|tel:|\/(?!\/)|#)/i.test( url.trim() ) ? url.trim() : null );
+// Text for saved HTML, inside an element or an attribute: `&` (an entity already written stays), `<`, `>`, `"` and `'` escaped.
+export const escHtml = ( s ) => String( s ).replace( /&(?!amp;|lt;|gt;|quot;|#39;)/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' ).replace( /"/g, '&quot;' ).replace( /'/g, '&#39;' );
 
 // The checkout surface's artefacts for a client: { key, entry, inventory, source, file } (inventory or source null when its file
 // is absent), or null when no surfaces.json entry builds the checkout template.
@@ -243,7 +249,7 @@ export function checkoutDraft( { inventory, source = null, link = () => null } )
 	const noteOf = ( n ) => {
 		const a = linkOf( n );
 		const href = a ? srcAttrs( a ).href ?? '' : '';
-		const url = a ? link( href, el( a ) ) : null;
+		const url = a ? safeLink( link( href, el( a ) ) ) : null;
 		a && null === url && gaps.push( `note ${ n.key }: its link "${ href }" goes to no page of the site, so the note is written without it` );
 		return { key: n.key, text: words( n ), ...( a && null !== url ? { linkLabel: words( a ), linkUrl: url } : {} ) };
 	};
@@ -255,17 +261,17 @@ export function checkoutDraft( { inventory, source = null, link = () => null } )
 	if ( termsNode ) {
 		const t = templateOf( termsNode );
 		if ( t ) {
-			const esc = ( s ) => String( s ).replace( /&(?!amp;|lt;|gt;|quot;|#39;)/g, '&amp;' ).replace( /</g, '&lt;' ).replace( />/g, '&gt;' );
+			const esc = escHtml;
 			let broken = false;
 			const html = ( t.children || [] ).map( ( c ) => {
 				if ( ! c.tag ) {
 					return esc( c.text );
 				}
-				const url = 'a' === c.tag ? link( c.attrs.href ?? '', null ) : null;
+				const url = 'a' === c.tag ? safeLink( link( c.attrs.href ?? '', null ) ) : null;
 				broken = broken || null === url;
 				return `<a href="${ esc( url ?? '' ) }">${ esc( ws( ownText( c ) ) ) }</a>`;
 			} ).join( '' ).replace( /\s+/g, ' ' ).trim();
-			broken ? gaps.push( `terms ${ termsNode.key }: a link in it goes to no page of the site, so WooCommerce's terms words are kept` ) : ( terms = { key: termsNode.key, text: html, afterPay: true } );
+			broken ? gaps.push( `terms ${ termsNode.key }: a link in it goes to no page of the site, so WooCommerce's terms words are kept (a link is written only to a web, mail or phone address, a site path or an anchor)` ) : ( terms = { key: termsNode.key, text: html, afterPay: true } );
 		} else {
 			gaps.push( `terms ${ termsNode.key }: its words are not found once in the draft's template, so WooCommerce's terms words are kept` );
 		}
@@ -424,14 +430,16 @@ const same = ( a, b ) => JSON.stringify( a ) === JSON.stringify( b );
 
 // The plan applied to the page's markup: { content, changes: [ text ], notes: [ text ] }. A setting the block holds with
 // another value is kept and noted; a class is added beside the block's own; a block already there is not placed again.
-export function applyCheckoutPlan( text, plan ) {
+// Removing and moving WooCommerce's blocks happen on the step's first run on the page only (`firstRun`, the page carrying no
+// CHECKOUT_MARKER): on a later run a block the client put back or moved is kept and noted.
+export function applyCheckoutPlan( text, plan, { firstRun = true } = {} ) {
 	const tree = parseContent( text );
 	const changes = [];
 	const notes = [];
 	const checkout = blocksOf( tree ).find( ( x ) => x.block.name === WC.checkout )?.block;
 	if ( ! checkout ) {
 		notes.push( 'the checkout page holds no woocommerce/checkout block, so its words are not written' );
-		return { content: text, changes, notes };
+		return { content: text, changes, notes, missing: true };
 	}
 	const blockOf = ( name ) => ( name === WC.checkout ? checkout : findBlock( checkout, name )?.block ?? null );
 	const write = ( b, key, value ) => {
@@ -479,7 +487,9 @@ export function applyCheckoutPlan( text, plan ) {
 	}
 	for ( const r of plan.removes ) {
 		const hit = findBlock( checkout, r.block );
-		if ( hit ) {
+		if ( hit && ! firstRun ) {
+			notes.push( `${ r.block }: the page holds it after the step's first run (put back on the site), kept (${ r.why })` );
+		} else if ( hit ) {
 			removeBlock( hit.parent, hit.block );
 			changes.push( `${ r.block } removed (${ r.why })` );
 		}
@@ -487,7 +497,10 @@ export function applyCheckoutPlan( text, plan ) {
 	for ( const mv of plan.moves || [] ) {
 		const hit = findBlock( checkout, mv.block );
 		const anchor = findBlock( checkout, mv.after );
-		if ( hit && anchor && hit.parent === anchor.parent && hit.parent.inner.indexOf( hit.block ) < hit.parent.inner.indexOf( anchor.block ) ) {
+		const above = hit && anchor && hit.parent === anchor.parent && hit.parent.inner.indexOf( hit.block ) < hit.parent.inner.indexOf( anchor.block );
+		if ( above && ! firstRun ) {
+			notes.push( `${ mv.block }: the page holds it above ${ mv.after } after the step's first run (moved on the site), kept (${ mv.why })` );
+		} else if ( above ) {
 			removeBlock( hit.parent, hit.block );
 			insertBlock( hit.parent, hit.block, { anchor: anchor.block } );
 			changes.push( `${ mv.block } moved after ${ mv.after } (${ mv.why })` );
@@ -552,8 +565,11 @@ export function checkoutPlanFor( { repo, client } ) {
 }
 
 const PAGE = "(int) get_option( 'woocommerce_checkout_page_id' )";
-const readPhp = () => `$id = ${ PAGE }; $p = $id ? get_post( $id ) : null; echo wp_json_encode( array( 'id' => $id, 'content' => $p ? base64_encode( $p->post_content ) : null, 'options' => array( '${ SIGNUP_OPTION }' => (string) get_option( '${ SIGNUP_OPTION }' ), '${ REMINDER_OPTION }' => (string) get_option( '${ REMINDER_OPTION }' ) ) ) );`;
-const writePhp = ( id, content, options ) => `kses_remove_filters(); $r = wp_update_post( wp_slash( array( 'ID' => ${ Number( id ) }, 'post_content' => base64_decode( '${ Buffer.from( content, 'utf8' ).toString( 'base64' ) }' ) ) ), true ); ${ options.map( ( o ) => `update_option( '${ o.name }', '${ o.value }' );` ).join( ' ' ) } echo wp_json_encode( array( 'ok' => ! is_wp_error( $r ), 'error' => is_wp_error( $r ) ? $r->get_error_message() : '' ) );`;
+// The checkout page's record that this step has written it (the SHA-256 of the markup it wrote), as the site build records
+// `_sgs_site_build_content`. Its absence is the first run; scripts/local-wp/reset-shop-pages.php deletes it with the page's content.
+export const CHECKOUT_MARKER = '_sgs_checkout_content';
+const readPhp = () => `$id = ${ PAGE }; $p = $id ? get_post( $id ) : null; echo wp_json_encode( array( 'id' => $id, 'content' => $p ? base64_encode( $p->post_content ) : null, 'marker' => $id ? (string) get_post_meta( $id, '${ CHECKOUT_MARKER }', true ) : '', 'options' => array( '${ SIGNUP_OPTION }' => (string) get_option( '${ SIGNUP_OPTION }' ), '${ REMINDER_OPTION }' => (string) get_option( '${ REMINDER_OPTION }' ) ) ) );`;
+const writePhp = ( id, content, options, write ) => `kses_remove_filters(); $r = ${ write ? `wp_update_post( wp_slash( array( 'ID' => ${ Number( id ) }, 'post_content' => base64_decode( '${ Buffer.from( content, 'utf8' ).toString( 'base64' ) }' ) ) ), true )` : Number( id ) }; is_wp_error( $r ) || update_post_meta( ${ Number( id ) }, '${ CHECKOUT_MARKER }', '${ crypto.createHash( 'sha256' ).update( content ).digest( 'hex' ) }' ); ${ options.map( ( o ) => `update_option( '${ o.name }', '${ o.value }' );` ).join( ' ' ) } echo wp_json_encode( array( 'ok' => ! is_wp_error( $r ), 'error' => is_wp_error( $r ) ? $r->get_error_message() : '' ) );`;
 const json = ( text, what ) => {
 	const s = String( text );
 	const start = s.indexOf( '{' );
@@ -563,13 +579,16 @@ const json = ( text, what ) => {
 	return JSON.parse( s.slice( start ) );
 };
 
-// The checkout page and options as the site holds them: { id, content (null: no page), options }.
+// The checkout page and options as the site holds them: { id, content (null: no page), marker (CHECKOUT_MARKER, '' before the
+// step's first run), options }.
 export function readCheckoutPage( runPhp ) {
 	const r = json( runPhp( readPhp() ), 'checkout page read' );
-	return { id: r.id, content: null === r.content ? null : Buffer.from( r.content, 'base64' ).toString( 'utf8' ), options: r.options || {} };
+	return { id: r.id, content: null === r.content ? null : Buffer.from( r.content, 'base64' ).toString( 'utf8' ), marker: String( r.marker ?? '' ), options: r.options || {} };
 }
 
-// Runs the step: prints the plan, and with `apply` writes the page and the options and reads them back. `content` (a saved page's
+// Runs the step: prints the plan, and with `apply` writes the page, the options and the page's CHECKOUT_MARKER and reads them back.
+// The options are turned on at the step's first run on the page only: later a value the site holds that is not `yes` (the client
+// turned it off) is kept and noted. `content` (a saved page's
 // markup) plans against it instead of the site and never writes. Returns the exit code (0 done or nothing to do, 1 the read-back
 // disagrees).
 export function runCheckoutContent( { repo, client, runPhp = null, apply = false, content = null, log = console.log, error = console.error } ) {
@@ -580,14 +599,21 @@ export function runCheckoutContent( { repo, client, runPhp = null, apply = false
 	}
 	const { draft, plan } = got;
 	draft.gaps.forEach( ( g ) => log( `note: ${ g }` ) );
-	const site = null === content ? readCheckoutPage( runPhp ) : { id: 0, content, options: {} };
+	const site = null === content ? readCheckoutPage( runPhp ) : { id: 0, content, marker: '', options: {} };
 	if ( null === site.content ) {
 		log( 'checkout content: the site has no checkout page (woocommerce_checkout_page_id), so nothing is written' );
 		return 0;
 	}
-	const result = applyCheckoutPlan( site.content, plan );
+	const firstRun = ! site.marker;
+	const result = applyCheckoutPlan( site.content, plan, { firstRun } );
 	result.notes.forEach( ( n ) => log( `note: ${ n }` ) );
-	const options = null === content ? plan.options.filter( ( o ) => site.options[ o.name ] !== o.value ) : plan.options;
+	if ( result.missing ) {
+		log( 'checkout content: nothing written (no Checkout block on the page, so no option either)' );
+		return 0;
+	}
+	const unset = null === content ? plan.options.filter( ( o ) => site.options[ o.name ] !== o.value ) : plan.options;
+	const options = firstRun ? unset : [];
+	firstRun || unset.forEach( ( o ) => log( `note: option ${ o.name } reads ${ JSON.stringify( site.options[ o.name ] ?? '' ) } after the step's first run (changed on the site), kept (${ o.why })` ) );
 	result.changes.forEach( ( c ) => log( `checkout content: ${ c }` ) );
 	options.forEach( ( o ) => log( `checkout content: option ${ o.name }: ${ JSON.stringify( site.options[ o.name ] ?? '' ) } -> ${ o.value } (${ o.why })` ) );
 	if ( null !== content ) {
@@ -595,23 +621,23 @@ export function runCheckoutContent( { repo, client, runPhp = null, apply = false
 		outlineContent( result.content ).forEach( ( l ) => log( `  ${ l }` ) );
 		return 0;
 	}
-	if ( ! result.changes.length && ! options.length ) {
+	if ( ! result.changes.length && ! options.length && ! firstRun ) {
 		log( 'checkout content: nothing to do' );
 		return 0;
 	}
 	if ( ! apply ) {
-		log( `checkout content: ${ result.changes.length } page change(s) and ${ options.length } option(s) on page ${ site.id } (dry run: re-run with --apply)` );
+		log( `checkout content: ${ result.changes.length } page change(s) and ${ options.length } option(s) on page ${ site.id }${ firstRun ? ', its first run' : '' } (dry run: re-run with --apply)` );
 		return 0;
 	}
-	const w = json( runPhp( writePhp( site.id, result.content, options ) ), 'checkout page write' );
+	const w = json( runPhp( writePhp( site.id, result.content, options, result.changes.length > 0 ) ), 'checkout page write' );
 	if ( ! w.ok ) {
 		error( `FAILED: the checkout page ${ site.id } was not saved: ${ w.error }` );
 		return 1;
 	}
 	const back = readCheckoutPage( runPhp );
 	const stuck = options.filter( ( o ) => back.options[ o.name ] !== o.value );
-	if ( back.content !== result.content || stuck.length ) {
-		error( `FAILED: after the write ${ back.content !== result.content ? `the checkout page ${ site.id } holds other markup than was written` : '' }${ stuck.map( ( o ) => ` ${ o.name } reads ${ JSON.stringify( back.options[ o.name ] ) }` ).join( ',' ) }` );
+	if ( back.content !== result.content || stuck.length || ! back.marker ) {
+		error( `FAILED: after the write ${ back.content !== result.content ? `the checkout page ${ site.id } holds other markup than was written` : '' }${ back.marker ? '' : ` the page carries no ${ CHECKOUT_MARKER }` }${ stuck.map( ( o ) => ` ${ o.name } reads ${ JSON.stringify( back.options[ o.name ] ) }` ).join( ',' ) }` );
 		return 1;
 	}
 	log( `checkout content: page ${ site.id } written and read back (${ result.changes.length } change(s))${ options.length ? `; ${ options.map( ( o ) => `${ o.name } now reads "${ o.value }"` ).join( ', ' ) }` : '' }` );
