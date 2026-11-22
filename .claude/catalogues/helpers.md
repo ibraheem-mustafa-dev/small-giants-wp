@@ -194,29 +194,34 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_carousel_arrow_icon_transform` | `function sgs_carousel_arrow_icon_transform( $raw ): string` | The arrow icon for an arrow size: half of it, as the 22px icon is half the 44px default arrow. | no markup |
 | `sgs_carousel_controls_css` | `function sgs_carousel_controls_css( array $attributes, string $scope, array $parts, array $opts = array() )…` | The look of a slider's arrows, pause button and dots, from the two kits' prefixed settings. | no markup |
 
-#### `includes/helpers-cart-panel-css.php` — 1 function(s)
+#### `includes/helpers-cart-panel-css.php` — 4 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
+| `sgs_cart_panel_surface` | `function sgs_cart_panel_surface(): string` | The page's own surface colour, for a panel whose fill is unset or names a palette colour the site does not define: the site's page… | no markup |
+| `sgs_cart_canvas_fallback` | `function sgs_cart_canvas_fallback( string $value ): string` | A palette colour reference with the browser's page colour (`Canvas`) as its fallback in place of the shared colour helper's `currentColor`… | no markup |
+| `sgs_cart_panel_bg_paint` | `function sgs_cart_panel_bg_paint( string $colour, string $gradient ): string` | The panel's fill declaration: a gradient as set; a raw colour as set; a palette colour with the page surface as its fallback (the shared… | no markup |
 | `sgs_cart_panel_css` | `function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): array` | Scoped CSS for the mini-cart panel's own settings (typography, colours, per-device lengths, padding boxes, shadow, motion), for flyout and… | no markup |
 
-#### `includes/helpers-cart-panel-extras.php` — 3 function(s)
+#### `includes/helpers-cart-panel-extras.php` — 4 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_cart_gift_box_html` | `function sgs_cart_gift_box_html( array $args ): string` | The gift box: a tick box, and a name and a note that appear when it is ticked. It starts hidden; the view script shows it while the basket… | tags div, input, label, p, span, textarea; roles alert |
 | `sgs_cart_empty_product` | `function sgs_cart_empty_product( $product, ?array $deps = null ): array` | What the empty state's button does with a chosen product: the one-tap add the buy box would make if the shopper changed nothing. | no markup |
 | `sgs_cart_empty_state_html` | `function sgs_cart_empty_state_html( array $args ): string` | The drawer's empty state, centred: an optional picture, the heading, an optional body line, an optional button for one product and an… | tags a, button, div, p |
+| `sgs_cart_upsell_html` | `function sgs_cart_upsell_html( array $args ): string` | The upsell row: an optional picture, a heading, an optional line of text and an Add button for one product. It starts hidden; the view… | tags a, button, div, p |
 
-#### `includes/helpers-cart-panel-items-css.php` — 3 function(s)
+#### `includes/helpers-cart-panel-items-css.php` — 4 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_cart_qty_stepper_css` | `function sgs_cart_qty_stepper_css( array $attributes, string $p ): array` | Scoped CSS for the quantity stepper (itemQtyStyle "stepper"). | no markup |
 | `sgs_cart_view_cart_css` | `function sgs_cart_view_cart_css( array $attributes, string $p ): array` | Scoped CSS for the "View cart" button or link: its text colour at rest and on hover or keyboard focus. Its typography prints through the… | no markup |
 | `sgs_cart_footer_band_css` | `function sgs_cart_footer_band_css( array $attributes, string $p ): array` | Scoped CSS for the note under the subtotal (its colour; its typography prints through the panel's shared typography loop) and the… | no markup |
+| `sgs_cart_drawer_extras_css` | `function sgs_cart_drawer_extras_css( array $attributes, string $p ): array` | Scoped CSS for the drawer's extra looks that are more than one declaration on one element: the text Remove link's decoration, the empty… | no markup |
 
-#### `includes/helpers-cart-panel.php` — 4 function(s)
+#### `includes/helpers-cart-panel.php` — 6 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
@@ -224,6 +229,8 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_cart_panel_body_html` | `function sgs_cart_panel_body_html( array $args ): string` | Build the shared mini-cart panel body. | tags a, div, p, span, style, template; roles status; aria aria-atomic, aria-busy, aria-live |
 | `sgs_cart_close_button_html` | `function sgs_cart_close_button_html(): string` | The drawer's close button. It sits in the panel head row (built into `sgs_cart_panel_body_html()` through `$args['close_html']`), so the… | tags button, circle, ellipse, line, path, polygon, polyline, rect, svg; aria aria-label |
 | `sgs_cart_panel_wrapper_html` | `function sgs_cart_panel_wrapper_html( string $mode, string $body_html, array $args ): string` | Wrap the panel body in the element the display mode's ARIA pattern requires. | tags dialog, div; aria aria-labelledby |
+| `sgs_instalment_minor` | `function sgs_instalment_minor( int $total_minor, int $count ): int` | One instalment of a total: the total in minor units divided by the count, rounded to the nearest minor unit (£139 over 3 is 4633). The JS… | no markup |
+| `sgs_instalments_note_fill` | `function sgs_instalments_note_fill( string $note, string $amount_html ): string` | A typed instalments note with its amount in place, for a note the server prints whole (the buy box's): the note through… | no markup |
 
 #### `includes/helpers-colour-parse.php` — 3 function(s)
 
@@ -396,7 +403,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_gallery_grid_layout_css` | `function sgs_gallery_grid_layout_css( string $grid_sel, array $attributes ): string` | Scoped CSS for the grid layout's grid settings, on the image grid. | no markup |
 | `sgs_gallery_layout_tiers` | `function sgs_gallery_layout_tiers( array $attributes ): array` | The gallery's layout at each device tier, after the carousel rewrite. | no markup |
 | `sgs_gallery_scroll_bleed_declarations` | `function sgs_gallery_scroll_bleed_declarations( bool $on ): string` | The room a swipe row leaves around its tiles so a tilt, a hover lift or a shadow is not clipped by the row's `overflow-x:auto` (which makes… | no markup |
-| `sgs_gallery_layout_declarations` | `function sgs_gallery_layout_declarations( string $tier ): array` | The full declarations that make the image grid one layout at one device tier, resetting every property the other layouts set, so a narrower… | no markup |
+| `sgs_gallery_layout_declarations` | `function sgs_gallery_layout_declarations( string $tier, string $scrollbar = 'hidden' ): array` | The full declarations that make the image grid one layout at one device tier, resetting every property the other layouts set, so a narrower… | no markup |
 | `sgs_gallery_layout_css` | `function sgs_gallery_layout_css( string $grid_sel, array $attributes ): string` | The per-device layout override rules, on the image grid and its items. | no markup |
 | `sgs_gallery_scroll_css` | `function sgs_gallery_scroll_css( string $grid_sel, array $attributes ): string` | The swipe row's own settings on the image grid: the width of a card (`scrollItemWidth`, printed as `--sgs-scroll-item-width`, which only a… | no markup |
 
@@ -504,11 +511,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 |---|---|---|---|
 | `sgs_render_info_toggle` | `function sgs_render_info_toggle( string $panel_text, string $aria_label = '', string $extra_class = '' )…` | Render an info-toggle button + its (initially hidden) panel. | tags button, div; aria aria-controls, aria-expanded, aria-label |
 
-#### `includes/helpers-inline-formats.php` — 9 function(s)
+#### `includes/helpers-inline-formats.php` — 10 function(s)
 
 | Function | Signature | Purpose | Prints |
 |---|---|---|---|
 | `sgs_rich_text_kses` | `function sgs_rich_text_kses( $html, bool $links = true, string $formats = 'free' ): string` | Sanitise RichText markup for output: the post allowlist without inline style. | no markup |
+| `sgs_rich_text_has_content` | `function sgs_rich_text_has_content( $html ): bool` | Whether a rich value holds anything to show: words, or a picture or icon (img, svg, picture, video) with no words, such as an icon-only… | no markup |
 | `sgs_authored_text_plain` | `function sgs_authored_text_plain( $value ): string` | A typed rich value as plain text: line breaks become a space, tags are stripped, entities decoded, white space collapsed. The caller… | no markup |
 | `sgs_rich_text_sanitise_param` | `function sgs_rich_text_sanitise_param( $value ): string` | A REST argument sanitiser for typed rich text that prints inside a link or button: the sanitised markup, no link. | no markup |
 | `sgs_inline_format_palette_css` | `function sgs_inline_format_palette_css(): string` | The highlight colour rule for each palette slug that is safe in a selector. | no markup |
@@ -667,6 +675,12 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_nav_drawer_motion_timing` | `function sgs_nav_drawer_motion_timing( array $attributes ): array` | The panel entrance's timing, for the scrim and the focus deferral. | no markup |
 | `sgs_nav_drawer_motion_origin_css` | `function sgs_nav_drawer_motion_origin_css( string $root_sel, $anchor_raw, array $allowed_anchors ): string` | The panel's anchor-derived transform origin: `--sgs-nd-anim-origin` per tier (`sgs_nav_drawer_anchor_origin()`). A tier follows the tier… | no markup |
 
+#### `includes/helpers-order-pickup.php` — 1 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_order_is_pickup` | `function sgs_order_is_pickup( $order ): bool` | Whether the order's shipping line is a local pickup method: WooCommerce's block `pickup_location`, the classic `local_pickup`, or an id… | no markup |
+
 #### `includes/helpers-preselect-url.php` — 2 function(s)
 
 | Function | Signature | Purpose | Prints |
@@ -738,6 +752,16 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_scrim_render` | `function sgs_scrim_render( array $attributes, string $uid, array $args )` | Build a block's scrim: its scoped CSS, and queue its HTML for `wp_footer`. | tags div; aria aria-hidden |
 | `sgs_scrim_queue` | `function sgs_scrim_queue( $uid = null, $html = null )` | Queue (or, with no argument, read) the scrim HTML printed at `wp_footer`. Keyed by uid, so a block rendered twice queues one scrim. | no markup |
 | `sgs_scrim_print_footer` | `function sgs_scrim_print_footer()` | Print every queued scrim as a direct child of `<body>`, and the script that shows each one while its owner is open (enqueued here, at… | no markup |
+
+#### `includes/helpers-scrollbar.php` — 5 function(s)
+
+| Function | Signature | Purpose | Prints |
+|---|---|---|---|
+| `sgs_scrollbar_choices` | `function sgs_scrollbar_choices(): array` | The three scrollbar choices. | no markup |
+| `sgs_scrollbar_style` | `function sgs_scrollbar_style( $value, string $start = 'default' ): string` | The area's choice: the stored value when it is one of the three, otherwise the area's starting value. | no markup |
+| `sgs_scrollbar_selector_with` | `function sgs_scrollbar_selector_with( string $selector, string $suffix ): string` | Appends a suffix (a pseudo-element or a child step) to every selector of a comma list. | no markup |
+| `sgs_scrollbar_css` | `function sgs_scrollbar_css( string $selector, string $choice, string $media = '', bool $width = true ): string` | The CSS a scrollbar choice prints for the scrolling area matched by $selector. | no markup |
+| `sgs_scrollbar_width_declaration` | `function sgs_scrollbar_width_declaration( string $choice ): string` | The area's own `scrollbar-width` declaration for a choice, for a caller that prints it per device tier (see sgs_scrollbar_css()'s… | no markup |
 
 #### `includes/helpers-separators-css.php` — 5 function(s)
 
@@ -1087,7 +1111,7 @@ Every top-level `function sgs_xxx(...)` across every `helpers-*.php` file, group
 | `sgs_value_ladder` | `function sgs_value_ladder( array $combos, ?int $base_pence, string $framing_mode, bool $decoy_enabled, string…` | Build a sorted, deduplicated comparative value ladder for a product's combos (Spec 27 Part 2 P1). | calls wc_price |
 | `sgs_value_ladder_markup` | `function sgs_value_ladder_markup( string $wrapper_class, array $rows, int $default_pack, bool $decoy_enabled…` | Markup for the comparative value ladder: one <ul> of pack rows (Spec 27 Part 2 P1). | tags li, span, ul; aria aria-current, aria-label |
 
-**109 files, 527 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
+**111 files, 541 functions.** Regenerate with `python plugins/sgs-blocks/scripts/generate-helper-catalogue.py`.
 
 ### JS shared editor components — `src/components/*.js`
 
@@ -1136,6 +1160,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `SavedPostPicker.js` | `SavedPostPicker (default)` | SavedPostPicker: a searchable picker for posts of one non-public custom post type (sgs_form, sgs_choice_flow, ...). |
 | `ScaleAxisControl.js` | `ScaleAxisControl (default)` | ScaleAxisControl — 2-axis (X/Y) proportional scale control with a link/unlink toggle (Spec 35A §F.2.3, D637). |
 | `ScrimControls.js` | `ScrimControls (default)`, `scrimColourRow` | ScrimControls: the shared inspector controls for a viewport scrim, the see-through layer that dims the page behind an open… |
+| `ScrollbarStyleControl.js` | `ScrollbarStyleControl (default)` | The inspector control for a scrolling area's scrollbar (Spec 02 FR-2-35): default, thin or hidden. |
 | `SeparatorAxisRow.js` | `SeparatorAxisRow (default)` | SeparatorAxisRow — one axis of `SgsSeparatorControl`: the per-device thickness beside ONE colour swatch whose popover holds the… |
 | `ServerSideRender.js` | `ServerSideRender (default)`, `omitNullish` | ServerSideRender: the SGS drop-in for `@wordpress/server-side-render`. |
 | `SgsBooleanField.js` | `SgsBooleanField (default)` | SgsBooleanField — the SGS standard BOOLEAN control (golden-controls.json goldens/input.json `boolean` row, Bean-approved live… |
@@ -1161,7 +1186,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 | `TypographyControls.js` | `TypographyControls (default)`, `isTieredValue`, `typographyAttrName`… | TypographyControls — shared, uniform typography UI for every SGS block. |
 | `TypographyNumberShadowRows.js` | `textShadowIsEditable`, `parseTextShadowShape`, `composeTextShadowShape`… | Number style and text shadow rows for TypographyControls (opt-in: `showNumberStyle`, `showTextShadow`). |
 
-**65 files.**
+**66 files.**
 
 ### JS media atoms — `src/components/media/atoms/*.js`
 
@@ -1171,7 +1196,7 @@ One row per file (top-level only, not sub-directories, except the dedicated `med
 |---|---|---|
 | `box-shape.js` | `normaliseRatio`, `resolveSizingMode`, `validateShape`, `resolveHeight`, `resolveWidth`… | `box-shape` atom — L2b control + disclosure + validator + value-setter. |
 | `caption.js` | `attrKeys`, `validateTag`, `disclosure`, `validate`, `emit` | `caption` atom — L2b control + disclosure + validator + value-setter. |
-| `filter.js` | `emit`, `validate`, `disclosure` | `filter` atom: the colour treatment (Natural, Black and white with a strength, White), logic half. PHP twin… |
+| `filter.js` | `emit`, `validate`, `disclosure` | `filter` atom: the colour treatment (Natural, Black and white with a strength, White, and the tone presets Dim, Deepen, Soften… |
 | `focal-point.js` | `resolvePosition`, `validate`, `disclosure`, `emit` | `focal-point` atom — LOGIC half (L2b value-setter + validator + disclosure). |
 | `layout.js` | `emit`, `validate`, `disclosure` | `layout` atom: Alignment and Order on the layout box, logic half. PHP twin: `includes/media/atoms/layout.php`. |
 | `link.js` | `attrKeys`, `disclosure`, `validate`, `emit` | `link` atom — L2b control + disclosure + validator + value-setter. |
