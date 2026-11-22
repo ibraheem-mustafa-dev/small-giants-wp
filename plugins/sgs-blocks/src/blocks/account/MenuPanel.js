@@ -70,6 +70,7 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					menuActiveIndicatorStyle: undefined,
 					menuOrdersCount: undefined,
 					menuOrder: undefined,
+					hideUnofferedTabs: undefined,
 					tabHeadings: undefined,
 					headingMarginBottom: undefined,
 					menuItemBorderWidth: undefined,
@@ -238,6 +239,19 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 				help={ __( 'Shows once the customer has a first name, a last name and an email address.', 'sgs-blocks' ) }
 			/>
 			{ attributes.menuAccountTick && <TextField attributes={ attributes } setAttributes={ setAttributes } name="menuAccountTickLabel" label={ __( 'Tick screen-reader text', 'sgs-blocks' ) } help={ __( 'Empty uses “Details complete”.', 'sgs-blocks' ) } /> }
+			</ToolsPanelItem>
+			<ToolsPanelItem
+				label={ __( 'Hide tabs the shop does not offer', 'sgs-blocks' ) }
+				hasValue={ () => !! attributes.hideUnofferedTabs }
+				onDeselect={ () => setAttributes( { hideUnofferedTabs: undefined } ) }
+			>
+			<Toggle
+				attributes={ attributes }
+				setAttributes={ setAttributes }
+				name="hideUnofferedTabs"
+				label={ __( 'Hide tabs the shop does not offer', 'sgs-blocks' ) }
+				help={ __( 'Leaves out Downloads while no product sells a download, unless the customer already has one. Payment methods already shows only when a payment gateway can save cards.', 'sgs-blocks' ) }
+			/>
 			</ToolsPanelItem>
 			<ToolsPanelItem
 				label={ __( 'Menu order', 'sgs-blocks' ) }

@@ -68,8 +68,8 @@ final class Account_Dashboard {
 		if ( ! function_exists( 'wc_get_account_menu_items' ) ) {
 			return '';
 		}
-		// One lookup per hidden-items setting per request: the menu asks once per menu item.
-		$key = md5( (string) wp_json_encode( is_array( Account_Endpoints::$active ) ? ( Account_Endpoints::$active['hiddenEndpoints'] ?? array() ) : array() ) );
+		// One lookup per hidden-items and unoffered-tabs setting per request: the menu asks once per menu item.
+		$key = md5( (string) wp_json_encode( is_array( Account_Endpoints::$active ) ? array( Account_Endpoints::$active['hiddenEndpoints'] ?? array(), ! empty( Account_Endpoints::$active['hideUnofferedTabs'] ) ) : array() ) );
 		if ( isset( self::$first_cache[ $key ] ) ) {
 			return self::$first_cache[ $key ];
 		}
@@ -84,7 +84,7 @@ final class Account_Dashboard {
 	}
 
 	/**
-	 * First visible endpoint per hidden-items setting, for the request.
+	 * First visible endpoint per hidden-items and unoffered-tabs setting, for the request.
 	 *
 	 * @var array<string,string>
 	 */

@@ -339,8 +339,13 @@
 			]
 		},
 		"sgs/account": {
-			"_comment": "The signed-in account views (surface my-account-in) and the sign-in forms (surface my-account). Each switch turns on the block's own view the draft draws: its orders as a list of cards (not a table), each card's thumbnails, an order's own page, the details form's phone field and marketing tick, its two columns and its password card, the address cards. `menu` is read by lib/part-look-account-views.mjs::accountMenuModes: which WooCommerce view each of the draft's tabs opens, told by the part its own view locates (or a view listing another component's cards), the endpoints the block's menu serves (each no tab opens is hidden), and the dashboard's parts switched off when it is hidden. The words rules write the draft's own words for the order page and the orders list, with the order number put back as {order}; the order numbers' shared prefix is the block's number prefix (Bean's D-7).",
+			"_comment": "The signed-in account views (surface my-account-in) and the sign-in forms (surface my-account). Each switch turns on the block's own view the draft draws: its orders as a list of cards (not a table), each card's thumbnails, an order's own page, the details form's phone field and marketing tick, its two columns and its password card, the address cards. `menu` is read by lib/part-look-account-views.mjs::accountMenuModes: which WooCommerce view each of the draft's tabs opens, told by the part its own view locates (or a view listing another component's cards), the endpoints the block's menu serves (each no tab opens is hidden), and the dashboard's parts switched off when it is hidden. The words rules write the draft's own words for the order page and the orders list, with the order number put back as {order}; the order numbers' shared prefix is the block's number prefix (Bean's D-7). `hideUnofferedTabs` is a rule with no condition: it is written on for every account surface, because a clone never offers a feature its shop lacks.",
 			"rules": [
+				{
+					"setting": "hideUnofferedTabs",
+					"value": true,
+					"reason": "a clone never offers a feature its shop lacks: the menu leaves out Downloads while no product sells a download (Payment methods already follows WooCommerce)"
+				},
 				{
 					"setting": "ordersRowList",
 					"value": true,

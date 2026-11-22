@@ -30,6 +30,12 @@ final class Account_Endpoints {
 	/** Transient key guarding the self-healing rewrite flush against a loop. */
 	const REWRITE_FLUSH_GUARD = 'sgs_account_rewrite_flushed';
 
+	/** Transient holding whether the shop sells a downloadable product ('1' or '0'). */
+	const SELLS_DOWNLOADS_CACHE = 'sgs_account_shop_sells_downloads';
+
+	/** Seconds the downloadable-product answer is kept when no product is saved in between. */
+	const SELLS_DOWNLOADS_TTL = 86400;
+
 	/**
 	 * Wire WordPress hooks. Called once from sgs-blocks.php.
 	 */
@@ -37,6 +43,10 @@ final class Account_Endpoints {
 		\add_filter( 'woocommerce_get_query_vars', array( __CLASS__, 'add_query_var' ) );
 		\add_action( 'init', array( __CLASS__, 'maybe_flush_rewrite_rules' ), 20 );
 		\add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'filter_menu_items' ), 20 );
+		// A product or variation saved, trashed, restored or deleted can change whether the shop sells a download.
+		foreach ( array( 'save_post_product', 'save_post_product_variation', 'trashed_post', 'untrashed_post', 'deleted_post' ) as $hook ) {
+			\add_action( $hook, array( __CLASS__, 'forget_sells_downloads' ) );
+		}
 		\add_filter( 'woocommerce_endpoint_saved-items_title', array( __CLASS__, 'saved_items_title' ) );
 		\add_action( 'woocommerce_account_saved-items_endpoint', array( __CLASS__, 'render_saved_items_endpoint' ) );
 		\add_action( 'woocommerce_account_orders_endpoint', array( __CLASS__, 'render_orders_heading' ), 1 );
@@ -228,10 +238,81 @@ final class Account_Endpoints {
 			foreach ( $hidden as $endpoint ) {
 				unset( $items[ $endpoint ] );
 			}
+			if ( ! empty( self::$active['hideUnofferedTabs'] ) ) {
+				$items = self::drop_unoffered_tabs( $items );
+			}
 			$items = self::apply_menu_order( $items, self::$active['menuOrder'] ?? array() );
 		}
 
 		return $items;
+	}
+
+	/**
+	 * Leave out the tabs a shop does not offer (the `hideUnofferedTabs` setting): Downloads when no product sells a
+	 * download and the signed-in customer holds none. Only the menu item goes: the endpoint's own URL keeps
+	 * WooCommerce's behaviour. Payment methods is not touched here: WooCommerce's `wc_get_account_menu_items()`
+	 * already leaves it out unless an available payment gateway supports `add_payment_method` or `tokenization`.
+	 *
+	 * @param array $items Endpoint => label.
+	 * @return array
+	 */
+	private static function drop_unoffered_tabs( array $items ): array {
+		if ( isset( $items['downloads'] ) && ! self::shop_sells_downloads() && ! self::customer_has_downloads() ) {
+			unset( $items['downloads'] );
+		}
+		return $items;
+	}
+
+	/**
+	 * Whether any published or private product, or variation, is downloadable. One indexed lookup, kept in a transient
+	 * until a product changes (`forget_sells_downloads`) or a day passes. True when the database is unavailable, so a
+	 * failed lookup keeps the tab.
+	 *
+	 * @return bool
+	 */
+	public static function shop_sells_downloads(): bool {
+		$cached = \get_transient( self::SELLS_DOWNLOADS_CACHE );
+		if ( false !== $cached ) {
+			return '1' === (string) $cached;
+		}
+		global $wpdb;
+		if ( ! is_object( $wpdb ) ) {
+			return true;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- a cached existence check on core tables; WooCommerce has no query for a downloadable variation.
+		$found = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT p.ID FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON m.post_id = p.ID WHERE m.meta_key = %s AND m.meta_value = %s AND p.post_type IN ( 'product', 'product_variation' ) AND p.post_status IN ( 'publish', 'private' ) LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- core table names.
+				'_downloadable',
+				'yes'
+			)
+		);
+		$sells = null !== $found && '' !== (string) $found;
+		\set_transient( self::SELLS_DOWNLOADS_CACHE, $sells ? '1' : '0', self::SELLS_DOWNLOADS_TTL );
+		return $sells;
+	}
+
+	/**
+	 * Forget the stored downloadable-product answer. Hooked to every product save, trash, restore and delete; takes
+	 * whatever argument the hook passes.
+	 */
+	public static function forget_sells_downloads(): void {
+		\delete_transient( self::SELLS_DOWNLOADS_CACHE );
+	}
+
+	/**
+	 * Whether the signed-in customer already holds a download (a purchase of a product since changed or removed), so
+	 * the tab that reaches it stays.
+	 *
+	 * @return bool
+	 */
+	private static function customer_has_downloads(): bool {
+		$user_id = (int) \get_current_user_id();
+		if ( $user_id <= 0 || ! function_exists( 'wc_get_customer_available_downloads' ) ) {
+			return false;
+		}
+		$downloads = \wc_get_customer_available_downloads( $user_id );
+		return is_array( $downloads ) && array() !== $downloads;
 	}
 
 	/**

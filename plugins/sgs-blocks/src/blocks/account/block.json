@@ -1933,6 +1933,11 @@
 				"type": "string"
 			}
 		},
+		"hideUnofferedTabs": {
+			"type": "boolean",
+			"default": false,
+			"description": "Leaves out the menu tabs the shop does not offer: Downloads while no product sells a download (a customer who already holds one keeps the tab). Payment methods already follows WooCommerce, which shows it only when an enabled payment gateway can save cards. Off keeps every tab WooCommerce lists."
+		},
 		"greeting": {
 			"type": "string",
 			"default": "Hello, {name}"

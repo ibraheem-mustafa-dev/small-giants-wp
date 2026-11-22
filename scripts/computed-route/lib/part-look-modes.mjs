@@ -45,6 +45,8 @@
 //   whenLargest             { part, over }: the number the first copy of `part` holds is larger than every number the copies of `over` hold
 //                           (the "all" chip's count against the other chips'); no number on either side writes nothing
 //   value                   the literal to write when the condition holds
+//   reason                  a rule with no condition above writes `value` on every surface of the block; `reason` is its evidence
+//                           (a clone never offers a feature its shop lacks)
 // A rule whose setting the framework database does not hold for the block, whose instances disagree, or whose evidence is missing
 // is a gap row with the draft's evidence, never a guess. Pure: reads and database rows in, writes and gaps out.
 import { WIDTHS, primitive } from './fill-part-look.mjs';
@@ -172,7 +174,7 @@ export function evaluateModes( { block, rules, rows, reads, others = null } ) {
 			continue;
 		}
 		let value = rule.value;
-		let evidence = rule.whenStyle ? `every ${ rule.whenStyle.part } of the draft reads ${ rule.whenStyle.style } ${ rule.whenStyle.equals }` : rule.whenAbsent ? `the draft draws no ${ [].concat( rule.whenAbsent ).join( ' or ' ) } at any width` : ( rule.whenFound ? `the draft draws ${ rule.whenFound }` : '' );
+		let evidence = rule.whenStyle ? `every ${ rule.whenStyle.part } of the draft reads ${ rule.whenStyle.style } ${ rule.whenStyle.equals }` : rule.whenAbsent ? `the draft draws no ${ [].concat( rule.whenAbsent ).join( ' or ' ) } at any width` : ( rule.whenFound ? `the draft draws ${ rule.whenFound }` : ( rule.reason || '' ) );
 		if ( rule.from?.text ) {
 			const cut = ( t ) => {
 				const tail = rule.from.minus ? instances( reads, rule.from.minus ).map( ( i ) => String( i.text || '' ) ).find( ( x ) => x && String( t ).endsWith( x ) ) : null;

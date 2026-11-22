@@ -1,0 +1,7 @@
+[
+	{"file":"lib/part-look-modes.mjs","find":"( rule.whenFound ? `the draft draws ${ rule.whenFound }` : ( rule.reason || '' ) )","replace":"( rule.whenFound ? `the draft draws ${ rule.whenFound }` : '' )","why":"a rule with no condition says nothing about why it writes"},
+	{"file":"lib/part-look-modes.mjs","find":"if ( ! known.has( rule.setting ) ) {","replace":"if ( false ) {","why":"a setting the framework database lacks is written anyway"},
+	{"file":"data/part-look-modes.json","find":"\"setting\": \"hideUnofferedTabs\",\n\t\t\t\t\t\"value\": true,","replace":"\"setting\": \"hideUnofferedTabs\",\n\t\t\t\t\t\"value\": false,","why":"the surface writes the setting off"},
+	{"file":"data/part-look-modes.json","find":"\"setting\": \"hideUnofferedTabs\",","replace":"\"setting\": \"hideUnofferedTabsRemoved\",","why":"the account surface no longer writes the setting"},
+	{"file":"data/part-look-modes.json","find":"\"setting\": \"hideUnofferedTabs\",\n\t\t\t\t\t\"value\": true,","replace":"\"setting\": \"hideUnofferedTabs\",\n\t\t\t\t\t\"value\": true,\n\t\t\t\t\t\"whenFound\": \"ordersRows\",","why":"the setting is written only where the draft draws an orders list, so the sign-in forms never get it"}
+]
