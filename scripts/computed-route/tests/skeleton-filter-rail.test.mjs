@@ -161,7 +161,7 @@ test( 'MUST FAIL: each group is built the way the draft draws it: heading count,
 	assert.equal( after( 'Brand' ).attributes.showCounts, true, 'options showing numbers show counts' );
 	// Negative controls: a group with no numbers shows none, no box means no search, terms with no "all" first are no segmented row.
 	assert.equal( after( 'Shade' ).attributes.showCounts, false );
-	assert.equal( after( 'Kind' ).attributes.showCounts, false );
+	assert.equal( after( 'Kind' ).attributes.showCounts, true, 'a group the draft shows closed shows no options at rest, so it keeps the rule\'s own counts' );
 	assert.ok( ! after( 'Kind' ).innerBlocks.some( ( n ) => 'sgs/filter-search' === n.name ) );
 	assert.doesNotMatch( heading( 'Kind' ).attributes.className, /segmented|count/ );
 	const plain = run( SHOP, SHOP_ROLE() );

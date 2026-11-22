@@ -7,5 +7,6 @@
 	{"file": "lib/skeleton-filter-rail.mjs", "find": "const box = rule.search ? searchBox( x ) : null;", "replace": "const box = null;", "why": "the draft's search box is not built"},
 	{"file": "lib/skeleton-filter-rail.mjs", "find": "[ '', 'text', 'search' ].includes( attr( c, 'type' ).toLowerCase() )", "replace": "true", "why": "a checkbox is taken for a search box"},
 	{"file": "lib/skeleton-filter-rail.mjs", "find": "...( placeholder ? { placeholder } : {} ),", "replace": "", "why": "the search box loses the draft's placeholder"},
-	{"file": "lib/skeleton-filter-rail.mjs", "find": "innerBlocks: [], draftKey: box.key, ...( x.facet ? { facet: x.facet.slug } : {} ) };", "replace": "innerBlocks: [], draftKey: box.key };", "why": "the search box carries no attribute id"}
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "innerBlocks: [], draftKey: box.key, ...( x.facet ? { facet: x.facet.slug } : {} ) };", "replace": "innerBlocks: [], draftKey: box.key };", "why": "the search box carries no attribute id"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "'price' !== x.kind && open( x ) && 'showCounts' in", "replace": "'price' !== x.kind && 'showCounts' in", "why": "a closed group's counts are turned off from no evidence"}
 ]

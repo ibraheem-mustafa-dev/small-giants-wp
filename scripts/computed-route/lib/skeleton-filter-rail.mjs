@@ -18,7 +18,7 @@
 //     in the draft's order; a group the draft shows open starts open (the heading's open class), a facet with swatches
 //     takes the swatch look, and a group showing checkboxes is a checkbox list, else chips;
 //   - each group is drawn the way the draft draws it at rest (F-32): a number beside the label is the heading's count class,
-//     the options' counts are shown only when two or more options show a number, a text box above the options is a search
+//     an open group's options show counts only when two or more show a number (a closed group keeps the rule's own), a text box above the options is a search
 //     box (rules.filterRail.search, its placeholder the draft's, inside the filter it narrows, read at the draft's box), and a
 //     facet's row of three or more buttons whose first is no term of the facet (an "all") and the rest its terms is the
 //     heading's segmented class.
@@ -195,7 +195,8 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	};
 	const shaped = ( x, filter ) => {
 		const search = searchOf( x, filter );
-		const counts = 'price' !== x.kind && 'showCounts' in ( filter.attributes || {} ) ? { showCounts: optionCounts( x ) } : {};
+		// Counts are read only from a group the draft shows open: a closed group shows no options at rest, which is no evidence.
+		const counts = 'price' !== x.kind && open( x ) && 'showCounts' in ( filter.attributes || {} ) ? { showCounts: optionCounts( x ) } : {};
 		return { ...filter, attributes: { ...filter.attributes, ...counts }, innerBlocks: [ ...( search ? [ search ] : [] ), ...filter.innerBlocks ] };
 	};
 	const filterOf = ( x ) => {
