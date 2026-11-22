@@ -40,6 +40,23 @@ test( 'MUST FAIL: --allow-unpicked lets the rows through on the proposal and say
 	assert.deepEqual( finaliserVerdict( { intake, intakeSurface: undefined, client: 'acme' } ), { ok: true, detail: 'no skeleton of its own (a copy reads no draft)' } );
 } );
 
+test( 'MUST FAIL: a surface whose draft record matched with no intake skeleton stops at finalise; a copy with no draft record passes', async () => {
+	const gap = { key: 'template-order-confirmation', record: 'S-32', why: 'no intake skeleton has the id S-32' };
+	const v = finaliserVerdict( { intake, intakeSurface: undefined, client: 'acme', noIntake: gap } );
+	assert.equal( v.ok, false );
+	assert.match( v.detail, /draft record S-32 matches it but intake holds no skeleton/ );
+	assert.match( v.next, /intake\.mjs acme.*manifest\.mjs acme --site <site> --only template-order-confirmation --apply/ );
+	assert.equal( finaliserVerdict( { intake, intakeSurface: undefined, client: 'acme', noIntake: { key: 'x', record: null, why: 'no handoff record matched' } } ).ok, true, 'negative control: no draft record is a true copy' );
+	assert.equal( finaliserVerdict( { intake, intakeSurface: 'ok', client: 'acme', noIntake: gap } ).ok, true, 'negative control: a surface with a skeleton is judged by its rows' );
+	let launched = 0;
+	const lines = [];
+	const out = await cloneSurfaces( { client: 'acme', site: 's', keys: [ 'drawer', 'template-order-confirmation' ], intake, surfaces: { ...surfaces, 'template-order-confirmation': { copy: { from: 'page' } } }, noIntake: [ gap ], run: async () => ( launched++, { status: clean( [ 'drawer', 'template-order-confirmation' ] ) } ), log: ( l ) => lines.push( l ) } );
+	assert.equal( out.ok, false );
+	assert.equal( launched, 0, 'the run never starts' );
+	assert.match( lines.join( '\n' ), /FAIL template-order-confirmation finalise - the draft record S-32/ );
+	assert.equal( ( await cloneSurfaces( { client: 'acme', site: 's', keys: [ 'template-page' ], intake, surfaces, noIntake: [ gap ], run: async () => ( { status: clean( [ 'template-page' ] ) } ), log: () => {} } ) ).ok, true, 'negative control: another surface\'s gap stops nothing' );
+} );
+
 test( 'MUST FAIL: the one site-run command runs every stage strictly, one job, with the template copies, and carries the allowances', () => {
 	const args = siteRunArgs( { client: 'acme', site: 'local-mediatest-acme', keys: [ 'header', 'footer' ], allowMissingPaint: [ 'sgs/gallery' ] } );
 	assert.deepEqual( args, [ 'acme', '--site', 'local-mediatest-acme', '--only', 'header,footer', '--stages', 'inventory,propose,fill,build,apply,walk', '--jobs', '1', '--strict', '--allow-missing-paint', 'sgs/gallery' ] );

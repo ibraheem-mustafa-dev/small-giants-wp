@@ -543,6 +543,8 @@ test( 'an entry whose record has no intake skeleton gets no intakeSurface and is
 	assert.equal( 'intakeSurface' in out.entries.header, false );
 	assert.equal( out.noIntake.length, 1 );
 	assert.equal( out.noIntake[ 0 ].key, 'header' );
+	assert.equal( out.noIntake[ 0 ].record, 'S-3', 'MUST FAIL: the row names the matched record, which lib/clone-surface.mjs::finaliserVerdict stops on' );
+	assert.equal( run( [ row( 'sgs_header', 'header', 9 ) ], [] ).noIntake[ 0 ]?.record ?? null, null, 'negative control: no matched record names none' );
 	assert.equal( run( [ row( 'sgs_header', 'header', 9 ) ], records ).noIntake.length, 1, 'no intake file at all is listed too' );
 	const twice = run( [ row( 'sgs_header', 'header', 9 ) ], records, { intake: { skeletons: { a: { id: 'S-3' }, b: { id: 'S-3' } } } } );
 	assert.equal( 'intakeSurface' in twice.entries.header, false, 'two intake skeletons with one id are not picked between' );

@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/clone-surface.mjs", "find": "if ( ! intakeSurface && noIntake?.record ) {", "replace": "if ( false ) {", "why": "a matched record with no skeleton passes as a copy again" },
+	{ "file": "lib/clone-surface.mjs", "find": "if ( ! intakeSurface && noIntake?.record ) {", "replace": "if ( ! intakeSurface && noIntake ) {", "why": "a copy with no draft record is stopped too" },
+	{ "file": "lib/clone-surface.mjs", "find": "if ( ! intakeSurface && noIntake?.record ) {", "replace": "if ( noIntake?.record ) {", "why": "a surface with its own skeleton is stopped by a gap row" },
+	{ "file": "lib/clone-surface.mjs", "find": "noIntake: noIntake.find( ( n ) => n.key === key ) ?? null", "replace": "noIntake: noIntake[ 0 ] ?? null", "why": "another surface's gap row stops this one" },
+	{ "file": "lib/clone-surface.mjs", "find": "noIntake: noIntake.find( ( n ) => n.key === key ) ?? null", "replace": "noIntake: null", "why": "cloneSurfaces passes no gap row" }
+]

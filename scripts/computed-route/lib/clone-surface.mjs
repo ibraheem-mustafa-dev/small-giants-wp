@@ -25,8 +25,18 @@ const TIMEOUT = /time[ -]?out|timed out|ETIMEDOUT/i;
 export const isTimeout = ( detail ) => TIMEOUT.test( String( detail ?? '' ) );
 
 // The finaliser check of one surface: { ok, detail, next? }. `intake` is intake.json; `intakeSurface` the surface's skeleton record
-// (surfaces.json `intakeSurface`; none for a template copy, which reads no draft).
-export function finaliserVerdict( { intake, intakeSurface, client, allowUnpicked = false } ) {
+// (surfaces.json `intakeSurface`; none for a template copy, which reads no draft). `noIntake` is the surface's row of the manifest's
+// noIntake list (lib/manifest-build.mjs::buildManifest), if any: a surface whose draft record matched but which intake holds no
+// skeleton for stops here, because its run would build a stock copy in place of the draft; only a surface with no draft record
+// passes as a copy.
+export function finaliserVerdict( { intake, intakeSurface, client, allowUnpicked = false, noIntake = null } ) {
+	if ( ! intakeSurface && noIntake?.record ) {
+		return {
+			ok: false,
+			detail: `the draft record ${ noIntake.record } matches it but intake holds no skeleton for that record, so a copy would stand in for the draft`,
+			next: `run node scripts/computed-route/intake.mjs ${ client }, then node scripts/computed-route/manifest.mjs ${ client } --site <site> --only ${ noIntake.key } --apply`,
+		};
+	}
 	if ( ! intakeSurface ) {
 		return { ok: true, detail: 'no skeleton of its own (a copy reads no draft)' };
 	}
@@ -88,15 +98,15 @@ export function surfaceVerdict( { status, keys, runDir = null } ) {
 }
 
 // The whole command. `run( args )` launches one site-run.mjs and resolves { status, runDir, error }, `status` being its status.json (null
-// when the run stopped before any stage, with `error` the reason). Returns { ok, lines, failed, skipped, missing } and logs each line.
-export async function cloneSurfaces( { client, site, keys, intake, surfaces, run, allowMissingPaint = [], allowUnpicked = false, retry = true, jobs = 1, log = console.log } ) {
+// when the run stopped before any stage, with `error` the reason). `noIntake` is the manifest's noIntake list for `keys`. Returns { ok, lines, failed, skipped, missing } and logs each line.
+export async function cloneSurfaces( { client, site, keys, intake, surfaces, run, noIntake = [], allowMissingPaint = [], allowUnpicked = false, retry = true, jobs = 1, log = console.log } ) {
 	const say = ( l ) => log( l );
 	const unknown = keys.filter( ( k ) => ! Object.hasOwn( surfaces, k ) );
 	if ( unknown.length ) {
 		say( `FAIL ${ unknown.join( ', ' ) } - not in surfaces.json (known: ${ Object.keys( surfaces ).join( ', ' ) })` );
 		return { ok: false, lines: [], failed: unknown.map( ( k ) => `${ k }: not in surfaces.json` ), skipped: [], missing: [] };
 	}
-	const picks = keys.map( ( key ) => ( { key, ...finaliserVerdict( { intake, intakeSurface: surfaces[ key ].intakeSurface, client, allowUnpicked } ) } ) );
+	const picks = keys.map( ( key ) => ( { key, ...finaliserVerdict( { intake, intakeSurface: surfaces[ key ].intakeSurface, client, allowUnpicked, noIntake: noIntake.find( ( n ) => n.key === key ) ?? null } ) } ) );
 	picks.forEach( ( p ) => say( p.ok ? `ok   ${ p.key } finalise - ${ p.detail }` : `FAIL ${ p.key } finalise - ${ p.detail }; next: ${ p.next }` ) );
 	if ( picks.some( ( p ) => ! p.ok ) ) {
 		return { ok: false, lines: [], failed: picks.filter( ( p ) => ! p.ok ).map( ( p ) => `${ p.key } finalise: ${ p.detail }` ), skipped: [], missing: [] };

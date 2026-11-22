@@ -2,7 +2,8 @@
 // The surface command: one or more surfaces of a client cloned onto a site through every stage, passing only when every stage ran.
 //   node scripts/computed-route/clone-surface.mjs <client> --surface a,b --site <target>
 //        [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--no-retry] [--jobs 1]
-// It checks each surface's finaliser picks (lib/clone-surface.mjs::finaliserVerdict), runs site-run.mjs for the surfaces with every stage
+// It checks each surface's finaliser picks (lib/clone-surface.mjs::finaliserVerdict; a surface whose draft record matched with no intake
+// skeleton, the manifest's noIntake, stops there instead of passing as a copy), runs site-run.mjs for the surfaces with every stage
 // (inventory, propose, fill, build, apply, walk) and --strict, retries a build that timed out once with --stages build,apply,walk, and prints
 // one line per surface and stage: `ok`, `skip` or `FAIL` with its reason and, for a failure, the stage log. A template copy a page sits in is
 // run with the page (never --no-copies). Exit 0 when every stage ran and passed; 1 otherwise (each failure and each stage that did not run
@@ -16,11 +17,36 @@ import { cloneSurfaces } from './lib/clone-surface.mjs';
 import { launchSiteRun } from './lib/site-run-launch.mjs';
 import { allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { assertUnprotected, readTargets, targetOf } from './lib/site-targets.mjs';
+import { buildManifest } from './lib/manifest-build.mjs';
+import { readPageMap } from './lib/site-build-map.mjs';
+import { stateRows } from './lib/state-vocab.mjs';
+import { openDb } from './lib/db.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
 const USAGE = 'usage: clone-surface.mjs <client> --surface a,b --site <target> [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--no-retry] [--jobs 1]';
 
-export async function main( argv, { launch = launchSiteRun, repo = REPO, log = console.log, error = console.error } = {} ) {
+// The manifest's noIntake rows for `keys` (lib/manifest-build.mjs::buildManifest, as manifest.mjs builds it without --apply): each
+// surface whose draft record intake holds no skeleton for, which lib/clone-surface.mjs::finaliserVerdict stops on.
+export function noIntakeOf( { repo, client, site, keys, surfaces, intake, targets } ) {
+	const dir = path.join( repo, 'sites', client );
+	const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	const facts = path.join( dir, 'build', 'intake', 'facts.json' );
+	return buildManifest( {
+		client,
+		site,
+		rows: readPageMap( path.join( dir, 'build', 'page-map.json' ) ),
+		only: keys,
+		records: readJson( path.join( dir, 'handoff', 'surfaces.json' ) ).records,
+		intake,
+		facts: fs.existsSync( facts ) ? readJson( facts ) : null,
+		target: targets[ site ],
+		entryFiles: readJson( path.join( dir, 'handoff', 'MANIFEST.json' ) ).entry_drafts || [],
+		vocab: stateRows( openDb() ),
+		existing: surfaces,
+	} ).noIntake;
+}
+
+export async function main( argv, { launch = launchSiteRun, repo = REPO, log = console.log, error = console.error, gaps = noIntakeOf } = {} ) {
 	const flag = ( n ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : null );
 	const client = argv[ 0 ] && ! argv[ 0 ].startsWith( '--' ) ? argv[ 0 ] : null;
 	const site = flag( '--site' );
@@ -37,7 +63,7 @@ export async function main( argv, { launch = launchSiteRun, repo = REPO, log = c
 		const surfaces = JSON.parse( fs.readFileSync( path.join( build, 'surfaces.json' ), 'utf8' ) );
 		const intake = JSON.parse( fs.readFileSync( path.join( build, 'intake', 'intake.json' ), 'utf8' ) );
 		const verdict = await cloneSurfaces( {
-			client, site, keys, intake, surfaces, allowMissingPaint: allowMissingPaintArg( argv ), allowUnpicked: argv.includes( '--allow-unpicked' ), retry: ! argv.includes( '--no-retry' ), log,
+			client, site, keys, intake, surfaces, noIntake: gaps( { repo, client, site, keys, surfaces, intake, targets } ), allowMissingPaint: allowMissingPaintArg( argv ), allowUnpicked: argv.includes( '--allow-unpicked' ), retry: ! argv.includes( '--no-retry' ), log,
 			jobs: Number( flag( '--jobs' ) ?? 1 ),
 			run: ( args ) => launch( { repo, client, args } ),
 		} );

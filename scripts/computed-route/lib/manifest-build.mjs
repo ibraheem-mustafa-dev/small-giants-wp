@@ -347,7 +347,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		const intakeSurface = intakeSurfaceOf( match.record, intake, row );
 		// A kept link counts only while it names a skeleton intake holds; a dead one with nothing generated is listed too.
 		const keptLive = have && Object.hasOwn( have, 'intakeSurface' ) && Object.hasOwn( intake?.skeletons || {}, have.intakeSurface );
-		null === intakeSurface && ! noDraft && ! keptLive && out.noIntake.push( { key, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
+		null === intakeSurface && ! noDraft && ! keptLive && out.noIntake.push( { key, record: match.record?.id ?? null, why: match.record ? `no intake skeleton has the id ${ match.record.id }` : 'no handoff record matched' } );
 		const surfaceTarget = isTemplate ? { template: row.templateOf.slug } : builtTemplate( row ) ? { template: builtTemplate( row ) } : { postId: row.id };
 		// The site run never walks WooCommerce's own cart and checkout pages (lib/site-build-plan.mjs::isUnwalkedWooPage): no walker is named.
 		const walked = ! isUnwalkedWooPage( surfaceTarget, row );
