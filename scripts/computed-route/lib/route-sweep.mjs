@@ -171,16 +171,19 @@ export function splitProblems( all, real ) {
 }
 
 // Wraps the carried-ids reader a propose gets so the sweep learns whether any lookup could have produced a hand-over line: a lookup
-// that answered with a reason (logo, product, attribute), a menu the map lacks, or any item lookup (an item a label has no id for
-// is not told apart from outside). `probe.touched` is set; a surface that never touches it has no hand-over line and is not
-// proposed a second time.
+// that answered with a reason (a logo or product the media map or catalogue lacks, an attribute the catalogue lacks), a menu the map
+// lacks, or any item lookup (an item a label has no id for is not told apart from outside). `probe.touched` is set, and the reason
+// of each empty logo, product or attribute lookup is added to `probe.reasons`; a surface that never touches the probe has no
+// hand-over line and is not proposed a second time.
 export function instrumentCarried( carried, probe ) {
 	if ( ! carried ) {
 		return carried;
 	}
+	probe.reasons ||= [];
 	const wrap = ( fn, miss ) => ( ...a ) => {
 		const r = fn.apply( carried, a );
 		miss( r ) && ( probe.touched = true );
+		r?.reason && probe.reasons.push( r.reason );
 		return r;
 	};
 	return {
@@ -193,11 +196,23 @@ export function instrumentCarried( carried, probe ) {
 	};
 }
 
+// The real route faults among a propose's problem lines. `carryless`: the lines of the same surface proposed with no carried ids
+// (the lines it also writes are real; an array, or null when that run could not be made); `reasons`: what the empty lookups said
+// (`probe.reasons`). With the carry-less lines the class is exactly what the carried ids write. Without them the lines that
+// end in an empty lookup's own reason (a logo, product or attribute the saved maps lack) are hand-overs and the rest stay real, so
+// a surface whose carry-less run fails never reports a hand-over as a fault because of that. Returns { lines, by }.
+export function realFaultLines( { problems, carryless, reasons = [] } ) {
+	if ( Array.isArray( carryless ) ) {
+		return { lines: carryless, by: 'carry-less run' };
+	}
+	return { lines: ( problems || [] ).filter( ( l ) => ! reasons.some( ( r ) => lineOf( l ).endsWith( r ) ) ), by: 'recorded lookup reasons' };
+}
+
 // The summary of one proposed surface: its node count and its problem lines in the two classes. `problems` is every line the
 // propose wrote; `realProblems` the lines of it that are real route faults (splitProblems; omitted, every line is one).
 // `problemCount`, `byKind` and `problems` are the real faults, which a comparison fails on; `handoverCount` and `handovers` are
 // the hand-overs, which it lists.
-export function summariseSurface( { client, surface, proposal, problems, realProblems = null, skeleton } ) {
+export function summariseSurface( { client, surface, proposal, problems, realProblems = null, classifiedBy = null, skeleton } ) {
 	const { real, handovers } = splitProblems( problems, null === realProblems ? problems : realProblems );
 	const byKind = {};
 	for ( const l of real ) {
@@ -205,7 +220,7 @@ export function summariseSurface( { client, surface, proposal, problems, realPro
 		byKind[ k ] = ( byKind[ k ] || 0 ) + 1;
 	}
 	const c = proposal?.counts || {};
-	return { client, surface, ok: true, nodes: fingerprintNodes( skeleton, proposal ).length, rows: c.rows ?? null, low: c.low ?? null, unresolved: c.unresolved ?? null, problemCount: real.length, byKind, problems: real, handoverCount: handovers.length, handovers };
+	return { client, surface, ok: true, nodes: fingerprintNodes( skeleton, proposal ).length, rows: c.rows ?? null, low: c.low ?? null, unresolved: c.unresolved ?? null, problemCount: real.length, byKind, problems: real, handoverCount: handovers.length, handovers, ...( classifiedBy ? { classifiedBy } : {} ) };
 }
 
 // A surface that could not be proposed: it counts as a failure when the baseline proposed it.

@@ -26,7 +26,7 @@ import os from 'node:os';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
-	HELD_OUT, instrumentCarried, freezeClient, recordClients, surfaceList, buildWork, summariseSurface, failedSummary, fingerprintNodes, writeSweep, readSweep, compareSweeps,
+	HELD_OUT, instrumentCarried, realFaultLines, freezeClient, recordClients, surfaceList, buildWork, summariseSurface, failedSummary, fingerprintNodes, writeSweep, readSweep, compareSweeps,
 	formatComparison, formatSweep, acquireSlots, releaseSlots, shardItems, summariseFill, failedFill, filesUnder,
 } from '../lib/route-sweep.mjs';
 
@@ -107,6 +107,11 @@ async function proposeWorker( o ) {
 					r = proposeSurface( { client, surface, repo: o.work, cache, allowMissingPaint: a, propose: ( args ) => proposeSkeleton( { ...args, carried: 'keep' === carried ? instrumentCarried( args.carried, probe ) : null } ) } );
 				} catch ( e ) {
 					err = e;
+					// Two jobs opening the framework database at once can find it locked: wait and try again.
+					if ( /database is locked/.test( String( e.message ) ) ) {
+						Atomics.wait( new Int32Array( new SharedArrayBuffer( 4 ) ), 0, 0, 2000 );
+						continue;
+					}
 					const named = /--allow-missing-paint (\S+) to resolve/.exec( String( e.message ) )?.[ 1 ];
 					if ( ! named ) {
 						break;
@@ -128,15 +133,16 @@ async function proposeWorker( o ) {
 		// The hand-over lines are the ones the carried ids write: when a lookup could have written one, the surface is proposed
 		// again with no carried ids, and the lines that second run also writes are the real faults (splitProblems). The second run
 		// overwrites the surface's saved skeleton and proposal in the work folder, so the first run's are written back.
-		let realProblems = null;
+		let classified = { lines: null, by: null };
 		if ( probe.touched ) {
-			const second = run( null, null ).r;
-			realProblems = second ? second.problems : null;
+			const second = run( null, null );
+			second.err && console.log( `${ item }: the carry-less run failed (${ String( second.err.message ).split( '\n' )[ 0 ].slice( 0, 160 ) }): hand-overs told by the recorded lookup reasons` );
+			classified = realFaultLines( { problems: r.problems, carryless: second.r ? second.r.problems : null, reasons: probe.reasons } );
 			const write = ( file, value ) => fs.writeFileSync( file, `${ JSON.stringify( value, null, '\t' ) }\n` );
 			write( r.paths.skeleton, r.skeleton );
 			write( r.paths.proposal, r.proposal );
 		}
-		const summary = summariseSurface( { client, surface, proposal: r.proposal, problems: r.problems, realProblems, skeleton: r.skeleton } );
+		const summary = summariseSurface( { client, surface, proposal: r.proposal, problems: r.problems, realProblems: classified.lines, classifiedBy: classified.by, skeleton: r.skeleton } );
 		fs.writeFileSync( path.join( dir, `${ surface }.summary.json` ), JSON.stringify( summary ) );
 		fs.writeFileSync( path.join( dir, `${ surface }.nodes.json` ), JSON.stringify( fingerprintNodes( r.skeleton, r.proposal ) ) );
 		fs.writeFileSync( path.join( dir, `${ surface }.proposal.json` ), JSON.stringify( r.proposal, null, 1 ) );

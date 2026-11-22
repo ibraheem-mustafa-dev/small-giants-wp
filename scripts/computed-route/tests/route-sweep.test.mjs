@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
 	HELD_OUT, freezeFiles, heldOutFile, surfaceList, recordClients, buildWork, freezeClient, problemKind, summariseSurface, failedSummary, fingerprintNodes, diffNodes,
-	compareSweeps, formatComparison, clientTotals, splitProblems, instrumentCarried, writeSweep, readSweep, acquireSlots, releaseSlots, shardItems, summariseFill,
+	compareSweeps, formatComparison, clientTotals, splitProblems, instrumentCarried, realFaultLines, writeSweep, readSweep, acquireSlots, releaseSlots, shardItems, summariseFill,
 } from '../lib/route-sweep.mjs';
 import { parseArgs, defaultFills } from '../tools/route-sweep.mjs';
 
@@ -322,4 +322,33 @@ test( 'instrumentCarried flags a lookup that could write a hand-over line, and l
 		assert.equal( pr.touched, true, name );
 	}
 	assert.equal( instrumentCarried( null, probe ), null );
+} );
+
+const REASON = 'assets/eye-care-wordmark.png (sha256 7a991f04) is not in the media map for a-test';
+const MEDIA_LINE = `Root/30#0: no logoSource is carried: ${ REASON }`;
+
+test( 'MUST FAIL: an empty media-map lookup is a hand-over even when the carry-less run cannot be made (it was a real fault before)', () => {
+	// The reader as skeleton-carried.mjs::carriedIds gives it: a logo the media map holds no attachment for answers with a reason.
+	const reader = { logo: () => ( { reason: REASON } ), menu: () => 7, items: () => ( {} ) };
+	const probe = { touched: false };
+	instrumentCarried( reader, probe ).logo( { key: 'Root/30#0' } );
+	assert.equal( probe.touched, true );
+	assert.deepEqual( probe.reasons, [ REASON ] );
+	const problems = [ FAULT, MEDIA_LINE ];
+	const before = summariseSurface( { client: 'a', surface: 'header', proposal: { counts: {} }, problems, realProblems: null, skeleton: [] } );
+	assert.equal( before.problemCount, 2, 'with no carry-less lines the old summary took every line for a fault' );
+	const c = realFaultLines( { problems, carryless: null, reasons: probe.reasons } );
+	assert.equal( c.by, 'recorded lookup reasons' );
+	const s = summariseSurface( { client: 'a', surface: 'header', proposal: { counts: {} }, problems, realProblems: c.lines, classifiedBy: c.by, skeleton: [] } );
+	assert.deepEqual( s.problems, [ FAULT ] );
+	assert.deepEqual( s.handovers, [ MEDIA_LINE ] );
+	assert.equal( s.classifiedBy, 'recorded lookup reasons' );
+	assert.equal( compareSweeps( { surfaces: { 'a/header': sum( 'a/header', [ FAULT ] ) }, nodes: {} }, { surfaces: { 'a/header': s }, nodes: {} } ).ok, true );
+} );
+
+test( 'realFaultLines takes the carry-less lines when there are some, and a line that merely looks like a hand-over stays real when no lookup said it', () => {
+	assert.deepEqual( realFaultLines( { problems: [ FAULT, MEDIA_LINE ], carryless: [ FAULT ], reasons: [] } ), { lines: [ FAULT ], by: 'carry-less run' } );
+	const other = 'Root/4#0: no logoSource is carried: some other reason no lookup gave';
+	assert.deepEqual( realFaultLines( { problems: [ other ], carryless: null, reasons: [ REASON ] } ).lines, [ other ] );
+	assert.deepEqual( realFaultLines( { problems: [ FAULT ], carryless: null } ).lines, [ FAULT ] );
 } );
