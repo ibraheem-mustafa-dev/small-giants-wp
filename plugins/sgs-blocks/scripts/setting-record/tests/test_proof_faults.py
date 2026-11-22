@@ -314,3 +314,74 @@ def test_probe_widths_fall_between_breakpoints_inside_the_tier():
     assert breaks == [512.0]                       # the container passes 480px on a 512px screen (16px padding each side)
     assert PR.probe_widths(('@media (max-width: 767.98px)',), breaks, [375, 768, 1440]) == [639]
     assert PR.probe_widths(('@media (min-width:1024px) and (max-width:767.98px)',), breaks, [375]) == []
+
+
+# ---------------------------------------------------------------- a token the block's own other setting defines
+def test_must_fail_a_setting_that_stops_reading_a_token_another_setting_defines_is_proved():
+    # The menu's featured hover: the plain link's transition reads `--sgs-nav-item-motion` (set only by the motion
+    # setting, so undefined here and falling back), the featured rule does not read it. With the motion setting on, the
+    # two differ. Breaks while a property the block declares anywhere is never given a placeholder.
+    plain_css = '.sgs-demo__link{transition:color var(--sgs-demo-motion, 150ms ease)}'
+    changed_css = plain_css + '.sgs-demo .sgs-demo__link{transition:color 150ms ease}'
+    other = '.sgs-demo--motion .sgs-demo__link{--sgs-demo-motion:400ms linear}'  # another setting's render defines it
+    html = '<div class="sgs-demo"><a class="sgs-demo__link" href="#">x</a></div>'
+    e = entry(setting='featured', part='sgs-demo__link', props=('transition-duration',))
+    run, key = run_of(html, plain_css, html, changed_css, e, True, ['.sgs-demo .sgs-demo__link'])
+    run['results']['m'] = {'html': html, 'css': plain_css + other}
+    run['jobs']['m'] = {'motion': True}
+    out, rep = PR.prove(SHORT, run)
+    assert rep['counts']['removed'] == 0 and 'unproved' not in out[key], rep
+    assert out[key]['kind'] == 'switched-on'
+
+
+# ---------------------------------------------------------------- a script-set class the server also prints
+def test_must_fail_a_class_the_server_prints_for_the_setting_is_not_held_on_both_pages(tmp_path):
+    # The cart's hideWhenEmpty: render.php prints `sgs-demo--hidden-empty` when it is on, and view.js also toggles the class
+    # on the widget. Breaks while the script-set class is held on both pages: both hide, and the entry was removed.
+    plain = '<div class="sgs-demo"><span class="sgs-demo__label">x</span></div>'
+    changed = '<div class="sgs-demo sgs-demo--hidden-empty"><span class="sgs-demo__label">x</span></div>'
+    css = '.sgs-demo--hidden-empty{display:none}'
+    e = entry(setting='hideWhenEmpty', props=('display',))
+    run, key = run_of(plain, css, changed, css, e, True, ['.sgs-demo--hidden-empty'])
+    run['plugin'] = tmp_plugin(tmp_path, {'src/blocks/demo/view.js':
+                                          "document.querySelectorAll('.sgs-demo').forEach( ( widget ) => { widget.classList.toggle('sgs-demo--hidden-empty', n === 0); } );"})
+    out, rep = PR.prove(SHORT, run)
+    assert rep['counts']['removed'] == 0 and 'unproved' not in out[key], rep
+
+
+def test_must_fail_a_two_choice_setting_tried_each_way_may_be_removed_as_restating(monkeypatch):
+    # The cart's triggerStyle (icon or pill): one pair goes icon to pill, another pill to icon, and the badge's
+    # `pointer-events: none` is restated by the pill rule in both. Breaks while only a separate second render counts as a
+    # second value: the entry stayed unproven as same-value-here.
+    plain = ROOT_HTML.format('<span class="sgs-demo__badge">1</span>')
+    pill = plain.replace('sgs-demo sgs-demo-1a2b3c4d', 'sgs-demo sgs-demo-1a2b3c4d sgs-demo--pill')
+    css = '.sgs-demo__badge{pointer-events:none}.sgs-demo--pill .sgs-demo__badge{pointer-events:none}'
+    e = entry(setting='style', part='sgs-demo__badge', props=('pointer-events',))
+    run, key = run_of(plain, css, pill, css, e, 'pill', ['.sgs-demo--pill .sgs-demo__badge'])
+    run['results'].update({'b2': {'html': pill, 'css': css}, 'c2': {'html': plain, 'css': css}})
+    run['jobs'].update({'b2': {'style': 'pill'}, 'c2': {'style': 'icon'}})
+    run['pairs'][key] = {('b', 'c'), ('b2', 'c2')}
+    monkeypatch.setattr(I, 'switching_values', lambda plugin, short, attr, current: [])
+    out, rep = PR.prove(SHORT, run)
+    assert key not in out and rep['counts']['removed'] == 1 and 'restates' in rep['removed'][0]['evidence'], rep
+
+
+def test_must_fail_a_style_restated_beside_a_tokened_colour_in_a_shorthand_is_restating():
+    # The form's fieldBorderWidth: the plain field draws `border: 1px solid var(--edge, #ccc)`, the setting's rule writes
+    # `border-style: solid`. The style is `solid` whatever --edge holds. Breaks while the var() guard reads the whole
+    # declaration: the entry stayed unproven as same-value-here.
+    html = ROOT_HTML.format('<input class="sgs-demo__input">')
+    base = '.sgs-demo__input{border:1px solid var(--edge, #ccc)}'
+    e = entry(setting='borderWidth', part='sgs-demo__input', props=('border-style',))
+    run, key = run_of(html, base, html, base + '.sgs-demo .sgs-demo__input{border-style:solid}', e, True, ['.sgs-demo .sgs-demo__input'])
+    out, rep = PR.prove(SHORT, run)
+    assert key not in out and rep['counts']['removed'] == 1 and 'restates' in rep['removed'][0]['evidence'], rep
+
+
+def test_a_colour_read_through_different_tokens_is_still_not_restating():
+    html = ROOT_HTML.format('<input class="sgs-demo__input">')
+    base = '.sgs-demo__input{border:1px solid var(--edge, #ccc)}'
+    e = entry(setting='borderColour', part='sgs-demo__input', props=('border-color',))
+    run, key = run_of(html, base, html, base + '.sgs-demo .sgs-demo__input{border-color:var(--other, #ccc)}', e, True, ['.sgs-demo .sgs-demo__input'])
+    out, rep = PR.prove(SHORT, run)
+    assert rep['counts']['removed'] == 0

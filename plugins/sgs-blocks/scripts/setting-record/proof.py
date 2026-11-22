@@ -170,7 +170,7 @@ class Pages:
         self.frame_all = frame_widths(layout, range(PROBE_RANGE[0], PROBE_RANGE[1] + 1))
         # the block drawn inside its fixture's parents (a menu in a header row), so a rule scoped by the parent matches
         self.shell = parent_shell(run)
-        parents = [p['name'].split('/', 1)[1] for p in self.shell['parents']]
+        parents = self.shell.get('blocks') or [p['name'].split('/', 1)[1] for p in self.shell['parents']]
         files = sorted(set(D.sheet_files(run['plugin'], short, run['children'])) | {f for b in parents for f in D.sheet_files(run['plugin'], b, [])})
         texts = [f.read_text(encoding='utf-8', errors='ignore') for f in files]
         self.base = CP.Page.static_rules(([css] if css else []) + texts)
@@ -250,16 +250,19 @@ CHILD_MARK = '<!--sgs-setting-record-child-->'
 
 def parent_shell(run: dict) -> dict:
     """The markup and CSS of the fixture's `parents` (outermost first) around the block: each parent rendered through its
-    own render.php with the next one inside it as its content, the innermost holding a marker where the block goes.
-    {'before', 'after', 'css', 'parents', 'error'}; empty strings when the fixture names no parents or one fails to render."""
-    out = {'before': '', 'after': '', 'css': '', 'parents': [], 'error': None}
+    own render.php with the next one inside it as its content, the innermost holding a marker where the block goes. A
+    parent's `siblings` ([{name, attributes, content?}]) are rendered and placed after the block inside that parent (a
+    button beside the menu in a header row, for the rules that reach the row's other controls).
+    {'before', 'after', 'css', 'parents', 'blocks', 'error'}: `blocks` names every block drawn around the block (its sheets
+    load too); empty strings when the fixture names no parents or one fails to render."""
+    out = {'before': '', 'after': '', 'css': '', 'parents': [], 'blocks': [], 'error': None}
     fixture = (run.get('plan') or {}).get('fixture') or {}
     parents = fixture.get('parents') or []
     rn = run.get('renderer')
     if not parents or rn is None:
         return out
     plugin = Path(run['plugin'])
-    content, css = CHILD_MARK, []
+    content, css, blocks = CHILD_MARK, [], []
     for p in reversed(parents):
         name = p['name']
         short = name.split('/', 1)[1]
@@ -268,6 +271,20 @@ def parent_shell(run: dict) -> dict:
         except OSError as exc:
             out['error'] = f'{name}: {exc}'
             return out
+        for sib in p.get('siblings') or []:
+            sshort = sib['name'].split('/', 1)[1]
+            try:
+                sres = rn.render(sib['name'], RN.with_defaults(plugin, sshort, RN.fill(sib.get('attributes') or {})), sib.get('content', ''))
+            except OSError as exc:
+                out['error'] = f'{sib["name"]}: {exc}'
+                return out
+            if not sres.get('ok'):
+                out['error'] = f'{sib["name"]}: ' + (sres.get('error') or 'did not render')[:200]
+                return out
+            content += sres.get('html', '')
+            css.insert(0, sres.get('css', ''))
+            blocks.append(sshort)
+        blocks.append(short)
         res = rn.render(name, attrs, content)
         if not res.get('ok') or CHILD_MARK not in res.get('html', ''):
             out['error'] = f'{name}: ' + (res.get('error') or 'its render does not print its content')[:200]
@@ -275,7 +292,7 @@ def parent_shell(run: dict) -> dict:
         content = res['html']
         css.insert(0, res.get('css', ''))
     before, _, after = content.partition(CHILD_MARK)
-    out.update(before=before, after=after, css='\n'.join(css), parents=parents)
+    out.update(before=before, after=after, css='\n'.join(css), parents=parents, blocks=blocks)
     return out
 
 
@@ -345,13 +362,15 @@ def unnamed_states(selectors) -> list:
     return sorted({f':{m.group(1)}' for s in selectors for m in UNNAMED_STATE.finditer(s) if m.group(1) not in HOLDABLE})
 
 
-def outside_vars(page, el, pse, names, width, conds, known) -> set:
+def outside_vars(page, el, pse, names, width, conds, known, with_known=False) -> set:
     """Custom properties the winning declarations for these names read that the element does not inherit and that no
     stylesheet of the block, no render of it and no rule of the theme sheet in force ever declares (`known` is the block's
     own; the theme's reach the element through `custom`): their values come from a client's tokens, a parent block or a
     script, which the proof lacks, so no difference between the pages is no proof of none. A block's own optional custom
     property is known, so its fallback is what the block really draws; a property with a fallback that nothing here defines
-    is still unknown, because a client site defines it."""
+    is still unknown, because a client site defines it. With `with_known`, a property of the block's own that this page
+    leaves undefined is listed too: another setting of the block defines it (a motion setting's `--sgs-nav-item-motion`),
+    so a setting that switches whether it is read is tested with a placeholder for it (token_test)."""
     custom = page.computed(el, pse, width)['_custom']
     out = set()
     decls = page.cascade.declared(el, pse, width, frozenset(conds))
@@ -368,7 +387,7 @@ def outside_vars(page, el, pse, names, width, conds, known) -> set:
                     # a property the element has, defined as another variable (a preset class's `--x: var(--wp--custom--y)`):
                     # the value is only as defined as that variable is
                     todo += re.findall(r'var\(\s*(--[\w-]+)', custom[v] or '')
-                elif v not in known:
+                elif with_known or v not in known:
                     out.add(v)
     return out
 
@@ -415,15 +434,31 @@ def selector_pseudo(sel: str):
     return m[-1].group(1) if m and m[-1].end() == len(sel.strip()) else None
 
 
-def script_holds(run, short: str, selectors, held) -> set:
+def printed_by_server(run, pairs, tok: dict) -> bool:
+    """Whether any render of the entry's pairs already carries the token (the class in a class attribute, the attribute on a
+    tag): the server prints it, so which page has it is the setting's doing and is read as rendered, never held."""
+    if tok['kind'] == 'class':
+        pat = re.compile(r'\bclass\s*=\s*["\'][^"\']*(?<![\w-])' + re.escape(tok['name']) + r'(?![\w-])')
+    else:
+        pat = re.compile(r'<[a-zA-Z][^<>]*\s' + re.escape(tok['name']) + r'(?:\s*=|[\s/>])')
+    for b, c in pairs:
+        for j in (b, c):
+            if pat.search((run['results'].get(j) or {}).get('html', '')):
+                return True
+    return False
+
+
+def script_holds(run, short: str, selectors, held, pairs=()) -> set:
     """The `held` entries that make each token a front-end script sets (scriptsets.py) true for these rules: a class or
     attribute the rule waits on that some script writes is put on the elements the script puts it on (its landing selector),
     or, with no landing, held as a state (a class token the rule's selector then reads as always there). A token the entry's
-    own state already holds is left to that state."""
+    own state already holds is left to that state. A token the server already prints in a render of the entry's pairs is
+    never held: the script toggles it, but the server decides it here (hideWhenEmpty prints `sgs-cart--hidden-empty`,
+    which view.js also toggles), and holding it on both pages would erase the setting's own difference."""
     out = set()
     toks = SS.scan(tuple((r, t) for r, t in corpus(str(run['plugin'])) if r.endswith(('.php', '.js', '.mjs'))))
     for tok in SS.needed_by(selectors, toks):
-        if f'.{tok["name"]}' in held:
+        if f'.{tok["name"]}' in held or printed_by_server(run, pairs, tok):
             continue
         if tok['landing']:
             out.add(script_hold(tok))
@@ -508,7 +543,7 @@ def prove(short: str, run: dict):
         pairs = sorted(run['pairs'].get(k, ()))
         selectors = run['selectors'].get(k, ())
         held = {state} if state else set()
-        held |= script_holds(run, short, selectors, held)
+        held |= script_holds(run, short, selectors, held, pairs)
         conds = conditions_of(tiers)
         widths = sorted(R.tier_widths(tiers) or WIDTHS)
         verdict, evidence, kind, cause, refile = None, None, None, None, set()
@@ -568,14 +603,17 @@ def prove(short: str, run: dict):
                 elif refile:
                     verdict, evidence = 'refiled', sorted(refile)
                 else:
-                    theme = set()
+                    theme, undefined = set(), set()
                     for b, c in pairs:
                         for j in (b, c):
                             pg = pages.get(j, held, conds)
                             for el, pse in pg.elements(part)[:1]:
                                 for w in widths:
                                     theme |= outside_vars(pg, el, pse, names, w, conds, pages.known)
-                    token = token_test(pages, pairs, part, names, widths, held, conds, theme) if theme else ''
+                                    undefined |= outside_vars(pg, el, pse, names, w, conds, pages.known, with_known=True)
+                    # every property read and undefined here gets a placeholder, the block's own included: the setting may
+                    # switch whether a token another setting defines is read
+                    token = token_test(pages, pairs, part, names, widths, held, conds, theme | undefined) if (theme or undefined) else ''
                     scripted = script_set_tokens(run['plugin'], theme) if theme and not token else []
                     if theme and not token and not scripted:
                         # the value comes from a token no page here defines, and the setting does not switch which one is
@@ -877,12 +915,26 @@ def declared_text(page, el, pse, name, width, conds):
 
 def other_value_tried(run, setting, pairs) -> bool:
     """Whether the proof has seen the setting at a value other than the first test value: a true/false setting (both values
-    are its plain and changed render), another test value's pair (sibling_pairs), or a second value second_value rendered.
+    are its plain and changed render), pairs of its own that change it to two different values (a two-choice setting tried
+    each way), another test value's pair (sibling_pairs), or a second value second_value rendered.
     A setting tried at one value only may restate the block's own value by coincidence (a font weight of 700 over the
     block's 700), so its entry is never removed as restating."""
     if _is_bool(run, setting) or sibling_pairs(run, setting, pairs):
         return True
+    changed = {json.dumps(run['jobs'][c].get(setting), sort_keys=True, default=str) for _, c in pairs}
+    if len(changed) > 1:
+        return True
     return any(second_values(run, setting, run['jobs'][b], run['jobs'][c]) for b, c in pairs[:2])
+
+
+def declared_longhand(page, el, pse, name, width, conds):
+    """The text the winning declaration gives one longhand, var() left as written: `border: 1px solid var(--edge)` gives
+    border-bottom-style `solid` and border-bottom-color `var(--edge)`. None when nothing is declared."""
+    d = declared_text(page, el, pse, name, width, conds)
+    if d is None:
+        return None
+    prop, value = d
+    return value if prop == name else CP.expand(prop, value).get(name, value)
 
 
 def restated_value(pages, pairs, part, names, widths, held, conds) -> str:
@@ -906,10 +958,11 @@ def restated_value(pages, pairs, part, names, widths, held, conds) -> str:
                         return ''
                     if rb.get(name) is None:
                         continue
-                    # a value read through var() is judged by the declaration's own text: the two rules reading different
-                    # properties give one value only because of the tokens defined here (a theme's, a page's), which a site
-                    # can define otherwise
-                    db, dc = declared_text(pb, xb, pse, name, w, conds), declared_text(pc, xc, pse, name, w, conds)
+                    # a value read through var() is judged by the declaration's own text for this longhand: two rules reading
+                    # different tokens give one value only because of the tokens defined here (a theme's, a page's), which a
+                    # site can define otherwise. A shorthand's other parts do not count: `border: 1px solid var(--edge)` and
+                    # `border-style: solid` give the same style whatever --edge holds.
+                    db, dc = declared_longhand(pb, xb, pse, name, w, conds), declared_longhand(pc, xc, pse, name, w, conds)
                     if db != dc and 'var(' in f'{db}{dc}':
                         return ''
                     seen += 1
