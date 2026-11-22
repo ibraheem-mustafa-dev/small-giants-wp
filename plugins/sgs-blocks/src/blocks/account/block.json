@@ -609,7 +609,10 @@
 						"clusters": [
 							"text"
 						],
-						"prefix": "authHeading"
+						"prefix": "authHeading",
+						"attrMap": {
+							"css:margin": "authPanelHeadingMargin"
+						}
 					},
 					"loginRememberText": {
 						"selector": ".woocommerce-form-login__rememberme",
@@ -619,7 +622,11 @@
 						"clusters": [
 							"text"
 						],
-						"prefix": "loginRememberText"
+						"prefix": "loginRememberText",
+						"attrMap": {
+							"css:min-height": "loginRememberMinHeight",
+							"css:gap": "loginRememberGap"
+						}
 					},
 					"lostPasswordRow": {
 						"selector": ".woocommerce-form-login .lost_password",
@@ -653,7 +660,10 @@
 						"clusters": [
 							"text"
 						],
-						"prefix": "resetErrorLine"
+						"prefix": "resetErrorLine",
+						"attrMap": {
+							"css:margin": "resetErrorMargin"
+						}
 					},
 					"resetNoticeText": {
 						"selector": ":has(form.lost_reset_password) .woocommerce-error",
@@ -663,7 +673,12 @@
 						"clusters": [
 							"text"
 						],
-						"prefix": "resetNoticeText"
+						"prefix": "resetNoticeText",
+						"attrMap": {
+							"css:border-width": "resetNoticeBorderWidth",
+							"css:padding": "resetNoticePadding",
+							"css:margin": "resetNoticeMargin"
+						}
 					},
 					"addressSaveButton": {
 						"selector": ".sgs-account__wc form[method=\"post\"] button[name=\"save_address\"]",
@@ -673,7 +688,11 @@
 						"clusters": [
 							"text"
 						],
-						"prefix": "addressSaveButton"
+						"prefix": "addressSaveButton",
+						"attrMap": {
+							"css:min-height": "saveAddressMinHeight",
+							"css:padding": "saveAddressPadding"
+						}
 					},
 					"addressEditLink": {
 						"selector": ".woocommerce-Address-title a.edit",
@@ -683,7 +702,11 @@
 						"clusters": [
 							"text"
 						],
-						"prefix": "addressEditLink"
+						"prefix": "addressEditLink",
+						"attrMap": {
+							"css:border-width": "addressEditRuleWidth",
+							"css:margin": "addressEditMargin"
+						}
 					},
 					"addressText": {
 						"selector": ".woocommerce-Address address",
@@ -703,7 +726,11 @@
 						"clusters": [
 							"text"
 						],
-						"prefix": "orderDetailBackLink"
+						"prefix": "orderDetailBackLink",
+						"attrMap": {
+							"css:min-height": "orderDetailBackMinHeight",
+							"css:gap": "orderDetailBackGap"
+						}
 					},
 					"orderDetailPlacedLine": {
 						"selector": ".sgs-account__od-placed",
@@ -991,7 +1018,10 @@
 						],
 						"prefix": "accountSection",
 						"attrMap": {
-							"css:color": "accountSectionColour"
+							"css:color": "accountSectionColour",
+							"css:padding": "accountLegendPadding",
+							"css:margin": "accountLegendMargin",
+							"css:border-top-width": "accountLegendRuleWidth"
 						}
 					},
 					"accountSectionRule": {
@@ -1003,7 +1033,11 @@
 							"layout"
 						],
 						"attrMap": {
-							"css:border-color": "accountSectionRuleColour"
+							"css:border-color": "accountSectionRuleColour",
+							"css:border-width": "accountFieldsetBorderWidth",
+							"css:margin": "accountFieldsetMargin",
+							"css:padding": "accountFieldsetPadding",
+							"css:gap": "accountFieldsetGap"
 						}
 					},
 					"accountPasswordHelperText": {
@@ -1016,7 +1050,8 @@
 						],
 						"prefix": "accountPasswordHelperType",
 						"attrMap": {
-							"css:color": "accountPasswordHelperColour"
+							"css:color": "accountPasswordHelperColour",
+							"css:margin": "accountPasswordHelperMargin"
 						}
 					},
 					"accountSave": {
@@ -1128,7 +1163,8 @@
 							"layout"
 						],
 						"attrMap": {
-							"css:grid-template-columns": "loginLinkPlacement"
+							"css:grid-template-columns": "loginLinkPlacement",
+							"css:row-gap": "loginFormRowGap"
 						},
 						"layer": "OUTER"
 					},
@@ -1322,6 +1358,324 @@
 							"css:margin-bottom": "loginRowMarginBottom"
 						},
 						"_note": "The sign-in form rows, remember-me line and forgotten-password line: the space below each."
+					},
+					"headerAccountEyebrow": {
+						"selector": ".sgs-account__header--account .sgs-account__header-eyebrow",
+						"motion": false,
+						"label": "Signed-in page header eyebrow",
+						"order": 123,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-bottom": "headerAccountEyebrowMarginBottom"
+						},
+						"_note": "The eyebrow line of the signed-in page header: the space below it."
+					},
+					"signInHeader": {
+						"selector": ".sgs-account__header--signin",
+						"motion": false,
+						"label": "Sign-in page header",
+						"order": 124,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-bottom": "headerSignInMarginBottom"
+						},
+						"_note": "The sign-in page header: the space below it."
+					},
+					"headerReset": {
+						"selector": ":has(form.lost_reset_password) .sgs-account__header",
+						"motion": false,
+						"label": "Reset-password page header",
+						"order": 125,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-bottom": "headerResetMarginBottom"
+						},
+						"_note": "The page header while the reset-password form shows: the space below it."
+					},
+					"headerAccountTitle": {
+						"selector": ".sgs-account__header--account .sgs-account__header-title",
+						"motion": false,
+						"label": "Signed-in page header title",
+						"order": 126,
+						"clusters": [ "text" ],
+						"attrMap": {
+							"css:line-height": "headerAccountTitleLineHeight"
+						},
+						"_note": "The signed-in page header title: its line height."
+					},
+					"registerHint": {
+						"selector": ".sgs-account__register-hint",
+						"motion": false,
+						"label": "Create-account hint",
+						"order": 127,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-top": "registerHintMarginTop"
+						},
+						"_note": "The hint line under the create-account form: the space above it."
+					},
+					"mobileHint": {
+						"selector": ".sgs-account__mobile-hint",
+						"motion": false,
+						"label": "Mobile-number hint",
+						"order": 128,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin": "mobileHintMargin"
+						},
+						"_note": "The hint line under the mobile-number field: its margin."
+					},
+					"authPair": {
+						"selector": ".sgs-account__wc > #customer_login.u-columns.col2-set",
+						"motion": false,
+						"label": "Sign-in and create-account pair",
+						"order": 129,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:gap": "authPairGap",
+							"css:border-width": "authPairBorderWidth"
+						},
+						"_note": "The frame holding the sign-in and create-account forms side by side: the gap between them and its border width."
+					},
+					"authPairCell": {
+						"selector": ".sgs-account__wc > #customer_login.u-columns.col2-set > div",
+						"motion": false,
+						"label": "Sign-in or create-account panel",
+						"order": 130,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:padding": "authPairCellPadding",
+							"css:border-width": "authPairCellBorderWidth",
+							"css:border-radius": "authPairCellRadius"
+						},
+						"_note": "Each panel of the sign-in and create-account pair: padding, border width and radius."
+					},
+					"authForm": {
+						"selector": "#customer_login form",
+						"motion": false,
+						"label": "Sign-in and create-account forms",
+						"order": 131,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:row-gap": "authFormRowGap"
+						},
+						"_note": "Both forms of the sign-in view: the gap between their rows."
+					},
+					"rememberCheckbox": {
+						"selector": ".woocommerce-form-login__rememberme input[type=\"checkbox\"]",
+						"motion": false,
+						"label": "Remember-me tick box",
+						"order": 132,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:width": "rememberCheckboxSize",
+							"css:height": "rememberCheckboxSize"
+						},
+						"_note": "The remember-me tick box: its size."
+					},
+					"privacyLink": {
+						"selector": ".woocommerce-privacy-policy-text a",
+						"motion": false,
+						"label": "Privacy policy link",
+						"order": 133,
+						"clusters": [ "text" ],
+						"attrMap": {
+							"css:text-decoration": "privacyLinkTextDecoration"
+						},
+						"_note": "The link inside the privacy policy line: underline or none."
+					},
+					"resetView": {
+						"selector": ":has(form.lost_reset_password.woocommerce-ResetPassword)",
+						"motion": false,
+						"label": "Reset-password view",
+						"order": 134,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:max-width": "resetFormMaxWidth"
+						},
+						"_note": "The block while the reset-password form shows: its maximum width."
+					},
+					"resetForm": {
+						"selector": ".sgs-account__wc > form.lost_reset_password.woocommerce-ResetPassword",
+						"motion": false,
+						"label": "Reset-password form",
+						"order": 135,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:border-width": "resetFormBorderWidth",
+							"css:border-radius": "resetFormRadius",
+							"css:padding": "resetFormPadding",
+							"css:gap": "resetFormGap"
+						},
+						"_note": "The reset-password form frame: border width, radius, padding and the gap between its rows."
+					},
+					"resetIntro": {
+						"selector": "form.lost_reset_password > p:not(.form-row):not(.sgs-account__reset-error)",
+						"motion": false,
+						"label": "Reset-password intro line",
+						"order": 136,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:display": "resetHideIntro"
+						},
+						"_note": "The intro line above the reset-password fields: hidden when the setting is on."
+					},
+					"resetRow": {
+						"selector": "form.lost_reset_password .form-row",
+						"motion": false,
+						"label": "Reset-password form row",
+						"order": 137,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin": "resetRowMargin",
+							"css:padding": "resetRowPadding"
+						},
+						"_note": "Each row of the reset-password form: margin and padding."
+					},
+					"resetNoticeItem": {
+						"selector": ":has(form.lost_reset_password) .woocommerce-error li",
+						"motion": false,
+						"label": "Reset-password notice line",
+						"order": 138,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:padding": "resetNoticeItemPadding"
+						},
+						"_note": "Each line of the reset-password error notice: its padding."
+					},
+					"addressActions": {
+						"selector": ".sgs-account__addr-actions",
+						"motion": false,
+						"label": "Address editor actions",
+						"order": 139,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-top": "addressActionsMarginTop"
+						},
+						"_note": "The Save and Cancel row of the address editor: the space above it."
+					},
+					"orderChatLink": {
+						"selector": ".sgs-account__od-chat",
+						"motion": false,
+						"label": "Order page chat link",
+						"order": 140,
+						"clusters": [ "text" ],
+						"attrMap": {
+							"css:text-decoration": "orderDetailChatUnderline"
+						},
+						"_note": "The chat link on the order page: underline or none."
+					},
+					"orderDetailBoxTitle": {
+						"selector": ".sgs-account__od-box-title",
+						"motion": false,
+						"label": "Order page box title",
+						"order": 141,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-bottom": "orderDetailBoxTitleMarginBottom"
+						},
+						"_note": "The title of each order page box: the space below it."
+					},
+					"orderDetailLastBoxTitle": {
+						"selector": ".sgs-account__od-box:last-child .sgs-account__od-box-title",
+						"motion": false,
+						"label": "Order page last box title",
+						"order": 142,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-bottom": "orderDetailLastBoxTitleMarginBottom"
+						},
+						"_note": "The title of the last order page box: the space below it."
+					},
+					"orderTotalRow": {
+						"selector": ".sgs-account__od-row--total",
+						"motion": false,
+						"label": "Order page total row",
+						"order": 143,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:padding-top": "orderDetailTotalRowPaddingTop",
+							"css:margin-top": "orderDetailTotalRowMarginTop",
+							"css:border-top-width": "orderDetailTotalRowRuleWidth"
+						},
+						"_note": "The total row of the order page: padding and margin above it and its top rule width."
+					},
+					"orderDetailTitle": {
+						"selector": ".sgs-account__od-title",
+						"motion": false,
+						"label": "Order page title",
+						"order": 144,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-bottom": "orderDetailTitleMarginBottom"
+						},
+						"_note": "The order page title: the space below it."
+					},
+					"orderDetailItemMeta": {
+						"selector": ".sgs-account__od-item-meta",
+						"motion": false,
+						"label": "Order page item meta line",
+						"order": 145,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-top": "orderDetailItemMetaMarginTop"
+						},
+						"_note": "The meta line under each order item: the space above it."
+					},
+					"orderListRow": {
+						"selector": ".sgs-account__order",
+						"motion": false,
+						"label": "Order list row link",
+						"order": 146,
+						"clusters": [ "text" ],
+						"attrMap": {
+							"css:text-decoration": "ordersRowTextDecoration"
+						},
+						"_note": "A row of the order list: underline or none on the row and its words."
+					},
+					"tabHeading": {
+						"selector": ".sgs-account__tab-heading",
+						"motion": false,
+						"label": "Tab heading",
+						"order": 147,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:margin-bottom": "tabHeadingMarginBottom"
+						},
+						"_note": "The heading at the top of a tab: the space below it."
+					},
+					"accountRoot": {
+						"selector": ".sgs-account",
+						"motion": false,
+						"label": "Account block",
+						"order": 148,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:max-width": "contentMaxWidth"
+						},
+						"_note": "The whole account block: its maximum width."
+					},
+					"accountSidebarLayout": {
+						"selector": ".sgs-account--desktop-sidebar .sgs-account__wc:has(> nav.woocommerce-MyAccount-navigation)",
+						"motion": false,
+						"label": "Account sidebar layout",
+						"order": 149,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:grid-template-columns": "navWidth"
+						},
+						"_note": "The desktop layout with the menu beside the page: the width of the menu column."
+					},
+					"signedOutFrame": {
+						"selector": ":not(:has(nav.woocommerce-MyAccount-navigation))",
+						"motion": false,
+						"label": "Signed-out view",
+						"order": 150,
+						"clusters": [ "layout" ],
+						"attrMap": {
+							"css:max-width": "signedOutMaxWidth"
+						},
+						"_note": "The block while no account menu shows: its maximum width."
 					}
 				},
 				"spacingDefaults": {
