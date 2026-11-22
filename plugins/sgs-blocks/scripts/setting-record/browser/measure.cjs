@@ -65,17 +65,17 @@ async function putFormOnScreen( page ) {
 // The menu's submenu: the visitor points at (or clicks) the first item that opens a panel, and mega-disclosure.js sizes the
 // hover bridge under it (--sgs-mm-bridge-h). Below the collapse point the bar is folded into the burger and no item is on
 // screen: nothing is opened there, so the bridge is read closed on both pages alike.
-async function putNavOnScreen( page ) {
+async function putNavOnScreen( page, within = '' ) {
 	await page.locator( SCOPE[ 'nav-bar-menu' ] ).first().waitFor( { state: 'attached', timeout: 15000 } );
-	const trigger = page.locator( `${ SCOPE[ 'nav-bar-menu' ] } .sgs-nav-bar-menu__bar [data-sgs-mega-trigger]` ).first();
+	const sel = `${ SCOPE[ 'nav-bar-menu' ] } .sgs-nav-bar-menu__bar ${ within ? '.' + within + ' ' : '' }[data-sgs-mega-trigger]`;
+	const trigger = page.locator( sel ).first();
 	if ( ! ( await trigger.count() ) || ! ( await trigger.isVisible() ) ) { await settle( page, 800 ); return; }
 	if ( 'true' !== ( await trigger.getAttribute( 'aria-expanded' ) ) ) {
 		await trigger.hover( { timeout: 5000 } ).catch( () => {} );
 		await page.waitForTimeout( 400 );
 		if ( 'true' !== ( await trigger.getAttribute( 'aria-expanded' ) ) ) { await trigger.click( { timeout: 5000 } ).catch( () => {} ); }
 	}
-	await page.waitForFunction( ( sel ) => { const t = document.querySelector( sel ); return t && 'true' === t.getAttribute( 'aria-expanded' ); },
-		`${ SCOPE[ 'nav-bar-menu' ] } .sgs-nav-bar-menu__bar [data-sgs-mega-trigger]`, { timeout: 5000 } );
+	await page.waitForFunction( ( s ) => { const t = document.querySelector( s ); return t && 'true' === t.getAttribute( 'aria-expanded' ); }, sel, { timeout: 5000 } );
 	await settle( page, 1500 );
 	await page.waitForTimeout( 300 );
 }
@@ -103,6 +103,8 @@ async function readProbe( page, cdp, kind, probe ) {
 			return { n: out.length, shown: out.length > 0, els: out };
 		}, { scope: SCOPE[ kind ], props: probe.props } );
 	}
+	// a submenu entry held `open` is read with the panel of the probed item itself open (its own trigger), not the first one
+	if ( 'nav-bar-menu' === kind && 'open' === probe.state ) { await putNavOnScreen( page, probe.part ); }
 	const selector = `${ SCOPE[ kind ] } .${ probe.part }`;
 	let nodeIds = [];
 	// hover and focus are forced; any other state (a submenu `open`) is the one the page was put in (putNavOnScreen)
