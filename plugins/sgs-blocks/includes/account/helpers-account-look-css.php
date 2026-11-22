@@ -162,7 +162,22 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 		if ( ! empty( $attributes['ordersLook'] ) || $row_list ) {
 			$table = $row_list ? $root_sel . ' .sgs-account__orders-list' : $root_sel . '.sgs-account--orders-rows table.woocommerce-orders-table';
 			$row   = $row_list ? $table . ' .sgs-account__order' : $table . ' .woocommerce-orders-table__row';
-			$line  = sgs_colour_value( (string) ( $attributes['ordersRowBorderColour'] ?? '' ) );
+			// The rows' border colour, read only through the shared border helper: each row's own frame
+			// (ordersRowBorderWidth, a box or one per device, and ordersRowBorderStyle), and as a fact the colour that
+			// paints the hairlines between joined rows.
+			$row_border = sgs_border_element_decls(
+				$attributes,
+				'ordersRow',
+				$row,
+				array(
+					'colour'         => array( 'base' => 'ordersRowBorderColour' ),
+					'colour_default' => 'var(--wp--preset--color--border, #e2e2e2)',
+					'radius'         => false,
+					'facts'          => true,
+				)
+			);
+			$paint      = (string) ( $row_border['facts']['paint'] ?? '' );
+			$line       = 0 === strpos( $paint, 'background-color:' ) ? substr( $paint, strlen( 'background-color:' ) ) : '';
 			if ( '' !== $line ) {
 				$css[] = ( $row_list ? $table : $table . ' tbody' ) . '{background-color:' . $line . ';border-color:' . $line . ';}';
 			}
@@ -193,19 +208,7 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 				'sgs/account'
 			);
 			$css[]      = $row_shadow['normal'] ? $row . '{' . implode( ';', $row_shadow['normal'] ) . ';}' : '';
-			// Each row's own frame: ordersRowBorderWidth (a box, or one per device) and ordersRowBorderStyle, in the rows'
-			// border colour (else the theme's border colour).
 			$frame      = '' !== $line ? $line : 'var(--wp--preset--color--border, #e2e2e2)';
-			$row_border = sgs_border_element_decls(
-				$attributes,
-				'ordersRow',
-				$row,
-				array(
-					'colour'         => array( 'base' => 'ordersRowBorderColour' ),
-					'colour_default' => $frame,
-					'radius'         => false,
-				)
-			);
 			// A frame is a width (or the style none) the setting holds; the colour alone paints the hairlines, not a frame.
 			$has_frame  = array() !== preg_grep( '/^border-(?:width|style)\b/', array_merge( $row_border['base'], $row_border['tablet'], $row_border['mobile'] ) ) || array() !== $row_border['rules'];
 			if ( $has_frame ) {

@@ -66,7 +66,7 @@
     },
     "parts": {
       "_comment": "Every BEM part with a literal look and no setting, keyed file::symbol::part.",
-      "ceiling": 265,
+      "ceiling": 264,
       "entries": {
         "plugins/sgs-blocks/src/blocks/accordion/style.css::(file)::chevron": 1,
         "plugins/sgs-blocks/src/blocks/accordion/style.css::(file)::icon-close": 1,
@@ -89,7 +89,6 @@
         "plugins/sgs-blocks/src/blocks/account/style.css::(file)::od-status": 1,
         "plugins/sgs-blocks/src/blocks/account/style.css::(file)::od-step": 1,
         "plugins/sgs-blocks/src/blocks/account/style.css::(file)::od-step-bar": 1,
-        "plugins/sgs-blocks/src/blocks/account/style.css::(file)::orders-list": 1,
         "plugins/sgs-blocks/src/blocks/account/style.css::(file)::row": 1,
         "plugins/sgs-blocks/src/blocks/account/style.css::(file)::tab-count": 1,
         "plugins/sgs-blocks/src/blocks/audio/style.css::(file)::glow": 1,
