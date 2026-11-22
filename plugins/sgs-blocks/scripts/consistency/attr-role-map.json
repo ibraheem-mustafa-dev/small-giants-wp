@@ -2,7 +2,7 @@
   "_meta": {
     "generated_from": "sgs-framework.db",
     "regenerate_with": "python plugins/sgs-blocks/scripts/generate-attr-role-map.py",
-    "row_count": 14433,
+    "row_count": 14434,
     "source_table": "block_attributes (role) joined to blocks (block_slug)"
   },
   "roles": {
@@ -1121,6 +1121,7 @@
     "sgs/account::hiddenEndpoints": null,
     "sgs/account::hideRememberMe": "boolean-visibility",
     "sgs/account::hideRequiredMarks": "boolean-visibility",
+    "sgs/account::hideUnofferedTabs": "behaviour",
     "sgs/account::labelColour": "color",
     "sgs/account::labelFontFamily": "typography",
     "sgs/account::labelFontSize": "typography",
