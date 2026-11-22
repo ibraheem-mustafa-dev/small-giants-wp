@@ -2773,15 +2773,6 @@
     },
     {
       "slug": "sgs/account",
-      "attr": "ordersRowBorderColour",
-      "fields": {
-        "css_property": "border-color",
-        "role": "color",
-        "css_element": "ordersRows"
-      }
-    },
-    {
-      "slug": "sgs/account",
       "attr": "ordersRowBorderStyle",
       "fields": {
         "css_property": "border-style",
@@ -2794,15 +2785,6 @@
       "fields": {
         "css_property": "border-width",
         "css_element": "ordersRows"
-      }
-    },
-    {
-      "slug": "sgs/account",
-      "attr": "ordersRowGap",
-      "fields": {
-        "css_property": "gap",
-        "css_layer": "GRID",
-        "css_element": "ordersRowsList"
       }
     },
     {
@@ -9165,7 +9147,7 @@
       "attr": "itemQtyFontWeight",
       "fields": {
         "css_property": "font-weight",
-        "css_element": "item-stepper"
+        "css_element": "itemQty"
       }
     },
     {
@@ -27389,15 +27371,6 @@
     },
     {
       "slug": "sgs/process-steps",
-      "attr": "numberGap",
-      "fields": {
-        "css_property": "gap",
-        "css_layer": "GRID",
-        "css_element": "step"
-      }
-    },
-    {
-      "slug": "sgs/process-steps",
       "attr": "numberLetterSpacing",
       "fields": {
         "css_property": "letter-spacing",
@@ -38573,6 +38546,24 @@
         "css_property": "background-color",
         "role": "color",
         "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "ordersRowsList"
       }
     },
     {
@@ -50242,6 +50233,15 @@
         "css_property": "color-gradient",
         "css_element": "number",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "step"
       }
     },
     {
