@@ -773,10 +773,10 @@ dialog.sgs-shop-filters {
    `display`, and the panel is an sgs/container: `.sgs-container--stack`, its
    per-instance scope rule (one class, or two in the compound form) and WordPress's
    `is-layout-flex` / `is-layout-grid` all made the closed dialog a flex or grid
-   box, which the sheet's `translate` (8d) only moved out of sight: at 375px it
+   box, which the sheet's `translate` (shop-filters-drawer.css, 8d) only moved out of sight: at 375px it
    kept a 1,790px blank band in the page. The id outranks every layout rule.
    Closing the sheet still slides it out: `display` transitions with
-   `allow-discrete` (8d), so the sheet stays painted until the slide ends. */
+   `allow-discrete` (shop-filters-drawer.css, 8d), so the sheet stays painted until the slide ends. */
 dialog#sgs-shop-filters:not([open]),
 dialog.sgs-shop-filters:not([open]) {
 	display: none;

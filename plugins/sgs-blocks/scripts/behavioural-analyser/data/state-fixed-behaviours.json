@@ -2932,12 +2932,12 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
    "selector": "body.is-enhanced .sgs-shop-filters__toggle:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
    "selector": "body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -2972,7 +2972,7 @@
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
    "selector": "dialog#sgs-shop-filters:modal",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
@@ -2982,22 +2982,22 @@
    "reason": "each filter group fades in over the duration-fast token as the drawer opens (the draft's group fade); the groups are built in the browser around WooCommerce filter blocks, which take no motion settings"
   },
   {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
    "selector": "dialog.sgs-shop-filters:modal .sgs-shop-filters__scroll",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
    "selector": "dialog.sgs-shop-filters:modal .sgs-shop-filters__sheet-footer",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
    "selector": "dialog.sgs-shop-filters[open]",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },
   {
-   "file": "theme/sgs-theme/assets/css/woocommerce.css",
+   "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
    "selector": "dialog.sgs-shop-filters[open]::backdrop",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },

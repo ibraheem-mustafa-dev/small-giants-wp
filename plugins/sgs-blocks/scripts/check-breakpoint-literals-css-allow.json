@@ -46,6 +46,16 @@
       "reason": "WordPress core's columns stacking band (600-781px), matched on purpose for core/columns"
     },
     {
+      "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
+      "condition": "max-width:781.98px",
+      "reason": "the shop filter drawer breakpoint's default (782, WordPress core's mobile edge); not a device tier: inc/shop-filters-drawer-css.php::shop_filter_drawer_css rewrites it from sgs_shop_filter_drawer_breakpoint when a site sets one"
+    },
+    {
+      "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
+      "condition": "min-width:782px",
+      "reason": "the shop filter drawer breakpoint's default (782, WordPress core's mobile edge); not a device tier: inc/shop-filters-drawer-css.php::shop_filter_drawer_css rewrites it from sgs_shop_filter_drawer_breakpoint when a site sets one"
+    },
+    {
       "file": "theme/sgs-theme/assets/css/shop-load-more.css",
       "condition": "max-width:781.98px",
       "reason": "WordPress core's 782px mobile edge (shop filters), matched on purpose"
@@ -64,16 +74,6 @@
       "file": "theme/sgs-theme/assets/css/woocommerce.css",
       "condition": "max-width:481px",
       "reason": "small-phone refinement edge (paired with the 480px rule)"
-    },
-    {
-      "file": "theme/sgs-theme/assets/css/woocommerce.css",
-      "condition": "max-width:781.98px",
-      "reason": "WordPress core's 782px mobile edge (shop filters), matched on purpose"
-    },
-    {
-      "file": "theme/sgs-theme/assets/css/woocommerce.css",
-      "condition": "min-width:782px",
-      "reason": "WordPress core's 782px mobile edge, matched on purpose"
     }
   ]
 }

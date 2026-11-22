@@ -1,10 +1,13 @@
 /**
  * SGS Shop Filter Drawer — Native <dialog> Bottom Sheet (Mobile) / In-Flow Sidebar (Desktop)
  *
- * Behaviour:
- *   Desktop (≥782px): the filters block is a static, always-open, NON-MODAL
- *                      <dialog open> — renders in-flow as today's sticky sidebar.
- *   Mobile (<782px):   the filters block is a CLOSED <dialog> (no `open` attr,
+ * Behaviour (the breakpoint is `sgsShopFilters.breakpoint`, the Customizer's
+ * Shop Filters > Drawer breakpoint, 782px by default; the drawer CSS switches at
+ * the same width, inc/shop-filters-drawer-css.php):
+ *   From the breakpoint up: the filters block is a static, always-open,
+ *                      NON-MODAL <dialog open> — renders in-flow as today's
+ *                      sticky sidebar.
+ *   Below it:          the filters block is a CLOSED <dialog> (no `open` attr,
  *                      so `display:none` by woocommerce.css — zero tabbable
  *                      descendants by construction). The toggle button and a
  *                      scroll-triggered sticky trigger open it via
