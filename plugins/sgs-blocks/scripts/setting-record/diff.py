@@ -254,6 +254,41 @@ def compiled_scss(plugin: Path, f: Path) -> Path:
     return out
 
 
+def node_env(plugin: Path) -> dict:
+    """The environment a Node helper needs to find the plugin's own packages (postcss): $SGS_NODE_PATH, else the
+    plugin's node_modules; neither present raises."""
+    import os
+    nm = os.environ.get('SGS_NODE_PATH') or str(plugin / 'node_modules')
+    if not (Path(nm) / 'postcss').is_dir():
+        raise RuntimeError(f"no postcss for the build's CSS rewrites: set SGS_NODE_PATH or install the plugin's node_modules ({nm})")
+    return {**os.environ, 'NODE_PATH': nm}
+
+
+def shipped_css(plugin: Path, f: Path, block_json: Path) -> Path:
+    """The stylesheet as the build ships it (shipped-css.js: shadow-lift, hover-guard, shadow-fallback, the postbuild
+    order), cached by its text, the theme's shadow settings and the rewriting code; the source file is remembered."""
+    import hashlib
+    import subprocess
+    import render as RN
+    here = Path(__file__).resolve().parent
+    theme = plugin.resolve().parents[1] / 'theme' / 'sgs-theme' / 'theme.json'
+    code = [here / 'shipped-css.js'] + [plugin / 'scripts' / d / 'transform.js' for d in ('shadow-lift', 'hover-guard', 'shadow-fallback')]
+    h = hashlib.md5(f.read_bytes())
+    for x in [theme, block_json, *code]:
+        h.update(x.read_bytes() if x.is_file() else b'')
+    out = RN.CACHE_ROOT / 'shipped' / f'{h.hexdigest()}.css'
+    SOURCE_OF[out] = SOURCE_OF.get(f, f)
+    if out.is_file():
+        return out
+    out.parent.mkdir(parents=True, exist_ok=True)
+    p = subprocess.run(['node', str(here / 'shipped-css.js'), str(f), str(block_json) if block_json.is_file() else ''],
+                       capture_output=True, text=True, encoding='utf-8', errors='replace', env=node_env(plugin))
+    if p.returncode != 0:
+        raise RuntimeError(f'the build rewrites failed on {f}: {p.stderr.strip()[:300]}')
+    out.write_text(p.stdout, encoding='utf-8')
+    return out
+
+
 def sheet_files(plugin: Path, short: str, children) -> list:
     """The front-end stylesheets a render of the block loads: its own and its rendered children's, those of any block a
     child belongs in (block.json parent / ancestor), src/shared and assets/css."""
@@ -270,8 +305,10 @@ def sheet_files(plugin: Path, short: str, children) -> list:
         if d.is_dir():
             css = [f for f in d.rglob('*.css') if 'editor' not in f.name]
             # a block whose stylesheet is written in Sass (style.scss, no style.css) is read from its compiled CSS
-            files += css + [compiled_scss(plugin, f) for f in d.rglob('*.scss')
-                            if 'editor' not in f.name and not f.name.startswith('_') and f.with_suffix('.css') not in css]
+            own = css + [compiled_scss(plugin, f) for f in d.rglob('*.scss')
+                         if 'editor' not in f.name and not f.name.startswith('_') and f.with_suffix('.css') not in css]
+            # as it ships: the build rewrites every block stylesheet after webpack (package.json postbuild)
+            files += [shipped_css(plugin, f, d / 'block.json') for f in own]
     files += [f for f in (plugin / 'src' / 'shared').rglob('*.css') if 'editor' not in f.name]
     files += [f for f in (plugin / 'assets' / 'css').glob('*.css') if not EXCLUDED_SHEET.search(f.name)]
     return sorted(set(files))

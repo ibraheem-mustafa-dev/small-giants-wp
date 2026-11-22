@@ -523,6 +523,16 @@ def compare_lists(pb, pc, lb, lc, names, widths) -> list:
     return diffs
 
 
+# The removals that rest on reading the part on the page (the winning declaration, a per-device override sweep, a rule
+# restating the plain value): each needs a drawn element of the part (part_drawn).
+MEASURED_REMOVALS = ('the winning declaration is the same', 'a per-device override tried', 'the setting changes which rule declares')
+
+
+def part_drawn(pages, pairs, part, held, conds) -> bool:
+    """Whether any page of any pair draws an element of the part (not only a selector that matches)."""
+    return any(pages.get(j, held, conds).elements(part) for b, c in pairs for j in (b, c))
+
+
 def scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors) -> dict:
     """Read every (plain, changed) pair of renders for one entry: whether the part is drawn (`seen_part`), whether the
     entry's own rule matches an element in either render (`matched`), the first pair that proves it (`verdict`, `evidence`,
@@ -701,6 +711,12 @@ def prove(short: str, run: dict):
                         # the note reads the last pair whose changed page draws the part (a completion or sibling pair may not)
                         drawn = next((pr for pr in reversed(pairs) if pages.get(pr[1], held, conds).elements(part)), pairs[-1])
                         verdict, evidence = 'removed', 'the winning declaration is the same with and without the setting, also with a second test value: ' + winner_note(pages, drawn, part, names, widths, held, conds)
+        if verdict == 'removed' and str(evidence).startswith(MEASURED_REMOVALS) and not part_drawn(pages, pairs, part, held, conds):
+            # A removal that says it measured the part (nothing on it moves) needs an element of the part on some page; with
+            # none (only a selector matched) nothing was read, so the entry stays, unproven, never removed. Removals that
+            # need no element (a rule a browser never applies, a rule that can match nothing, a class no source prints) stand.
+            verdict, cause = 'blind', 'part-not-rendered'
+            evidence = f'no page draws the part {part} (its rule matched, its element was never found), so the proof read nothing: {evidence}'
         row = {'setting': setting, 'part': part, 'props': props, 'state': state, 'tiers': tiers, 'verdict': verdict, 'evidence': evidence}
         if verdict == 'proved':
             out[k] = {**e, 'kind': kind}

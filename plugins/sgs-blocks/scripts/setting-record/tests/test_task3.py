@@ -239,3 +239,44 @@ def test_only_scripts_a_front_end_entry_reaches_count_as_setting_a_token():
     assert 'src/blocks/cart/panel-preview-style.js' not in reach  # imported only by the editor's PanelPreview.js
     assert PR.script_set_tokens(PLUGIN, {'--sgs-focus-under'}) == []  # written by the cart's editor preview only
     assert PR.script_set_tokens(PLUGIN, {'--sgs-mm-bridge-h'}) == [('--sgs-mm-bridge-h', 'src/shared/nav-interactivity/mega-disclosure.js')]
+
+
+# ---------------------------------------------------------------- no removal without a drawn part
+def test_an_entry_whose_part_no_page_draws_is_never_removed(monkeypatch):
+    import proof as PR
+
+    class Page:
+        def __init__(self, els):
+            self.els = els
+
+        def elements(self, part):
+            return self.els
+
+    class Pages:
+        def __init__(self, els):
+            self.els = els
+
+        def get(self, j, held=(), conds=frozenset()):
+            return Page(self.els)
+
+    assert PR.part_drawn(Pages([]), [('b', 'c')], 'ROOT', (), frozenset()) is False
+    assert PR.part_drawn(Pages([('el', None)]), [('b', 'c')], 'ROOT', (), frozenset()) is True
+    src = (Path(PR.__file__)).read_text(encoding='utf-8')
+    # the guard sits before the verdict is recorded and spares only the dead-CSS removal
+    assert "if verdict == 'removed' and str(evidence).startswith(MEASURED_REMOVALS) and not part_drawn(" in src
+    for fragment in PR.MEASURED_REMOVALS:  # every measured removal's evidence starts with one of these
+        assert f"'removed', '{fragment}" in src or f"'removed', (f'{fragment}" in src
+
+
+# ---------------------------------------------------------------- the stylesheet as it ships
+def test_a_block_stylesheet_is_read_as_the_build_ships_it(tmp_path, monkeypatch):
+    try:
+        D.node_env(PLUGIN)
+    except RuntimeError:
+        pytest.skip('no postcss here (set SGS_NODE_PATH)')
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path)
+    src = tmp_path / 'style.css'
+    src.write_text('.sgs-demo__card { box-shadow: 0 2px 4px rgba(0,0,0,.2); }', encoding='utf-8')
+    shipped = D.shipped_css(PLUGIN, src, tmp_path / 'no-block.json').read_text(encoding='utf-8')
+    assert 'forced-colors' in shipped  # scripts/shadow-fallback adds the high-contrast fallback the source lacks
+    assert D.SOURCE_OF[D.shipped_css(PLUGIN, src, tmp_path / 'no-block.json')] == src
