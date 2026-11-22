@@ -81,6 +81,30 @@ def test_an_override_that_changes_nothing_in_any_combination_is_removed(monkeypa
     assert key not in out and rep['counts']['removed'] == 1
 
 
+def test_must_fail_an_override_whose_winning_rule_changes_but_not_its_value_is_removed(monkeypatch):
+    # Breaks without the sweep's removal: the winning rule is `.sgs-demo__label` plain and `.sgs-demo--m-pill .sgs-demo__label`
+    # with the override on, both `pointer-events: none`; the entry stayed blind as same-value-here although every
+    # combination of the override over the desktop value had been tried.
+    run, key = override_run(monkeypatch)
+    run['entries'][key]['props'] = ['pointer-events']
+
+    class SameValue(OverrideRenderer):
+        @staticmethod
+        def one(a):
+            mobile = a.get('styleMobile') or a.get('style', 'icon')
+            return {'ok': True, 'html': f'<div class="sgs-demo sgs-demo--m-{mobile}"><span class="sgs-demo__label">x</span></div>',
+                    'css': '.sgs-demo__label{pointer-events:none}' + MOBILE + '{.sgs-demo--m-pill .sgs-demo__label{pointer-events:none}}'}
+
+    run['renderer'] = SameValue()
+    plain, changed = run['jobs']['b'], run['jobs']['c']
+    run['results'] = {'b': SameValue.one(plain), 'c': SameValue.one({**changed, 'styleMobile': 'pill'})}
+    run['jobs']['c'] = {**changed, 'styleMobile': 'pill'}
+    run['selectors'] = {key: {'.sgs-demo--m-pill .sgs-demo__label'}}
+    out, rep = PR.prove(SHORT, run)
+    assert key not in out and rep['counts']['removed'] == 1 and rep['counts']['blind'] == 0, rep
+    assert 'combinations' in rep['removed'][0]['evidence'] and 'pointer-events' in rep['removed'][0]['evidence']
+
+
 # ---------------------------------------------------------------- G3: the block inside its fixture's parents
 class ParentRenderer:
     def render(self, slug, attrs, content='', inner=None):
@@ -100,3 +124,14 @@ def test_must_fail_a_rule_scoped_by_the_parent_is_proved_inside_it(monkeypatch):
     run['plan'] = {'fixture': {'parents': [{'name': 'sgs/row', 'attributes': {}}]}}
     out, rep = PR.prove(SHORT, run)
     assert rep['counts']['proved'] == 1 and rep['parents']['names'] == ['sgs/row']
+
+
+# ---------------------------------------------------------------- a setting that removes or replaces the block
+def test_must_fail_a_setting_that_hides_the_block_places_nothing():
+    # Breaks without the rule: every rule of the vanished block was read as changed and placed on every part.
+    import check
+    plain = '<div class="sgs-demo"><span class="sgs-demo__label">x</span></div>'
+    assert check.replaces_block(plain, '', 'demo')
+    assert check.replaces_block(plain, '<div class="sgs-demo sgs-demo--broken-reference">Missing form</div>', 'demo')
+    assert not check.replaces_block(plain, '<div class="sgs-demo sgs-demo--x"><span class="sgs-demo__label">y</span></div>', 'demo')
+    assert not check.replaces_block('<style>.a{}</style>', '', 'demo')

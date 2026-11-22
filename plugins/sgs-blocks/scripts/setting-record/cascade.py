@@ -94,6 +94,85 @@ def split_list(sel: str) -> list:
     return out
 
 
+# @supports is evaluated for one assumed browser: a current Chromium. A `(property: value)` test holds, so the fallback an
+# author writes under `@supports not (background-clip: text)` never applies; the exceptions are properties Chromium does not
+# implement (listed below) and vendor-prefixed ones of another engine (`-moz-`, `-ms-`). `selector()` holds unless it names a
+# `-moz-` or `-ms-` pseudo. This is a stated assumption, not a measurement: it matches the proof's one rendering engine
+# (the browser pass runs Chromium) and is the same for every block.
+_SUPPORTS_NOT_IN_CHROMIUM = {'hanging-punctuation', 'text-size-adjust-none', 'font-smooth', 'initial-letter-wrap'}
+
+
+def supports_holds(prelude: str) -> bool:
+    """Whether an `@supports` condition holds in a current Chromium (see above). `not`, `and`, `or` and parentheses are
+    evaluated; a leaf `(prop: value)` holds unless the property is another engine's or one Chromium lacks; `selector(...)`
+    holds unless it names another engine's pseudo; any other function (`font-tech()`, `font-format()`) holds."""
+    toks = re.findall(r'\(|\)|selector\([^)]*(?:\([^)]*\)[^)]*)*\)|[a-z-]+\([^()]*\)|[^\s()]+', prelude.strip().lower().replace(':', ' : '))
+    pos = 0
+
+    def leaf(text: str) -> bool:
+        text = text.strip()
+        if text.startswith('selector('):
+            return not re.search(r':-(?:moz|ms)-|::-(?:moz|ms)-', text)
+        m = re.match(r'([a-z-]+)\s*:', text.replace(' : ', ':'))
+        if not m:
+            return True
+        prop = m.group(1)
+        return not (prop.startswith(('-moz-', '-ms-', '-o-')) or prop in _SUPPORTS_NOT_IN_CHROMIUM)
+
+    def parse_or():
+        nonlocal pos
+        v = parse_and()
+        while pos < len(toks) and toks[pos] == 'or':
+            pos += 1
+            r = parse_and()
+            v = v or r
+        return v
+
+    def parse_and():
+        nonlocal pos
+        v = parse_not()
+        while pos < len(toks) and toks[pos] == 'and':
+            pos += 1
+            r = parse_not()
+            v = v and r
+        return v
+
+    def parse_not():
+        nonlocal pos
+        if pos < len(toks) and toks[pos] == 'not':
+            pos += 1
+            return not parse_not()
+        return parse_atom()
+
+    def parse_atom():
+        nonlocal pos
+        if pos >= len(toks):
+            return True
+        t = toks[pos]
+        if t == '(':
+            pos += 1
+            # a parenthesised group is a condition when it holds `not`, `and`, `or` or another group, else a property test
+            depth, j = 1, pos
+            while j < len(toks) and depth:
+                depth += {'(': 1, ')': -1}.get(toks[j], 0)
+                j += 1
+            inner = toks[pos:j - 1]
+            if any(x in ('(', 'and', 'or', 'not') for x in inner) and ':' not in inner[:2]:
+                v = parse_or()
+                if pos < len(toks) and toks[pos] == ')':
+                    pos += 1
+                return v
+            pos = j
+            return leaf(' '.join(inner))
+        pos += 1
+        return leaf(t)
+
+    try:
+        return bool(parse_or())
+    except Exception:  # noqa: BLE001 - an unreadable condition is left holding, as before
+        return True
+
+
 def flatten(css: str, origin: int, start: int, layered=False) -> list:
     """Every style rule of a stylesheet as Rule objects (one per selector of a list), with the @media / @container
     preludes it sits in, including an @media nested inside a style rule."""
@@ -114,6 +193,8 @@ def flatten(css: str, origin: int, start: int, layered=False) -> list:
                 pre = tinycss2.serialize(n.prelude).strip()
                 if n.content is None or name in ('font-face', 'keyframes', '-webkit-keyframes', 'page', 'property', 'counter-style', 'font-feature-values', 'view-transition', 'position-try'):
                     continue
+                if name == 'supports' and not supports_holds(pre):
+                    continue  # a condition the assumed browser fails: nothing inside it applies
                 if name == 'media':
                     sub_media = media + (pre,)
                 elif name == 'container':

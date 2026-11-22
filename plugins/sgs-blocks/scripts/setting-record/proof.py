@@ -47,6 +47,7 @@ import computed as CP  # noqa: E402
 import diff as D  # noqa: E402
 import instances as I  # noqa: E402
 import render as RN  # noqa: E402
+import scriptsets as SS  # noqa: E402
 import reference as R  # noqa: E402
 import vocab as V  # noqa: E402
 sys.path.insert(0, str(HERE.parent / 'lib'))
@@ -79,18 +80,78 @@ def load_theme(run: dict) -> tuple:
         return '', None, f'{type(ex).__name__}: {str(ex)[:200]}'
 
 
-def frame_widths(layout) -> dict:
+def frame_widths(layout, widths=None) -> dict:
     """The width a block's container has at each screen width: the page's content size, or the screen less the root
-    padding on both sides when that is narrower ({375: px, 768: px, 1440: px}); empty when the layout is unknown."""
+    padding on both sides when that is narrower ({375: px, 768: px, 1440: px}); empty when the layout is unknown. A width
+    other than the three sampled ones takes the root padding of its tier (theme.layout: below 768 the mobile gutter, below
+    1024 the tablet one, then the desktop one)."""
     if not layout:
         return {}
     pad = layout.get('rootPadding') or {}
     out = {}
-    for w in WIDTHS:
-        p = pad.get(w, pad.get(str(w)))
+    for w in (widths or WIDTHS):
+        key = min(WIDTHS) if w < 768 else sorted(WIDTHS)[1] if w < 1024 else max(WIDTHS)
+        p = pad.get(key, pad.get(str(key)))
         if p is not None and layout.get('contentSize'):
             out[w] = min(float(layout['contentSize']), w - 2 * float(p))
     return out
+
+
+# The screen widths the probe covers: a phone held narrow to a wide desktop.
+PROBE_RANGE = (320, 1600)
+_WIDTH_TEST = re.compile(r'(min|max)-width\s*:\s*([\d.]+)px')
+
+
+def width_breaks(css_texts, frame_all) -> list:
+    """Every screen width at which a rule of these sheets starts or stops applying: each `min-width` / `max-width` of an
+    `@media` prelude as it stands, and each of an `@container` prelude as the screen width whose container (frame_all)
+    first passes it. Sorted, inside PROBE_RANGE."""
+    out = set()
+    for text in css_texts:
+        for at, prelude in re.findall(r'@(media|container)([^{;]*)\{', text or ''):
+            for _, n in _WIDTH_TEST.findall(prelude):
+                v = float(n)
+                if at == 'media':
+                    out.add(v)
+                else:
+                    cross = next((w for w in sorted(frame_all) if frame_all[w] >= v), None)
+                    if cross is not None:
+                        out.add(float(cross))
+    return sorted(v for v in out if PROBE_RANGE[0] < v < PROBE_RANGE[1])
+
+
+def tier_ranges(tiers) -> list:
+    """[(lo, hi)] screen widths an entry's tiers cover: each comma alternative of each `@media` tier with its min and max
+    width; the whole PROBE_RANGE for no tiers or a tier that tests no width; an alternative whose min passes its max is empty."""
+    ranges = []
+    for t in tiers or ():
+        t = str(t).strip()
+        if not t.startswith('@media'):
+            continue
+        for alt in C.split_list(t[len('@media'):]):
+            lo, hi = PROBE_RANGE
+            for kind, n in _WIDTH_TEST.findall(alt):
+                if kind == 'min':
+                    lo = max(lo, float(n))
+                else:
+                    hi = min(hi, float(n))
+            if lo <= hi:
+                ranges.append((lo, hi))
+    return ranges or ([PROBE_RANGE] if not any(str(t).strip().startswith('@media') for t in tiers or ()) else [])
+
+
+def probe_widths(tiers, breaks, sampled) -> list:
+    """Screen widths between the sampled ones where a rule may apply that none of them sees: inside each range the tiers
+    cover, the midpoint of every stretch between two breakpoints (or a breakpoint and the range's edge) that holds no
+    sampled width. A midpoint, not a width beside the breakpoint, so a root padding a pixel or two off still lands inside."""
+    out = set()
+    for lo, hi in tier_ranges(tiers):
+        points = sorted({lo, hi} | {b for b in breaks if lo < b < hi})
+        for a, b in zip(points, points[1:]):
+            if b - a < 4 or any(a < w < b for w in sampled):
+                continue
+            out.add(int((a + b) // 2))
+    return sorted(out)
 
 
 class Pages:
@@ -105,6 +166,8 @@ class Pages:
         if not with_theme:
             css = ''
         self.frame = frame_widths(layout)
+        # the container's width at every screen width the probe can ask for (probe_widths)
+        self.frame_all = frame_widths(layout, range(PROBE_RANGE[0], PROBE_RANGE[1] + 1))
         # the block drawn inside its fixture's parents (a menu in a header row), so a rule scoped by the parent matches
         self.shell = parent_shell(run)
         parents = [p['name'].split('/', 1)[1] for p in self.shell['parents']]
@@ -115,9 +178,12 @@ class Pages:
         # theme (the first sheet) holds the rules numbered in this range
         self.theme_orders = range(10_000, 110_000) if css else range(0)
         self.memo = {}
+        self.aliases = {}
+        self.subject_memo = {}
         # every custom property the block's own stylesheets or any of its renders declare (not the theme's: a theme
         # property that is not in force on the element is still undefined for the block)
         self.known = set(re.findall(r'(--[\w-]+)\s*:', ' '.join(texts)))
+        self.breaks = width_breaks(([css] if css else []) + texts + [self.shell['css']] + [r.get('css', '') for r in run['results'].values()], self.frame_all)
         for res in run['results'].values():
             self.known |= set(re.findall(r'(--[\w-]+)\s*:', res.get('css', '') + ' ' + res.get('html', '')))
 
@@ -133,8 +199,50 @@ class Pages:
             res = self.run['results'][job]
             html = self.shell['before'] + res.get('html', '') + self.shell['after']
             self.memo[k] = CP.Page(html, [self.shell['css'], res.get('css', '')], self.short, held=held, conditions=conditions,
-                                   base_rules=self.base, underlay=underlay, container_frame=self.frame, tokens=tuple(tokens))
+                                   base_rules=self.base, underlay=underlay, container_frame=self.frame_all or self.frame, tokens=tuple(tokens),
+                                   script_set=script_tokens_of(held))
         return self.memo[k]
+
+    def alias(self, job: str):
+        """sel -> sel for one render: each instance-id class the render prints also counts as the block class diff.uid_map
+        gives it. The entries' selectors are written with the block class where the render prints `.sgs-x-1a2b3c4d` (diff.read
+        folds the id into the class so two renders compare), so a selector is matched against the raw page by letting
+        `.sgs-x` also name the elements that carry that id."""
+        if job not in self.aliases:
+            groups = {}
+            for tok, cls in D.uid_map(self.run['results'][job].get('html', ''), self.short).items():
+                if tok != cls:
+                    groups.setdefault(cls, []).append(tok)
+            self.aliases[job] = groups
+        groups = self.aliases[job]
+
+        def widen(sel: str) -> str:
+            for cls, toks in groups.items():
+                sel = re.sub(r'\.' + re.escape(cls) + r'(?![\w-])', ':is(' + ','.join('.' + t for t in [cls] + sorted(toks)) + ')', sel)
+            return sel
+        return widen
+
+    def subjects(self, job: str, selectors, held, conds=frozenset()) -> list:
+        """[(element, pseudo)] the entry's own rules select in this render (the rule's subject, which is the named part or a
+        child of it), the alias widening applied; memoised per render, selector and held set."""
+        out, seen = [], set()
+        widen = None
+        for sel in sorted(selectors):
+            k = (job, frozenset(held), frozenset(conds), sel)
+            if k not in self.subject_memo:
+                widen = widen or self.alias(job)
+                page = self.get(job, held, conds)
+                pseudo = selector_pseudo(sel)
+                try:
+                    hits = sv.select(widen(C.resting(_strip_pseudo(sel), held)), page.soup)
+                except Exception:  # noqa: BLE001 - a selector soupsieve cannot read selects nothing here
+                    hits = []
+                self.subject_memo[k] = [(el, pseudo) for el in hits]
+            for el, pseudo in self.subject_memo[k]:
+                if (id(el), pseudo) not in seen:
+                    seen.add((id(el), pseudo))
+                    out.append((el, pseudo))
+        return out
 
 
 CHILD_MARK = '<!--sgs-setting-record-child-->'
@@ -250,8 +358,17 @@ def outside_vars(page, el, pse, names, width, conds, known) -> set:
     for name in names:
         win = [d for d in decls if name in CP.expand(d[1], d[2]) or d[1] == name]
         if win:
-            for v in re.findall(r'var\(\s*(--[\w-]+)', win[-1][2]):
-                if v not in custom and v not in known:
+            todo, seen = re.findall(r'var\(\s*(--[\w-]+)', win[-1][2]), set()
+            while todo:
+                v = todo.pop()
+                if v in seen:
+                    continue
+                seen.add(v)
+                if v in custom:
+                    # a property the element has, defined as another variable (a preset class's `--x: var(--wp--custom--y)`):
+                    # the value is only as defined as that variable is
+                    todo += re.findall(r'var\(\s*(--[\w-]+)', custom[v] or '')
+                elif v not in known:
                     out.add(v)
     return out
 
@@ -273,38 +390,105 @@ def conditions_of(tiers) -> set:
     return out
 
 
-def scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors) -> dict:
-    """Read every (plain, changed) pair of renders for one entry: whether the part is drawn (`seen_part`), whether the
-    entry's own rule matches it (`matched`), the first pair that proves it (`verdict`, `evidence`, `kind`), and the other
-    parts the same properties change on (`refile`)."""
-    r = {'seen_part': False, 'matched': False, 'verdict': None, 'evidence': None, 'kind': None, 'refile': set()}
-    for b, c in pairs:
-        pb, pc = pages.get(b, held, conds), pages.get(c, held, conds)
-        eb, ec = pb.elements(part), pc.elements(part)
-        if not eb and not ec:
+SCRIPT_HOLD = 'script:'
+
+
+def script_hold(tok: dict) -> str:
+    """A script-set token as a `held` entry (`script:class:NAME:LANDING`): the page puts it on its landing elements
+    (computed.Page `script_set`), so the rule that waits on it can match."""
+    return f'{SCRIPT_HOLD}{tok["kind"]}:{tok["name"]}:{tok["landing"]}'
+
+
+def script_tokens_of(held) -> tuple:
+    """((kind, name, landing), ...) for the `script:` entries of a held set."""
+    out = []
+    for h in sorted(held):
+        if h.startswith(SCRIPT_HOLD):
+            kind, name, landing = h[len(SCRIPT_HOLD):].split(':', 2)
+            out.append((kind, name, landing if landing != 'None' else None))
+    return tuple(out)
+
+
+def selector_pseudo(sel: str):
+    """The pseudo-element a selector ends in (`before`, `after`, ...), or None."""
+    m = list(C.PSEUDO_EL.finditer(sel.strip()))
+    return m[-1].group(1) if m and m[-1].end() == len(sel.strip()) else None
+
+
+def script_holds(run, short: str, selectors, held) -> set:
+    """The `held` entries that make each token a front-end script sets (scriptsets.py) true for these rules: a class or
+    attribute the rule waits on that some script writes is put on the elements the script puts it on (its landing selector),
+    or, with no landing, held as a state (a class token the rule's selector then reads as always there). A token the entry's
+    own state already holds is left to that state."""
+    out = set()
+    toks = SS.scan(tuple((r, t) for r, t in corpus(str(run['plugin'])) if r.endswith(('.php', '.js', '.mjs'))))
+    for tok in SS.needed_by(selectors, toks):
+        if f'.{tok["name"]}' in held:
             continue
-        r['seen_part'] = True
-        if bool(eb) != bool(ec):
-            r.update(verdict='proved', evidence=f'the part is drawn only in the {"changed" if ec else "plain"} render', kind='switched-on')
-            return r
-        diffs = []
-        for (xb, pse), (xc, _) in zip(eb, ec):
+        if tok['landing']:
+            out.add(script_hold(tok))
+        elif tok['kind'] == 'class':
+            out.add(f'.{tok["name"]}')
+    return out
+
+
+def _values(page, lst, names, widths) -> dict:
+    return {(w, n): [page.value(x, pse, n, w) for x, pse in lst] for w in widths for n in names}
+
+
+def compare_lists(pb, pc, lb, lc, names, widths) -> list:
+    """[(property, width, plain value, changed value)] where two lists of elements (the plain render's, the changed
+    render's) differ. Lists of the same length are compared element by element in order. Lists of different lengths are
+    compared by the values they hold: a value only one side has differs (an element the setting adds or takes away, such as a
+    second burger drawn only when detached, is compared too), and an extra element that repeats a value the other side has
+    shows nothing. An empty list on one side only is the caller's (the part or the rule's subject is drawn only on one side)."""
+    diffs = []
+    if not lb or not lc:
+        return diffs
+    if len(lb) == len(lc):
+        for (xb, pse), (xc, _) in zip(lb, lc):
             for w in widths:
                 for prop in names:
                     vb, vc = pb.value(xb, pse, prop, w), pc.value(xc, pse, prop, w)
                     if vb != vc:
                         diffs.append((prop, w, vb, vc))
+        return diffs
+    for w in widths:
+        for prop in names:
+            vb = [pb.value(x, pse, prop, w) for x, pse in lb]
+            vc = [pc.value(x, pse, prop, w) for x, pse in lc]
+            only_b, only_c = [v for v in vb if v not in vc], [v for v in vc if v not in vb]
+            if only_b or only_c:
+                diffs.append((prop, w, ', '.join(map(str, dict.fromkeys(only_b or vb))), ', '.join(map(str, dict.fromkeys(only_c or vc)))))
+    return diffs
+
+
+def scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors) -> dict:
+    """Read every (plain, changed) pair of renders for one entry: whether the part is drawn (`seen_part`), whether the
+    entry's own rule matches an element in either render (`matched`), the first pair that proves it (`verdict`, `evidence`,
+    `kind`), and the other parts the same properties change on (`refile`).
+
+    A pair proves the entry when a property differs between the renders on the named part's elements or on the rule's own
+    subject elements (the elements its selector picks: the part, or a child of it; the selector's instance-id classes widened
+    as `Pages.alias` says). The change can go either way: a rule that matches the plain render and not the changed one is the
+    setting switching a paint off, and shows as the same difference."""
+    r = {'seen_part': False, 'matched': False, 'verdict': None, 'evidence': None, 'kind': None, 'refile': set()}
+    for b, c in pairs:
+        pb, pc = pages.get(b, held, conds), pages.get(c, held, conds)
+        eb, ec = pb.elements(part), pc.elements(part)
+        sb, sc = pages.subjects(b, selectors, held, conds), pages.subjects(c, selectors, held, conds)
+        if sb or sc:
+            r['matched'] = True
+        if not (eb or ec or sb or sc):
+            continue
+        r['seen_part'] = True
+        if bool(eb) != bool(ec):
+            r.update(verdict='proved', evidence=f'the part is drawn only in the {"changed" if ec else "plain"} render', kind='switched-on')
+            return r
+        diffs = compare_lists(pb, pc, eb, ec, names, widths) + compare_lists(pb, pc, sb, sc, names, widths)
         if diffs:
             r.update(verdict='proved', evidence=[list(map(str, d)) for d in diffs[:3]], kind=kind_of(run, c, b, setting, diffs))
             return r
-        # nothing differs on the part: does the entry's own rule match it here?
-        for sel in selectors:
-            try:
-                ids = {id(el) for el, _ in ec}
-                if any(id(x) in ids for x in sv.select(C.resting(_strip_pseudo(sel), held), pc.soup)):
-                    r['matched'] = True
-            except Exception:
-                pass
         r['refile'] |= other_parts(pb, pc, names, widths, part)
     return r
 
@@ -324,11 +508,19 @@ def prove(short: str, run: dict):
         pairs = sorted(run['pairs'].get(k, ()))
         selectors = run['selectors'].get(k, ())
         held = {state} if state else set()
+        held |= script_holds(run, short, selectors, held)
         conds = conditions_of(tiers)
         widths = sorted(R.tier_widths(tiers) or WIDTHS)
         verdict, evidence, kind, cause, refile = None, None, None, None, set()
         container = [t for t in tiers if t.lstrip().startswith('@container')]
-        if state and not holdable(state):
+        never_taken = next((t for t in tiers if t.lstrip().startswith('@supports') and not C.supports_holds(t.lstrip()[len('@supports'):])), None)
+        nested = None if never_taken else forbidden_nesting(run['plugin'], short, part, pages, pairs)
+        if never_taken:
+            verdict, evidence = 'removed', (f'the rule sits under `{never_taken.strip()}`, which a current Chromium never takes (cascade.supports_holds: a property test it '
+                                            f'implements holds, so the fallback written under `not` never applies); the entry is a fallback for engines the proof does not assume')
+        elif nested:
+            verdict, evidence = 'removed', nested
+        elif state and not holdable(state):
             verdict, cause, evidence = 'blind', 'state-not-holdable', f'state {state} is a token the proof cannot hold'
         elif container and not all(C.container_evaluable('container ' + t.lstrip()[len('@container'):].strip()) for t in container):
             verdict, cause, evidence = 'blind', 'container-query', f'it holds under a container query ({container[0]}) that tests more than the width, which the proof cannot evaluate'
@@ -390,9 +582,13 @@ def prove(short: str, run: dict):
                         # read: the token's value is the site's, not this setting's, so the entry is judged as any other
                         theme = set()
                     changed_decl = declaration_changes(pages, pairs, part, names, widths, held, conds)
-                    other = None if theme else scan_pairs(pages, run, setting, part, names, sibling_pairs(run, setting, pairs), held, conds, widths, selectors)
-                    second = '' if (theme or (other and other['verdict'])) else second_value(pages, run, pairs, setting, part, names, widths, held, conds)
-                    under = '' if (theme or second or not changed_decl) else underlay_test(pages, pairs, part, names, widths, held, conds)
+                    probes = [] if theme else [w for w in probe_widths(tiers, pages.breaks, widths) if w not in widths]
+                    wide = scan_pairs(pages, run, setting, part, names, pairs, held, conds, probes, selectors) if probes else None
+                    if wide and wide['verdict'] != 'proved':
+                        wide = None
+                    other = None if (theme or wide) else scan_pairs(pages, run, setting, part, names, sibling_pairs(run, setting, pairs), held, conds, widths, selectors)
+                    second = '' if (theme or wide or (other and other['verdict'])) else second_value(pages, run, pairs, setting, part, names, widths, held, conds)
+                    under = '' if (theme or wide or second or not changed_decl) else underlay_test(pages, pairs, part, names, widths, held, conds)
                     if token:
                         # the setting switches which token the value reads: proved whatever each site's token holds
                         verdict, evidence, kind = 'proved', token, 'switched-on'
@@ -400,6 +596,10 @@ def prove(short: str, run: dict):
                         # a front-end script writes the token (from what the setting printed): only a browser sees its value
                         verdict, cause = 'blind', 'script-set-token'
                         evidence = f'the value reads {scripted[0][0]}, which a front-end script sets ({scripted[0][1]}): the browser pass reads it'
+                    elif wide:
+                        # the sampled screens miss it: a screen width between two breakpoints shows the setting's paint
+                        verdict, kind = 'proved', wide['kind']
+                        evidence = f'at a screen width between the sampled ones ({", ".join(map(str, probes))}px probed): {wide["evidence"]}' if isinstance(wide['evidence'], str) else [['probe width', *d] for d in wide['evidence']]
                     elif unnamed and not second:
                         verdict, cause, evidence = 'blind', 'state-not-holdable', f'the rule holds in a state the record cannot name ({", ".join(unnamed)}), which the proof cannot hold'
                     elif theme:
@@ -414,9 +614,18 @@ def prove(short: str, run: dict):
                     elif under:
                         # the declaration the setting switches on computes to the plain value here, but not over a sentinel
                         verdict, evidence, kind = 'proved', under, 'switched-on'
+                    elif changed_decl and _OVERRIDE.match(setting) and report.get('overrideSweeps', {}).get(setting, 0) > 1:
+                        # a per-device override tried over every desktop value it can override (override_sweep), the same also over
+                        # the underlay: the declaration is written but its value is the one the part already has in every combination
+                        verdict, evidence = 'removed', (f'a per-device override tried in {report["overrideSweeps"][setting]} combinations of its values over the values of the setting it '
+                                                        f'overrides: the part computes the same in every one, also over a sentinel underlay; the winning declaration changes ({changed_decl}) '
+                                                        f'but never its value')
+                    elif changed_decl and other_value_tried(run, setting, pairs) and restated_value(pages, pairs, part, names, widths, held, conds):
+                        verdict, evidence = 'removed', (f'the setting changes which rule declares the property, not its value ({restated_value(pages, pairs, part, names, widths, held, conds)}; '
+                                                        f'{changed_decl}): the rule restates what the plain render already declares, also with a second test value and over a sentinel underlay')
                     elif changed_decl:
                         verdict, cause, evidence = 'blind', 'same-value-here', f'the winning declaration changes ({changed_decl}) but computes to the same value in these renders, also over a sentinel underlay (it inherits, or meets a floor or the initial value)'
-                    elif container:
+                    elif container and not pages.frame_all:
                         # the container's width between the three sampled screens is not seen: no difference here is no proof of none
                         verdict, cause, evidence = 'blind', 'container-query', f'under a container query ({container[0]}): the container is {sorted(set(pages.frame.values()))} px wide at the three screen widths, and the threshold of its rule may sit between them'
                     elif theme_winner(pages, pairs, part, names, widths, held, conds):
@@ -447,6 +656,41 @@ def prove(short: str, run: dict):
     counts['deadParts'] = len(report['deadParts'])
     report['counts'] = counts
     return out, report
+
+
+# HTML's content model: an element that is interactive content cannot hold another (the parser closes the outer one first).
+INTERACTIVE = {'a', 'button'}
+INTERACTIVE_INSIDE = {'a', 'button', 'input', 'select', 'textarea'}
+
+
+def forbidden_nesting(plugin, short: str, part: str, pages, pairs):
+    """Evidence (text) that the entry's rule asks for an element HTML cannot put inside the part, or None. The part names a
+    tag inside an element (`sgs-x__view a`): when that element is itself an `a` or a `button` (read from any render here, else
+    from the PHP template that prints its class) and the tag is interactive content, no render can draw the rule's subject: a
+    parsed document never holds an `a` inside an `a`. Such a rule is dead whatever the setting does."""
+    head, _, tag = part.split('::')[0].strip().partition(' ')
+    tag = tag.strip()
+    if not head.startswith('sgs-') or tag not in INTERACTIVE_INSIDE:
+        return None
+    outer, where = None, None
+    for b, c in pairs[:1]:
+        for j in (b, c):
+            els = pages.get(j).soup.select('.' + head)
+            if els:
+                outer, where = els[0].name, 'a render of the block'
+                break
+    if outer is None:
+        pat = re.compile(r'<(a|button)\b[^<>]*?\bclass\s*=\s*["\'][^"\']*(?<![\w-])' + re.escape(head) + r'(?![\w-])')
+        for rel, text in corpus(str(plugin)):
+            if rel.endswith('.php'):
+                m = pat.search(text)
+                if m:
+                    outer, where = m.group(1), f'the template in {rel}'
+                    break
+    if outer in INTERACTIVE:
+        return (f'dead rule: {part} asks for an `{tag}` inside {head}, which is itself an `{outer}` ({where}); HTML forbids interactive content '
+                f'inside an `{outer}`, so no render can draw the rule\'s subject')
+    return None
 
 
 # Why an entry stays unproved, by the cause slug each mechanism or task owns (README, "The record"). A caller that names no
@@ -551,30 +795,53 @@ def bump(v):
     return None
 
 
+def second_values(run, setting, plain_attrs, changed_attrs) -> list:
+    """Other test values for a setting whose first value left the part as it was: the values the plan's own generator gives
+    when the first test value is taken as the setting's current one, so each differs from it and keeps the setting's type
+    (a font weight of 700 that equals the block's own weight gets 300; a keyword gets another keyword), then the first value
+    scaled (bump). A value the plain render already holds is skipped. Each is the changed render's attributes with that value."""
+    first = changed_attrs.get(setting)
+    cands = []
+    try:
+        cands += I.switching_values(Path(run['plugin']), run['slug'].split('/', 1)[1], setting, dict(changed_attrs))
+    except (OSError, KeyError, ValueError):
+        pass
+    alt = bump(first)
+    if alt is not None:
+        cands.append({setting: alt})
+    out, seen = [], set()
+    for cand in cands:
+        if cand.get(setting) in (first, plain_attrs.get(setting)):
+            continue
+        k = json.dumps(cand, sort_keys=True, default=str)
+        if k not in seen:
+            seen.add(k)
+            out.append({**changed_attrs, **cand})
+    return out[:3]
+
+
 def second_value(pages, run, pairs, setting, part, names, widths, held, conds) -> str:
-    """Render once more with a clearly different value of the setting and compare with the plain render: a declaration
-    the first value left at the same computed value (a floor, a coincidence) shows here whether it follows the setting."""
+    """Render once more with a clearly different value of the setting (second_values) and compare with the plain render:
+    a declaration the first value left at the same computed value (a floor, a coincidence, a test value equal to the
+    block's own) shows here whether it follows the setting."""
     rn = run.get('renderer')
     if rn is None:
         return ''
     for b, c in pairs[:2]:
-        attrs = dict(run['jobs'][c])
-        alt = bump(attrs.get(setting))
-        if alt is None:
-            continue
-        attrs[setting] = alt
-        res = rn.render(run['slug'], attrs, run['content'], run['inner'])
-        if not res.get('ok'):
-            continue
-        job = f'second:{c}'
-        run['results'][job] = res
-        pb, pa = pages.get(b, held, conds), pages.get(job, held, conds)
-        for (xb, pse), (xa, _) in zip(pb.elements(part), pa.elements(part)):
-            for w in widths:
-                for name in names:
-                    vb, va = pb.value(xb, pse, name, w), pa.value(xa, pse, name, w)
-                    if vb != va:
-                        return f'with a second test value ({alt!s:.40}): {name} at {w}px {vb} -> {va}'
+        todo = {f'second{n}:{c}': attrs for n, attrs in enumerate(second_values(run, setting, run['jobs'][b], run['jobs'][c]))}
+        done = rn.render_many(run['slug'], todo, run['content'], run['inner']) if todo else {}
+        for job, attrs in todo.items():
+            alt, res = attrs.get(setting), done.get(job) or {}
+            if not res.get('ok'):
+                continue
+            pages.add_job(job, attrs, res)
+            pb, pa = pages.get(b, held, conds), pages.get(job, held, conds)
+            for (xb, pse), (xa, _) in zip(pb.elements(part), pa.elements(part)):
+                for w in widths:
+                    for name in names:
+                        vb, va = pb.value(xb, pse, name, w), pa.value(xa, pse, name, w)
+                        if vb != va:
+                            return f'with a second test value ({alt!s:.40}): {name} at {w}px {vb} -> {va}'
     return ''
 
 
@@ -599,6 +866,55 @@ def declaration_changes(pages, pairs, part, names, widths, held, conds) -> str:
                     if tb != tc:
                         return f'{name} at {w}px: {tb!s:.90} -> {tc!s:.90}'
     return ''
+
+
+def declared_text(page, el, pse, name, width, conds):
+    """(property, value text) of the winning declaration for a property on an element, as written (var() not substituted), or None."""
+    decls = page.cascade.declared(el, pse, width, frozenset(conds))
+    win = [d for d in decls if d[1] == name or name in CP.expand(d[1], d[2])]
+    return (win[-1][1], re.sub(r'\s*!important\s*$', '', win[-1][2])) if win else None
+
+
+def other_value_tried(run, setting, pairs) -> bool:
+    """Whether the proof has seen the setting at a value other than the first test value: a true/false setting (both values
+    are its plain and changed render), another test value's pair (sibling_pairs), or a second value second_value rendered.
+    A setting tried at one value only may restate the block's own value by coincidence (a font weight of 700 over the
+    block's 700), so its entry is never removed as restating."""
+    if _is_bool(run, setting) or sibling_pairs(run, setting, pairs):
+        return True
+    return any(second_values(run, setting, run['jobs'][b], run['jobs'][c]) for b, c in pairs[:2])
+
+
+def restated_value(pages, pairs, part, names, widths, held, conds) -> str:
+    """Evidence (text) that the setting only changes which rule declares the part's properties, never their value: in every pair,
+    on every element and at every width, the winning declaration of each property, var() substituted and shorthands expanded,
+    is the same text in the plain and the changed page (a rule that restates the value the plain page already declares, such as
+    `pointer-events: none` over `pointer-events: none`, or `text-align: center` over a button's own `center`). '' when any
+    value differs, when nothing is declared at all, or when there is no element to read."""
+    seen = 0
+    sample = ''
+    for b, c in pairs:
+        pb, pc = pages.get(b, held, conds), pages.get(c, held, conds)
+        eb, ec = pb.elements(part), pc.elements(part)
+        if len(eb) != len(ec) or not eb:
+            return ''
+        for (xb, pse), (xc, _) in zip(eb, ec):
+            for w in widths:
+                rb, rc = pb.raw(xb, pse, w), pc.raw(xc, pse, w)
+                for name in names:
+                    if rb.get(name) != rc.get(name):
+                        return ''
+                    if rb.get(name) is None:
+                        continue
+                    # a value read through var() is judged by the declaration's own text: the two rules reading different
+                    # properties give one value only because of the tokens defined here (a theme's, a page's), which a site
+                    # can define otherwise
+                    db, dc = declared_text(pb, xb, pse, name, w, conds), declared_text(pc, xc, pse, name, w, conds)
+                    if db != dc and 'var(' in f'{db}{dc}':
+                        return ''
+                    seen += 1
+                    sample = sample or f'{name}: {rb[name]}'
+    return f'{sample} in all {seen} readings' if seen else ''
 
 
 def sibling_pairs(run: dict, setting: str, known) -> list:
@@ -886,35 +1202,65 @@ _ATTR_NEED = re.compile(r'\[\s*data-([a-z0-9-]+)')
 
 
 def completion(pages, run, scan, setting, part, names, pairs, held, conds, widths, selectors, missing_part: bool):
-    """A part, class or data attribute the renders here lack, printed by the setting the scanner says decides it
-    (instances.switching_attrs): the plain and the changed render again with that setting moved (each test value it has,
-    then all together), and the first pair that draws the part (or matches the entry's rule) is the pair the entry is
-    proved on. Returns {'pair': (plain job, changed job), 'with': attrs} or None."""
+    """A part, class or data attribute the renders here lack, printed by the settings the scanner says decide it
+    (instances.switching_attrs): the plain and the changed render again with those settings moved, and the first pair that
+    draws the part (or matches the entry's rule) is the pair the entry is proved on. Returns {'pair': (plain job, changed
+    job), 'with': attrs} or None.
+
+    It is asked for only when no render, on either side of any pair, matches the entry's rule. The demand is then the rule's
+    whole condition, not what the renders happen to lack: every class the rule requires and every data attribute it names.
+    Each demanded token has its own supplies (the test values of the settings that print it, never the entry's own setting,
+    which stays on the changed side); a candidate is one supply for each token that has any, so a rule that needs two
+    classes together (`.x--pill.x--count-bubble`) is tried with both printed at once, whichever of them some other pair of
+    renders already has on its own."""
     rn = run.get('renderer')
     if rn is None or scan is None or not pairs:
         return None
     base = part.split('::')[0].split(' ')[0]
     if missing_part:
-        tokens, data = [base], []
+        demands = [([base], [])]
     else:
-        present = _present(pages, pairs, held, conds)
-        tokens = sorted({c for s in selectors for c in C.required_classes(C.resting(_strip_pseudo(s), held))} - present)
-        data = sorted({m for s in selectors for m in _ATTR_NEED.findall(s)})
-    attrs = [a for a in I.switching_attrs(scan, tokens, data) if a != setting]
-    if not attrs:
-        return None
+        demands = []
+        for sel in sorted(selectors):
+            toks = sorted(C.required_classes(C.resting(_strip_pseudo(sel), held)))
+            data = sorted(set(_ATTR_NEED.findall(sel)))
+            if toks or data:
+                demands.append((toks, data))
     plugin, short = Path(run['plugin']), pages.short
     b, c = pairs[0]
     base_attrs, changed_attrs = run['jobs'][b], run['jobs'][c]
-    options = {a: I.switching_values(plugin, short, a, changed_attrs) for a in attrs}
-    cands = [v for a in attrs for v in options[a]]                     # one setting at a time
-    for i, a in enumerate(attrs[:4]):                                  # then two together (a class that needs both)
-        for a2 in attrs[i + 1:4]:
-            cands += [{**v, **w} for v in options[a][:4] for w in options[a2][:4]]
-    if len(attrs) > 2:
-        cands.append({k: v for a in attrs for k, v in (options[a][0] if options[a] else {}).items()})
+    options = {}
+
+    def supply(token, is_data) -> list:
+        """The attribute dicts that print one token: each deciding setting's test values alone, then two deciding settings
+        together (a class printed only when both hold)."""
+        names_ = [a for a in (I.switching_attrs(scan, [], [token]) if is_data else I.switching_attrs(scan, [token])) if a != setting]
+        for a in names_:
+            if a not in options:
+                options[a] = I.switching_values(plugin, short, a, changed_attrs)
+        out = [v for a in names_ for v in options[a][:4]]               # a few values of each deciding setting, not every value of the first
+        for i, a in enumerate(names_[:6]):
+            for a2 in names_[i + 1:6]:
+                out += [{**v, **w} for v in options[a][:3] for w in options[a2][:3]]
+        return out
+
+    cands, key_parts = [], []
+    for toks, data in demands:
+        key_parts.append((tuple(toks), tuple(data)))
+        lists = [x for x in ([supply(t, False) for t in toks] + [supply(d, True) for d in data]) if x]
+        if not lists:
+            continue
+        combos = [{}]
+        for lst in lists:
+            nxt = []
+            for cur in combos:
+                for v in lst[:60]:
+                    if all(cur.get(k, v[k]) == v[k] for k in v):      # two tokens printed by one setting at different values: no such render
+                        nxt.append({**cur, **v})
+            combos = nxt[:400] or combos
+        cands += sorted((x for x in combos if x), key=len)         # the fewest settings moved first
     memo = run.setdefault('_completed', {})
-    key = (tuple(tokens), tuple(data), part)
+    key = (tuple(key_parts), part)
     if key in memo and memo[key] is None:
         return None                                                    # an earlier entry of this part found nothing prints it
     if memo.get(key):
@@ -925,8 +1271,8 @@ def completion(pages, run, scan, setting, part, names, pairs, held, conds, width
         if x and setting not in x and k not in seen:
             seen.add(k)
             order.append(x)
-    for i in range(0, min(len(order), 30), 6):                         # six candidates (twelve renders) at a time, in parallel
-        chunk = order[i:i + 6]
+    for i in range(0, min(len(order), 240), 12):                       # twelve candidates (24 renders) at a time, in parallel
+        chunk = order[i:i + 12]
         todo, pair_of = {}, {}
         for extra in chunk:
             pair = []

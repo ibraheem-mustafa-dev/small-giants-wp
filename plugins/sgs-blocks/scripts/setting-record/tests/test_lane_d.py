@@ -209,15 +209,17 @@ def test_container_query_on_more_than_width_is_blind():
     assert out[key]['unproved'] == 'container-query'
 
 
-def test_must_fail_container_entry_with_no_difference_at_the_sampled_widths_is_not_removed():
+def test_must_fail_container_entry_with_no_difference_at_the_sampled_widths_is_proved_between_them():
     # The form's 480px rule holds at none of 327 px and equals the default 560px rule at 720 and 1200, so the three sampled
-    # widths show no difference: but a container 450 px wide would. No difference is not a proof of none: the entry stays.
+    # widths show no difference: a container between 480 and 560 px wide does, and the probe widths reach one. Breaks
+    # without probe_widths (the entry was removed, then kept blind as container-query).
     e = container_entry('(min-width: 480px)')
     base = CONTAINER_BASE + '@container demo (min-width: 560px){.sgs-demo__inner{grid-template-columns:repeat(6,1fr)}}'
     css = base + '@container demo (min-width: 480px){.sgs-demo__inner{grid-template-columns:repeat(6,1fr)}}'
     run, key = run_of(CONTAINER_HTML, base, CONTAINER_HTML, css, e, '480', ['.sgs-demo__inner'], layout=LAYOUT)
     out, rep = PR.prove(SHORT, run)
-    assert rep['counts']['removed'] == 0 and out[key]['unproved'] == 'container-query'
+    assert rep['counts']['removed'] == 0 and 'unproved' not in out[key]
+    assert 'probe width' in str(rep['proved'][0]['evidence']) or 'between the sampled' in str(rep['proved'][0]['evidence'])
 
 
 def test_container_preludes_read_ranges_and_inline_size():

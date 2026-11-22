@@ -389,10 +389,12 @@ class Page:
     no frame it never holds. `underlay` is (part, property names): the underlay test (see _apply_underlay). While `filled`
     is held every text input and textarea has a value, so :placeholder-shown is false on it. `tokens` is ((custom property,
     value), ...): each is declared on the page's root at the lowest priority, the way a site's own tokens reach a block
-    (see proof.token_test)."""
+    (see proof.token_test). `script_set` is ((kind, name, landing selector), ...): a class or attribute a front-end script
+    sets after the server render (scriptsets.py), put on every element the landing selector names before the cascade is built,
+    so a rule that waits on it can match (see proof.script_holds)."""
 
     def __init__(self, html: str, sheets: list, short: str, held=(), conditions=frozenset(), base_rules=None, underlay=None, container_frame=None,
-                 tokens=()):
+                 tokens=(), script_set=()):
         frame = ('<html><body><div class="wp-site-blocks"><main class="wp-block-group">'
                  '<div class="entry-content wp-block-post-content is-layout-constrained has-global-padding">' + html + '</div></main></div></body></html>')
         self.soup = BeautifulSoup(frame, 'html.parser')
@@ -420,6 +422,8 @@ class Page:
         self._measuring = set()
         if 'filled' in self.held:
             self._fill_inputs()
+        for kind, name, landing in script_set:
+            self._set_script_token(kind, name, landing)
         if underlay:
             self._apply_underlay(*underlay)
         if tokens:
@@ -427,6 +431,22 @@ class Page:
             # property, as a site's own tokens are
             self.rules.append(C.Rule('html', None, [(n, v, False) for n, v in tokens], (), False, 0, -1))
         self.cascade = C.Cascade(self.soup, self.rules, self.held)
+
+    def _set_script_token(self, kind: str, name: str, landing) -> None:
+        """Put a script-set class (or attribute) on the elements a script puts it on. With no landing selector nothing is
+        put anywhere (proof.script_holds holds such a class as a state instead)."""
+        if not landing:
+            return
+        try:
+            els = self.soup.select(landing)
+        except Exception:  # noqa: BLE001 - an unreadable selector holds nothing
+            return
+        for el in els:
+            if kind == 'class':
+                if name not in (el.get('class') or []):
+                    el['class'] = list(el.get('class') or []) + [name]
+            elif not el.has_attr(name):
+                el[name] = ''
 
     def _fill_inputs(self):
         """Give every text input and textarea a value: the state `filled` (a field the visitor has typed in)."""
