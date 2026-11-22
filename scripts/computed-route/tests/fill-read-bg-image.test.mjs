@@ -67,4 +67,10 @@ test( 'negative control: a gradient, two layers, words, a child element and a he
 	assert.deepEqual( media( '5:' ), [], 'an element holding a child element' );
 	assert.deepEqual( media( '6:' ).map( ( m ) => [ m.tag, m.alt ] ), [ [ 'img', 'Box' ] ], 'the held image is the media, not the background' );
 	assert.deepEqual( media( '7:' ).map( ( m ) => [ m.tag, m.alt ] ), [ [ 'img', 'Self' ] ], 'an image painting a background is its own image' );
+	assert.ok( ! media( '7:' )[ 0 ].element.ownBackground && ! media( '6:' )[ 0 ].element.ownBackground, 'an <img> is no CSS background' );
+} );
+
+test( 'MUST FAIL: the picture a wordless element paints as its own background is marked as its own background', () => {
+	assert.equal( media( '1:' )[ 0 ].element.ownBackground, true );
+	assert.equal( media( '1:', 375 )[ 0 ].element.ownBackground, true );
 } );

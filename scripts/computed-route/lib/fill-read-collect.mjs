@@ -224,7 +224,7 @@ export function collectMany( [ jobs, collectSrc, resolveSrc, paintSrc, props, ps
 			// element holding words or elements is no picture of its own.
 			const bgUrl = /^url\(\s*(["']?)([^"')]+)\1\s*\)$/.exec( getComputedStyle( el ).backgroundImage || '' )?.[ 2 ] || null;
 			const painted = ! nodes.length && ! el.children.length && '' === ( el.textContent || '' ).trim() && shown( el ) ? bgUrl : null;
-			const light = painted ? [ { ...read( el ), tag: 'img', src: painted, alt: '' } ] : nodes.map( read );
+			const light = painted ? ( ( one ) => [ { ...one, tag: 'img', src: painted, alt: '', element: { ...one.element, ownBackground: true } } ] )( read( el ) ) : nodes.map( read );
 			// A custom element draws its picture in its open shadow root: those images, one per address, when no light-DOM media shows.
 			const seen = new Set();
 			const shadow = light.length ? [] : drawn.filter( ( i ) => shown( i ) && ! seen.has( imgSrc( i ) ) && seen.add( imgSrc( i ) ) ).map( read );

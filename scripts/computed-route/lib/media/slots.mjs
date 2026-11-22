@@ -36,16 +36,17 @@ export function blockMediaSlots( slug ) {
 /**
  * The slot one group of draft media goes to (section 11's placement rows): a background group goes to the block's Background
  * slot, else to an `element` slot (a layer block is itself the picture the draft paints behind its siblings, so the
- * decorative-image layer holds it as its Source), a decorative group to an `element` slot else a content slot, any other
- * media to the one content slot. A slot is chosen only when its kinds hold every kind the group shows.
+ * decorative-image layer holds it as its Source), a decorative group to an `element` slot else a content slot, a picture
+ * the element paints as its own CSS background (`own-background`) to a content slot (a media block is that picture), else to the
+ * Background slot (a box's background media), else an `element` slot, any other media to the one content slot. A slot is chosen only when its kinds hold every kind the group shows.
  *
  * @param {Object[]} slots Block slots.
- * @param {'background'|'decorative-image'|'media'} group Placement.
+ * @param {'own-background'|'background'|'decorative-image'|'media'} group Placement.
  * @param {string[]} kinds Kinds the group shows at any width.
  * @return {{slot:Object|null, reason:string|null}} The slot, or why none.
  */
 export function pickSlot( slots, group, kinds ) {
-	const contexts = 'background' === group ? [ 'background', 'element' ] : 'decorative-image' === group ? [ 'element', 'content' ] : [ 'content' ];
+	const contexts = 'own-background' === group ? [ 'content', 'background', 'element' ] : 'background' === group ? [ 'background', 'element' ] : 'decorative-image' === group ? [ 'element', 'content' ] : [ 'content' ];
 	for ( const context of contexts ) {
 		const fits = slots.filter( ( s ) => s.context === context && kinds.every( ( k ) => s.kinds.includes( k ) ) );
 		if ( 1 === fits.length ) {

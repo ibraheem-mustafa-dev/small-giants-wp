@@ -48,10 +48,14 @@ export function absorbs( w ) {
  * Where a draft media element goes (§11's first row and the decorative row).
  *
  * @param {Object} e Element read: { computed: { position, inset: boolean (all four offsets 0) }, fullBox, behindSiblings,
- *                   hasSiblingContent, hasText, offsets: boolean }.
- * @return {'background'|'decorative-image'|'media'} Target.
+ *                   hasSiblingContent, hasText, offsets: boolean, ownBackground: boolean (the element's own CSS background is the
+ *                   picture) }.
+ * @return {'own-background'|'background'|'decorative-image'|'media'} Target.
  */
 export function placement( e ) {
+	if ( e?.ownBackground ) {
+		return 'own-background';
+	}
 	const absolute = 'absolute' === e?.computed?.position;
 	if ( absolute && ( e.computed.inset || e.fullBox ) && e.behindSiblings && e.hasSiblingContent ) {
 		return 'background';

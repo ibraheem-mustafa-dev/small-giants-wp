@@ -63,6 +63,26 @@ test( 'an absolute full-box image behind content goes to the Background slot, no
 	assert.deepEqual( r.writes.map( ( w ) => w.attr ).sort(), [ 'backgroundDecorative', 'backgroundSource' ] );
 } );
 
+// A picture a wordless box paints as its own CSS background (the reader marks it `ownBackground`) goes to the block's Background
+// slot where the block has no content slot (a container), and to its content slot where it has one (a media block).
+const BG_SLOT = { prefix: 'background', context: 'background', kinds: [ 'image', 'video', 'svg' ], source: 'backgroundSource', alt: 'backgroundAlt', decorative: 'backgroundDecorative', caption: null };
+const ownBg = ( src ) => img( src, '', { element: { computed: { position: 'static' }, hasText: false, ownBackground: true } } );
+
+test( 'MUST FAIL: a picture a box paints as its own background is written to the Background slot of the box', () => {
+	const r = run( ownBg( 'assets/hero.png' ), { slots: [ BG_SLOT ] } );
+	assert.deepEqual( r.unmapped, [] );
+	assert.equal( val( r, 'backgroundSource' ).desktop.id, 101 );
+	assert.equal( val( r, 'backgroundDecorative' ), true );
+} );
+
+test( 'negative controls: the same picture as a plain image still has no home on a box with only a Background slot, and a block with a content slot keeps it there', () => {
+	const plain = run( img( 'assets/hero.png', '' ), { slots: [ BG_SLOT ] } );
+	assert.equal( plain.writes.length, 0 );
+	assert.match( plain.unmapped[ 0 ].reason, /no content media setting/ );
+	const both = run( ownBg( 'assets/hero.png' ), { slots: [ SLOT, BG_SLOT ] } );
+	assert.deepEqual( both.writes.map( ( w ) => w.attr ).sort(), [ 'decorative', 'source' ] );
+} );
+
 test( 'a figcaption writes the caption, escaped (MUST FAIL)', () => {
 	assert.equal( val( run( img( 'assets/hero.png', 'Loaf' ), { caption: 'Rye & spelt <fresh>' } ), 'caption' ), 'Rye &amp; spelt &lt;fresh&gt;' );
 } );
