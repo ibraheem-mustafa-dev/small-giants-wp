@@ -1,8 +1,8 @@
 <?php
 /**
  * Product field values for the `sgs-product/field` bindings source beyond the
- * core set (price, title, image, stock, short description): brand, SKU, any
- * product attribute and allowed product meta.
+ * core set (price, title, image, stock, short and long description): brand, SKU,
+ * the review rating, any product attribute and allowed product meta.
  *
  * Keys use dot notation, like the `sgs/site-info` source:
  *   brand                     the product's first brand term's NAME
@@ -14,6 +14,8 @@
  *   dimensions.<length|width|height>  WooCommerce's shipping dimension (unit: the
  *                             store's dimension unit setting)
  *   weight                    WooCommerce's weight (unit: the store's weight unit)
+ *   rating                    the product's average review rating, one decimal ("4.9"); '' with no reviews
+ *   rating_count              the product's review count ("41"); '' with no reviews
  *
  * On a variable product these follow the variation the shopper picks
  * (includes/class-product-field-variations.php).
@@ -102,6 +104,16 @@ if ( ! function_exists( 'sgs_product_field_value' ) ) {
 
 			case 'weight':
 				return (string) $product->get_weight();
+
+			// The product's own reviews, as the product card's rating row reads them
+			// (includes/product-card-live-fill.php). Empty with no reviews, so a bound
+			// text holds nothing (or its fallback) rather than "0.0".
+			case 'rating':
+				return (int) $product->get_review_count() > 0 ? number_format_i18n( (float) $product->get_average_rating(), 1 ) : '';
+
+			case 'rating_count':
+				$count = (int) $product->get_review_count();
+				return $count > 0 ? number_format_i18n( $count ) : '';
 		}
 		return '';
 	}
@@ -122,6 +134,9 @@ if ( ! function_exists( 'sgs_product_field_list' ) ) {
 			'brand_url'         => array( 'label' => __( 'Brand page URL', 'sgs-blocks' ) ),
 			'sku'               => array( 'label' => __( 'SKU', 'sgs-blocks' ) ),
 			'short_description' => array( 'label' => __( 'Short description', 'sgs-blocks' ) ),
+			'description'       => array( 'label' => __( 'Description', 'sgs-blocks' ) ),
+			'rating'            => array( 'label' => __( 'Average rating', 'sgs-blocks' ) ),
+			'rating_count'      => array( 'label' => __( 'Review count', 'sgs-blocks' ) ),
 			'stock_status'      => array( 'label' => __( 'Stock status', 'sgs-blocks' ) ),
 			'dimensions.length' => array( 'label' => __( 'Length', 'sgs-blocks' ) ),
 			'dimensions.width'  => array( 'label' => __( 'Width', 'sgs-blocks' ) ),

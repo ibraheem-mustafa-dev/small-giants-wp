@@ -78,9 +78,9 @@ final class Product_Bindings {
 	 *
 	 * @param array     $source_args Array of source arguments.
 	 *     Supported keys: price, title, image_url, image_alt, stock_status,
-	 *     short_description, plus the extended set in
+	 *     short_description, description, plus the extended set in
 	 *     includes/product-field-values.php (brand, brand_logo_url, brand_url,
-	 *     sku, attribute.<taxonomy>, meta.<key>).
+	 *     sku, rating, rating_count, attribute.<taxonomy>, meta.<key>, dimensions.<side>, weight).
 	 *     Optional: source ('wc'|'cpt'|'auto'), product_id.
 	 * @param \WP_Block $block       Block instance providing context.
 	 * @param string    $attribute   The bound attribute name; decides whether the value follows the size picker.
@@ -249,6 +249,10 @@ final class Product_Bindings {
 			case 'short_description':
 				return \wp_kses_post( $product->get_short_description() );
 
+			// The long description (the product's main content), filtered to post HTML like the short one.
+			case 'description':
+				return \wp_kses_post( $product->get_description() );
+
 			// A URL, so it is escaped as one — the fallthrough below escapes
 			// for HTML text, which is wrong for an `src`/`href` value.
 			case 'brand_logo_url':
@@ -257,7 +261,7 @@ final class Product_Bindings {
 				return '' !== $brand_url ? \esc_url( $brand_url ) : '';
 		}
 
-		// Brand, SKU, attribute.<taxonomy>, meta.<key> (includes/product-field-values.php).
+		// Brand, SKU, rating, rating_count, attribute.<taxonomy>, meta.<key> (includes/product-field-values.php).
 		return \esc_html( \sgs_product_field_value( $product, $key ) );
 	}
 

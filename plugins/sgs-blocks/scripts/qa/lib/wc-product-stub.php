@@ -89,6 +89,9 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		public function get_short_description() {
 			return (string) ( $this->data['short_description'] ?? '' );
 		}
+		public function get_description() {
+			return (string) ( $this->data['description'] ?? '' );
+		}
 		public function is_purchasable() {
 			return (bool) ( $this->data['purchasable'] ?? true );
 		}
