@@ -5,6 +5,7 @@ as a route site target and strip it back to a blank foundation. The script is so
 arguments; no WSL, database or site is reached.
 Run: python -m pytest scripts/tests/test_scratch_mirror.py
 """
+import json
 import os
 import shutil
 import subprocess
@@ -178,6 +179,36 @@ class ScratchMirror(unittest.TestCase):
             self.assertNotIn("delete", self.log.read_text(encoding="utf-8"), kwargs)
             self.assertNotIn("remove", self.log.read_text(encoding="utf-8"), kwargs)
 
+    def reset_copy(self, name=NAME, marked=True, db=None):
+        www = Path(self.tmp.name) / "www"
+        (www / name).mkdir(parents=True, exist_ok=True)
+        if marked:
+            (www / name / ".scratch-source").write_text("local-mamas\n", encoding="utf-8")
+        self.log.write_text("", encoding="utf-8")
+        db_env = f"STUB_DB={db} " if db else ""
+        snippet = f'sudo() {{ shift 2; "$@"; }}; {db_env}SCRATCH_WWW_ROOT="{www.as_posix()}" reset_shop_pages {name}'
+        return self.bash(snippet), www / name
+
+    def test_reset_shop_pages_runs_the_worker_on_the_copy_alone(self):
+        r, d = self.reset_copy()
+        self.assertEqual(r.returncode, 0, r.stderr)
+        call = self.log.read_text(encoding="utf-8")
+        self.assertRegex(call, rf"wp --path={d.as_posix()} --allow-root eval-file \S*scripts/local-wp/reset-shop-pages\.php {NAME}")
+        self.assertTrue(Path(SCRIPT).with_name("reset-shop-pages.php").is_file())
+        self.assertNotIn("delete", call, "the reset deletes no post, option, menu or mod of its own")
+
+    def test_reset_shop_pages_refuses_a_folder_this_script_did_not_make_a_real_mirror_and_another_database(self):
+        for kwargs, message in (({"marked": False}, "not a scratch copy"), ({"name": "local-mamas"}, "name must match"), ({"name": "local-eye-care"}, "name must match"), ({"db": "wp_mediatest_other"}, "refusing to reset its shop pages")):
+            r, _ = self.reset_copy(**kwargs)
+            self.assertNotEqual(r.returncode, 0, kwargs)
+            self.assertIn(message, r.stderr)
+            self.assertNotIn("eval-file", self.log.read_text(encoding="utf-8"), kwargs)
+
+    def test_the_command_line_names_reset_shop_pages(self):
+        src = Path(SCRIPT).read_text(encoding="utf-8")
+        self.assertIn('reset-shop-pages) [ $# -eq 2 ] || die "usage: reset-shop-pages <local-mediatest-name>"; reset_shop_pages "$2" ;;', src)
+        self.assertIn('guard_copy "$name" "$dir" "reset its shop pages"', src[src.index("reset_shop_pages() {"):src.index("list() {")])
+
     def test_create_makes_the_password_and_the_registration_in_that_order_and_drop_removes_the_registration(self):
         src = Path(SCRIPT).read_text(encoding="utf-8")
         create = src[src.index("create() {"):src.index("drop() {")]
@@ -185,6 +216,65 @@ class ScratchMirror(unittest.TestCase):
         self.assertLess(create.index("fresh_app_password"), create.index("scratch_target add"))
         self.assertIn('scratch_target remove "$name"', src[src.index("drop() {"):src.index("list() {")])
         self.assertIn("fresh_app_password \"$2\"", src[src.index("  secrets)\n"):src.index("  target)\n")])
+
+
+PHP = shutil.which("php")
+WORKER = (Path(__file__).resolve().parents[1] / "local-wp" / "reset-shop-pages.php").as_posix()
+# WordPress, WP-CLI and WooCommerce's installer as far as the worker reaches them: pages by id, options, the metas it deletes.
+PHP_STUBS = r"""<?php
+define( 'ABSPATH', '/' );
+class WP_CLI { static function error( $m ) { fwrite( STDERR, "ERROR $m\n" ); exit( 1 ); } static function log( $m ) { echo "$m\n"; } }
+class WC_Install {
+	protected static function get_cart_block_content() { return "<!-- wp:woocommerce/cart -->\n<div class=\"wp-block-woocommerce-cart\"></div>\n<!-- /wp:woocommerce/cart -->"; }
+	protected static function get_checkout_block_content() { return "<!-- wp:woocommerce/checkout -->\n<div class=\"wp-block-woocommerce-checkout\"></div>\n<!-- /wp:woocommerce/checkout -->"; }
+}
+$GLOBALS['stub'] = json_decode( getenv( 'STUB_STATE' ), true );
+function get_option( $o ) { return $GLOBALS['stub']['options'][ $o ] ?? false; }
+function get_post( $id ) { return isset( $GLOBALS['stub']['pages'][ $id ] ) ? (object) array( 'ID' => $id, 'post_type' => $GLOBALS['stub']['pages'][ $id ] ) : null; }
+function apply_filters( $hook, $value ) { return $value; }
+function kses_remove_filters() { echo "KSES OFF\n"; }
+function wp_slash( $v ) { return $v; }
+function wp_update_post( $a, $err ) { $GLOBALS['saved'][ $a['ID'] ] = $a['post_content']; echo "SAVE {$a['ID']} " . json_encode( $a['post_content'] ) . "\n"; return $a['ID']; }
+function is_wp_error( $x ) { return false; }
+function delete_post_meta( $id, $key ) { echo "META $id $key\n"; }
+function clean_post_cache( $id ) {}
+function get_post_field( $f, $id, $c ) { return $GLOBALS['saved'][ $id ] ?? ''; }
+$args = array( 'local-mediatest-acme' );
+require getenv( 'WORKER' );
+"""
+
+
+@unittest.skipUnless(PHP, "php is needed")
+class ResetShopPagesWorker(unittest.TestCase):
+    def run_worker(self, options, pages):
+        with tempfile.TemporaryDirectory() as tmp:
+            runner = Path(tmp) / "run.php"
+            runner.write_text(PHP_STUBS, encoding="utf-8")
+            env = dict(os.environ, STUB_STATE=json.dumps({"options": options, "pages": pages}), WORKER=WORKER)
+            return subprocess.run([PHP, runner.as_posix()], capture_output=True, text=True, env=env)
+
+    def test_each_shop_page_gets_woocommerces_default_and_loses_the_site_builds_record(self):
+        r = self.run_worker({"woocommerce_cart_page_id": "101", "woocommerce_checkout_page_id": "102", "woocommerce_myaccount_page_id": "103"}, {"101": "page", "102": "page", "103": "page"})
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("KSES OFF", r.stdout.splitlines()[0])
+        self.assertIn(r'SAVE 101 "<!-- wp:woocommerce\/cart -->', r.stdout)
+        self.assertIn(r'SAVE 102 "<!-- wp:woocommerce\/checkout -->', r.stdout)
+        self.assertIn(r'SAVE 103 "<!-- wp:shortcode -->[woocommerce_my_account]<!-- \/wp:shortcode -->"', r.stdout)
+        for page in ("101", "102", "103"):
+            self.assertIn(f"META {page} _sgs_site_build_tree", r.stdout)
+            self.assertIn(f"META {page} _sgs_site_build_content", r.stdout)
+        self.assertIn("reset local-mediatest-acme: checkout page 102 holds WooCommerce's default content", r.stdout)
+
+    def test_an_option_naming_no_page_stops_the_run(self):
+        r = self.run_worker({"woocommerce_cart_page_id": "101", "woocommerce_checkout_page_id": "0", "woocommerce_myaccount_page_id": "103"}, {"101": "page", "103": "page"})
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("woocommerce_checkout_page_id names no page (0)", r.stderr)
+        self.assertNotIn("SAVE 103", r.stdout, "nothing after the failing page is written")
+
+    def test_a_post_that_is_not_a_page_is_refused(self):
+        r = self.run_worker({"woocommerce_cart_page_id": "101", "woocommerce_checkout_page_id": "102", "woocommerce_myaccount_page_id": "103"}, {"101": "product", "102": "page", "103": "page"})
+        self.assertNotEqual(r.returncode, 0)
+        self.assertNotIn("SAVE", r.stdout)
 
 
 if __name__ == "__main__":

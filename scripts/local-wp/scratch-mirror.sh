@@ -7,13 +7,15 @@
 #   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh create local-sandybrown local-mediatest-sandybrown 8092
 #   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh drop local-mediatest-sandybrown
 #   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh strip local-mediatest-sandybrown
+#   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh reset-shop-pages local-mediatest-sandybrown
 #   wsl -d Ubuntu -u root -- bash /mnt/e/<worktree>/scripts/local-wp/scratch-mirror.sh list
 #
 # The name must start local-mediatest; the source must be one of the four mirrors; the port must be free and 8090-8199.
 # The copy records its source in <docroot>/.scratch-source, which sync-build.sh reads to pick the theme.json. create also makes the
 # copy its own application password (in its login file) and registers it as a route site target; drop removes the registration.
 # strip takes a copy back to a blank foundation for the foundation command, and refuses any folder that is not a copy this
-# script made with its own database (see strip below).
+# script made with its own database (see strip below); reset-shop-pages puts the copy's basket, checkout and account pages back to
+# WooCommerce's own default content, with the same refusal (see reset_shop_pages below).
 set -euo pipefail
 
 MIRRORS="local-eye-care local-sandybrown local-indus local-mamas"
@@ -197,11 +199,18 @@ STRIP_POST_TYPES="sgs_header sgs_footer sgs_drawer wp_global_styles wp_template 
 STRIP_OPTIONS="sgs_active_header_cpt_id sgs_active_footer_cpt_id sgs_active_drawer_cpt_id"
 STRIP_OPTION_PATTERNS="sgs_business_* sgs_site_info* sgs_social_*"
 
-strip() {
-  local name="$1" dir="${SCRATCH_WWW_ROOT:-/var/www}/$1" type ids count menus opt names pattern
+# The refusal every write to a copy's content goes through: the name matches NAME_RE, the folder holds .scratch-source and its
+# wp-config names the copy's own database. `verb` names the refused action in the message.
+guard_copy() {
+  local name="$1" dir="$2" verb="$3"
   [[ "$name" =~ $NAME_RE ]] || die "name must match $NAME_RE"
   [ -f "$dir/.scratch-source" ] || die "$name is not a scratch copy this script made (no $dir/.scratch-source)"
-  [ "$(wp --path="$dir" --allow-root config get DB_NAME)" = "$(db_of "$name")" ] || die "$name's wp-config does not name its own database $(db_of "$name"); refusing to strip"
+  [ "$(wp --path="$dir" --allow-root config get DB_NAME)" = "$(db_of "$name")" ] || die "$name's wp-config does not name its own database $(db_of "$name"); refusing to $verb"
+}
+
+strip() {
+  local name="$1" dir="${SCRATCH_WWW_ROOT:-/var/www}/$1" type ids count menus opt names pattern
+  guard_copy "$name" "$dir" strip
   # An option that is not there is skipped; any other failure stops the strip.
   for opt in $STRIP_OPTIONS; do
     if wp --path="$dir" --allow-root option get "$opt" >/dev/null 2>&1; then
@@ -237,6 +246,20 @@ strip() {
   sudo -u www-data wp --path="$dir" cache flush >/dev/null 2>&1 || wp --path="$dir" --allow-root cache flush >/dev/null
 }
 
+# Puts a copy's basket, checkout and account pages (the pages WooCommerce's woocommerce_cart_page_id, woocommerce_checkout_page_id and
+# woocommerce_myaccount_page_id name) back to the content WooCommerce gives a new shop: its default Cart and Checkout blocks (as the
+# installed WooCommerce's WC_Install writes them) and its account shortcode. strip keeps pages, so without this a copy's checkout
+# kept the source site's hand-built inner blocks, words, gift step and notes, and a "from blank" checkout proof proved nothing
+# (MERGED S-6). The site build's record of having built each page (its tree and content hashes) goes too, so the next site build
+# treats the account page as unbuilt and builds it from its tree instead of stopping on an edited page. Same refusal as strip.
+# The work is scripts/local-wp/reset-shop-pages.php, which prints one line per page and fails on a page it cannot reset.
+reset_shop_pages() {
+  local name="$1" dir="${SCRATCH_WWW_ROOT:-/var/www}/$1"
+  guard_copy "$name" "$dir" "reset its shop pages"
+  wp --path="$dir" --allow-root eval-file "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/reset-shop-pages.php" "$name"
+  sudo -u www-data wp --path="$dir" cache flush >/dev/null 2>&1 || wp --path="$dir" --allow-root cache flush >/dev/null
+}
+
 list() {
   for f in /etc/apache2/sites-available/local-mediatest*.conf; do
     [ -e "$f" ] || continue
@@ -252,6 +275,7 @@ case "${1:-}" in
   create) [ $# -eq 4 ] || die "usage: create <source mirror> <local-mediatest-name> <port>"; create "$2" "$3" "$4" ;;
   drop) [ $# -eq 2 ] || die "usage: drop <local-mediatest-name>"; drop "$2" ;;
   strip) [ $# -eq 2 ] || die "usage: strip <local-mediatest-name>"; strip "$2" ;;
+  reset-shop-pages) [ $# -eq 2 ] || die "usage: reset-shop-pages <local-mediatest-name>"; reset_shop_pages "$2" ;;
   secrets)
     [ $# -eq 2 ] && [[ "$2" =~ $NAME_RE ]] || die "usage: secrets <local-mediatest-name>"
     s_src="$(cat "/var/www/$2/.scratch-source")"
@@ -269,5 +293,5 @@ case "${1:-}" in
     echo "$3" > "/var/www/$2/.scratch-target"
     echo "$2 now runs the theme.json deployed to $3" ;;
   list) list ;;
-  *) die "usage: create <source> <name> <port> | drop <name> | strip <name> | secrets <name> | target <name> <deploy target> | list" ;;
+  *) die "usage: create <source> <name> <port> | drop <name> | strip <name> | reset-shop-pages <name> | secrets <name> | target <name> <deploy target> | list" ;;
 esac
