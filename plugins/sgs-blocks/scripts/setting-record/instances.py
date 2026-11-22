@@ -112,10 +112,7 @@ LAYOUT_VALUES = ('flex', 'grid', 'row', 'stack', 'columns', 'inline', 'horizonta
 # How each setting state is reached in a browser (calibrate-instances.mjs::STATE_TRIGGERS); the offline renderer
 # diffs printed CSS, so this is carried for a reader, never needed to see the change.
 STATE_TRIGGERS = {'hover': 'hover', 'focus': 'focus', 'focus-visible': 'focus', 'scrolled': 'scroll', 'shrunk': 'class', 'open': 'open', 'current': 'fixture'}
-EXTENSION_WHY = 'an extension setting that changes what the block does or shows, not how it paints (extension-roster.json role behaviour or content)'
-# Extension roles that paint: their settings are valued like the block's own (the runner's --render-block-filters runs
-# the render_block filters that print them).
-EXTENSION_PAINT_ROLES = {'layout', 'boolean-visibility', 'styling', 'visual'}
+EXTENSION_WHY = 'an extension setting the extension roster gives no definition for'
 # The placeholders the renderer fills (probe.py::PLACEHOLDERS).
 IMAGE = {'id': '{{image}}', 'url': '{{image.url}}'}
 
@@ -909,9 +906,10 @@ def plan(short: str, plugin: Path = PLUGIN, fixtures: dict | None = None, *, sca
     roster = extension_roster(str(plugin))
     ext = extension_attrs(bj, roster)
     shapes = tier_shapes(schema, blocks_dir / short, plugin)
-    # The extension settings that paint join the block's own: their definition, place and tier shape from the roster.
-    paint = {a: d for e in roster for a, d in (e.get('attributes') or {}).items()
-             if a in ext and a not in schema and (d.get('role') in EXTENSION_PAINT_ROLES or str(d.get('role', '')).startswith('colour'))}
+    # The extension settings join the block's own: their definition, place and tier shape from the roster.
+    # Every extension setting the block receives is tried, whatever its roster role: a setting that paints nothing is
+    # shown to by its renders (check.py lists it under testedNoPaint), not assumed from its role.
+    paint = {a: d for e in roster for a, d in (e.get('attributes') or {}).items() if a in ext and a not in schema}
     if paint:
         bj = {**bj, 'attributes': {**{a: {k: v for k, v in d.items() if k in ('type', 'default', 'enum')} for a, d in paint.items()},
                                    **(bj.get('attributes') or {})}}

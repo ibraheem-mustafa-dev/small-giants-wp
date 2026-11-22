@@ -83,12 +83,12 @@ def test_coincident_inherited_value_is_proved_over_a_sentinel_underlay():
     assert 'underlay' in rep['proved'][0]['evidence']
 
 
-def test_theme_custom_property_is_blind():
-    # The plain value reads a custom property only the theme defines; without the theme both sides fall back alike.
+def test_undefined_token_read_alike_in_both_pages_is_removed():
+    # Both pages read the same token through the same declaration: whatever a site defines, the setting changes nothing.
     css = '.sgs-demo{color:var(--theme-ink, red)}'
     run, key = run_of(HTML, css, HTML, css + '.sgs-demo{color:var(--theme-ink, red)}', entry(), 'red', ['.sgs-demo'])
     out, rep = PR.prove(SHORT, run)
-    assert verdicts(rep)['blind'] == 1 and 'theme' in rep['blind'][0]['evidence']
+    assert verdicts(rep)['removed'] == 1
 
 
 def test_difference_on_another_part_is_refiled():

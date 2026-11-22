@@ -38,8 +38,9 @@ SCHEMA = HERE / 'record.schema.json'
 
 
 BROWSER_VERDICTS = HERE / 'browser' / 'verdicts'
-# The causes the browser pass settles (browser/README.md): a part the block's script builds, or one another block prints.
-BROWSER_CAUSES = {'script-built-part', 'part-printed-elsewhere'}
+# The causes the browser pass settles (browser/README.md): a part the block's script builds, a token a script sets, or a
+# part another block prints.
+BROWSER_CAUSES = {'script-built-part', 'script-set-token', 'part-printed-elsewhere'}
 
 
 def key(e: dict) -> tuple:
@@ -177,8 +178,13 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
                 if p.get('selector'):
                     sels.setdefault(k, set()).add(p['selector'])
     errors = sorted({(results[k].get('error') or '')[:200] for k in results if not results[k].get('ok')})
+    # Every setting is accounted for: in the record (an entry), tested and painting nothing (its renders changed no CSS,
+    # class, attribute or style anywhere), or not tested (`unvalued`, with the reason the generator could not value it).
+    tested = {i['attr'] for i in insts if i['attr'] and not i['isDefault'] and not i['isBase'] and not i.get('paintState')}
+    recorded = {e['setting'] for e in entries.values()} | {e['setting'] for e in unnamed}
     stats = {'block': slug, 'instances': len(insts), 'renders': len(jobs), 'failed': sum(1 for r in results.values() if not r.get('ok')),
-             'errors': errors[:10], 'secondsRendering': round(t2 - t1, 1), 'secondsRun': round(time.time() - t0, 1)}
+             'errors': errors[:10], 'secondsRendering': round(t2 - t1, 1), 'secondsRun': round(time.time() - t0, 1),
+             'testedNoPaint': sorted(tested - recorded), 'unvalued': pl.get('unvalued') or []}
     return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'selectors': sels, 'results': results, 'children': children, 'plugin': plugin, 'jobs': jobs, 'defaultHtml': d0.get('html', ''), 'stats': stats,
             'log': log, 'aliases': aliases, 'sheets': sheets, 'renderer': rn, 'plan': pl, 'slug': slug, 'content': content, 'inner': inner}
 

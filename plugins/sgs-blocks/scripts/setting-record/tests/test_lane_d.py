@@ -238,10 +238,10 @@ def test_must_fail_theme_custom_property_is_defined_by_the_theme_sheet():
     run, key = run_of(*run_args, theme_css=':root{--wp--preset--color--primary:#112233}')
     out, rep = PR.prove(SHORT, run)
     assert rep['counts']['proved'] == 1 and rep['theme']['loaded'] is True
-    # the negative control: without the theme sheet the value is undefined and the entry keeps its cause
+    # without the theme sheet the property is undefined: its placeholder proves the setting switches it on (G4)
     run2, key2 = run_of(*run_args)
     out2, rep2 = PR.prove(SHORT, run2)
-    assert out2[key2]['unproved'] == 'theme-value'
+    assert 'unproved' not in out2[key2] and 'placeholder' in str(rep2['proved'][0]['evidence'])
 
 
 def test_must_fail_a_theme_rule_that_wins_in_both_pages_keeps_the_entry():
@@ -267,21 +267,36 @@ def test_must_fail_a_proof_the_blocks_own_sheets_give_survives_the_theme_sheet()
     assert rep['counts']['proved'] == 1
 
 
-def test_must_fail_an_undefined_property_with_a_fallback_stays_unknown_even_with_the_theme():
-    # `var(--sgs-parent-default, 600)`: a parent block or a client's tokens define it, so no difference between the pages
-    # is no proof of none, and the entry must not be removed because the theme sheet loaded.
+def test_an_undefined_token_both_pages_read_alike_is_judged_on_its_declaration():
+    # `var(--sgs-parent-default, 600)` in both pages: whatever a parent block or a client's token holds, both pages read
+    # the same one through the same declaration, so the setting changes nothing here and the entry is removed.
     e = entry(setting='weight', props=('font-weight',))
     css = '.sgs-demo{font-weight:var(--sgs-parent-default, 600)}'
     run, key = run_of(HTML, css, HTML, css + '.sgs-demo{--x:1}', e, '600', ['.sgs-demo'], theme_css=':root{--other:1}')
     out, rep = PR.prove(SHORT, run)
-    assert rep['counts']['removed'] == 0 and out[key]['unproved'] == 'theme-value'
+    assert rep['counts']['removed'] == 1
 
 
-def test_value_still_undefined_after_the_theme_loads_keeps_theme_value():
-    e = entry()
-    run, key = run_of(HTML, '', HTML, '.sgs-demo{color:var(--site-only-token)}', e, 'x', ['.sgs-demo'], theme_css=':root{--wp--preset--color--primary:#112233}')
+def test_must_fail_a_token_a_front_end_script_sets_goes_to_the_browser(tmp_path):
+    # Breaks without the guard: a script writes the token from what the setting printed, so a fixed placeholder sees no
+    # change and the entry would be removed though the browser shows one.
+    e = entry(setting='weight', props=('font-weight',))
+    css = '.sgs-demo{font-weight:var(--sgs-bridge-h, 600)}'
+    run, key = run_of(HTML, css, HTML, css + '.sgs-demo{--x:1}', e, '600', ['.sgs-demo'], theme_css=':root{--other:1}')
+    run['plugin'] = tmp_plugin(tmp_path, {'src/blocks/demo/view.js': "el.style.setProperty('--sgs-bridge-h', h + 'px');"})
     out, rep = PR.prove(SHORT, run)
-    assert out[key]['unproved'] == 'theme-value'
+    assert out[key]['unproved'] == 'script-set-token' and rep['counts']['removed'] == 0
+
+
+def test_must_fail_a_setting_that_swaps_one_site_token_for_another_is_proved_by_their_placeholders():
+    # Breaks without the placeholders (G4): both tokens are a site's own, undefined here, so both pages computed alike
+    # (even over the underlay) and the entry stayed unproven, though on a site the two tokens differ.
+    e = entry()
+    run, key = run_of(HTML, '.sgs-demo{color:var(--site-ink)}', HTML, '.sgs-demo{color:var(--site-accent)}', e, 'accent', ['.sgs-demo'],
+                      theme_css=':root{--wp--preset--color--primary:#112233}')
+    out, rep = PR.prove(SHORT, run)
+    assert 'unproved' not in out[key] and out[key]['kind'] == 'switched-on'
+    assert 'placeholder' in str(rep['proved'][0]['evidence'])
 
 
 # ---------------------------------------------------------------- where a missing part comes from

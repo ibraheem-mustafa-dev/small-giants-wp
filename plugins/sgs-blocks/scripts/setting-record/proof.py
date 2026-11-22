@@ -46,6 +46,7 @@ import cascade as C  # noqa: E402
 import computed as CP  # noqa: E402
 import diff as D  # noqa: E402
 import instances as I  # noqa: E402
+import render as RN  # noqa: E402
 import reference as R  # noqa: E402
 import vocab as V  # noqa: E402
 sys.path.insert(0, str(HERE.parent / 'lib'))
@@ -104,7 +105,10 @@ class Pages:
         if not with_theme:
             css = ''
         self.frame = frame_widths(layout)
-        files = D.sheet_files(run['plugin'], short, run['children'])
+        # the block drawn inside its fixture's parents (a menu in a header row), so a rule scoped by the parent matches
+        self.shell = parent_shell(run)
+        parents = [p['name'].split('/', 1)[1] for p in self.shell['parents']]
+        files = sorted(set(D.sheet_files(run['plugin'], short, run['children'])) | {f for b in parents for f in D.sheet_files(run['plugin'], b, [])})
         texts = [f.read_text(encoding='utf-8', errors='ignore') for f in files]
         self.base = CP.Page.static_rules(([css] if css else []) + texts)
         # static_rules numbers the user-agent sheet from 0 and each sheet after it from 10,000 in steps of 100,000: the
@@ -123,13 +127,48 @@ class Pages:
         self.run['jobs'][job] = attrs
         self.known |= set(re.findall(r'(--[\w-]+)\s*:', res.get('css', '') + ' ' + res.get('html', '')))
 
-    def get(self, job: str, held=(), conditions=frozenset(), underlay=None):
-        k = (job, frozenset(held), frozenset(conditions), (underlay[0], tuple(underlay[1])) if underlay else None)
+    def get(self, job: str, held=(), conditions=frozenset(), underlay=None, tokens=()):
+        k = (job, frozenset(held), frozenset(conditions), (underlay[0], tuple(underlay[1])) if underlay else None, tuple(tokens))
         if k not in self.memo:
             res = self.run['results'][job]
-            self.memo[k] = CP.Page(res.get('html', ''), [res.get('css', '')], self.short, held=held, conditions=conditions,
-                                   base_rules=self.base, underlay=underlay, container_frame=self.frame)
+            html = self.shell['before'] + res.get('html', '') + self.shell['after']
+            self.memo[k] = CP.Page(html, [self.shell['css'], res.get('css', '')], self.short, held=held, conditions=conditions,
+                                   base_rules=self.base, underlay=underlay, container_frame=self.frame, tokens=tuple(tokens))
         return self.memo[k]
+
+
+CHILD_MARK = '<!--sgs-setting-record-child-->'
+
+
+def parent_shell(run: dict) -> dict:
+    """The markup and CSS of the fixture's `parents` (outermost first) around the block: each parent rendered through its
+    own render.php with the next one inside it as its content, the innermost holding a marker where the block goes.
+    {'before', 'after', 'css', 'parents', 'error'}; empty strings when the fixture names no parents or one fails to render."""
+    out = {'before': '', 'after': '', 'css': '', 'parents': [], 'error': None}
+    fixture = (run.get('plan') or {}).get('fixture') or {}
+    parents = fixture.get('parents') or []
+    rn = run.get('renderer')
+    if not parents or rn is None:
+        return out
+    plugin = Path(run['plugin'])
+    content, css = CHILD_MARK, []
+    for p in reversed(parents):
+        name = p['name']
+        short = name.split('/', 1)[1]
+        try:
+            attrs = RN.with_defaults(plugin, short, RN.fill(p.get('attributes') or {}))
+        except OSError as exc:
+            out['error'] = f'{name}: {exc}'
+            return out
+        res = rn.render(name, attrs, content)
+        if not res.get('ok') or CHILD_MARK not in res.get('html', ''):
+            out['error'] = f'{name}: ' + (res.get('error') or 'its render does not print its content')[:200]
+            return out
+        content = res['html']
+        css.insert(0, res.get('css', ''))
+    before, _, after = content.partition(CHILD_MARK)
+    out.update(before=before, after=after, css='\n'.join(css), parents=parents)
+    return out
 
 
 def leaves(v) -> list:
@@ -275,7 +314,8 @@ def prove(short: str, run: dict):
     pages = Pages(short, run)
     plain = Pages(short, run, with_theme=False) if pages.theme['loaded'] else pages
     out, report = {}, {'proved': [], 'refiled': [], 'removed': [], 'blind': [], 'deadParts': [], 'completions': [],
-                       'theme': pages.theme, 'frame': pages.frame}
+                       'theme': pages.theme, 'frame': pages.frame,
+                       'parents': {'names': [p['name'] for p in pages.shell['parents']], 'error': pages.shell['error']}}
     scan = scan_of(run, short)
     dead_seen = {}
     for k, e in run['entries'].items():
@@ -307,6 +347,13 @@ def prove(short: str, run: dict):
                     report['completions'].append({'setting': setting, 'part': part, 'with': extra['with']})
                     pairs = pairs + [extra['pair']]
                     r = scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors)
+            if r['verdict'] is None:
+                sweep = override_sweep(pages, run, setting, pairs)
+                if sweep:
+                    # a per-device override: every value of it over every desktop value it can override
+                    pairs = pairs + [x for x in sweep if x not in pairs]
+                    r = scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors)
+                    report.setdefault('overrideSweeps', {})[setting] = len(sweep)
             seen_part, matched, refile = r['seen_part'], r['matched'], r['refile']
             verdict, evidence, kind = r['verdict'], r['evidence'], r['kind']
             if verdict is None:
@@ -336,11 +383,24 @@ def prove(short: str, run: dict):
                             for el, pse in pg.elements(part)[:1]:
                                 for w in widths:
                                     theme |= outside_vars(pg, el, pse, names, w, conds, pages.known)
+                    token = token_test(pages, pairs, part, names, widths, held, conds, theme) if theme else ''
+                    scripted = script_set_tokens(run['plugin'], theme) if theme and not token else []
+                    if theme and not token and not scripted:
+                        # the value comes from a token no page here defines, and the setting does not switch which one is
+                        # read: the token's value is the site's, not this setting's, so the entry is judged as any other
+                        theme = set()
                     changed_decl = declaration_changes(pages, pairs, part, names, widths, held, conds)
                     other = None if theme else scan_pairs(pages, run, setting, part, names, sibling_pairs(run, setting, pairs), held, conds, widths, selectors)
                     second = '' if (theme or (other and other['verdict'])) else second_value(pages, run, pairs, setting, part, names, widths, held, conds)
                     under = '' if (theme or second or not changed_decl) else underlay_test(pages, pairs, part, names, widths, held, conds)
-                    if unnamed and not second:
+                    if token:
+                        # the setting switches which token the value reads: proved whatever each site's token holds
+                        verdict, evidence, kind = 'proved', token, 'switched-on'
+                    elif scripted:
+                        # a front-end script writes the token (from what the setting printed): only a browser sees its value
+                        verdict, cause = 'blind', 'script-set-token'
+                        evidence = f'the value reads {scripted[0][0]}, which a front-end script sets ({scripted[0][1]}): the browser pass reads it'
+                    elif unnamed and not second:
                         verdict, cause, evidence = 'blind', 'state-not-holdable', f'the rule holds in a state the record cannot name ({", ".join(unnamed)}), which the proof cannot hold'
                     elif theme:
                         verdict, cause, evidence = 'blind', 'theme-value', f'the value reads {sorted(theme)[:4]}, defined by neither the theme (loaded: {pages.theme["loaded"]}) nor the block\'s own sheets'
@@ -392,6 +452,7 @@ def prove(short: str, run: dict):
 # Why an entry stays unproved, by the cause slug each mechanism or task owns (README, "The record"). A caller that names no
 # cause gets the slug whose words its evidence carries.
 UNPROVED = (
+    ('script-set-token', 'a front-end script sets'),
     ('script-built-part', "front-end script"),
     ('part-not-rendered', 'printed by PHP only'),
     ('part-printed-nowhere', 'printed nowhere'),
@@ -557,6 +618,69 @@ def sibling_pairs(run: dict, setting: str, known) -> list:
     return out
 
 
+_OVERRIDE = re.compile(r'^(.+?)(Tablet|Mobile)$')
+
+
+def override_of(schema: dict, setting: str) -> str | None:
+    """The setting a per-device override overrides: `fooMobile` and `fooTablet` override `foo` when the block has both
+    (block.json: "Mobile-tier override of triggerStyle"). None for any other setting."""
+    m = _OVERRIDE.match(setting)
+    return m.group(1) if m and m.group(1) in schema and setting in schema else None
+
+
+def override_sweep(pages, run, setting: str, pairs) -> list:
+    """For a per-device override, (plain, changed) render pairs that try every value of the override over every value of
+    the setting it overrides: a desktop value the plain render already shares with the override's test value shows
+    nothing, so the override is judged against a desktop value it really changes. For a per-device value held in one
+    attribute (desktop, tablet, mobile), every test value's tablet and mobile slots over its own desktop slot. Made once
+    per setting and shared by its entries; [] for a setting that overrides nothing."""
+    memo = run.setdefault('_sweeps', {})
+    if setting in memo:
+        return memo[setting]
+    memo[setting] = []
+    rn = run.get('renderer')
+    if rn is None or not pairs:
+        return []
+    plugin, short = Path(run['plugin']), pages.short
+    try:
+        schema = {k: v for k, v in (I.block_json(plugin, short).get('attributes') or {}).items() if isinstance(v, dict)}
+    except OSError:
+        return []
+    base = dict(run['jobs'][pairs[0][0]])
+    stem = override_of(schema, setting)
+    combos = []
+    if stem:
+        unset = schema[setting].get('default', '')
+        desktop = [{stem: base.get(stem, schema[stem].get('default'))}] + I.switching_values(plugin, short, stem, base)
+        for d in desktop:
+            for o in I.switching_values(plugin, short, setting, {**base, setting: unset}):
+                if o.get(setting) not in (None, unset) and o.get(setting) != d.get(stem):
+                    plain = {**base, **d, setting: unset}
+                    combos.append((plain, {**plain, **o}))
+    else:
+        for o in I.switching_values(plugin, short, setting, base):
+            v = o.get(setting)
+            if isinstance(v, dict) and 'desktop' in v and ({'tablet', 'mobile'} & set(v)):
+                plain = {**base, **o, setting: {'desktop': v['desktop']}}
+                combos.append((plain, {**base, **o}))
+    if not combos:
+        return []
+    todo, out = {}, []
+    for plain, changed in combos[:24]:
+        pair = []
+        for attrs_ in (plain, changed):
+            jk = 'ovr:' + hashlib.md5(json.dumps(attrs_, sort_keys=True, default=str).encode()).hexdigest()
+            pair.append(jk)
+            if jk not in run['results'] and jk not in todo:
+                todo[jk] = attrs_
+        out.append(tuple(pair))
+    if todo:
+        for jk, res in rn.render_many(run['slug'], todo, run['content'], run['inner']).items():
+            pages.add_job(jk, todo[jk], res)
+    memo[setting] = [x for x in out if run['results'][x[0]].get('ok') and run['results'][x[1]].get('ok')]
+    return memo[setting]
+
+
 def theme_winner(pages, pairs, part, names, widths, held, conds) -> str:
     """The first property on the part whose winning declaration in the changed page is a rule of the theme's sheet (the
     page frame's layout rules, a global style), as text, or ''."""
@@ -699,6 +823,48 @@ def part_source(plugin, short: str, part: str, scan) -> dict:
 
 
 # ---------------------------------------------------------------- the underlay test
+_COLOUR_PROP = re.compile(r'colou?r|fill|stroke|shadow|background|outline|border(?!-(radius|width|style|spacing|collapse|image-width))')
+
+
+def script_set_tokens(plugin, tokens) -> list:
+    """[(token, file)] for each custom property a front-end script of the plugin or theme writes (setProperty, or the
+    name in a style string a script builds): its value is the script's, read only in a browser."""
+    out = []
+    for t in sorted(tokens):
+        pat = re.compile(re.escape(t) + r'(?![\w-])')
+        for rel, text in corpus(str(plugin)):
+            if rel.endswith(('.js', '.mjs')) and pat.search(text):
+                out.append((t, rel))
+                break
+    return out
+
+
+def token_values(tokens, names) -> tuple:
+    """A placeholder value for each custom property no page here defines, distinct from every other and of the kind the
+    entry's properties take (a colour for a colour property, else a length)."""
+    colour = any(_COLOUR_PROP.search(n.lstrip('_')) for n in names)
+    out = []
+    for i, t in enumerate(sorted(tokens)):
+        out.append((t, f'rgb({17 + i}, {29 + 2 * i}, {41 + 3 * i})' if colour else f'{1001 + i}px'))
+    return tuple(out)
+
+
+def token_test(pages, pairs, part, names, widths, held, conds, tokens) -> str:
+    """The value reads a custom property no page here defines (a client's token, a parent block's default). Both pages are
+    rebuilt with each such property given its own placeholder on the page root: a setting that switches which property the
+    value reads now changes the computed value, whatever a site's own token holds. Returns the first difference, or ''."""
+    toks = token_values(tokens, names)
+    for b, c in pairs[:4]:
+        tb, tc = pages.get(b, held, conds, tokens=toks), pages.get(c, held, conds, tokens=toks)
+        for (xb, pse), (xc, _) in zip(tb.elements(part), tc.elements(part)):
+            for w in widths:
+                for prop in names:
+                    vb, vc = tb.value(xb, pse, prop, w), tc.value(xc, pse, prop, w)
+                    if vb != vc:
+                        return f'with each undefined token given its own placeholder ({", ".join(t for t, _ in toks[:3])}), {prop} at {w}px: {str(vb)[:40]} -> {str(vc)[:40]}'
+    return ''
+
+
 def underlay_test(pages, pairs, part, names, widths, held, conds) -> str:
     """A declaration the setting switches on that computes to the plain value (an inherit under a root with none, `none`, a
     floor): both pages rebuilt over two lowest-priority sentinel rules, one on the part's elements and a different one on

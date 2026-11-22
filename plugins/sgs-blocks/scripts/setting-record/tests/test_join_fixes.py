@@ -34,8 +34,8 @@ def test_must_fail_extension_settings_that_paint_are_valued():
     assert {'sgsHideOnMobile', 'sgsHideOnTablet', 'sgsHideOnDesktop', 'sgsPosition'} <= attrs
     unvalued = {u['setting']: u['why'] for u in pl['unvalued']}
     assert 'sgsHideOnMobile' not in unvalued
-    # A behaviour setting (it changes what the block does, not how it paints) stays unvalued, with that reason.
-    assert 'behaviour' in unvalued.get('sgsConditionLoggedIn', '')
+    # A behaviour setting is tried too: whether it paints is shown by its renders, not assumed from its roster role.
+    assert 'sgsConditionLoggedIn' in attrs
 
 
 def test_must_fail_a_utility_class_the_setting_adds_is_placed_on_its_element():

@@ -387,9 +387,12 @@ class Page:
     `container_frame` is the width a block's container has at each screen width ({375: px, ...}: the page frame's content width, see
     proof.frame_widths); a container query is evaluated against it (less the container's own padding and border), and with
     no frame it never holds. `underlay` is (part, property names): the underlay test (see _apply_underlay). While `filled`
-    is held every text input and textarea has a value, so :placeholder-shown is false on it."""
+    is held every text input and textarea has a value, so :placeholder-shown is false on it. `tokens` is ((custom property,
+    value), ...): each is declared on the page's root at the lowest priority, the way a site's own tokens reach a block
+    (see proof.token_test)."""
 
-    def __init__(self, html: str, sheets: list, short: str, held=(), conditions=frozenset(), base_rules=None, underlay=None, container_frame=None):
+    def __init__(self, html: str, sheets: list, short: str, held=(), conditions=frozenset(), base_rules=None, underlay=None, container_frame=None,
+                 tokens=()):
         frame = ('<html><body><div class="wp-site-blocks"><main class="wp-block-group">'
                  '<div class="entry-content wp-block-post-content is-layout-constrained has-global-padding">' + html + '</div></main></div></body></html>')
         self.soup = BeautifulSoup(frame, 'html.parser')
@@ -419,6 +422,10 @@ class Page:
             self._fill_inputs()
         if underlay:
             self._apply_underlay(*underlay)
+        if tokens:
+            # origin 0, specificity 0, order -1 on the root: inherited by everything, beaten by any rule that sets the same
+            # property, as a site's own tokens are
+            self.rules.append(C.Rule('html', None, [(n, v, False) for n, v in tokens], (), False, 0, -1))
         self.cascade = C.Cascade(self.soup, self.rules, self.held)
 
     def _fill_inputs(self):

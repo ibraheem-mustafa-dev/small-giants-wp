@@ -91,6 +91,7 @@
           "unproved": {
             "enum": [
               "script-built-part",
+              "script-set-token",
               "part-not-rendered",
               "part-printed-nowhere",
               "part-printed-elsewhere",
