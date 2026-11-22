@@ -82,6 +82,24 @@ if ( ! function_exists( 'sgs_rich_text_kses' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_rich_text_has_content' ) ) {
+	/**
+	 * Whether a rich value holds anything to show: words, or a picture or icon (img, svg, picture, video) with no words,
+	 * such as an icon-only heading. Whitespace and tags that wrap nothing are empty. sgs/text and sgs/heading render
+	 * nothing for an empty value.
+	 *
+	 * @param mixed $html RichText markup; anything that is not a scalar is empty.
+	 * @return bool
+	 */
+	function sgs_rich_text_has_content( $html ): bool {
+		$html = is_scalar( $html ) ? (string) $html : '';
+		if ( '' !== trim( wp_strip_all_tags( $html ) ) ) {
+			return true;
+		}
+		return 1 === preg_match( '/<(?:img|svg|picture|video)\b/i', $html );
+	}
+}
+
 if ( ! function_exists( 'sgs_authored_text_plain' ) ) {
 	/**
 	 * A typed rich value as plain text: line breaks become a space, tags are stripped, entities decoded, white space

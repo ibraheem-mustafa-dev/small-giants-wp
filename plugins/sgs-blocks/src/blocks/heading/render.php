@@ -64,9 +64,9 @@ $level        = $attributes['level'] ?? 'h2';
 $sub_tag      = $attributes['subTag'] ?? 'p';
 $anchor       = $attributes['anchor'] ?? '';
 
-// Soft-fail: nothing to render if the heading has no words (as sgs/text), so a binding that resolves to '' leaves no
-// empty element and no scoped style behind.
-if ( '' === trim( wp_strip_all_tags( $content ) ) ) {
+// Soft-fail: nothing to render if the heading holds no words and no picture or icon (as sgs/text), so a binding that
+// resolves to '' leaves no empty element and no scoped style behind, while an icon-only heading still renders.
+if ( ! sgs_rich_text_has_content( $content ) ) {
 	return;
 }
 

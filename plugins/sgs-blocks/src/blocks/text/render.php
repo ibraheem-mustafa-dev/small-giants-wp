@@ -133,10 +133,10 @@ $transition_duration = 300;
 $transition_easing   = 'ease';
 
 // ---------------------------------------------------------------------------
-// 2. Soft-fail: nothing to render if text is empty.
+// 2. Soft-fail: nothing to render if the text holds no words and no picture or icon.
 // ---------------------------------------------------------------------------
 
-if ( '' === trim( wp_strip_all_tags( $text ) ) ) {
+if ( ! sgs_rich_text_has_content( $text ) ) {
 	return;
 }
 
