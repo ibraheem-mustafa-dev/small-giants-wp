@@ -8,134 +8,120 @@ created: 2026-11-21
 
 ## Goal and why
 
-Mama's and Eye Care's from-blank shop pages (product, shop listing, basket and drawer, checkout, account, order confirmation), built by the cloning route with no hand edits on the scratch copies `local-mediatest-trlab` and `local-mediatest-trec`, pass Bean's eye beside their drafts at 375 and 1440, and the route is ready for MIC (a new shop) cloned on 2026-11-28. Done, as Bean sees it: one pair per page type per client beside its draft, every listed fault fixed or recorded as a gap, and every check that used to look green while comparing nothing now able to fail.
+Mama's and Eye Care's from-blank shop pages (product, shop listing, basket and drawer, checkout, account, order confirmation), built by the cloning route with no hand edits on the scratch copies `local-mediatest-trlab` (Mama's, :8121) and `local-mediatest-trec` (Eye Care, :8125), pass Bean's eye beside their drafts at 375 and 1440, and the route is ready for MIC (a new shop) cloned on 2026-11-28. Done, as Bean sees it: one pair per page type per client beside its draft, every listed fault fixed or recorded as a gap, and every check that used to look green while comparing nothing now able to fail.
 
 ## Approach
 
-Bean asked for every page to be investigated before more fixing (2026-11-21 night). Six investigators wrote 99 findings, six independent checkers fact-checked them (several "missing setting" claims were wrong and were dropped), and one merge grouped them by cause into 68 fixes, F-1 to F-68, each with its proof, file::symbol, owner, size, render-scope need and check: `.claude/reports/2026-11-21-shop-investigation/MERGED.md` (read a fix's block there before building it; the findings and `verify-*.md` verdicts sit beside it). Tasks below group the fixes into lanes that touch different files, so helpers on separate worktrees build them in parallel, then one rebuild of both copies proves them together. Rejected: page-by-page rounds of a few faults (Bean's ruling of 2026-11-20: work by mechanism), because most causes span several pages.
+Six investigators wrote 99 findings; checkers fact-checked them; one merge grouped them by cause into 68 fixes, F-1 to F-68 (`.claude/reports/2026-11-21-shop-investigation/MERGED.md`: read a fix's block there before building it). On 2026-11-22 a second opinion (three reviewers, every finding verified against main) found about a third of the work already built or only route work on settings that exist, and an order that serialised what need not wait. This plan is the corrected version: MERGED.md section 9 lists what was dropped or shrunk and why. Work runs as lanes on separate worktrees (theme, four plugin lanes, two route foundations), then one vertical slice per page type with Bean looking at each slice as it passes, not all at the end. Rejected: one horizontal round of all lanes, one plugin round last and one rebuild at the end (the lanes need the plugin settings early, and Bean's eye would come only on day 5).
 
 ## Out of scope
 
-The general cloning session's own fixes (listed in Task 1's message; it builds them), the header, footer and nav drawer builds, subscriptions (D-4), and any WooCommerce page a draft does not draw (left at its default, named in the report: MERGED.md section 7).
+The general cloning session's fixes (MERGED.md section 4, sent in Task 1), the header, footer and nav drawer builds, subscriptions (D-4), and WooCommerce pages a draft does not draw (MERGED.md section 7).
 
 ## Order
 
-- Task 1 and Task 2 first (no code). Task 3 (theme, first wave) and Tasks 4 to 6 (enablers and part-look foundations) run in parallel; the general session's RW-27 route half (F-29) lands only after Task 3's F-28, and its threshold write only after F-68 and F-30.
-- Tasks 7 to 12 (one lane per page type) start once Tasks 4 and 5 land; they run in parallel, but `data/part-locators.json` and `data/part-look-modes.json` are shared: each lane rebases and lands its data edits one at a time.
-- Task 13 (the plugin round) collects every lane's plugin settings into one batch and one announced private reseed (`.claude/dev-setup.md` "Publishing a private reseed"); never two reseeds at once, and tell the general session first.
-- Task 14 rebuilds both copies once (one surface at a time per copy) and Task 15 is Bean's look and the deploy checks. The build runs through `/subagent-driven-development`.
-- Every fix marked render-scope in MERGED.md runs `scripts/render-scope/render-scope.py` and lists its pages before any site's next deploy of `main`.
+- **Two heavy jobs at most, across both sessions.** Heavy: `build-foundation.mjs`, a chain or part-look run, an offline Fill, the full route suite, `npm run build`, a render check. A helper takes a lock folder `E:\sgs-tmp\heavy-lock\<job>` before one and removes it after; no more than two may exist. At most five helpers. The full route suite and `check-mutation-lists.mjs` run once per landing batch, not per task.
+- Wave 0 starts at once, all in parallel: Tasks 1 to 9. Task 10 (reseed A) follows Tasks 4 to 7 in the slot agreed with the general and setting-record sessions (their plugin round 6 reseed, then reseed A, then setting-record Task 3).
+- Wave 1 (Tasks 11 to 16): each fix starts when its own "Depends on" in MERGED.md has landed, not when a wave ends. Shared files land one change at a time, rebasing first: `lib/template-piece-woo-layout.mjs`, `lib/fill-part-look.mjs`, `lib/skeleton-filter-rail.mjs`, `data/part-locators.json`, `data/part-look-modes.json`.
+- Wave 2 (Task 17) proves each slice as it passes offline; Task 18 is deploy readiness.
+- Only the integration worktree (`E:\sgs-tmp\wt-tr-lab`, kept on main) syncs to the two copies (`sync-build.sh` copies from the repo that holds it); `chmod 777` the plugin folder after each sync.
 
 ## Risks
 
-- The copies were never truly from blank (S-2, S-6): a pass on a hand-finished leftover proves nothing. Task 2 must land before any live check counts.
-- Wrong "missing setting" claims: before building any new setting (Task 13), run the four checks (database, motion system, theme Customizer settings, the hand-built site's setting names) and drop what already exists.
-- Shared defaults: F-18, F-22, F-27, F-28, F-34, F-36, F-38, F-45, F-55, F-60, F-68 change what other sites render; each lists its pages (Bean's rule: a fix applies everywhere, an extension is opt-in).
+- The setting-record plan's Task 3 adds a build check: a block whose settings change fails `npm run build` until its record is updated. Every plugin commit after it takes the printed "entries to add" in the same commit.
+- Shared defaults (F-18, F-27, F-28, F-36, F-38, F-45, F-55, F-60, F-68) change what other sites render: Task 18 lists them through one render-scope run.
+- **Cut line if days slip** (recommended, Bean can change it): MIC-critical are product, shop listing with the phone filter, basket and drawer, checkout; the fidelity tail is account and confirmation polish, F-61's low rows, F-62's upsell row, F-35, F-22.
 
 ## Session breaks
 
-Read this plan, `MERGED.md` section 1 and `git log --oneline -20`; find the first task whose Status is not done; rerun the previous task's check; continue. Investigation scripts and pictures: `E:\sgs-tmp\template-rework\investigation\`; rebuild chain scripts: `chain.sh`, `chain-pl.sh` there.
+Read this plan, MERGED.md sections 1 and 9, and `git log --oneline -20`; find the first task whose Status is not done; rerun the previous task's check; continue. Investigation scripts and pictures: `E:\sgs-tmp\template-rework\investigation\`.
 
 ## First action
 
-Bean answers the eight decisions in MERGED.md section 6 (D-1 to D-8, each with a recommendation; five minutes).
+Task 1's message to the general session (5 minutes; everything it needs is in this plan and MERGED.md section 4).
 
-## Wave 1: Decisions, setup and the first wave
+## Wave 0: Decisions, setup and lanes (parallel)
 
 ### Task 1: Decisions recorded and the general session's list sent
-- Why: eight choices only Bean can make shape Tasks 10 to 12; the general session owns 13 fixes. Read first: MERGED.md sections 4 and 6
-- Changes: this plan's tasks updated with Bean's answers (D-1 to D-8); one message to the general session with section 4's list, settling owners of F-9 and F-20
-- Touches: this plan; a cross-session message
-- Done when: each D has an answer in this plan, and the general session has replied naming its build wave for each of its items
+- Why: Bean's answers shape the lanes; the general session owns fixes this stream's proof needs. Read first: MERGED.md sections 4 and 6
+- Changes: D-1 to D-8 recorded in MERGED.md section 6 (done 2026-11-22); one message to the general session: section 4 minus F-67 and the built halves of F-5 and F-31; D-1's `SignIn.dc.html` page row; D-4's Claude Design note; F-2, F-3, F-7, F-11, F-42 and F-27 asked for as hard dependencies with a wave each (offering to build F-2 and F-3 here); owners of F-9 and F-20; whether `local-mediatest-trlab` can be its stripped Mama's plumbing copy; the reseed slot; whether setting-record Task 5 covers F-37
+- Touches: MERGED.md; a cross-session message
+- Done when: the general session has replied with a wave or owner for each item
 - Depends on: none
+- Status: decisions recorded; message not sent
+
+### Task 2: Both copies truly from blank and complete
+- Why: a pass on a hand-finished leftover proves nothing (S-2, S-6). Read first: MERGED.md section 3, `scripts/computed-route/lib/foundation-plan.mjs`
+- Changes: `scripts/local-wp/scratch-mirror.sh strip` then `build-foundation.mjs` on each copy (it runs intake, tokens, plugin build, sync, media, site-build, manifest, paint calibration and the header, footer and drawer clones: S-3, S-4, S-5, S-11); a small script resetting the basket, checkout and account pages to WooCommerce's default blocks (S-6, the only setup step with no script); `site-build.mjs --account-registration --apply` (S-9); test keys for the card field only, 15 minutes at most (wallets need https and stay on Task 18's hand check); the fixture product's image (S-12); a worktree kit script copying the gitignored `sites/<client>/build/intake/{facts.json,inventories,replay}` into a helper worktree and setting `SGS_SECRETS_ROOT`; `chain.sh` and `chain-pl.sh` pointed at the integration worktree
+- Touches: the two scratch copies (two heavy jobs, about 2.5 to 3.5 hours each, in the background)
+- Done when: a read-only diff against `local-mamas` finds no hand-finished block settings on Mama's copy, `manifest.mjs` lists no `noIntake`, both checkouts show a card field or the gap is recorded
+- Depends on: none (coordinate the strip of Mama's copy with the general session's plumbing run)
 - Status: not started
 
-### Task 2: Make both copies truly from blank and complete
-- Why: Mama's drawer, checkout words and shop options were hand-finished leftovers, Eye Care's header is from 2026-10-28, Mama's intake is stale. Read first: MERGED.md section 3 (S-2 to S-14)
-- Changes: a real strip of both copies (the new strip command, `99650a2c1`/`c2f980e44`, plus a reset of Mama's checkout page, S-6); Mama's intake re-run, then `manifest.mjs --apply` (S-3); a fresh Eye Care header (S-4); calibration of `sgs/product-card` on both copies and `sgs/account`'s kit hover rows on Mama's (S-5); registration step (S-9); test-mode gateway keys (S-10); missing upload files copied (S-11, S-12); the seeded customer's email confirmed (S-14)
-- Touches: the two scratch copies only; never `local-mamas`, `local-eye-care` or any hosted site
-- Done when: a read-only diff against `local-mamas` shows no hand-finished block settings left on Mama's copy, `manifest.mjs` lists no `noIntake`, and the checkout shows a test card field on both copies
-- Depends on: none
+### Task 3: Theme lane (F-28, F-68, later F-35)
+- Why: the general session's RW-27 route half shows a 1,790px blank band at 375 until F-28 lands; MIC's phone filter needs F-68. Read first: MERGED.md F-28, F-68, F-35
+- Changes: `theme/sgs-theme/assets/css/woocommerce.css` (a closed `dialog#sgs-shop-filters` takes no space whatever layout class; the 13 rules fixed at 781.98px/782px print from `sgs_shop_filter_drawer_breakpoint`, `inc/shop-filters-settings.php`); F-35 later, only the properties the two drafts differ on
+- Touches: the theme; every site's shop (render-scope in Task 18)
+- Done when: on trec at 375 the closed drawer takes 0px and opens and closes with its animation; with the option at 1060 the drawer shows from 1059 down and the sidebar from 1060 up (Playwright); the general session is told after F-28 and after F-68
+- Depends on: none (its live check waits for Task 2)
 - Status: not started
 
-### Task 3: First wave: the closed filter drawer and its breakpoint (F-28, F-68)
-- Why: the general session's RW-27 route half exposes a 1,790px blank band at 375 until F-28 lands, and MIC's phone filter needs both. Read first: MERGED.md F-28, F-68
-- Changes: `theme/sgs-theme/assets/css/woocommerce.css` (closed `dialog#sgs-shop-filters` hidden whatever layout class; the ~8 rules fixed at 782px moved to a rule the theme prints from `sgs_shop_filter_drawer_breakpoint`, `inc/shop-filters-settings.php`)
-- Touches: the theme; every site's shop (render-scope)
-- Done when: on `local-mediatest-trec` at 375 the closed drawer takes 0px and opens and closes; with the option at 1060 the drawer shows from 1059 down and the sidebar from 1060 up (Playwright); render-scope lists the pages; message the general session after each fix lands
-- Depends on: none
+### Task 4: Plugin lane P1, cart drawer (F-18, F-62, F-60's drawer rows)
+- Changes: `src/blocks/cart/render-scoped-css.php` (`$has_panel` falls back to the surface colour); F-62's missing settings only (remove text type and padding, stepper number width, free-delivery line height, empty body type and width, empty link look, vertical centring, gift box look and placement, upsell row, close tap area if `panelCloseSize` does not cover it); F-60's `item-row-template.js` add-options row
+- Done when: Eye Care's drawer reads at 375 and 1440; build gates pass; `audit-inline-styling --check` exits 0. Depends on: none. Status: not started
+
+### Task 5: Plugin lane P2, WooCommerce look (F-60's page rows, F-61, F-66, F-6's database rows)
+- Changes: F-60's page bugs; F-61's missing settings only (`sgsTermsTextAlign`, error text, summary-title visibility, stack width, the "via" line, quantity badge, `object-fit`; test first whether a tree edit or the coupon block's own attribute already gives shipping-in-step and coupon-open); F-66 (`sgsSort*` extras, `sgs/gift-order` tile type and column count, `sgs/icon-list` icon box border); the chip and sort settings (`extension-roster.json`, `includes/product-filter-look.php`) seeded as `block_attributes` rows so part-look can pair them
+- Done when: build gates pass; the seeder dry run lists the new rows. Depends on: none. Status: not started
+
+### Task 6: Plugin lane P3, account and order (F-36, F-38, F-41, F-45, F-49, F-12, F-63, F-64)
+- Changes: `account/style.css` rules that beat WooCommerce's floats (F-36); the order page's WooCommerce-table fallback (F-38 plugin half); `email` in `Customer_Binding::KEYS` (F-41); `heading/render.php` renders nothing for empty text (F-45); an `order-view` source in `helpers-link-source.php::sgs_resolve_link_source` (F-49); the order Show-to rules F-12 needs (check `order-owner`/`order-guest` against the draft's branches first); F-63's missing settings only (`menuItem` border and shadow, `ordersRow` radius, shadow and gap, `hideRequiredMarks`, `loginRowInline`, string keys); F-64's order-items settings; F-37 only after its cause is proved and setting-record Task 5 is ruled out
+- Done when: build gates pass; tests fail first. Depends on: none. Status: not started
+
+### Task 7: Plugin lane P4, product (F-55, F-65, D-8, F-51's sources)
+- Changes: `option-picker` chosen text through `sgs_wcag_text_colour_for_bg` (F-55); F-65's missing settings only (`tagBorderWidth`, `tagBorderColour`, `addToCartPriceSeparator`, `pickBadgeFontSize`; the buy box badge reuses `product-card-per-product.php`'s reader); the buy box instalments note, the twin of the drawer's `panelInstalmentsNote`/`panelInstalmentsCount`, off by default, %s = current price ÷ count, updated on a variation pick (D-8); `rating` and long `description` sources in `class-product-bindings.php` (F-51)
+- Done when: build gates pass; the note shows £46.33 for a £139 product at count 3. Depends on: none. Status: not started
+
+### Task 8: Route lane R1 (F-1 own half, F-4, F-8, F-10, F-13)
+- Changes: `template-piece-product-field.mjs::placeTitle` sets `level: h1`; the commerce region reports its run (prove offline first); the woo-layout piece claims the empty-basket branch; `template-piece-frame.mjs` records the wrapper it drops; the order reader binds a literal equal to the id the draft's order action creates (D-3)
+- Done when: offline propose passes for Eye Care's shop, Mama's basket and Mama's checkout on the saved inventories; tests fail first; mutation lists killed. Depends on: Task 2's worktree kit. Status: not started
+
+### Task 9: Route lane R2, part-look foundations (F-14, then F-15 to F-17)
+- Changes: F-14 (`shop` entry in Eye Care's `part-look.json`, plus the signed-in and link parts it names); F-15 (`statedSize` reads `height`, viewport-capped widths and grid tracks); F-16 after F-14; F-17 before F-23 (verify and compare report what they did not compare)
+- Done when: Eye Care's part-look on shop, checkout and the signed-in account pairs parts it paired 0 of before (counts in the commit); a verify with unpaired parts can no longer report all-match. Depends on: Task 2's worktree kit. Status: not started
+
+### Task 10: Reseed A
+- Changes: Tasks 4 to 7's settings published through `.claude/dev-setup.md` "Publishing a private reseed", announced to the general session first; then the lab rebuilt and synced. The four checks (database, motion system, theme Customizer, the hand-built site's setting names) only on section 5's "not checked" rows and the D-8 note. A reseed B only if slices find more settings
+- Touches: plugin; framework database. Done when: publish succeeds; inspector scan has no new finding. Depends on: 4 to 7 and the agreed slot. Status: not started. Also picks up the `sgs/cart`, `sgs/account` and `sgs/product-card` element selectors (`aae74374b`, `92a404f90`: about 16 `motion_targets` rows, no render)
+
+## Wave 1: One slice per page type (parallel, gated per fix)
+
+Each slice: read its MERGED.md blocks; tests fail first; mutation lists killed; every new skeleton rule passes the double-claim check (`lib/skeleton-double-claims.mjs`) on both clients' saved inventories; plugin settings found here go to reseed B.
+
+### Task 11: Product slice (F-50, F-52, F-53, F-54, F-51's route half, product-15's content align)
+- Also: the code review's sold-out simple product (`includes/class-cart-proxy.php::handle_availability` falls back to `Product_Manifest::build_simple()`) and the express-pay note in `buybox/extras.php::sgs_buybox_after_cart_form_action`; the product lane writes D-8's note from the draft's line. Status: not started
+
+### Task 12: Shop listing slice (F-6, F-30, F-32, F-33, F-34)
+- F-30 writes the theme shop options as theme mods the way `lib/site-build-catalogue-toggle.mjs` does (names only from eye-care-test, values from the draft). F-33 adds a mode rule writing `cardContentSource: product` and a modes `from` kind for `imageRatio` and `priceFromLowest`; F-34 also writes `_sgs_card_cta_label` and `_sgs_card_cta_action`; the route writes `showRating` and never `noReviewsText` (D-5). Also from the code review: `skeleton-filter-rail.mjs::handlerOf`'s regex, the brand strip's uncached product query, catalogue terms holding `&`. Status: not started
+
+### Task 13: Basket and drawer slice (F-19, F-20, F-21, F-9 if ours)
 - Status: not started
 
-### Task 4: Route enablers in this stream's files (F-1 own half, F-4, F-8, F-10, F-13)
-- Why: these unblock propose and the h1 on several pages. Read first: MERGED.md F-1, F-4, F-8, F-10, F-13
-- Changes: `lib/template-piece-product-field.mjs::placeTitle` sets `level: h1`; the commerce region reports its run (`lib/template-pieces-context.mjs`, region rule's run via `paint.runs`); the woo-layout piece claims the empty-basket branch; `lib/template-piece-frame.mjs` reports the wrapper it drops; the order reader treats state only the order action writes as the order (with D-3)
-- Touches: route files only
-- Done when: offline propose passes for Eye Care's shop, Mama's basket and Mama's checkout on the lab's saved inventories; each change has a test that fails first and a killed mutation list
-- Depends on: none (F-13 waits on D-3)
+### Task 14: Checkout slice (F-23 shrunk to step-number, line-item-brand, summary-fill and a section-with-h2 step; F-24, F-25, F-26 after F-10 and F-11)
 - Status: not started
 
-### Task 5: Part-look foundations (F-14 to F-17)
-- Why: every page lane builds on these; F-17 removes three green-but-empty checks. Read first: MERGED.md F-14 to F-17 and section 8
-- Changes: `lib/part-look-run.mjs` reads a one-file draft by its route (`part-look.json` entries, incl. Eye Care's shop) and refuses a surface it cannot open; `lib/fill-part-look.mjs` stated-size rule reads `height`, viewport-capped widths and grid tracks; current-state looks written; verify and compare report parts they did not compare as not verified
-- Touches: route files; `data/part-look.json` per client
-- Done when: Eye Care's part-look on shop, checkout and the signed-in account pairs parts it paired 0 of before (counts in the commit), and a verify with unpaired parts can no longer report all-match
-- Depends on: none
+### Task 15: Account slice (F-39, F-40, F-41's route half, D-1's sign-in page addresses, D-7's order words)
 - Status: not started
 
-### Task 6: The basket drawer never paints near-black (F-18)
-- Why: Eye Care's drawer is unreadable on every page. Read first: MERGED.md F-18, verify-basket.md
-- Changes: `plugins/sgs-blocks/src/blocks/cart/render-scoped-css.php` (the `$has_panel` branch falls back to the site's surface colour, not `currentColor`)
-- Touches: plugin; every site's drawer (render-scope)
-- Done when: Eye Care's drawer reads on the copy at 375 and 1440; render-scope lists the pages
-- Depends on: none
-- Status: not started
+### Task 16: Confirmation slice (F-12, F-13's binding, F-43, F-44, F-48 shrunk, F-49's route half, D-2's fixed words)
+- Mama's must build from its own draft, not WooCommerce's stock page. Status: not started
 
-## Wave 2: One lane per page type (parallel)
+## Wave 2: Proof and deploy readiness
 
-Each lane: read its MERGED.md blocks; tests fail first; mutation lists killed; offline propose and part-look checks; plugin settings it needs go to Task 13, not into the lane.
+### Task 17: Prove each slice as it passes
+- Changes: none in code. As a slice passes offline, the integration worktree runs `chain.sh` and `chain-pl.sh` for its surfaces on both copies in parallel (measured: full chains about 45 and 49 minutes, part-look 22 and 30), takes pairs at 375 and 1440 and sends them to Bean at once. Each MERGED.md section 8 row's fix has its failing-first test. MIC's draft gets an offline propose on the day it arrives (2026-11-27 is buffer)
+- Done when: Bean passes each slice, or names what fails (it returns to its slice). Depends on: the slice. Status: not started
 
-### Task 7: Basket lane (F-19, F-20, F-21, F-22, F-9 if ours)
-- Changes and checks: per MERGED.md. Depends on: 5. Status: not started
-
-### Task 8: Checkout lane (F-23 to F-26)
-- Changes and checks: per MERGED.md (F-27 is the general session's extractor). Depends on: 5, 2. Status: not started
-
-### Task 9: Shop lane (F-30 site-build shop-options step, F-6, F-31 own half, F-32 to F-35)
-- Also, from the night's code review (`reports/2026-11-21-shop-investigation/code-review.md`): `lib/skeleton-filter-rail.mjs::handlerOf` strips the letter s, not whitespace (`/^{{s*|s*}}$/g`); `brand-strip/product-brands-source.php::sgs_brand_strip_brand_ids_with_visible_products` loads every product id per render with no cache (large catalogues); a catalogue term with `&` (stored `&amp;`) is planned as missing on every run (`lib/site-build-catalogue-axes.mjs::axisChanges`).
-- Changes and checks: per MERGED.md; F-30 writes the 56 theme shop options from the draft (names only from eye-care-test, values from the draft). Depends on: 3, 5. Status: not started
-
-### Task 10: Account lane (F-36, F-38 to F-41)
-- Changes and checks: per MERGED.md, with D-1 and D-7. Depends on: 5. Status: not started
-
-### Task 11: Confirmation lane (F-12, F-43 to F-47)
-- Changes and checks: per MERGED.md, with D-2 and D-3; Mama's must build from its own draft, not WooCommerce's stock page. Depends on: 2, 4. Status: not started
-
-### Task 12: Product lane (F-50 to F-55, the kit's content align from product-15)
-- Also, from the night's code review: a simple product that sells out after its page loads keeps Add to Cart (the 409 branch of `product-card/view.js` calls `includes/class-cart-proxy.php::handle_availability`, which accepts only variable products: fall back to `Product_Manifest::build_simple()`); the express-pay screen-reader note in `buybox/extras.php::sgs_buybox_after_cart_form_action` asks a simple product's shopper to choose options.
-- Changes and checks: per MERGED.md, with D-4, D-5 and D-8. Depends on: 4, 5. Status: not started
-
-## Wave 3: Settings and proof
-
-### Task 13: Plugin round (F-37, F-60 to F-66, and every lane's settings)
-- Why: one batch and one reseed. Read first: MERGED.md section 5, `.claude/dev-setup.md` "Publishing a private reseed"
-- Changes: the settings each item names, through the shared components (Spec 32, 35, 35A); bugs F-60 first
-- Touches: plugin; framework database (reseed, announced); render-scope for F-60 and F-62
-- Done when: the four checks recorded per new setting; build gates, inspector scan with no new finding, `audit-inline-styling --check` exit 0; publish succeeds
-- Depends on: 7 to 12 (their settings lists)
-- Status: not started. The reseed also picks up the block.json element selectors added for `sgs/cart`, `sgs/account` and `sgs/product-card` (`aae74374b`, `92a404f90`): it changes `motion_targets.css_element` for about 16 rows and no render
-
-### Task 14: Rebuild both copies and prove every page
-- Why: one rebuild proves all lanes together. Read first: `E:\sgs-tmp\template-rework\investigation\chain.sh`, `chain-pl.sh`
-- Changes: none in code; rebuild every page type on both copies, part-look, pairs at 375 and 1440
-- Touches: the two scratch copies
-- Done when: every surface's propose and finalise pass with no green-but-empty check left (MERGED.md section 8 each now able to fail), and the pairs show each fixed fault gone; leftovers become a short round in this plan
-- Depends on: 1 to 13
-- Status: not started
-
-### Task 15: Bean's look, and deploy checks
-- Why: closes the Goal. Read first: this plan's Goal
-- Changes: one pair per page type per client sent to Bean; the render-scope list against Mama's live build (`bcc47e0a6`); express pay checked by hand on a product with options before Mama's next deploy; report gaps G-1 to G-7
-- Touches: none until Bean approves a deploy
-- Done when: Bean passes one page per type, or names what fails (which returns to its lane)
-- Depends on: 14
-- Status: not started
+### Task 18: Deploy readiness
+- Changes: one render-scope run (before `bcc47e0a6`, Mama's live build; after the final main) listing every page; render-check only on Mama's basket, checkout and account (F-18, F-36, F-38, F-60); the express-pay hand check on a product with options before Mama's next deploy; report gaps G-1 to G-7 and the missing features (D-4, D-8's static line)
+- Touches: none until Bean approves a deploy. Depends on: 17. Status: not started

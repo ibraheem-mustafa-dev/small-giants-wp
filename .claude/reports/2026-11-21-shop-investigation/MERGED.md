@@ -910,6 +910,16 @@ Dropped as wrong or not needed by the verdicts: shop-11's "no sort setting exist
 
 ## 6. Decisions for Bean
 
+**Bean's answers (2026-11-22), each checked against the code:**
+- D-1 A, own page. Mama's live shop already sends a signed-out visitor from `/my-account/` to `/sign-in/` (302, `includes/account/class-account-redirect.php`, driven by `signedOutSignInUrl`), so the route copies that: a page row for `SignIn.dc.html` and the card's two addresses.
+- D-2 B, fixed sample words (Bean: the draft invented a system the business does not have). F-45 keeps only the heading's empty stop.
+- D-3 B, bind the literal equal to the id the draft's order action creates (F-13).
+- D-4 A, omit and record a missing feature.
+- D-5: already built. `includes/product-card-live-fill.php` reads the live rating and review count; at 0 reviews with `noReviewsText` empty the card shows no rating row. The route writes `showRating` and never `noReviewsText`.
+- D-6: nothing to build. The coupon field takes the field look (`selectors.json::field_text`), Apply takes the primary button preset (`woocommerce.css`), and the toggles and shipping line already use the body font and colour at the `small` token (measured on trec's basket). Eye Care's 9.5px is F-27's token value.
+- D-7 A, take the words.
+- D-8: the buy box gets a twin of the drawer's `panelInstalmentsNote`/`panelInstalmentsCount` (plan Task 7); Bean ruled out gateway buttons in that spot.
+
 **D-1 Mama's sign-in page: its own page, or folded into the account page (account-19).** Today the page map folds `SignIn.dc.html` into the account row, so the band "welcome back, mama / Sign in", the "why have an account?" card and the guest note are never built.
 - A (recommended): the sign-in draft becomes its own page, built like any page, and the account card's two buttons link to it. Matches the hand-finished site (`/sign-in/`, page 628) and needs no new mechanism. M.
 - B: one page; the sign-in sections are built onto the account page and shown only on the sign-in view (`sgsConditionUrlParam` `sgs-login`). Keeps one address but adds conditional sections and hides the card view's band there.
@@ -996,3 +1006,15 @@ The main session relayed (2026-11-21 late): the general session splits RW-27; it
 - F-28 split from the breakpoint-rules change (now F-68), because the two block different halves of RW-27; F-68 numbered out of sequence to keep every other id stable.
 - Re-read Mama's `/cart/` live (read-only `curl`) to settle the product verdict's h1 claim.
 - account.md's Eye Care reference site flagged as the wrong mirror (S-15), from `.claude/dev-setup.md`.
+
+## 9. Second opinion (2026-11-22): what is already built, and what shrank
+
+Three reviewers audited every fix against main (`acfa39ade`); independent verifiers checked each finding. The plan's tasks carry the result; this is the record.
+
+- Built or not this stream's: F-5's and F-31's route halves (`913dadb49`, `518e4054e`); F-67 is the general session's RW-18; F-47 dropped (latent, no draft hits it); F-46 parked (editor only); F-45(b) not needed under D-2.
+- Route work only, every setting exists: F-39 (all 16 `sgs/account` settings), F-50 (`extrasBeforeCount`, `galleryColumnRatio`, `galleryColumnGap`, `stackBelow`), F-52, F-54 (`sgsSameTermAs`), F-33 (all 11 card settings). F-33 also needs a mode rule writing `cardContentSource: product` (default `typed`): without it the per-product badge, price note and button F-34 writes never render (`includes/product-card-per-product.php` reads `_sgs_card_badge`, `_sgs_card_price_note`, `_sgs_card_cta_label`, `_sgs_card_cta_action`). The `ctaBehaviour` gap note in `data/part-look-modes.json` is wrong for label and action.
+- Shrunk: F-2 is one `copyFile(buildDir, slug)` call in `gate-chain.mjs::buildContext`; F-14(a) is one `shop` entry; F-23 lacks only step-number, line-item-brand, summary-fill and a section-with-h2 step; F-48 only non-emoji glyph discs (`skeleton-rules.mjs::EMOJI` covers emoji); F-49's plugin half is an `order-view` link source; F-55 reuses `sgs_wcag_text_colour_for_bg`; F-30 writes theme mods like `lib/site-build-catalogue-toggle.mjs`, not `site-build-options.mjs` (which writes options and refuses non-Fill sources); F-35 only what the drafts differ on.
+- Settings that exist (do not rebuild): F-61 `sgsItemStepper*`, `sgsNotice*`, `sgsDeliveryDescription*`, `sgsCouponLabel*`, `sgsTerms*`; F-62 `.sgs-cart__panel-empty--rich`, `emptyMessage*`, `emptyCta*`, `freeDeliveryPlacement`, `itemQtyFontWeight`/`Height`/`Radius`, `panelCloseSize`; F-63 `ordersRowBorderColour`, `ordersRowBackgroundHover`, `ordersRowView*`, `ordersPill*`, `addressCard*`, `menuActiveIndicator*`, `menuCount*`, `menuItemRadius`/`Padding`, `resetNotice*`; F-65 `galleryStickerText` and the per-product card reader; F-66 `giftTile*`, `iconBoxSize`, `iconBackgroundColour`.
+- Corrected: F-6's settings live in `src/blocks/extensions/extension-roster.json` and `includes/product-filter-look.php`, not `capabilities.json`; the database has no `block_attributes` rows for `product-filter-*` or `catalog-sorting`, so part-look cannot pair them until they are seeded. F-58 stays (the 2026-11-21 Fill still says "reach-only"; only `itemTitleFontFamily` is routed). F-22 stays latent until the fresh header shows it. F-26 also depends on F-10 and F-11. F-27's owner is unconfirmed (the general plan's RW-17 does not name `pick_font_scale`). F-12: `order-owner`/`order-guest` cannot tell a new account from an existing one.
+- Setup: `build-foundation.mjs` (`lib/foundation-plan.mjs`) already runs intake, tokens, plugin build, sync, media, site-build, manifest, paint calibration and the header, footer and drawer clones after `scratch-mirror.sh strip` (S-2 to S-5, S-11); registration is `site-build.mjs --account-registration --apply` (S-9). Only S-6 has no script. The foundation takes 143 to 198 minutes a site and has never run live. Wallets need https and a verified domain (Stripe), so the copies test the card field only (S-10). S-7, S-8, S-13, S-15, S-16 and S-17 need no action.
+- Orchestration: the plugin round starts at once in four lanes and one reseed (the lanes need its settings); fixes start by their own dependencies, not by wave; at most two heavy jobs at once across sessions (the PC stopped at 23:31 on 2026-11-20 with more); helper worktrees need the gitignored intake files; only one worktree syncs to the copies; render-scope runs once against `bcc47e0a6`; Bean sees each slice as it passes.
