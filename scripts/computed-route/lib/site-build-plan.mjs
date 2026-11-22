@@ -192,7 +192,10 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 		const hash = treeHash( tree );
 		const binds = LAYOUT_TYPES[ row.postType ] && boundMenu( LAYOUT_TYPES[ row.postType ], Object.keys( menuIds ) );
 		const unbound = 'placeholder' === source && [ 'header', 'drawer' ].includes( LAYOUT_TYPES[ row.postType ] ) && wanted.menus[ binds ] && ! menuIds[ binds ];
-		const fields = { post_parent: parent ? idOf( rowKey( parent ) ) : 0, page_template: pageTemplate };
+		// The shop page takes no page template field at all: under a block theme WooCommerce reports `archive-product` as
+		// its page template on every read whatever is stored (ProductCatalogTemplate::handle_get_post_metadata), so a
+		// planned '' would be rewritten on every pass and never settle.
+		const fields = { post_parent: parent ? idOf( rowKey( parent ) ) : 0, ...( 'shop' === row.postType ? {} : { page_template: pageTemplate } ) };
 		if ( ! ids[ key ] ) {
 			const after = Object.fromEntries( Object.entries( fields ).filter( ( [ , v ] ) => v ) );
 			actions.push( { phase, type: 'create', key, postType: wpType( row ), title: row.title, slug: row.slug, tree, hash, fields: after, say: `${ key }: create "${ row.title }" from the ${ source } tree${ unbound ? ' (its menu is bound once the menus exist)' : '' }${ Object.keys( after ).length ? `, then set ${ Object.entries( after ).map( ( [ k, v ] ) => `${ k }=${ shown( v ) }` ).join( ', ' ) }` : '' }` } );

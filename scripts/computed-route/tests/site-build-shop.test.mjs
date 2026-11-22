@@ -215,3 +215,14 @@ test( 'a template build runs wp-build-page.js with --template and returns the sa
 	assert.equal( args[ args.indexOf( '--template' ) + 1 ], 'single-product' );
 	assert.ok( ! args.includes( '--create' ) && ! args.includes( '--post-id' ) );
 } );
+
+// WooCommerce reports `archive-product` as the shop page's page template on every read under a block theme, whatever is
+// stored (ProductCatalogTemplate::handle_get_post_metadata), so a planned '' never settles.
+test( 'MUST FAIL: a built shop page whose page template reads as archive-product plans no change; a page row\'s template is still planned', () => {
+	const post = ( id, slug, template ) => ( { id, type: 'page', slug, title: { 6: 'Shop', 7: 'Basket' }[ id ], status: 'publish', parent: 0, template, rowKey: '', treeHash: '' } );
+	const rows = SHOP().map( ( r ) => ( { shop: { ...r, id: 6 }, basket: { ...r, id: 7 } }[ r.slug ] || r ) );
+	const p = plan( rows, state( { posts: { 6: post( 6, 'shop', 'archive-product' ), 7: post( 7, 'basket', '' ) } } ) );
+	const updates = p.actions.filter( ( a ) => 'update' === a.type );
+	assert.deepEqual( updates.filter( ( a ) => 'shop:shop' === a.key ), [], 'the shop page plans no page template change' );
+	assert.deepEqual( updates.find( ( a ) => 'page:basket' === a.key )?.fields, { page_template: 'cart' }, 'negative control: a page row\'s template is still planned' );
+} );
