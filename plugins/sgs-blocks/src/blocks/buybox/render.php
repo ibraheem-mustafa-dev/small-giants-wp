@@ -95,6 +95,9 @@ if ( $buybox_pinned_id > 0 ) {
 	}
 }
 
+// The photo sticker's words from the product's own card badge when galleryStickerSource is "product" (gallery-sticker.php).
+$attributes = sgs_buybox_gallery_sticker_from_product( $attributes, $buybox_post_id );
+
 /* ── 2. Guard: WooCommerce absent or no product ──────────────────────────── */
 
 if ( ! class_exists( 'WooCommerce' ) || $buybox_post_id <= 0 ) {
@@ -243,6 +246,15 @@ if ( '' !== $per_unit_denomination_raw ) {
 	$per_unit_template = __( 'per %s', 'sgs-blocks' );
 }
 $per_unit_display = sgs_configurator_per_unit_display( $def, $tax_mode, $decimals, $per_unit_template );
+
+// The instalments note under the add-to-cart button (instalmentsNote, the twin of sgs/cart's panelInstalmentsNote):
+// its %s is the current price over instalmentsCount, formatted as the price is, and product-card/view.js recomputes
+// it from context.instalmentsCount when a variation is picked. The two context keys exist only while a note is set.
+$buybox_instalments_note  = trim( (string) ( $attributes['instalmentsNote'] ?? '' ) );
+$buybox_instalments_count = max( 1, absint( $attributes['instalmentsCount'] ?? 3 ) );
+$buybox_instalments_shown = '' !== $buybox_instalments_note
+	? sgs_configurator_format_minor( sgs_instalment_minor( (int) $def['priceMinor'], $buybox_instalments_count ), $decimals )
+	: '';
 $discount_label   = ( null !== $def['saleMinor'] )
 	? __( 'Sale', 'sgs-blocks' )
 	: ( isset( $def['discountLabel'] ) ? (string) $def['discountLabel'] : '' );
@@ -511,6 +523,10 @@ $context = array(
 	'soldOutLabel'        => $sold_out_label,
 	'unavailableLabel'    => $unavailable_label,
 );
+if ( '' !== $buybox_instalments_note ) {
+	$context['instalmentsCount']   = $buybox_instalments_count;
+	$context['instalmentsDisplay'] = $buybox_instalments_shown;
+}
 
 /* ── 6. Builder data limit: sgs_configurator_context_cap_bytes() (24 KB unless a site raises it per product) ── */
 
@@ -583,6 +599,8 @@ $buybox_opener_first     = $buybox_keep_flow && ! empty( $attributes['openerBefo
 // stylesheet being enqueued on this page.
 $add_to_cart_style_class = sgs_buybox_add_to_cart_class( sanitize_key( (string) ( $attributes['addToCartStyle'] ?? '' ) ) );
 $add_to_cart_show_price  = (bool) ( $attributes['addToCartShowPrice'] ?? false );
+// The joiner printed between the label and the price ("·"), decorative; '' prints none.
+$add_to_cart_price_separator = sanitize_text_field( (string) ( $attributes['addToCartPriceSeparator'] ?? '' ) );
 // Cart icon show/hide (cart-mode form only — buybox-modal-cta.php's
 // own markup is outside this block's file scope) and the hover-lift modifier
 // (style.css pairs this class with the site-wide button hover transform and
@@ -990,6 +1008,13 @@ $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyLabel',
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyInput', $root_sel . ' .sgs-buybox__notify-email', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifySubmit', $root_sel . ' .sgs-buybox__notify-submit', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'notifyStatus', $root_sel . ' .sgs-buybox__notify-status', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'instalmentsLine', $root_sel . ' .sgs-buybox__instalments', '', false, false, sgs_object_attr_keys( $block ) );
+$sgs_bb_instalments_colour = sgs_colour_value( (string) ( $attributes['instalmentsLineColour'] ?? '' ) );
+if ( '' !== $sgs_bb_instalments_colour ) {
+	$sgs_bb_surface_typo_css .= $root_sel . ' .sgs-buybox__instalments{color:' . $sgs_bb_instalments_colour . ';}';
+}
+// The pick a set term badge's size (pickBadgeFontSize); its colours print with configurator.php's badge rule.
+$sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'pickBadge', $root_sel . ' .sgs-buybox__pick-box .sgs-option-picker__term-badge,' . $root_sel . ' .sgs-buybox__pick-box .sgs-buybox-pick__option-badge', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-btn', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-index', '', false, false, sgs_object_attr_keys( $block ) );
 $sgs_bb_surface_typo_css .= sgs_typography_css_rule( $attributes, 'guidedMeter', $root_sel . ' .sgs-buybox-guided__meter-compact', '', false, false, sgs_object_attr_keys( $block ) );
@@ -1662,6 +1687,9 @@ if ( $buybox_side_cart ) {
 				// button label itself is static (no data-wp-text) and does not need its
 				// own re-render logic to stay in sync.
 				?>
+				<?php if ( '' !== $add_to_cart_price_separator ) : ?>
+				<span class="buybox__cart-separator" aria-hidden="true"><?php echo esc_html( $add_to_cart_price_separator ); ?></span>
+				<?php endif; ?>
 				<span class="buybox__cart-price" data-wp-text="context.priceDisplay"><?php echo esc_html( $price_display ); ?></span>
 			<?php else : ?>
 				<?php if ( $add_to_cart_show_icon ) : ?>
@@ -1674,6 +1702,12 @@ if ( $buybox_side_cart ) {
 <?php // phpcs:ignore Generic.WhiteSpace.ScopeIndent.Incorrect -- flush left: indentation before a tag prints.
 		if ( $buybox_keep_flow ) {
 			echo ( $buybox_opener_first ? '' : sgs_buybox_flow_opener_html( $buybox_linked_flow_post, $add_to_cart_style_class, $attributes ) ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the helper escapes every value.
+		}
+		// The instalments note sits under the button (and under the flow's opener when the two share a row), above the
+		// express payment buttons.
+		if ( '' !== $buybox_instalments_note ) {
+			$buybox_instalments_amount = '<span class="sgs-buybox__instalments-amount" data-wp-text="context.instalmentsDisplay">' . esc_html( $buybox_instalments_shown ) . '</span>';
+			echo '<p class="sgs-buybox__instalments" data-wp-bind--hidden="!context.inStock">' . sgs_instalments_note_fill( $buybox_instalments_note, $buybox_instalments_amount ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the note through sgs_rich_text_kses(), the amount esc_html()'d.
 		}
 		$buybox_express_on_interaction = 'interaction' === ( $attributes['expressLoad'] ?? 'page' );
 		sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal, $buybox_express_on_interaction );

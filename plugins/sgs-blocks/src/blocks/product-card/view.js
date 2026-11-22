@@ -64,6 +64,7 @@ import { renderThumbStrip } from './thumb-strip';
 import { applyPhoto } from './photo-source';
 import { pulseState } from '../../shared/motion-state-publish';
 import { fetchWithNonce } from '../../shared/rest-nonce';
+import { instalmentMinor } from '../../shared/cart-live/instalments';
 
 /**
  * Replay the main photo's entrance after its image changes, when the photo has a State entrance to replay.
@@ -450,6 +451,19 @@ function modeRegular( combo, ctx ) {
 }
 
 /**
+ * One instalment of a combo's price, e.g. "£46.33" for £139 over 3: the buy box's instalments note
+ * (context.instalmentsCount, render.php's instalmentsNote). Mirrors the server's
+ * sgs_configurator_format_minor( sgs_instalment_minor( priceMinor, count ) ).
+ *
+ * @param {Object} combo The selected manifest combo.
+ * @param {Object} ctx   The card's live context.
+ * @return {string} The formatted amount.
+ */
+function instalmentsDisplay( combo, ctx ) {
+	return formatPrice( instalmentMinor( combo.priceMinor, ctx.instalmentsCount ), ctx );
+}
+
+/**
  * Per-unit price string for a combo, e.g. "£1.04 per bar". Mirrors PHP
  * sgs_configurator_per_unit_display() so the swap value == the SSR literal.
  * Returns '' when the combo has no divisor (>0) or no unit label.
@@ -655,6 +669,11 @@ function applyPillSelection( ctx, detail ) {
 		const puDisplay = perUnitDisplay( combo, ctx );
 		ctx.perUnitDisplay = puDisplay;
 		ctx.perUnitHidden = puDisplay === '';
+		// The buy box's instalments note (instalmentsNote): the chosen price over the count, formatted as the price is.
+		// Its context keys exist only while the note is set, so a card or a buy box without one skips this.
+		if ( ctx.instalmentsCount ) {
+			ctx.instalmentsDisplay = instalmentsDisplay( combo, ctx );
+		}
 		// FP-13: an on-sale combo shows the "Sale" badge (limited-time urgency);
 		// otherwise the author's cosmetic discount label (e.g. "Best value"). The
 		// "Sale" literal is the server-seeded ctx.saleLabel (SSR==swap parity).

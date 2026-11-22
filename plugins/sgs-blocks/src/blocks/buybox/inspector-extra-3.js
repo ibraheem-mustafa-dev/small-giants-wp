@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
-import { TypographyControls } from '../../components';
+import { SgsFreeTextField, TypographyControls } from '../../components';
 
 const PICKER_STYLE_OPTIONS = [
 	{ value: '', label: __( "Picker's own default", 'sgs-blocks' ) },
@@ -29,6 +29,7 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 		pickerShowSelectedTick,
 		pickerShowSelectedValue,
 		addToCartShowPrice,
+		addToCartPriceSeparator,
 		addToCartShowIcon,
 		addToCartHoverLift,
 	} = attributes;
@@ -375,6 +376,33 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 							showWritingMode: true,
 						},
 						{
+							key: 'instalmentsLine',
+							label: __( 'Instalments note', 'sgs-blocks' ),
+							prefix: 'instalmentsLine',
+							fontSizePresets: true,
+							showFontFamily: true,
+							showDecoration: true,
+							showTransform: true,
+							showLetterSpacing: true,
+							showTextAlign: true,
+							showTextWrap: true,
+							showTextStroke: true,
+							showTextColumns: true,
+							showWritingMode: true,
+						},
+						{
+							key: 'pickBadge',
+							label: __( 'Pick a set term badge', 'sgs-blocks' ),
+							prefix: 'pickBadge',
+							fontSizePresets: true,
+							showFontFamily: false,
+							showWeight: false,
+							showStyle: false,
+							showLineHeight: false,
+							showLetterSpacing: false,
+							showTransform: false,
+						},
+						{
 							key: 'notifyStatus',
 							label: __( 'Notify status message', 'sgs-blocks' ),
 							prefix: 'notifyStatus',
@@ -409,6 +437,14 @@ export function BuyboxExtraStylesPanels( { attributes, setAttributes } ) {
 					) }
 					__nextHasNoMarginBottom
 				/>
+				{ !! addToCartShowPrice && (
+					<SgsFreeTextField
+						label={ __( 'Between the label and the price', 'sgs-blocks' ) }
+						help={ __( 'A joiner such as "·" printed between the label and the price. Empty prints none.', 'sgs-blocks' ) }
+						value={ addToCartPriceSeparator || '' }
+						onChange={ ( val ) => setAttributes( { addToCartPriceSeparator: val } ) }
+					/>
+				) }
 				<ToggleControl
 					label={ __( 'Show the cart icon', 'sgs-blocks' ) }
 					checked={ addToCartShowIcon !== false }

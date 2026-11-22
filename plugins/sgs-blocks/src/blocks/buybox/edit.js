@@ -15,6 +15,7 @@ import { BuyboxExtraStylesPanels } from './inspector-extra-3';
 import { BuyboxExtraSettingsPanels3 } from './inspector-extra-4';
 import { BuyboxExpressLoadPanel } from './inspector-express';
 import { BuyboxStickerPanels } from './inspector-sticker';
+import { BuyboxInstalmentsPanel, instalmentsColourRows } from './inspector-instalments';
 import ButtonActionPanel from './ButtonActionPanel';
 import GuidedPanel, { guidedColourRows } from './GuidedPanel';
 import ProductPinPanel from './ProductPinPanel';
@@ -81,6 +82,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		...getBuyboxExtraColourRows( { attributes, setAttributes } ),
 		...guidedColourRows( { attributes, setAttributes } ),
 		...configuratorColourRows( { attributes, setAttributes } ),
+		...instalmentsColourRows( { attributes, setAttributes } ),
 	];
 
 	// Contrast check for border colour against the buybox's own background.
@@ -350,6 +352,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 				/>
+				<BuyboxInstalmentsPanel attributes={ attributes } setAttributes={ setAttributes } />
 				<BuyboxExtraSettingsPanels2
 					attributes={ attributes }
 					setAttributes={ setAttributes }

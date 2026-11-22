@@ -32,6 +32,7 @@ const CORNERS = [
 export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 	const {
 		galleryStickerText,
+		galleryStickerSource,
 		galleryStickerPosition,
 		galleryStickerOffsetX,
 		galleryStickerOffsetY,
@@ -52,20 +53,39 @@ export function BuyboxStickerPanels( { attributes, setAttributes } ) {
 				title={ __( 'Photo sticker', 'sgs-blocks' ) }
 				initialOpen={ false }
 			>
-				<TextControl
-					label={ __( 'Sticker text', 'sgs-blocks' ) }
-					value={ galleryStickerText || '' }
+				<ToggleGroupControl
+					label={ __( 'Sticker words from', 'sgs-blocks' ) }
+					value={ galleryStickerSource || 'typed' }
 					onChange={ ( val ) =>
-						setAttributes( { galleryStickerText: val } )
+						setAttributes( { galleryStickerSource: val } )
 					}
 					help={ __(
-						'Printed on the main photo, so it stays with the photo while the gallery is pinned. Empty = no sticker.',
+						"Each product: the product's own card badge (set on the product's Card tab); a product without one shows no sticker.",
 						'sgs-blocks'
 					) }
+					isBlock
 					__nextHasNoMarginBottom
 					__next40pxDefaultSize
-				/>
-				{ !! galleryStickerText && (
+				>
+					<ToggleGroupControlOption value="typed" label={ __( 'Typed here', 'sgs-blocks' ) } />
+					<ToggleGroupControlOption value="product" label={ __( 'Each product', 'sgs-blocks' ) } />
+				</ToggleGroupControl>
+				{ 'product' !== galleryStickerSource && (
+					<TextControl
+						label={ __( 'Sticker text', 'sgs-blocks' ) }
+						value={ galleryStickerText || '' }
+						onChange={ ( val ) =>
+							setAttributes( { galleryStickerText: val } )
+						}
+						help={ __(
+							'Printed on the main photo, so it stays with the photo while the gallery is pinned. Empty = no sticker.',
+							'sgs-blocks'
+						) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				) }
+				{ ( !! galleryStickerText || 'product' === galleryStickerSource ) && (
 					<>
 						<ToggleGroupControl
 							label={ __( 'Corner', 'sgs-blocks' ) }

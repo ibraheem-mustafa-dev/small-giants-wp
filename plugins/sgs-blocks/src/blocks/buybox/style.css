@@ -322,6 +322,17 @@
 	white-space: nowrap;
 }
 
+/* The joiner between the label and the price (addToCartPriceSeparator); it takes the button's type by inheritance. */
+.sgs-buybox .buybox__cart-separator {
+	flex: none;
+}
+
+/* The instalments note under the button (instalmentsNote): a plain line; its type and colour come from the
+   instalmentsLine settings, the space above it from the buy box's own stack. */
+.sgs-buybox .sgs-buybox__instalments {
+	margin: 0;
+}
+
 /* ── Add-to-cart hover lift (addToCartHoverLift) ─────────────
    The switch forces a lift even when no site-wide lift is set: it uses the
    site-wide button hover transform and timing (buttonPresets.default), falling

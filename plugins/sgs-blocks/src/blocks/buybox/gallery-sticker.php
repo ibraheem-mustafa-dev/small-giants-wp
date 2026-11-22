@@ -4,7 +4,8 @@
  *
  * A short phrase ("baked with love") on a corner of the main photo. It prints inside the photo box
  * (`.product-card__media`) in the gallery column, so it stays on the photo while the pinned gallery
- * column scrolls with the page. Off until galleryStickerText is set. One markup builder and one
+ * column scrolls with the page. Off until galleryStickerText is set, or, with galleryStickerSource "product", until the
+ * product has its own card badge. One markup builder and one
  * scoped-CSS builder; the look comes from the block's own settings through the shared emitters
  * (colours, border, padding, typography), with the stylesheet holding only layout defaults.
  *
@@ -22,6 +23,28 @@ if ( ! function_exists( 'sgs_buybox_gallery_sticker_text' ) ) {
 	 */
 	function sgs_buybox_gallery_sticker_text( array $attributes ): string {
 		return sanitize_text_field( (string) ( $attributes['galleryStickerText'] ?? '' ) );
+	}
+}
+
+if ( ! function_exists( 'sgs_buybox_gallery_sticker_from_product' ) ) {
+	/**
+	 * The render-time attributes with the sticker's words taken from the product when galleryStickerSource is
+	 * "product": the product's own card badge, read by the product card's reader
+	 * (includes/product-card-per-product.php::sgs_product_card_per_product_read, the `_sgs_card_badge` meta), so one
+	 * buy box in the product template shows each product's own badge. A product with none shows no sticker. "typed"
+	 * (the default) leaves the attributes as they are.
+	 *
+	 * @param array $attributes Block attributes.
+	 * @param int   $product_id The product the buy box shows.
+	 * @return array Attributes.
+	 */
+	function sgs_buybox_gallery_sticker_from_product( array $attributes, int $product_id ): array {
+		if ( 'product' !== ( $attributes['galleryStickerSource'] ?? 'typed' ) ) {
+			return $attributes;
+		}
+		require_once dirname( __DIR__, 3 ) . '/includes/product-card-per-product.php';
+		$attributes['galleryStickerText'] = sgs_product_card_per_product_read( $product_id, array() )['badge'];
+		return $attributes;
 	}
 }
 

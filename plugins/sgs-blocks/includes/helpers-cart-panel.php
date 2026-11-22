@@ -297,3 +297,31 @@ function sgs_cart_panel_wrapper_html( string $mode, string $body_html, array $ar
 
 	return '';
 }
+
+/**
+ * One instalment of a total: the total in minor units divided by the count, rounded to the nearest minor unit
+ * (£139 over 3 is 4633). The JS twin is src/shared/instalments.js::instalmentMinor, used by the drawer's note
+ * (src/blocks/cart/panel-extras.js) and the buy box's (src/blocks/product-card/view.js).
+ *
+ * @param int $total_minor Total in minor units.
+ * @param int $count       Number of instalments; below 1 counts as 1.
+ * @return int One instalment in minor units.
+ */
+function sgs_instalment_minor( int $total_minor, int $count ): int {
+	return (int) round( $total_minor / max( 1, $count ) );
+}
+
+/**
+ * A typed instalments note with its amount in place, for a note the server prints whole (the buy box's): the note
+ * through sgs_rich_text_kses(), its first %s replaced by the amount markup, or the amount added after a space when
+ * the note has no %s. The drawer's view script fills its note the same way (src/shared/instalments.js::noteWithAmount).
+ *
+ * @param string $note        The typed note, rich text.
+ * @param string $amount_html The amount's markup, already escaped.
+ * @return string Safe HTML.
+ */
+function sgs_instalments_note_fill( string $note, string $amount_html ): string {
+	$safe = sgs_rich_text_kses( $note );
+	$at   = strpos( $safe, '%s' );
+	return false === $at ? $safe . ' ' . $amount_html : substr_replace( $safe, $amount_html, $at, 2 );
+}

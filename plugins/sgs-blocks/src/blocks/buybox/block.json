@@ -596,6 +596,41 @@
 						}
 					}
 				},
+				"instalmentsLine": {
+					"text": true,
+					"selector": ".sgs-buybox__instalments",
+					"label": "Instalments note",
+					"order": 14,
+					"clusters": [
+						"text"
+					],
+					"prefix": "instalmentsLine",
+					"attrMap": {
+						"css:font-size": "instalmentsLineFontSize",
+						"css:font-weight": "instalmentsLineFontWeight",
+						"css:font-style": "instalmentsLineFontStyle",
+						"css:font-family": "instalmentsLineFontFamily",
+						"css:text-transform": "instalmentsLineTextTransform",
+						"css:text-decoration": "instalmentsLineTextDecoration",
+						"css:line-height": "instalmentsLineLineHeight",
+						"css:letter-spacing": "instalmentsLineLetterSpacing",
+						"css:text-align": "instalmentsLineTextAlign",
+						"css:text-wrap": "instalmentsLineTextWrap",
+						"css:-webkit-text-stroke-width": "instalmentsLineTextStrokeWidth",
+						"css:-webkit-text-stroke-color": "instalmentsLineTextStrokeColour",
+						"css:column-count": "instalmentsLineTextColumns",
+						"css:writing-mode": "instalmentsLineWritingMode",
+						"css:color": "instalmentsLineColour"
+					},
+					"_note": "The instalments note under the add-to-cart button (.sgs-buybox__instalments, instalmentsNote and instalmentsCount); its amount follows the chosen variation.",
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:-webkit-text-stroke-color": "instalmentsLineTextStrokeColourHover"
+							}
+						}
+					}
+				},
 				"savingBadge": {
 					"selector": ".sgs-buybox__saving-badge",
 					"label": "Gallery saving badge",
@@ -1104,7 +1139,8 @@
 					"label": "Pick a set term badge",
 					"order": 27,
 					"clusters": [
-						"colour"
+						"colour",
+						"text"
 					],
 					"absentIn": [
 						"main",
@@ -1113,7 +1149,8 @@
 					"absentWhy": "Prints only in the Pick a set type (buyboxLayout configurator).",
 					"attrMap": {
 						"css:background-color": "pickBadgeBackgroundColour",
-						"css:color": "pickBadgeTextColour"
+						"css:color": "pickBadgeTextColour",
+						"css:font-size": "pickBadgeFontSize"
 					}
 				},
 				"rrp-price": {
@@ -2179,6 +2216,147 @@
 			"type": "string",
 			"default": "",
 			"description": "Add-to-cart button style preset (matches the SGS button presets: primary, secondary, outline, and the snapshot's own names on a site that sets namedButtonPresets). Empty = today's accent-colour look."
+		},
+		"addToCartPriceSeparator": {
+			"type": "string",
+			"default": "",
+			"description": "Text printed between the add-to-cart label and the price when addToCartShowPrice is on (for example \"·\"), hidden from assistive technology. Empty prints none."
+		},
+		"pickBadgeFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Pick a set only: font size of the pack tile's term badge and of a pick-several option badge, per device. Empty keeps the stylesheet's size."
+		},
+		"pickBadgeFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"galleryStickerSource": {
+			"type": "string",
+			"enum": [
+				"typed",
+				"product"
+			],
+			"default": "typed",
+			"description": "Where the photo sticker's words come from: typed (galleryStickerText) or product (the product's own card badge, the _sgs_card_badge meta the product card reads; a product with none shows no sticker)."
+		},
+		"instalmentsNote": {
+			"type": "string",
+			"default": "",
+			"description": "Optional note under the add-to-cart button, the twin of sgs/cart's panelInstalmentsNote; %s is replaced by the current price divided by instalmentsCount, formatted as the store's price, and follows the chosen variation. Empty hides it."
+		},
+		"instalmentsCount": {
+			"type": "number",
+			"default": 3,
+			"description": "Number of instalments used to compute the amount in instalmentsNote."
+		},
+		"instalmentsLineColour": {
+			"type": "string",
+			"default": "",
+			"description": "Text colour of the instalments note (palette slug or colour). Empty inherits."
+		},
+		"instalmentsLineFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"instalmentsLineFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"instalmentsLineFontWeight": {
+			"type": "string",
+			"default": ""
+		},
+		"instalmentsLineFontStyle": {
+			"type": "string",
+			"enum": [
+				"",
+				"normal",
+				"italic"
+			],
+			"default": ""
+		},
+		"instalmentsLineFontFamily": {
+			"type": "string",
+			"default": ""
+		},
+		"instalmentsLineTextTransform": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"uppercase",
+				"lowercase",
+				"capitalize"
+			],
+			"default": ""
+		},
+		"instalmentsLineTextDecoration": {
+			"type": "string",
+			"enum": [
+				"",
+				"none",
+				"underline",
+				"line-through"
+			],
+			"default": ""
+		},
+		"instalmentsLineLineHeight": {
+			"type": "object",
+			"default": {}
+		},
+		"instalmentsLineLineHeightUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"instalmentsLineLetterSpacing": {
+			"type": "object",
+			"default": {}
+		},
+		"instalmentsLineLetterSpacingUnit": {
+			"type": "string",
+			"default": "em"
+		},
+		"instalmentsLineTextAlign": {
+			"type": "object",
+			"default": {}
+		},
+		"instalmentsLineTextWrap": {
+			"type": "string",
+			"enum": [
+				"",
+				"wrap",
+				"nowrap",
+				"balance",
+				"pretty",
+				"stable"
+			],
+			"default": ""
+		},
+		"instalmentsLineTextStrokeWidth": {
+			"type": "object",
+			"default": {}
+		},
+		"instalmentsLineTextStrokeColour": {
+			"type": "string",
+			"default": ""
+		},
+		"instalmentsLineTextStrokeColourHover": {
+			"type": "string",
+			"default": ""
+		},
+		"instalmentsLineTextColumns": {
+			"type": "number"
+		},
+		"instalmentsLineWritingMode": {
+			"type": "string",
+			"enum": [
+				"",
+				"horizontal-tb",
+				"vertical-rl",
+				"vertical-lr"
+			],
+			"default": ""
 		},
 		"addToCartShowPrice": {
 			"type": "boolean",
