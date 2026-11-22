@@ -201,12 +201,31 @@ export function logicReadings( d ) {
 	return { d, valueOf, fnOf, reach, writesOf, readsOf, scrolledRefs, scrolledSelectors, timers, listElements, itemField, comparedValue, toggles };
 }
 
+// The problem lines of the accordion-kind handoff records no accordion mechanism took (`widgetModel(...).unclaimed`), minus the
+// records a block that draws its own disclosure rows has absorbed: a record is dropped when every inventory element of its
+// roots lies inside an element absorbed into a block of the skeleton for which `drawsDisclosure( blockKey )` is true (its
+// calibration draws a summary part, lib/skeleton-part-pairing.mjs::drawsSummaryPart: a navigation block's own accordion rows).
+// An element the rows do not list (a panel closed at rest) is read through its nearest ancestor that has a row. rows: the
+// proposal's rows; byKey: the inventory model's elements by key.
+export function listUnclaimed( { unclaimed, rows, byKey, drawsDisclosure } ) {
+	const drawn = ( key ) => {
+		for ( let e = byKey[ key ]; e; e = byKey[ e.parentKey ] ) {
+			const row = rows.find( ( r ) => r.key === e.key );
+			if ( row ) {
+				return 'absorbed' === row.action && !! row.into && drawsDisclosure( row.into );
+			}
+		}
+		return false;
+	};
+	return unclaimed.filter( ( u ) => ! ( u.elements.length && u.elements.every( drawn ) ) ).map( ( u ) => u.line );
+}
+
 // o: { m (lib/skeleton-model.mjs), view (lib/skeleton-record.mjs::recordView), facts, R (decisions rules), surface,
 // declared (an element's declared style), topBlock (the block an element's plain scoring proposes), narrows (whether a
 // control's choice narrows a rendered list, rule optionSetFilter) }. Returns { of( e ) -> { rule, model, ... } | null,
 // accordions, sliders, tabs, problems, notes, closedPanel, itemWords, toggleIcon }.
 export function widgetModel( { m, view, facts, R, surface = {}, declared = () => ( {} ), topBlock = () => null, narrows = () => false } ) {
-	const out = { accordions: [], sliders: [], tabs: [], problems: [], notes: [] };
+	const out = { accordions: [], sliders: [], tabs: [], problems: [], notes: [], unclaimed: [] };
 	const at = new Map();
 	const none = { ...out, of: () => null, closedPanel: () => ( { inner: [], handover: [] } ), itemWords: () => ( { attributes: {}, handover: [] } ), toggleIcon: () => ( { attributes: {}, notes: [] } ) };
 	if ( ! ( R.accordion || R.slider || R.tabs ) || ! facts.repo || ! facts.client || ! view.sources ) {
@@ -531,11 +550,17 @@ export function widgetModel( { m, view, facts, R, surface = {}, declared = () =>
 		}
 	}
 
-	// A handoff record of the accordion kind shown on this surface that no accordion took is a proposal problem.
+	// A handoff record of the accordion kind shown on this surface that no accordion took is a proposal problem, unless a block
+	// that draws its own disclosure rows has absorbed its roots (lib/skeleton-propose.mjs decides that once the rows are known, so
+	// each such record is returned in `unclaimed` with the inventory elements of its roots and the problem line it would give).
 	if ( R.accordion ) {
 		const taken = new Set( out.accordions.map( ( a ) => a.record ).filter( Boolean ) );
 		recordsOf( R.accordion.recordKind ).filter( ( s ) => shownHere( s ) && ! taken.has( s.id ) )
-			.forEach( ( s ) => out.problems.push( `handoff record ${ s.id } ("${ s.name }", kind ${ s.kind }) names ${ ( s.roots || [] ).join( ', ' ) } on this surface and no accordion mechanism was found there (a control whose handler writes a state key its unit's panel condition reads): it stays as proposed` ) );
+			.forEach( ( s ) => out.unclaimed.push( {
+				id: s.id,
+				elements: ( s.roots || [] ).flatMap( ( k ) => m.els.filter( ( e ) => tkOf( e ) === k ).map( ( e ) => e.key ) ),
+				line: `handoff record ${ s.id } ("${ s.name }", kind ${ s.kind }) names ${ ( s.roots || [] ).join( ', ' ) } on this surface and no accordion mechanism was found there (a control whose handler writes a state key its unit's panel condition reads): it stays as proposed`,
+			} ) );
 	}
 
 	// The content an accordion item's panel holds when the draft shows it closed at rest: each panel element printing one

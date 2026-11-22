@@ -312,3 +312,16 @@ test( 'the logic reader resolves a field destructured from an array row (`([ cat
 	const id = idx.all.find( ( n ) => 'Identifier' === n.type && 'qq' === n.name && 'ArrayPattern' === idx.parent.get( n )?.type );
 	assert.equal( resolveName( idx, id )?.key, '1' );
 } );
+
+test( 'listUnclaimed: an accordion-kind record whose roots lie inside rows absorbed into a block that draws its own summary part is not listed; one outside such a host still is; MUST FAIL on the old listing', async () => {
+	const { listUnclaimed } = await import( '../lib/skeleton-widgets.mjs' );
+	const byKey = { a: { key: 'a', parentKey: null }, b: { key: 'b', parentKey: 'a' }, c: { key: 'c', parentKey: 'b' }, z: { key: 'z', parentKey: null } };
+	const rows = [ { key: 'a', action: null }, { key: 'b', action: 'absorbed', into: 'nav' }, { key: 'z', action: 'absorbed', into: 'plain' } ];
+	const drawsDisclosure = ( k ) => 'nav' === k;
+	const u = ( id, elements ) => ( { id, elements, line: `record ${ id }` } );
+	// c has no row of its own (a panel closed at rest): its nearest ancestor with a row is b, absorbed into the navigation block.
+	assert.deepEqual( listUnclaimed( { unclaimed: [ u( 'S-1', [ 'c' ] ), u( 'S-2', [ 'b', 'c' ] ) ], rows, byKey, drawsDisclosure } ), [] );
+	// outside a navigation host: not absorbed (a), absorbed into a block with no summary part (z), no element at all, or one root
+	// of two outside the host
+	assert.deepEqual( listUnclaimed( { unclaimed: [ u( 'S-3', [ 'a' ] ), u( 'S-4', [ 'z' ] ), u( 'S-5', [] ), u( 'S-6', [ 'c', 'a' ] ) ], rows, byKey, drawsDisclosure } ), [ 'record S-3', 'record S-4', 'record S-5', 'record S-6' ] );
+} );
