@@ -337,17 +337,8 @@
 			]
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"flex-start",
-				"center",
-				"flex-end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
+			"type": "object",
+			"default": {}
 		},
 		"minHeight": {
 			"type": "object",

@@ -653,9 +653,9 @@
 			"default": "em"
 		},
 		"stepGap": {
-			"type": "string",
-			"default": "",
-			"description": "Space between the steps (a CSS length). Empty keeps the stylesheet's spacing-30 gap."
+			"type": "object",
+			"description": "Space between the steps (a CSS length). Empty keeps the stylesheet's spacing-30 gap.",
+			"default": {}
 		},
 		"numberSize": {
 			"type": "object",
@@ -688,9 +688,9 @@
 			"description": "Per-device maximum width of each step's description (a CSS length, desktop/tablet/mobile). Unset leaves the description as wide as its step."
 		},
 		"numberGap": {
-			"type": "string",
-			"default": "",
-			"description": "List layout only: space between the step number and its text (a CSS length). Empty keeps the stylesheet's spacing-20 gap."
+			"type": "object",
+			"description": "List layout only: space between the step number and its text (a CSS length). Empty keeps the stylesheet's spacing-20 gap.",
+			"default": {}
 		},
 		"titleFontFamily": {
 			"type": "string",

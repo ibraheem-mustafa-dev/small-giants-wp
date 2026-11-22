@@ -585,29 +585,14 @@
 			"default": "center"
 		},
 		"alignContent": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"flex-start",
-				"center",
-				"flex-end",
-				"space-between",
-				"space-around"
-			]
+			"type": "object",
+			"default": {}
 		},
 		"flexDirection": {
 			"type": "string",
@@ -688,14 +673,10 @@
 			"default": {}
 		},
 		"justifyItems": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end"
-			]
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"layout": {
 			"type": "string",

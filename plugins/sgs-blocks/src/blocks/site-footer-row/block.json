@@ -200,8 +200,8 @@
 			"default": "wrap"
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"alignItems": {
 			"type": "object",
@@ -281,17 +281,10 @@
 			"description": "The cubic-bezier() read when rowShrinkEasing is custom."
 		},
 		"alignContent": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"flexDirection": {
 			"type": "string",
@@ -313,14 +306,10 @@
 			"default": {}
 		},
 		"justifyItems": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end"
-			]
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"borderWidth": {
 			"type": "object",

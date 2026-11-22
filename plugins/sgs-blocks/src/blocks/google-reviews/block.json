@@ -1009,16 +1009,20 @@
 			"default": "wrap"
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"justifyItems": {
-			"type": "string",
-			"default": "stretch"
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"alignContent": {
-			"type": "string",
-			"default": "stretch"
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"alignItems": {
 			"type": "object",

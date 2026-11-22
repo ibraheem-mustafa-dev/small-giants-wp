@@ -196,8 +196,8 @@
 			"_comment": "The header row is locked to ONE line and yields instead of wrapping ('nowrap' is the default): 'wrap' would trade a stack for an ambiguous 2-per-line arrangement. Read by SGS_Container_Wrapper (class-sgs-container-wrapper.php). No header pattern sets flexWrap explicitly, so this default governs every instance."
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"alignItems": {
 			"type": "object",
@@ -315,17 +315,10 @@
 			"description": "The cubic-bezier() read when rowShrinkEasing is custom."
 		},
 		"alignContent": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end",
-				"space-between",
-				"space-around",
-				"space-evenly"
-			]
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"flexDirection": {
 			"type": "string",
@@ -351,14 +344,10 @@
 			"default": {}
 		},
 		"justifyItems": {
-			"type": "string",
-			"default": "stretch",
-			"enum": [
-				"stretch",
-				"start",
-				"center",
-				"end"
-			]
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"borderWidth": {
 			"type": "object",

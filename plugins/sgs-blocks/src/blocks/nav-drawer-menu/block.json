@@ -893,17 +893,9 @@
 			"description": "The row-label magnet's pull FACTOR, 0.02 to 0.5. No default: unset keeps magnet.js's own shipped strength (factor 0.15, an 8px cap). When set, the cap is lifted, the pointer only engages inside the label's own box. Emitted as `data-magnet-strength` on the list and read by view.js::initBarEffects. Shown only while `itemMagnetEnabled` is on; pointer-fine only (touch and reduced motion switch the effect off)."
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": "",
-			"enum": [
-				"",
-				"flex-start",
-				"center",
-				"flex-end",
-				"space-between",
-				"space-around"
-			],
-			"description": "How a row's content (ornament, label, image, trailing icon) is spread across the row: `justify-content` on `.sgs-nav-drawer-menu__link`. '' keeps the row's own alignment (start)."
+			"type": "object",
+			"description": "How a row's content (ornament, label, image, trailing icon) is spread across the row: `justify-content` on `.sgs-nav-drawer-menu__link`. '' keeps the row's own alignment (start).",
+			"default": {}
 		},
 		"submenuCaretSize": {
 			"type": "string",

@@ -996,31 +996,20 @@
       "default": {}
     },
     "justifyContent": {
-      "type": "string",
-      "default": ""
+        "type": "object",
+        "default": {}
     },
     "justifyItems": {
-      "type": "string",
-      "default": "stretch",
-      "enum": [
-        "stretch",
-        "start",
-        "center",
-        "end"
-      ]
+        "type": "object",
+        "default": {
+            "desktop": "stretch"
+        }
     },
     "alignContent": {
-      "type": "string",
-      "default": "stretch",
-      "enum": [
-        "stretch",
-        "start",
-        "center",
-        "end",
-        "space-between",
-        "space-around",
-        "space-evenly"
-      ]
+        "type": "object",
+        "default": {
+            "desktop": "stretch"
+        }
     },
     "alignItems": {
         "type": "object",

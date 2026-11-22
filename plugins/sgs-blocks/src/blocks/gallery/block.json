@@ -542,16 +542,16 @@
 			"default": "wrap"
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"justifyItems": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"alignContent": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"alignItems": {
 			"type": "object",

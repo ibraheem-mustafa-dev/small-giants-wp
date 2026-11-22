@@ -150,8 +150,10 @@
 			}
 		},
 		"justifyItems": {
-			"type": "string",
-			"default": "stretch"
+			"type": "object",
+			"default": {
+				"desktop": "stretch"
+			}
 		},
 		"contentWidth": {
 			"type": "object",
@@ -192,12 +194,12 @@
 			"default": "wrap"
 		},
 		"justifyContent": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"alignContent": {
-			"type": "string",
-			"default": ""
+			"type": "object",
+			"default": {}
 		},
 		"columns": {
 			"type": "object",
