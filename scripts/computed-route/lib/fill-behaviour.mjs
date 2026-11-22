@@ -9,6 +9,7 @@ import path from 'path';
 import { openDb } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { recogniseBehaviour, hostsFromTemplate } from './motion-behaviours.mjs';
+import { scrolledLooksOf, scrolledThresholdOf } from './motion-behaviour-settings.mjs';
 import { validateMotionWrite, verdictProblems } from './motion-validate.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
 import { timeToMs } from './resolve.mjs';
@@ -49,7 +50,10 @@ export function behaviourIndex( { records, template, css, positions } ) {
 	const hosts = hostsFromTemplate( template, hosted.map( ( x ) => x.b.host ) );
 	// A control names the record it controls, not an element: it is applied wherever that record's layer was written.
 	const controls = found.filter( ( x ) => 'control' === x.b.kind ).map( ( x ) => ( { r: x.r, b: x.b, where: { node: null, block: '', slot: '' } } ) );
-	return { found, controls, stripKeys: stripKeysOf( found, template ), hostedFor: ( key ) => hosted.filter( ( x ) => hosts.get( x.b.host )?.has( key ) ) };
+	// A settings behaviour that names the elements it is written on (`placements`: { <template key>: { <block>: [ setting ] } })
+	// is written at each, whichever element its record is keyed on: placedFor( key ) gives its items for that element.
+	const placedFor = ( key ) => found.filter( ( x ) => 'settings' === x.b.kind && x.b.placements?.[ key ] ).map( ( x ) => ( { r: x.r, b: { ...x.b, blocks: x.b.placements[ key ] } } ) );
+	return { found, controls, placedFor, stripKeys: stripKeysOf( found, template ), hostedFor: ( key ) => hosted.filter( ( x ) => hosts.get( x.b.host )?.has( key ) ) };
 }
 
 // The template elements that scroll away above a pinned header: when the draft pins one element (a sticky header that
@@ -280,8 +284,9 @@ export function draftCssOf( draftDir, draftIndex = null ) {
 	return files.map( ( f ) => path.join( draftDir, f ) ).filter( ( f ) => fs.existsSync( f ) ).map( ( f ) => fs.readFileSync( f, 'utf8' ) );
 }
 
-// A fact record's template in the shape behaviourIndex reads: { elements: { <key>: { attrs } } }.
-export const templateOf = ( facts ) => ( facts ? { elements: Object.fromEntries( Object.entries( facts.elements || {} ).map( ( [ key, e ] ) => [ key, e.template || {} ] ) ) } : null );
+// A fact record's template in the shape behaviourIndex reads: { elements: { <key>: { attrs } }, scrolled: { <key>: [ look ] } },
+// `scrolled` the looks the draft's scrolled state gives each element (lib/motion-behaviour-settings.mjs::scrolledLooksOf).
+export const templateOf = ( facts ) => ( facts ? { elements: Object.fromEntries( Object.entries( facts.elements || {} ).map( ( [ key, e ] ) => [ key, e.template || {} ] ) ), scrolled: scrolledLooksOf( facts ), scrolledAt: scrolledThresholdOf( facts ) } : null );
 
 // The second pass: each control sets values on the layer of the record it controls (the marquee's hover rate). The merged
 // layer is validated on its own before it is kept, so a control value the schema refuses names the control instead of

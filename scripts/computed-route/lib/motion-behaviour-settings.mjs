@@ -108,6 +108,157 @@ export function headerScrollOf( r, ctx ) {
 	};
 }
 
+// The state key a draft's "the page has scrolled" state is named by (`scrolled`, `isScrolled`).
+const SCROLLED_KEY = /^(?:is)?scrolled$/i;
+const stateKeysOf = ( r ) => ( Array.isArray( r.trigger?.state_keys ) ? r.trigger.state_keys : [] );
+
+// The one value a hole's answer summary holds (a string or number answer that is not a loop's), else null.
+const valueOf = ( a ) => ( 1 === a?.v?.length && ! a.loop && [ 'string', 'number' ].includes( a.v[ 0 ].t ) ? a.v[ 0 ].v : null );
+
+// The looks a draft's scrolled state gives its template elements, from the fact record (lib/fact-record.mjs): the surface
+// states whose keys set only a scrolled key to true name a state job (`<surface id>:<state name>`), and each element's
+// `logic.holesByState[<job>]` holds the holes that state changes, per width, against `logic.holes`. Returns
+// { <template key>: [ { where: 'style:padding', path: 'navPad', by: { <width>: { rest, scrolled } } } ] }; `where` is the
+// hole's place (the style property or attribute), `path` the expression it is bound to.
+export function scrolledLooksOf( facts ) {
+	const els = facts?.elements || {};
+	const jobs = new Set();
+	for ( const e of Object.values( els ) ) {
+		for ( const s of e.surfaces || [] ) {
+			for ( const st of s.otherStates || [] ) {
+				const keys = Object.entries( st.state_keys || {} );
+				1 === keys.length && SCROLLED_KEY.test( keys[ 0 ][ 0 ] ) && true === keys[ 0 ][ 1 ] && jobs.add( `${ s.id }:${ st.name }` );
+			}
+		}
+	}
+	const out = {};
+	for ( const [ key, e ] of Object.entries( els ) ) {
+		const holes = Object.fromEntries( ( e.template?.holes || [] ).map( ( h ) => [ h.id, h ] ) );
+		for ( const [ , changed ] of Object.entries( e.logic?.holesByState || {} ).filter( ( [ job ] ) => jobs.has( job ) ) ) {
+			for ( const [ id, byWidth ] of Object.entries( changed ) ) {
+				const h = holes[ id ];
+				const by = {};
+				for ( const [ w, a ] of Object.entries( byWidth ) ) {
+					const scrolled = valueOf( a );
+					const rest = valueOf( e.logic?.holes?.[ id ]?.[ w ] );
+					null !== scrolled && null !== rest && ( by[ w ] = { rest, scrolled } );
+				}
+				h && Object.keys( by ).length && ( out[ key ] ??= [] ).push( { where: h.where, path: h.path, by } );
+			}
+		}
+	}
+	return out;
+}
+
+// A CSS padding shorthand of one to four pixel lengths as { top, right, bottom, left }, else null.
+export function paddingBox( value ) {
+	const parts = String( value ?? '' ).trim().split( /\s+/ );
+	if ( parts.length > 4 || ! parts.every( ( x ) => /^-?\d*\.?\d+(?:px)?$/.test( x ) ) ) {
+		return null;
+	}
+	const [ top, right = top, bottom = top, left = right ] = parts.map( ( x ) => ( /px$/.test( x ) || '0' === x ? x : `${ x }px` ) );
+	return { top, right, bottom, left };
+}
+
+// The tier map ({ desktop?, tablet?, mobile? }) of the values a draft gives at each width (`at`: { <width>: value | null },
+// null meaning the draft changes nothing at that width): a tier is written only where its value differs from the wider
+// tier's, a narrower tier inheriting. `off`, when given, is the value a width with no change takes beneath a tier that has one.
+function tiersOf( at, off = null ) {
+	const out = {};
+	let held = null;
+	for ( const [ tier, w ] of TIER_WIDTHS ) {
+		if ( ! ( w in at ) ) {
+			continue;
+		}
+		const v = null === at[ w ] ? off : at[ w ];
+		if ( null === v || ( null === held && null === at[ w ] ) ) {
+			continue;
+		}
+		JSON.stringify( v ) !== JSON.stringify( held ) && ( out[ tier ] = v );
+		held = v;
+	}
+	return out;
+}
+
+// The header element a template element sits in (itself or its nearest ancestor that is a `header`), else the nearest that
+// the draft pins; null for an element in no header.
+function headerKeyOf( key, template ) {
+	const els = template?.elements || {};
+	const pins = ( e ) => PINS.test( String( staticStyle( e, 'position' ) ?? '' ).trim() );
+	const chain = [ key, ...( els[ key ]?.parentChain || [] ) ].filter( ( k ) => els[ k ] );
+	return chain.find( ( k ) => 'header' === els[ k ].realTag || 'header' === els[ k ].tag ) ?? chain.find( ( k ) => pins( els[ k ] ) ) ?? null;
+}
+
+// The scrollY threshold the draft states for its scrolled state (`scrollY > 40`): the first record, of the given records, that
+// keys a scrolled state and names one. The fact record keeps the draft's own records under each element's `effects`.
+function scrolledThreshold( records ) {
+	for ( const r of records || [] ) {
+		const at = stateKeysOf( r ).some( ( k ) => SCROLLED_KEY.test( k ) ) ? new RegExp( `scrollY\\s*>\\s*${ NUMBER }` ).exec( blob( r ) ) : null;
+		if ( at ) {
+			return number( at[ 1 ] );
+		}
+	}
+	return null;
+}
+
+// The scroll distance the fact record's records give for the draft's scrolled state, or null.
+export const scrolledThresholdOf = ( facts ) => scrolledThreshold( Object.values( facts?.elements || {} ).flatMap( ( e ) => e.effects || [] ) );
+
+// The header block's own scrolled threshold, which a draft's is written over only where it differs.
+const SCROLLED_OFFSET_DEFAULT = 50;
+
+// The property a scrolled look is a look of, as an animation record names it.
+const LOOK_PROPERTY = { 'style:padding': 'padding', 'attr:width': 'width' };
+
+// A transition of a property the draft's scrolled state changes on that element (`ctx.template.scrolled`, scrolledLooksOf): a
+// row whose padding changes with it shrinks on scroll (`rowShrink` and `rowShrinkPadding` on the `sgs/site-header-row`, and
+// the draft's threshold as `scrolledOffset` on the header it sits in where it is not the default), and a logo whose width
+// changes with it is `shrinkWidth` on its `sgs/responsive-logo`. The record is the one the element is keyed by and the
+// values are the fact record's, so a record needs no `scrolled` state key of its own. `placements` names each template
+// element and the settings written there, by block; `blocks` is the same settings by block alone.
+export function scrollShrinkOf( r, ctx ) {
+	const looks = ctx.template?.scrolled;
+	const key = templateOfRecord( r, ctx )?.key;
+	const mine = ( looks?.[ key ] || [] ).filter( ( l ) => props( r ).some( ( p ) => nameOf( p ) === LOOK_PROPERTY[ l.where ] ) );
+	if ( 'state' !== triggerOf( r ) || ! mine.length ) {
+		return null;
+	}
+	const placements = {};
+	const notes = [ 'the header shrinks once the page has scrolled (the draft\'s scrolled state)' ];
+	const offset = ctx.template.scrolledAt ?? scrolledThreshold( ctx.records );
+	const px = ( v ) => ( 'number' === typeof v ? `${ v }px` : String( v ) );
+	const pad = mine.find( ( l ) => 'style:padding' === l.where );
+	const width = mine.find( ( l ) => 'attr:width' === l.where );
+	const header = pad ? headerKeyOf( key, ctx.template ) : null;
+	if ( pad && header ) {
+		const boxes = Object.fromEntries( TIER_WIDTHS.map( ( [ , w ] ) => [ w, pad.by[ w ] ? paddingBox( pad.by[ w ].scrolled ) : null ] ) );
+		const held = TIER_WIDTHS.every( ( [ , w ] ) => ! pad.by[ w ] || boxes[ w ] );
+		const on = tiersOf( Object.fromEntries( TIER_WIDTHS.map( ( [ , w ] ) => [ w, pad.by[ w ] ? 'on' : null ] ) ), 'off' );
+		( placements[ key ] ??= {} )[ 'sgs/site-header-row' ] = [
+			{ attr: 'rowShrink', value: on },
+			...( held ? [ { attr: 'rowShrinkPadding', value: tiersOf( Object.fromEntries( TIER_WIDTHS.map( ( [ , w ] ) => [ w, boxes[ w ] ] ) ) ) } ] : [] ),
+		];
+		held || notes.push( `the shrunk padding is not in pixels at every width, so the row's own default (half the resting top and bottom) stands` );
+		if ( null !== offset && offset !== SCROLLED_OFFSET_DEFAULT ) {
+			( placements[ header ] ??= {} )[ 'sgs/site-header' ] = [ { attr: 'scrolledOffset', value: offset } ];
+		}
+	}
+	if ( width ) {
+		const value = tiersOf( Object.fromEntries( TIER_WIDTHS.map( ( [ , w ] ) => [ w, width.by[ w ] ? px( width.by[ w ].scrolled ) : null ] ) ) );
+		Object.keys( value ).length && ( ( placements[ key ] ??= {} )[ 'sgs/responsive-logo' ] = [ { attr: 'shrinkWidth', value } ] );
+	}
+	if ( ! Object.keys( placements ).length ) {
+		return null;
+	}
+	const blocks = {};
+	for ( const byBlock of Object.values( placements ) ) {
+		for ( const [ block, settings ] of Object.entries( byBlock ) ) {
+			blocks[ block ] = [ ...( blocks[ block ] || [] ), ...settings ];
+		}
+	}
+	return { blocks, placements, notes };
+}
+
 // An endless ring that grows from a dot and fades (a box-shadow spread from nothing to transparent): the open-status dot.
 export function dotPulseOf( r ) {
 	const p = props( r ).find( ( q ) => 'box-shadow' === nameOf( q ) );

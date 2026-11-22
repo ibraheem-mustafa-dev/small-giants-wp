@@ -300,11 +300,13 @@ export function motionWrites( { nodes, flat, refOf, records: given, sampled = {}
 			const where = { node: ref, block: n.name, slot: t.slot };
 			applyStrip( { n, target: t, key, idx, out, where, flat, hasAttr, reads } );
 			// Settings behaviours (the header's scrolled shadow, the timeline's pinned track, ...) write block settings, not motion layers.
-			const settings = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( ( x ) => x && 'settings' === x.b.kind );
+			const behaviourSettings = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( ( x ) => x && 'settings' === x.b.kind );
+			// A behaviour with `placements` is written at the elements it names (idx.placedFor), not at its record's own element.
+			const settings = [ ...behaviourSettings.filter( ( x ) => ! x.b.placements ), ...idx.placedFor( key ) ];
 			if ( settings.length ) {
 				applySettings( { items: settings, n, out, where, flat, hasAttr, palette: ctx.palette } );
-				own = own.filter( ( r ) => ! settings.some( ( x ) => x.r === r ) );
 			}
+			own = own.filter( ( r ) => ! behaviourSettings.some( ( x ) => x.r === r ) );
 			// A behaviour the block expresses as its own settings (a nav label's magnet as the nav's item magnet) needs no declared
 			// part; it is written once per record however many of the block's slots it reaches.
 			const blockLevel = own.map( ( r ) => idx.found.find( ( x ) => x.r === r ) ).filter( ( x ) => x && x.b.alt?.settings.every( ( s ) => hasAttr?.( n.name, s.attr ) ) );

@@ -25,7 +25,7 @@
 
 import { poseOf } from './motion-channels.mjs';
 import { props, nameOf, words, blob, triggerOf, MINUS, TIMES, NUMBER, number, round, durationOf, easingOf, compact } from './motion-record-text.mjs';
-import { PINNED, headerScrollOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf } from './motion-behaviour-settings.mjs';
+import { PINNED, headerScrollOf, scrollShrinkOf, dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf } from './motion-behaviour-settings.mjs';
 import { effectElementStyle, colourOf, largerSideFactor } from './motion-effect-element.mjs';
 import { templateKey } from './fact-key.mjs';
 import { fromPointer, tiltOf, tiltGlareHostOf, tiltResetOf } from './motion-tilt.mjs';
@@ -301,7 +301,7 @@ export function recogniseBehaviour( record, ctx = {} ) {
 	if ( fade ) {
 		return done( r, { kind: 'site', option: 'page-transition', value: { ...fade, settings: compact( { page_transitions: true, page_transition_style: fade.style, page_transition_duration: fade.durationMs, page_transition_easing: fade.easing } ) }, notes: [ `the page fades in on a route change: the site's page transition (${ fade.style }, ${ fade.durationMs }ms ${ fade.easing }) with the custom duration and easing, which win over the style's own`, 'the draft fades only the page body; SGS fades the page (an accepted difference, Ruling 5)' ] } );
 	}
-	for ( const make of [ ( x ) => headerScrollOf( x, ctx ), dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf ] ) {
+	for ( const make of [ ( x ) => headerScrollOf( x, ctx ), ( x ) => scrollShrinkOf( x, ctx ), dotPulseOf, accordionScrollOf, autoplayOf, pinnedTimelineOf ] ) {
 		const e = make( r );
 		if ( e ) {
 			return done( r, { kind: 'settings', ...e } );
