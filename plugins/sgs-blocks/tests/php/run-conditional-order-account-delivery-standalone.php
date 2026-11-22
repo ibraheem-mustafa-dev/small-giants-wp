@@ -36,6 +36,9 @@ sgs_t_order( array( 'id' => 21, 'key' => 'k21', 'user' => 8, 'created' => $now -
 sgs_t_order( array( 'id' => 22, 'key' => 'k22', 'created' => $now - 30, 'shipping' => array( array( 'name' => 'Royal Mail', 'method_id' => 'flat_rate' ) ) ) );
 sgs_t_order( array( 'id' => 23, 'key' => 'k23', 'user' => 8, 'created' => $now - 30 ) );
 sgs_t_order( array( 'id' => 24, 'key' => 'k24', 'created' => $now - 30, 'shipping' => array( array( 'name' => 'Local pickup', 'method_id' => 'local_pickup' ) ) ) );
+// 25: a delivery method whose id merely contains the word. 26: a pickup add-on's own id (local_pickup_plus).
+sgs_t_order( array( 'id' => 25, 'key' => 'k25', 'created' => $now - 30, 'shipping' => array( array( 'name' => 'Courier, no pickup', 'method_id' => 'no_pickup_delivery' ) ) ) );
+sgs_t_order( array( 'id' => 26, 'key' => 'k26', 'created' => $now - 30, 'shipping' => array( array( 'name' => 'Collect in store', 'method_id' => 'local_pickup_plus' ) ) ) );
 
 $html  = '<p>x</p>';
 $run   = static fn( string $rule ) => SGS\Blocks\check_conditional_visibility( $html, array( 'blockName' => 'sgs/text', 'attrs' => array( 'sgsConditionLoggedIn' => $rule ) ) );
@@ -61,6 +64,10 @@ $view( 23, 'k23', 8 );
 ok( ! $shows( 'order-collect' ) && ! $shows( 'order-delivery' ), 'an order with no shipping line shows neither the collect nor the delivery block' );
 $view( 24, 'k24' );
 ok( $shows( 'order-collect' ), 'the classic local_pickup method is a collection too' );
+$view( 25, 'k25' );
+ok( ! $shows( 'order-collect' ) && $shows( 'order-delivery' ), 'a method id that only contains the word pickup (no_pickup_delivery) is a delivery' );
+$view( 26, 'k26' );
+ok( $shows( 'order-collect' ) && ! $shows( 'order-delivery' ), 'a pickup method id with a suffix (local_pickup_plus) is a collection' );
 $view( 20, 'wrong', 7 );
 ok( $none_of(), 'a wrong order key hides every new rule' );
 $GLOBALS['sgs_t']['query'] = array();
