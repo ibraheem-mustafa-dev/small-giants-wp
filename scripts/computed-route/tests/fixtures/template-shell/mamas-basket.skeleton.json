@@ -1,0 +1,102 @@
+[
+	{
+		"name": "sgs/container",
+		"attributes": {
+			"tagName": "main"
+		},
+		"draftRef": {
+			"tpl": "Root/8#0"
+		},
+		"draftFingerprint": {
+			"tag": "main",
+			"cls": "",
+			"styleHash": "3e7740",
+			"parentTags": [],
+			"textHash": "1505",
+			"line": 11
+		},
+		"innerBlocks": [
+			{
+				"name": "sgs/hero",
+				"attributes": {},
+				"draftRef": {
+					"tpl": "Root/9#0"
+				},
+				"draftFingerprint": {
+					"tag": "div",
+					"cls": "",
+					"styleHash": "ebee20dc",
+					"parentTags": [
+						"main"
+					],
+					"textHash": "1505",
+					"line": 12
+				},
+				"innerBlocks": [
+					{
+						"name": "sgs/text",
+						"attributes": {
+							"text": "nearly there"
+						},
+						"draftRef": {
+							"tpl": "Root/10#0"
+						},
+						"draftFingerprint": {
+							"tag": "div",
+							"cls": "",
+							"styleHash": "c99acba9",
+							"parentTags": [
+								"main",
+								"div"
+							],
+							"textHash": "fda2b7a6",
+							"line": 13
+						},
+						"innerBlocks": []
+					},
+					{
+						"name": "sgs/heading",
+						"attributes": {
+							"content": "Your basket 2"
+						},
+						"draftRef": {
+							"tpl": "Root/11#0"
+						},
+						"draftFingerprint": {
+							"tag": "h1",
+							"cls": "",
+							"styleHash": "24723c92",
+							"parentTags": [
+								"main",
+								"div"
+							],
+							"textHash": "a7a6b6de",
+							"line": 14
+						},
+						"innerBlocks": [],
+						"handover": [
+							{
+								"owner": "content-page",
+								"kind": "text",
+								"detail": "the heading \"Your basket 2\" holds \"2\" as a piece of its own (font-size 0.4em, font-weight 700), which the heading's rich text cannot carry: split it into its own block or restyle it"
+							},
+							{
+								"owner": "content-page",
+								"kind": "text",
+								"detail": "the heading \"Your basket 2\" holds words the draft's code fills ({{ count }}): its rendered words are written"
+							}
+						]
+					},
+					{
+						"name": "core/post-content",
+						"attributes": {},
+						"innerBlocks": [],
+						"draftStandsFor": {
+							"tpl": "Root/22#0"
+						}
+					}
+				]
+			}
+		]
+	}
+]

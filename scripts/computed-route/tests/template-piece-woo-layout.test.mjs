@@ -10,7 +10,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { otherBranches, place } from '../lib/template-piece-woo-layout.mjs';
+import { basketCounts, otherBranches, place, templateView } from '../lib/template-piece-woo-layout.mjs';
+import { logicOf } from '../lib/shop-parts-logic.mjs';
 import { BUILDERS, piecesPass, placedLint } from '../lib/template-pieces-context.mjs';
 import { openDb } from '../lib/db.mjs';
 import { checkPieces, countBlocks, loadPieces, placePieces } from '../lib/template-pieces.mjs';
@@ -289,4 +290,63 @@ test( 'Eye Care\'s checkout: the block stands in for the grid; its h1 above the 
 	assert.deepEqual( nodes( got.tree ).find( ( n ) => 'core/post-content' === n.name ).draftStandsFor, { tpl: 'Root/739#0' } );
 	assert.equal( got.tree[ 0 ].templateFrame, undefined );
 	assert.ok( got.notes.some( ( n ) => /Eye Care Birmingham\/742 at the head of the form column is an express-payment group/.test( n ) ), got.notes.join( '\n' ) );
+} );
+
+// Mama's basket as the skeleton writes it today (the 2026-11-21 lab propose, saved as fixtures: the inventory without its
+// screenshots and revealed states): the h1 "Your basket" holds the count chip `<span>{{ count }}</span>` (Root/12#0).
+const BASKET = () => ( { tree: json( path.join( FIX, 'mamas-basket.skeleton.json' ) ), inventory: json( path.join( FIX, 'mamas-basket.inventory.json' ) ) } );
+const basketCtx = ( input, extra = {} ) => ( { ...realCtx( MAMAS, 'Basket', 'cart', input, json( path.join( FIX, 'mamas-facts.json' ) ), { role: 'cart', checkout: 'Checkout.dc.html' } ), draftSource: fs.readFileSync( path.join( REPO, 'sites', MAMAS, 'handoff', 'Basket.dc.html' ), 'utf8' ), ...extra } );
+
+test( 'MUST FAIL: a piece counting the basket\'s lines beside the heading becomes the live basket count, in a row with the heading\'s own words', () => {
+	const input = BASKET();
+	const got = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input ), builders: BUILDERS } );
+	assert.deepEqual( got.problems, [] );
+	const hero = got.tree[ 0 ].innerBlocks[ 0 ];
+	assert.deepEqual( shape( hero.innerBlocks ), [ [ 'sgs/text', 'Root/10#0' ], [ 'sgs/container', null, [ [ 'sgs/heading', 'Root/11#0' ], [ 'sgs/text', 'Root/12#0' ] ] ], [ 'core/post-content', null ] ] );
+	const row = hero.innerBlocks[ 1 ];
+	// The row carries no style value (the skeleton lint); its gap and alignment are handed over.
+	assert.deepEqual( row.attributes, { tagName: 'div', layout: 'flex' } );
+	assert.equal( row.draftRef, undefined );
+	assert.match( row.handover[ 0 ].detail, /Root\/12#0 sits in the line of Root\/11#0's words \(a word space before it/ );
+	const [ heading, chip ] = row.innerBlocks;
+	assert.equal( heading.attributes.content, 'Your basket' );
+	assert.equal( heading.draftFingerprint.tag, 'h1' );
+	// The two handover notes about the count (its own piece, its code-filled words) are settled by the split.
+	assert.equal( heading.handover, undefined );
+	assert.deepEqual( chip.attributes, { text: '<span class="sgs-basket-count">0</span>' } );
+	assert.equal( chip.draftFingerprint.tag, 'span' );
+	assert.ok( got.notes.some( ( n ) => /Root\/12#0 in Root\/11#0 counts the region's lines \(\{\{ count \}\}\)/.test( n ) ), got.notes.join( '\n' ) );
+	// What the piece placed passes the lint the pieces pass guards with.
+	assert.deepEqual( placedLint( input.tree, got.tree, openDb() ), [] );
+	// The rest of the tree is as before: only the heading changed.
+	assert.deepEqual( got.placed.find( ( p ) => 'core/post-content' === p.block ).run, [ 'Root/22#0', 'Root/14#0' ] );
+} );
+
+test( 'basketCounts: only a text hole counting a list the region loops over, held by an element with words of its own outside the region', () => {
+	const input = BASKET();
+	const facts = json( path.join( FIX, 'mamas-facts.json' ) );
+	const src = fs.readFileSync( path.join( REPO, 'sites', MAMAS, 'handoff', 'Basket.dc.html' ), 'utf8' );
+	const L = logicOf( src );
+	const v = templateView( facts, 'Basket' );
+	assert.deepEqual( basketCounts( v, 'Basket/22', L ), [ { host: 'Basket/11', chip: 'Basket/12', expr: 'count' } ] );
+	// Negative controls: no logic; a region looping over no list; a count of another list (the same words over `others`).
+	assert.deepEqual( basketCounts( v, 'Basket/22', null ), [] );
+	assert.deepEqual( basketCounts( v, 'Basket/10', L ), [] );
+	const other = logicOf( src.replace( 'const items = M ?', 'const gifts = [], items = M ?' ).replace( 'count: items.reduce(', 'count: gifts.reduce(' ) );
+	assert.deepEqual( basketCounts( v, 'Basket/22', other ), [] );
+	// A name the logic also gives a value counting nothing is no count.
+	assert.deepEqual( basketCounts( v, 'Basket/22', logicOf( src.replace( 'freePct:', 'other: { count: 3 }, freePct:' ) ) ), [] );
+	// A count inside the region is the block's own drawing (here the region is the hero holding the heading too).
+	assert.deepEqual( basketCounts( v, 'Basket/9', L ), [] );
+	// A count bound to an attribute, not to the words, is no piece of words.
+	const attr = structuredClone( facts );
+	attr.elements[ 'Basket/12' ].template.holes = [ { where: 'attr:title', expr: 'count' } ];
+	assert.deepEqual( basketCounts( templateView( attr, 'Basket' ), 'Basket/22', L ), [] );
+	// A count whose holder has no words of its own (a bare count box) is not split.
+	const bare = structuredClone( facts );
+	bare.elements[ 'Basket/11' ].template.words = '{{ count }}';
+	assert.deepEqual( basketCounts( templateView( bare, 'Basket' ), 'Basket/22', L ), [] );
+	// Without the draft's source the tree is left as it is.
+	const plain = placePieces( { key: 'cart', tree: input.tree, data: DATA, ctx: basketCtx( input, { draftSource: null } ), builders: BUILDERS } );
+	assert.equal( plain.tree[ 0 ].innerBlocks[ 0 ].innerBlocks[ 1 ].name, 'sgs/heading' );
 } );

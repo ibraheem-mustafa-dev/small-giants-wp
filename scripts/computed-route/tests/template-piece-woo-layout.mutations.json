@@ -27,5 +27,18 @@
 	{"file": "lib/template-piece-woo-layout.mjs", "find": "run: [ region, ...others.map( ( k ) => `Root/${ nOf( k ) }#0` ) ]", "replace": "run: [ region ]", "why": "the empty basket is not in the layout's run"},
 	{"file": "lib/template-piece-woo-layout.mjs", "find": "( 'sc-else' === t.tag && i === at + 1 )", "replace": "false", "why": "the else of the region's branch is not its other branch"},
 	{"file": "lib/template-piece-woo-layout.mjs", "find": ".some( ( l ) => lists.has( l ) )", "replace": ".length > 0", "why": "a sibling counting another list is taken as the other branch"},
-	{"file": "lib/template-piece-woo-layout.mjs", "find": "if ( ! lists.size ) {", "replace": "if ( false ) {", "why": "a branch counting no list still has other branches"}
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "if ( ! lists.size ) {", "replace": "if ( false ) {", "why": "a branch counting no list still has other branches"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"const pruned = split( prune( tree ) );","replace":"const pruned = prune( tree );","why":"the basket count stays inside the heading as its rendered number"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"if ( inRegion( t ) || ! host ||","replace":"if ( ! host ||","why":"a count inside the region the block stands for is split out too"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"! ws( String( host.words ?? '' ).replace( /\\{\\{[^}]*\\}\\}/g, '' ) )","replace":"! ws( String( host.words ?? '' ) )","why":"a holder whose only words are the count is split"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"countedDecls( L, h.expr ).some( ( d ) => lines.has( d ) )","replace":"countedDecls( L, h.expr ).length > 0","why":"a count of any list is taken as the basket count"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"'text' === h.where && countedDecls","replace":"true && countedDecls","why":"a style or attribute hole is taken as the count's words"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"[ text ]: words }","replace":"[ text ]: n.attributes[ text ] }","why":"the heading keeps the count's rendered number in its words"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"innerBlocks: first ? [ chip, own ] : [ own, chip ]","replace":"innerBlocks: [ chip, own ]","why":"the count goes before the words"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"text: '<span class=\"sgs-basket-count\">0</span>'","replace":"text: ws( chipEl.words )","why":"the count is written as the draft's sample number"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"draftRef: { tpl: chipEl.key }, draftFingerprint","replace":"draftFingerprint","why":"the count reads no look of the draft's chip"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"! String( h.detail || '' ).includes( `{{ ${ expr } }}` ) && ","replace":"","why":"the handover about the code-filled count stays"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"...counted,","replace":"","why":"the split is not noted"},
+	{"file":"lib/shop-parts-logic.mjs","find":"return n.callee.object;","replace":"return n.arguments[ 0 ];","why":"a reduce counts its reducer, not its list"},
+	{"file":"lib/shop-parts-logic.mjs","find":"return values.length && decls.every( Boolean ) ? [ ...new Set( decls ) ] : [];","replace":"return [ ...new Set( decls.filter( Boolean ) ) ];","why":"a binding counting nothing is taken to count"}
 ]

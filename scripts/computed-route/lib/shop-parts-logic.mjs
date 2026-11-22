@@ -322,6 +322,49 @@ export const countBinding = ( L, expr ) => {
 	return values.length > 0 && values.every( ( v ) => isCount( L, v ) );
 };
 
+// The collection node an isCount expression counts (`items` in `items.reduce( …, 0 )` or `items.length`), or null.
+function countedOf( L, n, depth = 0 ) {
+	if ( ! n || depth > DEPTH ) {
+		return null;
+	}
+	if ( lengthOf( n ) ) {
+		return n.object;
+	}
+	if ( 'CallExpression' === n.type && 0 === n.arguments[ 1 ]?.value && 'reduce' === n.callee.property?.name ) {
+		return n.callee.object;
+	}
+	if ( 'BinaryExpression' === n.type && '+' === n.operator ) {
+		return countedOf( L, n.left, depth + 1 );
+	}
+	if ( 'Identifier' === n.type ) {
+		const r = resolveName( L, n );
+		return 'var' === r?.kind && ! r.key ? countedOf( L, r.init, depth + 1 ) : null;
+	}
+	return null;
+}
+
+// The variable a value is drawn from: the base of its call and member chain (`items.map( … )`, `items.length`, `items`),
+// as the declaration that names it, or null (a store call, a literal).
+export function baseDecl( L, node ) {
+	let n = node;
+	while ( n && ( 'CallExpression' === n.type || 'MemberExpression' === n.type ) ) {
+		n = 'CallExpression' === n.type ? n.callee : n.object;
+	}
+	const r = 'Identifier' === n?.type ? resolveName( L, n ) : null;
+	return 'var' === r?.kind && ! r.key ? r.decl : null;
+}
+
+// The declarations of the collections a binding counts (`count: items.reduce( ( a, x ) => a + x.qty, 0 )` counts the
+// `items` variable): [] when a value it is given counts nothing.
+export function countedDecls( L, expr ) {
+	const values = valuesOf( L, expr );
+	const decls = values.map( ( v ) => baseDecl( L, countedOf( L, v ) ) );
+	return values.length && decls.every( Boolean ) ? [ ...new Set( decls ) ] : [];
+}
+
+// The declarations of the variables a list binding is drawn from (`items: items.map( … )` is drawn from `items`).
+export const listDecls = ( L, expr ) => [ ...new Set( valuesOf( L, expr ).map( ( v ) => baseDecl( L, v ) ).filter( Boolean ) ) ];
+
 // The values a `let` variable is reassigned to, each with the test of the `if` or conditional that guards it:
 // [{ value, test }] (`test` null when unguarded).
 function reassignments( L, id, decl ) {

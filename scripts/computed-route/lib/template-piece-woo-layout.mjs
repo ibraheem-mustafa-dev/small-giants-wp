@@ -23,6 +23,11 @@
 //     handler: a wallet button's work is its payment provider's) and a divider (an element whose own words sit between two
 //     or more empty boxes) are WooCommerce's block's own; a heading and plain text before it are the draft's.
 // A region holding any other part is left as it is, with a note naming the part.
+// Outside the region, a heading or text holding a piece whose words are a count of the list the region's lines loop over (the
+// basket's `{{ count }}`, `items.reduce( ( a, x ) => a + x.qty, 0 )` over the `items` the lines loop) is the live basket count
+// (basketCounts): the node becomes a row holding its own words and an `sgs/text` drawing the "Basket count" format
+// (`<span class="sgs-basket-count">`, filled by src/shared/cart-live/basket-count.js), which reads the piece's look. The row
+// has no draft element, so its gap and alignment are a handover row (a skeleton carries no style value).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -31,6 +36,7 @@ import { commerceRegion } from './skeleton-commerce-region.mjs';
 import { fingerprintOf } from './identity.mjs';
 import { handlerOpens } from './skeleton-handler-opens.mjs';
 import { templateKeyOf } from './fact-key.mjs';
+import { countedDecls, listDecls, logicOf } from './shop-parts-logic.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const DECISIONS = path.resolve( HERE, '..', 'data', 'skeleton-decisions.json' );
@@ -165,6 +171,42 @@ function headOf( v, form ) {
 
 const keyOf = ( node ) => node?.draftRef?.tpl ?? null;
 
+// The pieces outside the region whose words are the count of the region's lines: [{ host, chip, expr }] (template keys), where
+// `chip` holds a text hole whose binding counts a variable a list the region loops over is drawn from, and `host` is its parent,
+// which has words of its own. `L`: the draft's parsed logic (lib/shop-parts-logic.mjs::logicOf).
+export function basketCounts( v, regionKey, L ) {
+	const inRegion = ( t ) => t.key === regionKey || ( t.parentChain || [] ).includes( regionKey );
+	const lines = new Set( v.below( regionKey ).filter( ( t ) => 'sc-for' === t.tag && t.own?.list ).flatMap( ( t ) => listDecls( L, t.own.list ) ) );
+	if ( ! lines.size ) {
+		return [];
+	}
+	return Object.values( v.byKey ).flatMap( ( t ) => {
+		const host = v.byKey[ t.parent ];
+		if ( inRegion( t ) || ! host || ! ws( String( host.words ?? '' ).replace( /\{\{[^}]*\}\}/g, '' ) ) ) {
+			return [];
+		}
+		const hole = ( t.holes || [] ).find( ( h ) => 'text' === h.where && countedDecls( L, h.expr ).some( ( d ) => lines.has( d ) ) );
+		return hole ? [ { host: host.key, chip: t.key, expr: hole.expr } ] : [];
+	} );
+}
+
+// The row standing for a node whose element holds a basket count: its own words, then the count (or the count first when the
+// draft draws it before the words).
+function countRow( n, { hostEl, chipEl, expr, m } ) {
+	const words = ws( hostEl.words );
+	const text = 'sgs/heading' === n.name ? 'content' : 'text';
+	const handover = ( n.handover || [] ).filter( ( h ) => ! String( h.detail || '' ).includes( `{{ ${ expr } }}` ) && ! String( h.detail || '' ).includes( `"${ ws( chipEl.words ) }" as a piece of its own` ) );
+	const { handover: _drop, ...rest } = n;
+	const own = { ...rest, attributes: { ...n.attributes, [ text ]: words }, ...( handover.length ? { handover } : {} ) };
+	const chip = { name: 'sgs/text', attributes: { text: '<span class="sgs-basket-count">0</span>' }, draftRef: { tpl: chipEl.key }, draftFingerprint: fingerprintOf( chipEl, m.byKey ), innerBlocks: [] };
+	const snippet = String( hostEl.snippet || '' ).replace( /^<[^>]*>/, '' );
+	const first = ! ws( snippet.slice( 0, Math.max( 0, snippet.indexOf( '<' ) ) ) );
+	// The row has no draft element of its own (the draft sets the count in the heading's line), so no reader writes its gap or
+	// cross alignment and a skeleton may carry no style value: they are handed over.
+	const line = { owner: 'content-page', kind: 'layout', detail: `the basket count ${ chipEl.key } sits in the line of ${ hostEl.key }'s words (a word space ${ first ? 'after' : 'before' } it, centred on the line by vertical-align): set this row's gap and its items' alignment to match` };
+	return { name: 'sgs/container', attributes: { tagName: 'div', layout: 'flex' }, handover: [ line ], innerBlocks: first ? [ chip, own ] : [ own, chip ] };
+}
+
 export function place( ctx, piece ) {
 	const tree = ctx.tree || [];
 	const facts = ctx.factRecord;
@@ -211,7 +253,19 @@ export function place( ctx, piece ) {
 		}
 		return [ n.innerBlocks?.length ? { ...n, innerBlocks: prune( n.innerBlocks ) } : n ];
 	} );
-	const pruned = prune( tree );
+	const counts = basketCounts( v, regionKey, ctx.draftSource ? logicOf( ctx.draftSource ) : null );
+	const counted = [];
+	const split = ( list ) => ( list || [] ).map( ( n ) => {
+		const c = counts.find( ( x ) => keyOf( n ) === `Root/${ nOf( x.host ) }#0` );
+		const hostEl = c && m.byKey[ keyOf( n ) ];
+		const chipEl = c && m.byKey[ `Root/${ nOf( c.chip ) }#0` ];
+		if ( hostEl && chipEl && [ 'sgs/heading', 'sgs/text' ].includes( n.name ) ) {
+			counted.push( `${ ctx.key }: ${ chipEl.key } in ${ keyOf( n ) } counts the region's lines ({{ ${ c.expr } }}): built as the live basket count beside the ${ n.name }'s words` );
+			return countRow( n, { hostEl, chipEl, expr: c.expr, m } );
+		}
+		return n.innerBlocks?.length ? { ...n, innerBlocks: split( n.innerBlocks ) } : n;
+	} );
+	const pruned = split( prune( tree ) );
 	if ( ! block ) {
 		return leave( 'the tree holds no core/post-content placed at the region' );
 	}
@@ -257,6 +311,7 @@ export function place( ctx, piece ) {
 			...head.filter( ( h ) => ! kept.includes( h ) ).map( ( h ) => `${ ctx.key }: ${ h.t.key } at the head of the form column is ${ 'express payment' === h.kind ? 'an express-payment group, drawn by the block\'s express payment' : 'divider' === h.kind ? 'the divider between express payment and the fields, drawn by the block' : `${ h.kind }, drawn by the block (it follows the column's own head)` }` ),
 			...kept.map( ( h ) => `${ ctx.key }: ${ h.t.key } (${ h.kind }) at the head of the form column stays the draft's own, above the block` ),
 			...dropped.map( ( d ) => `${ ctx.key }: ${ d } is dropped: an element inside the region the block stands in for` ),
+			...counted,
 			...notes,
 		],
 	};
