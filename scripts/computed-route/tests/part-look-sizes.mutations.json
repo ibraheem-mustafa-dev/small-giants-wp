@@ -1,0 +1,80 @@
+[
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "\t\treturn s( 'decl:height' ) ? { text: s( 'decl:height' ), own: false } : null;",
+		"replace": "\t\treturn null;",
+		"why": "a min-height setting never takes the declared height"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( own && ! ( 'max-width' === property && VIEWPORT_CAP.test( own ) ) ) {",
+		"replace": "if ( own ) {",
+		"why": "a viewport-capped max-width is read as its own (unreadable) value"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return width ? { text: '100vw' === width ? '100%' : width, own: false } : { text: own, own: true };",
+		"replace": "return width ? { text: width, own: false } : { text: own, own: true };",
+		"why": "a width of the whole viewport is not held as 100%"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "\t\treturn s( 'track:width' ) ? { text: s( 'track:width' ), own: false } : null;",
+		"replace": "\t\treturn null;",
+		"why": "a grid track never states the sidebar width"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "\t\t\t\tif ( ! stated.own ) {\n\t\t\t\t\treturn px( stated.text );\n\t\t\t\t}",
+		"replace": "",
+		"why": "a borrowed size reads the computed value of the setting's own property"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "if ( '100%' === stated.text && ! stated.own ) {",
+		"replace": "if ( false ) {",
+		"why": "the full-viewport width is refused as no px length"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return undeclared && SIDES.every( ( n ) => box[ n ] === UA_BUTTON_PADDING[ n ] ) ? null : box;",
+		"replace": "return box;",
+		"why": "a button's browser padding is written as the draft's look"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "const undeclared = 'padding' === property && SIDES.every( ( n ) => ! s( `decl:padding-${ n }` ) );",
+		"replace": "const undeclared = 'padding' === property;",
+		"why": "a padding the draft states as 1px 6px is dropped"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "return { value: 'string' === typeof value ? value : pxText( value ) };",
+		"replace": "return { value: pxText( value ) };",
+		"why": "100% is written as a broken pixel length"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( ! p || ! /grid/.test( styleOf( p ).display ) || ! /\\dfr\\b/.test( declared( p, 'grid-template-columns' ) ) ) {",
+		"replace": "if ( ! p || ! /grid/.test( styleOf( p ).display ) ) {",
+		"why": "fixed grid columns are taken for the draft's ratio"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "const own = 2 === tracks.length ? tracks.find(",
+		"replace": "const own = tracks.length ? tracks.find(",
+		"why": "a one-column grid's track is taken for a side column"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "'max-width', 'flex-basis', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];",
+		"replace": "'max-width', 'flex-basis' ];",
+		"why": "the padding the draft states is never read"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": ", 'track:width': trackWidth( el ) } };",
+		"replace": " } };",
+		"why": "the track width is never read in the page"
+	}
+]

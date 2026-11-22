@@ -48,8 +48,37 @@ const FAMILY = {
 	'box-shadow': 'shadow',
 };
 const SIZES = new Set( [ 'width', 'height', 'min-width', 'min-height', 'max-width' ] );
-// A column's width the draft states as a flex basis counts as stated.
-const statedSize = ( property, s ) => s( `decl:${ property }` ) || ( 'width' === property ? s( 'decl:flex-basis' ) : '' );
+const PX = /^-?[\d.]+px$/;
+// A max-width the draft states against the viewport (100vw, 92vw, 100%): the element's own width is the size the draft chose.
+const VIEWPORT_CAP = /^(\d+(\.\d+)?vw|100%)$/;
+// What the draft states for a size setting's property: { text, own } (`own` when the property itself is stated, so the computed value
+// is read), or null when the draft states none. Also stated:
+//   - a column's width as a flex basis, or as its track of a two-track grid whose declared columns hold a fraction (`1.35fr 1fr`,
+//     measured in the page as `track:width` at each width where the grid has two columns);
+//   - a min-height as a declared height (a button drawn `height:66px` is at least that tall);
+//   - a max-width capped by the viewport as the declared width (`width:440px;max-width:100vw`); a width of the whole viewport is 100%.
+export function statedSize( property, s ) {
+	const own = s( `decl:${ property }` );
+	if ( own && ! ( 'max-width' === property && VIEWPORT_CAP.test( own ) ) ) {
+		return { text: own, own: true };
+	}
+	if ( 'width' === property ) {
+		if ( s( 'decl:flex-basis' ) ) {
+			return { text: s( 'decl:flex-basis' ), own: true };
+		}
+		return s( 'track:width' ) ? { text: s( 'track:width' ), own: false } : null;
+	}
+	if ( 'min-height' === property ) {
+		return s( 'decl:height' ) ? { text: s( 'decl:height' ), own: false } : null;
+	}
+	if ( 'max-width' === property && own ) {
+		const width = s( 'decl:width' );
+		return width ? { text: '100vw' === width ? '100%' : width, own: false } : { text: own, own: true };
+	}
+	return null;
+}
+// The padding the browser gives a button of its own (1px 6px): a draft that states no padding has not chosen it.
+const UA_BUTTON_PADDING = { top: 1, right: 6, bottom: 1, left: 6 };
 const BORDER_SIDE = { border: 'top', 'border-top': 'top', 'border-bottom': 'bottom', 'border-top-style': 'top' };
 
 // A value that paints nothing (the CSS initial of a look): never written.
@@ -117,8 +146,14 @@ export function primitive( property, styles, row = {}, keep = false ) {
 				if ( ! stated ) {
 					return null;
 				}
-				if ( ! /^-?[\d.]+px$/.test( stated ) ) {
+				if ( '100%' === stated.text && ! stated.own ) {
+					return '100%';
+				}
+				if ( ! PX.test( stated.text ) ) {
 					return undefined;
+				}
+				if ( ! stated.own ) {
+					return px( stated.text );
 				}
 			}
 			let v;
@@ -133,7 +168,12 @@ export function primitive( property, styles, row = {}, keep = false ) {
 		case 'box': {
 			const side = ( n ) => px( s( 'border-width' === property ? `border-${ n }-width` : `${ property }-${ n }` ) );
 			const box = Object.fromEntries( SIDES.map( ( n ) => [ n, side( n ) ] ) );
-			return SIDES.some( ( n ) => null === box[ n ] ) ? undefined : box;
+			if ( SIDES.some( ( n ) => null === box[ n ] ) ) {
+				return undefined;
+			}
+			// A padding the draft never states that equals a button's own browser padding is the browser's, not the draft's look.
+			const undeclared = 'padding' === property && SIDES.every( ( n ) => ! s( `decl:padding-${ n }` ) );
+			return undeclared && SIDES.every( ( n ) => box[ n ] === UA_BUTTON_PADDING[ n ] ) ? null : box;
 		}
 		case 'radius': {
 			const corners = Object.fromEntries( CORNERS.map( ( [ k, c ] ) => [ k, s( `border-${ c }-radius` ) ] ) );
@@ -264,7 +304,8 @@ export function toSetting( row, value, ctx ) {
 			return { value: round( value ), extra };
 		}
 		case 'length':
-			return { value: pxText( value ) };
+			// A width of the whole viewport is held as 100% (statedSize); every other length is a number of pixels.
+			return { value: 'string' === typeof value ? value : pxText( value ) };
 		case 'box':
 			return { value: Object.fromEntries( SIDES.map( ( s ) => [ s, pxText( value[ s ] ) ] ) ) };
 		case 'radius': {

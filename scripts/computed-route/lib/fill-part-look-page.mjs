@@ -461,7 +461,19 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		}
 		return '';
 	};
-	const SIZES = [ 'width', 'height', 'min-width', 'min-height', 'max-width', 'flex-basis' ];
+	const SIZES = [ 'width', 'height', 'min-width', 'min-height', 'max-width', 'flex-basis', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];
+	// The element's own track of a two-track grid whose declared columns hold a fraction (`1.35fr 1fr`): the column width the draft's
+	// ratio gives it at this width ('' where the grid is one column, the columns are fixed, or the element spans both tracks).
+	const trackWidth = ( el ) => {
+		const p = el.parentElement;
+		if ( ! p || ! /grid/.test( styleOf( p ).display ) || ! /\dfr\b/.test( declared( p, 'grid-template-columns' ) ) ) {
+			return '';
+		}
+		const tracks = styleOf( p ).gridTemplateColumns.split( /\s+/ ).filter( ( t ) => /^[\d.]+px$/.test( t ) );
+		const w = box( el ).width;
+		const own = 2 === tracks.length ? tracks.find( ( t ) => Math.abs( parseFloat( t ) - w ) < 1 ) : null;
+		return own ? `${ Math.round( parseFloat( own ) * 10 ) / 10 }px` : '';
+	};
 	const pathOf = ( el ) => {
 		const parts = [];
 		for ( let e = el; e && e !== document.body; e = e.parentElement ) {
@@ -479,7 +491,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		out[ name ] = els.map( ( el ) => {
 			const s = styleOf( el );
 			const r = box( el );
-			return { key: pathOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 60 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10 }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ) } };
+			return { key: pathOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 60 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10 }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ) } };
 		} );
 	}
 	return out;

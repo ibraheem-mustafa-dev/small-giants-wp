@@ -49,7 +49,7 @@
 	},
 	{
 		"file": "lib/fill-part-look.mjs",
-		"find": "if ( ! /^-?[\\d.]+px$/.test( stated ) ) {",
+		"find": "if ( ! PX.test( stated.text ) ) {",
 		"replace": "if ( false ) {",
 		"why": "a size declared in vw is written as its computed pixels"
 	},
