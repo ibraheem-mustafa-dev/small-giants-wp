@@ -522,7 +522,8 @@
           },
           "price": 139
         }
-      ]
+      ],
+      "menuOrder": 0
     },
     {
       "draftId": "2",
@@ -704,7 +705,8 @@
           },
           "price": 289
         }
-      ]
+      ],
+      "menuOrder": 1
     },
     {
       "draftId": "3",
@@ -889,7 +891,8 @@
           },
           "price": 119
         }
-      ]
+      ],
+      "menuOrder": 2
     },
     {
       "draftId": "4",
@@ -1069,7 +1072,8 @@
           },
           "price": 239
         }
-      ]
+      ],
+      "menuOrder": 3
     },
     {
       "draftId": "5",
@@ -1348,7 +1352,8 @@
           },
           "price": 129
         }
-      ]
+      ],
+      "menuOrder": 4
     },
     {
       "draftId": "6",
@@ -1531,7 +1536,8 @@
           },
           "price": 135
         }
-      ]
+      ],
+      "menuOrder": 5
     },
     {
       "draftId": "7",
@@ -1712,7 +1718,8 @@
           },
           "price": 199
         }
-      ]
+      ],
+      "menuOrder": 6
     },
     {
       "draftId": "8",
@@ -1864,7 +1871,8 @@
           },
           "price": 59
         }
-      ]
+      ],
+      "menuOrder": 7
     },
     {
       "draftId": "9",
@@ -2044,7 +2052,8 @@
           },
           "price": 109
         }
-      ]
+      ],
+      "menuOrder": 8
     },
     {
       "draftId": "10",
@@ -2192,7 +2201,8 @@
           },
           "price": 169
         }
-      ]
+      ],
+      "menuOrder": 9
     },
     {
       "draftId": "11",
@@ -2373,7 +2383,8 @@
           },
           "price": 59
         }
-      ]
+      ],
+      "menuOrder": 10
     },
     {
       "draftId": "12",
@@ -2521,7 +2532,8 @@
           },
           "price": 339
         }
-      ]
+      ],
+      "menuOrder": 11
     },
     {
       "draftId": "13",
@@ -2704,7 +2716,8 @@
           },
           "price": 99
         }
-      ]
+      ],
+      "menuOrder": 12
     },
     {
       "draftId": "14",
@@ -2884,7 +2897,8 @@
           },
           "price": 215
         }
-      ]
+      ],
+      "menuOrder": 13
     },
     {
       "draftId": "15",
@@ -3064,7 +3078,8 @@
           },
           "price": 109
         }
-      ]
+      ],
+      "menuOrder": 14
     },
     {
       "draftId": "16",
@@ -3247,7 +3262,8 @@
           },
           "price": 115
         }
-      ]
+      ],
+      "menuOrder": 15
     }
   ],
   "gaps": [

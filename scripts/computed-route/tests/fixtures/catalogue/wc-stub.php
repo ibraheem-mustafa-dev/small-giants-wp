@@ -56,6 +56,8 @@ class WC_Product {
 	public function set_status( $v ) { $this->s( 'status', $v ); }
 	public function set_catalog_visibility( $v ) {}
 	public function set_short_description( $v ) {}
+	public function get_menu_order() { global $W; $this->ensure(); return (int) ( $W['posts'][ $this->id ]['menu_order'] ?? 0 ); }
+	public function set_menu_order( $v ) { $this->s( 'menu_order', (int) $v ); }
 	public function get_sku() { return $this->g( 'sku' ); }
 	public function set_sku( $v ) {
 		global $W;
@@ -137,6 +139,8 @@ function get_posts( $a ) { global $W; $out = array(); foreach ( $W['posts'] as $
 function get_page_by_path( $slug ) { global $W; foreach ( $W['posts'] as $id => $p ) { if ( $p && $p['slug'] === $slug ) { return (object) array( 'ID' => $id ); } } return null; }
 function get_post_status( $id ) { global $W; return $W['posts'][ $id ]['status'] ?? false; }
 function get_post_type( $id ) { return 'product'; }
+function get_post_field( $field, $id ) { global $W; return 'menu_order' === $field ? (int) ( $W['posts'][ $id ]['menu_order'] ?? 0 ) : ''; }
+if ( ! function_exists( 'sanitize_text_field' ) ) { function sanitize_text_field( $v ) { return trim( strip_tags( (string) $v ) ); } }
 function wp_update_post( $a ) { global $W; $W['posts'][ $a['ID'] ]['status'] = $a['post_status']; }
 function get_post_thumbnail_id( $id ) { global $W; return $W['posts'][ $id ]['thumb'] ?? 0; }
 function set_post_thumbnail( $id, $att ) { global $W; $W['posts'][ $id ]['thumb'] = $att; }

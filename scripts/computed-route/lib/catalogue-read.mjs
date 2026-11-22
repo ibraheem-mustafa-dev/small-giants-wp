@@ -15,7 +15,9 @@
 //     picks as the price itself, more than one priced choice, too many variations and every filter field with no
 //     WooCommerce home are gap rows (`kind`, `detail`), never silent drops;
 //   - every other filter field is a facet (lib/catalogue-facets.mjs): a global attribute with its terms, and each
-//     product's terms in its `facets`.
+//     product's terms in its `facets`;
+//   - `menuOrder` is the product's place in the draft's lists (the shop's own order), and `card` the per-product words its
+//     product card shows (badge, price note, button words and action: lib/catalogue-card-facts.mjs), when the draft holds any.
 import fs from 'node:fs';
 import path from 'node:path';
 import { embeddedManifest } from './intake-routing.mjs';
@@ -23,6 +25,7 @@ import { UNREAD, catalogueSources, valueOf } from './catalogue-source.mjs';
 import { descriptionField, facetFields, imageFields, recordLists } from './catalogue-records.mjs';
 import { basketLines, keyOptions, lineFor, lineKeys } from './catalogue-options.mjs';
 import { omittedChoices } from './catalogue-omitted.mjs';
+import { cardFacts } from './catalogue-card-facts.mjs';
 import { readFacets, settleFacets } from './catalogue-facets.mjs';
 
 export const MAX_VARIATIONS = 100;
@@ -259,6 +262,8 @@ export function readCatalogue( { repo, client, rows } ) {
 		out.gaps.push( ...facetRead.gaps );
 		const lines = basketLines( ctx, list, file );
 		const omitted = omittedChoices( ctx, lines, list, file );
+		const card = cardFacts( ctx, list, [ ...taken, img.image, img.gallery, desc, catField, brandField, ...facets.map( ( f ) => f.field ) ].filter( Boolean ) );
+		card.notes.forEach( ( n ) => notes.push( n ) );
 		const first = out.products.length;
 		for ( const r of list.records ) {
 			const draftId = String( r[ list.key ] );
@@ -278,6 +283,8 @@ export function readCatalogue( { repo, client, rows } ) {
 				facets: facetRead.termsOf( r ),
 				attributes: attributes.map( ( { priced, ...a } ) => a ),
 				variations,
+				menuOrder: out.products.length,
+				...( Object.keys( card.valuesOf( r ) ).length ? { card: card.valuesOf( r ) } : {} ),
 			} );
 		}
 		omitted.forEach( ( o ) => {

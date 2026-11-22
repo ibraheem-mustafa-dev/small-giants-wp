@@ -70,7 +70,7 @@ $sgs_variesby = function ( $value ) {
 `;
 
 // The read: per product { draftId, id, how, fixture, type, status, sku, price, image, gallery, categories, brand, rrp,
-// draftMeta, photoToCome (the `_sgs_photo_to_come` marker), attributes (pa_ slugs), variesBy (per attribute taxonomy,
+// draftMeta, photoToCome (the `_sgs_photo_to_come` marker), menuOrder, card (the four `_sgs_card_*` metas: badge, note, label, action), attributes (pa_ slugs), variesBy (per attribute taxonomy,
 // the `_sgs_variesby_value` of each of the product's terms, '' for none, as the preflight reads it), variations (SKUs),
 // permalink, facets (per facet slug, its term names), variationAttributes (the attribute taxonomies that are a choice),
 // attributeTerms (per attribute taxonomy, the product's term names) and, for a product with the route's SKU prefix,
@@ -123,6 +123,8 @@ foreach ( $in as $p ) {
 			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'variesBy' => (object) $vb, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ),
 			'variationAttributes' => $vattrs, 'attributeTerms' => (object) $aterms, 'variationRows' => $rows );
 		$row['facets'] = $sgs_product_facets( $id );
+		$row['menuOrder'] = (int) get_post_field( 'menu_order', $id );
+		$row['card'] = (object) array( 'badge' => (string) get_post_meta( $id, '_sgs_card_badge', true ), 'note' => (string) get_post_meta( $id, '_sgs_card_price_note', true ), 'label' => (string) get_post_meta( $id, '_sgs_card_cta_label', true ), 'action' => (string) get_post_meta( $id, '_sgs_card_cta_action', true ) );
 	}
 	$out[] = $row;
 }
@@ -302,7 +304,14 @@ foreach ( $steps as $s ) {
 			$wc->set_default_attributes( $defaults );
 		}
 	}
+	// The shop's own order is the draft's (its place in the record lists), on a product the route made.
+	if ( $ours && isset( $p['menuOrder'] ) && (int) $wc->get_menu_order() !== (int) $p['menuOrder'] ) { $wc->set_menu_order( (int) $p['menuOrder'] ); }
 	$id = $wc->save();
+	// The product card's per-product words (includes/product-card-per-product.php), each only where the product has none.
+	$sgs_card_keys = array( 'badge' => '_sgs_card_badge', 'note' => '_sgs_card_price_note', 'label' => '_sgs_card_cta_label', 'action' => '_sgs_card_cta_action' );
+	foreach ( (array) ( $p['card'] ?? array() ) as $k => $v ) {
+		if ( isset( $sgs_card_keys[ $k ] ) && '' !== (string) $v && '' === (string) get_post_meta( $id, $sgs_card_keys[ $k ], true ) ) { update_post_meta( $id, $sgs_card_keys[ $k ], sanitize_text_field( (string) $v ) ); }
+	}
 	if ( ! $ours ) {
 		$done[] = $p['draftId'] . ': adopted product ' . $id . ' (its name, price and choices left as they are)';
 	}

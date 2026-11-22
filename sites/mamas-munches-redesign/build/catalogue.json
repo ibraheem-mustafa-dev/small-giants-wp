@@ -394,7 +394,14 @@
           },
           "price": 38
         }
-      ]
+      ],
+      "menuOrder": 0,
+      "card": {
+        "badge": "Build your own",
+        "note": "£1.19 a cookie",
+        "label": "Build your box",
+        "action": "page"
+      }
     },
     {
       "draftId": "trial",
@@ -427,7 +434,14 @@
         ]
       },
       "attributes": [],
-      "variations": []
+      "variations": [],
+      "menuOrder": 1,
+      "card": {
+        "badge": "New? Start here",
+        "note": "postage included",
+        "label": "Add to basket",
+        "action": "add"
+      }
     },
     {
       "draftId": "giftbox",
@@ -464,7 +478,14 @@
         ]
       },
       "attributes": [],
-      "variations": []
+      "variations": [],
+      "menuOrder": 2,
+      "card": {
+        "badge": "Gift favourite",
+        "note": "gift-boxed",
+        "label": "Add to basket",
+        "action": "add"
+      }
     },
     {
       "draftId": "care40",
@@ -499,7 +520,14 @@
         ]
       },
       "attributes": [],
-      "variations": []
+      "variations": [],
+      "menuOrder": 3,
+      "card": {
+        "badge": "Most thoughtful",
+        "note": "6 deliveries",
+        "label": "Add to basket",
+        "action": "add"
+      }
     },
     {
       "draftId": "giftcard",
@@ -582,7 +610,14 @@
           },
           "price": 40
         }
-      ]
+      ],
+      "menuOrder": 4,
+      "card": {
+        "badge": "For baby showers",
+        "note": "£15 · £25 · £40",
+        "label": "Choose amount",
+        "action": "page"
+      }
     }
   ],
   "gaps": [

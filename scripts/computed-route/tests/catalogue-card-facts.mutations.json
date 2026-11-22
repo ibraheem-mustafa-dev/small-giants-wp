@@ -1,0 +1,14 @@
+[
+	{"file": "lib/catalogue-card-facts.mjs", "find": "if ( absolute( el ) && up.some( ( a ) => 'a' === a.tag ) ) {", "replace": "if ( up.some( ( a ) => 'a' === a.tag ) ) {", "why": "any field inside the picture link is the badge, placed or not"},
+	{"file": "lib/catalogue-card-facts.mjs", "find": "if ( prevRead?.direct && priceKeys.has( prevRead.direct ) ) {", "replace": "if ( prevRead?.direct ) {", "why": "a field after any field is the price note"},
+	{"file": "lib/catalogue-card-facts.mjs", "find": "if ( ! read || ! drawsRecords( src, el, read ) ) {", "replace": "if ( ! read ) {", "why": "a loop over other things (filter chips) is read as a product's words"},
+	{"file": "lib/catalogue-card-facts.mjs", "find": "case 'ThisExpression':\n\t\t\treturn UNSET;", "replace": "case 'ThisExpression':\n\t\t\treturn null;", "why": "the card's state and size are unread, so no label is read"},
+	{"file": "lib/catalogue-card-facts.mjs", "find": "return null === t ? null : ( UNSET !== t && Boolean( t ) ? 'page' : 'add' );", "replace": "return null === t ? null : ( UNSET !== t && Boolean( t ) ? 'add' : 'page' );", "why": "the page and add actions are swapped"},
+	{"file": "lib/catalogue-card-facts.mjs", "find": "fields.length > 1 && notes.push(", "replace": "false && notes.push(", "why": "a role two fields fill is not noted"},
+	{"file": "lib/catalogue-card-facts.mjs", "find": "return 1 === fields.length ? found[ role ].filter( ( h ) => h.field === fields[ 0 ] ) : [];", "replace": "return found[ role ];", "why": "a role two fields fill is written from the first"},
+	{"file": "lib/catalogue-read.mjs", "find": "menuOrder: out.products.length,", "replace": "menuOrder: 0,", "why": "every product takes the first place"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "if ( ours && Number.isInteger( p.menuOrder ) && Number.isInteger( s.menuOrder ) && s.menuOrder !== p.menuOrder ) {", "replace": "if ( Number.isInteger( p.menuOrder ) && Number.isInteger( s.menuOrder ) && s.menuOrder !== p.menuOrder ) {", "why": "an adopted product's order is planned"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "const cardLack = Object.entries( p.card || {} ).filter( ( [ k ] ) => s.card && '' === s.card[ k ] );", "replace": "const cardLack = Object.entries( p.card || {} );", "why": "card words the product has are planned again"},
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "&& '' === (string) get_post_meta( $id, $sgs_card_keys[ $k ], true ) ) {", "replace": ") {", "why": "card words the product has are replaced"},
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "if ( $ours && isset( $p['menuOrder'] ) &&", "replace": "if ( isset( $p['menuOrder'] ) &&", "why": "an adopted product's order is changed"}
+]
