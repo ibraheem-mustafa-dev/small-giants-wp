@@ -1,0 +1,7 @@
+[
+	{"file": "lib/skeleton-commerce-region.mjs", "find": "if ( 1 !== blocks.length ) {", "replace": "if ( ! blocks.length ) {", "why": "two blocks of the region's name still claim it"},
+	{"file": "lib/skeleton-commerce-region.mjs", "find": "return all.some( ( n ) => ! own.has( n ) && n.draftRef?.tpl && inRegion( n.draftRef.tpl ) ) ? null :", "replace": "return false ? null :", "why": "a region whose elements keep nodes outside the block is claimed"},
+	{"file": "lib/skeleton-commerce-region.mjs", "find": "return all.some( ( n ) => ! own.has( n ) && n.draftRef?.tpl", "replace": "return all.some( ( n ) => n.draftRef?.tpl", "why": "the block's own card, which reads the first draft card, counts as a node outside it"},
+	{"file": "lib/skeleton-commerce-region.mjs", "find": "if ( k === region.key ) {", "replace": "if ( false ) {", "why": "no element is read as inside the region"},
+	{"file": "lib/skeleton-commerce-region.mjs", "find": "{ id: 'commerce-region', block: region.block, at: region.key, run: [ region.key ] }", "replace": "{ id: 'commerce-region', block: region.block, at: region.key, run: [] }", "why": "the run names no element"}
+]

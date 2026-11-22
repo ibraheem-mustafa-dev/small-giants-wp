@@ -4,10 +4,11 @@
 	{"file": "skeleton.mjs", "find": "paint && Object.assign( r.proposal, { problems: paint.problems, paintUnread: paint.unread } );", "replace": "", "why": "the saved proposal's problems keep the stale paint line"},
 	{"file": "skeleton.mjs", "find": "missingFeatures: paint?.missing ?? [] };", "replace": "missingFeatures: [] };", "why": "the missing features are not saved"},
 	{"file": "skeleton.mjs", "find": "notes: [ ...pieces.notes, ...( paint?.notes ?? [] ) ]", "replace": "notes: pieces.notes", "why": "the missing features are not named in the notes"},
-	{"file": "skeleton.mjs", "find": "paint: { runs: [ railed.run ].filter( Boolean ), problems: r.problems, rows: r.proposal.rows,", "replace": "paint: { runs: [ railed.run ].filter( Boolean ), problems: [], rows: r.proposal.rows,", "why": "the proposal's other problems are lost"},
+	{"file": "skeleton.mjs", "find": "paint: { runs: [ railed.run, regionRun( { proposal: r.proposal, skeleton: r.skeleton, inventory } ) ].filter( Boolean ), problems: r.problems, rows: r.proposal.rows,", "replace": "paint: { runs: [ railed.run, regionRun( { proposal: r.proposal, skeleton: r.skeleton, inventory } ) ].filter( Boolean ), problems: [], rows: r.proposal.rows,", "why": "the proposal's other problems are lost"},
 	{"file": "lib/template-pieces-context.mjs", "find": "paint: paint ? piecesPaint(", "replace": "paint: false ? piecesPaint(", "why": "the pass never checks paint again"},
 	{"file": "lib/template-pieces-context.mjs", "find": "placed: [ ...got.placed, ...( paint.runs || [] ) ],", "replace": "placed: got.placed,", "why": "the filter rail's run is not given to the paint check"},
-	{"file": "skeleton.mjs", "find": "paint: { runs: [ railed.run ].filter( Boolean ),", "replace": "paint: { runs: [],", "why": "propose hands the paint check no rail run"},
+	{"file": "skeleton.mjs", "find": "paint: { runs: [ railed.run, regionRun( { proposal: r.proposal, skeleton: r.skeleton, inventory } ) ].filter( Boolean ),", "replace": "paint: { runs: [ regionRun( { proposal: r.proposal, skeleton: r.skeleton, inventory } ) ].filter( Boolean ),", "why": "propose hands the paint check no rail run"},
 	{"file": "skeleton.mjs", "find": "\tr.skeleton = railed.skeleton;\n", "replace": "", "why": "the draft's filter button stays in the tree"},
-	{"file": "skeleton.mjs", "find": "\tObject.assign( r.proposal, railed.proposal );\n", "replace": "", "why": "the proposal does not name the removed filter button"}
+	{"file": "skeleton.mjs", "find": "\tObject.assign( r.proposal, railed.proposal );\n", "replace": "", "why": "the proposal does not name the removed filter button"},
+	{"file": "skeleton.mjs", "find": "railed.run, regionRun( { proposal: r.proposal, skeleton: r.skeleton, inventory } ) ].filter", "replace": "railed.run ].filter", "why": "propose hands the pieces pass no commerce region run"}
 ]

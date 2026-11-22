@@ -192,3 +192,34 @@ export function commerceRegion( { m, commerce, rule } ) {
 	}
 	return { key: region.key, role: commerce.role, block: spec.block, attributes, inner: spec.inner || null, item: item || null, reason: `${ spec.reason } (${ evidence.join( '; ' ) })` };
 }
+
+// The commerce region's run (as lib/skeleton-filter-rail.mjs::railRun is the rail's): { id: 'commerce-region', block, at: <region
+// key>, run: [ <region key> ] } when the rules placed the region's WooCommerce block (`proposal.commerceRegion`, one node of that
+// block the draft does not link) and it stands for the whole region: no node outside the block is built from an element inside
+// the region. Every draft element inside the region, and every state copy of one, is then the block's missing feature rather than
+// a paint conservation problem (lib/template-pieces-context.mjs::piecesPaint). Null otherwise: a region whose draft elements still
+// have nodes of their own (the cart's and checkout's page content, which lib/template-piece-woo-layout.mjs stands in for, reporting
+// its own run) or a proposal with no region. `inventory`: the surface's, its `revealed` state copies included.
+export function regionRun( { proposal, skeleton, inventory } ) {
+	const region = proposal?.commerceRegion;
+	if ( ! region?.key || ! region.block ) {
+		return null;
+	}
+	const walk = ( list ) => ( list || [] ).flatMap( ( n ) => [ n, ...walk( n.innerBlocks ) ] );
+	const all = walk( skeleton );
+	const blocks = all.filter( ( n ) => n.name === region.block && ! n.draftRef );
+	if ( 1 !== blocks.length ) {
+		return null;
+	}
+	const own = new Set( walk( [ blocks[ 0 ] ] ) );
+	const parentOf = new Map( [ ...( inventory?.elements || [] ), ...( inventory?.revealed || [] ) ].map( ( e ) => [ e.key, e.parentKey ] ) );
+	const inRegion = ( key ) => {
+		for ( let k = key, seen = new Set(); k && ! seen.has( k ); seen.add( k ), k = parentOf.get( k ) ) {
+			if ( k === region.key ) {
+				return true;
+			}
+		}
+		return false;
+	};
+	return all.some( ( n ) => ! own.has( n ) && n.draftRef?.tpl && inRegion( n.draftRef.tpl ) ) ? null : { id: 'commerce-region', block: region.block, at: region.key, run: [ region.key ] };
+}

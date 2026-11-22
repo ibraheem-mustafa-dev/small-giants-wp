@@ -99,6 +99,27 @@ test( 'MUST FAIL: the filter rail the rules placed is a replaced run: its unread
 	}
 } );
 
+test( 'MUST FAIL: propose hands the commerce region the rules\' block stands for whole to the pieces pass as a run: its unread paint is that block\'s missing feature', () => {
+	const f = productRepo();
+	try {
+		// The node for Root/15#0 is the rules' block, placed with no draft link, as the shop's product collection is.
+		const tree = () => {
+			const t = TREE();
+			delete t[ 0 ].innerBlocks[ 1 ].draftRef;
+			return t;
+		};
+		const propose = ( region ) => () => ( { skeleton: tree(), proposal: { counts: {}, rows: [], problems: [ STALE ], ...( region ? { commerceRegion: region } : {} ) }, problems: [ STALE ] } );
+		const r = proposeSurface( { client: CLIENT, surface: 'product', repo: f.repo, db, propose: propose( { key: 'Root/15#0', role: 'shop', block: 'sgs/container' } ) } );
+		assert.deepEqual( r.proposal.templatePieces.missingFeatures.filter( ( m ) => 'commerce-region' === m.piece ).map( ( m ) => [ m.block, m.key ] ), [ [ 'sgs/container', 'Root/18#0' ], [ 'sgs/container', 'Root/19#1' ] ] );
+		assert.doesNotMatch( r.problems.join( '\n' ), /Root\/18#0/ );
+		// Negative control: with no region the box is a problem.
+		const none = proposeSurface( { client: CLIENT, surface: 'product', repo: f.repo, db, propose: propose( null ) } );
+		assert.match( none.problems.join( '\n' ), /^paint conservation: .*Root\/18#0 background/m );
+	} finally {
+		f.done();
+	}
+} );
+
 test( 'MUST FAIL: propose leaves the draft\'s filter button out of the tree and records its paint as the rail\'s missing feature; the proposal names the button', () => {
 	const f = productRepo();
 	try {
