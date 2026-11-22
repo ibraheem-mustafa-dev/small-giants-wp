@@ -96,6 +96,7 @@
 						"css:border-width": "childIconBorderWidth",
 						"css:border-style": "childIconBorderStyle",
 						"css:width": "childIconShapeSize",
+						"css:height": "childIconShapeSize",
 						"css:box-shadow": "childIconBoxShadow"
 					},
 					"states": {
@@ -110,7 +111,7 @@
 							}
 						}
 					},
-					"_note": "Group defaults for every child's `.sgs-icon__shape`, printed on the row as --sgs-si-* custom properties that icon/style.css reads after the icon's own value; a child that sets its own value wins."
+					"_note": "Group defaults for every child's `.sgs-icon__shape`, printed on the row as --sgs-si-* custom properties that icon/style.css reads after the icon's own value; a child that sets its own value wins. `childIconShapeSize` is a per-device {width,height} object, so it maps as css:width and css:height (a circle and the outlines use width only; height follows width while childIconShapeSizeLinked)."
 				},
 				"glyph": {
 					"motion": false,
