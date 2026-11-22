@@ -1,0 +1,1909 @@
+{
+ "block": "sgs/form",
+ "scriptHash": "264c66a3a751e644",
+ "measured": "2026-11-21, on a local scratch copy of local-mamas running the plugin build of f3733bb1d, Chromium via Playwright, 1440/768/375 (browser/README.md). scriptHash is taken from main at 30b0a2472, whose cart and form folders and src/shared match f3733bb1d byte for byte except 18 part `selector` labels added to cart/block.json (git diff f3733bb1d 30b0a2472).",
+ "entries": [
+  {
+   "setting": "reviewDetailFontFamily",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailFontFamily-kw-Georgia-serif-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailFontSize",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailFontSize",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailFontSize",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailFontStyle",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailFontStyle-kw-italic-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailFontWeight",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-weight": "400"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailFontWeight-weight-700-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailLetterSpacing",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailLetterSpacing",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailLetterSpacing",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailLineHeight",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailLineHeight",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailLineHeight",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextAlign",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "right"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextAlign",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextAlign",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "center"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "right"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextColumns",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "768": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "375": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextColumns-count-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextDecoration",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextDecoration-enum-none-v0",
+    "reviewDetailTextDecoration-enum-underline-v0",
+    "reviewDetailTextDecoration-enum-line-through-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextStrokeColour",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextStrokeColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextStrokeColourHover",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextStrokeColourHover",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(58, 42, 34)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextStrokeWidth",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextStrokeWidth",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextStrokeWidth",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextTransform",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextTransform-enum-none-v0",
+    "reviewDetailTextTransform-enum-uppercase-v0",
+    "reviewDetailTextTransform-enum-lowercase-v0",
+    "reviewDetailTextTransform-enum-capitalize-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailTextWrap",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailTextWrap-enum-wrap-v0",
+    "reviewDetailTextWrap-enum-nowrap-v0",
+    "reviewDetailTextWrap-enum-balance-v0",
+    "reviewDetailTextWrap-enum-pretty-v0",
+    "reviewDetailTextWrap-enum-stable-v0"
+   ]
+  },
+  {
+   "setting": "reviewDetailWritingMode",
+   "part": "sgs-form-review__detail",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "768": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "375": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    }
+   },
+   "tested": [
+    "reviewDetailWritingMode-enum-horizontal-tb-v0",
+    "reviewDetailWritingMode-enum-vertical-rl-v0",
+    "reviewDetailWritingMode-enum-vertical-lr-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermFontFamily",
+   "part": "sgs-form-review__term",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-family": "Karla, \"Karla Fallback\", system-ui, sans-serif"
+     },
+     "changed": {
+      "font-family": "Georgia, serif"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermFontFamily-kw-Georgia-serif-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermFontSize",
+   "part": "sgs-form-review__term",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermFontSize",
+   "part": "sgs-form-review__term",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermFontSize",
+   "part": "sgs-form-review__term",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "13px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermFontStyle",
+   "part": "sgs-form-review__term",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-style": "normal"
+     },
+     "changed": {
+      "font-style": "italic"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermFontStyle-kw-italic-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermFontWeight",
+   "part": "sgs-form-review__term",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-weight": "600"
+     },
+     "changed": {
+      "font-weight": "700"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermFontWeight-weight-700-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermLetterSpacing",
+   "part": "sgs-form-review__term",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermLetterSpacing",
+   "part": "sgs-form-review__term",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermLetterSpacing",
+   "part": "sgs-form-review__term",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "letter-spacing": "normal"
+     },
+     "changed": {
+      "letter-spacing": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermLetterSpacing-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermLineHeight",
+   "part": "sgs-form-review__term",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermLineHeight",
+   "part": "sgs-form-review__term",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermLineHeight",
+   "part": "sgs-form-review__term",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "20.15px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextAlign",
+   "part": "sgs-form-review__term",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "right"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextAlign",
+   "part": "sgs-form-review__term",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextAlign",
+   "part": "sgs-form-review__term",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "center"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "right"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-align": "start"
+     },
+     "changed": {
+      "text-align": "left"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextAlign-tiers-value-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextColumns",
+   "part": "sgs-form-review__term",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "768": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    },
+    "375": {
+     "plain": {
+      "column-count": "auto"
+     },
+     "changed": {
+      "column-count": "3"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextColumns-count-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextDecoration",
+   "part": "sgs-form-review__term",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextDecoration-enum-none-v0",
+    "reviewTermTextDecoration-enum-underline-v0",
+    "reviewTermTextDecoration-enum-line-through-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextStrokeColour",
+   "part": "sgs-form-review__term",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextStrokeColour-hex-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextStrokeColourHover",
+   "part": "sgs-form-review__term",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextStrokeColourHover",
+   "part": "sgs-form-review__term",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-color": "rgb(94, 74, 61)"
+     },
+     "changed": {
+      "-webkit-text-stroke-color": "rgb(19, 87, 155)"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextStrokeColourHover-hex-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextStrokeWidth",
+   "part": "sgs-form-review__term",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextStrokeWidth",
+   "part": "sgs-form-review__term",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextStrokeWidth",
+   "part": "sgs-form-review__term",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "-webkit-text-stroke-width": "0px"
+     },
+     "changed": {
+      "-webkit-text-stroke-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextStrokeWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextTransform",
+   "part": "sgs-form-review__term",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-transform": "none"
+     },
+     "changed": {
+      "text-transform": "uppercase"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextTransform-enum-none-v0",
+    "reviewTermTextTransform-enum-uppercase-v0",
+    "reviewTermTextTransform-enum-lowercase-v0",
+    "reviewTermTextTransform-enum-capitalize-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermTextWrap",
+   "part": "sgs-form-review__term",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-wrap": "wrap"
+     },
+     "changed": {
+      "text-wrap": "nowrap"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermTextWrap-enum-wrap-v0",
+    "reviewTermTextWrap-enum-nowrap-v0",
+    "reviewTermTextWrap-enum-balance-v0",
+    "reviewTermTextWrap-enum-pretty-v0",
+    "reviewTermTextWrap-enum-stable-v0"
+   ]
+  },
+  {
+   "setting": "reviewTermWritingMode",
+   "part": "sgs-form-review__term",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "768": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    },
+    "375": {
+     "plain": {
+      "writing-mode": "horizontal-tb"
+     },
+     "changed": {
+      "writing-mode": "vertical-rl"
+     }
+    }
+   },
+   "tested": [
+    "reviewTermWritingMode-enum-horizontal-tb-v0",
+    "reviewTermWritingMode-enum-vertical-rl-v0",
+    "reviewTermWritingMode-enum-vertical-lr-v0"
+   ]
+  }
+ ]
+}
