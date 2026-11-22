@@ -6,6 +6,7 @@ import {
 	useSettings,
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
+import { PanelBody, SelectControl, RangeControl } from '@wordpress/components';
 import {
 	TierSelectControl,
 	ResponsiveOverride,
