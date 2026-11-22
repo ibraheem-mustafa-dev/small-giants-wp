@@ -116,12 +116,17 @@ def load_plan(short: str, plugin: Path, fixtures: dict, instances: Path | None) 
 
 
 def replaces_block(base_html: str, changed_html: str, short: str) -> bool:
-    """True when the changed render keeps none of the block's own parts that the plain one prints (or prints nothing):
-    the setting removed the block or swapped it for other markup."""
+    """True when the changed render keeps none of the block's own parts that the plain one prints (or prints nothing), or
+    drops the block's root element (its `sgs-<block>` or `wp-block-sgs-<block>` class) the plain one prints: the setting
+    removed the block or swapped it for other markup. Markup the block queued for elsewhere (a detached burger printed at
+    wp_footer) can outlive the block itself, so the root is what says whether the block is still on the page."""
     part = re.compile(rf'\bsgs-{re.escape(short)}__[a-z0-9-]+')
+    rooted = re.compile(rf'\bclass\s*=\s*["\'](?:[^"\']*\s)?(?:wp-block-)?sgs-{re.escape(short)}(?=[\s"\'])')
     strip = lambda h: re.sub(r'<style\b.*?</style>', '', h or '', flags=re.S)  # noqa: E731
     before, after = strip(base_html), strip(changed_html)
     if not after.strip() and before.strip():
+        return True
+    if rooted.search(before) and not rooted.search(after):
         return True
     return bool(part.search(before)) and not part.search(after)
 

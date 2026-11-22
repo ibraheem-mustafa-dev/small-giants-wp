@@ -135,3 +135,16 @@ def test_must_fail_a_setting_that_hides_the_block_places_nothing():
     assert check.replaces_block(plain, '<div class="sgs-demo sgs-demo--broken-reference">Missing form</div>', 'demo')
     assert not check.replaces_block(plain, '<div class="sgs-demo sgs-demo--x"><span class="sgs-demo__label">y</span></div>', 'demo')
     assert not check.replaces_block('<style>.a{}</style>', '', 'demo')
+
+
+def test_must_fail_a_block_hidden_whose_footer_copy_survives_replaces_the_block():
+    # The menu with its burger detached, hidden by a visibility condition: render_block returns '', but the burger copy
+    # queued for wp_footer still prints (nav-detach-chip.php). Breaks without the root test: the copy keeps a part class,
+    # so 168 per-part entries were read from the hidden block.
+    import check
+    plain = ('<nav class="sgs-demo sgs-demo-1a2b3c4d wp-block-sgs-demo"><span class="sgs-demo__label">x</span></nav>'
+             '<div class="sgs-demo-1a2b3c4d sgs-demo__detach"><button class="sgs-demo__burger">Menu</button></div>')
+    hidden = '<div class="sgs-demo-1a2b3c4d sgs-demo__detach"><button class="sgs-demo__burger">Menu</button></div>'
+    assert check.replaces_block(plain, hidden, 'demo')
+    # the root kept with another class beside it is not a replacement
+    assert not check.replaces_block(plain, plain.replace('class="sgs-demo ', 'class="sgs-demo sgs-demo--x '), 'demo')
