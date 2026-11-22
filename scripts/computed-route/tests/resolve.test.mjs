@@ -1,6 +1,6 @@
 // Proves FR-47-1 / R-47-3: one engine maps a measured property on a calibrated slot to a write in the block's
 // storage shape, or returns a gap. Covers §3.1's done line: heading line-height as a tier object with its unit,
-// container padding as a box inside a tier object, a flat_sibling background image, and an unknown property.
+// container padding as a box inside a tier object, a flat_sibling logo width, and an unknown property.
 import test from 'node:test';
 import { DatabaseSync } from 'node:sqlite';
 import assert from 'node:assert/strict';
@@ -24,10 +24,18 @@ test( 'container padding-top: one side of a box inside a tier object', () => {
 	assert.deepEqual( r.writes, [ { attr: 'padding', value: { mobile: { top: '56px' }, desktop: { top: '104px' } }, merge: 'deep' } ] );
 } );
 
-test( 'container background image: one flat_sibling attribute per tier', () => {
-	const r = resolve( { block: 'sgs/container', slot: '', prop: 'background-image', perWidth: { 1440: 'url("https://x.test/a.jpg")', 375: 'url("https://x.test/b.jpg")' } },
-		{ db, snapshot, calibration: cal( { backgroundImage: { slot: '', property: 'background-image' }, backgroundImageTablet: { slot: '', property: 'background-image' }, backgroundImageMobile: { slot: '', property: 'background-image' } } ) } );
-	assert.deepEqual( r.writes.map( ( w ) => [ w.attr, w.value.url ] ).sort(), [ [ 'backgroundImage', 'https://x.test/a.jpg' ], [ 'backgroundImageMobile', 'https://x.test/b.jpg' ] ] );
+test( 'logo width: one flat_sibling attribute per tier, a tier equal to the wider one is not written', () => {
+	const cals = cal( { width: { slot: '', property: 'width' }, widthTablet: { slot: '', property: 'width' }, widthMobile: { slot: '', property: 'width' } } );
+	const three = resolve( { block: 'sgs/responsive-logo', slot: '', prop: 'width', perWidth: { 1440: '200px', 768: '160px', 375: '120px' } }, { db, snapshot, calibration: cals } );
+	assert.deepEqual( three.writes.map( ( w ) => [ w.attr, w.value ] ).sort(), [ [ 'width', 200 ], [ 'widthMobile', 120 ], [ 'widthTablet', 160 ] ] );
+	const two = resolve( { block: 'sgs/responsive-logo', slot: '', prop: 'width', perWidth: { 1440: '200px', 768: '200px', 375: '120px' } }, { db, snapshot, calibration: cals } );
+	assert.deepEqual( two.writes.map( ( w ) => [ w.attr, w.value ] ).sort(), [ [ 'width', 200 ], [ 'widthMobile', 120 ] ] );
+} );
+
+test( 'container background image: no setting paints the picture (the media slot owns it), so the resolver reports a gap and writes no bare url', () => {
+	const r = resolve( { block: 'sgs/container', slot: '', prop: 'background-image', perWidth: { 1440: 'url("https://x.test/a.jpg")', 375: 'url("https://x.test/b.jpg")' } }, { db, snapshot, calibration: cal( {} ) } );
+	assert.equal( r.gap, 'no-setting' );
+	assert.equal( r.writes, undefined );
 } );
 
 test( 'a colour snaps to the palette slug', () => {

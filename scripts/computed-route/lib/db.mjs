@@ -126,7 +126,7 @@ export function statesVocabulary( db ) {
 	return { rows: db.prepare( 'SELECT state, family, kind, token, reach, call, note FROM states ORDER BY id' ).all().map( plain ), missing: null };
 }
 
-// The other rows sharing a flat_sibling base name (backgroundImage, backgroundImageTablet, backgroundImageMobile).
+// The other rows sharing a flat_sibling base name (width, widthTablet, widthMobile).
 export function siblings( db, block, attr ) {
 	const base = attr.replace( /(Tablet|Mobile)$/, '' );
 	return attrsFor( db, block ).filter( ( r ) => 'flat_sibling' === r.tier_shape && r.attr_name.replace( /(Tablet|Mobile)$/, '' ) === base );

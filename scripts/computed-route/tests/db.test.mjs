@@ -20,7 +20,7 @@ test( 'returns block settings and extension settings, never native rows', () => 
 } );
 
 test( 'finds flat_sibling rows by base name', () => {
-	assert.deepEqual( siblings( db, 'sgs/container', 'backgroundImageTablet' ).map( ( r ) => r.css_tier ).sort(), [ 'desktop', 'mobile', 'tablet' ] );
+	assert.deepEqual( siblings( db, 'sgs/responsive-logo', 'widthTablet' ).map( ( r ) => r.css_tier ).sort(), [ 'desktop', 'mobile', 'tablet' ] );
 	assert.equal( attrRow( db, 'sgs/heading', 'margin' ).box_family, 'margin' );
 } );
 
