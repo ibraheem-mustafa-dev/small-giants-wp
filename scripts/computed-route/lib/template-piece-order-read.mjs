@@ -16,7 +16,7 @@
 //     shown or hidden by the test's polarity; a branch that only hides a value its own content shows is a guard and needs
 //     no rule.
 // Pure apart from reading the draft file named by the fact record's component.
-import { classMethod, decodeEntities, isFn, keyName, loadDraft, resolveName } from './intake-ast.mjs';
+import { classMethod, decodeEntities, enclosingFn, isFn, keyName, loadDraft, propName, resolveName, subtree } from './intake-ast.mjs';
 import { returnsOf } from './intake-ast-eval.mjs';
 import { isMoney, valuesOf } from './shop-parts-logic.mjs';
 import { parseTemplateKey } from './fact-key.mjs';
@@ -254,6 +254,30 @@ export function joinFormat( L, node ) {
 // The words that pick a key, a group or a row out of the order facts: the path's own words.
 const wordHit = ( segment, words ) => wordsOf( segment ).some( ( w ) => words.includes( w ) ) || words.includes( String( segment ).toLowerCase() );
 
+// The field of the record the draft's order action creates whose value is the literal `ref`, character for character: [ name ]
+// when one object literal of the logic holds `name: '<ref>'` and the function it sits in writes that object to the component's
+// state (`setState`): written there itself, or held in a variable that is (the order the action places, as the draft keeps it:
+// `placed: [ order ].concat( ... )`). Null when no such record holds it, or two records hold it in different fields.
+export function createdReference( L, ref ) {
+	const fields = new Set();
+	const within = ( n, outer ) => n.start >= outer.start && n.end <= outer.end;
+	for ( const p of L.all.filter( ( n ) => 'ObjectProperty' === n.type && 'StringLiteral' === n.value?.type && n.value.value === ref ) ) {
+		const record = L.parent.get( p );
+		const fn = enclosingFn( L, record );
+		if ( ! fn || ! keyName( p ) ) {
+			continue;
+		}
+		const inside = subtree( L, fn );
+		// What the function writes to the state: each setState argument, a variable argument by its value.
+		const written = inside.filter( ( n ) => 'CallExpression' === n.type && 'setState' === propName( n.callee ) ).flatMap( ( c ) => c.arguments.map( ( x ) => ( 'Identifier' === x.type ? resolveName( L, x )?.init ?? x : x ) ) ).filter( Boolean );
+		const up = L.parent.get( record );
+		const decl = 'VariableDeclarator' === up?.type && up.init === record && 'Identifier' === up.id.type ? up : null;
+		const held = !! decl && inside.some( ( n ) => 'Identifier' === n.type && n !== decl.id && n.name === decl.id.name && resolveName( L, n )?.decl === decl && written.some( ( w ) => within( n, w ) ) );
+		( held || written.some( ( w ) => within( record, w ) ) ) && fields.add( keyName( p ) );
+	}
+	return 1 === fields.size ? [ [ ...fields ][ 0 ] ] : null;
+}
+
 // The order as the draft shows it: { lines, rows, holes, branches, problems, notes } (see the header). `record` is the fact
 // record, `tops` the template keys of the surface's top elements, `draft` the draft file loaded by lib/intake-ast.mjs::
 // loadDraft (its logic in `draft.idx`), `facts` data/order-facts.json, `plugin` the plugin facts (lib/template-piece-order-plugin.mjs::
@@ -266,11 +290,19 @@ export function readOrder( { record, tops, draft, facts, plugin = null } ) {
 	const problems = [];
 	const notes = [];
 	const out = { lines: null, rows: [], holes: [], branches: [], problems, notes, numberPath: null, order: null };
-	// An order reference written as fixed words: no value of the logic shows it, so nothing can bind it and the page would
-	// show that one reference for every order.
+	// An order reference written as fixed words. When the words equal, character for character, a field of the record the
+	// draft's order action creates (createdReference), they are that field of the order: a value bound like a hole (`literal`
+	// the words it replaces). Otherwise no value of the logic shows it, so nothing can bind it and the page would show that one
+	// reference for every order.
 	for ( const e of els ) {
 		const ref = REFERENCE_IN.exec( String( e.template?.words || '' ).replace( /\{\{[^}]*\}\}/g, ' ' ) )?.[ 2 ];
-		ref && problems.push( `the draft writes the order reference "${ ref }" as fixed words in <${ e.template.tag }> ${ e.key } ("${ String( e.template.words ).trim().slice( 0, 80 ) }"): no value of the logic shows it, so it cannot be bound and would show for every order` );
+		const field = ref && L ? createdReference( L, ref ) : null;
+		if ( field ) {
+			out.holes.push( { el: e.key, id: null, expr: ref, literal: ref, where: 'text', loops: [], paths: [ field ], reads: [ pathText( field ) ], money: false, joined: false, sample: ref, logicFormat: null } );
+			notes.push( `the draft writes the order reference "${ ref }" as fixed words in <${ e.template.tag }> ${ e.key }; they equal the ${ pathText( field ) } of the record the draft's order action creates, so they are bound as that field of the order` );
+		} else if ( ref ) {
+			problems.push( `the draft writes the order reference "${ ref }" as fixed words in <${ e.template.tag }> ${ e.key } ("${ String( e.template.words ).trim().slice( 0, 80 ) }"): no value of the logic shows it, so it cannot be bound and would show for every order` );
+		}
 	}
 	if ( ! L ) {
 		problems.push( `the draft's logic cannot be read (${ draft?.error || 'no logic' }), so no value is known to come from the order` );

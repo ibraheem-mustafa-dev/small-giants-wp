@@ -427,14 +427,61 @@ test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift not
 	assert.equal( refs( got.tree ).length, refs( tree ).length - 8 );
 } );
 
-test( "Eye Care's confirmation: the reference is fixed words, so the number is a problem row and no binding is guessed", () => {
+test( "Eye Care's confirmation: the reference written as fixed words equals the id of the order its order action creates, so the number is bound with the words around it", () => {
 	const factRecord = JSON.parse( fs.readFileSync( path.join( FIX, 'eye-care-done-facts.json' ), 'utf8' ) );
-	const tree = JSON.parse( fs.readFileSync( path.join( REPO, 'sites', 'eye-care-ward-end', 'build', 'skeleton', 'template-order-confirmation.skeleton.json' ), 'utf8' ) );
+	const tree = JSON.parse( fs.readFileSync( path.join( FIX, 'eye-care-confirmation-skeleton.json' ), 'utf8' ) );
 	const got = placePieces( { key: 'order-confirmation', tree, data: loadPieces(), ctx: { factRecord, rootComponent: 'Eye Care Birmingham', handoffDir: path.join( REPO, 'sites', 'eye-care-ward-end', 'handoff' ), db: openDb() }, builders: { order: { place } } } );
-	assert.deepEqual( got.placed, [] );
-	assert.match( got.problems[ 0 ], /the draft writes the order reference "EC-10482" as fixed words in <h1> Eye Care Birmingham\/845/ );
-	assert.match( got.problems.at( -1 ), /the working piece "order-number" is missing: no block bound to sgs\/order number/ );
-	assert.deepEqual( got.tree, tree );
+	assert.deepEqual( got.problems, [] );
+	assert.deepEqual( got.placed[ 0 ], { id: 'order-number', block: 'sgs/heading', at: 'Eye Care Birmingham/845', attribute: 'content', key: 'number', format: 'Thank you — order %s.' } );
+	assert.ok( got.notes.some( ( n ) => /"EC-10482" as fixed words in <h1> Eye Care Birmingham\/845; they equal the id of the record the draft's order action creates/.test( n ) ) );
+} );
+
+// D-3 (Bean, 2026-11-22): a one-file draft that writes its order reference as fixed words. The words are the order's reference
+// only when they equal, character for character, a field of the record the draft's order action creates and writes to the state.
+const REF_TEMPLATE = '<main><h1>Thank you — order XY-1234.</h1></main>';
+const refLogic = ( action ) => `class Component extends DCLogic {
+  renderVals() {
+    return { place: () => { ${ action } } };
+  }
+}`;
+const STORED = "const s0 = this.state; const order = { id: 'XY-1234', total: 5 }; const patch = { placed: [ order ].concat( s0.placed ) }; this.setState( patch );";
+const readRef = ( logic, template = REF_TEMPLATE ) => {
+	const { draft, record } = plant( template, logic, {} );
+	return { r: readOrder( { record, tops: [ keyOf( record, 'main' ) ], draft, facts: FACTS } ), record, draft };
+};
+
+test( 'MUST FAIL: a reference written as fixed words that equals the id of the record the order action stores is that field of the order', () => {
+	const { r, record } = readRef( refLogic( STORED ) );
+	assert.deepEqual( r.problems, [] );
+	assert.equal( r.holes.length, 1 );
+	assert.deepEqual( [ r.holes[ 0 ].el, r.holes[ 0 ].literal, r.holes[ 0 ].paths, r.holes[ 0 ].key ], [ keyOf( record, 'h1' ), 'XY-1234', [ [ 'id' ] ], 'number' ] );
+	assert.deepEqual( r.numberPath, [ 'id' ] );
+	// The record passed straight to setState is stored too.
+	assert.equal( readRef( refLogic( "const order = { ref: 'XY-1234' }; this.setState( { last: order } );" ) ).r.holes[ 0 ]?.paths[ 0 ][ 0 ], 'ref' );
+	// And a record written to the state where it is made.
+	assert.equal( readRef( refLogic( "this.setState( { placed: [ { id: 'XY-1234', total: 5 } ] } );" ) ).r.holes[ 0 ]?.paths[ 0 ][ 0 ], 'id' );
+} );
+
+test( 'MUST FAIL: place binds the fixed reference on its block, the words around it the format', () => {
+	const { record, draft } = readRef( refLogic( STORED ) );
+	const tree = [ { name: 'sgs/container', attributes: { tagName: 'main' }, draftRef: { tpl: 'Root/0#0' }, innerBlocks: [ { name: 'sgs/heading', attributes: { content: 'Thank you — order XY-1234.' }, draftRef: { tpl: 'Root/1#0' }, innerBlocks: [] } ] } ];
+	const got = place( { key: 'order-confirmation', tree, factRecord: record, rootComponent: 'Page', draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS }, { id: 'order-number', binds: { source: 'sgs/order', key: 'number' }, kind: 'order', find: 'order-values' } );
+	assert.deepEqual( got.tree[ 0 ].innerBlocks[ 0 ].attributes.metadata.bindings.content, { source: 'sgs/order', args: { key: 'number', format: 'Thank you — order %s.' } } );
+} );
+
+test( 'a fixed reference no stored record holds, character for character, stays refused', () => {
+	const refused = /the draft writes the order reference "XY-1234" as fixed words/;
+	for ( const [ why, logic ] of [
+		[ 'a record holding another id', refLogic( "const order = { id: 'XY-9999' }; this.setState( { placed: [ order ] } );" ) ],
+		[ 'a record holding a longer id', refLogic( "const order = { id: 'XY-12345' }; this.setState( { placed: [ order ] } );" ) ],
+		[ 'a record never written to the state', refLogic( "const order = { id: 'XY-1234' }; this.setState( { placed: [] } ); return order;" ) ],
+		[ 'a literal outside a record', refLogic( "const id = 'XY-1234'; this.setState( { placed: [ id ] } );" ) ],
+		[ 'two records naming it in different fields', refLogic( "const a = { id: 'XY-1234' }; const b = { ref: 'XY-1234' }; this.setState( { x: a, y: b } );" ) ],
+	] ) {
+		const { r } = readRef( logic );
+		assert.equal( r.holes.length, 0, why );
+		assert.match( r.problems[ 0 ] || '', refused, why );
+	}
 } );
 
 // Site-supplied facts (FR-48-96): an order value no key of the sgs/order source holds, which the logic reads from the order,

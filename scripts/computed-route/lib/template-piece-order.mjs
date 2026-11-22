@@ -267,7 +267,9 @@ function placeValues( ctx, piece, r ) {
 			const others = [];
 			if ( 'text-content' === role ) {
 				const text = sourceText( draft, record[ holder ] );
-				const hole = new RegExp( `\\{\\{\\s*${ h.expr.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' ) }\\s*\\}\\}` );
+				// A reference the draft writes as fixed words (`literal`, lib/template-piece-order-read.mjs::createdReference) is found as those words.
+				const escaped = h.expr.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+				const hole = new RegExp( h.literal ? `(?<![\\w-])${ escaped }(?![\\w-])` : `\\{\\{\\s*${ escaped }\\s*\\}\\}` );
 				if ( null === text || ! hole.test( text ) ) {
 					problems.push( `the words around {{ ${ h.expr } }} in ${ holder } cannot be read from the draft source, so the order's ${ h.key } is not bound` );
 					continue;
