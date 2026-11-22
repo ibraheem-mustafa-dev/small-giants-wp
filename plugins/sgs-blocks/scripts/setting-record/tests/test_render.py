@@ -29,7 +29,7 @@ def test_must_fail_another_blocks_files_leave_the_hash_alone(tmp_path):
 
 def test_own_files_shared_php_and_any_block_json_change_the_hash(tmp_path):
     plugin = make_plugin(tmp_path)
-    for rel, text in (('src/blocks/button/style.css', '.x{}'), ('includes/helpers.php', '<?php //'), ('src/blocks/cart/block.json', '{"name": "sgs/cart", "x": 1}')):
+    for rel, text in (('src/blocks/button/render.php', '<?php echo 3;'), ('includes/helpers.php', '<?php //'), ('src/blocks/cart/block.json', '{"name": "sgs/cart", "x": 1}')):
         before = RN.code_hash(plugin, (), {'button'})
         (plugin / rel).write_text(text, encoding='utf-8')
         assert RN.code_hash(plugin, (), {'button'}) != before, rel

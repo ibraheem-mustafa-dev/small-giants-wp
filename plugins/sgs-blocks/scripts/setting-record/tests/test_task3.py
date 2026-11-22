@@ -571,3 +571,31 @@ def test_the_stamp_hashes_the_plans_renders_not_the_proofs(monkeypatch):
     plain = ST.outputs_hash(run['planResults'])
     run['results']['proof-completion'] = {'ok': True, 'html': '<div class="sgs-demo extra"></div>'}  # what the proof adds
     assert ST.outputs_hash(run['planResults']) == plain and ST.outputs_hash(run['results']) != plain
+
+
+
+def test_a_stylesheet_edit_keeps_the_cached_renders_and_a_php_edit_does_not(tmp_path):
+    plugin = tmp_path / 'plugin'
+    blk = plugin / 'src' / 'blocks' / 'demo'
+    blk.mkdir(parents=True)
+    (blk / 'block.json').write_text('{"name": "sgs/demo"}', encoding='utf-8')
+    (blk / 'render.php').write_text('<?php echo 1;', encoding='utf-8')
+    (blk / 'style.css').write_text('.a{color:red}', encoding='utf-8')
+    before = RN.code_hash(plugin, (), {'demo'})
+    (blk / 'style.css').write_text('.a{color:blue}', encoding='utf-8')
+    assert RN.code_hash(plugin, (), {'demo'}) == before
+    (blk / 'render.php').write_text('<?php echo 2;', encoding='utf-8')
+    assert RN.code_hash(plugin, (), {'demo'}) != before
+
+
+def test_a_render_that_loads_a_stylesheet_reader_is_refused(tmp_path, monkeypatch):
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path)
+    rn = RN.Renderer(PLUGIN, {}, PLUGIN, 'text')
+    import subprocess
+
+    def fake(cmd, **k):
+        Path(k['env']['SGS_SETTING_RECORD_INCLUDED']).write_text(json.dumps([str(PLUGIN / RN.STYLESHEET_READERS[0])]), encoding='utf-8')
+        return SimpleNamespace(stdout=json.dumps({'ok': True, 'html': '<p></p>'}), stderr='')
+    monkeypatch.setattr(subprocess, 'run', fake)
+    with pytest.raises(RuntimeError, match='reads stylesheet files'):
+        rn.render('sgs/text', {'y': 1})
