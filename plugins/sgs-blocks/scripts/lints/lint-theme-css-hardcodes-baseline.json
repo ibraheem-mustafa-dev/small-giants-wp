@@ -151,11 +151,11 @@
     "selector": ".wc-block-components-filter-reset-button, .wp-block-woocommerce-product-filter-removable-chips li, .wc-block-product-filter-active__item",
     "value": "0.8125rem"
   },
-  "theme/sgs-theme/assets/css/woocommerce.css:body.is-enhanced .sgs-shop-filters__toggle:font-size:0.9375rem": {
-    "file": "theme/sgs-theme/assets/css/woocommerce.css",
-    "line": 549,
+  "theme/sgs-theme/assets/css/shop-filters-drawer.css:body.is-enhanced .sgs-shop-filters__toggle:font-size:0.9375rem": {
+    "file": "theme/sgs-theme/assets/css/shop-filters-drawer.css",
+    "line": 50,
     "property": "font-size",
-    "reason": "mobile filter-toggle button text size -- component-scoped button chrome; the block comment above it (lines 507-527) documents this button deliberately reuses primary-button COLOUR tokens while owning its own layout/size",
+    "reason": "mobile filter-toggle button text size -- component-scoped button chrome; the block comment above the toggle in woocommerce.css (8c) documents this button deliberately reuses primary-button COLOUR tokens while owning its own layout/size",
     "selector": "body.is-enhanced .sgs-shop-filters__toggle",
     "value": "0.9375rem"
   },

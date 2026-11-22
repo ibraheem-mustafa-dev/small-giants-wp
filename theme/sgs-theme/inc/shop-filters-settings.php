@@ -212,13 +212,9 @@ function localise_shop_filter_settings(): void {
 		return;
 	}
 
-	$breakpoint = absint( get_theme_mod( 'sgs_shop_filter_drawer_breakpoint', 782 ) );
-	if ( $breakpoint < 1 ) {
-		$breakpoint = 782;
-	}
-
 	$settings = array(
-		'breakpoint'    => $breakpoint,
+		// The width the drawer CSS switches at too (inc/shop-filters-drawer-css.php).
+		'breakpoint'    => shop_filter_drawer_breakpoint(),
 		'booleanFilter' => get_shop_filter_boolean_config(),
 		'resultCount'   => null,
 		'clearLabel'    => (string) get_theme_mod( 'sgs_shop_clear_label', __( 'Clear all', 'sgs-theme' ) ),

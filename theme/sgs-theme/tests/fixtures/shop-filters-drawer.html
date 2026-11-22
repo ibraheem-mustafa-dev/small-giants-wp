@@ -7,7 +7,8 @@
 <!--
   Fixture for tests/shop-filters-drawer.test.mjs: the theme's real woocommerce.css and the container block's real
   style.css, around the shop layout the archive template renders once sgs-shop-filters.js has turned the panel into a
-  <dialog>. The test swaps the panel's layout classes and the stylesheet under test (id="sgs-woocommerce-css").
+  <dialog>. The test swaps the panel's layout classes and the body's classes, adds the drawer CSS the theme prints after
+  woocommerce.css, or swaps the stylesheet under test (id="sgs-woocommerce-css").
 -->
 <link id="sgs-woocommerce-css" rel="stylesheet" href="../../assets/css/woocommerce.css">
 <link rel="stylesheet" href="../../../../plugins/sgs-blocks/src/blocks/container/style.css">
@@ -34,6 +35,7 @@
 </div>
 <div class="wp-block-sgs-container sgs-container sgs-shop-layout">
 	<dialog id="sgs-shop-filters" class="wp-block-sgs-container sgs-container sgs-shop-filters">
+		<div class="sgs-shop-filters__header"><h2 class="sgs-shop-filters__heading">Filters</h2><button type="button" class="sgs-shop-filters__close">Close</button></div>
 		<div class="sgs-shop-filters__scroll"><div class="fixture-filters-body">Filters</div></div>
 		<div class="sgs-shop-filters__sheet-footer"><button type="button" class="sgs-shop-filters__apply">Apply</button></div>
 	</dialog>

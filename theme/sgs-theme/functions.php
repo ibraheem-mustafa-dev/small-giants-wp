@@ -22,6 +22,7 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 require_once __DIR__ . '/inc/colour-helpers.php';
 require_once __DIR__ . '/inc/type-scale-ranges.php';
 require_once __DIR__ . '/inc/shop-filters-settings.php';
+require_once __DIR__ . '/inc/shop-filters-drawer-css.php';
 require_once __DIR__ . '/inc/shop-filters-sorting.php';
 require_once __DIR__ . '/inc/shop-toolbar-settings.php';
 require_once __DIR__ . '/inc/shop-filter-look-settings.php';

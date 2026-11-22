@@ -57,9 +57,10 @@
 	 */
 	const SETTINGS = window.sgsShopFilters || {};
 
-	// px — mirrors WP admin breakpoint / woocommerce.css by default; configurable
-	// via the Customizer (Shop Filters -> Drawer breakpoint) for a client whose
-	// draft switches to a drawer at a different width.
+	// px — 782 (WP admin's breakpoint) by default; configurable via the Customizer
+	// (Shop Filters -> Drawer breakpoint) for a client whose draft switches to a
+	// drawer at a different width. The theme prints the drawer CSS's media queries
+	// from the same value (inc/shop-filters-drawer-css.php).
 	const BREAKPOINT = Number( SETTINGS.breakpoint ) > 0 ? Number( SETTINGS.breakpoint ) : 782;
 	const SCROLL_REVEAL_PX = () => window.innerHeight; // ~1 viewport of scroll.
 

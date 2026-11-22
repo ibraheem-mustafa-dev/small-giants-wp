@@ -1,0 +1,237 @@
+/**
+ * SGS Shop filter drawer: the rules that switch at the drawer breakpoint.
+ *
+ * NOT enqueued on its own. inc/shop-filters-drawer-css.php reads this file and prints it with
+ * wp_add_inline_style() right after woocommerce.css (handle `sgs-woocommerce`), with every
+ * `max-width: 781.98px` and `min-width: 782px` below rewritten from the Customizer's
+ * Shop Filters > Drawer breakpoint (`sgs_shop_filter_drawer_breakpoint`, default 782), the same
+ * value sgs-shop-filters.js switches between the sheet and the sidebar on. At the default the
+ * file prints unchanged, so a site that never sets the option renders as before.
+ *
+ * Write every media query here as `( max-width: 781.98px )` (the drawer) or `( min-width: 782px )`
+ * (the sidebar), and keep the rules in the order they had in woocommerce.css: printed after the
+ * whole file, a rule here wins every tie against a rule there, and none of woocommerce.css's
+ * later rules ties with these (each later rule on the same element is more specific, less
+ * specific, or !important). The section numbers are woocommerce.css's.
+ */
+
+/* ── 8a. Shop layout: one column, and room for the floating Filter button ── */
+@media ( max-width: 781.98px ) {
+	/* Mobile: single column; aside sits above grid (no-JS fallback) */
+	.wp-block-sgs-container.sgs-shop-layout {
+		display: block;
+	}
+
+	/* Reserve space for the sticky filter trigger (8d-ii) so its reveal never
+	   occludes the last product row. Reserved whether or not it is showing (no
+	   layout shift when it fades in on scroll), and only while the Customizer's
+	   "Show a floating Filter button" is on. */
+	body.is-enhanced:not(.sgs-shop-no-sticky-trigger) .sgs-shop-layout {
+		padding-bottom: calc(48px + var(--wp--preset--spacing--30, 1rem) * 2 + env(safe-area-inset-bottom, 0px));
+	}
+}
+
+/* ── 8c. The Filter button ── */
+/* JS-enhanced mobile: show the toggle. */
+@media ( max-width: 781.98px ) {
+	body.is-enhanced .sgs-shop-filters__toggle {
+		/* ── Toggle-only layout (NOT owned by .btn-primary) ── */
+		display: inline-flex;       /* icon + label row (.btn is inline-block) */
+		align-items: center;
+		gap: 0.5em;                 /* space between icon and "Filter" label */
+		margin-bottom: var(--wp--preset--spacing--40, 1.5rem);
+
+		/* ── Primary-button visual properties, via the SAME tokens .btn-primary
+		   uses (scope bridge — see block comment above) ── */
+		min-height: 44px;
+		padding: 0.5em 1.25em;
+		border-radius: var(--wp--custom--border-radius--pill, 9999px);
+		font-weight: 600;
+		font-size: 0.9375rem;
+		cursor: pointer;
+		background: var(--wp--preset--color--primary, #E68A95);
+		/* Text ON the primary fill, so it takes the palette's own `primary-text`
+		   (#fffaf5) — the token that exists for exactly this pairing. Was
+		   `--sgs-product-card-btn-text` (#3A2E26), which is body-text brown and
+		   matched no other primary control on the site.
+		   ⚠ CORRECTION to an earlier comment here, which claimed the client's
+		   tokens were inconsistent because `button-presets--primary--text` is
+		   also brown. That was a misreading, not a defect: `primary` is the brand
+		   colour itself, `primary-text` is the text that sits on it, and the
+		   button-preset entry is a separate setting again. Nothing to fix in the
+		   theme snapshot. */
+		color: var(--wp--preset--color--primary-text, #fffaf5);
+		border: 2px solid var(--wp--preset--color--primary, #E68A95);
+		transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+	}
+
+	body.is-enhanced .sgs-shop-filters__toggle:hover {
+		background: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #C56A7A));
+		border-color: var(--sgs-product-card-btn-hover-bg, var(--wp--preset--color--primary-dark, #C56A7A));
+		color: var(--sgs-product-card-btn-hover-text, #ffffff);
+	}
+}
+
+/* ── 8d. The bottom sheet and its motion ── */
+@media ( max-width: 781.98px ) {
+	dialog#sgs-shop-filters:modal {
+		/* Bottom sheet: full width, ~85vh, anchored to the viewport bottom. */
+		position: fixed;
+		inset: auto 0 0 0;
+		margin: 0;
+		width: 100%;
+		max-width: 100vw;
+		/* FULL height, not 85vh (Bean, 2026-08-20). The sheet is anchored to the
+		   bottom edge and the filter set is tall enough to fill the screen, so a
+		   15vh letterbox of dimmed page above it bought nothing and cost a whole
+		   filter group of visible space. `dvh` not `vh` so the mobile browser's
+		   collapsing address bar does not leave a gap or force an inner scroll. */
+		height: 100dvh;
+		max-height: 100dvh;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		/* No top rounding at full height - a rounded corner against the very top
+		   of the viewport reads as a rendering fault, not a sheet. */
+		border-radius: 0;
+		/* The sheet's side inset, as a property so the scroll region can bleed
+		   through it (below) and the plain variant can change it in one place. */
+		--sgs-sheet-pad-x: var(--wp--preset--spacing--40, 1.5rem);
+		padding: var(--wp--preset--spacing--40, 1.5rem) var(--sgs-sheet-pad-x) 0;
+	}
+
+	/* ── Sheet motion: enter AND exit (Tier V — CSS only, no JS, no library) ──
+	 *
+	 * A keyframe `animation` can only play on ENTER: by the time the dialog
+	 * closes the element is already `display:none`, so the old
+	 * `animation: sgs-sheet-in` gave a sheet that slid up gracefully and then
+	 * vanished instantly. The pair that makes exit possible is `@starting-style`
+	 * (the state to animate FROM on first paint) plus `transition-behavior:
+	 * allow-discrete` on `display`/`overlay`, which keeps the element painted in
+	 * the top layer for the duration of the transition.
+	 *
+	 * Keyed on `[open]` rather than `:modal` deliberately — `:modal` stops
+	 * matching the instant `close()` is called, which would kill the exit
+	 * transition. Inside this media query `[open]` implies modal anyway, because
+	 * the non-modal `show()` path only runs at >=782px.
+	 *
+	 * Easing is a decelerate curve, not `ease`: a bottom sheet should arrive fast
+	 * and settle, the way a physical panel does. */
+	dialog.sgs-shop-filters {
+		translate: 0 100%;
+		opacity: 0;
+		transition:
+			translate 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+			opacity 0.2s ease,
+			display 0.32s allow-discrete,
+			overlay 0.32s allow-discrete;
+	}
+
+	dialog.sgs-shop-filters[open] {
+		translate: 0 0;
+		opacity: 1;
+	}
+
+	@starting-style {
+		dialog.sgs-shop-filters[open] {
+			translate: 0 100%;
+			opacity: 0;
+		}
+	}
+
+	dialog.sgs-shop-filters::backdrop {
+		background: rgb(0 0 0 / 0);
+		transition:
+			background 0.32s ease,
+			display 0.32s allow-discrete,
+			overlay 0.32s allow-discrete;
+	}
+
+	dialog.sgs-shop-filters[open]::backdrop {
+		background: rgb(0 0 0 / 0.45);
+	}
+
+	@starting-style {
+		dialog.sgs-shop-filters[open]::backdrop {
+			background: rgb(0 0 0 / 0);
+		}
+	}
+
+	/* The scroll region bleeds through the sheet's side inset and puts it back
+	   as its own padding, so its scrollbar sits on the sheet's right edge, where
+	   the page's scrollbar was (the page's is hidden while the sheet is open),
+	   instead of inset against the group chevrons. */
+	dialog.sgs-shop-filters:modal .sgs-shop-filters__scroll {
+		flex: 1 1 auto;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		margin-inline: calc(-1 * var(--sgs-sheet-pad-x));
+		padding-inline: var(--sgs-sheet-pad-x);
+		padding-bottom: var(--wp--preset--spacing--30, 1rem);
+	}
+
+	body.is-enhanced .sgs-shop-filters__close {
+		display: inline-flex;
+	}
+}
+
+/* ── 8d-i. The sheet footer ── */
+@media ( max-width: 781.98px ) {
+	dialog.sgs-shop-filters:modal .sgs-shop-filters__sheet-footer {
+		display: flex;
+		align-items: center;
+		gap: var(--wp--preset--spacing--30, 1rem);
+		flex-shrink: 0;
+		padding: var(--wp--preset--spacing--30, 1rem) 0;
+		padding-bottom: calc(var(--wp--preset--spacing--30, 1rem) + env(safe-area-inset-bottom, 0px));
+		/* The footer sits INSIDE the sheet, so it takes the sheet's own surface.
+		   It previously used --sgs-elevation-1, the generic neutral introduced
+		   before the panel had a brand skin — against the now brand-tinted panel
+		   that read as a grey slab pasted onto pink. The border still separates
+		   it; the fill no longer contradicts it. */
+		border-top: 1px solid var(--sgs-filter-line, var(--sgs-elevation-line));
+		background: var(--sgs-filter-surface, var(--sgs-elevation-1));
+	}
+}
+
+/* ── 8d-ii. The floating Filter button stays hidden from the breakpoint up ── */
+@media ( min-width: 782px ) {
+	.sgs-shop-filters__sticky-trigger {
+		display: none !important;
+	}
+}
+
+/* ── 8k. The outlined Filter button ── */
+/* Filter button: outlined text in capitals, and its place in the toolbar. */
+@media ( max-width: 781.98px ) {
+	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle,
+	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle:hover {
+		gap: 0;
+		min-height: 44px;
+		padding: 0 16px;
+		border: 1px solid var(--wp--preset--color--text);
+		border-radius: var(--wp--custom--button-presets--outline--border-radius, 0);
+		background: var(--wp--preset--color--surface-alt, var(--wp--preset--color--surface));
+		color: var(--wp--preset--color--text);
+		font-size: 12.5px;
+		font-weight: 400;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	body.is-enhanced.sgs-shop-toggle-outlined .sgs-shop-filters__toggle svg {
+		display: none;
+	}
+
+	body.is-enhanced .sgs-shop-filters__toggle--toolbar {
+		margin-bottom: 0;
+	}
+}
+
+/* ── 8j. First paint: the aside before its script runs ── */
+/* Below the drawer breakpoint the panel is a closed dialog, so the aside is never part of the page. */
+@media ( max-width: 781.98px ) {
+	body.is-enhanced aside#sgs-shop-filters {
+		display: none;
+	}
+}
