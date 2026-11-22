@@ -170,6 +170,9 @@ ALLOW_RUNTIME = {
     'plugins/sgs-blocks/scripts/check-hardcoded-render-defaults.js':
         ("the gate looks `<attr>Unit` up in the block's own attributes and composes a default only when the block declares it",
          ('allAttrs[ `${ attrName }Unit` ]',)),
+    'plugins/sgs-blocks/scripts/setting-record/instances.py':
+        ("the setting check's test-value generator pairs `<attr>Unit` with a value only when the block's own schema declares it",
+         ("unit = f'{attr}Unit' if f'{attr}Unit' in schema else None", "unit = f'{name}Unit' if f'{name}Unit' in schema else None")),
 }
 
 
