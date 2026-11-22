@@ -21,6 +21,7 @@ import { commerceRegion, ownerBlockOf } from './skeleton-commerce-region.mjs';
 import { productTiles } from './skeleton-product-tile.mjs';
 import { reviewPlatformRegions } from './skeleton-review-platform.mjs';
 import { pictureTileGrids } from './skeleton-picture-tiles.mjs';
+import { numberedSteps } from './skeleton-numbered-steps.mjs';
 import { messagingLink } from './skeleton-messaging-link.mjs';
 import { handlerScrollsTop } from './skeleton-scroll-top.mjs';
 import { filterRail } from './skeleton-filter-rail.mjs';
@@ -1029,6 +1030,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const reviews = R.reviewPlatform ? reviewPlatformRegions( { m, rule: R.reviewPlatform } ) : { regions: new Map(), notes: [] };
 	const tiles = R.productTile ? productTiles( { m, products: surface.products, money: R.commerceRegion?.money } ) : { tiles: new Map(), listings: new Set(), notes: [] };
 	// The grids of titled picture tiles, each one link or control (lib/skeleton-picture-tiles.mjs), each a card grid.
+	// The parents whose children are numbered steps (rules.numberedSteps, lib/skeleton-numbered-steps.mjs).
+	const stepRuns = R.numberedSteps ? numberedSteps( { m, rule: R.numberedSteps, headingLevels: facts.enumOf?.( R.numberedSteps.block, R.numberedSteps.settings.level ) || [] } ) : new Map();
 	const pictureGrids = R.pictureTileGrid ? pictureTileGrids( { m, rule: R.pictureTileGrid, money: R.commerceRegion?.money } ) : { grids: new Map(), notes: [] };
 	// A surface the page map holds as an sgs_choice_flow row: what the flow holds, read from the fact record.
 	const role = surface.role ?? null;
@@ -1324,6 +1327,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		( { e } ) => {
 			const g = pictureGrids.grids.get( e.key );
 			return g ? v( 'pictureTileGrid', { block: g.block, absorb: true, attributes: g.attributes, reason: `${ R.pictureTileGrid.reason }; ${ g.reason }`, ...( g.handovers.length ? { handover: g.handovers[ 0 ], handovers: g.handovers } : {} ) } ) : null;
+		},
+		// The parent of numbered steps (each typing its number beside its words, counting up from 1) is one process-steps block
+		// (rules.numberedSteps): the block draws the steps, so the steps' elements are absorbed.
+		( { e } ) => {
+			const g = stepRuns.get( e.key );
+			return g && 'form' !== surface.kind ? v( 'numberedSteps', { block: R.numberedSteps.block, absorb: true, attributes: g.attributes, reason: `${ R.numberedSteps.reason }; ${ g.reason }` } ) : null;
 		},
 		// The first section of a page holding its h1 is the hero; with an image inside it is the split hero. A page wrapper (the
 		// `<main>`, or an element holding two or more stacked sections) is never the hero: the hero is its first block child

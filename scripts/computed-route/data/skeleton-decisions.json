@@ -416,6 +416,20 @@
 			},
 			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there"
 		},
+		"numberedSteps": {
+			"block": "sgs/process-steps",
+			"minSteps": 2,
+			"maxTexts": 3,
+			"maxTitleWords": 14,
+			"minTitleWords": 4,
+			"numberPattern": "^0?[0-9]{1,2}[.):]?$",
+			"cardPaint": "style=\"(?:[^\"]*[;\\s])?(?:background(?:-color|-image)?|box-shadow|border)\\s*:(?!\\s*(?:none\\b|transparent\\b|0(?:px)?\\s*(?:;|\")))",
+			"fallbackLevel": "p",
+			"settings": { "steps": "steps", "level": "headingLevel" },
+			"fields": { "number": "number", "title": "title", "description": "description" },
+			"layout": { "setting": "layout", "stacked": "list", "side": "row" },
+			"reason": "a parent whose children are all steps, each typing its own number (1, 2, 3 or 01, 02, 03) beside its words with the numbers counting up from 1, is one process-steps block holding each step's number, title and description (the hand-built reference sites build their numbered steps as sgs/process-steps: a stacked list in its list layout, a row of steps in its row layout; none builds them as a numbered icon list, and a row of numbered cards that paint their own box, such as four reasons on dark tiles, is built as containers). Found by structure (lib/skeleton-numbered-steps.mjs), never by words: no step holds a control, a picture or a painted box of its own (cardPaint), at most three pieces of text a step, the title at most maxTitleWords words, and a step explains (a description, or a title of at least minTitleWords words: a number beside a short label is a contents list, the list block's numbered marker); a number the draft never types (a counter or a CSS marker) stays the list block's marker, and a run whose numbers are not 1..n (years, a word) is a timeline and is not claimed (2026-11-22)"
+		},
 		"listHeading": {
 			"surfaces": [ "footer" ],
 			"maxWords": 4,

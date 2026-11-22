@@ -35,7 +35,6 @@ const EC = 'Eye Care Birmingham';
 const IN = 'Indus Foods Website v2';
 
 for ( const [ name, holder, marker, format, first ] of [
-	[ 'ec-steps', `${ EC }/222#0`, 'numbered', 'decimal', 'Pick a frame, then' ],
 	[ 'ec-lens-steps', `${ EC }/583#0`, 'numbered', 'decimal', 'Choose a frame and tap' ],
 	[ 'ec-features', `${ EC }/422#0`, 'none', null, 'Pilot shape in Metal' ],
 	[ 'ec-lens-list', `${ EC }/574#0`, 'none', null, 'UV400 protection' ],
@@ -55,6 +54,17 @@ for ( const [ name, holder, marker, format, first ] of [
 		assert.ok( list.attributes.items.every( ( it ) => ! /^\(?\d{1,3}[.)]?\s/.test( String( it.text ) ) ), 'no item repeats its typed number' );
 	} );
 }
+
+test( 'MUST FAIL: ec-steps (Eye Care Birmingham/222#0), numbers typed beside sentences, is one sgs/process-steps, not a numbered list (rules.numberedSteps)', () => {
+	const r = propose( fixture( 'skeleton-lists', 'ec-steps' ) );
+	assert.equal( lists( r ).length, 0, 'no list block' );
+	const [ steps ] = flat( r.skeleton ).filter( ( n ) => 'sgs/process-steps' === n.name );
+	assert.ok( steps, 'the steps are one process-steps block' );
+	assert.equal( rowOf( r, `${ EC }/222#0` ).rule, 'numberedSteps' );
+	assert.deepEqual( steps.attributes.steps.map( ( s ) => s.number ), [ '1', '2', '3' ] );
+	assert.ok( steps.attributes.steps[ 0 ].title.startsWith( 'Pick a frame, then' ) );
+	assert.equal( steps.attributes.layout, 'list' );
+} );
 
 test( 'negative control: Mama\'s checklist rows (a marker, a title and a description) stay containers', () => {
 	const r = propose( fixture( 'skeleton-lists', 'mama-checklist' ) );
