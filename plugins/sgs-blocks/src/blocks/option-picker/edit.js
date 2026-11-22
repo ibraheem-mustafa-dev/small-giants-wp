@@ -15,6 +15,11 @@
  */
 import { __ } from '@wordpress/i18n';
 import { composeShadow } from '../../utils/shadow-layers';
+import {
+	resolveColourHexAlpha,
+	relativeLuminance,
+	whiteWinsForLuminance,
+} from '../../utils/surface-tone';
 import ItemSlotFields from '../../components/media/ItemSlotFields.js';
 import ItemSlotPicture from '../../components/media/ItemSlotPicture.js';
 import { hasFile } from '../../components/media/mediaSlotWrites.js';
@@ -168,6 +173,22 @@ function buildRootPreviewStyle( attributes, tier, palette ) {
 	}
 	if ( pillSelectedTextColour ) {
 		rootStyle[ '--sgs-op-sel-text' ] = colourVar( pillSelectedTextColour );
+	} else if (
+		[ 'outlined', 'filled' ].includes( attributes.pillStyle || 'outlined' )
+	) {
+		// No chosen-text colour: black or white, whichever reads better on the chosen fill
+		// (pillSelectedBgColour, else the primary), as render.php prints --sgs-op-sel-auto-text.
+		const fillHex = resolveColourHexAlpha(
+			pillSelectedBgColour || 'primary',
+			palette
+		).hex;
+		if ( fillHex ) {
+			rootStyle[ '--sgs-op-sel-auto-text' ] = whiteWinsForLuminance(
+				relativeLuminance( fillHex )
+			)
+				? '#fff'
+				: '#000';
+		}
 	}
 	if ( pillSelectedBorderColour ) {
 		rootStyle[ '--sgs-op-sel-border' ] = colourVar(
