@@ -133,21 +133,9 @@
 	},
 	{
 		"file": "lib/template-piece-product-field.mjs",
-		"find": "...hiddenPictureHoles( index, e ), ",
+		"find": "...hiddenPictureHoles( index, e, byTpl ), ",
 		"replace": "",
 		"why": "a main picture drawn only in a hidden branch is not read"
-	},
-	{
-		"file": "lib/template-piece-draft.mjs",
-		"find": "\t\tdeepest === Number( e.tpl ) && out.push",
-		"replace": "\t\tout.push",
-		"why": "an ancestor reads the picture its descendant draws"
-	},
-	{
-		"file": "lib/template-piece-draft.mjs",
-		"find": "\t\tif ( held.has( n ) ) {",
-		"replace": "\t\tif ( false ) {",
-		"why": "a shown element's tag is read again as hidden"
 	},
 	{
 		"file": "lib/template-piece-product-field.mjs",
@@ -184,5 +172,23 @@
 		"find": "piece.find.linkKey && 'a' === e.tag && Object.hasOwn( blockSchema( at.node.name ) || {}, 'url' ) ? linkNode(",
 		"replace": "false ? linkNode(",
 		"why": "a link showing the brand keeps the draft's one address"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "filter( ( c ) => c.tag && ! ( null !== c.tpl && held.has( Number( c.tpl ) ) ) )",
+		"replace": "filter( ( c ) => c.tag )",
+		"why": "an element reads the pictures its shown descendants draw"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "\tconst node = SERVED_ROOT === e?.template ? byTpl?.get( Number( e.tpl ) ) : null;",
+		"replace": "\tconst node = byTpl?.get( Number( e.tpl ) );",
+		"why": "an imported component's element is read in the surface's template"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "\t\tout.push( ...PICTURE_ATTRS.flatMap( ( a ) => holesOf( c.attrs?.[ a ] ?? '' ) ) );\n\t\twalk( c );",
+		"replace": "\t\tout.push( ...PICTURE_ATTRS.flatMap( ( a ) => holesOf( c.attrs?.[ a ] ?? '' ) ) );",
+		"why": "a picture inside a hidden branch's wrapper is not reached"
 	}
 ]

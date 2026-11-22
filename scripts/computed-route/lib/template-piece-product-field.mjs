@@ -16,7 +16,7 @@
 //     draft's gallery region (the element holding those pictures, climbing through wrappers that hold only it) is
 //     removed and the buy box's gallery shows the pictures; with no buy box in the tree the draft's gallery stays. A
 //     picture a branch hidden at rest draws (the photo shown only when the record has one, its placeholder drawn instead)
-//     is read from the source of the element holding it (lib/template-piece-draft.mjs::hiddenPictureHoles); a picture
+//     is read from the draft's template below the element holding it (lib/template-piece-draft.mjs::hiddenPictureHoles); a picture
 //     inside the buy box's own controls (a colour tile painted with the photo) is never the gallery; a region no node is
 //     built from is not placed, and says so.
 // The bound setting is the node's own words setting (lib/template-piece-draft.mjs::wordsSetting). An area found twice,
@@ -24,7 +24,7 @@
 import { countBlocks } from './template-pieces.mjs';
 import { blockSchema } from './resolve.mjs';
 import { locateRun, runOf } from './template-piece-buybox.mjs';
-import { attrHolesOf, dcOf, hiddenPictureHoles, declsOf, draftLogic, holeReads, holesOf, inventoryIndex, locateParts, loopListOf, nodesWithin, recordSurface, refKey, treeNodes, wordsSetting } from './template-piece-draft.mjs';
+import { attrHolesOf, dcOf, hiddenPictureHoles, templateByTpl, declsOf, draftLogic, holeReads, holesOf, inventoryIndex, locateParts, loopListOf, nodesWithin, recordSurface, refKey, treeNodes, wordsSetting } from './template-piece-draft.mjs';
 
 const FIXED = ( e ) => Object.values( e?.position || {} ).some( ( p ) => 'fixed' === p );
 const shown = ( e ) => Object.values( e?.visible || {} ).some( Boolean );
@@ -159,7 +159,8 @@ function placeGallery( ctx, piece, index, L ) {
 	// A picture the buy box's own controls draw (a colour tile painted with the product's photo) is the buy box's, never the gallery.
 	const box = piece.find.surface ? locateRun( ctx, piece.find.surface, piece.block ) : { why: 'the piece names no record surface' };
 	const inBox = ( k ) => ! box.why && box.inRun( k );
-	const drawn = index.elements.filter( ( e ) => OWN === e.template && shown( e ) && [ ...attrHolesOf( e.snippet ), ...hiddenPictureHoles( index, e ), ...holesOf( e.srcOwnText ) ].some( ( h ) => holeReads( L, h, roots, fields, loopListOf( e ) ) ) ).map( ( e ) => e.key );
+	const byTpl = templateByTpl( ctx.draftSource );
+	const drawn = index.elements.filter( ( e ) => OWN === e.template && shown( e ) && [ ...attrHolesOf( e.snippet ), ...hiddenPictureHoles( index, e, byTpl ), ...holesOf( e.srcOwnText ) ].some( ( h ) => holeReads( L, h, roots, fields, loopListOf( e ) ) ) ).map( ( e ) => e.key );
 	const pictures = drawn.filter( ( k ) => ! inBox( k ) );
 	if ( ! pictures.length ) {
 		return note( drawn.length ? `the gallery is not placed: every element showing the product's pictures (${ drawn.join( ', ' ) }) is inside the buy box's controls` : `no element shows the product's own pictures, so ${ piece.block } shows its gallery where the draft draws none` );

@@ -5,7 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { place } from '../lib/template-piece-product-field.mjs';
-import { hiddenPictureHoles, inventoryIndex } from '../lib/template-piece-draft.mjs';
+import { hiddenPictureHoles, inventoryIndex, templateByTpl } from '../lib/template-piece-draft.mjs';
 import { countBlocks } from '../lib/template-pieces.mjs';
 
 const BIND = ( key ) => ( { source: 'sgs-product/field', key } );
@@ -147,18 +147,24 @@ test( 'MUST FAIL: with no buy box, or a picture region holding the h1, the draft
 // F-50's gallery half: the main picture drawn only in a branch hidden at rest, a picture inside the buy box's controls, and a
 // gallery region no node is built from.
 const GALLERY_BOX = { ...GALLERY, find: { field: 'image', surface: 'buybox' } };
-const HIDDEN_MAIN = '<div style="aspect-ratio:1" data-dc-tpl="4"><sc-if value="{{ hasImg }}" data-dc-tpl="48"><div data-dc-tpl="49" style="background-image:{{ mainImg }}"></div></sc-if><span data-dc-tpl="5" style="background-image:{{ mainImg }}">baked with love</span>';
 const noThumbs = ( over = {} ) => INVENTORY.elements.filter( ( e ) => ! [ 21, 23 ].includes( e.tpl ) ).map( ( e ) => ( over[ e.tpl ] ? { ...e, ...over[ e.tpl ] } : e ) );
+// The draft's template, numbered as the runtime numbers it (0 the wrapper, then each element in document order): the main
+// picture (6) sits in a branch hidden at rest inside the frame (4); the sticker (7) is shown and paints the same picture.
+const HIDDEN_TEMPLATE = '<x-dc><div><main><div><div><div style="aspect-ratio:1"><sc-if value="{{ hasImg }}"><div style="background-image:{{ mainImg }}"></div></sc-if><span style="background-image:{{ mainImg }}">baked with love</span></div></div><div><h1>{{ p.name }}</h1></div></div></main></div></x-dc>';
+const HIDDEN_ELEMENTS = [ el( 1, null, 'main' ), el( 2, 1, 'div' ), el( 3, 2, 'div' ), el( 4, 3, 'div', '', { snippet: '<div style="aspect-ratio:1" data-dc-tpl="4"> <sc-if value="{{ hasImg }}" data-dc-tpl="5"> <div style="backgr' } ), el( 7, 4, 'span', 'baked with love' ), el( 8, 2, 'div' ), el( 9, 8, 'h1', '{{ p.name }}', { words: 'Zookies' } ) ];
 
-test( 'MUST FAIL: a main picture drawn only in a branch hidden at rest is read from the snippet of the element holding it', () => {
-	const elements = noThumbs( { 4: { snippet: HIDDEN_MAIN }, 3: { snippet: `<div data-dc-tpl="3">${ HIDDEN_MAIN }` } } );
-	const index = inventoryIndex( { elements } );
-	assert.deepEqual( hiddenPictureHoles( index, index.byKey.get( 'Root/4#0' ) ), [ 'mainImg' ] );
-	// Negative controls: the ancestor whose snippet also holds it does not read it, and a shown element's tag (5) is never read here.
-	assert.deepEqual( hiddenPictureHoles( index, index.byKey.get( 'Root/3#0' ) ), [] );
-	const got = place( ctx( { inventory: { elements } } ), GALLERY );
-	assert.match( got.placed[ 0 ].at, /in place of the draft's gallery Root\/3#0 \(nodes Root\/4#0, Root\/5#0\)/ );
-	assert.match( place( ctx( { inventory: { elements: noThumbs( { 4: { snippet: '<div style="aspect-ratio:1">' } } ) } } ), GALLERY ).notes[ 0 ], /no element shows the product's own pictures/ );
+test( 'MUST FAIL: a main picture drawn only in a branch hidden at rest is read from the draft\'s template below the element holding it', () => {
+	const index = inventoryIndex( { elements: HIDDEN_ELEMENTS } );
+	const byTpl = templateByTpl( HIDDEN_TEMPLATE );
+	assert.deepEqual( hiddenPictureHoles( index, index.byKey.get( 'Root/4#0' ), byTpl ), [ 'mainImg' ] );
+	// Negative controls: the ancestor reads nothing its shown child holds, a shown element (the sticker) is not read as hidden,
+	// and an element of an imported component has no template here.
+	assert.deepEqual( hiddenPictureHoles( index, index.byKey.get( 'Root/3#0' ), byTpl ), [] );
+	assert.deepEqual( hiddenPictureHoles( index, { ...index.byKey.get( 'Root/4#0' ), template: 'Card' }, byTpl ), [] );
+	const tree = [ n( 'sgs/container', 1, {}, [ n( 'sgs/container', 2, {}, [ n( 'sgs/media', 4 ), n( 'sgs/text', 7, { text: 'baked with love' } ), n( 'sgs/heading', 9, { level: 'h1', content: 'Zookies' } ), n( 'sgs/buybox', null ) ] ) ] ) ];
+	const got = place( ctx( { tree, inventory: { elements: HIDDEN_ELEMENTS }, draftSource: SOURCE.replace( '<x-dc><div></div></x-dc>', HIDDEN_TEMPLATE ) } ), GALLERY );
+	assert.match( got.placed[ 0 ].at, /in place of the draft's gallery Root\/3#0 \(nodes Root\/4#0, Root\/7#0\)/ );
+	assert.match( place( ctx( { tree: structuredClone( tree ), inventory: { elements: HIDDEN_ELEMENTS } } ), GALLERY ).notes[ 0 ], /no element shows the product's own pictures/ );
 } );
 
 test( 'MUST FAIL: a picture inside the buy box\'s controls is never the gallery, and a region no node is built from is not placed', () => {

@@ -9,6 +9,7 @@
 import { SERVED_ROOT } from './key-space.mjs';
 import { logicOf, valuesOf } from './shop-parts-logic.mjs';
 import { resolveName } from './intake-ast.mjs';
+import { parseTemplate } from './shop-parts-read.mjs';
 
 // The component a record surface's own elements are stamped by: its draft file without `.dc.html`.
 export const dcOf = ( file ) => String( file || '' ).replace( /\.dc\.html$/i, '' );
@@ -201,21 +202,37 @@ const PICTURE_ATTRS = [ 'style', 'src', 'srcset' ];
 export const attrHolesOf = ( snippet ) => PICTURE_ATTRS.flatMap( ( a ) => [ ...openTag( snippet ).matchAll( new RegExp( `\\s${ a }="([^"]*)"?`, 'gi' ) ) ].flatMap( ( m ) => holesOf( m[ 1 ] ) ) );
 
 // The picture holes a branch hidden at rest draws inside an element: an `sc-if` the opening read did not show (a product photo
-// drawn only when the record has one, its placeholder shown instead) leaves no inventory element, but its source stays in the
-// snippet of the element holding it. Each tag of the snippet numbered `data-dc-tpl="N"` that the inventory does not hold for
-// the element's component is read (its opening tag's picture holes, attrHolesOf) by the deepest element whose snippet holds
-// it, so an ancestor never reads a picture its descendant draws.
-export function hiddenPictureHoles( index, e ) {
-	const same = index.elements.filter( ( x ) => x.template === e.template );
-	const held = new Set( same.map( ( x ) => Number( x.tpl ) ) );
+// drawn only when the record has one, its placeholder shown instead) leaves no inventory element, and the inventory's snippet
+// is cut before it, so it is read from the draft's own template (`byTpl`: the surface's template elements by their
+// `data-dc-tpl` number, lib/shop-parts-read.mjs::parseTemplate). Each element below `e` in the template that the inventory
+// does not hold is read (its style, src and srcset holes); one the inventory holds is shown and reads its own, so an element
+// never reads a picture a shown descendant draws. Only the surface's own component (the served root) has a template here.
+export function hiddenPictureHoles( index, e, byTpl ) {
+	const node = SERVED_ROOT === e?.template ? byTpl?.get( Number( e.tpl ) ) : null;
+	if ( ! node ) {
+		return [];
+	}
+	const held = new Set( index.elements.filter( ( x ) => x.template === e.template ).map( ( x ) => Number( x.tpl ) ) );
 	const out = [];
-	for ( const m of String( e?.snippet || '' ).matchAll( /<[a-z][\w-]*\s[^>]*?data-dc-tpl="(\d+)"[^>]*>?/gi ) ) {
-		const n = Number( m[ 1 ] );
-		if ( held.has( n ) ) {
-			continue;
-		}
-		const deepest = Math.max( ...same.filter( ( x ) => String( x.snippet || '' ).includes( `data-dc-tpl="${ n }"` ) ).map( ( x ) => Number( x.tpl ) ) );
-		deepest === Number( e.tpl ) && out.push( ...attrHolesOf( m[ 0 ] ) );
+	const walk = ( n ) => ( n.children || [] ).filter( ( c ) => c.tag && ! ( null !== c.tpl && held.has( Number( c.tpl ) ) ) ).forEach( ( c ) => {
+		out.push( ...PICTURE_ATTRS.flatMap( ( a ) => holesOf( c.attrs?.[ a ] ?? '' ) ) );
+		walk( c );
+	} );
+	walk( node );
+	return out;
+}
+
+// The surface's own template elements by their `data-dc-tpl` number, from its draft source (lib/shop-parts-read.mjs::parseTemplate).
+export function templateByTpl( source ) {
+	const out = new Map();
+	const walk = ( n ) => ( n?.children || [] ).filter( ( c ) => c.tag ).forEach( ( c ) => {
+		null !== c.tpl && undefined !== c.tpl && out.set( Number( c.tpl ), c );
+		walk( c );
+	} );
+	try {
+		walk( source ? parseTemplate( source ) : null );
+	} catch {
+		return out;
 	}
 	return out;
 }
