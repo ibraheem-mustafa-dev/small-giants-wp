@@ -1,0 +1,6 @@
+{
+	"_comment": "How the part-look command (scripts/computed-route/part-look.mjs) opens each shop surface of this draft. The header's `empty` script empties the basket through the draft's store, for the drawer's empty state (the drawer is read filled first, as the store seeds it).",
+	"surfaces": {
+		"header": { "empty": "window.MM.cart.clear();" }
+	}
+}

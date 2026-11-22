@@ -192,7 +192,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			controls.why && notes.push( `${ surface }: the flow opener is not located: ${ controls.why }` );
 		}
 		const builtin = declaredButtons( loc.block );
-		const spec = { anchors: group.anchors, parts: group.parts, shopParts, routeHandlers, rootName: String( mainFile ).replace( /\.dc\.html$/, '' ) };
+		const spec = { anchors: group.anchors, parts: group.parts, shopParts, routeHandlers, rootName: String( mainFile ).replace( /\.dc\.html$/, '' ), ...( group.emptyPins ? { emptyPins: group.emptyPins } : {} ) };
 		const also = ( loc.alsoRead || [] ).map( ( role ) => pages[ role ] ).filter( Boolean );
 		const { rows: blockRowsOf, names } = blockRows( loc.block, db );
 		const blockKey = [ 'woocommerce/cart', 'woocommerce/checkout' ].includes( loc.block ) ? loc.block.split( '/' )[ 1 ] : null;
@@ -211,7 +211,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			reads = signed.reads;
 			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		} else {
-			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
+			( { reads } = await readParts( { draftDir: path.resolve( REPO, entry.draftDir ), files: [ mainFile, ...also ], spec, names: Object.keys( group.parts ), pages, config: cfg.route || cfg.init || cfg.empty ? cfg : null, hover: builtin.map( ( b ) => b.part ), headed, log } ) );
 		}
 		const build = buildLook( {
 			block: loc.block, rows: blockRowsOf, names, locators: spec, reads, snapshot,

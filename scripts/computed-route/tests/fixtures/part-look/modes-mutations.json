@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/part-look-modes.mjs",
-		"find": "if ( rule.whenAbsent && has( reads, rule.whenAbsent ) ) {",
+		"find": "if ( rule.whenAbsent && [].concat( rule.whenAbsent ).some( ( part ) => has( reads, part ) ) ) {",
 		"replace": "if ( false ) {",
 		"why": "a card that draws option buttons has its pickers turned off"
 	},

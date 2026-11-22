@@ -1234,6 +1234,17 @@
 							"from": "page",
 							"match": {
 								"scope": "overlay",
+								"modal": true,
+								"has": {
+									"text": "currency"
+								}
+							},
+							"smallest": true
+						},
+						{
+							"from": "page",
+							"match": {
+								"scope": "overlay",
 								"position": [
 									"fixed"
 								],
@@ -1324,7 +1335,8 @@
 								"img",
 								"svg"
 							]
-						}
+						},
+						"notInAnchor": "lines"
 					},
 					"smallest": true
 				},
@@ -1383,6 +1395,47 @@
 						}
 					},
 					"pick": "first"
+				},
+				"checkoutControl": {
+					"from": "drawer",
+					"match": {
+						"control": true,
+						"tag": [
+							"a",
+							"button"
+						],
+						"linksTo": "checkout"
+					},
+					"smallest": true
+				},
+				"empty": {
+					"from": "drawer",
+					"match": {
+						"noAnchor": "lines",
+						"has": {
+							"control": true,
+							"text": "words"
+						},
+						"hasAll": [
+							{
+								"ownText": true,
+								"text": "words",
+								"control": false
+							}
+						]
+					},
+					"smallest": true
+				},
+				"gift": {
+					"from": "drawer",
+					"match": {
+						"inputType": [
+							"checkbox"
+						],
+						"notInAnchor": "lines"
+					},
+					"pick": "first",
+					"rel": "wrapper"
 				}
 			},
 			"parts": {
@@ -1394,6 +1447,29 @@
 				},
 				"panel-heading": {
 					"sameAs": "heading"
+				},
+				"panelCount": {
+					"any": [
+						{
+							"from": "heading",
+							"match": {
+								"ownText": true,
+								"text": "any"
+							},
+							"pick": "first"
+						},
+						{
+							"from": "heading",
+							"match": {
+								"ownText": true,
+								"text": "count"
+							},
+							"pick": "first"
+						}
+					]
+				},
+				"panel-count": {
+					"sameAs": "panelCount"
 				},
 				"panelHead": {
 					"from": "drawer",
@@ -1445,13 +1521,28 @@
 					"sameAs": "band"
 				},
 				"freeDeliveryText": {
-					"from": "band",
-					"match": {
-						"ownText": true,
-						"text": "words",
-						"control": false
-					},
-					"pick": "first"
+					"any": [
+						{
+							"from": "band",
+							"match": {
+								"ownText": true,
+								"text": "words",
+								"control": false,
+								"precedesAnchor": "track"
+							},
+							"pick": "last"
+						},
+						{
+							"from": "band",
+							"match": {
+								"ownText": true,
+								"text": "words",
+								"control": false,
+								"followsAnchor": "track"
+							},
+							"pick": "first"
+						}
+					]
 				},
 				"free-delivery-text": {
 					"sameAs": "freeDeliveryText"
@@ -1480,7 +1571,9 @@
 					"match": {
 						"ownText": true,
 						"text": "words",
-						"control": false
+						"control": false,
+						"upper": false,
+						"square": false
 					},
 					"perRoot": true,
 					"pick": {
@@ -1492,7 +1585,9 @@
 					"match": {
 						"ownText": true,
 						"text": "words",
-						"control": false
+						"control": false,
+						"upper": false,
+						"square": false
 					},
 					"perRoot": true,
 					"pick": {
@@ -1535,15 +1630,27 @@
 					"sameAs": "item-stepper"
 				},
 				"itemRemove": {
-					"from": "lines",
-					"match": {
-						"tag": [
-							"button"
-						],
-						"text": "words"
-					},
-					"perRoot": true,
-					"pick": "first"
+					"any": [
+						{
+							"from": "lines",
+							"match": {
+								"shopPart": "drawer-remove"
+							},
+							"perRoot": true,
+							"pick": "first"
+						},
+						{
+							"from": "lines",
+							"match": {
+								"tag": [
+									"button"
+								],
+								"text": "words"
+							},
+							"perRoot": true,
+							"pick": "last"
+						}
+					]
 				},
 				"subtotal": {
 					"from": "drawer",
@@ -1577,8 +1684,12 @@
 						"control": false,
 						"tag": [
 							"div",
-							"p"
-						]
+							"p",
+							"span"
+						],
+						"precedesAnchor": "checkoutControl",
+						"notPrecedesAnchor": "track",
+						"notInAnchor": "lines"
 					},
 					"pick": "last"
 				},
@@ -1592,16 +1703,7 @@
 					"sameAs": "panelTaxNote"
 				},
 				"checkout": {
-					"from": "drawer",
-					"match": {
-						"control": true,
-						"tag": [
-							"a",
-							"button"
-						],
-						"linksTo": "checkout"
-					},
-					"smallest": true
+					"sameAs": "checkoutControl"
 				},
 				"panel-checkout": {
 					"sameAs": "checkout"
@@ -1664,7 +1766,204 @@
 				},
 				"icon": {
 					"sameAs": "iconTrigger"
+				},
+				"itemBrand": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false,
+						"upper": true
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"item-brand": {
+					"sameAs": "itemBrand"
+				},
+				"item-remove": {
+					"sameAs": "itemRemove"
+				},
+				"itemAction": {
+					"from": "lines",
+					"match": {
+						"shopPart": "drawer-add-options"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"item-action": {
+					"sameAs": "itemAction"
+				},
+				"itemOtherAction": {
+					"from": "lines",
+					"match": {
+						"control": true,
+						"text": "words",
+						"notShopPart": [
+							"drawer-remove",
+							"drawer-add-options"
+						]
+					},
+					"perRoot": true
+				},
+				"itemQtyNumber": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "count",
+						"control": false
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"itemQtyInput": {
+					"from": "lines",
+					"match": {
+						"inputType": [
+							"number"
+						]
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"panel-subtotal": {
+					"sameAs": "subtotal"
+				},
+				"panelInstalments": {
+					"from": "drawer",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false,
+						"followsAnchor": "checkoutControl",
+						"notInAnchor": "lines"
+					},
+					"pick": "first"
+				},
+				"trackInFooter": {
+					"from": "drawer",
+					"match": {
+						"parentOfAnchor": "checkoutControl",
+						"holdsAnchor": "track"
+					},
+					"smallest": true
+				},
+				"trackWhenEmpty": {
+					"from": "drawer",
+					"match": {
+						"tag": [
+							"div"
+						],
+						"text": "none",
+						"minChildren": 1,
+						"has": {
+							"text": "none"
+						},
+						"lacks": {
+							"tag": [
+								"img",
+								"svg"
+							]
+						},
+						"noAnchor": "lines"
+					}
+				},
+				"panelEmpty": {
+					"sameAs": "empty"
+				},
+				"panel-empty": {
+					"sameAs": "empty"
+				},
+				"emptyMessage": {
+					"from": "empty",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"pick": "first"
+				},
+				"panel-empty-message": {
+					"sameAs": "emptyMessage"
+				},
+				"emptyBody": {
+					"from": "empty",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"pick": {
+						"index": 1
+					}
+				},
+				"panel-empty-body": {
+					"sameAs": "emptyBody"
+				},
+				"emptyCta": {
+					"from": "empty",
+					"match": {
+						"control": true,
+						"text": "words"
+					},
+					"pick": "first"
+				},
+				"panel-empty-cta": {
+					"sameAs": "emptyCta"
+				},
+				"emptyLink": {
+					"from": "empty",
+					"match": {
+						"control": true,
+						"text": "words"
+					},
+					"pick": {
+						"index": 1
+					}
+				},
+				"panel-empty-link": {
+					"sameAs": "emptyLink"
+				},
+				"giftBox": {
+					"sameAs": "gift"
+				},
+				"giftLabel": {
+					"from": "gift",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"pick": "first"
+				},
+				"panel-gift-label": {
+					"sameAs": "giftLabel"
+				},
+				"giftHelp": {
+					"from": "gift",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false
+					},
+					"pick": {
+						"index": 1
+					}
+				},
+				"panel-gift-help": {
+					"sameAs": "giftHelp"
+				},
+				"giftAfterItems": {
+					"from": "gift",
+					"self": true,
+					"match": {
+						"followsAnchor": "lines"
+					}
 				}
+			},
+			"emptyPins": {
+				"drawer": "panel"
 			}
 		},
 		"buybox": {

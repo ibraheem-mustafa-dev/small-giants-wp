@@ -73,9 +73,22 @@ async function openPage( browser, { url, width, config } ) {
 	return { ctx, page };
 }
 
+// The pins of the emptied read at one width: each anchor `spec.emptyPins` names, pinned to the template stamp of the element the first read
+// located for its part ({ anchor: { tpl, host } }); an anchor whose part the first read did not locate, or located unstamped, is not pinned.
+export function emptyPins( spec, reads, width ) {
+	return Object.fromEntries( Object.entries( spec?.emptyPins || {} ).flatMap( ( [ anchor, part ] ) => {
+		const el = reads[ part ]?.[ width ]?.[ 0 ];
+		return el?.tpl ? [ [ anchor, { tpl: el.tpl, host: el.host ?? null } ] ] : [];
+	} ) );
+}
+
 // Reads every part of a locator group from a served draft at each width: { part: { width: [ { key, tag, text, box, styles } ] } }.
 // `files` are tried in order; a part no earlier file located is taken from a later one (the sign-in page's fields for the account).
 // `hover` names the parts whose instances are also hovered (lib/part-look-hover.mjs: each gains `hover`).
+// A surface whose config names an `empty` script (the client's part-look.json: the script that empties the basket, run like `init`) is
+// read a second time at each width with that script in place of `init`, taking only the parts the first read did not locate (the
+// basket drawer's empty state). Each anchor the group's `emptyPins` names ({ anchor: part }) is pinned in that read to the element the
+// first read located for that part at the same width (its template stamp), so the second read takes the same drawer.
 export async function readParts( { draftDir, files, spec, names, pages, config = null, hover = [], headed = false, log = () => {} } ) {
 	const { chromium } = await loadChromium();
 	const served = await serveDraft( draftDir, { index: files[ 0 ] } );
@@ -102,6 +115,25 @@ export async function readParts( { draftDir, files, spec, names, pages, config =
 					await ctx.close();
 				}
 			}
+		}
+		if ( config?.empty ) {
+			const url = `${ served.url }${ encodeURIComponent( files[ 0 ] ) }`;
+			for ( const width of WIDTHS ) {
+				const { ctx, page } = await openPage( browser, { url, width, config: { route: config.route || null, init: config.empty } } );
+				try {
+					const pins = emptyPins( spec, reads, width );
+					const found = await page.evaluate( findPartsInPage, { spec: { ...spec, pins }, names: names.filter( ( n ) => ! filled[ n ] ), props: READ_PROPS, pages } );
+					for ( const [ part, list ] of Object.entries( found ) ) {
+						if ( list.length ) {
+							( reads[ part ] ??= {} )[ width ] = list;
+						}
+					}
+					log( `read ${ files[ 0 ] } emptied at ${ width }px: ${ Object.values( found ).filter( ( l ) => l.length ).length } more parts located` );
+				} finally {
+					await ctx.close();
+				}
+			}
+			Object.keys( reads ).forEach( ( part ) => ( filled[ part ] ??= `${ files[ 0 ] } (emptied)` ) );
 		}
 	} finally {
 		await browser.close();

@@ -198,6 +198,180 @@
 					"whenFound": "detailsOptIn"
 				}
 			]
+		},
+		"sgs/cart": {
+			"_comment": "The basket drawer (surface header): what the panel shows and says, from the parts the drawer group locates in the draft, its empty state read with the basket emptied (part-look.json `empty`). A switch the draft gives no evidence for either way stays at the block default. Not decided here: the view link's style and the actions' stacking (they need the parts' places, which the read does not keep), Remove's place in the line, and the success words of the free-delivery bar (drawn only once the threshold is met).",
+			"rules": [
+				{
+					"setting": "panelHeading",
+					"from": {
+						"text": "panel-heading",
+						"minus": "panelCount"
+					},
+					"whenFound": "panel-heading"
+				},
+				{
+					"setting": "panelShowCount",
+					"value": true,
+					"whenFound": "panelCount"
+				},
+				{
+					"setting": "panelShowCount",
+					"value": false,
+					"whenAbsent": "panelCount",
+					"neighbours": [
+						"panel-heading"
+					]
+				},
+				{
+					"setting": "itemQtyStyle",
+					"value": "stepper",
+					"whenFound": "item-stepper"
+				},
+				{
+					"setting": "itemShowQty",
+					"value": false,
+					"whenAbsent": [
+						"item-stepper",
+						"itemQtyInput"
+					],
+					"neighbours": [
+						"item"
+					]
+				},
+				{
+					"setting": "itemShowSaveForLater",
+					"value": false,
+					"whenAbsent": "itemOtherAction",
+					"neighbours": [
+						"item",
+						"itemRemove"
+					]
+				},
+				{
+					"setting": "itemRemoveStyle",
+					"value": "text",
+					"whenFound": "itemRemove"
+				},
+				{
+					"setting": "panelShowViewCart",
+					"value": false,
+					"whenAbsent": "panelView",
+					"neighbours": [
+						"checkout"
+					]
+				},
+				{
+					"setting": "viewCartLabel",
+					"from": {
+						"text": "panelView"
+					},
+					"whenFound": "panelView"
+				},
+				{
+					"setting": "checkoutLabel",
+					"from": {
+						"text": "checkout",
+						"label": true
+					},
+					"whenFound": "checkout"
+				},
+				{
+					"setting": "panelTaxNote",
+					"from": {
+						"text": "panelTaxNote"
+					},
+					"whenFound": "panelTaxNote"
+				},
+				{
+					"setting": "panelTaxNote",
+					"value": "",
+					"whenAbsent": "panelTaxNote",
+					"neighbours": [
+						"checkout",
+						"subtotal"
+					]
+				},
+				{
+					"setting": "panelInstalmentsNote",
+					"from": {
+						"text": "panelInstalments",
+						"amount": true
+					},
+					"whenFound": "panelInstalments"
+				},
+				{
+					"setting": "panelInstalmentsCount",
+					"from": {
+						"ratio": [
+							"subtotalValue",
+							"panelInstalments"
+						]
+					},
+					"whenFound": "panelInstalments"
+				},
+				{
+					"setting": "freeDeliveryMessage",
+					"from": {
+						"text": "freeDeliveryText",
+						"amount": true
+					},
+					"whenFound": "freeDeliveryText"
+				},
+				{
+					"setting": "freeDeliverySuccessMessage",
+					"from": {
+						"text": "freeDeliveryText",
+						"amount": false
+					},
+					"whenFound": "freeDeliveryText"
+				},
+				{
+					"setting": "freeDeliveryPlacement",
+					"value": "footer",
+					"whenFound": "trackInFooter"
+				},
+				{
+					"setting": "freeDeliveryHideWhenEmpty",
+					"value": true,
+					"whenAbsent": "trackWhenEmpty",
+					"neighbours": [
+						"panelEmpty",
+						"freeDeliveryTrack"
+					]
+				},
+				{
+					"setting": "panelGiftShow",
+					"value": true,
+					"whenFound": "giftBox"
+				},
+				{
+					"setting": "panelGiftLabel",
+					"from": {
+						"text": "giftLabel"
+					},
+					"whenFound": "giftLabel"
+				},
+				{
+					"setting": "panelGiftHelp",
+					"from": {
+						"text": "giftHelp"
+					},
+					"whenFound": "giftHelp"
+				},
+				{
+					"setting": "panelGiftPlacement",
+					"value": "after-items",
+					"whenFound": "giftAfterItems"
+				},
+				{
+					"setting": "emptyBody",
+					"from": {
+						"text": "emptyBody"
+					},
+					"whenFound": "emptyBody"
+				}
+			]
 		}
 	}
 }

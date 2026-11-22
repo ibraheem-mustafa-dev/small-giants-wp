@@ -1,7 +1,8 @@
 // The content and mode settings of a block that choose what a part shows (template-rework Task 4, product page and shop listing): whether a
 // card draws option pickers, what its button says, whether the add button shows its price. They have no CSS property, so the look pairing
 // cannot place them; `data/part-look-modes.json` bridges each to what the draft draws, as rules over the located parts:
-//   whenFound / whenAbsent  a part (named in the block's locators) the draft draws, or does not draw, at any width
+//   whenFound / whenAbsent  a part (named in the block's locators) the draft draws, or does not draw, at any width (whenAbsent may
+//                           list several parts, all of which must be absent)
 //   neighbours              parts that must be found, so an absence is never read from a failed read
 //   from.text               the part's own words (all instances must agree), from.look the part's computed value of a property
 //   from.differs            parts whose words differ from one copy to the next (a per-product badge, note or button), or that
@@ -10,6 +11,11 @@
 //   from.aspect             a part's width to height at the widest width, every copy agreeing (a picture's shape: `W / H`,
 //                           a near-simple ratio as itself), written as the desktop tier of a tier object
 //   from.pricePrefix        a price part whose words put a word before the amount on some copy ("from £9.50"): true, else false
+//   from.minus              with from.text: a part inside it whose words are cut from the end (the count after a heading's words)
+//   from.amount             with from.text: true takes only words holding an amount and writes the amount as `%s` ("Add %s more
+//                           for free delivery"), false only words holding none; a part whose words do not fit is not written
+//   from.ratio              [ total part, share part ]: the whole number of shares the total is, within 2% (the number of payments
+//                           an instalments line splits the subtotal into), from their amounts
 //   value                   the literal to write when the condition holds
 // A rule whose setting the framework database does not hold for the block, whose instances disagree, or whose evidence is missing
 // is a gap row with the draft's evidence, never a guess. Pure: reads and database rows in, writes and gaps out.
@@ -17,6 +23,11 @@ import { WIDTHS, primitive } from './fill-part-look.mjs';
 
 const AMOUNT = /\s*[·•|–-]?\s*[£$€]\s?\d[\d.,]*|\s*\d[\d.,]*\s?[£$€]/;
 const has = ( reads, part ) => WIDTHS.some( ( w ) => ( reads[ part ]?.[ w ] || [] ).length );
+const AMOUNT_IN = /[£$€]\s?\d[\d,]*(?:\.\d+)?|\d[\d,]*(?:\.\d+)?\s?[£$€]/;
+const amountOf = ( text ) => {
+	const m = AMOUNT_IN.exec( String( text || '' ) );
+	return m ? parseFloat( m[ 0 ].replace( /[^\d.]/g, '' ) ) : null;
+};
 const instances = ( reads, part ) => reads[ part ]?.[ 1440 ] || WIDTHS.map( ( w ) => reads[ part ]?.[ w ] ).find( ( l ) => l?.length ) || [];
 
 const PREFIXED = /^[^£$€\d]*[A-Za-z][^£$€\d]*[£$€]\s?\d/;
@@ -58,20 +69,35 @@ export function evaluateModes( { block, rules, rows, reads } ) {
 			out.settings[ rule.setting ] = { code: 'notDrawn' };
 			continue;
 		}
-		if ( rule.whenAbsent && has( reads, rule.whenAbsent ) ) {
+		if ( rule.whenAbsent && [].concat( rule.whenAbsent ).some( ( part ) => has( reads, part ) ) ) {
 			out.settings[ rule.setting ] = { code: 'drawn' };
 			continue;
 		}
 		let value = rule.value;
-		let evidence = rule.whenAbsent ? `the draft draws no ${ rule.whenAbsent } at any width` : ( rule.whenFound ? `the draft draws ${ rule.whenFound }` : '' );
+		let evidence = rule.whenAbsent ? `the draft draws no ${ [].concat( rule.whenAbsent ).join( ' or ' ) } at any width` : ( rule.whenFound ? `the draft draws ${ rule.whenFound }` : '' );
 		if ( rule.from?.text ) {
-			const texts = [ ...new Set( instances( reads, rule.from.text ).map( ( i ) => ( rule.from.label ? labelOf( i.text ) : i.text ) ) ) ];
+			const cut = ( t ) => {
+				const tail = rule.from.minus ? instances( reads, rule.from.minus ).map( ( i ) => String( i.text || '' ) ).find( ( x ) => x && String( t ).endsWith( x ) ) : null;
+				return tail ? String( t ).slice( 0, -tail.length ).trim() : t;
+			};
+			let texts = [ ...new Set( instances( reads, rule.from.text ).map( ( i ) => cut( rule.from.label ? labelOf( i.text ) : i.text ) ) ) ];
+			if ( undefined !== rule.from.amount ) {
+				texts = texts.filter( ( t ) => AMOUNT_IN.test( t ) === rule.from.amount ).map( ( t ) => ( rule.from.amount ? t.replace( AMOUNT_IN, '%s' ) : t ) );
+				if ( ! texts.length ) {
+					out.settings[ rule.setting ] = { code: rule.from.amount ? 'noAmount' : 'amount' };
+					continue;
+				}
+			}
 			if ( 1 !== texts.length ) {
 				gap( 'the instances of the part say different things and the block holds one value for all of them', `${ rule.from.text }: ${ JSON.stringify( texts ) }` );
 				continue;
 			}
 			[ value ] = texts;
 			evidence = `the draft's ${ rule.from.text } says ${ JSON.stringify( value ) }`;
+			if ( '' === value ) {
+				gap( 'the draft part has no words to write', evidence );
+				continue;
+			}
 		} else if ( rule.from?.hasAmount ) {
 			value = instances( reads, rule.from.hasAmount ).every( ( i ) => /[£$€]\s?\d|\d\s?[£$€]/.test( i.text ) );
 			evidence = `the draft's ${ rule.from.hasAmount } ${ value ? 'carries' : 'carries no' } amount`;
@@ -108,14 +134,19 @@ export function evaluateModes( { block, rules, rows, reads } ) {
 			}
 			value = { desktop: ratio };
 			evidence = `the draft's ${ rule.from.aspect } is ${ ratio } (width to height at the widest width)`;
+		} else if ( rule.from?.ratio ) {
+			const [ total, share ] = rule.from.ratio.map( ( part ) => amountOf( instances( reads, part )[ 0 ]?.text ) );
+			const n = total && share ? Math.round( total / share ) : 0;
+			if ( ! n || Math.abs( ( n * share ) / total - 1 ) > 0.02 ) {
+				gap( 'the total is no whole number of the share', `${ rule.from.ratio.join( ' / ' ) }: ${ total } / ${ share }` );
+				continue;
+			}
+			value = n;
+			evidence = `the draft's ${ rule.from.ratio[ 0 ] } ${ total } is ${ n } times its ${ rule.from.ratio[ 1 ] } ${ share }`;
 		} else if ( rule.from?.pricePrefix ) {
 			const texts = instances( reads, rule.from.pricePrefix ).map( ( i ) => String( i.text || '' ) );
 			value = texts.some( ( t ) => PREFIXED.test( t ) );
 			evidence = value ? `the draft's ${ rule.from.pricePrefix } reads ${ JSON.stringify( texts.find( ( t ) => PREFIXED.test( t ) ) ) }` : `no copy of the draft's ${ rule.from.pricePrefix } puts a word before its amount`;
-		}
-		if ( '' === value ) {
-			gap( 'the draft part has no words to write', evidence );
-			continue;
 		}
 		out.writes.push( { attr: rule.setting, value, part: rule.part || null, property: '(content)', mode: true, evidence, draft: { 1440: value } } );
 		out.settings[ rule.setting ] = { code: 'written' };

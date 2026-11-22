@@ -33,7 +33,13 @@
 // under 4px tall, or an element with a top or bottom border but not a border on every side, so a boxed card is not a rule),
 // linksTo (a link whose file is the page named for that role, or any of several roles, in `pages`; or an element whose own click handler
 // in the draft's template takes the visitor to that role's page, `spec.routeHandlers` mapping a role to { dc, handler }), control (a button, link, input, select or
-// textarea), scope ('page' outside the header, footer and any fixed panel, 'overlay' inside a fixed panel or dialog, 'any').
+// textarea), scope ('page' outside the header, footer and any fixed panel, 'overlay' inside a fixed panel or dialog, 'any'),
+// modal (a dialog: role dialog or alertdialog, aria-modal="true" or a <dialog>), upper (true or false: its computed text-transform is
+// uppercase), square (true or false), noAnchor (an anchor located nothing: the basket drawer's empty state is read where it holds no
+// lines), notPrecedesAnchor (the negation of precedesAnchor), notShopPart (none of the shop parts record's elements for these ids).
+// `spec.pins` maps an anchor to { tpl, host }: the anchor is the shown element the draft stamps with that template number in that
+// component (a second read of the same page in another state takes the drawer the first read found). Each located element is
+// returned with its own { tpl, host } stamp.
 export function findPartsInPage( { spec, names, props, pages } ) {
 	const AMOUNT = /[£$€]\s?\d|\d\s?[£$€]/;
 	// An amount on its own ("£21.50", "-£3", "12,50€"); a sentence that mentions one is words.
@@ -149,6 +155,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		}
 		return out;
 	};
+	const isModal = ( el ) => [ 'dialog', 'alertdialog' ].includes( el.getAttribute( 'role' ) ) || 'true' === el.getAttribute( 'aria-modal' ) || 'dialog' === el.tagName.toLowerCase();
 	const isPanel = ( el ) => 'fixed' === styleOf( el ).position || 'dialog' === el.getAttribute( 'role' ) || 'true' === el.getAttribute( 'aria-modal' ) || 'dialog' === el.tagName.toLowerCase();
 	const scopes = new Map();
 	const scopeOf = ( el ) => {
@@ -170,8 +177,17 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		const scope = scopeOf( el );
 		return descendants( el ).filter( ( d ) => scopeOf( d ) === scope );
 	};
-	const anchorEls = ( name ) => locate( spec.anchors[ name ], `a:${ name }` );
+	const stampOf = ( el ) => ( { tpl: el.getAttribute( 'data-dc-tpl' ), host: el.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' ) ?? null } );
+	const pinned = ( pin ) => [ ...document.querySelectorAll( `[data-dc-tpl="${ CSS.escape( String( pin.tpl ) ) }"]` ) ].filter( ( el ) => stampOf( el ).host === ( pin.host ?? null ) && shown( el ) );
+	const anchorEls = ( name ) => ( spec.pins?.[ name ] ? pinned( spec.pins[ name ] ) : locate( spec.anchors[ name ], `a:${ name }` ) );
 	const memo = new Map();
+	// Whether the shop parts record locates the element for one of these part ids (its template key in its own component).
+	const stampedAs = ( el, ids ) => {
+		const keys = [ ...[].concat( ids ).flatMap( ( id ) => spec.shopParts?.[ id ] || [] ) ];
+		const tpl = el.getAttribute( 'data-dc-tpl' );
+		const host = el.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' );
+		return !! tpl && keys.some( ( k ) => String( k.tpl ) === tpl && ( k.dc === spec.rootName ? [ 'Root', spec.rootName ].includes( host ) : k.dc === host ) );
+	};
 
 	function test( el, m ) {
 		if ( ! m ) {
@@ -212,11 +228,20 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		if ( undefined !== m.ownText && ownText( el ) !== m.ownText ) {
 			return false;
 		}
-		if ( m.square ) {
+		if ( undefined !== m.square ) {
 			const r = box( el );
-			if ( ! r.width || r.width / r.height < 0.8 || r.width / r.height > 1.25 ) {
+			if ( ( !! r.width && r.width / r.height >= 0.8 && r.width / r.height <= 1.25 ) !== !! m.square ) {
 				return false;
 			}
+		}
+		if ( undefined !== m.modal && isModal( el ) !== m.modal ) {
+			return false;
+		}
+		if ( undefined !== m.upper && ( 'uppercase' === styleOf( el ).textTransform ) !== m.upper ) {
+			return false;
+		}
+		if ( m.noAnchor && anchorEls( m.noAnchor ).length ) {
+			return false;
 		}
 		if ( undefined !== m.repeats && repeats( el ) !== m.repeats ) {
 			return false;
@@ -230,13 +255,11 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		if ( m.type && ! m.type.includes( ( el.getAttribute( 'type' ) || '' ).toLowerCase() ) ) {
 			return false;
 		}
-		if ( m.shopPart ) {
-			const keys = [ ...[].concat( m.shopPart ).flatMap( ( id ) => spec.shopParts?.[ id ] || [] ) ];
-			const tpl = el.getAttribute( 'data-dc-tpl' );
-			const host = el.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' );
-			if ( ! tpl || ! keys.some( ( k ) => String( k.tpl ) === tpl && ( k.dc === spec.rootName ? [ 'Root', spec.rootName ].includes( host ) : k.dc === host ) ) ) {
-				return false;
-			}
+		if ( m.shopPart && ! stampedAs( el, m.shopPart ) ) {
+			return false;
+		}
+		if ( m.notShopPart && stampedAs( el, m.notShopPart ) ) {
+			return false;
 		}
 		if ( undefined !== m.onlyChild && ( 1 === el.parentElement?.children.length ) !== m.onlyChild ) {
 			return false;
@@ -245,6 +268,9 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return false;
 		}
 		if ( m.precedesAnchor && ! anchorEls( m.precedesAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement?.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_FOLLOWING ) && ! el.contains( a ) ) ) {
+			return false;
+		}
+		if ( m.notPrecedesAnchor && anchorEls( m.notPrecedesAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement?.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_FOLLOWING ) && ! el.contains( a ) ) ) {
 			return false;
 		}
 		if ( m.followsAnchor && ! anchorEls( m.followsAnchor ).some( ( a ) => a !== el && ( a.parentElement === el.parentElement || a.parentElement?.parentElement === el.parentElement ) && ( el.compareDocumentPosition( a ) & Node.DOCUMENT_POSITION_PRECEDING ) && ! a.contains( el ) ) ) {
@@ -500,7 +526,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		out[ name ] = els.map( ( el ) => {
 			const s = styleOf( el );
 			const r = box( el );
-			return { key: pathOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 60 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10 }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ) } };
+			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 60 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10 }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ) } };
 		} );
 	}
 	return out;
