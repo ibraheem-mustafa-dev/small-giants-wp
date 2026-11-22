@@ -6,8 +6,10 @@
  *
  * The block's render.php calls sgs_product_card_live_fill() once, after the product
  * resolves, and every live branch then renders through the same element
- * helpers as typed mode (includes/product-card-builtin-render.php). A typed
- * value the operator set still wins; an empty one is filled from the product.
+ * helpers as typed mode (includes/product-card-builtin-render.php). For the
+ * brand name and the saving label a typed value the operator set still wins and
+ * an empty one is filled from the product; the rating and review count are always
+ * the product's own (with showRating on).
  *
  * Keys starting with an underscore are render-time only (never block
  * attributes): _sgsLiveProductId, _sgsLiveTitle, _sgsRrpDisplay and

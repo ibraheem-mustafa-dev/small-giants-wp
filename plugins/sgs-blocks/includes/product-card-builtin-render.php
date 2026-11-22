@@ -331,11 +331,13 @@ if ( ! function_exists( 'sgs_product_card_rating_markup' ) ) {
 
 	/**
 	 * Frame Card component: star rating + review-count row, or the zero-review
-	 * fallback line. Operator-authored (ratingValue/reviewCount) — not derived
-	 * from a live WooCommerce rating meta (out of scope for this build; see the
-	 * block's own CLAUDE.md history for the reasoning). Called from EVERY
-	 * render branch (typed + all 3 bound branches, FP-9) so one control
-	 * governs the element everywhere it can appear.
+	 * fallback line, from ratingValue/reviewCount. A typed card prints the values
+	 * the operator typed; a live product card (wc-product) prints the product's
+	 * own average rating and review count, which
+	 * includes/product-card-live-fill.php::sgs_product_card_live_fill writes over
+	 * those two attributes whenever showRating is on. Called from EVERY render
+	 * branch (typed + all 3 bound branches, FP-9) so one control governs the
+	 * element everywhere it can appear.
 	 *
 	 * @param array $attributes Block attributes.
 	 * @return string Safe HTML, or '' when showRating is off.
