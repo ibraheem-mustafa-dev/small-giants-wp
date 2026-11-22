@@ -456,3 +456,28 @@ def test_must_fail_a_token_a_script_puts_on_two_elements_is_held_on_both():
                      "const toggle = root.querySelector('.sgs-demo__toggle'); toggle.classList.add('is-open');"),))
     got = SS.needed_by(['.sgs-demo__toggle.is-open'], toks)
     assert {t['landing'] for t in got} == {'.sgs-demo__panel', '.sgs-demo__toggle'}
+
+
+def test_must_fail_a_rule_inside_an_element_printed_with_escaped_text_only_is_dead(tmp_path):
+    # The cart's upsell button: both templates fill it with esc_html() text, so `.sgs-cart__panel-upsell-add a` can
+    # match nothing. Breaks without text_only_printers: the entry stayed part-not-rendered.
+    php = ("<?php $h .= sprintf( '<button type=\"button\" class=\"sgs-demo__add\" data-x=\"%1$d\">%2$s</button>', 3, esc_html( $label ) );\n"
+           "$h .= sprintf( '<a class=\"sgs-demo__add\" href=\"%1$s\">%2$s</a>', esc_url( $u ), esc_html( $label ) );\n")
+    plugin = tmp_plugin(tmp_path, {'includes/helpers-demo.php': php, 'src/blocks/demo/block.json': '{"name": "sgs/demo"}'})
+    assert PR.text_only_printers(str(plugin), SHORT, 'sgs-demo__add') == ['includes/helpers-demo.php:1', 'includes/helpers-demo.php:2']
+    html = ROOT_HTML.format('<button class="sgs-demo__add">Add</button>')
+    run, key = run_of(html, '', html, '', entry(setting='addColourHover', part='sgs-demo__add a', props=('color',), state='hover'),
+                      '#123456', ['.sgs-demo__add a:hover'])
+    run['plugin'] = plugin
+    out, rep = PR.prove(SHORT, run)
+    assert key not in out and 'escaped text' in rep['removed'][0]['evidence'], rep
+
+
+def test_an_element_printed_with_markup_or_built_by_a_script_is_not_text_only(tmp_path):
+    php = "<?php $h .= sprintf( '<button class=\"sgs-demo__add\">%1$s</button>', $label_html );\n"
+    plugin = tmp_plugin(tmp_path, {'includes/helpers-demo.php': php})
+    assert PR.text_only_printers(str(plugin), SHORT, 'sgs-demo__add') == []
+    php2 = "<?php $h .= sprintf( '<button class=\"sgs-demo__add\">%1$s</button>', esc_html( $l ) );\n"
+    js = "const b = document.createElement('button'); b.className = 'sgs-demo__add'; b.innerHTML = '<a href=\"#\">x</a>';"
+    plugin2 = tmp_plugin(tmp_path / 'b', {'includes/helpers-demo.php': php2, 'src/blocks/demo/panel.js': js})
+    assert PR.text_only_printers(str(plugin2), SHORT, 'sgs-demo__add') == []

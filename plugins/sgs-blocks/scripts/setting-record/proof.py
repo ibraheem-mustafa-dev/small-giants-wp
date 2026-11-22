@@ -733,13 +733,15 @@ INTERACTIVE_INSIDE = {'a', 'button'}
 
 
 def forbidden_nesting(plugin, short: str, part: str, pages, pairs):
-    """Evidence (text) that the entry's rule asks for an element HTML cannot put inside the part, or None. The part names a
+    """Evidence (text) that the entry's rule asks for an element no render can put inside the part, or None. The part names a
     tag inside an element (`sgs-x__view a`): when that element is itself an `a` or a `button` (read from any render here, else
     from the PHP template that prints its class) and the tag is the same tag, no render can draw the rule's subject: a parsed
-    document never holds an `a` inside an `a` or a `button` inside a `button`. Such a rule is dead whatever the setting does."""
+    document never holds an `a` inside an `a` or a `button` inside a `button`. Nor can an element hold a child element when
+    every template that prints it fills it with escaped text and no front-end script builds it (text_only_printers). Such a
+    rule is dead whatever the setting does."""
     head, _, tag = part.split('::')[0].strip().partition(' ')
     tag = tag.strip()
-    if not head.startswith('sgs-') or tag not in INTERACTIVE_INSIDE:
+    if not head.startswith('sgs-') or not re.fullmatch(r'[a-z][a-z0-9]*', tag or ''):
         return None
     outer, where = None, None
     for b, c in pairs[:1]:
@@ -759,7 +761,83 @@ def forbidden_nesting(plugin, short: str, part: str, pages, pairs):
     if outer in INTERACTIVE and outer == tag:
         return (f'dead rule: {part} asks for an `{tag}` inside {head}, which is itself an `{outer}` ({where}); HTML forbids interactive content '
                 f'inside an `{outer}`, so no render can draw the rule\'s subject')
+    text_only = text_only_printers(str(plugin), short, head)
+    if text_only:
+        return (f'dead rule: {part} asks for an `{tag}` inside {head}, which holds only escaped text: every template that prints it fills it '
+                f'with esc_html() ({"; ".join(text_only)}) and no front-end script builds it, so no render can draw the rule\'s subject')
     return None
+
+
+_PRINTF = re.compile(r"\b(?:s?printf)\(\s*([\"'])(.*?)(?<!\\)\1\s*,(.*)$")
+
+
+def _top_args(text: str) -> list:
+    """The top-level comma-separated arguments of a call's argument text (up to its closing parenthesis)."""
+    out, depth, cur, quote = [], 0, '', None
+    for ch in text:
+        if quote:
+            cur += ch
+            if ch == quote:
+                quote = None
+            continue
+        if ch in ('"', "'"):
+            quote = ch
+        elif ch in '([':
+            depth += 1
+        elif ch in ')]':
+            if depth == 0:
+                out.append(cur.strip())
+                return out
+            depth -= 1
+        elif ch == ',' and depth == 0:
+            out.append(cur.strip())
+            cur = ''
+            continue
+        cur += ch
+    out.append(cur.strip())
+    return out
+
+
+_EDITOR_IMPORT = re.compile(r"""from\s*['"]@wordpress/(?:block-editor|components|element|editor|edit-post|data)['"]""")
+
+
+@lru_cache(maxsize=8)
+def front_end_scripts(plugin: str) -> tuple:
+    """((path, text), ...) of the corpus's scripts that can run on the front end: every JS file of corpus() except those that
+    import the editor's packages (@wordpress/block-editor, components, element, editor, edit-post, data), which are the
+    editor's own code (a block's preview and its controls)."""
+    return tuple((rel, text) for rel, text in corpus(plugin) if rel.endswith(('.js', '.mjs')) and not _EDITOR_IMPORT.search(text))
+
+
+def text_only_printers(plugin: str, short: str, head: str) -> list:
+    """['file:line', ...] when every PHP template that prints the class `head` fills its element with esc_html() text (a
+    printf whose format puts one argument between the tag's opening and closing, that argument escaped as text), and no
+    front-end script (front_end_scripts) names the class outside a selector. [] otherwise, or when no template prints it."""
+    cls = re.compile(r"class\s*=\s*\\?[\"'][^\"']*(?<![\w-])" + re.escape(head) + r"(?![\w-])[^\"']*\\?[\"'][^>]*>\s*%(\d+)\$s\s*</")
+    hits = []
+    for rel, text in corpus(plugin):
+        if not rel.endswith('.php') or head not in text:
+            continue
+        for n, line in enumerate(text.split('\n'), 1):
+            if head not in line:
+                continue
+            m = _PRINTF.search(line)
+            fm = cls.search(m.group(2)) if m else None
+            if not fm:
+                if re.search(r'(?<![.\w-])' + re.escape(head) + r'(?![\w-])', line) and 'class' in line:
+                    return []  # printed some other way: its content is not known to be text
+                continue
+            args = _top_args(m.group(3))
+            k = int(fm.group(1)) - 1
+            if k >= len(args) or not args[k].startswith(('esc_html(', 'esc_html__(')):
+                return []
+            hits.append(f'{rel}:{n}')
+    if not hits:
+        return []
+    for rel, text in front_end_scripts(plugin):
+        if re.search(r'(?<![.\w-])' + re.escape(head) + r'(?![\w-])', text):
+            return []
+    return hits
 
 
 # Why an entry stays unproved, by the cause slug each mechanism or task owns (README, "The record"). A caller that names no
