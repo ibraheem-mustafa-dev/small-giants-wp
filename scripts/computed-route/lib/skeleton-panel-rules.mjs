@@ -35,8 +35,30 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		return { grows: !! track && fractionalTrack( track ), fixed: ratio || ( !! track && fixedTrack( track ) ) };
 	};
 
-	// The verdict ({ rule, block }) for a child of the panel's row, or null: a growing child holding a run of links is a mega
-	// group, a fixed or ratio-sized painted box without links an aside, any other growing child a plain container.
+	// Whether a column is a heading over a run of text links: a leaf of words that is not a link, then (at most one plain
+	// wrapper down, `R.megaGroup.headedRun.maxWrappers`) an element holding a run of links that each carry words and no block
+	// of their own. A gallery of picture links, a grid of cards and a promo are not (their links hold pictures or blocks).
+	const headedRun = ( e ) => {
+		const cfg = R.megaGroup?.headedRun;
+		if ( ! cfg ) {
+			return false;
+		}
+		const label = ( k ) => view.has( k ) && 'a' !== k.tag && !! m.words( k ) && ! m.blockKids( k ).length;
+		const textRun = ( k ) => view.has( k ) && ! view.repeated( k ) && view.linkRun( k ) && m.blockKids( k ).every( ( l ) => m.isTextLink( l ) );
+		const parts = ( x, wrappers ) => {
+			const kids = m.blockKids( x );
+			if ( kids.some( ( k, i ) => textRun( k ) && kids.slice( 0, i ).some( label ) ) ) {
+				return true;
+			}
+			const only = 1 === kids.length ? kids[ 0 ] : null;
+			return wrappers < ( cfg.maxWrappers ?? 1 ) && !! only && view.has( only ) && ! view.repeated( only ) && 'a' !== only.tag && ! m.words( only ) && ! view.ownPaint( only ) && parts( only, wrappers + 1 );
+		};
+		return parts( e, 0 );
+	};
+
+	// The verdict ({ rule, block }) for a child of the panel's row, or null: a growing child holding a run of links, or a
+	// heading over one, is a mega group, a fixed or ratio-sized painted box without links an aside, any other growing child a
+	// plain container.
 	const rowChild = ( e, row ) => {
 		if ( ! view.has( e ) || view.repeated( e ) ) {
 			return null;
@@ -47,7 +69,7 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		}
 		const size = sizing( e, layout, row );
 		const run = view.linkRun( e );
-		if ( R.megaGroup && size.grows && run ) {
+		if ( R.megaGroup && size.grows && ( run || headedRun( e ) ) ) {
 			return { rule: 'megaGroup', block: R.megaGroup.block };
 		}
 		if ( R.megaAside && size.fixed && view.ownPaint( e ) && ! run ) {

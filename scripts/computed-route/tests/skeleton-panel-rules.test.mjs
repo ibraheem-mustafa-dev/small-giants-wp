@@ -506,3 +506,33 @@ test( 'surfaceContext: a surface that is one state of a record ("<record name>: 
 	const other = run( panel(), { kind: 'menu', name: 'Panelled: Sunglasses', surfaces: header, openers: OPEN } );
 	assert.ok( rows( other ).every( ( x ) => ! [ 'megaGroup', 'megaAside', 'megaContainer' ].includes( x.rule ) ), 'a name that only begins with the record name is another surface' );
 } );
+
+// A column of a header panel: growing, a heading (or label) leaf, then one element holding a loop of text links.
+const linkLoop = ( css = 'display:flex;flex-direction:column' ) => N( 'div', { style: css }, [ N( 'a', { loop: true, words: 'One', attrs: { href: '/one' } } ) ] );
+const headedPanel = ( col ) => N( 'div', { style: 'display:flex' }, [ col, N( 'div', { style: 'flex-grow:1' }, [ card( 'Two', '/two' ), card( 'Three', '/three' ) ] ) ] );
+const headedCol = ( kids ) => N( 'div', { style: 'flex-grow:1' }, kids );
+const firstColumn = ( col, o = {} ) => kidAt( run( headedPanel( col ), { kind: 'menu', name: 'Panel', surfaces: header, openers: OPEN, ...o } ), 0 );
+
+test( 'megaGroup.headedRun: a column of a heading over a stack of text links one wrapper down is a mega group; MUST FAIL on the direct-run-only rule', () => {
+	const col = headedCol( [ N( 'p', { words: 'Heading' } ), linkLoop() ] );
+	const hit = firstColumn( col );
+	assert.deepEqual( [ outcome( hit ), hit.rule ], [ 'sgs/mega-group', 'megaGroup' ] );
+	assert.notEqual( firstColumn( col, { facts: facts( 'megaGroup.headedRun' ) } ).rule, 'megaGroup', 'without its entry the column is the plain container' );
+	// a plain wrapper around the heading and the run (the one wrapper the rule allows) is still the group
+	const wrapped = headedCol( [ N( 'div', {}, [ N( 'p', { words: 'Heading' } ), linkLoop() ] ) ] );
+	assert.equal( firstColumn( wrapped ).rule, 'megaGroup' );
+} );
+
+test( 'NEGATIVE megaGroup.headedRun: a label over a gallery of picture links, a grid of cards, a run with no heading above, a run two wrappers down and a direct run stay as they were', () => {
+	const gallery = headedCol( [ N( 'p', { words: 'Label' } ), N( 'div', { style: 'display:grid' }, [ N( 'a', { loop: true, attrs: { href: '/b' } }, [ N( 'img', { attrs: { src: 'a.png', alt: '' } } ) ] ) ] ) ] );
+	assert.deepEqual( [ outcome( firstColumn( gallery ) ), firstColumn( gallery ).rule ], [ 'sgs/container', 'megaContainer' ], 'picture links are a gallery' );
+	const cards = headedCol( [ N( 'p', { words: 'Label' } ), N( 'div', { style: 'display:grid' }, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ) ] );
+	assert.equal( firstColumn( cards ).rule, 'megaContainer', 'a grid of two-text cards is not a run of text links' );
+	const unheaded = headedCol( [ linkLoop(), N( 'p', { words: 'Note' } ) ] );
+	assert.equal( firstColumn( unheaded ).rule, 'megaContainer', 'the heading must sit above the run' );
+	const deep = headedCol( [ N( 'div', {}, [ N( 'div', {}, [ N( 'p', { words: 'Heading' } ), linkLoop() ] ) ] ) ] );
+	assert.notEqual( firstColumn( deep ).rule, 'megaGroup', 'more than one wrapper down is out of reach' );
+	const direct = headedCol( [ card( 'One', '/one' ), card( 'Two', '/two' ) ] );
+	assert.equal( firstColumn( direct ).rule, 'megaGroup', 'a direct run stays a group' );
+	assert.equal( firstColumn( direct, { facts: facts( 'megaGroup.headedRun' ) } ).rule, 'megaGroup', 'and needs no headedRun entry' );
+} );

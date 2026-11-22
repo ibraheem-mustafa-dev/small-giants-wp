@@ -1,5 +1,5 @@
 [
- { "file": "lib/skeleton-panel-rules.mjs", "find": "if ( R.megaGroup && size.grows && run ) {", "replace": "if ( R.megaGroup && size.grows && ! run ) {", "why": "a group needs no link run" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "size.grows && ( run || headedRun( e ) ) ) {", "replace": "size.grows && ! ( run || headedRun( e ) ) ) {", "why": "a group needs no link run" },
  { "file": "lib/skeleton-panel-rules.mjs", "find": "R.megaAside && size.fixed && view.ownPaint( e ) && ! run", "replace": "R.megaAside && size.fixed && ! run", "why": "an aside needs no own paint" },
  { "file": "lib/skeleton-panel-rules.mjs", "find": "! view.has( e ) || view.repeated( e ) ) {", "replace": "! view.has( e ) ) {", "why": "a loop's repeated card is a panel child" },
  { "file": "lib/skeleton-panel-rules.mjs", "find": "if ( ! scope?.headerDisclosure ) {", "replace": "if ( ! scope ) {", "why": "any surface with a record is a header disclosure" },
@@ -38,5 +38,9 @@
  { "file": "lib/skeleton-rules.mjs", "find": "const svg = x.svg ? keptSvg( x.svg ) : null;", "replace": "const svg = x.svg || null;", "why": "an item icon would keep the draft's style, handlers and root size" },
  { "file": "lib/skeleton-rules.mjs", "find": "...Object.fromEntries( ( I.clear || [] ).map( ( a ) => [ a, '' ] ) ), ...plain }", "replace": "...plain }", "why": "the strip's words would also print as the block's title" },
  { "file": "lib/skeleton-rules.mjs", "find": "const read = I && ( e.codeItems || [] ).length >= 2 ?", "replace": "const read = I && ( e.codeItems || [] ).length >= 1 ?", "why": "one item would be written as the list and the handover lost" },
- { "file": "lib/skeleton-facts.mjs", "find": "if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) ||", "replace": "if ( ci && ( false ||", "why": "an items setting the block lacks would pass the decisions check" }
+ { "file": "lib/skeleton-facts.mjs", "find": "if ( ci && ( ! facts.attr( r.marqueeCodeItems.block, ci.setting ) ||", "replace": "if ( ci && ( false ||", "why": "an items setting the block lacks would pass the decisions check" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "( run || headedRun( e ) )", "replace": "run", "why": "a heading over a run of links is not a group" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "m.blockKids( k ).every( ( l ) => m.isTextLink( l ) )", "replace": "true", "why": "a gallery of picture links or a grid of cards is a run of text links" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "kids.slice( 0, i ).some( label )", "replace": "true", "why": "a run with no heading above is a headed run" },
+ { "file": "lib/skeleton-panel-rules.mjs", "find": "wrappers < ( cfg.maxWrappers ?? 1 )", "replace": "wrappers < 9", "why": "a run any number of wrappers down is a headed run" }
 ]
