@@ -97,6 +97,17 @@ export function gridTracks( value ) {
 // A track that shares the free space (a fraction, or minmax with a zero minimum) or has a fixed length.
 export const fractionalTrack = ( t ) => /\d\s*fr$/.test( t ) || /^minmax\(\s*0(?:px)?\s*,/.test( t );
 export const fixedTrack = ( t ) => /^-?[\d.]+(?:px|rem|em|ch|vw|vh)$/.test( t );
+// The track the index-th rendered child of a grid takes, as { track, auto }. An auto-fit or auto-fill repeat is one token that
+// stands for as many tracks as fit, so every child takes the repeated track (auto true); any other list gives each child its own
+// token (undefined past the end).
+export function trackAt( value, index ) {
+	const tracks = gridTracks( value );
+	const auto = 1 === tracks.length ? /^repeat\(\s*auto-(?:fit|fill)\s*,\s*(.+)\)$/.exec( tracks[ 0 ] ) : null;
+	return auto ? { track: auto[ 1 ].trim(), auto: true } : { track: tracks[ index ], auto: false };
+}
+// Whether a track shares the free space: a fraction or a minmax with a zero minimum (fractionalTrack), or, for the track an
+// auto-fit or auto-fill repeat repeats, a minmax whose largest size is a fraction (the columns then stretch to fill the row).
+export const sharesSpace = ( { track, auto } ) => !! track && ( fractionalTrack( track ) || ( auto && /^minmax\(.*,\s*[\d.]+fr\s*\)$/.test( track ) ) );
 
 // The view of a record: o { record (or null), parts: { surface id: opened_by words } }.
 export function recordView( record, { openers = {}, rootComponent = null } = {} ) {

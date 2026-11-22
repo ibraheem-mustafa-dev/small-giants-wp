@@ -5,7 +5,7 @@
 // panel and of the child (flex grow and shrink, grid tracks, width, aspect ratio, own paint), a loop of links (`sc-for`)
 // and the brand registry's Site Info kinds. No pixel width, no author-defined logic key and no client name is read.
 import { brandOwnsAddress } from './brand-registry.mjs';
-import { gridTracks, fractionalTrack, fixedTrack } from './skeleton-record.mjs';
+import { gridTracks, trackAt, sharesSpace, fixedTrack } from './skeleton-record.mjs';
 
 const UNSET = new Set( [ '', 'initial', 'unset', 'inherit', 'auto', 'none' ] );
 const grows = ( v ) => /^[\d.]+$/.test( String( v ?? '' ).trim() ) && Number( v ) > 0;
@@ -29,22 +29,23 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		if ( 'flex' === layout ) {
 			return { grows: grows( st[ 'flex-grow' ] ), fixed: ratio || ( ! UNSET.has( st.width ?? '' ) && '0' === String( st[ 'flex-shrink' ] ?? '' ).trim() ) };
 		}
-		const tracks = gridTracks( view.declared( row )[ 'grid-template-columns' ] );
-		// Each rendered child (each copy of a loop's item) takes the next track.
-		const track = tracks[ m.blockKids( row ).indexOf( e ) ];
-		return { grows: !! track && fractionalTrack( track ), fixed: ratio || ( !! track && fixedTrack( track ) ) };
+		// Each rendered child (each copy of a loop's item) takes the next track; an auto-fit or auto-fill repeat gives every child
+		// the repeated track.
+		const at = trackAt( view.declared( row )[ 'grid-template-columns' ], m.blockKids( row ).indexOf( e ) );
+		return { grows: sharesSpace( at ), fixed: ratio || ( !! at.track && fixedTrack( at.track ) ) };
 	};
 
 	// Whether a column is a heading over a run of text links: a leaf of words that is not a link, then (at most one plain
 	// wrapper down, `R.megaGroup.headedRun.maxWrappers`) an element holding a run of links that each carry words and no block
-	// of their own. A gallery of picture links, a grid of cards and a promo are not (their links hold pictures or blocks).
+	// of their own. Under a heading two or more
+	// text links are a run whatever their styles (one link in the stack may be coloured or bold: `linkRun` wants one style). A gallery of picture links, a grid of cards and a promo are not (their links hold pictures or blocks).
 	const headedRun = ( e ) => {
 		const cfg = R.megaGroup?.headedRun;
 		if ( ! cfg ) {
 			return false;
 		}
 		const label = ( k ) => view.has( k ) && 'a' !== k.tag && !! m.words( k ) && ! m.blockKids( k ).length;
-		const textRun = ( k ) => view.has( k ) && ! view.repeated( k ) && view.linkRun( k ) && m.blockKids( k ).every( ( l ) => m.isTextLink( l ) );
+		const textRun = ( k ) => view.has( k ) && ! view.repeated( k ) && ( view.linkRun( k ) || m.blockKids( k ).length >= 2 ) && m.blockKids( k ).every( ( l ) => m.isTextLink( l ) );
 		const parts = ( x, wrappers ) => {
 			const kids = m.blockKids( x );
 			if ( kids.some( ( k, i ) => textRun( k ) && kids.slice( 0, i ).some( label ) ) ) {
@@ -56,20 +57,33 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		return parts( e, 0 );
 	};
 
-	// The verdict ({ rule, block }) for a child of the panel's row, or null: a growing child holding a run of links, or a
-	// heading over one, is a mega group, a fixed or ratio-sized painted box without links an aside, any other growing child a
-	// plain container.
+	// Whether a column is a stack of text and no more: two or more block children (`R.megaGroup.textColumn.minLeaves`), each a
+	// leaf of words that is not a link and holds no block (no picture or link inside; an inline icon is a part of the block). A column that heads an item (a
+	// label, a heading, a line of text) and links nowhere below the column itself.
+	const textColumn = ( e ) => {
+		const cfg = R.megaGroup?.textColumn;
+		const kids = cfg ? m.blockKids( e ) : [];
+		return !! cfg && kids.length >= ( cfg.minLeaves ?? 2 ) && kids.every( ( k ) => view.has( k ) && 'a' !== k.tag && !! m.words( k ) && ! m.blockKids( k ).length );
+	};
+
+	// The verdict ({ rule, block }) for a child of the panel's row, or null: a growing child holding a run of links, a heading
+	// over one, or a stack of text alone is a mega group, a fixed or ratio-sized painted box without links an aside, any other
+	// growing child a plain container. A loop's repeated item is a column only as a stack of text (a card with a picture or a
+	// link inside is the card grid's).
 	const rowChild = ( e, row ) => {
-		if ( ! view.has( e ) || view.repeated( e ) ) {
+		if ( ! view.has( e ) ) {
 			return null;
 		}
 		const layout = layoutOf( row );
 		if ( ! layout ) {
 			return null;
 		}
+		if ( view.repeated( e ) ) {
+			return R.megaGroup && textColumn( e ) && sizing( e, layout, row ).grows ? { rule: 'megaGroup', block: R.megaGroup.block } : null;
+		}
 		const size = sizing( e, layout, row );
 		const run = view.linkRun( e );
-		if ( R.megaGroup && size.grows && ( run || headedRun( e ) ) ) {
+		if ( R.megaGroup && size.grows && ( run || headedRun( e ) || textColumn( e ) ) ) {
 			return { rule: 'megaGroup', block: R.megaGroup.block };
 		}
 		if ( R.megaAside && size.fixed && view.ownPaint( e ) && ! run ) {
@@ -90,7 +104,9 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 	// wrappers (each the only block child of the one above, no words of its own, not a loop's item), that lays two or more
 	// children out as a grid or flex row and whose children include a column. { row, chain } where
 	// chain holds every wrapper down to and including the row (the panel block lays its columns out, so they go); null when
-	// the root is itself the row or no such row sits within MAX_WRAPPERS levels. Computed once per panel.
+	// the root is itself the row or no such row sits within MAX_WRAPPERS levels. When the wrappers end in an element that lays
+	// nothing out (block flow) and holds a run of links, or a heading over one (`R.megaPanelRow.soleColumn`), that element is
+	// the panel's only column: { row: its parent, chain: the wrappers above it, column }. Computed once per panel.
 	let found;
 	const panelRow = () => {
 		if ( undefined !== found ) {
@@ -104,14 +120,19 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 		for ( let x = root; chain.length < ( R.megaPanelRow.maxWrappers ?? 3 ); ) {
 			const kids = m.blockKids( x );
 			const c = 1 === kids.length ? kids[ 0 ] : null;
+			if ( R.megaPanelRow.soleColumn && R.megaGroup && x !== root && kids.length >= 2 && ( view.linkRun( x ) || headedRun( x ) ) ) {
+				found = { row: m.byKey[ x.parentKey ], chain: chain.slice( 0, -1 ), column: x };
+				return found;
+			}
 			if ( ! c || ! view.has( c ) || view.repeated( c ) || m.words( c ) ) {
 				return found;
 			}
-			if ( view.ownPaint( c ) ) {
+			const lays = !! layoutOf( c ) && m.blockKids( c ).length >= 2;
+			if ( view.ownPaint( c ) && ! lays ) {
 				return found;
 			}
 			chain.push( c );
-			if ( layoutOf( c ) && m.blockKids( c ).length >= 2 ) {
+			if ( lays ) {
 				found = m.blockKids( c ).some( ( k ) => isColumn( k, c ) ) ? { row: c, chain } : null;
 				return found;
 			}
@@ -145,11 +166,16 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 			return null;
 		}
 		const wrapped = panelRow();
+		if ( wrapped?.column === e ) {
+			return { rule: 'megaGroup', block: R.megaGroup.block };
+		}
 		if ( wrapped?.chain.includes( e ) ) {
 			// The first wrapper that declares a width cap or padding hands it to the panel's own settings (a later one that does
-			// too keeps its look unread, so paint conservation leaves it a node).
-			const first = wrapped.chain.slice( 0, -1 ).find( ( c ) => bandOf( c ).length );
-			const conserve = first === e ? bandOf( e ).map( ( setting ) => ( { kind: 'setting', node: root.key, setting, looks: setting === R.megaPanelRow.band.padding ? [ 'padding' ] : [ 'max-width', 'margin-auto' ] } ) ) : [];
+			// too keeps its look unread, so paint conservation leaves it a node). The row itself holds no band; a sole column's
+			// chain holds only wrappers.
+			const first = ( wrapped.column ? wrapped.chain : wrapped.chain.slice( 0, -1 ) ).find( ( c ) => bandOf( c ).length );
+			const rowPaint = wrapped.row === e && R.megaPanelRow.rowPaint && view.ownPaint( e ) ? [ { kind: 'setting', node: root.key, setting: R.megaPanelRow.rowPaint, looks: [ 'background', 'border' ] } ] : [];
+			const conserve = rowPaint.length ? rowPaint : first === e ? bandOf( e ).map( ( setting ) => ( { kind: 'setting', node: root.key, setting, looks: setting === R.megaPanelRow.band.padding ? [ 'padding' ] : [ 'max-width', 'margin-auto' ] } ) ) : [];
 			return { rule: 'megaPanelRow', action: 'unwrap', hostLays: root.key, ...( conserve.length ? { conserve } : {} ) };
 		}
 		const row = wrapped ? wrapped.row : root;

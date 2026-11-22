@@ -12,6 +12,7 @@ import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { recordView, gridTracks, fractionalTrack, fixedTrack } from '../lib/skeleton-record.mjs';
+import * as recordLib from '../lib/skeleton-record.mjs';
 import { loopingKeys } from '../lib/skeleton-rerun.mjs';
 import { blockPadding } from '../lib/skeleton-rules.mjs';
 
@@ -535,4 +536,103 @@ test( 'NEGATIVE megaGroup.headedRun: a label over a gallery of picture links, a 
 	const direct = headedCol( [ card( 'One', '/one' ), card( 'Two', '/two' ) ] );
 	assert.equal( firstColumn( direct ).rule, 'megaGroup', 'a direct run stays a group' );
 	assert.equal( firstColumn( direct, { facts: facts( 'megaGroup.headedRun' ) } ).rule, 'megaGroup', 'and needs no headedRun entry' );
+} );
+
+// Columns of a panel row whose grid is an auto-fit or auto-fill repeat, a loop of text cards, a painted hairline row and a sole
+// column behind a width cap.
+const AUTO = 'display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr))';
+const links = ( list, style ) => N( 'div', { style: 'display:flex;flex-direction:column' }, list.map( ( [ words, href, own ] ) => N( 'a', { words, style: own ?? style, attrs: { href } } ) ) );
+const headedStatic = ( list, style ) => N( 'div', {}, [ N( 'p', { words: 'Heading' } ), links( list, style ) ] );
+const rowIn = ( style, cols, o = {} ) => behindRun( behind( { inner: [ N( 'div', { style }, cols ) ] } ), o );
+const groupsOf = ( r ) => rows( r ).filter( ( x ) => 'megaGroup' === x.rule );
+
+test( 'MUST FAIL: an auto-fit or auto-fill repeat of a fraction gives every column of the row the repeated track, so the columns share the free space and are found', () => {
+	assert.deepEqual( recordLib.trackAt?.( 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', 2 ), { track: 'minmax(min(100%, 200px), 1fr)', auto: true } );
+	assert.equal( recordLib.sharesSpace?.( recordLib.trackAt( 'repeat(auto-fill, minmax(150px, 1fr))', 0 ) ), true );
+	const two = [ headedStatic( [ [ 'One', '/one' ], [ 'Two', '/two' ] ] ), headedStatic( [ [ 'Three', '/three' ], [ 'Four', '/four' ] ] ) ];
+	const r = rowIn( AUTO, two );
+	assert.equal( groupsOf( r ).length, 2, 'both columns are mega groups' );
+	assert.deepEqual( r.skeleton[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'sgs/mega-group', 'sgs/mega-group' ] );
+} );
+
+test( 'NEGATIVE auto tracks: a fixed repeated track, an explicit track list and a bare fixed-minimum minmax in an explicit list keep their old reading', () => {
+	const two = [ headedStatic( [ [ 'One', '/one' ], [ 'Two', '/two' ] ] ), headedStatic( [ [ 'Three', '/three' ], [ 'Four', '/four' ] ] ) ];
+	assert.equal( groupsOf( rowIn( 'display:grid;grid-template-columns:repeat(auto-fill, 200px)', two ) ).length, 0, 'a fixed repeated track grows nothing' );
+	assert.equal( recordLib.sharesSpace?.( recordLib.trackAt( 'minmax(150px, 1fr) 300px', 0 ) ), false, 'an explicit minmax with a non-zero minimum is not auto-read' );
+	assert.equal( recordLib.sharesSpace?.( recordLib.trackAt( 'minmax(0, 1fr) 300px', 0 ) ), true );
+	assert.equal( groupsOf( rowIn( 'display:grid;grid-template-columns:minmax(0, 1fr) minmax(0, 1fr)', two ) ).length, 2, 'explicit fractional tracks still find the columns' );
+} );
+
+// A loop of cards under the row: each an `a` holding the given leaves.
+const cardsOf = ( leaves ) => N( 'a', { loop: true, style: 'display:flex;flex-direction:column;background-color:rgb(255, 255, 255);padding-top:26px', attrs: { href: '/x' } }, leaves );
+const text = ( w ) => N( 'span', { words: w } );
+
+test( 'MUST FAIL megaGroup.textColumn: a loop item holding a stack of text leaves (a label, a heading, a line) is a mega group in the panel row; a static text column is too', () => {
+	const leaves = () => [ text( 'Label' ), text( 'Heading' ), text( 'Line' ) ];
+	const r = rowIn( AUTO, [ cardsOf( leaves() ), cardsOf( leaves() ) ] );
+	assert.equal( groupsOf( r ).length, 2, 'each loop item is a group' );
+	assert.deepEqual( r.skeleton[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'sgs/mega-group', 'sgs/mega-group' ], 'the row and cap go, the items are the panel\'s own columns' );
+	const stat = rowIn( 'display:grid;grid-template-columns:minmax(0, 1fr) minmax(0, 1fr)', [ N( 'div', {}, [ text( 'A' ), text( 'B' ) ] ), N( 'div', {}, [ text( 'C' ), text( 'D' ) ] ) ] );
+	assert.equal( groupsOf( stat ).length, 2 );
+	assert.equal( groupsOf( rowIn( AUTO, [ cardsOf( [ N( 'svg', {} ), ...leaves() ] ), cardsOf( [ N( 'svg', {} ), ...leaves() ] ) ] ) ).length, 2, 'an inline icon is a part of the card, not a block inside it' );
+	assert.equal( groupsOf( rowIn( AUTO, [ cardsOf( leaves() ), cardsOf( leaves() ) ], { facts: facts( 'megaGroup.textColumn' ) } ) ).length, 0, 'without its entry the item is no group' );
+} );
+
+test( 'NEGATIVE megaGroup.textColumn: a loop card with a picture or a link inside, a card of one leaf and a column that is not in the panel row are not text columns', () => {
+	const none = ( cards, why ) => assert.equal( groupsOf( rowIn( AUTO, [ cards, cards ] ) ).length, 0, why );
+	none( cardsOf( [ N( 'img', { attrs: { src: 'a.png', alt: '' } } ), text( 'Title' ), text( 'Line' ) ] ), 'a picture' );
+	none( cardsOf( [ text( 'Title' ), N( 'a', { words: 'Read more', attrs: { href: '/m' } } ) ] ), 'a link inside' );
+	none( cardsOf( [ text( 'Only one leaf' ) ] ), 'one leaf' );
+	none( cardsOf( [ N( 'span', { words: 'Title' }, [ N( 'img', { attrs: { src: 'a.png', alt: '' } } ) ] ), text( 'Line' ) ] ), 'a leaf holding a picture' );
+	assert.equal( groupsOf( rowIn( 'display:grid;grid-template-columns:repeat(auto-fill, 200px)', [ cardsOf( [ text( 'Label' ), text( 'Heading' ) ] ), cardsOf( [ text( 'Label' ), text( 'Heading' ) ] ) ] ) ).length, 0, 'a fixed track is no growing column' );
+	// the same cards one level down (inside a column) are not read by the row at all
+	const column = N( 'div', { style: 'flex-grow:1' }, [ cardsOf( [ text( 'Label' ), text( 'Heading' ) ] ), cardsOf( [ text( 'Label' ), text( 'Heading' ) ] ) ] );
+	const inner = behindRun( behind( { inner: [ N( 'div', { style: 'display:flex' }, [ column, N( 'div', { style: 'flex-grow:1' }, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ) ] ) ] } ) );
+	assert.ok( groupsOf( inner ).every( ( x ) => ! /Heading/.test( x.words ) ), 'cards inside a column stay the column\'s content' );
+} );
+
+test( 'MUST FAIL megaPanelRow.rowPaint: a painted row (a hairline grid) is unwrapped and its background and border recorded on the panel\'s group border colour; without the entry it stays a node', () => {
+	const painted = AUTO + ';background-color:rgb(230, 225, 218)';
+	const cols = [ headedStatic( [ [ 'One', '/one' ], [ 'Two', '/two' ] ] ), headedStatic( [ [ 'Three', '/three' ], [ 'Four', '/four' ] ] ) ];
+	const r = rowIn( painted, cols );
+	const row = ruleOf( r, 'Root/3#0' );
+	assert.equal( row.action, 'unwrap' );
+	assert.deepEqual( row.conserve.filter( ( x ) => 'setting' === x.kind ).map( ( x ) => [ x.kind, x.node, x.setting, x.looks.join() ] ), [ [ 'setting', 'Root/1#0', 'groupBorderColour', 'background,border' ] ] );
+	assert.deepEqual( r.skeleton[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'sgs/mega-group', 'sgs/mega-group' ] );
+	const off = rowIn( painted, cols, { facts: facts( 'megaPanelRow.rowPaint' ) } );
+	assert.notEqual( ruleOf( off, 'Root/3#0' ).action, 'unwrap', 'without the entry the painted row stays a node' );
+	assert.deepEqual( ( ruleOf( rowIn( AUTO, cols ), 'Root/3#0' ).conserve ?? [] ).filter( ( x ) => 'setting' === x.kind ), [], 'an unpainted row records no setting' );
+} );
+
+test( 'MUST FAIL megaPanelRow.soleColumn: a block-flow column of a heading, a grid of tiles and a grid of text links behind a width cap is the panel\'s one mega group, the cap going; without the entry nothing is found', () => {
+	const tiles = N( 'div', { style: 'display:grid;grid-template-columns:repeat(5, minmax(0, 1fr))' }, [ N( 'a', { loop: true, attrs: { href: '/t' } }, [ N( 'span', { words: 'Name' } ), N( 'span', { words: 'Count' } ) ] ) ] );
+	const col = N( 'div', {}, [ N( 'p', { words: 'Most asked' } ), tiles, N( 'p', { words: 'All brands' } ), N( 'div', { style: 'display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr))' }, [ N( 'a', { loop: true, words: 'Name', attrs: { href: '/n' } } ) ] ) ] );
+	const r = behindRun( behind( { inner: [ col ] } ) );
+	assert.equal( ruleOf( r, 'Root/2#0' ).action, 'unwrap', 'the cap goes' );
+	assert.equal( ruleOf( r, 'Root/3#0' ).rule, 'megaGroup' );
+	assert.deepEqual( r.skeleton[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'sgs/mega-group' ] );
+	assert.ok( ruleOf( r, 'Root/2#0' ).conserve.some( ( x ) => 'maxWidth' === x.setting ), 'the cap\'s width reaches the panel' );
+	const pair = N( 'div', {}, [ N( 'p', { words: 'Heading' } ), links( [ [ 'One', '/one' ], [ 'Two', '/two' ] ] ) ] );
+	assert.equal( ruleOf( behindRun( behind( { inner: [ pair ] } ) ), 'Root/3#0' ).rule, 'megaGroup', 'a heading and its links are enough' );
+	const off = behindRun( behind( { inner: [ col ] } ), { facts: facts( 'megaPanelRow.soleColumn' ) } );
+	assert.ok( rows( off ).every( ( x ) => 'megaPanelRow' !== x.rule && 'megaGroup' !== x.rule ) );
+} );
+
+test( 'NEGATIVE megaPanelRow.soleColumn: a heading over a gallery of picture links, a lone column with no links, and the root\'s own children are not a sole column', () => {
+	const gallery = N( 'div', {}, [ N( 'p', { words: 'Label' } ), N( 'div', { style: 'display:grid' }, [ N( 'a', { loop: true, attrs: { href: '/b' } }, [ N( 'img', { attrs: { src: 'a.png', alt: '' } } ) ] ) ] ) ] );
+	assert.ok( rows( behindRun( behind( { inner: [ gallery ] } ) ) ).every( ( x ) => 'megaPanelRow' !== x.rule && 'megaGroup' !== x.rule ), 'picture links are a gallery' );
+	const plain = N( 'div', {}, [ N( 'p', { words: 'Heading' } ), N( 'p', { words: 'A note' } ) ] );
+	assert.ok( rows( behindRun( behind( { inner: [ plain ] } ) ) ).every( ( x ) => 'megaPanelRow' !== x.rule && 'megaGroup' !== x.rule ), 'text alone, behind a cap, is no link column' );
+	const direct = N( 'div', { style: 'background-color:rgb(1, 2, 3)' }, [ N( 'p', { words: 'Heading' } ), links( [ [ 'One', '/one' ], [ 'Two', '/two' ] ] ) ] );
+	assert.ok( rows( behindRun( direct ) ).every( ( x ) => 'megaPanelRow' !== x.rule && 'megaGroup' !== x.rule ), 'the root\'s own children with no wrapper above are no sole column' );
+} );
+
+test( 'MUST FAIL megaGroup.headedRun: under a heading, two or more text links are a run whatever their styles (one coloured link in the stack); with no heading above they are not', () => {
+	const mixed = [ [ 'One', '/one', 'font-size:14px' ], [ 'Two', '/two', 'font-size:14px' ], [ 'Three', '/three', 'font-size:14px;color:rgb(27, 127, 67)' ] ];
+	const col = N( 'div', { style: 'flex-grow:1' }, [ N( 'p', { words: 'Heading' } ), links( mixed ) ] );
+	assert.equal( firstColumn( col ).rule, 'megaGroup' );
+	const bare = N( 'div', { style: 'flex-grow:1' }, [ links( mixed ), N( 'p', { words: 'Note' } ) ] );
+	assert.notEqual( firstColumn( bare ).rule, 'megaGroup', 'the heading must sit above the run' );
+	const single = N( 'div', { style: 'flex-grow:1' }, [ N( 'p', { words: 'Heading' } ), links( [ [ 'One', '/one' ] ] ) ] );
+	assert.notEqual( firstColumn( single ).rule, 'megaGroup', 'one link is no run' );
 } );
