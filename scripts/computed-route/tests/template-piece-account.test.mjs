@@ -148,6 +148,17 @@ test( 'MUST FAIL: the signed-in view gives the details and addresses tab heading
 	assert.ok( got.notes.some( ( n ) => /gap: panel .* \(shown by "\{\{ showOrders \}\}", heading "Past bakes"\): no structural tell/.test( n ) ) );
 } );
 
+test( 'MUST FAIL: a card with only its own line of words turns the block\'s guest line off; a second line beside it keeps the block\'s default', () => {
+	assert.equal( accountOf( place( ctx(), PIECE ).tree ).attributes.showGuestLine, false );
+	const inv = promptInventory();
+	inv.elements.push( el( 25, 7, 'p', 'No account? Order as a guest.', {}, 6 ) );
+	assert.equal( accountOf( place( ctx( { inventory: inv } ), PIECE ).tree ).attributes.showGuestLine, undefined );
+	const form = structuredClone( FORM_INVENTORY );
+	assert.equal( accountOf( place( ctx( { inventory: form } ), PIECE ).tree ).attributes.showGuestLine, false, 'forms with no line beside them' );
+	form.elements.push( el( 16, 2, 'p', 'Checkout works as a guest.' ) );
+	assert.equal( accountOf( place( ctx( { inventory: form } ), PIECE ).tree ).attributes.showGuestLine, undefined, 'a line beside the forms keeps it' );
+} );
+
 test( 'a setting the node already holds with another value is kept and named', () => {
 	const tree = TREE();
 	accountOf( tree ).attributes = { signedOutHeading: 'Hand-set', strings: { signIn: 'Hand-set' } };
@@ -196,7 +207,7 @@ test( 'MUST FAIL: Mama\'s account page: the prompt card, the sign-in page\'s wor
 	assert.deepEqual( placedLint( before, got.tree, db ), [] );
 	assert.deepEqual( checkPieces( { key: 'account', tree: got.tree, data: loadPieces() } ), [] );
 	assert.deepEqual( node.attributes, {
-		signedOutView: 'card', signedOutHeading: 'Sign in to see your orders', signedOutCopy: 'Your orders, bake dates, subscriptions and saved addresses live here.', signedOutSignInLabel: 'Sign in →', signedOutRegisterLabel: 'Create an account',
+		signedOutView: 'card', showGuestLine: false, signedOutHeading: 'Sign in to see your orders', signedOutCopy: 'Your orders, bake dates, subscriptions and saved addresses live here.', signedOutSignInLabel: 'Sign in →', signedOutRegisterLabel: 'Create an account',
 		strings: { signIn: 'Sign in →', usernameLabel: 'Email', lostPassword: 'Forgotten your password?', register: 'Create account →', registerEmailLabel: 'Email', signOut: 'Sign out' },
 		hideRememberMe: true, registerShowFirstName: true, registerShowLastName: true, registerShowMarketingOptIn: true, registerMarketingOptInLabel: 'Email me about new flavours and bake days (optional)',
 		authLayout: 'tabs', authTabSignInLabel: 'Sign in', authTabRegisterLabel: 'Create account',
@@ -234,7 +245,7 @@ test( 'MUST FAIL: Eye Care\'s account page draws the sign-in form itself: the fo
 	assert.deepEqual( placedLint( before, got.tree, db ), [] );
 	assert.deepEqual( node.attributes, {
 		strings: { signIn: 'Sign in', signInHeading: 'Sign in', usernameLabel: 'Email', rememberMe: 'Keep me signed in', lostPassword: 'Forgotten your password?', register: 'Create account', registerHeading: 'New here?', registerEmailLabel: 'Email', signOut: 'Sign out' },
-		registerShowFirstName: true, registerPasswordHint: '8 characters or more',
+		registerShowFirstName: true, registerPasswordHint: '8 characters or more', showGuestLine: false,
 		addressesTabHeading: 'Addresses', accountDetailsTabHeading: 'Account details', tabHeadings: true,
 	} );
 } );

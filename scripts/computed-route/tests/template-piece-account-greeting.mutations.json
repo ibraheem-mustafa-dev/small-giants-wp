@@ -1,0 +1,13 @@
+[
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"if ( 'ConditionalExpression' !== v?.type || literal( v.alternate ) !== String( e.words ?? '' ).trim() ) {", "replace":"if ( 'ConditionalExpression' !== v?.type ) {", "why":"a value whose signed-out side is not the words the skeleton holds is rewritten" },
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"const key = j ? keyOfProp( j.prop ) : null;", "replace":"const key = j ? 'first_name' : null;", "why":"a field no form names by a customer token is bound as the first name" },
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"if ( null !== signedIn && c.test && tests.has( c.test ) ) {", "replace":"if ( null !== signedIn ) {", "why":"a plain value on another test (the basket) gets a signed-in twin" },
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"format: `${ j.lead }%s${ j.tail }`", "replace":"format: `${ j.lead }%s`", "why":"the words after the name are lost from the format" },
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"if ( 'LogicalExpression' === n?.type && '||' === n.operator && null !== literal( n.right ) ) {", "replace":"if ( false ) {", "why":"a name with a fallback (`a.first || 'lovely'`) is not read" },
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"if ( 1 !== reads.length || ! memberProp( reads[ 0 ] ) ) {", "replace":"if ( ! reads.length || ! memberProp( reads[ 0 ] ) ) {", "why":"words joined to two values are bound as one" },
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"node.attributes = { ...( node.attributes || {} ), [ rule ]: 'logged-out' };", "replace":"", "why":"the signed-out words also show to a signed-in customer" },
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"copy.attributes = { ...( copy.attributes || {} ), [ attr ]: step.signedIn, [ rule ]: 'logged-in' };", "replace":"copy.attributes = { ...( copy.attributes || {} ), [ rule ]: 'logged-in' };", "why":"the signed-in twin keeps the signed-out words" },
+	{ "file":"lib/template-piece-account-greeting.mjs", "find":"token && read && ( out[ token ] ??= [] ).includes( read ) === false && out[ token ].push( read );", "replace":"read && ( out[ token ] ??= [] ).includes( read ) === false && out[ token ].push( read );", "why":"a field with no token is taken for a named field" },
+	{ "file":"lib/template-piece-account.mjs", "find":"greeting.push( ...applied.placed.map( ( p ) => ( { id: piece.id, ...p } ) ) );", "replace":"", "why":"the account piece does not report the greeting it placed" },
+	{ "file":"lib/template-piece-account.mjs", "find":"const plan = greetingPlan(", "replace":"const plan = { plan: [], notes: [] } || greetingPlan(", "why":"the account piece writes no greeting" }
+]

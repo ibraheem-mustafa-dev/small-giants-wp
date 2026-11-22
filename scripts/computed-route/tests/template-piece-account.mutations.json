@@ -38,5 +38,8 @@
 	{"file": "lib/template-pieces-context.mjs", "find": "frame, account, related, breadcrumbs, rating };", "replace": "frame };", "why": "the account builder is not handed to the pass"},
 	{"file": "lib/template-pieces-context.mjs", "find": "draftLinks: pieces.some( ( p ) => LINK_KINDS.includes( p.kind ) ) ? draftLinksFor( { repo, client } ) : null,", "replace": "draftLinks: null,", "why": "the builder gets no link resolver"},
 	{"file": "lib/template-pieces-context.mjs", "find": "pageRowId: entry?.target?.postId ?? null,", "replace": "pageRowId: null,", "why": "the builder does not know the page it is on, so a folded sign-in page is written as an address"},
-	{"file": "data/account-parts.json", "find": "\"registerQuery\": \"mode=register\"", "replace": "\"registerQuery\": \"mode=join\"", "why": "the register button carries a query the block does not read"}
+	{"file": "data/account-parts.json", "find": "\"registerQuery\": \"mode=register\"", "replace": "\"registerQuery\": \"mode=join\"", "why": "the register button carries a query the block does not read"},
+	{"file": "lib/template-piece-account.mjs", "find": "looseLines( scope ).length <= 1 && found.push(", "replace": "found.push(", "why": "a card with a guest line beside its text turns the guest line off"},
+	{"file": "lib/template-piece-account.mjs", "find": "0 === looseLines( scope ).length && found.push(", "replace": "found.push(", "why": "forms with a guest line beside them turn the guest line off"},
+	{"file": "lib/template-piece-account-read.mjs", "find": "|| 'form' === a.tag ) && 'form' !== n.tag );", "replace": ") && 'form' !== n.tag );", "why": "a form's own words are counted as a line beside the forms, so the guest line is never turned off"}
 ]

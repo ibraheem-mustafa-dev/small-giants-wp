@@ -240,3 +240,11 @@ export function signedInWords( root, tokens ) {
 	nav && below( nav ).some( ( n ) => 'sc-for' === n.tag ) && gaps.push( 'account menu: the tab names are a loop over draft data (read only from the draft\'s logic), so the menu\'s labels are left to the block' );
 	return { found, gaps };
 }
+
+// The lines of words in an account region outside its forms: shown text that is no heading (nor inside one), no control (nor inside
+// one) and not inside a form. A signed-out card's own text line is one; a guest line beside it ("No account? Check out as a guest")
+// would be a second.
+export function looseLines( scope ) {
+	const out = below( scope ).filter( ( n ) => n.text && ! HEADING.test( n.tag ) && ! isControl( n ) && ! ancestors( n, scope ).some( ( a ) => HEADING.test( a.tag ) || isControl( a ) || 'form' === a.tag ) && 'form' !== n.tag );
+	return out;
+}

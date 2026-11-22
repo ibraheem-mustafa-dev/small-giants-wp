@@ -15,6 +15,8 @@
 //     unresolved one writes nothing and is a note. The forms' words are read from the sign-in draft files themselves
 //     (commerceOf's `signIn`), with the sign-in tabs where the draft draws them;
 //   - the signed-in view's panel headings and sign-out words are read from the account draft's source.
+//   - the page band's greeting: a band text the draft's logic changes once signed in binds to the customer's own field, or gets a
+//     signed-in twin behind the Show-to setting (lib/template-piece-account-greeting.mjs).
 // Only content and mode settings are written; the look is part-look.mjs's. A setting the node already holds with another
 // value is kept and noted. Every part the draft draws that no setting holds, or that structure cannot place, is a note
 // beginning `gap:`.
@@ -28,11 +30,15 @@ import { treeNodes } from './template-piece-draft.mjs';
 import { parseTemplate } from './shop-parts-read.mjs';
 import { resolveDraftLink, linkWrite } from './draft-link.mjs';
 import { openDb } from './db.mjs';
-import { below, formWords, hasPassword, inventoryTree, plain, promptParts, signedInWords, tabWords, templateTree } from './template-piece-account-read.mjs';
+import { loadDraft } from './intake-ast.mjs';
+import { applyGreeting, customerSourceOf, fieldProperties, greetingPlan } from './template-piece-account-greeting.mjs';
+import { SUPPORT_FILE, supportedAttributesOf } from './template-piece-order-plugin.mjs';
+import { below, formWords, hasPassword, inventoryTree, looseLines, plain, promptParts, signedInWords, tabWords, templateTree } from './template-piece-account-read.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const ACCOUNT_PARTS_FILE = path.resolve( HERE, '..', 'data', 'account-parts.json' );
 const REPO = path.resolve( HERE, '..', '..', '..' );
+const CUSTOMER_FILE = path.join( REPO, 'plugins', 'sgs-blocks', 'includes', 'class-customer-binding.php' );
 const STRINGS = /^strings\.(.+)$/;
 const GROUPS = [ 'prompt', 'form', 'signedIn' ];
 
@@ -135,11 +141,13 @@ export function place( ctx, piece ) {
 		found.push( ...f.found.map( ( x ) => ( { ...x, group: 'form' } ) ) );
 		gaps.push( ...f.gaps );
 		below( scope ).some( ( n ) => 'tab' === n.attrs.role ) && gaps.push( 'tabs: the region draws sign-in tabs, which are read only from a sign-in draft file' );
+		0 === looseLines( scope ).length && found.push( { group: 'form', part: 'noGuestLine', value: true, at: region } );
 	} else {
 		const files = ctx.commerce?.signIn || [];
 		const p = promptParts( scope, ( href ) => files.some( ( f ) => leadsTo( pagePath( href ), f ) ) );
 		gaps.push( ...p.gaps );
 		found.push( { group: 'prompt', part: 'view', value: parts.prompt.view.value, at: region } );
+		looseLines( scope ).length <= 1 && found.push( { group: 'prompt', part: 'noGuestLine', value: true, at: region } );
 		for ( const [ part, n ] of [ [ 'heading', p.heading ], [ 'copy', p.copy ] ] ) {
 			n && ( plain( n.text ) ? found.push( { group: 'prompt', part, value: n.text, at: n.key } ) : gaps.push( `prompt ${ part }: the draft's words at ${ n.key } carry a live value` ) );
 		}
@@ -194,5 +202,15 @@ export function place( ctx, piece ) {
 		}
 		written.push( setting );
 	}
-	return { tree, placed: [ { id: piece.id, block: parts.block, at: `the account region ${ region } (${ 'form' === mode ? 'the sign-in form on the page' : 'the signed-out prompt' })`, settings: written } ], notes: gaps.map( ( g ) => `${ key }: piece "${ piece.id }": gap: ${ g }` ) };
+	// The band's greeting: a band text the draft's logic changes once signed in (lib/template-piece-account-greeting.mjs).
+	const greeting = [];
+	if ( ctx.draftFile && ctx.handoffDir && fs.existsSync( path.join( ctx.handoffDir, ctx.draftFile ) ) ) {
+		const draft = loadDraft( ctx.handoffDir, ctx.draftFile );
+		const customer = customerSourceOf( CUSTOMER_FILE );
+		const plan = greetingPlan( { els: ctx.inventory?.elements || [], idx: draft.idx, fields: fieldProperties( draft.text ), keyTokens: parts.customerKeys || {}, keys: customer.keys } );
+		const applied = applyGreeting( { tree, plan: plan.plan, db: ctx.db || openDb(), supported: supportedAttributesOf( fs.readFileSync( SUPPORT_FILE, 'utf8' ) ), source: customer.source } );
+		greeting.push( ...applied.placed.map( ( p ) => ( { id: piece.id, ...p } ) ) );
+		gaps.push( ...plan.notes, ...applied.notes );
+	}
+	return { tree, placed: [ { id: piece.id, block: parts.block, at: `the account region ${ region } (${ 'form' === mode ? 'the sign-in form on the page' : 'the signed-out prompt' })`, settings: written }, ...greeting ], notes: gaps.map( ( g ) => `${ key }: piece "${ piece.id }": gap: ${ g }` ) };
 }

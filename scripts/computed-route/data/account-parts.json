@@ -1,5 +1,5 @@
 {
-	"_comment": "Which structural part of a draft's account page feeds which content or mode setting of the account block (Spec 48 FR-48-87; Spec 27 FR-30-25; read by lib/template-piece-account.mjs, data/template-pieces.json pages.account kind `account`). A part is told by structure (lib/template-piece-account-read.mjs), never by its words; its value is the draft's own words, or the fixed `value` named here. Every setting is checked against the framework database when the file loads (lib/template-piece-account.mjs::accountPartsProblems): the block must hold it, it must paint no CSS property (the look is part-look.mjs's), a fixed value must fit its type and, where the database lists them, its values. A `strings.<key>` setting is one key of the block's `strings` wording map, checked against the keys the block's wording class supports (`stringsSource`, its `supported()` list), since the database holds no keys of an object setting. `prompt`: the signed-out card (a branch of the account region with links to the sign-in surface and no password field); `registerQuery` is the query the block itself reads to open its create-account form (helpers-account-signed-out.php::sgs_account_register_mode_requested). `form`: the sign-in and create-account forms, read where the draft draws them (the account region when it holds a password field, else the sign-in draft files the page map folds into the account row). `signedIn`: the signed-in view of the account draft, read from the draft source. `tokens`: the autocomplete tokens (HTML's own field names) that tell the forms apart.",
+	"_comment": "Which structural part of a draft's account page feeds which content or mode setting of the account block (Spec 48 FR-48-87; Spec 27 FR-30-25; read by lib/template-piece-account.mjs, data/template-pieces.json pages.account kind `account`). A part is told by structure (lib/template-piece-account-read.mjs), never by its words; its value is the draft's own words, or the fixed `value` named here. Every setting is checked against the framework database when the file loads (lib/template-piece-account.mjs::accountPartsProblems): the block must hold it, it must paint no CSS property (the look is part-look.mjs's), a fixed value must fit its type and, where the database lists them, its values. A `strings.<key>` setting is one key of the block's `strings` wording map, checked against the keys the block's wording class supports (`stringsSource`, its `supported()` list), since the database holds no keys of an object setting. `prompt`: the signed-out card (a branch of the account region with links to the sign-in surface and no password field); `noGuestLine` turns the block's guest line off where the region draws no line of words beside the card's own text and the forms (lib/template-piece-account-read.mjs::looseLines); `registerQuery` is the query the block itself reads to open its create-account form (helpers-account-signed-out.php::sgs_account_register_mode_requested). `form`: the sign-in and create-account forms, read where the draft draws them (the account region when it holds a password field, else the sign-in draft files the page map folds into the account row). `signedIn`: the signed-in view of the account draft, read from the draft source. `tokens`: the autocomplete tokens (HTML's own field names) that tell the forms apart. `customerKeys`: the customer binding source's key each autocomplete token stands for (lib/template-piece-account-greeting.mjs: the band text the draft greets the signed-in customer with binds to the key of the field its words read).",
 	"block": "sgs/account",
 	"stringsSource": { "file": "plugins/sgs-blocks/includes/account/class-account-strings.php", "list": "supported" },
 	"prompt": {
@@ -10,7 +10,8 @@
 		"signInUrl": "signedOutSignInUrl",
 		"registerLabel": "signedOutRegisterLabel",
 		"registerUrl": "signedOutRegisterUrl",
-		"registerQuery": "mode=register"
+		"registerQuery": "mode=register",
+		"noGuestLine": { "setting": "showGuestLine", "value": false }
 	},
 	"form": {
 		"signInSubmit": "strings.signIn",
@@ -29,7 +30,8 @@
 		"passwordHint": "registerPasswordHint",
 		"tabs": { "setting": "authLayout", "value": "tabs" },
 		"signInTab": "authTabSignInLabel",
-		"registerTab": "authTabRegisterLabel"
+		"registerTab": "authTabRegisterLabel",
+		"noGuestLine": { "setting": "showGuestLine", "value": false }
 	},
 	"signedIn": {
 		"addressesHeading": "addressesTabHeading",
@@ -37,6 +39,7 @@
 		"headings": { "setting": "tabHeadings", "value": true },
 		"signOut": "strings.signOut"
 	},
+	"customerKeys": { "first_name": "given-name", "email": "email" },
 	"tokens": {
 		"currentPassword": "current-password",
 		"newPassword": "new-password",
