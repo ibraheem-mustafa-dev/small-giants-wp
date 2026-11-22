@@ -8490,6 +8490,31 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "emptyBodyColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "emptyBody"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyBodyFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-empty-body"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyBodyLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "panel-empty-body"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "emptyCtaBg",
       "fields": {
         "css_property": "background-color",
@@ -8536,6 +8561,31 @@
       "fields": {
         "css_property": "text-transform",
         "css_element": "panel-empty-cta"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyLinkColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "emptyLink"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyLinkFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-empty-link"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyLinkFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "panel-empty-link"
       }
     },
     {
@@ -8639,11 +8689,117 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "freeDeliveryTextLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "free-delivery-text"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "freeDeliveryTrackColour",
       "fields": {
         "css_property": "background-color",
         "role": "color",
         "css_element": "freeDeliveryTrack"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftBoxBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "giftBox"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftBoxBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "giftBox"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftBoxBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "giftBox"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftFieldBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "giftMessage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftFieldBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "giftMessage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftHelpColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "giftHelp"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftHelpFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-gift-help"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-gift-label"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "panel-gift-label"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftMessageFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "panel-gift-message"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftMessageFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-gift-message"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftMessageLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "panel-gift-message"
       }
     },
     {
@@ -8863,6 +9019,30 @@
         "css_property": "color",
         "role": "color",
         "css_element": "itemRemove"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemRemoveFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "item-remove"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemRemoveLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "item-remove"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemRemoveTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "item-remove"
       }
     },
     {
@@ -9258,6 +9438,90 @@
         "css_property": "color",
         "role": "color",
         "css_element": "subtotalValue"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "upsell"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "upsellButton"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "upsellButton"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonColourHover",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "upsellButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-upsell-add"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "panel-upsell-add"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellTextColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "upsellText"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-upsell-body"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellTitleFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "panel-upsell-title"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellTitleFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "panel-upsell-title"
       }
     },
     {
@@ -10188,6 +10452,13 @@
       "attr": "arrowBorderWidth",
       "fields": {
         "css_property": "border-width"
+      }
+    },
+    {
+      "slug": "sgs/container",
+      "attr": "arrowPosition",
+      "fields": {
+        "css_property": "position"
       }
     },
     {
@@ -23122,6 +23393,15 @@
     },
     {
       "slug": "sgs/nav-drawer-menu",
+      "attr": "itemGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "item"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer-menu",
       "attr": "itemMediaRadius",
       "fields": {
         "css_property": "border-radius",
@@ -26521,6 +26801,14 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "descriptionMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "descriptionTextAlign",
       "fields": {
         "css_property": "text-align",
@@ -26909,6 +27197,15 @@
       "fields": {
         "css_property": "padding",
         "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "stepAlignItems",
+      "fields": {
+        "css_property": "align-items",
+        "css_layer": "GRID",
+        "css_element": "step"
       }
     },
     {
@@ -31398,7 +31695,7 @@
       "slug": "sgs/social-icons",
       "attr": "childIconShapeSize",
       "fields": {
-        "css_property": "width",
+        "css_property": "height,width",
         "css_element": "shape"
       }
     },
@@ -33441,6 +33738,14 @@
       "attr": "arrowBorderWidth",
       "fields": {
         "css_property": "border-width",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowPosition",
+      "fields": {
+        "css_property": "position",
         "css_element": "arrow"
       }
     },
@@ -37956,6 +38261,14 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "scrollbarStyle",
+      "fields": {
+        "css_property": "scrollbar-width",
+        "css_element": "menuList"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "signedOutActionsFlexWrap",
       "fields": {
         "css_property": "flex-wrap",
@@ -39717,6 +40030,14 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "emptyBodyMaxWidth",
+      "fields": {
+        "css_property": "max-width",
+        "css_element": "emptyBody"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "emptyCtaPadding",
       "fields": {
         "css_property": "padding",
@@ -39729,6 +40050,14 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "emptyCta"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "emptyLinkPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "emptyLink"
       }
     },
     {
@@ -39787,6 +40116,73 @@
       "fields": {
         "css_property": "border-radius",
         "css_element": "freeDeliveryBar"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftBoxBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "giftBox"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftBoxMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "giftBox"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftBoxPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "giftBox"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftBoxRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "giftBox"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftFieldBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "giftMessage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftFieldBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "giftMessage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftFieldPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "giftMessage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "giftFieldRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "giftMessage"
       }
     },
     {
@@ -39897,10 +40293,26 @@
     },
     {
       "slug": "sgs/cart",
+      "attr": "itemQtyNumberWidth",
+      "fields": {
+        "css_property": "width",
+        "css_element": "itemQtyNumber"
+      }
+    },
+    {
+      "slug": "sgs/cart",
       "attr": "itemQtyRadius",
       "fields": {
         "css_property": "border-radius",
         "css_element": "itemQty"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "itemRemovePadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "itemRemove"
       }
     },
     {
@@ -39949,7 +40361,15 @@
       "slug": "sgs/cart",
       "attr": "panelCloseSize",
       "fields": {
-        "css_property": "width",
+        "css_property": "height,width",
+        "css_element": "panelCloseIcon"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "panelCloseTapSize",
+      "fields": {
+        "css_property": "min-height,min-width",
         "css_element": "panelClose"
       }
     },
@@ -40148,6 +40568,91 @@
       }
     },
     {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonBg",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "upsellButton"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonBgHover",
+      "fields": {
+        "css_property": "background-color",
+        "role": "color",
+        "css_element": "upsellButton",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "upsellButton"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "upsellButton"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "upsellButton"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellButtonRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "upsellButton"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellImageRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "upsellImage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellImageSize",
+      "fields": {
+        "css_property": "height,width",
+        "css_element": "upsellImage"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "upsell"
+      }
+    },
+    {
+      "slug": "sgs/cart",
+      "attr": "upsellRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "upsell"
+      }
+    },
+    {
       "slug": "sgs/choice-flow",
       "attr": "flexWrap",
       "fields": {
@@ -40171,7 +40676,6 @@
       "attr": "footerBandBorder",
       "fields": {
         "css_property": "border-top-color,border-top-style,border-top-width",
-        "role": "styling",
         "css_layer": "CONTENT",
         "css_element": "footer-band"
       }
@@ -40200,7 +40704,6 @@
       "attr": "headerBandBorder",
       "fields": {
         "css_property": "border-bottom-color,border-bottom-style,border-bottom-width",
-        "role": "styling",
         "css_layer": "CONTENT",
         "css_element": "header-band"
       }
@@ -40287,7 +40790,6 @@
       "attr": "summaryBorder",
       "fields": {
         "css_property": "border-color,border-style,border-width",
-        "role": "styling",
         "css_layer": "CONTENT",
         "css_element": "summary-box"
       }
@@ -40315,7 +40817,6 @@
       "attr": "optionBadgeBorder",
       "fields": {
         "css_property": "border-color,border-style,border-width",
-        "role": "styling",
         "css_element": "option-badge"
       }
     },
@@ -43024,6 +43525,15 @@
     },
     {
       "slug": "sgs/gallery",
+      "attr": "scrollbarStyle",
+      "fields": {
+        "css_property": "scrollbar-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/gallery",
       "attr": "tileBorderColour",
       "fields": {
         "css_property": "border-color",
@@ -43730,6 +44240,24 @@
         "role": "color",
         "css_layer": "OUTER",
         "css_element": "average"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scrollbarColour",
+      "fields": {
+        "css_property": "scrollbar-color",
+        "css_layer": "OUTER",
+        "css_element": "list"
+      }
+    },
+    {
+      "slug": "sgs/google-reviews",
+      "attr": "scrollbarStyle",
+      "fields": {
+        "css_property": "scrollbar-width",
+        "css_layer": "OUTER",
+        "css_element": "list"
       }
     },
     {
@@ -47289,6 +47817,15 @@
     },
     {
       "slug": "sgs/nav-drawer",
+      "attr": "scrollbarStyle",
+      "fields": {
+        "css_property": "scrollbar-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/nav-drawer",
       "attr": "toggleCloseColourHoverGradient",
       "fields": {
         "css_property": "color-gradient",
@@ -49019,6 +49556,15 @@
     },
     {
       "slug": "sgs/post-grid",
+      "attr": "scrollbarStyle",
+      "fields": {
+        "css_property": "scrollbar-width",
+        "css_layer": "GRID",
+        "css_element": "inner"
+      }
+    },
+    {
+      "slug": "sgs/post-grid",
       "attr": "titleColour",
       "fields": {
         "css_property": "color",
@@ -49233,6 +49779,14 @@
     },
     {
       "slug": "sgs/process-steps",
+      "attr": "descriptionMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "description"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
       "attr": "headingLevel",
       "fields": {
         "css_property": "tag",
@@ -49263,6 +49817,14 @@
         "css_property": "color-gradient",
         "css_element": "number",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "numberMargin",
+      "fields": {
+        "css_property": "margin",
+        "css_element": "number"
       }
     },
     {
@@ -49315,6 +49877,14 @@
       "attr": "titleColourGradient",
       "fields": {
         "css_property": "background-image",
+        "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/process-steps",
+      "attr": "titleMargin",
+      "fields": {
+        "css_property": "margin",
         "css_element": "title"
       }
     },
@@ -51183,6 +51753,14 @@
     },
     {
       "slug": "sgs/tabs",
+      "attr": "scrollbarStyle",
+      "fields": {
+        "css_property": "scrollbar-width",
+        "css_element": "tab"
+      }
+    },
+    {
+      "slug": "sgs/tabs",
       "attr": "tabActiveIndicatorColourGradient",
       "fields": {
         "css_property": "border-color-gradient",
@@ -51567,6 +52145,38 @@
         "role": "color",
         "css_element": "arrow",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowInsetBottom",
+      "fields": {
+        "css_property": "bottom",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowInsetLeft",
+      "fields": {
+        "css_property": "left",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowInsetRight",
+      "fields": {
+        "css_property": "right",
+        "css_element": "arrow"
+      }
+    },
+    {
+      "slug": "sgs/testimonial-slider",
+      "attr": "arrowInsetTop",
+      "fields": {
+        "css_property": "top",
+        "css_element": "arrow"
       }
     },
     {
@@ -52757,6 +53367,15 @@
       "fields": {
         "css_property": "tag",
         "css_element": "title"
+      }
+    },
+    {
+      "slug": "sgs/trustpilot-reviews",
+      "attr": "scrollbarStyle",
+      "fields": {
+        "css_property": "scrollbar-width",
+        "css_layer": "OUTER",
+        "css_element": "wrapper"
       }
     },
     {
