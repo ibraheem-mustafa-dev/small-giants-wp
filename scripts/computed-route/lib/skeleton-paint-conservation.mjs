@@ -188,6 +188,22 @@ const BAND_KEY = 'draftBandWrappers';
 // width alternative's `{ key, shown }` (the element the node is read at on other widths), never a value in its attributes
 // or fingerprint. A finder under `draftBandWrappers` reads the box's width cap
 // only (`band`); an element another finder also names is read in full.
+// The first svg element under `item` in document order, or null.
+const firstSvgUnder = ( item, elements ) => {
+	const kids = new Map();
+	elements.forEach( ( e ) => e.parentKey && ( kids.get( e.parentKey ) ?? kids.set( e.parentKey, [] ).get( e.parentKey ) ).push( e ) );
+	const walk = ( e ) => {
+		for ( const k of kids.get( e.key ) || [] ) {
+			const hit = 'svg' === k.tag ? k : walk( k );
+			if ( hit ) {
+				return hit;
+			}
+		}
+		return null;
+	};
+	return walk( item );
+};
+
 export function namedReads( tree, elements = [] ) {
 	const out = new Map();
 	const select = selectorFinder( elements );
@@ -211,6 +227,10 @@ export function namedReads( tree, elements = [] ) {
 			row && Object.values( n.childRefs || {} ).forEach( ( s ) => {
 				const item = 'string' === typeof s ? select( s, row ) : null;
 				item && out.set( item.key, 'full' );
+				// Fill reads each generated icon's glyph at the first svg inside its item (lib/fill-skeleton.mjs::expandSiteInfoRows,
+				// ROW_GLYPH_SLOT), so that svg is named too.
+				const glyph = item ? firstSvgUnder( item, elements ) : null;
+				glyph && out.set( glyph.key, 'full' );
 			} );
 			walk( n.innerBlocks );
 		}

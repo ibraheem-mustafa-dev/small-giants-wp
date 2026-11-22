@@ -198,6 +198,13 @@ test( 'namedKeys collects every finder on a node, and never a value in its attri
 	assert.deepEqual( [ ...namedKeys( tree[ 0 ] ) ].sort(), [ 'Root/1#0', 'Root/2#0', 'Root/3#0', 'Root/4#0', 'Root/5#0' ], 'a single node is read as a tree of one' );
 } );
 
+test( 'MUST FAIL: a Site Info row item also names the first svg inside it (Fill reads each generated icon glyph there), and an svg outside the items stays unnamed', () => {
+	const at = ( key, tpl, parentKey, tag = 'div' ) => ( { key, tpl, parentKey, template: 'SiteFooter', tag } );
+	const elements = [ at( 'F/2#0', 2, null ), at( 'F/44#0', 44, 'F/2#0' ), at( 'F/45#0', 45, 'F/44#0', 'a' ), at( 'F/46#0', 46, 'F/45#0', 'svg' ), at( 'F/47#0', 47, 'F/46#0', 'rect' ), at( 'F/50#0', 50, 'F/44#0', 'a' ), at( 'F/60#0', 60, 'F/2#0', 'svg' ) ];
+	const tree = [ { name: 'sgs/social-icons', attributes: {}, draftRef: 'footer[data-dc-tpl="2"] [data-dc-tpl="44"]', siteInfoRow: [ 'instagram', 'whatsapp' ], childRefs: { instagram: '[data-dc-tpl="45"]', whatsapp: '[data-dc-tpl="50"]' } } ];
+	assert.deepEqual( [ ...namedKeys( tree, elements ) ].sort(), [ 'F/44#0', 'F/45#0', 'F/46#0', 'F/50#0' ], 'the item with an svg names it; the item with none and the svg outside the row name nothing more' );
+} );
+
 test( 'a Site Info row\'s selector finder names its element and its items inside it; a selector the draft holds twice, or no number, names none; MUST FAIL where only { tpl } finders count', () => {
 	const at = ( key, tpl, parentKey, template = 'SiteFooter' ) => ( { key, tpl, parentKey, template, tag: 'div' } );
 	const elements = [ at( 'F/2#0', 2, null ), at( 'F/44#0', 44, 'F/2#0' ), at( 'F/45#0', 45, 'F/44#0' ), at( 'F/50#0', 50, 'F/44#0' ), at( 'F/9#0', 9, null ), at( 'F/45#1', 45, 'F/9#0' ), at( 'X/44#0', 44, null, 'Other' ) ];
