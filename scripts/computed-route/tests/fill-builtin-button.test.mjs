@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
 import { fixtureDb } from './fixtures/framework-db.mjs';
 import { buildLook, READ_PROPS } from '../lib/fill-part-look.mjs';
-import { applyBuiltinButtons, declaredButtons, presetReads, kitValueShapes, translateY, HOVER_PROPS } from '../lib/fill-builtin-button.mjs';
+import { applyBuiltinButtons, contentAlignWrite, PRICE_ALIGN, declaredButtons, presetReads, kitValueShapes, translateY, HOVER_PROPS } from '../lib/fill-builtin-button.mjs';
 import { presetMisses } from '../lib/fill-preset.mjs';
 
 const PART = 'flow-opener';
@@ -200,12 +200,27 @@ test( 'MUST FAIL: a draft button that spreads its content (justify-content: spac
 	const centred = run();
 	assert.equal( centred.value( 'flowOpenerContentAlign' ), undefined, 'a centred draft writes nothing (negative control)' );
 	assert.equal( centred.build.settings.flowOpenerContentAlign.status, 'not-written', 'the setting stays unwritten, with a reason' );
-	assert.match( centred.build.settings.flowOpenerContentAlign.reason, /centres the button's content/ );
+	assert.match( centred.build.settings.flowOpenerContentAlign.reason, /aligns the button's content as the block does of its own \(center\)/ );
 	assert.equal( centred.out.buttons[ 0 ].contentAlign, null );
 	const spreadRun = run( { reads: readsOf( spread() ) } );
 	assert.deepEqual( spreadRun.value( 'flowOpenerContentAlign' ), { desktop: 'space-between' } );
 	assert.equal( spreadRun.build.settings.flowOpenerContentAlign.status, 'written' );
 	assert.deepEqual( spreadRun.out.buttons[ 0 ].contentAlign, { desktop: 'space-between' } );
+} );
+
+test( 'MUST FAIL: a button the modes set to show its price spreads its content of its own, so a draft that centres it writes centre (product-15)', () => {
+	const withPrice = ( value, reads = readsOf() ) => {
+		const build = buildLook( { block: BLOCK, rows: rowsOf(), names: NAMES, locators: { anchors: {}, parts: { [ PART ]: {} } }, reads, snapshot: null } );
+		build.writes.push( { attr: 'flowOpenerShowPrice', value, part: null, property: '(content)', mode: true } );
+		applyBuiltinButtons( { block: BLOCK, build, rows: rowsOf(), names: NAMES, db, reads, presets: EYE_CARE, snapshot: SNAPSHOT, buttons: [ { prefix: 'flowOpener', part: PART } ], schemaOf: () => null } );
+		return build.writes.find( ( w ) => 'flowOpenerContentAlign' === w.attr )?.value;
+	};
+	assert.deepEqual( withPrice( true ), { desktop: 'center' } );
+	// Negative controls: no price shown keeps the own centre unwritten; a draft spread like the price button writes nothing new.
+	assert.equal( withPrice( false ), undefined );
+	assert.equal( withPrice( true, readsOf( spread() ) ), undefined );
+	assert.deepEqual( contentAlignWrite( { attr: 'a', part: PART, instances: readsOf()[ PART ], own: PRICE_ALIGN } ).write.value, { desktop: 'center' } );
+	assert.match( contentAlignWrite( { attr: 'a', part: PART, instances: readsOf( spread() )[ PART ], own: PRICE_ALIGN } ).skip, /as the block does of its own \(space-between\)/ );
 } );
 
 test( 'a justify-content that is the block\'s own centre (normal, centre, unread) writes no content alignment (negative control)', () => {

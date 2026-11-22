@@ -92,9 +92,14 @@ export function transformShape( transform ) {
 	return { ty, pure: Object.entries( fixed ).every( ( [ i, v ] ) => Math.abs( n[ i ] - v ) < 0.001 ) };
 }
 
+// The alignment a built-in button has of its own while it shows its price (`<prefix>ShowPrice`): the label at one end, the price at
+// the other (src/blocks/buybox/style.css `.buybox__add-to-cart--show-price`).
+export const PRICE_ALIGN = 'space-between';
+
 // The `<prefix>ContentAlign` write of a part: the draft's computed justify-content at each width, as { desktop, tablet?, mobile? } where a
-// narrower width differs from the one above it (part-look's rule for a per-device setting), the block's own centre dropped. { write } or { skip }.
-export function contentAlignWrite( { attr, part, instances, explicit = false } ) {
+// narrower width differs from the one above it (part-look's rule for a per-device setting), the block's own alignment dropped: `own` is
+// centre, or PRICE_ALIGN for a button that shows its price, where a draft that centres its content is written as centre. { write } or { skip }.
+export function contentAlignWrite( { attr, part, instances, explicit = false, own = 'center' } ) {
 	const draft = {};
 	for ( const width of WIDTHS ) {
 		const seen = [ ...new Set( ( instances[ width ] || [] ).map( ( i ) => String( i.styles?.[ 'justify-content' ] ?? '' ).trim() ) ) ];
@@ -108,7 +113,7 @@ export function contentAlignWrite( { attr, part, instances, explicit = false } )
 	}
 	const effective = ( v ) => ALIGN_VALUES[ v ] ?? ( ALIGN_OWN.includes( v ) ? 'center' : null );
 	const tiers = {};
-	let above = 'center';
+	let above = own;
 	for ( const [ tier, width ] of [ [ 'desktop', 1440 ], [ 'tablet', 768 ], [ 'mobile', 375 ] ] ) {
 		const v = undefined === draft[ width ] ? above : effective( draft[ width ] );
 		if ( null === v ) {
@@ -119,9 +124,9 @@ export function contentAlignWrite( { attr, part, instances, explicit = false } )
 	}
 	// `explicit`: the button follows another whose alignment is written, so its own centre is written too (it would follow the other's).
 	if ( ! Object.keys( tiers ).length && explicit ) {
-		tiers.desktop = 'center';
+		tiers.desktop = own;
 	}
-	return Object.keys( tiers ).length ? { write: { attr, value: tiers, part, property: 'justify-content', draft, defaultNotRead: true } } : { skip: `the draft centres the button's content, which is the block's own` };
+	return Object.keys( tiers ).length ? { write: { attr, value: tiers, part, property: 'justify-content', draft, defaultNotRead: true } } : { skip: `the draft aligns the button's content as the block does of its own (${ own })` };
 }
 
 // The `<prefix>HoverLiftDistance` write of a part: whole px the hovered button moves up from its resting place at 1440. { write } or { skip }.
@@ -218,7 +223,9 @@ export function applyBuiltinButtons( { block, build, rows, names, db, reads, pre
 		build.writes = build.writes.map( ( w ) => ( w.part === part && ! w.mode && ! w.companionOf && /^device_/.test( shapes[ w.attr ] || '' ) ? perDeviceWrite( w, rows.find( ( r ) => r.attr_name === w.attr ), { names, snapshot, log: [] } ) : w ) );
 		// The content alignment and the hover lift: one owner here, whether or not a preset matches and whether or not the part-look pass
 		// wrote the setting from its own row (the hover row is a state setting it does not read).
-		for ( const [ base, made ] of [ [ 'ContentAlign', contentAlignWrite( { attr: `${ prefix }ContentAlign`, part, instances } ) ], [ 'HoverLiftDistance', hoverLiftWrite( { attr: `${ prefix }HoverLiftDistance`, part, instance: ( instances[ 1440 ] || [] )[ 0 ] } ) ] ] ) {
+		// A button the modes set to show its price is spread to both ends of its own (PRICE_ALIGN), so a centred draft is written as centre.
+		const ownAlign = build.writes.some( ( w ) => `${ prefix }ShowPrice` === w.attr && true === w.value ) ? PRICE_ALIGN : 'center';
+		for ( const [ base, made ] of [ [ 'ContentAlign', contentAlignWrite( { attr: `${ prefix }ContentAlign`, part, instances, own: ownAlign } ) ], [ 'HoverLiftDistance', hoverLiftWrite( { attr: `${ prefix }HoverLiftDistance`, part, instance: ( instances[ 1440 ] || [] )[ 0 ] } ) ] ] ) {
 			const attr = `${ prefix }${ base }`;
 			if ( ! names.has( attr ) ) {
 				continue;
