@@ -50,7 +50,7 @@ import { draftCssOf, templateOf } from './lib/fill-behaviour.mjs';
 import { groupBindings, noFactsWarning } from './lib/fill-binding-group.mjs';
 import { factsFile, loadFacts } from './lib/fact-record.mjs';
 import { currentItemGroups } from './lib/fill-current-item.mjs';
-import { widthGateWrites, maskHiddenVariants } from './lib/fill-width-gate.mjs';
+import { widthGateWrites, maskHiddenVariants, draftThresholds } from './lib/fill-width-gate.mjs';
 import { pictureBoxReads } from './lib/fill-picture-box.mjs';
 import { sumAbsorbedPadding } from './lib/fill-absorbed.mjs';
 import { stackOverlayLayers } from './lib/fill-overlay-stack.mjs';
@@ -306,7 +306,7 @@ export async function fillSurface( o ) {
 		result.customCssGaps = stepRungs.gaps;
 		// FR-48-50: content the draft's logic shows or hides by width, written as hiding settings (lib/fill-width-gate.mjs); a snapped
 		// threshold's `breakpoint-snap` entry is added to the client's divergence ledger (the file Fill reads), once.
-		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, reads, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent } );
+		const gates = widthGateWrites( { nodes, flat, refOf, facts, db, scope: o.surface, reads, entries: loadLedger( ledgerFile ), rootComponent: intakeParts.rootComponent, writes: result.writes, thresholds: draftThresholds( buildDir ) } );
 		addEntries( ledgerFile, gates.ledger );
 		result.writes.push( ...gates.writes );
 		result.unmapped.push( ...gates.unmapped );
