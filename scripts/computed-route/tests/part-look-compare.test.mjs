@@ -108,3 +108,12 @@ test( 'page roles come from the page map and the account row\'s own WooCommerce 
 	const pages = pagesOf( { rows, surfaces: { 'my-account': { draftIndex: 'Account.dc.html' } } } );
 	assert.deepEqual( pages, { cart: 'Basket.dc.html', checkout: 'Checkout.dc.html', account: 'Account.dc.html', signin: 'SignIn.dc.html' } );
 } );
+
+test( 'MUST FAIL: a sign-in draft made a page of its own (D-1) is still the account\'s sign-in page, so the signed-in views can sign in', () => {
+	const rows = [
+		{ route: 'Account.dc.html', postType: 'page', slug: 'my-account', template: 'page', parts: [ { owner: 'woocommerce', draftId: 'Account.dc.html:1:1 <form>' } ] },
+		{ route: 'SignIn.dc.html', postType: 'page', slug: 'sign-in', template: 'page', parts: [ { owner: 'woocommerce', draftId: 'SignIn.dc.html:49:9 <form>' } ] },
+	];
+	assert.equal( pagesOf( { rows, surfaces: { 'my-account': { draftIndex: 'Account.dc.html' } } } ).signin, 'SignIn.dc.html' );
+	assert.equal( pagesOf( { rows: rows.slice( 0, 1 ), surfaces: { 'my-account': { draftIndex: 'Account.dc.html' } } } ).signin, undefined, 'negative control: no sign-in page, no sign-in role' );
+} );

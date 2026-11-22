@@ -60,9 +60,9 @@
 		"why": "the Custom CSS rules are not counted"
 	},
 	{
-		"file": "part-look.mjs",
-		"find": ".find( ( f ) => f && f !== account )",
-		"replace": ".find( ( f ) => f )",
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": ".filter( ( f ) => f && f !== draftFile( page.route ) );",
+		"replace": ".filter( ( f ) => f );",
 		"why": "the sign-in page is the account's own file"
 	}
 ]

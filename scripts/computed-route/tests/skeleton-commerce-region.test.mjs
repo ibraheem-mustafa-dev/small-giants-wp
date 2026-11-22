@@ -10,7 +10,7 @@ import { openDb } from '../lib/db.mjs';
 import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { inventoryModel } from '../lib/skeleton-model.mjs';
-import { commerceOf, commerceRegion, leadsTo } from '../lib/skeleton-commerce-region.mjs';
+import { commerceOf, commerceRegion, leadsTo, signInFilesOf } from '../lib/skeleton-commerce-region.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -145,6 +145,23 @@ test( 'MUST FAIL: an account page read signed out makes its sign-in prompt, the 
 	assert.equal( account.draftRef, undefined, 'WooCommerce draws it: Fill reads nothing into it' );
 	assert.equal( names( skeleton ).filter( ( n ) => 'sgs/account' === n ).length, 1, 'a sign-in link under no condition is no signed-out view' );
 	assert.ok( find( skeleton, 'sgs/heading' ), 'the page heading around the region stays' );
+} );
+
+test( 'MUST FAIL: a sign-in draft made a page of its own (D-1) is still the account page\'s sign-in page, so its signed-out prompt makes the account block', () => {
+	const account = { ...ACCOUNT_ROW, parts: ACCOUNT_ROW.parts.slice( 0, 1 ) };
+	const signInRow = { postType: 'page', slug: 'sign-in', template: 'page', route: 'SignIn.dc.html', id: 14, parts: [ { kind: 'form', label: 'doSignin', owner: 'woocommerce', draftId: 'SignIn.dc.html:49:9 <form>' } ] };
+	const commerce = commerceOf( { target: { postId: 13 } }, [ account, signInRow ] );
+	assert.deepEqual( commerce, { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } );
+	assert.deepEqual( signInFilesOf( account, [ account, signInRow ] ), [ 'SignIn.dc.html' ] );
+	const { proposal } = run( SIGNED_OUT, commerce );
+	assert.deepEqual( proposal.commerceRegion, { key: 'Root/19#0', role: 'account', block: 'sgs/account' } );
+	// Negative controls: a checkout page (a commerce role), a page whose form the page map gives a block, and a page whose
+	// WooCommerce form is drawn in another file are no sign-in page of their own.
+	const checkoutRow = { postType: 'page', slug: 'checkout', template: 'checkout', route: 'Checkout.dc.html', id: 15, parts: [ { owner: 'woocommerce', draftId: 'Checkout.dc.html:9:9 <form>' } ] };
+	const contactRow = { postType: 'page', slug: 'contact', template: 'page', route: 'Contact.dc.html', id: 16, parts: [ { owner: 'block', draftId: 'Contact.dc.html:9:9 <form>' } ] };
+	const elsewhere = { ...signInRow, parts: [ { owner: 'woocommerce', draftId: 'Other.dc.html:9:9 <form>' } ] };
+	assert.equal( commerceOf( { target: { postId: 13 } }, [ account, checkoutRow, contactRow, elsewhere ] ).signIn, undefined );
+	assert.deepEqual( signInFilesOf( ACCOUNT_ROW, [ ACCOUNT_ROW, signInRow ] ), [ 'SignIn.dc.html' ], 'a file both folded and its own page is named once' );
 } );
 
 test( 'no account region without a sign-in page to link to, without a condition, or with two signed-out views', () => {

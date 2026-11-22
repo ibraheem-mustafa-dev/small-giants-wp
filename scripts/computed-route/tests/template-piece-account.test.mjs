@@ -14,7 +14,8 @@ import { fileURLToPath } from 'node:url';
 import { place, accountPartsProblems, loadAccountParts, phpListKeys, ACCOUNT_PARTS_FILE } from '../lib/template-piece-account.mjs';
 import { linkContext } from '../lib/draft-link.mjs';
 import { openDb } from '../lib/db.mjs';
-import { piecesPass, placedLint } from '../lib/template-pieces-context.mjs';
+import { pieceContext, piecesPass, placedLint } from '../lib/template-pieces-context.mjs';
+import { commerceOf } from '../lib/skeleton-commerce-region.mjs';
 import { checkPieces, loadPieces } from '../lib/template-pieces.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
@@ -203,6 +204,28 @@ test( 'MUST FAIL: Mama\'s account page: the prompt card, the sign-in page\'s wor
 	} );
 	// The sign-in page is folded into the account row, so both buttons keep the block's own address.
 	assert.equal( got.notes.filter( ( n ) => /reaches this page, whose block draws the sign-in form itself/.test( n ) ).length, 2 );
+} );
+
+test( 'MUST FAIL: Mama\'s sign-in draft made a page of its own (Bean\'s D-1): the card\'s two buttons go to that page, so a signed-out visitor is sent there', () => {
+	const client = 'mamas-munches-redesign';
+	const b = path.join( REPO, 'sites', client, 'build' );
+	const json = ( f ) => JSON.parse( fs.readFileSync( path.join( b, f ), 'utf8' ) );
+	const entry = json( 'surfaces.json' )[ 'my-account' ];
+	const rows = json( 'page-map.json' );
+	// The page map the general session writes for D-1: the sign-in draft's own page row holding its WooCommerce forms, which
+	// leave the account row.
+	const signInForm = ( p ) => /^SignIn\.dc\.html:/.test( p.draftId );
+	const account = rows.find( ( r ) => 'Account.dc.html' === r.route );
+	const own = [ ...rows.filter( ( r ) => r !== account ), { ...account, parts: account.parts.filter( ( p ) => ! signInForm( p ) ) }, { route: 'SignIn.dc.html', slug: 'sign-in', title: 'Sign in', parent: null, template: 'page', menus: [], postType: 'page', collection: 'static', flags: [], parts: account.parts.filter( signInForm ) } ];
+	const inventory = json( 'skeleton/my-account.inventory.json' );
+	const tree = json( 'skeleton/my-account.skeleton.json' );
+	const base = pieceContext( { repo: REPO, client, entry, inventory, pieces: [ PIECE ] } );
+	const got = place( { ...base, key: 'account', tree, commerce: commerceOf( entry, own ), draftLinks: linkContext( { rows: own } ), db }, PIECE );
+	const all = ( t ) => t.flatMap( ( n ) => ( 'sgs/account' === n.name ? [ n ] : all( n.innerBlocks || [] ) ) );
+	const node = ( t ) => all( t )[ 0 ];
+	assert.deepEqual( pick( node( got.tree ).attributes, [ 'signedOutView', 'signedOutSignInUrl', 'signedOutRegisterUrl' ] ), { signedOutView: 'card', signedOutSignInUrl: '/sign-in/', signedOutRegisterUrl: '/sign-in/?mode=register' } );
+	assert.equal( got.notes.filter( ( n ) => /reaches this page/.test( n ) ).length, 0 );
+	assert.equal( node( got.tree ).attributes.authLayout, 'tabs', 'the sign-in page\'s forms are still read for the block\'s words' );
 } );
 
 test( 'MUST FAIL: Eye Care\'s account page draws the sign-in form itself: the form view keeps, with the forms\' words and the signed-in headings', () => {

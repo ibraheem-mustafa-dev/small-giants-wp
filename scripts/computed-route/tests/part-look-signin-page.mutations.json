@@ -1,0 +1,8 @@
+[
+	{
+		"file": "part-look.mjs",
+		"find": "\tconst signin = accountRow ? signInFilesOf( accountRow, rows )[ 0 ] ?? null : null;",
+		"replace": "\tconst signin = ( accountRow?.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner ).map( ( p ) => String( p.draftId ).split( ':' )[ 0 ] ).find( ( f ) => f && f !== account ) ?? null;",
+		"why": "a sign-in draft made its own page leaves the signed-in views with no page to sign in on"
+	}
+]

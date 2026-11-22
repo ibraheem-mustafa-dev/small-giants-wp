@@ -22,7 +22,7 @@
 	{"file": "lib/skeleton-propose.mjs", "find": "\t\t\tnode.innerBlocks = r.inner.map( copy ).map( mark );", "replace": "\t\t\tnode.innerBlocks = [];", "why": "the product collection holds no product template or card"},
 	{"file": "lib/skeleton-propose.mjs", "find": "\t\t\tconst read = ( n ) => ( 'sgs/' === n.name.slice( 0, 4 ) && item ? { ...n, draftRef: finder( item ), draftFingerprint: m.fingerprint( item ) } : n );", "replace": "\t\t\tconst read = ( n ) => n;", "why": "the product card is not read at the draft's card"},
 	{"file": "lib/skeleton-facts.mjs", "find": "slug?.startsWith( 'core/' ) ? ! ( r.coreExceptions || [] ).some( ( x ) => x.block === slug ) : ! slug?.startsWith( 'woocommerce/' )", "replace": "false", "why": "an unlisted core block or unknown SGS block in the rule passes"},
-	{"file":"lib/skeleton-commerce-region.mjs","find":"( page.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner )","replace":"( page.parts || [] )","why":"a part a block owns names a sign-in page"},
+	{"file":"lib/skeleton-commerce-region.mjs","find":"( page?.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner )","replace":"( page?.parts || [] )","why":"a part a block owns names a sign-in page"},
 	{"file":"lib/skeleton-commerce-region.mjs","find":".filter( ( f ) => f && f !== draftFile( page.route ) )","replace":".filter( ( f ) => f )","why":"the account page's own file is its sign-in page"},
 	{"file":"lib/skeleton-commerce-region.mjs","find":"String( href ).split( /[?#]/ )[ 0 ] );","replace":"String( href ) );","why":"a sign-in link with a query string is missed"},
 	{"file":"lib/skeleton-commerce-region.mjs","find":"\t} else if ( 'account' === commerce.role ) {","replace":"\t} else if ( false ) {","why":"a signed-out account page has no region"},

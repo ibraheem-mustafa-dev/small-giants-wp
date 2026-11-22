@@ -37,6 +37,7 @@ import { compareSettings, faultsOf } from './lib/part-look-compare.mjs';
 import { REPO, assertMayWrite, blockRows, customCssOf, liveProductPath, patchBlock, readParts, readSavedBlock, templateIdOf } from './lib/part-look-run.mjs';
 import { draftProductSlugs } from './lib/template-live-address.mjs';
 import { draftLinksFor } from './lib/draft-link.mjs';
+import { signInFilesOf } from './lib/skeleton-commerce-region.mjs';
 import { reportMarkdown, totalsOf } from './lib/part-look-report.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { applyBuiltinButtons, declaredButtons } from './lib/fill-builtin-button.mjs';
@@ -53,12 +54,12 @@ const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 const SELECTOR_TABLE = path.join( REPO, 'plugins', 'sgs-blocks', 'includes', 'woocommerce', 'commerce-look', 'selectors.json' );
 
 // The draft file each role lives in: the cart and checkout page rows of the page map, the account surface's own file and the
-// sign-in page its WooCommerce parts name.
+// sign-in page its WooCommerce parts name, or the sign-in page row of its own (lib/skeleton-commerce-region.mjs::signInFilesOf).
 export function pagesOf( { rows, surfaces } ) {
 	const route = ( template ) => rows.find( ( r ) => 'page' === r.postType && template === r.template )?.route ?? null;
 	const account = surfaces[ 'my-account' ]?.draftIndex ?? null;
 	const accountRow = rows.find( ( r ) => r.route === account );
-	const signin = ( accountRow?.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner ).map( ( p ) => String( p.draftId ).split( ':' )[ 0 ] ).find( ( f ) => f && f !== account ) ?? null;
+	const signin = accountRow ? signInFilesOf( accountRow, rows )[ 0 ] ?? null : null;
 	return Object.fromEntries( Object.entries( { cart: route( 'cart' ), checkout: route( 'checkout' ), account, signin } ).filter( ( [ , v ] ) => v ) );
 }
 

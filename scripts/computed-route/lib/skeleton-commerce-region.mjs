@@ -25,8 +25,8 @@ import { isAccountRow } from './site-build-map.mjs';
 // The commerce role of a surface, by the template it builds (surfaces.json `target.template`) or, for the account page
 // (an ordinary page holding WooCommerce's account piece), the page row its post is; the checkout page's route (a cart's
 // region links to it); and, for the account page, `signIn`: the other draft page files holding the account row's own
-// WooCommerce forms (its `parts` owned by `woocommerce`, each naming `<file>:<line>:<column> <tag>`), where a signed-out
-// view sends its visitor. The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
+// WooCommerce forms (its `parts` owned by `woocommerce`, each naming `<file>:<line>:<column> <tag>`), or the sign-in page of its
+// own (signInFilesOf), where a signed-out view sends its visitor. The shop's role also carries `filters`, what the draft catalogue (sites/<client>/build/catalogue.json,
 // FR-48-92) says its filter rail can filter: { facets, brands, categories } (lib/skeleton-filter-rail.mjs).
 export const COMMERCE_ROLES = { 'archive-product': 'shop', cart: 'cart', checkout: 'checkout' };
 // The commerce role of a page-map row: its template's, or `account` for the account page.
@@ -39,6 +39,16 @@ const filtersOf = ( catalogue ) => {
 	const kept = ( catalogue?.products || [] ).filter( ( p ) => ! ( catalogue.dropped || [] ).includes( p.draftId ) );
 	return { facets: catalogue?.facets || [], brands: [ ...new Set( kept.map( ( p ) => p.brand ).filter( Boolean ) ) ], categories: [ ...new Set( kept.flatMap( ( p ) => p.categories || [] ) ) ] };
 };
+// The sign-in draft files of the account page row `page`: the other files holding the row's own WooCommerce forms (the page map
+// folds the sign-in draft into the account row), then the file of each page row of its own whose WooCommerce forms are drawn
+// in that file and which has no commerce role (the sign-in draft made its own page, Bean's D-1 of the shop investigation).
+export function signInFilesOf( page, rows = [] ) {
+	const own = ( r ) => ( r.parts || [] ).some( ( p ) => 'woocommerce' === p.owner && draftFile( p.draftId ) && draftFile( p.draftId ) === draftFile( r.route ) );
+	const folded = ( page?.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner ).map( ( p ) => draftFile( p.draftId ) ).filter( ( f ) => f && f !== draftFile( page.route ) );
+	const pages = rows.filter( ( r ) => r !== page && 'page' === r.postType && ! roleOfRow( r ) && own( r ) ).map( ( r ) => draftFile( r.route ) );
+	return [ ...new Set( [ ...folded, ...pages ] ) ];
+}
+
 export function commerceOf( entry, rows = [], catalogue = null ) {
 	const page = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
 	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
@@ -46,7 +56,7 @@ export function commerceOf( entry, rows = [], catalogue = null ) {
 		return null;
 	}
 	const checkout = rows.find( ( r ) => 'page' === r.postType && 'checkout' === r.template )?.route ?? null;
-	const signIn = 'account' === role ? [ ...new Set( ( page.parts || [] ).filter( ( p ) => 'woocommerce' === p.owner ).map( ( p ) => draftFile( p.draftId ) ).filter( ( f ) => f && f !== draftFile( page.route ) ) ) ] : [];
+	const signIn = 'account' === role ? signInFilesOf( page, rows ) : [];
 	return { role, checkout, ...( signIn.length ? { signIn } : {} ), ...( 'shop' === role && catalogue ? { filters: filtersOf( catalogue ) } : {} ) };
 }
 

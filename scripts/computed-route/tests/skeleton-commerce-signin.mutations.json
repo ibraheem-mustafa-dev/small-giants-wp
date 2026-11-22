@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": "\treturn [ ...new Set( [ ...folded, ...pages ] ) ];",
+		"replace": "\treturn [ ...new Set( folded ) ];",
+		"why": "a sign-in draft made its own page is not the account page's sign-in page (D-1), so no account region is found"
+	},
+	{
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": "r !== page && 'page' === r.postType && ! roleOfRow( r ) && own( r )",
+		"replace": "r !== page && 'page' === r.postType && own( r )",
+		"why": "the checkout page is taken for a sign-in page"
+	},
+	{
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": "'woocommerce' === p.owner && draftFile( p.draftId ) && draftFile( p.draftId ) === draftFile( r.route )",
+		"replace": "draftFile( p.draftId ) && draftFile( p.draftId ) === draftFile( r.route )",
+		"why": "a page whose form the page map gives a block is taken for a sign-in page"
+	},
+	{
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": "'woocommerce' === p.owner && draftFile( p.draftId ) && draftFile( p.draftId ) === draftFile( r.route )",
+		"replace": "'woocommerce' === p.owner && draftFile( p.draftId )",
+		"why": "a page whose WooCommerce form is drawn in another file is taken for a sign-in page"
+	},
+	{
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": "\treturn [ ...new Set( [ ...folded, ...pages ] ) ];",
+		"replace": "\treturn [ ...folded, ...pages ];",
+		"why": "a file both folded into the account row and its own page is named twice"
+	}
+]
