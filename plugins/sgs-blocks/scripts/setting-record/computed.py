@@ -412,10 +412,12 @@ class Page:
         self.rules = rules
         self.memo = {}
         self.raw_memo = {}
-        self.root = self.soup.select_one(f'.sgs-{short}')
-        # WordPress's get_block_wrapper_attributes() adds the block's generated class; the offline renderer's stub
-        # does not, so it is added here as WordPress would.
-        if self.root is not None:
+        # The block root: the element with the block's own class, else the one with WordPress's generated class (a
+        # block whose root prints only wp-block-sgs-<name> and its instance class, as sgs/heading does).
+        self.root = self.soup.select_one(f'.sgs-{short}') or self.soup.select_one(f'.wp-block-sgs-{short}')
+        # WordPress's get_block_wrapper_attributes() adds the block's generated class; a render without the runner's
+        # --wp-fidelity lacks it, so it is added here as WordPress would.
+        if self.root is not None and f'wp-block-sgs-{short}' not in (self.root.get('class') or []):
             self.root['class'] = list(self.root.get('class', [])) + [f'wp-block-sgs-{short}']
         self.frame = dict(container_frame or {})
         self._containers = {}

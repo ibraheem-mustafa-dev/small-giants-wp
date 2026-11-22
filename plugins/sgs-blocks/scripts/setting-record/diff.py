@@ -216,6 +216,44 @@ def read(res: dict, short: str):
 
 
 # ---------------------------------------------------------------- static stylesheets
+def sass_command(plugin: Path) -> list:
+    """The Sass compiler the plugin builds with: $SGS_SASS, else the plugin's own node_modules/.bin/sass."""
+    import os
+    import shutil
+    if os.environ.get('SGS_SASS'):
+        return [os.environ['SGS_SASS']]
+    for name in ('sass.cmd', 'sass'):
+        f = plugin / 'node_modules' / '.bin' / name
+        if f.is_file():
+            return [str(f)]
+    found = shutil.which('sass')
+    if found:
+        return [found]
+    raise RuntimeError(f"no Sass compiler: set SGS_SASS or install the plugin's node_modules ({plugin / 'node_modules'})")
+
+
+SOURCE_OF: dict = {}  # compiled .scss -> its source file, so a rule names the file it is written in
+
+
+def compiled_scss(plugin: Path, f: Path) -> Path:
+    """The CSS a block's .scss stylesheet compiles to, cached by its source text (a missing compiler raises)."""
+    import hashlib
+    import subprocess
+    import render as RN
+    src = f.read_bytes()
+    out = RN.CACHE_ROOT / 'scss' / f'{hashlib.md5(f.name.encode() + src).hexdigest()}.css'
+    SOURCE_OF[out] = f
+    if out.is_file():
+        return out
+    out.parent.mkdir(parents=True, exist_ok=True)
+    p = subprocess.run([*sass_command(plugin), '--no-source-map', '--load-path', str(plugin / 'src'), str(f)],
+                       capture_output=True, text=True, encoding='utf-8', errors='replace', shell=False)
+    if p.returncode != 0:
+        raise RuntimeError(f'Sass could not compile {f}: {p.stderr.strip()[:300]}')
+    out.write_text(p.stdout, encoding='utf-8')
+    return out
+
+
 def sheet_files(plugin: Path, short: str, children) -> list:
     """The front-end stylesheets a render of the block loads: its own and its rendered children's, those of any block a
     child belongs in (block.json parent / ancestor), src/shared and assets/css."""
@@ -230,7 +268,10 @@ def sheet_files(plugin: Path, short: str, children) -> list:
     for b in sorted(names):
         d = blocks_dir / b
         if d.is_dir():
-            files += [f for f in d.rglob('*.css') if 'editor' not in f.name]
+            css = [f for f in d.rglob('*.css') if 'editor' not in f.name]
+            # a block whose stylesheet is written in Sass (style.scss, no style.css) is read from its compiled CSS
+            files += css + [compiled_scss(plugin, f) for f in d.rglob('*.scss')
+                            if 'editor' not in f.name and not f.name.startswith('_') and f.with_suffix('.css') not in css]
     files += [f for f in (plugin / 'src' / 'shared').rglob('*.css') if 'editor' not in f.name]
     files += [f for f in (plugin / 'assets' / 'css').glob('*.css') if not EXCLUDED_SHEET.search(f.name)]
     return sorted(set(files))
@@ -244,7 +285,7 @@ def static_rules(plugin: Path, short: str, children) -> list:
             for p, v in decls_of(body):
                 if re.fullmatch(r'-{0,2}[a-z][a-z0-9-]*', p):
                     for s in split_top(sel):
-                        out.append((s.strip(), p, v, media.strip(), f.relative_to(plugin).as_posix()))
+                        out.append((s.strip(), p, v, media.strip(), SOURCE_OF.get(f, f).relative_to(plugin).as_posix()))
     return out
 
 

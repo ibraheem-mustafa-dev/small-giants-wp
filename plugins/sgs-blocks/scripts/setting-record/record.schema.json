@@ -17,7 +17,11 @@
       "pattern": "^sgs/[a-z0-9-]+$"
     },
     "schemaVersion": {
-      "const": 1
+      "enum": [
+        1,
+        2
+      ],
+      "description": "2 adds stamp, proofKeys, accounted and entry values; 1 is still read."
     },
     "parts": {
       "description": "The block's own part classes (sgs-<block>__<part>) the default render prints, in markup order.",
@@ -103,6 +107,14 @@
               "other"
             ],
             "description": "Set when the proof could not see what decides the entry, naming why. The entry is kept, but its kind is a reading, not a proof (switched-on for a true/false setting, else value): a reader that acts on kind must treat it as unproven."
+          },
+          "values": {
+            "type": "array",
+            "description": "The setting values whose renders produced this entry (the test values the check used)."
+          },
+          "symbolic": {
+            "type": "object",
+            "description": "For a tier written from the setting's own value (a breakpoint setting): {edge, setting, offset}."
           }
         },
         "if": {
@@ -118,6 +130,99 @@
           ]
         }
       }
+    },
+    "proofKeys": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ],
+        "minItems": 5,
+        "maxItems": 5
+      },
+      "description": "The keys (setting, part, props, state, tiers) the plain comparison sees before the proof removes or re-files any, so check.py --no-proof is exact against this record."
+    },
+    "stamp": {
+      "type": "object",
+      "description": "What the record was checked against (stamp.py::make_stamp): inputs {file: hash}, outputs, theme, classes, tags.",
+      "required": [
+        "version",
+        "inputs",
+        "outputs",
+        "theme"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer"
+        },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "outputs": {
+          "type": "string"
+        },
+        "theme": {
+          "type": "string"
+        },
+        "classes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "accounted": {
+      "type": "object",
+      "description": "Every setting not in an entry: tested with no paint, replacing the block, not valued (with the reason), or placed on a part the selector reader cannot name.",
+      "properties": {
+        "testedNoPaint": {
+          "type": "array"
+        },
+        "replacesBlock": {
+          "type": "array"
+        },
+        "unvalued": {
+          "type": "array"
+        },
+        "partNotNamed": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

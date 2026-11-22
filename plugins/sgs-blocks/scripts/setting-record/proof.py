@@ -698,7 +698,9 @@ def prove(short: str, run: dict):
                     elif theme_winner(pages, pairs, part, names, widths, held, conds):
                         verdict, cause, evidence = 'blind', 'same-value-here', 'the winning declaration is a rule of the theme in this page frame, the same with and without the setting (' + theme_winner(pages, pairs, part, names, widths, held, conds) + '): another layout would not apply it, so the entry stays'
                     else:
-                        verdict, evidence = 'removed', 'the winning declaration is the same with and without the setting, also with a second test value: ' + winner_note(pages, pairs[-1], part, names, widths, held, conds)
+                        # the note reads the last pair whose changed page draws the part (a completion or sibling pair may not)
+                        drawn = next((pr for pr in reversed(pairs) if pages.get(pr[1], held, conds).elements(part)), pairs[-1])
+                        verdict, evidence = 'removed', 'the winning declaration is the same with and without the setting, also with a second test value: ' + winner_note(pages, drawn, part, names, widths, held, conds)
         row = {'setting': setting, 'part': part, 'props': props, 'state': state, 'tiers': tiers, 'verdict': verdict, 'evidence': evidence}
         if verdict == 'proved':
             out[k] = {**e, 'kind': kind}
@@ -807,6 +809,57 @@ def front_end_scripts(plugin: str) -> tuple:
     import the editor's packages (@wordpress/block-editor, components, element, editor, edit-post, data), which are the
     editor's own code (a block's preview and its controls)."""
     return tuple((rel, text) for rel, text in corpus(plugin) if rel.endswith(('.js', '.mjs')) and not _EDITOR_IMPORT.search(text))
+
+
+_IMPORT = re.compile(r"""(?:import|export)\s[^'";]*?from\s*['"](\.{1,2}/[^'"]+)['"]|import\s*\(?\s*['"](\.{1,2}/[^'"]+)['"]""")
+EDITOR_ENTRIES = ('index.js', 'edit.js', 'editor.js')
+
+
+def _resolve_import(base: Path, spec: str, files: set):
+    """The corpus file a relative import names (with or without its extension, or a folder's index)."""
+    p = (base.parent / spec)
+    for cand in (p, p.with_suffix('.js'), p.with_suffix('.mjs'), p / 'index.js'):
+        key = cand.resolve()
+        if key in files:
+            return key
+    return None
+
+
+@lru_cache(maxsize=8)
+def front_end_reachable(plugin: str) -> frozenset:
+    """The corpus scripts (their relative paths) a visitor's page can run: every script reached through relative imports
+    from a starting point (a script nothing imports) that is not the editor's. A starting point is the editor's when it
+    is a block's editor entry (index.js, edit.js, editor.js) or imports the editor's packages (_EDITOR_IMPORT); every
+    other starting point (a block's view script, a webpack entry, a script the plugin or theme enqueues) counts as the
+    front end's, so an unknown entry is never dropped."""
+    rels = {}
+    for rel, text in corpus(plugin):
+        if rel.endswith(('.js', '.mjs')):
+            root = Path(plugin).resolve().parents[1] if rel.startswith('theme/') else Path(plugin).resolve()
+            rels[(root / rel).resolve()] = (rel, text)
+    # the editor's own entries are left out of corpus(); read them as starting points too
+    src = Path(plugin) / 'src'
+    for f in src.rglob('*.js'):
+        if f.name in EDITOR_ENTRIES and f.resolve() not in rels:
+            rels[f.resolve()] = (None, f.read_text(encoding='utf-8', errors='ignore'))
+    files = set(rels)
+    edges, imported = {}, set()
+    for f, (_rel, text) in rels.items():
+        targets = set()
+        for m in _IMPORT.finditer(text):
+            hit = _resolve_import(f, m.group(1) or m.group(2), files)
+            if hit is not None:
+                targets.add(hit)
+        edges[f] = targets
+        imported |= targets
+    starts = [f for f in rels if f not in imported and not (f.name in EDITOR_ENTRIES or _EDITOR_IMPORT.search(rels[f][1]))]
+    seen, todo = set(starts), list(starts)
+    while todo:
+        for t in edges.get(todo.pop(), ()):
+            if t not in seen:
+                seen.add(t)
+                todo.append(t)
+    return frozenset(rels[f][0] for f in seen if rels[f][0])
 
 
 def text_only_printers(plugin: str, short: str, head: str) -> list:
@@ -1306,12 +1359,14 @@ _COLOUR_PROP = re.compile(r'colou?r|fill|stroke|shadow|background|outline|border
 
 def script_set_tokens(plugin, tokens) -> list:
     """[(token, file)] for each custom property a front-end script of the plugin or theme writes (setProperty, or the
-    name in a style string a script builds): its value is the script's, read only in a browser."""
+    name in a style string a script builds): its value is the script's, read only in a browser. Only scripts a
+    front-end entry reaches count (front_end_reachable): an editor preview that mirrors a token is not the visitor's."""
     out = []
+    reach = front_end_reachable(str(plugin))
     for t in sorted(tokens):
         pat = re.compile(re.escape(t) + r'(?![\w-])')
         for rel, text in corpus(str(plugin)):
-            if rel.endswith(('.js', '.mjs')) and pat.search(text):
+            if rel.endswith(('.js', '.mjs')) and rel in reach and pat.search(text):
                 out.append((t, rel))
                 break
     return out

@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -34,6 +35,7 @@ import render as RN  # noqa: E402
 import vocab as V  # noqa: E402
 
 FIXTURES = HERE / 'fixtures.json'
+RECORDS = HERE.parent / 'data' / 'setting-records'  # the committed records the framework database is seeded from
 SCHEMA = HERE / 'record.schema.json'
 
 
@@ -148,8 +150,11 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
     rn = RN.Renderer(plugin, fixture, fixtures_dir, short)
     slug = f'sgs/{short}'
     content, inner = rn.render_inner(fixture.get('inner'))
-    children = sorted(set(re.findall(r'"name": "sgs/([a-z0-9-]+)"', json.dumps(fixture.get('inner') or []))))
+    if not fixture.get('inner') and fixture.get('content'):
+        content = fixture['content']  # saved markup a parent block echoes as $content, when it has no rendered children
+    children =sorted(set(re.findall(r'"name": "sgs/([a-z0-9-]+)"', json.dumps(fixture.get('inner') or []))))
     sheets = D.static_rules(plugin, short, children)
+    sheet_files = D.sheet_files(plugin, short, children)
     insts = [i for i in pl['instances'] if not i.get('discover')]
     jobs = {}
     for i in insts:
@@ -212,14 +217,39 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
     errors = sorted({(results[k].get('error') or '')[:200] for k in results if not results[k].get('ok')})
     # Every setting is accounted for: in the record (an entry), tested and painting nothing (its renders changed no CSS,
     # class, attribute or style anywhere), or not tested (`unvalued`, with the reason the generator could not value it).
-    tested = {i['attr'] for i in insts if i['attr'] and not i['isDefault'] and not i['isBase'] and not i.get('paintState')}
+    tried = {i['attr'] for i in insts if i['attr'] and not i['isDefault'] and not i['isBase'] and not i.get('paintState')}
+    tested = {e['attr'] for e in log if not e.get('error')}
     recorded = {e['setting'] for e in entries.values()} | {e['setting'] for e in unnamed}
+    # The coverage floor: a default render that prints nothing, or not the block's own root, tests nothing, so every
+    # setting would read as painting nothing; such a block fails until its fixture renders it.
+    root_printed = any(f'sgs-{short}' in m.split() or f'wp-block-sgs-{short}' in m.split()
+                       for m in re.findall(r'class="([^"]*)"', d0.get('html', '')))
     stats = {'block': slug, 'instances': len(insts), 'renders': len(jobs), 'failed': sum(1 for r in results.values() if not r.get('ok')),
              'errors': errors[:10], 'secondsRendering': round(t2 - t1, 1), 'secondsRun': round(time.time() - t0, 1),
              'testedNoPaint': sorted(tested - recorded - replaced), 'replacesBlock': sorted(replaced - recorded),
-             'unvalued': pl.get('unvalued') or []}
+             'unvalued': pl.get('unvalued') or [], 'renderFailedOnly': sorted(tried - tested - replaced),
+             # settings that painted nothing here although the source scanner finds CSS the code writes from them: a
+             # partner the fixture leaves off, content it lacks, or a fault (summarise.py buckets them)
+             'noPaintButPlaced': sorted((tested - recorded - replaced) & set(pl.get('rows') or [])),
+             'coverage': {'defaultRendered': bool(d0.get('ok')), 'defaultEmpty': not (d0.get('html') or '').strip(),
+                          'rootPrinted': root_printed}}
     return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'selectors': sels, 'results': results, 'children': children, 'plugin': plugin, 'jobs': jobs, 'defaultHtml': d0.get('html', ''), 'stats': stats,
-            'log': log, 'aliases': aliases, 'sheets': sheets, 'renderer': rn, 'plan': pl, 'slug': slug, 'content': content, 'inner': inner}
+            'log': log, 'aliases': aliases, 'sheets': sheets, 'renderer': rn, 'plan': pl, 'slug': slug, 'content': content, 'inner': inner, 'sheetFiles': sheet_files}
+
+
+def entry_values(run: dict) -> dict:
+    """{entry key: the setting values whose renders produced it}, from each placement's render pair."""
+    out = {}
+    for k, pairs in (run.get('pairs') or {}).items():
+        vals = []
+        for _b, c in pairs:
+            a = (run.get('jobs') or {}).get(c) or {}
+            v = a.get(k[0])
+            if v is not None and v not in vals:
+                vals.append(v)
+        if vals:
+            out[k] = sorted(vals, key=lambda v: json.dumps(v, sort_keys=True))
+    return out
 
 
 # ---------------------------------------------------------------- comparing
@@ -295,6 +325,7 @@ def check_block(args, block: str) -> int:
     instances = args.instances or (args.instances_dir / f'plan-{short}.json' if args.instances_dir else None)
     run = run_block(short, args.plugin, fixtures, args.fixtures.parent, instances)
     entries = run['entries']
+    plain_keys = sorted(run['entries'], key=json.dumps)  # what the plain comparison sees, before the proof
     proof = None
     if not args.no_proof:
         import proof as PR
@@ -315,15 +346,33 @@ def check_block(args, block: str) -> int:
         kept = []
         if write.is_file():
             kept = [e for e in json.loads(write.read_text(encoding='utf-8')).get('entries', []) if e.get('runner')]
-        doc = {'block': f'sgs/{short}', 'schemaVersion': 1, 'parts': parts['order'],
-               'entries': sorted(kept + [{k: v for k, v in e.items() if v is not None or k == 'state'} for e in entries.values()], key=lambda e: json.dumps(key(e)))}
+        import stamp as ST
+        import theme as TH
+        values = entry_values(run)
+        doc = {'block': f'sgs/{short}', 'schemaVersion': 2, 'parts': parts['order'],
+               'entries': sorted(kept + [{**{k: v for k, v in e.items() if v is not None or k == 'state'},
+                                          **({'values': values[key(e)]} if values.get(key(e)) else {})} for e in entries.values()],
+                                 key=lambda e: json.dumps(key(e))),
+               'proofKeys': [list(k[:2]) + [list(k[2]), k[3], list(k[4])] for k in plain_keys],
+               'accounted': {'testedNoPaint': run['stats']['testedNoPaint'], 'replacesBlock': run['stats']['replacesBlock'],
+                             'unvalued': run['stats']['unvalued'], 'partNotNamed': run['unnamed']},
+               'stamp': ST.make_stamp(args.plugin, short, run['plan']['fixture'] or {}, args.fixtures.parent, run['results'],
+                                      run['sheetFiles'], TH.theme_css(Path(args.plugin).resolve().parents[1]))}
+        if args.no_proof and write.resolve().parent == RECORDS.resolve():
+            raise SystemExit(f'refusing to write {write} without the proof: a record in {RECORDS} carries proved kinds')
         errs = schema_errors(doc, need_kind=not args.no_proof)
+        write.parent.mkdir(parents=True, exist_ok=True)
         write.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
         report.update(written=str(write), entries=len(doc['entries']), schemaErrors=errs)
         bad = bool(errs)
     if record_file:
         doc = json.loads(record_file.read_text(encoding='utf-8'))
-        res = compare(doc['entries'], entries)
+        if args.no_proof and doc.get('proofKeys') is not None:
+            # without the proof, the run's keys are the plain ones: compare them with the plain keys the record was proved from
+            plain = [dict(zip(('setting', 'part', 'props', 'state', 'tiers'), k)) for k in doc['proofKeys']]
+            res = compare(plain, entries)
+        else:
+            res = compare(doc['entries'], entries)
         if doc.get('parts') != parts['order']:
             parts['orderChanged'] = {'record': doc.get('parts'), 'code': parts['order']}
         errs = schema_errors(doc, need_kind=not args.no_proof)
@@ -333,6 +382,12 @@ def check_block(args, block: str) -> int:
         # A part block.json declares but nothing prints, or one printed but never declared, is a fault in the block, not
         # in its record: reported always, failing only with --strict-parts (until every block's declarations are whole).
         bad = bad or (args.strict_parts and bool(parts['declaredNotPrinted'] or parts['printedNotDeclared']))
+    cov = run['stats']['coverage']
+    floor = [] if cov['rootPrinted'] else ['the default render ' + ('is empty' if cov['defaultEmpty'] else 'does not print the block root')]
+    if run['stats']['renderFailedOnly']:
+        floor.append(f"{len(run['stats']['renderFailedOnly'])} setting(s) whose every render failed")
+    report['coverageFloor'] = floor
+    bad = bad or bool(floor)
     report['parts'] = parts
     if proof is not None:
         report['proof'] = proof
@@ -361,7 +416,13 @@ def main(argv=None):
     ap.add_argument('--strict-parts', action='store_true', help='also fail on parts block.json declares but nothing prints, or prints but never declares')
     ap.add_argument('--out', type=Path, default=RN.CACHE_ROOT / 'reports')
     ap.add_argument('--self-test', action='store_true')
+    ap.add_argument('--all', action='store_true', help='every block in src/blocks (from its block.json)')
+    ap.add_argument('--jobs', type=int, default=int(os.environ.get('SGS_SETTING_RECORD_JOBS') or 0),
+                    help='blocks checked at once with several blocks (default: a quarter of the cores, at least 2)')
     args = ap.parse_args(argv)
+    if args.all:
+        import seed_fixtures
+        args.blocks = [n.split('/', 1)[1] for n in seed_fixtures.roster(args.plugin)]
     if args.self_test:
         import selftest
         return selftest.main(args)
@@ -371,17 +432,40 @@ def main(argv=None):
         return check_block(args, args.blocks[0])
     if args.record or args.write:
         ap.error('--record and --write name one block file; with several blocks use --record-dir and --write-dir')
-    # several blocks: one process each, at once
-    base = [a for a in (argv if argv is not None else sys.argv[1:]) if a not in args.blocks]
-    import os
-    env = dict(os.environ, SGS_SETTING_RECORD_WORKERS=str(max(2, (os.cpu_count() or 8) // len(args.blocks))))
-    procs = {b: subprocess.Popen([sys.executable, str(Path(__file__).resolve()), b, *base], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', env=env)
-             for b in args.blocks}
+    return check_many(args)
+
+
+def _size(plugin: Path, block: str) -> int:
+    """How many attributes a block has: the pool starts the biggest first, so the longest block never runs last."""
+    try:
+        return len(RN.block_json(plugin, block.split('/', 1)[-1]).get('attributes') or {})
+    except (OSError, ValueError):
+        return 0
+
+
+def _check_in_worker(args, block: str) -> int:
+    """One block in a pool worker; an exception is that block's failure, never the run's."""
+    try:
+        return check_block(args, block)
+    except Exception as exc:  # noqa: BLE001 - reported per block, the pool carries on
+        print(json.dumps({'block': f"sgs/{block.split('/', 1)[-1]}", 'crashed': f'{type(exc).__name__}: {exc}'[:500]}), flush=True)
+        return 2
+
+
+def check_many(args) -> int:
+    """Several blocks in a bounded pool of long-lived worker processes: each worker builds the scanner's whole-plugin
+    helper index once (block-source-scan/common.py::contracts is cached per process) and checks many blocks; the biggest
+    blocks start first; each block prints its line when it finishes."""
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+    cores = os.cpu_count() or 8
+    jobs = max(1, min(len(args.blocks), args.jobs or max(2, cores // 4)))
+    os.environ.setdefault('SGS_SETTING_RECORD_WORKERS', str(max(2, cores // jobs)))
+    blocks = sorted(args.blocks, key=lambda b: -_size(args.plugin, b))
     worst = 0
-    for b, p in procs.items():
-        o, e = p.communicate()
-        print(o.strip() or e.strip()[-2000:])
-        worst = max(worst, p.returncode)
+    with ProcessPoolExecutor(max_workers=jobs) as pool:
+        futures = {pool.submit(_check_in_worker, args, b): b for b in blocks}
+        for f in as_completed(futures):
+            worst = max(worst, f.result())
     return worst
 
 

@@ -140,6 +140,22 @@ def is_empty(v) -> bool:
 
 
 # ---------------------------------------------------------------- inputs
+def load_shared(path=None) -> dict:
+    """fixtures.json's `_shared` entry: partners and reasons for the settings every block receives from a shared
+    extension (each cites the code that needs it)."""
+    data = json.loads(Path(path or FIXTURES_FILE).read_text(encoding='utf-8'))
+    return data.get('_shared') or {}
+
+
+def with_shared(fixture: dict, shared: dict) -> dict:
+    """The block's fixture with the shared partners under its own (its own win) and the shared reasons a setting is
+    not valued."""
+    if not shared:
+        return fixture
+    pre = {**(shared.get('preconditions') or {}), **(fixture.get('preconditions') or {})}
+    return {**fixture, 'preconditions': pre, '_unvalued': {**(shared.get('unvalued') or {}), **(fixture.get('_unvalued') or {})}}
+
+
 def load_fixtures(path=None) -> dict:
     """The fixtures file (keyed by block name, `_meta` dropped)."""
     data = json.loads(Path(path or FIXTURES_FILE).read_text(encoding='utf-8'))
@@ -429,6 +445,55 @@ def gating_toggle(attr: str, schema: dict, current: dict) -> dict:
     return {best[0]: True} if best else {}
 
 
+def shadow_lift_partner(attr: str, schema: dict, current: dict) -> dict:
+    """A shadow-lift switch (shadowLiftOnHover, submitShadowLiftOnHover) acts on the shadow its block draws
+    (helpers-shadow-hover.php::sgs_shadow_hover_rules): the block's own box shadow for that prefix is given a shape
+    when it has none, so switching the lift off changes the hover. The shadow is the prefix's `Shadow`, `BoxShadow`,
+    else the block's only box shadow (a text or SVG shadow never)."""
+    m = re.match(r'^(.*?)(?:S|s)hadowLiftOnHover$', attr)
+    if not m:
+        return {}
+    p = m.group(1)
+    names = [f'{p}Shadow', f'{p}BoxShadow'] if p else ['boxShadow', 'shadow']
+    if not p:
+        names += [n for n in schema if re.fullmatch(r'[a-z]+Shadow', n) and not re.search(r'(text|svg|Text|Svg)', n)]
+    for n in names:
+        d = schema.get(n)
+        if d and 'string' in types(d) and current.get(n, d.get('default', '')) in ('', None, 'none'):
+            return {n: SHADOW_SHAPE}
+    return {}
+
+
+# The values of a mode setting that switch its look off: the theme's own, none, off, hidden.
+OFF_MODES = ('', 'none', 'off', 'hidden', 'default', 'inherit', 'false', '0')
+
+
+# What a setting's name may add to a mode setting's name for the mode to gate it: a property of the mode's look (its
+# colour, size, offset...), never a state (Hover), a device (Tablet) or a mode of its own (layoutMode after layout).
+MODE_PART = re.compile(r'^(?:(?:Circle|Icon|Shape|Line|Text|Link)?(?:Colour|Color|Size|Width|Height|Thickness|Offset|Gap|Radius'
+                       r'|Opacity|Reveal|Custom|Duration|Delay|Weight|Linked)(?:Gradient|Hover|Linked)?)+$')
+
+
+def gating_mode(attr: str, schema: dict, current: dict) -> dict:
+    """The mode setting the setting's name extends at a word boundary with a property of its look (linkUnderline for
+    linkUnderlineColour), when that mode is an enum now at a value that switches its look off: it is moved to a value
+    that switches it on (the one the rest of the name names, as `custom` for fooEasingCustom, else its first), so the
+    setting's paint is drawn (the helper that reads both emits nothing while the mode is off). The longest stem wins."""
+    best = None
+    for name, d in schema.items():
+        rest = attr[len(name):] if attr.startswith(name) else ''
+        if name == attr or not rest[:1].isupper() or not MODE_PART.match(rest):
+            continue
+        en = d.get('enum') if isinstance(d, dict) else None
+        if not en or str(current.get(name, d.get('default', ''))) not in OFF_MODES:
+            continue
+        on = [v for v in en if isinstance(v, str) and v not in OFF_MODES]
+        named = [v for v in on if v.lower() in rest.lower()]
+        if on and (not best or len(name) > len(best[0])):
+            best = (name, (named or on)[0])
+    return {best[0]: best[1]} if best else {}
+
+
 @lru_cache(maxsize=None)
 def code_corpus(plugin: str) -> str:
     """Every front-end PHP file of the plugin (includes/ and the blocks' own), joined: what the code reads is searched here."""
@@ -484,6 +549,8 @@ def preconditions(row: dict, schema: dict, current: dict, ctx: dict) -> dict:
             and current.get('backgroundOverlayColour', schema['backgroundOverlayColour'].get('default', '')) in ('', None):
         out['backgroundOverlayColour'] = OVERLAY_REST_HEX
     out.update(gating_toggle(name, schema, current))
+    out.update({k: v for k, v in shadow_lift_partner(name, schema, current).items() if k not in out})
+    out.update({k: v for k, v in gating_mode(name, schema, current).items() if k not in out})
     out.update(border_partners(name, first, schema))
     out.update(shadow_partners(name, first, schema))
     if (re.search(r'overlay|scrim', name, re.I) or IMAGE_SHAPING.search(name) or any(IMAGE_SHAPING_PROPS.search(p) for p in props)) \
@@ -988,6 +1055,9 @@ def plan_block(bj: dict, fixture: dict | None = None, *, places: dict | None = N
         instances.append({'key': f'default-v{vi}', 'attrs': vattrs, 'variant': vi, 'isDefault': True})
         for a in settings:
             row = rows[a]
+            if a in (fixture.get('_unvalued') or {}):
+                unvalued.setdefault(a, fixture['_unvalued'][a])
+                continue
             res = values_for(row, schema[a], schema, vattrs)
             if isinstance(res, tuple):
                 unvalued.setdefault(a, res[1])
@@ -1033,6 +1103,7 @@ def plan(short: str, plugin: Path = PLUGIN, fixtures: dict | None = None, *, sca
     places = scanned_props(blocks_dir, short) if scan else {}
     places = {**places, **declared_props(bj, schema, plugin)}
     fixture = fixtures.get(bj['name']) or {'attributes': {}, 'variants': [{}]}
+    fixture = with_shared(fixture, fixtures.get('_shared') if '_shared' in fixtures else load_shared())
     roster = extension_roster(str(plugin))
     ext = extension_attrs(bj, roster)
     shapes = tier_shapes(schema, blocks_dir / short, plugin)
