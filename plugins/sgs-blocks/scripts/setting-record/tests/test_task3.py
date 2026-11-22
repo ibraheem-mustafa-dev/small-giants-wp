@@ -622,3 +622,23 @@ def test_a_core_file_aimed_at_one_block_checks_that_block(tmp_path, monkeypatch)
     scope.write_text("<?php add_filter( 'render_block_sgs/form', 'f' ); // v1", encoding='utf-8')
     out = ST.select(plugin, records, {}, tmp_path, '')
     assert out['sgs/form']['own'] == [] and 'includes/boot.php changed' in out['sgs/form']['core']
+
+
+
+def test_an_editor_script_edit_keeps_renders_and_selects_no_block(tmp_path):
+    plugin = tmp_path / 'plugin'
+    blk = plugin / 'src' / 'blocks' / 'demo'
+    blk.mkdir(parents=True)
+    (blk / 'block.json').write_text('{"name": "sgs/demo"}', encoding='utf-8')
+    (blk / 'render.php').write_text('<?php echo 1;', encoding='utf-8')
+    (blk / 'edit.js').write_text('export default 1;', encoding='utf-8')
+    before = RN.code_hash(plugin, (), {'demo'})
+    inputs = ST.block_inputs(plugin, 'demo', {}, {}, tmp_path, [], [])
+    assert 'src/blocks/demo/edit.js' not in inputs and 'src/blocks/demo/render.php' in inputs
+    records = {'sgs/demo': {'stamp': {'inputs': inputs, 'theme': ST.theme_reach({}, [], []), 'check': ST.check_hash(plugin)}}}
+    (blk / 'edit.js').write_text('export default 2;', encoding='utf-8')
+    (blk / 'index.js').write_text('import "./edit";', encoding='utf-8')  # a new script file
+    assert RN.code_hash(plugin, (), {'demo'}) == before
+    assert ST.select(plugin, records, {}, tmp_path, '') == {}
+    records['sgs/demo']['stamp']['inputs']['src/blocks/demo/edit.js'] = 'an older stamp listed it'
+    assert ST.select(plugin, records, {}, tmp_path, '') == {}

@@ -85,7 +85,7 @@ def block_inputs(plugin: Path, short: str, fixture: dict, shared: dict, fixtures
     plugin = Path(plugin)
     files = set(included)
     bdir = plugin / 'src' / 'blocks' / short
-    files.update(p.relative_to(plugin).as_posix() for p in bdir.rglob('*') if p.is_file())
+    files.update(p.relative_to(plugin).as_posix() for p in bdir.rglob('*') if p.is_file() and stamped_file(p))
     shipped = {}
     for f in sheets:
         f = Path(f)
@@ -104,6 +104,13 @@ def block_inputs(plugin: Path, short: str, fixture: dict, shared: dict, fixtures
     out['fixture-entry'] = text_hash(json.dumps(fixture, sort_keys=True))
     out['fixture-shared'] = text_hash(json.dumps(shared or {}, sort_keys=True))
     return out
+
+
+def stamped_file(p: Path) -> bool:
+    """A file of the block's folder the record depends on: not a script or a note (render.py::SCRIPT_SUFFIXES; no
+    render reads one, and the offline check sees no script's effect), so an editor-only edit selects nothing."""
+    import render as RN
+    return p.suffix not in RN.SCRIPT_SUFFIXES + ('.md',)
 
 
 def _rel(plugin: Path, f: Path):
@@ -227,6 +234,8 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
             fixture = fixtures.get(block) or {}
             import render as RN
             for path, h in st['inputs'].items():
+                if ':' not in path and path != 'fixture-entry' and not stamped_file(Path(path)):
+                    continue  # a script an older stamp listed: no longer an input
                 if path == 'fixture-entry':
                     now = text_hash(json.dumps(fixture, sort_keys=True))
                 elif path == 'fixture-shared':
@@ -245,7 +254,7 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
             bdir = plugin / 'src' / 'blocks' / short
             for p in bdir.rglob('*'):
                 rel = p.relative_to(plugin).as_posix()
-                if p.is_file() and rel not in st['inputs']:
+                if p.is_file() and stamped_file(p) and rel not in st['inputs']:
                     own.append(f'{rel} is new')
             if st.get('theme') != theme_reach(now_theme, st.get('classes') or [], st.get('tags') or []):
                 own.append('a theme rule that can reach its rendered elements changed')

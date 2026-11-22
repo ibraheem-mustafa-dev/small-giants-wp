@@ -42,19 +42,24 @@ RUNNER_FIDELITY_FLAGS = ['--render-block-filters', '--print-footer', '--wp-fidel
 CODE_ROOTS = ('src', 'includes', 'assets', 'schemas', 'templates', 'scripts/qa/lib', 'sgs-blocks.php')
 
 
-# A stylesheet never changes what a render prints: the renders read no stylesheet file (the one plugin file that does,
-# STYLESHEET_READERS, is never loaded by a render; Renderer.render refuses one that loads it), so a CSS edit keeps every
-# cached render. The check reads the sheets themselves fresh (diff.py::sheet_files), and each record's stamp holds them
-# (stamp.py `shipped:`), so a CSS edit still selects and re-checks the blocks it reaches.
+# A stylesheet or a script never changes what a render prints: the renders read neither (the plugin files that do,
+# ASSET_READERS, are never loaded by a render; Renderer.render refuses one that loads it), so a CSS or editor-script edit
+# keeps every cached render. The check reads the sheets themselves fresh (diff.py::sheet_files), and each record's stamp
+# holds them (stamp.py `shipped:`), so a CSS edit still selects and re-checks the blocks it reaches; a script edit moves
+# no entry the offline check can see (a browser verdict holds only while check.py::script_hash is unchanged).
 STYLESHEET_SUFFIXES = ('.css', '.scss')
-STYLESHEET_READERS = ('includes/class-sgs-css-delivery.php',)
+SCRIPT_SUFFIXES = ('.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx')
+NOT_RENDER_INPUTS = STYLESHEET_SUFFIXES + SCRIPT_SUFFIXES + ('.md',)
+ASSET_READERS = ('includes/class-sgs-css-delivery.php',  # inlines block stylesheets into the head
+                 'includes/woocommerce/commerce-look/line-items.php')  # inlines summary-extras.js
+STYLESHEET_READERS = ASSET_READERS
 
 
 def _files(base: Path):
     if base.is_file():
         return [base]
     return sorted(p for p in base.rglob('*') if p.is_file() and '__pycache__' not in p.parts
-                  and p.suffix not in STYLESHEET_SUFFIXES) if base.is_dir() else []
+                  and p.suffix not in NOT_RENDER_INPUTS) if base.is_dir() else []
 
 
 def code_hash(plugin: Path, fixture_files=(), blocks=None) -> str:
@@ -253,10 +258,10 @@ class Renderer:
         if res.get('ok'):
             # included-files.php writes the list at every render's end (an empty list only if PHP never reached it)
             res['included'] = included_paths(json.loads(inc.read_text(encoding='utf-8')), self.plugin) if inc.is_file() else []
-            readers = sorted(set(res['included']) & set(STYLESHEET_READERS))
+            readers = sorted(set(res['included']) & set(ASSET_READERS))
             if readers:
-                raise RuntimeError(f'a render of {slug} loaded {readers}, which reads stylesheet files: the render cache key '
-                                   'leaves stylesheets out (render.py::STYLESHEET_SUFFIXES), so it must take them in first')
+                raise RuntimeError(f'a render of {slug} loaded {readers}, which reads stylesheet files or scripts: the render '
+                                   'cache key leaves them out (render.py::NOT_RENDER_INPUTS), so it must take them in first')
             self.included.update(res['included'])
         if res.get('ok'):
             res['html'] = apply_directives(res.get('html', ''), res.get('interactivityState') or {})
