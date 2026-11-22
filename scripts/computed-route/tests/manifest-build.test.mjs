@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { buildManifest, matchRecord, statesOf, surfaceKey, walkerKey } from '../lib/manifest-build.mjs';
 import { isUnwalkedWooPage } from '../lib/site-build-plan.mjs';
+import { layoutSurfaces } from '../lib/foundation-parts.mjs';
 
 const vocab = [ { state: 'open', kind: 'class', token: '--open' }, { state: 'current', kind: 'class', token: '--current' }, { state: 'active', kind: 'class', token: '--active' }, { state: 'scrolled', kind: 'class', token: '--scrolled' }, { state: 'shrunk', kind: 'class', token: '--shrunk' }, { state: 'hover', kind: 'pseudo-class', token: ':hover' } ];
 const target = { envFile: '.claude/secrets/x.env', envKey: 'X' };
@@ -308,6 +309,34 @@ function fixture( { rows = [ row( 'page', 'home', 4 ) ], records = [ rec( 'S-1',
 	return { repo, site, out: path.join( site, 'build', 'surfaces.json' ), go, tree, done: () => fs.rmSync( repo, { recursive: true, force: true } ) };
 }
 const said = ( r ) => `${ r.stdout }${ r.stderr }`;
+
+test( 'MUST FAIL: a surfaces.json applied on another copy of the site gives the foundation\'s paint its layout rows once the manifest is applied on this copy', () => {
+	// The page map's layout rows hold this copy's new post ids; the kept surfaces.json holds the other copy's.
+	const rows = [ row( 'sgs_footer', 'footer', 6133 ), row( 'sgs_header', 'header', 6135 ), row( 'sgs_drawer', 'drawer-menu', 6137 ) ];
+	const f = fixture( { rows, records: [ rec( 'S-1', 'header', 'Header' ), rec( 'S-2', 'footer', 'Footer' ), rec( 'S-3', 'drawer', 'Drawer menu' ) ] } );
+	const old = { footer: 176, header: 178, 'drawer-menu': 180 };
+	fs.writeFileSync( f.out, JSON.stringify( Object.fromEntries( Object.entries( old ).map( ( [ k, id ] ) => [ k, { tree: `trees/sgs_${ k }.json`, site: 'old-site', target: { postId: id } } ] ) ) ) );
+	assert.equal( layoutSurfaces( { rows, surfaces: JSON.parse( fs.readFileSync( f.out, 'utf8' ) ) } ).missing.length, 3, 'before the apply paint finds no layout surface' );
+	f.go( '--apply' );
+	const after = JSON.parse( fs.readFileSync( f.out, 'utf8' ) );
+	const { found, missing } = layoutSurfaces( { rows, surfaces: after } );
+	assert.deepEqual( [ missing.length, found.map( ( x ) => x.key ) ], [ 0, [ 'header', 'footer', 'drawer-menu' ] ] );
+	assert.equal( after.header.site, 'indus-test' );
+	assert.equal( after.header.tree, 'trees/sgs_header.json', 'a kept field stays' );
+	f.done();
+} );
+
+// Negative control: a layout row whose surface already points at it is unchanged.
+test( 'a surfaces.json whose layout entries already point at the page map\'s posts is unchanged by a rerun', () => {
+	const rows = [ row( 'sgs_header', 'header', 6135 ) ];
+	const f = fixture( { rows, records: [ rec( 'S-1', 'header', 'Header' ) ] } );
+	f.go( '--apply' );
+	const first = fs.readFileSync( f.out, 'utf8' );
+	f.go( '--apply' );
+	assert.equal( fs.readFileSync( f.out, 'utf8' ), first );
+	assert.equal( layoutSurfaces( { rows, surfaces: JSON.parse( first ) } ).missing.length, 0 );
+	f.done();
+} );
 
 test( 'the command prints without --apply, writes with --apply, keeps a rerun stable and leaves nothing else behind', () => {
 	const f = fixture();
