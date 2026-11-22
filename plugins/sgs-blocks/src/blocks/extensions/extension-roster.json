@@ -8,7 +8,7 @@
 			"flag": "block sets supports.sgs.<flag> truthy",
 			"named": "only the blocks named in `blocks`; none of them is an sgs/* block, so no rows are seeded unless the rule sets `seedRows` (then the seeder adds a blocks row for each named block and an sgs-ext row for each attribute)"
 		},
-		"fields": "type, default (omitted = no default), enum, tier_shape, is_responsive, role (an existing roles.role_name), css_property/css_element/css_state/css_tier (omitted = NULL: no single CSS property to route, or a discovered enum), requires (companion attributes a calibration marker must also carry before the setting paints anything)",
+		"fields": "type, default (omitted = no default), enum, tier_shape, is_responsive, role (an existing roles.role_name), css_property/css_element/css_state/css_tier (omitted = NULL: no single CSS property to route, or a discovered enum), requires (companion attributes a calibration marker must also carry before the setting paints anything), blocks (an attribute of a `named` rule that serves only some of the rule's blocks: the blocks that receive it, so the seeder writes its row on those alone)",
 		"canvas_source": "An extension entry may set canvasSource: \"rest\" when its editor canvas is drawn from a server route its editor component fetches (no editor.BlockListBlock read). scripts/wiring-fingerprint/wf_extensions.py then counts a sgs/v1 route named in the entry's files as the canvas read of every attribute of the entry.",
 		"css_slots": "db-consistency check_routing allows one attribute per (css_property, css_element, css_state, css_tier) on a block, so a CSS slot is declared once. Controls that paint a slot a block can already own (width) keep css_property NULL.",
 		"css_element": "wrapper = the block root; image = the img/video inside it"
@@ -149,39 +149,39 @@
 		{
 			"id": "chipGap",
 			"file": "product-filter-chips-gap.js",
-			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips" ] },
+			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips" ], "seedRows": true },
 			"attributes": {
-				"sgsChipGap": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout" }
+				"sgsChipGap": { "type": "object", "default": {}, "tier_shape": "tier_object", "is_responsive": 1, "role": "layout", "css_property": "gap", "css_element": "chip-list" }
 			}
 		},
 		{
 			"id": "filterLook",
 			"file": "product-filter-look.js",
-			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips", "woocommerce/catalog-sorting" ] },
+			"rule": { "mode": "named", "blocks": [ "woocommerce/product-filter-chips", "woocommerce/catalog-sorting" ], "seedRows": true },
 			"attributes": {
-				"sgsChipFontWeight": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipBorderWidth": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipMinHeight": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipPaintButtons": { "type": "boolean", "default": false, "role": "visual" },
-				"sgsChipCountPill": { "type": "boolean", "default": false, "role": "visual" },
-				"sgsChipCountBackground": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipCountColour": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipCountRadius": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipCountSize": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipCountFontSize": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipAllLabel": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipAllCount": { "type": "boolean", "default": false, "role": "visual" },
-				"sgsChipSelectedShadow": { "type": "string", "default": "", "role": "visual", "css_property": "box-shadow", "css_element": "chip-selected" },
-				"sgsChipSelectedShadowColour": { "type": "string", "default": "", "role": "visual" },
-				"sgsChipSelectedOffsetX": { "type": "string", "default": "", "role": "layout", "css_property": "translate", "css_element": "chip-selected" },
-				"sgsChipSelectedOffsetY": { "type": "string", "default": "", "role": "layout", "css_property": "translate-y", "css_element": "chip-selected" },
-				"sgsChipStartTerm": { "type": "string", "default": "", "role": "behaviour" },
-				"sgsChipSingle": { "type": "boolean", "default": false, "role": "behaviour" },
-				"sgsSortBackground": { "type": "string", "default": "", "role": "visual" },
-				"sgsSortBorderColour": { "type": "string", "default": "", "role": "visual" },
-				"sgsSortBorderWidth": { "type": "string", "default": "", "role": "visual" },
-				"sgsSortBorderRadius": { "type": "string", "default": "", "role": "visual" },
-				"sgsSortFontWeight": { "type": "string", "default": "", "role": "visual" }
+				"sgsChipFontWeight": { "type": "string", "default": "", "role": "visual", "css_property": "font-weight", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipBorderWidth": { "type": "string", "default": "", "role": "visual", "css_property": "border-width", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipMinHeight": { "type": "string", "default": "", "role": "visual", "css_property": "min-height", "css_element": "chip", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipPaintButtons": { "type": "boolean", "default": false, "role": "visual", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipCountPill": { "type": "boolean", "default": false, "role": "visual", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipCountBackground": { "type": "string", "default": "", "role": "visual", "css_property": "background-color", "css_element": "chip-count", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipCountColour": { "type": "string", "default": "", "role": "visual", "css_property": "color", "css_element": "chip-count", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipCountRadius": { "type": "string", "default": "", "role": "visual", "css_property": "border-radius", "css_element": "chip-count", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipCountSize": { "type": "string", "default": "", "role": "visual", "css_property": "height", "css_element": "chip-count", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipCountFontSize": { "type": "string", "default": "", "role": "visual", "css_property": "font-size", "css_element": "chip-count", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipAllLabel": { "type": "string", "default": "", "role": "visual", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipAllCount": { "type": "boolean", "default": false, "role": "visual", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipSelectedShadow": { "type": "string", "default": "", "role": "visual", "css_property": "box-shadow", "css_element": "chip-selected", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipSelectedShadowColour": { "type": "string", "default": "", "role": "visual", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipSelectedOffsetX": { "type": "string", "default": "", "role": "layout", "css_property": "translate", "css_element": "chip-selected", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipSelectedOffsetY": { "type": "string", "default": "", "role": "layout", "css_property": "translate-y", "css_element": "chip-selected", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipStartTerm": { "type": "string", "default": "", "role": "behaviour", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsChipSingle": { "type": "boolean", "default": false, "role": "behaviour", "blocks": [ "woocommerce/product-filter-chips" ] },
+				"sgsSortBackground": { "type": "string", "default": "", "role": "visual", "css_property": "background-color", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortBorderColour": { "type": "string", "default": "", "role": "visual", "css_property": "border-color", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortBorderWidth": { "type": "string", "default": "", "role": "visual", "css_property": "border-width", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortBorderRadius": { "type": "string", "default": "", "role": "visual", "css_property": "border-radius", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortFontWeight": { "type": "string", "default": "", "role": "visual", "css_property": "font-weight", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] }
 			}
 		},
 		{

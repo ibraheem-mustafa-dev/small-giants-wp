@@ -305,8 +305,34 @@ def test_named_rule_with_seed_rows_seeds_the_woocommerce_blocks(tmp_path):
         assert {"sgsFieldBackground", "sgsItemBorderRadius", "sgsStepTitleFontSize", "sgsBarBackground"} <= attrs
         row = _row(conn, slug, "sgsFieldBackground")
         assert row["default_value"] is None, "the look settings carry no default: absent is WooCommerce's look"
-    # Positive control: another named extension without seedRows still seeds nothing for its block.
-    assert not _attrs(conn, "woocommerce/product-filter-chips")
+    # Negative control: a named extension without seedRows still seeds nothing for its block.
+    assert not _attrs(conn, "woocommerce/product-collection")
+
+
+def test_filter_chip_and_sort_settings_are_seeded_on_their_own_block(tmp_path):
+    """The chip and sort look settings (filterLook, chipGap) are seeded on WooCommerce's filter chips and sort
+    blocks, each attribute only on the block that has it, with its CSS property and element after layer 2.6, so
+    part-look can pair the shop's chips and sort select."""
+    conn = _fixture(tmp_path)
+    SGS._seed_extension_attr_rows(conn, tmp_path)
+    _apply_layers(conn)
+    chips = _attrs(conn, "woocommerce/product-filter-chips")
+    sort = _attrs(conn, "woocommerce/catalog-sorting")
+    assert {"sgsChipGap", "sgsChipFontWeight", "sgsChipMinHeight", "sgsChipCountBackground", "sgsChipSelectedShadow", "sgsChipAllLabel"} <= chips
+    assert {"sgsSortBackground", "sgsSortBorderColour", "sgsSortBorderWidth", "sgsSortBorderRadius", "sgsSortFontWeight"} <= sort
+    # Each attribute lands on its own block only.
+    assert not {a for a in chips if a.startswith("sgsSort")}, "a sort setting was seeded on the chips block"
+    assert not {a for a in sort if a.startswith("sgsChip")}, "a chip setting was seeded on the sort block"
+    for slug, attr, prop, element in (
+        ("woocommerce/product-filter-chips", "sgsChipMinHeight", "min-height", "chip"),
+        ("woocommerce/product-filter-chips", "sgsChipCountBackground", "background-color", "chip-count"),
+        ("woocommerce/product-filter-chips", "sgsChipGap", "gap", "chip-list"),
+        ("woocommerce/catalog-sorting", "sgsSortBorderColour", "border-color", "sort-select"),
+    ):
+        row = _row(conn, slug, attr)
+        assert (row["css_property"], row["css_element"]) == (prop, element), f"{slug}.{attr}"
+    # Negative control: a setting with no single CSS property keeps css_property NULL.
+    assert _row(conn, "woocommerce/product-filter-chips", "sgsChipAllLabel")["css_property"] is None
 
 
 def test_seed_rows_rows_are_removed_when_the_rule_goes(tmp_path):
@@ -317,4 +343,7 @@ def test_seed_rows_rows_are_removed_when_the_rule_goes(tmp_path):
         counts = SGS._seed_extension_attr_rows(conn, tmp_path)
     assert counts["ext_rows_deleted"] > 0
     assert not _attrs(conn, "woocommerce/cart")
-    assert conn.execute("SELECT COUNT(*) FROM blocks WHERE source = 'woocommerce'").fetchone() == (0,)
+    left = {r[0] for r in conn.execute("SELECT slug FROM blocks WHERE source = 'woocommerce'").fetchall()}
+    assert not left & {"woocommerce/cart", "woocommerce/checkout"}
+    # The other seedRows rules (the filter chips and sort look) keep their blocks.
+    assert left == {"woocommerce/product-filter-chips", "woocommerce/catalog-sorting"}

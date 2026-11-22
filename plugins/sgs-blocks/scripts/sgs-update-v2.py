@@ -2912,9 +2912,10 @@ def _seed_extension_attr_rows(
             continue
         for attr, spec in _extension_rows_for_block(roster, block_json).items():
             wanted[(slug, attr)] = spec
-    # A `named` rule with `seedRows` targets blocks SGS does not own (WooCommerce's Cart and Checkout): each
-    # gets a `blocks` row (source 'woocommerce', so no sgs-only stage touches it) so its attribute rows have
-    # a parent, and the cloning route can find the settings.
+    # A `named` rule with `seedRows` targets blocks SGS does not own (WooCommerce's Cart, Checkout, filter chips and
+    # sort select): each gets a `blocks` row (source 'woocommerce', so no sgs-only stage touches it) so its attribute
+    # rows have a parent, and the cloning route can find the settings. An attribute that names its own `blocks` is
+    # seeded only on those of the rule's blocks (one extension can serve two blocks with different settings).
     wanted_blocks: dict[str, str] = {}
     for ext in roster:
         rule = ext.get("rule") or {}
@@ -2923,6 +2924,8 @@ def _seed_extension_attr_rows(
         for slug in rule.get("blocks") or []:
             wanted_blocks[slug] = slug.split("/", 1)[-1].replace("-", " ").title()
             for attr, spec in (ext.get("attributes") or {}).items():
+                if spec.get("blocks") and slug not in spec["blocks"]:
+                    continue
                 wanted[(slug, attr)] = spec
     if not dry_run:
         for slug, title in wanted_blocks.items():
