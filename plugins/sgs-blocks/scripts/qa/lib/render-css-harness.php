@@ -404,6 +404,13 @@ if ( isset( $args['product-file'] ) ) {
 		$GLOBALS['sgs_qa_product'] = $product_tree;
 	}
 	require_once __DIR__ . '/wc-product-stub.php';
+	// --wp-fidelity: a product the cart's empty state or an add-to-basket button resolves (sgs_cart_empty_product) is
+	// read through the configurator's groups (the plugin bootstrap loads them): pure rules and a class that reads the
+	// product's attributes and post meta, so a simple product needs nothing more.
+	if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+		require_once $sgs_blocks_dir . '/includes/configurator-picks/functions.php';
+		require_once $sgs_blocks_dir . '/includes/configurator-picks/class-configurator-groups.php';
+	}
 }
 
 // --manifest-file: a variable product's Product_Manifest, served through build()'s own read-through cache
@@ -529,10 +536,10 @@ if ( isset( $args['post-file'] ) ) {
 	}
 	if ( array_is_list( $post_tree ) ) {
 		// A catalogue: the posts a WP_Query returns (wp-stubs.php), each the current post while its child renders.
-		$GLOBALS['sgs_qa_posts'] = array_map( static fn( $p ) => (object) $p, $post_tree );
+		$GLOBALS['sgs_qa_posts'] = array_map( static fn( $p ) => sgs_qa_make_post( (array) $p ), $post_tree );
 		$GLOBALS['sgs_qa_post']  = $GLOBALS['sgs_qa_posts'][0] ?? null;
 	} else {
-		$GLOBALS['sgs_qa_post'] = (object) $post_tree;
+		$GLOBALS['sgs_qa_post'] = sgs_qa_make_post( $post_tree );
 	}
 }
 
@@ -600,6 +607,13 @@ if ( isset( $args['content-file'] ) && is_file( $args['content-file'] ) ) {
 $harness_slug     = $slug;
 $harness_elements = null !== $block_type && is_array( $block_meta['supports']['sgs']['elements'] ?? null ) ? $block_meta['supports']['sgs']['elements'] : array();
 
+// --wp-fidelity: the mega menu post type's class (sgs-blocks.php loads it): a nav item that opens a mega panel resolves
+// its panel post through it (get_post() must answer a WP_Post of type `sgs_mega_menu`, status publish: a --post-file post).
+// register() is not called, so no hook is added.
+if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+	require_once $sgs_blocks_dir . '/includes/class-sgs-mega-menu-cpt.php';
+}
+
 // --wp-fidelity: the block as WP_Block holds it (its saved attributes, children and content), and the block
 // get_block_wrapper_attributes() describes.
 if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
@@ -624,6 +638,7 @@ if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
 // class-sgs-focus-rests.php, whose frame this runner opens and closes itself below.
 const SGS_QA_RENDER_BLOCK_FILTER_FILES = array(
 	'conditional-visibility.php',
+	'product-collection-empty-detection.php', // sgs_collection_has_results(), which conditional-visibility.php asks (sgsConditionCollectionQueryId).
 	'device-visibility.php',
 	'child-sizing.php',
 	'custom-css.php',
@@ -636,6 +651,20 @@ if ( isset( $args['render-block-filters'] ) ) {
 	$GLOBALS['sgs_qa_render_block_filters'] = true;
 	foreach ( SGS_QA_RENDER_BLOCK_FILTER_FILES as $filter_file ) {
 		require_once $sgs_blocks_dir . '/includes/' . $filter_file;
+	}
+	// The motion renderer (required above; this flag's hook table holds its render_block filters) writes a block's
+	// `sgsMotion` document into its markup (data-sgs-mc, data-sgs-mh and the rules for them) through the rest of the
+	// motion model, which the plugin bootstrap loads through includes/motion-loader.php (the same order: the folder,
+	// then field-types/). Without these a block that carries a motion document fatals in the filter.
+	require_once __DIR__ . '/collect-css-stub.php'; // sgs_collect_css(): the head's CSS buffer, which the renderer fills.
+	foreach ( array( '', '/field-types' ) as $motion_folder ) {
+		$motion_files = glob( $sgs_blocks_dir . '/includes/motion' . $motion_folder . '/*.php' );
+		sort( $motion_files, SORT_STRING );
+		foreach ( $motion_files as $motion_file ) {
+			if ( false === strpos( basename( $motion_file ), 'rest' ) ) { // class-sgs-fold-scan-rest.php registers REST routes only.
+				require_once $motion_file;
+			}
+		}
 	}
 }
 
@@ -721,6 +750,13 @@ if ( preg_match_all( '#<style\b[^>]*>(.*?)</style>#s', $html, $matches ) ) {
 
 if ( ! empty( $GLOBALS['sgs_qa_inline_styles'] ) ) {
 	$css .= "\n" . implode( "\n", $GLOBALS['sgs_qa_inline_styles'] );
+}
+
+// --render-block-filters: what the render handed to sgs_collect_css() is in the page head on a site.
+if ( isset( $args['render-block-filters'] ) && ! empty( $GLOBALS['sgs_collected_css'] ) ) {
+	$css .= "
+" . implode( "
+", $GLOBALS['sgs_collected_css'] );
 }
 
 $result = array(

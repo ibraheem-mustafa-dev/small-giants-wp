@@ -185,9 +185,9 @@ def test_extension_attribute_must_fail_when_the_roster_rule_is_ignored():
     assert I.extension_attrs(bj, roster) == {'sgsPosition': 'floatPosition'}
 
 
-def test_record_id_is_unvalued_not_invented():
+def test_record_id_gets_a_stand_in_not_an_invented_number():
     plan = I.plan_block(block({'ref': {'type': 'number'}}), plugin=PLUGIN)
-    assert [u['setting'] for u in plan['unvalued']] == ['ref'] and not setting_instances(plan, 'ref')
+    assert not plan['unvalued'] and setting_instances(plan, 'ref')[0]['attrs']['ref'] == '{{post2}}'   # tests/test_values_from_code.py has the rest
 
 
 def test_no_fixture_gives_one_plain_variant():
@@ -218,6 +218,7 @@ def test_fixtures_switch_every_part_on():
     assert cart['panelTaxNote'] and cart['panelShowViewCart'] is True
     nav = fx['sgs/nav-bar-menu']
     post = json.loads((HERE.parent / nav['harness']['postFile']).read_text(encoding='utf-8'))
+    post = post[0] if isinstance(post, list) else post  # the menu post comes first; the file also holds the mega panel and a second page
     for ident in nav['attributes']['featuredItemIds'] + nav['attributes']['disabledItemIds']:
         child = ident.split('>')[-1].replace('id:', '')
         assert child == '{{menuItem}}' or f'"id":{child}' in post['post_content']

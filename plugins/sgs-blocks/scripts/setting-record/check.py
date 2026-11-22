@@ -115,6 +115,17 @@ def load_plan(short: str, plugin: Path, fixtures: dict, instances: Path | None) 
     return pl
 
 
+def replaces_block(base_html: str, changed_html: str, short: str) -> bool:
+    """True when the changed render keeps none of the block's own parts that the plain one prints (or prints nothing):
+    the setting removed the block or swapped it for other markup."""
+    part = re.compile(rf'\bsgs-{re.escape(short)}__[a-z0-9-]+')
+    strip = lambda h: re.sub(r'<style\b.*?</style>', '', h or '', flags=re.S)  # noqa: E731
+    before, after = strip(base_html), strip(changed_html)
+    if not after.strip() and before.strip():
+        return True
+    return bool(part.search(before)) and not part.search(after)
+
+
 def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, instances: Path | None = None) -> dict:
     """Every setting's placements, with the renders behind each, the default render and timing."""
     t0 = time.time()
@@ -137,7 +148,7 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
     defaults = {i['variant']: i for i in insts if i['isDefault']}
     bases = {i['baseKey']: i for i in insts if i['isBase']}
     reads = {k: D.read(r, short) if r.get('ok') else None for k, r in results.items()}
-    settings, sources, log = {}, {}, []
+    settings, sources, log, replaced = {}, {}, [], set()
     for i in insts:
         if not i['attr'] or i['isDefault'] or i['isBase'] or i.get('paintState'):
             continue
@@ -146,6 +157,13 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
         entry = {'key': i['key'], 'attr': i['attr'], 'base': base['key'] if base else None}
         if rb is None or rm is None:
             entry['error'] = ((results[i['_key']].get('error') or (results[base['_key']].get('error') if base else '')) or 'no base')[:300]
+            log.append(entry)
+            continue
+        if replaces_block(results[base['_key']].get('html', ''), results[i['_key']].get('html', ''), short):
+            # the setting removes the block from the page or swaps it for other markup (a visibility condition, a broken
+            # reference notice): that is what it does, not a paint on the block's parts, so no placement comes from it
+            replaced.add(i['attr'])
+            entry.update(replacesBlock=True, n=0)
             log.append(entry)
             continue
         pls, info = D.diff_placements(rb, rm, short, sheets)
@@ -184,7 +202,8 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
     recorded = {e['setting'] for e in entries.values()} | {e['setting'] for e in unnamed}
     stats = {'block': slug, 'instances': len(insts), 'renders': len(jobs), 'failed': sum(1 for r in results.values() if not r.get('ok')),
              'errors': errors[:10], 'secondsRendering': round(t2 - t1, 1), 'secondsRun': round(time.time() - t0, 1),
-             'testedNoPaint': sorted(tested - recorded), 'unvalued': pl.get('unvalued') or []}
+             'testedNoPaint': sorted(tested - recorded - replaced), 'replacesBlock': sorted(replaced - recorded),
+             'unvalued': pl.get('unvalued') or []}
     return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'selectors': sels, 'results': results, 'children': children, 'plugin': plugin, 'jobs': jobs, 'defaultHtml': d0.get('html', ''), 'stats': stats,
             'log': log, 'aliases': aliases, 'sheets': sheets, 'renderer': rn, 'plan': pl, 'slug': slug, 'content': content, 'inner': inner}
 

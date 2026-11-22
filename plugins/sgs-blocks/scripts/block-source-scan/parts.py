@@ -11,7 +11,7 @@ from common import NON_CLASS_TOKENS, PLUGIN, TOKEN_RE, function_index, owner_of,
 from css_read import parse_css, split_top, subject_of
 from js_lex import js_segments, strip_js_comments
 from php_lex import code_mask, context_at, frames_of, php_segments
-from values import attrs_in, switch_attrs, var_attr_map
+from values import _add, _literals_in, attrs_in, call_seed, condition_literals, seed_signature, switch_attrs, var_attr_map
 
 CLASS_CONTEXT_RE = re.compile(r"""class(?:Name|List|_name|es)?\b|['"]class['"]|\$\w*(?:class|cls)\w*\s*(?:\[\]\s*)?[.=]""", re.I)
 ATTR_IN_LITERAL_RE = re.compile(r"""([\w:-]+)\s*=\s*\\?["'][^"']*$""")
@@ -19,6 +19,8 @@ EXTERNAL_MARKUP_RE = re.compile(r"\b(render_block|do_blocks|wp_nav_menu|wc_get_t
 NOT_A_CLASS_CALL_RE = re.compile(r'wp_(enqueue|register)_|asset_handle|esc_html__|__\(|_e\(|_x\(|esc_attr__|get_option|add_action|add_filter|wp_add_inline|strpos|str_contains|preg_match|in_array|array_key_exists|stripos')
 INSTANCE_ID_RE = r'\s*=\s*[^;]*(md5|uniqid|wp_unique_id|wp_rand|substr\(\s*md5|hash\()'
 CALL_DEPTH = 4
+MAX_WALKS_PER_FUNCTION = 4  # a helper is read again for each distinct set of settings its callers pass in
+DATA_LITERAL_RE = re.compile(r'(?:(?<=\s)|^)data-([a-z0-9-]+)')
 
 
 class PartsReader:
@@ -50,17 +52,33 @@ class PartsReader:
             rec['textAttrs'] |= set(text_attr)
 
     # ------------------------------------------------------------ PHP
-    def harvest_php(self, src: str, label: str, inherited_loops=(), inherited_conds=(), inherited_cond_attrs=()):
+    def note_values(self, key, lits, attrs):
+        """Record under `key` (a part, class, family or data attribute token) every setting its printing needs and the
+        values the code compares each against (`lits`); a setting only tested for being set keeps an empty list."""
+        rec = self.cond_values.setdefault(key, {})
+        for a in sorted(attrs):
+            _add(rec, [a], lits.get(a, ()))
+            rec.setdefault(a, [])
+
+    def harvest_php(self, src: str, label: str, inherited_loops=(), inherited_conds=(), inherited_cond_attrs=(), seed=None, inherited_lits=None):
         segs = list(php_segments(src))
         mask = code_mask(src, segs)
         frames = frames_of(mask, src)
-        vmap = var_attr_map(src, self.attr_names)
+        vmap = var_attr_map(src, self.attr_names, seed)
         self.php_texts.append((label, src, mask, frames, vmap))
+        _literals_in(src, vmap, self.attr_names, self.block_literals)
         for s, e, kind, content in segs:
             for m in re.finditer(r'<([a-z][a-z0-9]*)\b', content):
                 self.tags.add(m.group(1))
+            for m in DATA_LITERAL_RE.finditer(content):
+                if m.group(1).startswith('wp-'):
+                    continue  # an Interactivity directive, not markup a stylesheet selects
+                found = switch_attrs(s + m.start(), e, mask, src, vmap, self.attr_names, concat=False)
+                if found:
+                    self.data_attrs[m.group(1)] |= found
+                    self.note_values('data-' + m.group(1), self._lits_at(s + m.start(), frames, mask, src, vmap, inherited_lits), found)
             for m in TOKEN_RE.finditer(content):
-                self._php_token(m, s, e, kind, content, src, mask, frames, vmap, label, inherited_loops, inherited_conds, inherited_cond_attrs)
+                self._php_token(m, s, e, kind, content, src, mask, frames, vmap, label, inherited_loops, inherited_conds, inherited_cond_attrs, inherited_lits)
         for m in re.finditer(r'data-([a-z0-9-]+)=\\?["\']\s*\'?\s*\.\s*esc_attr\(\s*([^)]*)\)', src):
             for a in attrs_in(m.group(2), vmap, self.attr_names):
                 self.data_attrs[m.group(1)].add(a)
@@ -84,7 +102,7 @@ class PartsReader:
             self.flag('inner-blocks', label, 'prints its inner blocks: their parts belong to the child blocks', key=f'{label}:content')
         return mask, frames, vmap
 
-    def _php_token(self, m, s, e, kind, content, src, mask, frames, vmap, label, inh_loops, inh_conds, inh_cond_attrs):
+    def _php_token(self, m, s, e, kind, content, src, mask, frames, vmap, label, inh_loops, inh_conds, inh_cond_attrs, inh_lits=None):
         tok, tail = m.group(1), m.group(2)
         if tok in NON_CLASS_TOKENS:
             return
@@ -98,8 +116,11 @@ class PartsReader:
                 return  # an instance id, not a part or modifier
             self.flag('dynamic-class', label, f'class name built from "{fam}" + a runtime value: the parts or modifiers it names cannot be listed from source', key=fam)
             if '--' in tail or (('--' in tok) and tail == '-'):
-                for a in switch_attrs(abs_pos, e, mask, src, vmap, self.attr_names):
+                sw = switch_attrs(abs_pos, e, mask, src, vmap, self.attr_names)
+                for a in sw:
                     self.switch_classes[fam].add(a)
+                if sw:
+                    self.note_values(fam, self._lits_at(abs_pos, frames, mask, src, vmap, inh_lits), sw)
             return
         if before.endswith('.'):
             self.selector_refs[tok].add(label)
@@ -113,23 +134,40 @@ class PartsReader:
                 return
         tagm = re.search(r'<([a-z][a-z0-9]*)\b[^<>]*$', before)
         loops, conds = context_at(abs_pos, frames, mask, src)
-        cond_attrs = set(inh_cond_attrs)
+        cond_attrs, local = set(inh_cond_attrs), set()
+        lits = {a: list(v) for a, v in (inh_lits or {}).items()}
         for c in conds:
-            cond_attrs |= attrs_in(c, vmap, self.attr_names)
+            local |= attrs_in(c, vmap, self.attr_names)
+            for a, vals in condition_literals(c, vmap).items():
+                _add(lits, [a], vals)
+        cond_attrs |= local
         tail_txt = src[e:e + 260]
         tm = re.match(r"""[^;]*?(?:esc_html|wp_kses_post|wp_kses|sgs_rich_text_kses|esc_html_e)\s*\(\s*([^;]*?)\)""", tail_txt, re.S)
         text_attr = None
         if tm and '</' not in tail_txt[:tm.start(1)]:
             text_attr = attrs_in(tm.group(1), vmap, self.attr_names) or None
         if '--' in tok:
-            for a in switch_attrs(abs_pos, e, mask, src, vmap, self.attr_names):
+            sw = switch_attrs(abs_pos, e, mask, src, vmap, self.attr_names)
+            for a in sw:
                 self.switch_classes[tok].add(a)
+            if sw:
+                self.note_values(tok, lits, sw | local)
+        if cond_attrs:
+            self.note_values(part_of(tok), lits, local or cond_attrs)  # the part's own conditions; the caller's only when it has none
         self.add_part(part_of(tok), 'php' if kind != 'html' else 'php-html', label, tagm.group(1) if tagm else None,
                       list(inh_loops) + loops, list(inh_conds) + conds, text_attr, cond_attrs)
         if '--' in tok:
             self.parts[part_of(tok)].setdefault('modifiers', set()).add(tok)
 
-    def follow_calls(self, src, mask, frames, label, depth, vmap, seen, inherited=((), (), ())):
+    def _lits_at(self, pos, frames, mask, src, vmap, inh_lits):
+        """The values the conditions around `pos` compare settings against, on top of the caller's."""
+        lits = {a: list(v) for a, v in (inh_lits or {}).items()}
+        for c in context_at(pos, frames, mask, src)[1]:
+            for a, vals in condition_literals(c, vmap).items():
+                _add(lits, [a], vals)
+        return lits
+
+    def follow_calls(self, src, mask, frames, label, depth, vmap, seen, inherited=((), (), (), None)):
         index, short_index = function_index()
         obj_class = {m.group(1): m.group(2).split('\\')[-1] for m in re.finditer(r'\$(\w+)\s*=\s*new\s+\\?([\w\\]+)\s*\(', src)}
         calls = [(m.start(), m.group(1)) for m in re.finditer(r'(?<![\w$>:])([a-zA-Z_]\w*)\s*\(', mask)]
@@ -147,30 +185,59 @@ class PartsReader:
                     self.flag('unresolved-method', label, f'{name}(): instance method on an object whose class the source does not show; {len(cands)} candidates', key=name)
             if fn is None:
                 continue
+            seed = {}
             am = re.match(r'[^(]*\(', src[pos:])
             if am:
                 close = psi.matching_close(src, pos + am.end() - 1, '(', ')')
                 if close > 0:
-                    self.call_sites[fn.name].append((psi.split_top_level_args(src[pos + am.end():close]), label, pos))
-            if fn.name in seen:
+                    args = psi.split_top_level_args(src[pos + am.end():close])
+                    self.call_sites[fn.name].append((args, label, pos))
+                    seed = call_seed(args, fn.params, vmap, self.attr_names)
+            sig = seed_signature(seed) if seed else ''
+            walks = self.walked.setdefault(fn.name, set())
+            first = fn.name not in seen
+            if not first and (not sig or sig in walks or len(walks) >= MAX_WALKS_PER_FUNCTION):
                 continue
             body = fn.body
             if not re.search(r'<[a-z]|class|sgs-|\{', body):
+                if seed:  # a validator (`in_array( $raw, array( 'up', 'up-scale' ) )`): the values it accepts for what the caller passed
+                    _literals_in(body, var_attr_map(body, self.attr_names, seed), self.attr_names, self.block_literals)
                 continue
             seen.add(fn.name)
+            walks.add(sig)
             loops, conds = context_at(pos, frames, mask, src)
             cond_attrs = set(inherited[2])
+            lits = self._lits_at(pos, frames, mask, src, vmap, inherited[3])
             for c in conds:
                 cond_attrs |= attrs_in(c, vmap, self.attr_names)
             where = f'{rel(fn.file)}::{fn.name}'
+            inh = (list(inherited[0]) + loops, list(inherited[1]) + conds, cond_attrs, lits)
+            if not first:
+                # Another caller binds the helper's parameters differently: read it again once the first pass is done,
+                # so the first pass (and every list it fills) is exactly what it was without argument binding.
+                self.rewalk.append((fn, where, seed, inh, depth))
+                continue
             if depth <= 0:
                 if re.search(r"""<[a-z]|['"]sgs-""", body):
                     self.flag('call-depth', where, f'{fn.name}() prints markup but was not read: call depth limit', key=fn.name)
                 continue
-            self.followed.append(where)
-            inh = (list(inherited[0]) + loops, list(inherited[1]) + conds, cond_attrs)
-            mask2, frames2, vmap2 = self.harvest_php(body, where, *inh)
+            if where not in self.followed:
+                self.followed.append(where)
+            mask2, frames2, vmap2 = self.harvest_php(body, where, *inh[:3], seed or None, lits)
             self.follow_calls(body, mask2, frames2, where, depth - 1, vmap2, seen, inh)
+
+    def run_rewalks(self, seen):
+        """The helpers a second caller binds differently, read with that caller's arguments (see follow_calls)."""
+        i = 0
+        while i < len(self.rewalk):
+            fn, where, seed, inh, depth = self.rewalk[i]
+            i += 1
+            if depth <= 0:
+                continue
+            if where not in self.followed:
+                self.followed.append(where)
+            mask2, frames2, vmap2 = self.harvest_php(fn.body, where, *inh[:3], seed or None, inh[3])
+            self.follow_calls(fn.body, mask2, frames2, where, depth - 1, vmap2, seen, inh)
 
     @staticmethod
     def required_files(src: str, here: Path) -> list:
@@ -207,6 +274,7 @@ class PartsReader:
             for q in self.required_files(raw, p.parent):
                 if self.dir in q.parents:
                     todo.append(q)
+        self.run_rewalks(seen_fns)
 
     # ------------------------------------------------------------ JS
     @staticmethod
@@ -342,6 +410,14 @@ class PartsReader:
                 self.add_part(d['token'], 'declared-only', 'block.json')
                 self.flag('declared-only', 'block.json', f'declared part "{key}" ({d["token"]}) found in no read source', key='decl:' + key)
         self.add_part(f'sgs-{self.short}', 'root', 'block.json')
+
+    def finish_condition_values(self):
+        """Each token's settings keep the values compared in its own conditions first, then the values the sources
+        compare the same setting against anywhere (a family such as `sgs-x--` + a value is completed by a literal
+        another function validates it against)."""
+        for rec in self.cond_values.values():
+            for a in rec:
+                _add(rec, [a], self.block_literals.get(a, ()))
 
 
 __all__ = ['PartsReader', 'PLUGIN']

@@ -1,6 +1,6 @@
 {
 	"_meta": {
-		"purpose": "Per-block fixtures for the offline setting check (instances.py): the attributes, variants, partner preconditions, children, parents and paint states each block renders with, plus `harness` (the render harness options: stubWoocommerce, renderFile, postFile, attachmentsFile; paths relative to this folder) and `post` (steps the renderer applies to the rendered markup, standing in for a view script). Seeded from scripts/computed-route/calibration-fixtures.json, with every part switched on (see each block's `notes`)."
+		"purpose": "Per-block fixtures for the offline setting check (instances.py): the attributes, variants, partner preconditions, children, parents and paint states each block renders with, plus `harness` (the render harness options: stubWoocommerce, renderFile, postFile, productFile, attachmentsFile; paths relative to this folder) and `post` (steps the renderer applies to the rendered markup, standing in for a view script). Seeded from scripts/computed-route/calibration-fixtures.json, with every part switched on (see each block's `notes`)."
 	},
 	"sgs/button": {
 		"attributes": {
@@ -24,6 +24,52 @@
 					"tablet": "custom",
 					"mobile": "custom"
 				}
+			},
+			"iconBackground": {
+				"sgsMotion": {
+					"v": 1,
+					"elements": {
+						"icon": {
+							"effects": [
+								{
+									"id": "icon-float",
+									"effect": "ambient-float",
+									"values": {
+										"travel": -12,
+										"axis": "y",
+										"period": 2800,
+										"phase": 0,
+										"easing": "ease-in-out",
+										"direction": "alternate"
+									}
+								}
+							]
+						}
+					}
+				}
+			},
+			"iconBackgroundHover": {
+				"sgsMotion": {
+					"v": 1,
+					"elements": {
+						"icon": {
+							"effects": [
+								{
+									"id": "icon-float",
+									"effect": "ambient-float",
+									"values": {
+										"travel": -12,
+										"axis": "y",
+										"period": 2800,
+										"phase": 0,
+										"easing": "ease-in-out",
+										"direction": "alternate"
+									}
+								}
+							]
+						}
+					}
+				}
 			}
 		},
 		"familyPreconditions": {
@@ -35,8 +81,13 @@
 			"customWidth"
 		],
 		"harness": {
-			"attachmentsFile": "fixtures/attachments.json"
-		}
+			"attachmentsFile": "fixtures/attachments.json",
+			"postFile": "fixtures/standin-posts.json",
+			"productFile": "fixtures/product.json"
+		},
+		"notes": [
+			"iconBackground and iconBackgroundHover: includes/helpers-button-icon-circle.php::sgs_button_icon_circle_css writes `.sgs-button__icon[data-sgs-mc~=\"translate\"]` rules, and the attribute is written onto the icon by includes/motion/class-sgs-motion-emitter.php (data-sgs-mc) through Sgs_Motion_Renderer's render_block filter, only when the block carries a motion document on its `icon` element that writes the translate channel. The preconditions above hold that document (an ambient float; renders data-sgs-mc=\"translate scale\" on the icon with the runner's --render-block-filters). `sgsMotion` is not in block.json's attributes, so instances.py::preconditions (it keeps an attribute only when `a in schema`) must accept it before these two entries take effect."
+		]
 	},
 	"sgs/cart": {
 		"attributes": {
@@ -95,7 +146,8 @@
 		"harness": {
 			"attachmentsFile": "fixtures/attachments.json",
 			"stubWoocommerce": true,
-			"renderFile": "fixtures/cart-wc.php"
+			"renderFile": "fixtures/cart-wc.php",
+			"productFile": "fixtures/product.json"
 		},
 		"notes": [
 			"panelTaxNote holds text and panelShowViewCart is true, so the tax note and the View basket link render (both off in calibration's fixture)."

@@ -41,6 +41,10 @@ class Scan(PartsReader, SettingsReader, RulesReader):
         self.custom_props = defaultdict(set)
         self.switch_classes = defaultdict(set)
         self.data_attrs = defaultdict(set)
+        self.cond_values = {}  # token -> {setting: [values the code compares it against]}
+        self.block_literals = {}  # setting -> [values compared anywhere in the sources read]
+        self.rewalk = []  # (helper, where, argument seed, inherited context, depth) read after the first pass
+        self.walked = {}  # helper function -> the argument bindings it has been read with
         self.css_rules = []
         self.css_parts = defaultdict(list)
         self.declared_parts = {}
@@ -56,6 +60,7 @@ class Scan(PartsReader, SettingsReader, RulesReader):
         self.scan_js()
         self.scan_css()
         self.finish_parts()
+        self.finish_condition_values()
         self.settings_declared()
         self.settings_traced()
         self.apply_precedence()
@@ -77,6 +82,8 @@ class Scan(PartsReader, SettingsReader, RulesReader):
             'customProps': {k: sorted(v) for k, v in self.custom_props.items()},
             'switchClasses': {k: sorted(v) for k, v in self.switch_classes.items()},
             'dataAttrs': {k: sorted(v) for k, v in self.data_attrs.items()},
+            'settingValues': {a: list(v) for a, v in sorted(self.block_literals.items()) if v},
+            'conditionValues': {k: {a: list(vals) for a, vals in sorted(v.items())} for k, v in sorted(self.cond_values.items())},
         }
 
 

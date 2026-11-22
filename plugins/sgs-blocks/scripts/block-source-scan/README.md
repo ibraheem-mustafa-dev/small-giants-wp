@@ -30,6 +30,10 @@ Every placement counts, not the best one. A scan placement is expanded to one it
 
 - `parts`: token -> owner (`host`, `block:<name>`, `shared`), origins, tags, where printed, loop and condition context, the settings that decide whether it prints.
 - `settings`: setting -> placements, each `{part, props, state, mechanism, tiers?, where?, selector?}`. A placement from block.json `supports.sgs.elements` has mechanism `declared-attrMap` and `declaredSelector` (false when the element states no `selector`, so its part is the derived `sgs-<block>__<key>` guess).
+- `switchClasses`, `dataAttrs`: the settings that decide whether a modifier class (or family) or a data attribute prints. A ` data-x` literal is read from its ternary or enclosing condition (`values.py::switch_attrs(concat=False)`); Interactivity directives (`data-wp-*`) are skipped.
+- `conditionValues`: token (a part, a class or family, `data-<name>`) -> {setting: [values the code compares it against]}: every setting the token's own conditions read (the caller's only when the helper has none), each with the literals those conditions test (`=== 'x'`, `in_array`, `strpos` and friends as a sample holding the needle, `?? 'x'`), the token's own first, then every comparison anywhere in the sources read. A setting only tested for being set has an empty list. A token with two or more settings needs them together.
+- `settingValues`: setting -> every value any source read compares it against (a validator helper's `in_array` is read through the argument the caller passes).
+- Argument binding: a call's arguments are bound to the helper's parameters (`values.py::call_seed`), an `array( 'key' => expr )` argument per key, so `$args['body']` carries the setting passed as `body`; a helper called with different arguments is read again after the first pass (`parts.py::run_rewalks`, at most `MAX_WALKS_PER_FUNCTION`).
 - `unread`: known unknowns (markup from WordPress or another block, class names built at run time, helper prefixes not stated as literals, calls past the depth limit).
 
 ## Environment

@@ -24,9 +24,12 @@ CACHE_ROOT = Path(os.environ.get('SGS_SETTING_RECORD_CACHE') or HERE / '.cache')
 WORKERS = int(os.environ.get('SGS_SETTING_RECORD_WORKERS') or max(2, os.cpu_count() or 8))
 TIMEOUT = int(os.environ.get('SGS_SETTING_RECORD_TIMEOUT') or 120)  # seconds one render may take
 
-# Stand-ins for the ids and urls a fixture names (an image, a menu post, its first item, a drawer).
+# Stand-ins for the ids and urls a fixture names (an image, a menu post, its first item, a drawer, a second page for a
+# setting that names a post, a mega menu panel post, a WooCommerce product). A stand-in post or product exists in a
+# render only where that fixture's `harness` hands the runner the file that holds it (fixtures/*.json).
 PLACEHOLDERS = {'{{image}}': 9001, '{{image.url}}': 'https://example.test/wp-content/uploads/calibration.jpg',
-                '{{menu}}': 9101, '{{menuItem}}': 9102, '{{drawer}}': 9103}
+                '{{menu}}': 9101, '{{menuItem}}': 9102, '{{drawer}}': 9103,
+                '{{post2}}': 9201, '{{mega}}': 9202, '{{product}}': 9301}
 # What the setting check alone wants of the runner: the plugin's render_block filters, what wp_footer prints, WordPress's
 # own wrapper classes and spacing styles, and the Interactivity state each render collected (apply_directives reads it).
 RUNNER_FIDELITY_FLAGS = ['--render-block-filters', '--print-footer', '--wp-fidelity', '--interactivity-state']
@@ -99,6 +102,8 @@ def harness_args(fixture: dict, fixtures_dir: Path) -> tuple:
         out += ['--render-file', path(h['renderFile'])]
     if h.get('postFile'):
         out += ['--post-file', path(h['postFile'])]
+    if h.get('productFile'):
+        out += ['--product-file', path(h['productFile'])]
     if h.get('attachmentsFile'):
         out += ['--attachments-file', path(h['attachmentsFile'])]
     out.append('--motion-targets')  # the real block types registered, as on a site

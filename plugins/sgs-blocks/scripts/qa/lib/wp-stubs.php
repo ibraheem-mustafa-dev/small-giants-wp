@@ -430,6 +430,64 @@ function sgs_qa_find_post( $post = null ) {
 	return null;
 }
 
+if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) && ! class_exists( 'WP_Post', false ) ) {
+	/**
+	 * Core's WP_Post (--wp-fidelity only): the fields a post record holds, with core's defaults, so a block that asks
+	 * `get_post( $id ) instanceof WP_Post` is answered as on a site. Extra keys of a --post-file record (`meta`,
+	 * `thumbnail_id`, `author`) stay as properties, which the post stand-ins read.
+	 */
+	#[\AllowDynamicProperties]
+	final class WP_Post {
+		public $ID                    = 0;
+		public $post_author           = '0';
+		public $post_date             = '0000-00-00 00:00:00';
+		public $post_date_gmt         = '0000-00-00 00:00:00';
+		public $post_content          = '';
+		public $post_title            = '';
+		public $post_excerpt          = '';
+		public $post_status           = 'publish';
+		public $comment_status        = 'open';
+		public $ping_status           = 'open';
+		public $post_password         = '';
+		public $post_name             = '';
+		public $to_ping               = '';
+		public $pinged                = '';
+		public $post_modified         = '0000-00-00 00:00:00';
+		public $post_modified_gmt     = '0000-00-00 00:00:00';
+		public $post_content_filtered = '';
+		public $post_parent           = 0;
+		public $guid                  = '';
+		public $menu_order            = 0;
+		public $post_type             = 'post';
+		public $post_mime_type        = '';
+		public $comment_count         = 0;
+		public $filter;
+
+		public function __construct( $post ) {
+			foreach ( get_object_vars( (object) $post ) as $key => $value ) {
+				$this->$key = $value;
+			}
+		}
+	}
+}
+
+/**
+ * A --post-file record as the post object the stubs hand out: a WP_Post under --wp-fidelity, else the plain object
+ * every other run has always had.
+ *
+ * @param array $record The post file's record.
+ * @return object
+ */
+function sgs_qa_make_post( array $record ): object {
+	return isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ? new WP_Post( $record ) : (object) $record;
+}
+
+if ( ! function_exists( 'nocache_headers' ) ) {
+	// Core sends no-cache HTTP headers; a CLI render has no response to put them on (conditional-visibility.php calls it
+	// for a referrer or URL-parameter condition).
+	function nocache_headers(): void {}
+}
+
 if ( ! function_exists( 'get_post_thumbnail_id' ) ) {
 	// The post file's `thumbnail_id`, else 0 (no featured image).
 	function get_post_thumbnail_id( $post = null ) {
@@ -651,8 +709,13 @@ if ( ! function_exists( 'wp_trim_words' ) ) {
 if ( ! function_exists( 'get_permalink' ) ) {
 	function get_permalink( $post = null ) {
 		// A plain permalink for the --product-file or --post-file ID (the posts that exist); '' for any other post.
-		$id = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
-		foreach ( array( $GLOBALS['sgs_qa_product'] ?? null, isset( $GLOBALS['sgs_qa_post'] ) ? (array) $GLOBALS['sgs_qa_post'] : null ) as $source ) {
+		$id      = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+		$sources = array( $GLOBALS['sgs_qa_product'] ?? null, isset( $GLOBALS['sgs_qa_post'] ) ? (array) $GLOBALS['sgs_qa_post'] : null );
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+			// --wp-fidelity: every product and post of a list file exists, not only the current one.
+			$sources = array_merge( $sources, (array) ( $GLOBALS['sgs_qa_products'] ?? array() ), array_map( static fn( $p ) => (array) $p, (array) ( $GLOBALS['sgs_qa_posts'] ?? array() ) ) );
+		}
+		foreach ( $sources as $source ) {
 			if ( $id > 0 && is_array( $source ) && (int) ( $source['id'] ?? $source['ID'] ?? 0 ) === $id ) {
 				return 'https://example.test/?p=' . $id;
 			}
@@ -925,8 +988,28 @@ if ( ! function_exists( 'get_posts' ) ) {
 
 if ( ! function_exists( 'get_post' ) ) {
 	function get_post( $post = null ) {
+		// --wp-fidelity: the --post-file post with that ID (null when none exists), as core answers; an object comes
+		// back as it is, null or 0 is the current post.
+		if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) ) {
+			return is_object( $post ) ? $post : sgs_qa_find_post( $post );
+		}
 		// No post exists unless the harness --post-content-file option set one.
 		return $GLOBALS['sgs_qa_post'] ?? null;
+	}
+}
+
+if ( isset( $GLOBALS['sgs_qa_wp_fidelity'] ) && ! function_exists( 'get_post_status' ) ) {
+	// --wp-fidelity: a --product-file product's `status` (default publish) or a --post-file post's `post_status`
+	// for its own ID, false for a post that does not exist (as core's get_post_status()).
+	function get_post_status( $post = null ) {
+		$id = is_object( $post ) ? (int) ( $post->ID ?? 0 ) : (int) $post;
+		foreach ( $GLOBALS['sgs_qa_products'] ?? array( $GLOBALS['sgs_qa_product'] ?? null ) as $data ) {
+			if ( is_array( $data ) && $id > 0 && (int) ( $data['id'] ?? 0 ) === $id ) {
+				return (string) ( $data['status'] ?? 'publish' );
+			}
+		}
+		$found = sgs_qa_find_post( $post );
+		return is_object( $found ) ? (string) ( $found->post_status ?? 'publish' ) : false;
 	}
 }
 

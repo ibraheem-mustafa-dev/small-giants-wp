@@ -30,6 +30,10 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
+if str(Path(__file__).resolve().parent) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+import leaf_values as LV  # noqa: E402
+
 HERE = Path(__file__).resolve().parent
 SCRIPTS = HERE.parent
 PLUGIN = HERE.parents[1]
@@ -111,6 +115,7 @@ LAYOUT_PROPS = re.compile(r'^(flex-direction|flex-wrap|justify-content|align-ite
 LAYOUT_VALUES = ('flex', 'grid', 'row', 'stack', 'columns', 'inline', 'horizontal', 'carousel')
 # How each setting state is reached in a browser (calibrate-instances.mjs::STATE_TRIGGERS); the offline renderer
 # diffs printed CSS, so this is carried for a reader, never needed to see the change.
+MAX_PARTNERS = 3  # a token whose condition reads more settings than this is a composite, not a conjunction to try together
 STATE_TRIGGERS = {'hover': 'hover', 'focus': 'focus', 'focus-visible': 'focus', 'scrolled': 'scroll', 'shrunk': 'class', 'open': 'open', 'current': 'fixture'}
 EXTENSION_WHY = 'an extension setting the extension roster gives no definition for'
 # The placeholders the renderer fills (probe.py::PLACEHOLDERS).
@@ -424,6 +429,27 @@ def gating_toggle(attr: str, schema: dict, current: dict) -> dict:
     return {best[0]: True} if best else {}
 
 
+@lru_cache(maxsize=None)
+def code_corpus(plugin: str) -> str:
+    """Every front-end PHP file of the plugin (includes/ and the blocks' own), joined: what the code reads is searched here."""
+    root = Path(plugin)
+    parts = []
+    for base in (root / 'includes', root / 'src' / 'blocks'):
+        for p in sorted(base.rglob('*.php')) if base.is_dir() else []:
+            try:
+                parts.append(p.read_text(encoding='utf-8', errors='ignore'))
+            except OSError:
+                pass
+    return '\n'.join(parts)
+
+
+def code_reads(plugin, attr: str) -> bool:
+    """True when some PHP of the plugin reads `$x['attr']` (so a precondition on it reaches a render)."""
+    if plugin is None:
+        return False
+    return re.search(r"\[\s*['\"]" + re.escape(attr) + r"['\"]\s*\]", code_corpus(str(plugin))) is not None
+
+
 def preconditions(row: dict, schema: dict, current: dict, ctx: dict) -> dict:
     """The attributes a setting's part needs before the setting can paint (calibrate-instances.mjs::preconditionsFor)."""
     out = {}
@@ -439,14 +465,17 @@ def preconditions(row: dict, schema: dict, current: dict, ctx: dict) -> dict:
         for value, s in slots:
             if value == slot[0] and 'object' in types(schema.get(s)) and re.search(r'Source$|^source$', s) and is_empty(current.get(s)):
                 out[s] = {'desktop': {'kind': 'image', **IMAGE}}
+    # An attribute counts when block.json or the extension roster defines it, or when the plugin's PHP reads it
+    # (`sgsMotion`, which every block carries from the motion model and no block.json lists).
+    known = lambda a: a in schema or a in (ctx.get('extensionAttrs') or ()) or code_reads(ctx.get('plugin'), a)  # noqa: E731
     for a, v in (ctx.get('settingPreconditions', {}).get(name) or {}).items():
-        if a in schema and current.get(a) != v:
+        if known(a) and current.get(a) != v:
             out[a] = v
     for stem, attrs in (ctx.get('familyPreconditions') or {}).items():
         if not name.startswith(stem):
             continue
         for a, v in attrs.items():
-            if a != name and a in schema and json.dumps(current.get(a), sort_keys=True) != json.dumps(v, sort_keys=True):
+            if a != name and known(a) and json.dumps(current.get(a), sort_keys=True) != json.dumps(v, sort_keys=True):
                 out[a] = v
     partner = re.sub(r'Opacity$', 'Colour', name)
     if partner != name and partner in schema and current.get(partner, schema[partner].get('default', '')) in ('', None):
@@ -585,7 +614,10 @@ def _values_for(row: dict, d: dict, schema: dict, current: dict):
     if 'array' in t:
         if not is_empty(held):
             return one('emptied', [])
-        return None, 'a list: no generic item, the fixture supplies one'
+        item = LV.list_item_sample(row.get('plugin'), name)
+        if item is not None:
+            return one('list-item', item)
+        return None, 'a list no source of the plugin reads item by item (no `array_map( ..., (array) $x['' + name + ''] )`): no generic item'
     if not is_gradient and 'string' in t and not enum and is_colour:
         return one('hex', MARKER_ALT_HEX if held == MARKER_HEX else MARKER_HEX)
     if is_gradient and 'string' in t:
@@ -632,7 +664,10 @@ def _values_for(row: dict, d: dict, schema: dict, current: dict):
     if numeric and ANGLE_NAME.search(name):
         return one('angle', ((held or 0) + 90) % 360)
     if RECORD_NAME.search(name):
-        return None, 'names a post or item: the fixture supplies it'
+        got = LV.standin_value(name, d, held, row.get('literals'))
+        if isinstance(got, tuple):
+            return got
+        return one('standin', got)
     # No source names a property the value table knows: the name's own words choose the value.
     kebab = re.sub(r'([a-z0-9])([A-Z])', r'\1-\2', name).lower()
     if (numeric or 'string' in t) and kebab.endswith('opacity'):
@@ -760,8 +795,18 @@ def _object_values(row, d, schema, held, set_, with_unit, length_in):
             return [{'label': 'tiers-rotated', 'attrs': set_({t: rot[i % len(rot)] for i, t in enumerate(TIERS)})}]
         if leaves and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in leaves):
             return [{'label': 'tiers-number', 'attrs': set_({t: _num(leaves[0]) + (3, 2, 1)[i] for i, t in enumerate(TIERS)})}]
-        return None, 'a per-device value of unknown kind: its choices live in the editor control, not block.json'
-    return None, 'an object of no tier or box shape: no generic value'
+        leafy = LV.object_leaf_values(name, d, held, row.get('plugin'), row.get('literals') or (), schema)
+        if isinstance(leafy, list) and not set(LV.object_shape(name, d, row.get('plugin'), schema)) <= set(TIERS):
+            return leafy  # an object keyed by something other than devices (separators): its leaves, not per-device choices
+        coded = LV.code_choices(row.get('literals'), (held or {}).get('desktop'))
+        if re.search(r'Ratio$', name):
+            coded = [c for c in coded if re.fullmatch(r'[\d.]+\s*/\s*[\d.]+|[\d.]+', c)] or list(LV.RATIO_VALUES)
+        now = (held or {}).get('desktop')
+        free = [c for c in coded if c != now]
+        if free:
+            return [{'label': 'tiers-code-values', 'attrs': set_({t: free[i % len(free)] for i, t in enumerate(TIERS)})}]
+        return None, 'a per-device value of unknown kind: the code compares it against no value the generator can use'
+    return LV.object_leaf_values(name, d, held, row.get('plugin'), row.get('literals') or (), schema)
 
 
 def _num(v):
@@ -784,15 +829,61 @@ def switching_attrs(scan: dict, tokens, data_attrs=()) -> list:
             if n not in out:
                 out.append(n)
 
+    cv = scan.get('conditionValues') or {}
+
+    def own(key):
+        rec = cv.get(key) or {}
+        return sorted(rec, key=lambda a: (not rec[a], a))  # the settings the printing needs: the ones with a compared value first
+
     for tok in tokens:
         sw = scan.get('switchClasses') or {}
+        add(own(tok))
+        add(own(tok.split('--')[0]))
         add(sw.get(tok, ()))
         add(a for fam in sorted(sw, key=len, reverse=True) if fam.endswith('-') and tok.startswith(fam) for a in sw[fam])
         part = (scan.get('parts') or {}).get(tok.split('--')[0]) or {}
         add(part.get('conditionAttrs') or ())
         add(part.get('textAttrs') or ())
     for name in data_attrs:
+        add(own('data-' + name))
         add((scan.get('dataAttrs') or {}).get(name, ()))
+    return out
+
+
+def setting_literals(scan: dict | None) -> dict:
+    """setting -> the values the code compares it against, read by the scanner: each token's own conditions first
+    (`conditionValues`), then every comparison in the sources read (`settingValues`)."""
+    out = {}
+    scan = scan or {}
+    for rec in (scan.get('conditionValues') or {}).values():
+        for a, vals in rec.items():
+            for v in vals:
+                if v not in out.setdefault(a, []):
+                    out[a].append(v)
+    for a, vals in (scan.get('settingValues') or {}).items():
+        for v in vals:
+            if v not in out.setdefault(a, []):
+                out[a].append(v)
+    return out
+
+
+def _literal_dicts(attr: str, d: dict, shape, literals, current: dict) -> list:
+    """The attribute dicts that give `attr` each value the code compares it against (one valid for its type), skipping
+    the one it holds."""
+    t = types(d)
+    enum = d.get('enum') if isinstance(d.get('enum'), list) else None
+    out = []
+    for v in literals:
+        if v == current.get(attr, d.get('default')):
+            continue
+        if enum is not None and v not in enum:
+            continue
+        if isinstance(v, str) and 'string' in t:
+            out.append({attr: v})
+        elif isinstance(v, str) and shape == 'tier_object' and 'object' in t:
+            out.append({attr: every_tier(v)})
+        elif isinstance(v, (int, float)) and not isinstance(v, bool) and ('number' in t or 'integer' in t):
+            out.append({attr: v})
     return out
 
 
@@ -811,14 +902,53 @@ def switching_values(plugin: Path, short: str, attr: str, current: dict) -> list
     d = schema.get(attr)
     if d is None:
         return []
-    row = {'attr': attr, 'props': [], 'vprop': name_prop(attr, plugin), 'shape': _shapes(str(plugin), short).get(attr), 'box_family': box_families(bj).get(attr)}
+    scan = _scan_of(plugin, short)
+    literals = setting_literals(scan)
+    row = {'attr': attr, 'props': [], 'vprop': name_prop(attr, plugin), 'shape': _shapes(str(plugin), short).get(attr), 'box_family': box_families(bj).get(attr),
+           'plugin': plugin, 'literals': literals.get(attr, [])}
     got = values_for(row, d, schema, current)
-    return [] if isinstance(got, tuple) else [m['attrs'] for m in got]
+    generated = [] if isinstance(got, tuple) else [m['attrs'] for m in got]
+    coded = _literal_dicts(attr, d, row['shape'], row['literals'], current)
+    # A part or class that needs two settings at once (the roll's `up` copy needs labelRoll and an open label): the
+    # scanner records every setting a token's condition reads; each value the code compares `attr` against is also
+    # offered together with a value for each of the others.
+    combos = []
+    for rec in (scan.get('conditionValues') or {}).values():
+        if attr not in rec or not 2 <= len(rec) <= MAX_PARTNERS + 1:
+            continue
+        partners = {}
+        for b in rec:
+            if b == attr or b not in schema:
+                continue
+            bd = schema[b]
+            opts = _literal_dicts(b, bd, _shapes(str(plugin), short).get(b), rec[b], current)
+            if not opts:
+                bg = values_for({'attr': b, 'props': [], 'vprop': name_prop(b, plugin), 'shape': _shapes(str(plugin), short).get(b), 'box_family': box_families(bj).get(b),
+                                 'plugin': plugin, 'literals': literals.get(b, [])}, bd, schema, current)
+                opts = [] if isinstance(bg, tuple) else [m['attrs'] for m in bg]
+            if opts:
+                partners.update(opts[0])
+        if partners:
+            combos += [{**c, **partners} for c in coded[:2] + generated[:1]]
+    out, seen = [], set()
+    for cand in coded + combos + generated:
+        k = json.dumps(cand, sort_keys=True, default=str)
+        if k not in seen:
+            seen.add(k)
+            out.append(cand)
+    return out
+
+
+def _scan_of(plugin: Path, short: str) -> dict:
+    try:
+        return scan_json(Path(plugin) / 'src' / 'blocks', short)
+    except Exception:  # noqa: BLE001  (a block the scanner cannot read has no code facts; the generated values stand)
+        return {}
 
 
 # ---------------------------------------------------------------- the plan
 def plan_block(bj: dict, fixture: dict | None = None, *, places: dict | None = None, shapes: dict | None = None,
-               extensions: dict | None = None, plugin: Path | None = None) -> dict:
+               extensions: dict | None = None, plugin: Path | None = None, literals: dict | None = None) -> dict:
     """Every instance for one block from its block.json and fixture. places: attr -> {props, state, element, source};
     shapes: attr -> tier shape; extensions: the sgs* attributes render_block filters add (listed unvalued)."""
     plugin = Path(plugin or PLUGIN)
@@ -830,7 +960,7 @@ def plan_block(bj: dict, fixture: dict | None = None, *, places: dict | None = N
     fams = box_families(bj)
     vattr, vslots = variant_slots(bj)
     ctx = {'variantAttr': vattr, 'variantSlots': vslots, 'settingPreconditions': fixture.get('preconditions') or {},
-           'familyPreconditions': fixture.get('familyPreconditions') or {}}
+           'familyPreconditions': fixture.get('familyPreconditions') or {}, 'extensionAttrs': set(extensions or {}), 'plugin': plugin}
     variants = [variant_attributes(fixture.get('attributes'), v) for v in (fixture.get('variants') or [{}])]
     settings = [a for a in schema if a not in units]
     rows = {}
@@ -840,7 +970,7 @@ def plan_block(bj: dict, fixture: dict | None = None, *, places: dict | None = N
         vprop = re.sub(r':.*$', '', props[0]) if props else name_prop(a, plugin)
         rows[a] = {'attr': a, 'props': props, 'vprop': vprop, 'state': p.get('state'), 'element': p.get('element'),
                    'source': p.get('source') if props else ('name' if vprop else None),
-                   'shape': shapes.get(a), 'box_family': fams.get(a)}
+                   'shape': shapes.get(a), 'box_family': fams.get(a), 'plugin': plugin, 'literals': (literals or {}).get(a, [])}
     instances, unvalued, no_marker = [], {}, set()
     for ps in fixture.get('paintStates') or []:
         instances.append({'key': f"paint-{ps['name']}", 'attrs': variant_attributes(fixture.get('attributes'), ps.get('attributes') or {}),
@@ -917,8 +1047,9 @@ def plan(short: str, plugin: Path = PLUGIN, fixtures: dict | None = None, *, sca
             if d.get('css_property') and a not in places:
                 places[a] = {'props': [d['css_property']], 'state': None, 'element': None, 'source': 'extension-roster'}
             shapes.setdefault(a, d.get('tier_shape'))
+    literals = setting_literals(scan_json(blocks_dir, short)) if scan else {}
     return plan_block(bj, fixture, places=places, shapes=shapes,
-                      extensions={a: x for a, x in ext.items() if a not in paint}, plugin=plugin)
+                      extensions={a: x for a, x in ext.items() if a not in paint}, plugin=plugin, literals=literals)
 
 
 def main(argv=None):

@@ -1,1 +1,22 @@
-{"ID": 9101, "post_type": "wp_navigation", "post_status": "publish", "post_title": "Main", "post_content": "<!-- wp:core/navigation-link {\"label\":\"Home\",\"description\":\"New\",\"url\":\"/\",\"id\":9102,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-submenu {\"label\":\"Shop\",\"url\":\"/shop/\",\"id\":9104,\"kind\":\"post-type\",\"type\":\"page\"} --><!-- wp:core/navigation-link {\"label\":\"Sunglasses\",\"description\":\"New\",\"url\":\"/shop/sun/\",\"id\":9105,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Frames\",\"url\":\"/shop/frames/\",\"id\":9106,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Cases\",\"url\":\"/shop/cases/\",\"id\":9109,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Lenses\",\"url\":\"/shop/lenses/\",\"id\":9110,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- /wp:core/navigation-submenu --><!-- wp:core/navigation-link {\"label\":\"About\",\"url\":\"/about/\",\"id\":9107,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Contact\",\"url\":\"/contact/\",\"id\":9108,\"kind\":\"post-type\",\"type\":\"page\"} /-->"}
+[
+ {
+  "ID": 9101,
+  "post_type": "wp_navigation",
+  "post_status": "publish",
+  "post_title": "Main",
+  "post_content": "<!-- wp:core/navigation-link {\"label\":\"Home\",\"description\":\"New\",\"url\":\"/\",\"id\":9102,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-submenu {\"label\":\"Shop\",\"url\":\"/shop/\",\"id\":9104,\"kind\":\"post-type\",\"type\":\"page\"} --><!-- wp:core/navigation-link {\"label\":\"Sunglasses\",\"description\":\"New\",\"url\":\"/shop/sun/\",\"id\":9105,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Frames\",\"url\":\"/shop/frames/\",\"id\":9106,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Cases\",\"url\":\"/shop/cases/\",\"id\":9109,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Lenses\",\"url\":\"/shop/lenses/\",\"id\":9110,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- /wp:core/navigation-submenu --><!-- wp:core/navigation-link {\"label\":\"About\",\"url\":\"/about/\",\"id\":9107,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Contact\",\"url\":\"/contact/\",\"id\":9108,\"kind\":\"post-type\",\"type\":\"page\"} /--><!-- wp:core/navigation-link {\"label\":\"Collections\",\"url\":\"/collections/\",\"id\":9202,\"kind\":\"post-type\",\"type\":\"sgs_mega_menu\"} /-->"
+ },
+ {
+  "ID": 9202,
+  "post_type": "sgs_mega_menu",
+  "post_status": "publish",
+  "post_title": "Collections panel",
+  "post_content": "<!-- wp:paragraph --><p>Everything we make</p><!-- /wp:paragraph -->"
+ },
+ {
+  "ID": 9201,
+  "post_type": "page",
+  "post_status": "publish",
+  "post_title": "Second page"
+ }
+]
