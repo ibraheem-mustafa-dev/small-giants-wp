@@ -111,7 +111,7 @@ function placeHole( ctx, piece, index, L ) {
 		holesOf( e.srcOwnText ).some( ( h ) => holeReads( L, h, roots, fields, loopListOf( e ) ) ) );
 	const built = fed.map( ( e ) => ( { e, at: nodeOf( tree, e.key ) } ) ).filter( ( x ) => x.at );
 	if ( piece.find.every && built.length ) {
-		return bindEvery( { key, tree, piece, built } );
+		return bindEvery( { key, tree, piece, built, fields } );
 	}
 	if ( ! built.length ) {
 		return note( fed.length ? `the element(s) showing the product's ${ piece.find.field } (${ fed.map( ( e ) => e.key ).join( ', ' ) }) have no node of their own in this tree (they are inside the buy box, or another block absorbed them)` : `no element of the page shows the product's ${ piece.find.field }` );
@@ -131,16 +131,19 @@ function placeHole( ctx, piece, index, L ) {
 }
 
 // Every element showing the field as its whole words is bound (`find.every`: a word the page repeats, the product's brand in
-// the breadcrumb and above the title); one showing it among other words is a note, as a binding would replace those.
-function bindEvery( { key, tree, piece, built } ) {
+// the breadcrumb and above the title): its one hole names the field itself (`p.brand`), never a value built from it
+// (`sameBrandTitle: 'More from ' + p.brand`). One showing it among other words or inside a built value is a note, as a binding
+// would replace those words.
+function bindEvery( { key, tree, piece, built, fields } ) {
 	const placed = [];
 	const notes = [];
 	for ( const { e, at } of built ) {
-		const whole = 1 === holesOf( e.srcOwnText ).length && ! String( e.srcOwnText ).replace( /\{\{[^}]*\}\}/g, '' ).trim();
+		const holes = holesOf( e.srcOwnText );
+		const whole = 1 === holes.length && ! String( e.srcOwnText ).replace( /\{\{[^}]*\}\}/g, '' ).trim() && fields.includes( holes[ 0 ].split( '.' ).at( -1 ) );
 		const attr = whole ? bindNode( at.node, e, piece.binds ) : null;
 		// A link showing the field goes where the field's own page is (`find.linkKey`, the brand's page for the brand), not the draft's one address.
 		const link = attr && piece.find.linkKey && 'a' === e.tag && Object.hasOwn( blockSchema( at.node.name ) || {}, 'url' ) ? linkNode( at.node, { source: piece.binds.source, key: piece.find.linkKey } ) : null;
-		attr ? placed.push( { id: piece.id, block: at.node.name, at: e.key, bind: `${ attr } <- ${ piece.binds.source } ${ piece.binds.key }${ link ? `; url <- ${ piece.binds.source } ${ piece.find.linkKey }` : '' }` } ) : notes.push( `${ key }: piece "${ piece.id }": ${ e.key } shows the ${ piece.find.field } ${ whole ? `but ${ at.node.name } holds no single setting with its words` : `among other words ("${ String( e.srcOwnText ).trim() }"), which a binding would replace` }` );
+		attr ? placed.push( { id: piece.id, block: at.node.name, at: e.key, bind: `${ attr } <- ${ piece.binds.source } ${ piece.binds.key }${ link ? `; url <- ${ piece.binds.source } ${ piece.find.linkKey }` : '' }` } ) : notes.push( `${ key }: piece "${ piece.id }": ${ e.key } shows the ${ piece.find.field } ${ whole ? `but ${ at.node.name } holds no single setting with its words` : `among other words or in a value built from it ("${ String( e.srcOwnText ).trim() }"), which a binding would replace` }` );
 	}
 	return placed.length ? { tree, placed, notes } : { notes };
 }

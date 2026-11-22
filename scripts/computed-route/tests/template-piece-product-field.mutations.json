@@ -157,7 +157,7 @@
 	},
 	{
 		"file": "lib/template-piece-product-field.mjs",
-		"find": "\t\tconst whole = 1 === holesOf( e.srcOwnText ).length && ! String( e.srcOwnText ).replace( /\\{\\{[^}]*\\}\\}/g, '' ).trim();",
+		"find": "\t\tconst whole = 1 === holes.length && ! String( e.srcOwnText ).replace( /\\{\\{[^}]*\\}\\}/g, '' ).trim() && fields.includes( holes[ 0 ].split( '.' ).at( -1 ) );",
 		"replace": "\t\tconst whole = true;",
 		"why": "a field among other words is bound and its words replaced"
 	},
@@ -190,5 +190,11 @@
 		"find": "\t\tout.push( ...PICTURE_ATTRS.flatMap( ( a ) => holesOf( c.attrs?.[ a ] ?? '' ) ) );\n\t\twalk( c );",
 		"replace": "\t\tout.push( ...PICTURE_ATTRS.flatMap( ( a ) => holesOf( c.attrs?.[ a ] ?? '' ) ) );",
 		"why": "a picture inside a hidden branch's wrapper is not reached"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": " && fields.includes( holes[ 0 ].split( '.' ).at( -1 ) );",
+		"replace": ";",
+		"why": "a value built from the brand is bound as the bare brand"
 	}
 ]
