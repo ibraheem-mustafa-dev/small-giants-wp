@@ -131,10 +131,37 @@ describe( 'product-card store: the buy box amount follows the chosen variation',
 		expect( ctx.instalmentsDisplay ).toBe( '£46.33' );
 	} );
 
+	test( 'a free variation hides the note and a priced one shows it again', async () => {
+		await mount( {
+			instalmentsCount: 3,
+			instalmentsDisplay: '£46.33',
+			instalmentsHidden: false,
+		} );
+		ctx.combos[ 'pa_size:large' ].priceMinor = 0;
+		pick( 'large' );
+		expect( ctx.instalmentsHidden ).toBe( true );
+		expect( ctx.instalmentsDisplay ).toBe( '' );
+		pick( 'small' );
+		expect( ctx.instalmentsHidden ).toBe( false );
+		expect( ctx.instalmentsDisplay ).toBe( '£46.33' );
+	} );
+
+	test( 'an out-of-stock variation hides the note', async () => {
+		await mount( {
+			instalmentsCount: 3,
+			instalmentsDisplay: '£46.33',
+			instalmentsHidden: false,
+		} );
+		ctx.combos[ 'pa_size:large' ].inStock = false;
+		pick( 'large' );
+		expect( ctx.instalmentsHidden ).toBe( true );
+	} );
+
 	test( 'a buy box with no note gets no instalments key', async () => {
 		await mount( {} );
 		pick( 'large' );
 		expect( ctx.priceDisplay ).toBe( '£60.00' );
 		expect( 'instalmentsDisplay' in ctx ).toBe( false );
+		expect( 'instalmentsHidden' in ctx ).toBe( false );
 	} );
 } );

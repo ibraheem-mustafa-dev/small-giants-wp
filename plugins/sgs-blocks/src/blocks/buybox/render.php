@@ -249,12 +249,16 @@ $per_unit_display = sgs_configurator_per_unit_display( $def, $tax_mode, $decimal
 
 // The instalments note under the add-to-cart button (instalmentsNote, the twin of sgs/cart's panelInstalmentsNote):
 // its %s is the current price over instalmentsCount, formatted as the price is, and product-card/view.js recomputes
-// it from context.instalmentsCount when a variation is picked. The two context keys exist only while a note is set.
-$buybox_instalments_note  = trim( (string) ( $attributes['instalmentsNote'] ?? '' ) );
-$buybox_instalments_count = max( 1, absint( $attributes['instalmentsCount'] ?? 3 ) );
-$buybox_instalments_shown = '' !== $buybox_instalments_note
-	? sgs_configurator_format_minor( sgs_instalment_minor( (int) $def['priceMinor'], $buybox_instalments_count ), $decimals )
+// it from context.instalmentsCount when a variation is picked. The note hides at an amount of 0 (a free product or
+// variation) and when the variation is out of stock, as the cart drawer's hides at a 0 total (context.instalmentsHidden).
+// The three context keys exist only while a note is set.
+$buybox_instalments_note   = trim( (string) ( $attributes['instalmentsNote'] ?? '' ) );
+$buybox_instalments_count  = max( 1, absint( $attributes['instalmentsCount'] ?? 3 ) );
+$buybox_instalments_minor  = sgs_instalment_minor( (int) $def['priceMinor'], $buybox_instalments_count );
+$buybox_instalments_shown  = '' !== $buybox_instalments_note && $buybox_instalments_minor > 0
+	? sgs_configurator_format_minor( $buybox_instalments_minor, $decimals )
 	: '';
+$buybox_instalments_hidden = $buybox_instalments_minor <= 0 || empty( $def['inStock'] );
 $discount_label   = ( null !== $def['saleMinor'] )
 	? __( 'Sale', 'sgs-blocks' )
 	: ( isset( $def['discountLabel'] ) ? (string) $def['discountLabel'] : '' );
@@ -526,6 +530,7 @@ $context = array(
 if ( '' !== $buybox_instalments_note ) {
 	$context['instalmentsCount']   = $buybox_instalments_count;
 	$context['instalmentsDisplay'] = $buybox_instalments_shown;
+	$context['instalmentsHidden']  = $buybox_instalments_hidden;
 }
 
 /* ── 6. Builder data limit: sgs_configurator_context_cap_bytes() (24 KB unless a site raises it per product) ── */
@@ -1707,7 +1712,7 @@ if ( $buybox_side_cart ) {
 		// express payment buttons.
 		if ( '' !== $buybox_instalments_note ) {
 			$buybox_instalments_amount = '<span class="sgs-buybox__instalments-amount" data-wp-text="context.instalmentsDisplay">' . esc_html( $buybox_instalments_shown ) . '</span>';
-			echo '<p class="sgs-buybox__instalments" data-wp-bind--hidden="!context.inStock">' . sgs_instalments_note_fill( $buybox_instalments_note, $buybox_instalments_amount ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the note through sgs_rich_text_kses(), the amount esc_html()'d.
+			echo '<p class="sgs-buybox__instalments" data-wp-bind--hidden="context.instalmentsHidden"' . ( $buybox_instalments_hidden ? ' hidden' : '' ) . '>' . sgs_instalments_note_fill( $buybox_instalments_note, $buybox_instalments_amount ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the note through sgs_rich_text_kses(), the amount esc_html()'d.
 		}
 		$buybox_express_on_interaction = 'interaction' === ( $attributes['expressLoad'] ?? 'page' );
 		sgs_buybox_after_cart_form_action( $buybox_post_id, ! $buybox_is_guided && ! $add_to_cart_opens_modal, $buybox_express_on_interaction );

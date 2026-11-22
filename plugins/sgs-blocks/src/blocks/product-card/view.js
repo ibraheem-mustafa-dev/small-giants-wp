@@ -671,8 +671,11 @@ function applyPillSelection( ctx, detail ) {
 		ctx.perUnitHidden = puDisplay === '';
 		// The buy box's instalments note (instalmentsNote): the chosen price over the count, formatted as the price is.
 		// Its context keys exist only while the note is set, so a card or a buy box without one skips this.
+		// It hides at an amount of 0 (a free variation) and when the variation is out of stock, as render.php seeds it.
 		if ( ctx.instalmentsCount ) {
-			ctx.instalmentsDisplay = instalmentsDisplay( combo, ctx );
+			const minor = instalmentMinor( combo.priceMinor, ctx.instalmentsCount );
+			ctx.instalmentsDisplay = minor > 0 ? instalmentsDisplay( combo, ctx ) : '';
+			ctx.instalmentsHidden = minor <= 0 || ! combo.inStock;
 		}
 		// FP-13: an on-sale combo shows the "Sale" badge (limited-time urgency);
 		// otherwise the author's cosmetic discount label (e.g. "Best value"). The
@@ -722,6 +725,9 @@ function applyPillSelection( ctx, detail ) {
 		ctx.perUnitHidden = true;
 		ctx.discountLabel = '';
 		ctx.discountHidden = true;
+		if ( ctx.instalmentsCount ) {
+			ctx.instalmentsHidden = true;
+		}
 	}
 }
 
@@ -1350,6 +1356,9 @@ store( 'sgs/product-card', {
 									if ( currentCombo && ! currentCombo.inStock ) {
 										ctx.inStock = false;
 										ctx.stockText = 'Out of stock';
+										if ( ctx.instalmentsCount ) {
+											ctx.instalmentsHidden = true;
+										}
 									}
 									// The sold-out fact replaces the generic
 									// server message. Deliberately NOT

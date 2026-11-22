@@ -42,7 +42,7 @@ final class BuyboxInstalmentsAndLookTest extends TestCase {
 	public function test_the_note_shows_46_33_for_139_over_3_under_the_button(): void {
 		$html = $this->priced( array( 'instalmentsNote' => self::NOTE, 'instalmentsCount' => 3 ) );
 		$this->assertMatchesRegularExpression(
-			'#<p class="sgs-buybox__instalments" data-wp-bind--hidden="!context.inStock">Or 3 payments of <span class="sgs-buybox__instalments-amount" data-wp-text="context.instalmentsDisplay">[^<]*46\.33</span> with <strong>Klarna</strong></p>#',
+			'#<p class="sgs-buybox__instalments" data-wp-bind--hidden="context.instalmentsHidden">Or 3 payments of <span class="sgs-buybox__instalments-amount" data-wp-text="context.instalmentsDisplay">[^<]*46\.33</span> with <strong>Klarna</strong></p>#',
 			$html
 		);
 		$this->assertLessThan( strpos( $html, 'sgs-buybox__instalments"' ), strpos( $html, '</form>' ), 'printed after the add-to-cart form' );
@@ -61,12 +61,27 @@ final class BuyboxInstalmentsAndLookTest extends TestCase {
 		$this->assertMatchesRegularExpression( '#>Pay in 3: <span class="sgs-buybox__instalments-amount"#', $html );
 	}
 
+	public function test_a_free_product_hides_the_note(): void {
+		$html = BuyboxSnapshotTest::render_fixture( '../buybox-instalments/free', array( 'instalmentsNote' => self::NOTE, 'instalmentsCount' => 3 ), null, array(), true );
+		$this->assertMatchesRegularExpression( '#<p class="sgs-buybox__instalments" data-wp-bind--hidden="context.instalmentsHidden" hidden>#', $html );
+		$ctx = $this->context( $html );
+		$this->assertTrue( $ctx['instalmentsHidden'] );
+		$this->assertSame( '', $ctx['instalmentsDisplay'] );
+	}
+
+	public function test_a_priced_product_shows_the_note(): void {
+		$html = $this->priced( array( 'instalmentsNote' => self::NOTE, 'instalmentsCount' => 3 ) );
+		$this->assertStringContainsString( '<p class="sgs-buybox__instalments" data-wp-bind--hidden="context.instalmentsHidden">', $html );
+		$this->assertFalse( $this->context( $html )['instalmentsHidden'] );
+	}
+
 	public function test_no_note_prints_nothing_and_seeds_no_key(): void {
 		$html = $this->priced();
 		$this->assertStringContainsString( '</form>', $html, 'the form rendered, so the negative control is not vacuous' );
 		$this->assertStringNotContainsString( 'sgs-buybox__instalments', $html );
 		$this->assertArrayNotHasKey( 'instalmentsCount', $this->context( $html ) );
 		$this->assertArrayNotHasKey( 'instalmentsDisplay', $this->context( $html ) );
+		$this->assertArrayNotHasKey( 'instalmentsHidden', $this->context( $html ) );
 	}
 
 	public function test_the_note_takes_its_colour_and_type(): void {
