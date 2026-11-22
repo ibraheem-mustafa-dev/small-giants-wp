@@ -177,6 +177,8 @@ final class SGS_Blocks {
 		// only. Adds the per-device `sgsChipGap` length as a scoped <style> rule.
 		require_once SGS_BLOCKS_PATH . 'includes/product-filter-chips-gap.php';
 		require_once SGS_BLOCKS_PATH . 'includes/product-filter-look.php';
+		// The brand strip's cache of which brands the shop lists a product for, cleared when a product changes.
+		require_once SGS_BLOCKS_PATH . 'includes/brand-strip-visible-cache.php';
 
 		// Cart and Checkout look settings (FR-30-18) -- `woocommerce/cart` and `woocommerce/checkout` only.
 		// One writer for the front end (render_block) and the editor canvas (POST sgs/v1/commerce-look/css).

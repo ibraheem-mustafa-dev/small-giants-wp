@@ -321,4 +321,67 @@ final class BrandStripProductBrandsVisibilityTest extends TestCase {
 
 		$this->assertSame( array( 'pb-1', 'pb-2' ), $r['keys'] );
 	}
+
+	/**
+	 * MUST FAIL on the old code: the visible-brands lookup is cached, so a second render runs no product query.
+	 */
+	public function test_a_second_render_reads_the_cached_visible_brands(): void {
+		$scenario            = $this->scenario(
+			array(
+				$this->product( 10, array( 1 ), self::HIDDEN ),
+				$this->product( 11, array( 2 ) ),
+			),
+			array( 'brandHideEmpty' => true )
+		);
+		$scenario['renders'] = 3;
+		$r                   = $this->run_source( $scenario );
+
+		$this->assertSame( 1, $r['product_queries'], 'three renders, one product query' );
+		$this->assertSame( array( array( 'pb-2' ), array( 'pb-2' ), array( 'pb-2' ) ), $r['all_keys'] );
+	}
+
+	/**
+	 * MUST FAIL on the old code: saving a product clears the cache, so the next render lists what the shop lists now.
+	 * Negative control: without the save the cached list stands (the change is not seen until a product is saved).
+	 */
+	public function test_a_product_save_clears_the_cached_visible_brands(): void {
+		$after                    = array(
+			$this->product( 10, array( 1 ) ),
+			$this->product( 11, array( 2 ) ),
+		);
+		$scenario                 = $this->scenario(
+			array(
+				$this->product( 10, array( 1 ), self::HIDDEN ),
+				$this->product( 11, array( 2 ) ),
+			),
+			array( 'brandHideEmpty' => true )
+		);
+		$scenario['renders']      = 2;
+		$scenario['change_after'] = array( '1' => $after );
+		$saved                    = $scenario;
+		$saved['flush_after']     = array( 1 );
+
+		$this->assertSame( array( array( 'pb-2' ), array( 'pb-1', 'pb-2' ) ), $this->run_source( $saved )['all_keys'] );
+		$this->assertSame( 2, $this->run_source( $saved )['product_queries'] );
+		$this->assertSame( array( array( 'pb-2' ), array( 'pb-2' ) ), $this->run_source( $scenario )['all_keys'] );
+		$this->assertContains( 'save_post_product', $this->run_source( $scenario )['hooks'] );
+	}
+
+	/**
+	 * The shop's out-of-stock option is part of the cached lookup, so turning it off lists the out-of-stock brand at once,
+	 * with no product saved.
+	 */
+	public function test_the_out_of_stock_option_is_part_of_the_cached_lookup(): void {
+		$scenario                  = $this->scenario(
+			array(
+				$this->product( 10, array( 1 ), array( 'outofstock' ) ),
+				$this->product( 11, array( 2 ) ),
+			),
+			array( 'brandHideEmpty' => true ),
+			array( 'woocommerce_hide_out_of_stock_items' => 'yes' )
+		);
+		$scenario['renders']       = 2;
+		$scenario['options_after'] = array( '1' => array( 'woocommerce_hide_out_of_stock_items' => 'no' ) );
+		$this->assertSame( array( array( 'pb-2' ), array( 'pb-1', 'pb-2' ) ), $this->run_source( $scenario )['all_keys'] );
+	}
 }

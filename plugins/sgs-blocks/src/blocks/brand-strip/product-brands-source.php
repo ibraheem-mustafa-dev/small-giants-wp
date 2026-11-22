@@ -30,6 +30,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once dirname( __DIR__, 3 ) . '/includes/brand-strip-visible-cache.php';
+
 if ( ! function_exists( 'sgs_brand_strip_product_brands_available' ) ) {
 	/**
 	 * Whether the WooCommerce core "product_brand" taxonomy is registered on
@@ -74,7 +76,9 @@ if ( ! function_exists( 'sgs_brand_strip_brand_ids_with_visible_products' ) ) {
 	 * product without the `exclude-from-catalog` visibility term, and without
 	 * `outofstock` when the option `woocommerce_hide_out_of_stock_items` is `yes`.
 	 * One product query finds the visible products of these brands; one term query
-	 * reads the brands those products carry.
+	 * reads the brands those products carry. The answer is cached until a product
+	 * changes (includes/brand-strip-visible-cache.php), so a render after the first
+	 * runs neither query.
 	 *
 	 * @param int[] $brand_ids Candidate `product_brand` term ids.
 	 * @return array<int,true> The qualifying brand ids as keys.
@@ -88,6 +92,12 @@ if ( ! function_exists( 'sgs_brand_strip_brand_ids_with_visible_products' ) ) {
 		$hidden = array( 'exclude-from-catalog' );
 		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
 			$hidden[] = 'outofstock';
+		}
+
+		$cache_key = sgs_brand_strip_visible_cache_key( $brand_ids, $hidden );
+		$cached    = sgs_brand_strip_visible_cache_get( $cache_key );
+		if ( null !== $cached ) {
+			return $cached;
 		}
 
 		$product_ids = get_posts(
@@ -117,6 +127,7 @@ if ( ! function_exists( 'sgs_brand_strip_brand_ids_with_visible_products' ) ) {
 			)
 		);
 		if ( empty( $product_ids ) ) {
+			sgs_brand_strip_visible_cache_set( $cache_key, array() );
 			return array();
 		}
 
@@ -124,7 +135,9 @@ if ( ! function_exists( 'sgs_brand_strip_brand_ids_with_visible_products' ) ) {
 		if ( is_wp_error( $carried ) ) {
 			return array();
 		}
-		return array_fill_keys( array_map( 'intval', $carried ), true );
+		$visible = array_fill_keys( array_map( 'intval', $carried ), true );
+		sgs_brand_strip_visible_cache_set( $cache_key, $visible );
+		return $visible;
 	}
 }
 

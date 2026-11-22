@@ -13,7 +13,13 @@
  * Usage: php brand-strip-product-brands-harness.php <source-file> <scenario.json>
  * Scenario: { brands: [{id, name, order?}], products: [{id, status, hidden: [visibility slugs], brands: [ids]}],
  *             options: {name: value}, attributes: {block attributes} }
- * Output (JSON): { keys: [the entries' _key in order], product_queries: n, term_queries: [get_terms args] }
+ *             renders?: n (default 1; the source runs n times in this one process), flush_after?: [render numbers, 1-based]
+ *             (after each named render the scenario fires the hooks the visible-brands cache is cleared by: `save_post_product`),
+ *             change_after?: { render number: products } (the products as they stand after that render),
+ *             options_after?: { render number: options } (the site options as they stand after that render)
+ * Transients are an in-memory store for the process; `add_action` records each hook, and the harness fires a recorded hook.
+ * Output (JSON): { keys: [the entries' _key in order, last render], all_keys: [per render], product_queries: n (all renders),
+ *                  term_queries: [get_terms args], hooks: [hook names added] }
  *
  * @package SGS\Blocks\Tests
  */
@@ -35,6 +41,41 @@ $GLOBALS['sgs_h'] = array(
 );
 
 class WP_Error {}
+
+$GLOBALS['sgs_h']['transients'] = array();
+$GLOBALS['sgs_h']['hooks']      = array();
+if ( ! defined( 'DAY_IN_SECONDS' ) ) {
+	define( 'DAY_IN_SECONDS', 86400 );
+}
+function get_transient( $name ) {
+	return array_key_exists( $name, $GLOBALS['sgs_h']['transients'] ) ? $GLOBALS['sgs_h']['transients'][ $name ] : false;
+}
+function set_transient( $name, $value, $expiry = 0 ) {
+	$GLOBALS['sgs_h']['transients'][ $name ] = $value;
+	return true;
+}
+function delete_transient( $name ) {
+	unset( $GLOBALS['sgs_h']['transients'][ $name ] );
+	return true;
+}
+function add_action( $hook, $callback, $priority = 10, $args = 1 ) {
+	$GLOBALS['sgs_h']['hooks'][ $hook ][] = $callback;
+	return true;
+}
+function get_post_type( $id ) {
+	return 'product';
+}
+/**
+ * Fire a recorded hook as WordPress would.
+ *
+ * @param string $hook Hook name.
+ * @param mixed  ...$args Hook arguments.
+ */
+function sgs_h_fire( $hook, ...$args ) {
+	foreach ( $GLOBALS['sgs_h']['hooks'][ $hook ] ?? array() as $cb ) {
+		$cb( ...$args );
+	}
+}
 
 function is_wp_error( $thing ) {
 	return $thing instanceof WP_Error;
@@ -175,11 +216,25 @@ function wp_get_object_terms( $object_ids, $taxonomy, $args = array() ) {
 
 require $sgs_h_source;
 
-$sgs_h_logos = sgs_brand_strip_get_product_brand_logos( $sgs_h_scenario['attributes'] ?? array() );
+$sgs_h_all = array();
+for ( $sgs_h_i = 1; $sgs_h_i <= (int) ( $sgs_h_scenario['renders'] ?? 1 ); $sgs_h_i++ ) {
+	$sgs_h_all[] = array_column( sgs_brand_strip_get_product_brand_logos( $sgs_h_scenario['attributes'] ?? array() ), '_key' );
+	if ( isset( $sgs_h_scenario['change_after'][ (string) $sgs_h_i ] ) ) {
+		$GLOBALS['sgs_h']['products'] = $sgs_h_scenario['change_after'][ (string) $sgs_h_i ];
+	}
+	if ( isset( $sgs_h_scenario['options_after'][ (string) $sgs_h_i ] ) ) {
+		$GLOBALS['sgs_h']['options'] = $sgs_h_scenario['options_after'][ (string) $sgs_h_i ];
+	}
+	if ( in_array( $sgs_h_i, $sgs_h_scenario['flush_after'] ?? array(), true ) ) {
+		sgs_h_fire( 'save_post_product', 10 );
+	}
+}
 echo json_encode(
 	array(
-		'keys'            => array_column( $sgs_h_logos, '_key' ),
+		'keys'            => end( $sgs_h_all ),
+		'all_keys'        => $sgs_h_all,
 		'product_queries' => $GLOBALS['sgs_h']['product_queries'],
 		'term_queries'    => $GLOBALS['sgs_h']['term_queries'],
+		'hooks'           => array_keys( $GLOBALS['sgs_h']['hooks'] ),
 	)
 );
