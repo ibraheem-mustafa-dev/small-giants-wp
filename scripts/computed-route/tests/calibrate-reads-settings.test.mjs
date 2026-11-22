@@ -45,10 +45,13 @@ test( 'MUST FAIL: font-variant-numeric and clip-path are read, so their settings
 	}
 	assert.deepEqual( longhands( 'font-variant-numeric' ), [ 'font-variant-numeric' ] );
 	assert.deepEqual( longhands( 'clip-path' ), [ 'clip-path' ] );
-	for ( const [ block, attr ] of [ [ 'sgs/text', 'fontVariantNumeric' ], [ 'sgs/decorative-image', 'shape' ] ] ) {
+	for ( const [ block, attr ] of [ [ 'sgs/text', 'fontVariantNumeric' ] ] ) {
 		const row = rowOf( block, attr );
 		assert.ok( markersFor( row, blockSchema( block ), SNAPSHOT ).length, `${ block }.${ attr } gets a marker` );
 	}
+	// A clip-path setting is routed through the read list: the framework's only one now is the before/after divider, whose css_property
+	// lists clip-path first (the decorative image's shape moved into its media slot and paints no CSS property of its own).
+	assert.ok( longhands( rowOf( 'sgs/before-after', 'startPosition' ).css_property ).includes( 'clip-path' ), 'a setting that paints clip-path reaches the read' );
 } );
 
 test( 'MUST FAIL: a free-text text-shadow setting and a free-text overflow setting get a marker, and a text shadow colour its shape partner', () => {
@@ -103,7 +106,8 @@ test( 'MUST FAIL: a slot map measured without a block property is due on any sit
 test( 'MUST FAIL: a tier setting is marked with values its emitter holds; a length setting keeps its length markers', () => {
 	const values = ( block, attr ) => markersFor( rowOf( block, attr ), blockSchema( block ), SNAPSHOT ).filter( ( m ) => ! m.probe ).map( ( m ) => m.attrs[ attr ]?.desktop );
 	assert.deepEqual( values( 'sgs/post-grid', 'readMorePin' ), [ 'pinned', 'inline' ] );
-	assert.ok( values( 'sgs/button', 'contentAlign' ).every( ( v ) => [ 'flex-start', 'center', 'flex-end' ].includes( v ) ), 'never a keyword the emitter drops' );
+	assert.ok( values( 'sgs/button', 'contentAlign' ).every( ( v ) => [ 'flex-start', 'center', 'flex-end', 'space-between' ].includes( v ) ), 'never a keyword the emitter drops (sgs/button render.php::$content_align_allowed)' );
+	assert.ok( values( 'sgs/button', 'contentAlign' ).includes( 'space-between' ), 'a choice the emitter holds is marked' );
 	assert.deepEqual( values( 'sgs/text', 'maxWidthAlign' ), [ 'left', 'centre' ], 'an alignment on margin-inline is marked with its choices, never a length' );
 	assert.ok( values( 'sgs/container', 'minHeight' ).every( ( v ) => /^\d+px$/.test( v ) ), 'a preset never replaces a length marker' );
 } );
