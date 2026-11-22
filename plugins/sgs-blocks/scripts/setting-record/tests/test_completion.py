@@ -148,3 +148,15 @@ def test_must_fail_a_block_hidden_whose_footer_copy_survives_replaces_the_block(
     assert check.replaces_block(plain, hidden, 'demo')
     # the root kept with another class beside it is not a replacement
     assert not check.replaces_block(plain, plain.replace('class="sgs-demo ', 'class="sgs-demo sgs-demo--x '), 'demo')
+
+
+def test_must_fail_a_notice_of_the_blocks_own_in_place_of_its_parts_replaces_the_block():
+    # sgs/form with formIsLinked and no linked form: render.php prints `sgs-form sgs-form--broken-reference` holding only
+    # `sgs-form__fallback-message`. Breaks while any part class left counts as the block still drawn: the notice's own part
+    # kept the setting in the record, and its entry waited on markup no render carries.
+    import check
+    plain = '<div class="sgs-demo"><form class="sgs-demo__inner"><button class="sgs-demo__button">Send</button></form></div>'
+    notice = '<div class="sgs-demo sgs-demo--broken-reference"><p class="sgs-demo__fallback-message">Not available</p></div>'
+    assert check.replaces_block(plain, notice, 'demo')
+    # a render that keeps one part the plain one prints is the block repainted, not replaced
+    assert not check.replaces_block(plain, plain.replace('<button', '<p class="sgs-demo__note">x</p><button'), 'demo')

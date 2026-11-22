@@ -128,7 +128,10 @@ def replaces_block(base_html: str, changed_html: str, short: str) -> bool:
         return True
     if rooted.search(before) and not rooted.search(after):
         return True
-    return bool(part.search(before)) and not part.search(after)
+    # the parts the plain render prints, none of them left: a notice of the block's own (`sgs-form__fallback-message`) is
+    # other markup in place of the block, not the block repainted
+    printed = set(part.findall(before))
+    return bool(printed) and not (printed & set(part.findall(after)))
 
 
 def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, instances: Path | None = None) -> dict:
