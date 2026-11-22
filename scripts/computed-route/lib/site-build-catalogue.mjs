@@ -115,6 +115,9 @@ function missing( p, s, state, catalogue ) {
 	if ( ours && Number.isInteger( p.menuOrder ) && Number.isInteger( s.menuOrder ) && s.menuOrder !== p.menuOrder ) {
 		out.push( `its place in the shop (menu order ${ p.menuOrder }, now ${ s.menuOrder })` );
 	}
+	if ( ours && p.code && '' === ( s.code ?? '' ) ) {
+		out.push( `its code ${ p.code }` );
+	}
 	const cardLack = ours ? Object.entries( p.card || {} ).filter( ( [ k ] ) => s.card && '' === s.card[ k ] ) : [];
 	cardLack.length && out.push( `its card ${ cardLack.map( ( [ k, v ] ) => `${ k } "${ v }"` ).join( ', ' ) }` );
 	if ( 'variable' === p.type && s.type === p.type && ( ours || ! s.variations.length ) ) {

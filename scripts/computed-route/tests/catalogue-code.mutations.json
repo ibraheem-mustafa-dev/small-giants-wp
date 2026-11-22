@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/catalogue-records.mjs",
+		"find": "new Set( records.map( ( r ) => r[ k ] ) ).size === records.length );\n\treturn 1 === unique.length ? unique[ 0 ] : null;",
+		"replace": "true );\n\treturn 1 === unique.length ? unique[ 0 ] : null;",
+		"why": "a field records share is a code"
+	},
+	{
+		"file": "lib/catalogue-records.mjs",
+		"find": "\treturn 1 === unique.length ? unique[ 0 ] : null;",
+		"replace": "\treturn unique[ 0 ] ?? null;",
+		"why": "two code-like fields pick the first"
+	},
+	{
+		"file": "lib/catalogue-records.mjs",
+		"find": " && records.some( ( r ) => ! Number.isInteger( r[ k ] ) ) );",
+		"replace": " );",
+		"why": "a whole-number count is a rating"
+	},
+	{
+		"file": "lib/site-build-catalogue-php.mjs",
+		"find": "&& '' === (string) get_post_meta( $id, '_sgs_code', true ) ) { update_post_meta",
+		"replace": ") { update_post_meta",
+		"why": "a code the product has is replaced"
+	},
+	{
+		"file": "lib/site-build-catalogue.mjs",
+		"find": "\tif ( ours && p.code && '' === ( s.code ?? '' ) ) {",
+		"replace": "\tif ( ours && p.code ) {",
+		"why": "a fresh read plans the code again"
+	}
+]

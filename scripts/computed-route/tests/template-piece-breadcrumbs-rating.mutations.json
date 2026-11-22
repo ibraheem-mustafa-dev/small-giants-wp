@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/template-piece-breadcrumbs.mjs",
+		"find": "&& ! fixedOrChrome( e.key ) );",
+		"replace": ");",
+		"why": "a footer trail is read as the product's"
+	},
+	{
+		"file": "lib/template-piece-breadcrumbs.mjs",
+		"find": "\tif ( separators.length > 1 ) {",
+		"replace": "\tif ( false ) {",
+		"why": "mixed separators are written as the first"
+	},
+	{
+		"file": "lib/template-piece-breadcrumbs.mjs",
+		"find": "\t\t\tshowArchiveCrumb: 2 === links.length,",
+		"replace": "\t\t\tshowArchiveCrumb: false,",
+		"why": "the shop's crumb is dropped"
+	},
+	{
+		"file": "lib/template-piece-breadcrumbs.mjs",
+		"find": "\t\t\t...( 'brand' === ends ? { productPageCrumbs: 'brand', showCurrentCrumb: false } : {} ),",
+		"replace": "",
+		"why": "a trail ending at the brand ends at the product"
+	},
+	{
+		"file": "lib/template-piece-breadcrumbs.mjs",
+		"find": "\tconst ends = fields.name.includes( field ) ? 'name' : ( fields.brand.includes( field ) ? 'brand' : null );",
+		"replace": "\tconst ends = 'name';",
+		"why": "any field ends the trail as the product's name"
+	},
+	{
+		"file": "lib/template-piece-breadcrumbs.mjs",
+		"find": " || links.some( ( e ) => 'a' !== e.tag || holesOf( e.srcOwnText ).length ) ) {",
+		"replace": " ) {",
+		"why": "a trail whose earlier items are not fixed links is taken"
+	},
+	{
+		"file": "lib/template-piece-breadcrumbs.mjs",
+		"find": "\tconst field = whole ? fieldOf( L, holes[ 0 ], roots ) : null;",
+		"replace": "\tconst field = whole ? String( holes[ 0 ] ).split( '.' ).pop() : null;",
+		"why": "a hole that is not the shown record's is read as its field"
+	},
+	{
+		"file": "lib/template-piece-rating.mjs",
+		"find": "\tconst rows = smallest.filter( ( r ) => 1 === h1.length && index.within( h1[ 0 ].key, index.byKey.get( r )?.parentKey ) );",
+		"replace": "\tconst rows = smallest;",
+		"why": "the reviews summary is placed as the rating row too"
+	},
+	{
+		"file": "lib/template-piece-rating.mjs",
+		"find": " || builtFrom( L, h, roots, fields ) ) );",
+		"replace": " ) );",
+		"why": "a value built from the rating is not read"
+	},
+	{
+		"file": "lib/template-piece-rating.mjs",
+		"find": "\tconst smallest = found.filter( ( r ) => ! found.some( ( o ) => o !== r && index.within( o, r ) ) );",
+		"replace": "\tconst smallest = found;",
+		"why": "an element holding the row stands in for it"
+	},
+	{
+		"file": "lib/template-piece-rating.mjs",
+		"find": "\tif ( 2 !== parts.length || ! [ ...declsOf( L, parts[ 0 ] ) ].some( ( d ) => roots.has( d ) ) ) {",
+		"replace": "\tif ( 2 !== parts.length ) {",
+		"why": "another value built from a rating counts as the product's"
+	}
+]

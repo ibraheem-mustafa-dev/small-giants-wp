@@ -146,6 +146,25 @@ function textBindings( ctx ) {
 	return out;
 }
 
+// The product's code (a model or reference number shown beside the title, "RB3025 · 001/58"): the one field every record holds as
+// words, each record its own (no two alike), that no other role takes (`taken`: the key, name, prices, brand, description and
+// picture fields). None, or two such fields, is no code: a record list with several unique words fields says nothing about which.
+// The catalogue writes it to the product's `_sgs_code` meta (lib/site-build-catalogue-php.mjs) and the product page binds
+// `meta._sgs_code` (lib/template-piece-product-field.mjs), since the SKU holds the catalogue's own sgs-draft key.
+export function codeField( records, taken ) {
+	const keys = [ ...new Set( ( records || [] ).flatMap( ( r ) => Object.keys( r || {} ) ) ) ].filter( ( k ) => ! taken.includes( k ) );
+	const unique = keys.filter( ( k ) => records.length > 1 && records.every( ( r ) => 'string' === typeof r[ k ] && r[ k ].trim() ) && new Set( records.map( ( r ) => r[ k ] ) ).size === records.length );
+	return 1 === unique.length ? unique[ 0 ] : null;
+}
+
+// The product's star rating: the one field every record holds as a number from 0 to 5, at least one of them a fraction (4.9),
+// so a review count or a price is never it. Null when no field, or two, qualify.
+export function ratingField( records ) {
+	const keys = [ ...new Set( ( records || [] ).flatMap( ( r ) => Object.keys( r || {} ) ) ) ];
+	const hits = keys.filter( ( k ) => records.length && records.every( ( r ) => 'number' === typeof r[ k ] && r[ k ] >= 0 && r[ k ] <= 5 ) && records.some( ( r ) => ! Number.isInteger( r[ k ] ) ) );
+	return 1 === hits.length ? hits[ 0 ] : null;
+}
+
 export function descriptionField( ctx, records, taken ) {
 	const shown = textBindings( ctx );
 	const avg = ( k ) => records.reduce( ( a, r ) => a + ( 'string' === typeof r[ k ] ? r[ k ].length : 0 ), 0 ) / records.length;

@@ -13,13 +13,13 @@
 	},
 	{
 		"file": "lib/template-pieces-context.mjs",
-		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related };",
-		"replace": "export const BUILDERS = { buybox, gift, 'product-field': productField, order, 'woo-layout': wooLayout, frame, account, related };",
+		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related, breadcrumbs, rating };",
+		"replace": "export const BUILDERS = { buybox, gift, 'product-field': productField, order, 'woo-layout': wooLayout, frame, account, related, breadcrumbs, rating };",
 		"why": "the shop's builder is not handed to the pass"
 	},
 	{
 		"file": "lib/template-pieces-context.mjs",
-		"find": "\t\tadd( 'description', descriptionField( ctx, l.records, [ ...taken, img.image, img.gallery ].filter( Boolean ) ) );",
+		"find": "\t\tadd( 'description', description );",
 		"replace": "",
 		"why": "the description field is not read"
 	},
@@ -55,8 +55,8 @@
 	},
 	{
 		"file": "lib/template-pieces-context.mjs",
-		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related };",
-		"replace": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, 'woo-layout': wooLayout, frame, account, related };",
+		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related, breadcrumbs, rating };",
+		"replace": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, 'woo-layout': wooLayout, frame, account, related, breadcrumbs, rating };",
 		"why": "the order builder is not handed to the pass"
 	},
 	{
@@ -115,8 +115,8 @@
 	},
 	{
 		"file": "lib/template-pieces-context.mjs",
-		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related };",
-		"replace": "export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related };",
+		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related, breadcrumbs, rating };",
+		"replace": "export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related, breadcrumbs, rating };",
 		"why": "the gift builder is not handed to the pass"
 	},
 	{

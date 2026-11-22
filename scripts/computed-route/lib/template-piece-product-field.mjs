@@ -58,7 +58,7 @@ function linkNode( node, bind ) {
 }
 
 // The record the title's hole reads: the declarations of its root (`p` of `{{ p.name }}`), or null.
-function recordRoots( L, index, fields ) {
+export function recordRoots( L, index, fields ) {
 	const h1 = pageH1( index );
 	const hole = h1 ? holesOf( h1.srcOwnText ).find( ( h ) => 2 === h.split( '.' ).length && ( fields.name || [] ).includes( h.split( '.' )[ 1 ] ) ) : null;
 	const roots = hole ? declsOf( L, hole.split( '.' )[ 0 ] ) : new Set();

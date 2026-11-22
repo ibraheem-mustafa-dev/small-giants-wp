@@ -30,7 +30,7 @@ import path from 'node:path';
 import { loadShopParts } from './fill-shop-parts.mjs';
 import { CHECKED_ONLY, loadPieces, piecesFor, placePieces } from './template-pieces.mjs';
 import { catalogueSources } from './catalogue-source.mjs';
-import { descriptionField, imageFields, recordLists } from './catalogue-records.mjs';
+import { codeField, descriptionField, imageFields, ratingField, recordLists } from './catalogue-records.mjs';
 import { loadFacts } from './fact-record.mjs';
 import { pageKeyOf } from './manifest-build.mjs';
 import * as buybox from './template-piece-buybox.mjs';
@@ -42,6 +42,8 @@ import * as wooLayout from './template-piece-woo-layout.mjs';
 import * as frame from './template-piece-frame.mjs';
 import * as account from './template-piece-account.mjs';
 import * as related from './template-piece-related.mjs';
+import * as breadcrumbs from './template-piece-breadcrumbs.mjs';
+import * as rating from './template-piece-rating.mjs';
 import { loadCatalogue } from './catalogue-read.mjs';
 import { draftLinksFor } from './draft-link.mjs';
 import { commerceOf } from './skeleton-commerce-region.mjs';
@@ -51,7 +53,7 @@ import { conservationRows, identityOf, paintProblems, unreadList, STRICT_DEFAULT
 import { recordFor, openersFor, recordView } from './skeleton-record.mjs';
 
 // The builders the pass runs, by piece kind.
-export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related };
+export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related, breadcrumbs, rating };
 // The kinds whose builder reads the client's fact record (lib/template-piece-order.mjs::place, lib/template-piece-woo-layout.mjs::place
 // and lib/template-piece-frame.mjs::place read ctx.factRecord).
 export const FACT_KINDS = [ 'order', 'woo-layout', 'frame' ];
@@ -65,7 +67,7 @@ export const CATALOGUE_KINDS = [ 'related' ];
 // ::descriptionField; `rrp` the list's recommended price field, `brand` its brand field when every record holds a brand as
 // words, as lib/catalogue-read.mjs::readCatalogue reads it). Empty lists when the handoff has no records.
 export function productFieldsOf( folder ) {
-	const out = { name: [], price: [], rrp: [], brand: [], description: [], image: [] };
+	const out = { name: [], price: [], rrp: [], brand: [], description: [], image: [], code: [], rating: [] };
 	let lists = [];
 	let ctx = null;
 	try {
@@ -84,7 +86,10 @@ export function productFieldsOf( folder ) {
 		l.records.length && l.records.every( ( r ) => 'string' === typeof r.brand ) && add( 'brand', 'brand' );
 		add( 'image', img.image );
 		add( 'image', img.gallery );
-		add( 'description', descriptionField( ctx, l.records, [ ...taken, img.image, img.gallery ].filter( Boolean ) ) );
+		const description = descriptionField( ctx, l.records, [ ...taken, img.image, img.gallery ].filter( Boolean ) );
+		add( 'description', description );
+		add( 'code', codeField( l.records, [ ...taken, 'brand', description, img.image, img.gallery ].filter( Boolean ) ) );
+		add( 'rating', ratingField( l.records ) );
 	}
 	return out;
 }

@@ -26,8 +26,8 @@ const EYE = 'eye-care-ward-end';
 const refs = ( tree ) => treeNodes( tree ).map( ( r ) => refKey( r.node ) ).filter( Boolean );
 
 test( 'the catalogue reader names the product record fields each draft fills its product page from', () => {
-	assert.deepEqual( productFieldsOf( path.join( REPO, 'sites', MAMAS, 'handoff' ) ), { name: [ 'name' ], price: [ 'from' ], rrp: [], brand: [], description: [ 'short' ], image: [ 'img', 'gallery' ] } );
-	assert.deepEqual( productFieldsOf( path.join( REPO, 'sites', EYE, 'handoff' ) ), { name: [ 'name' ], price: [ 'price' ], rrp: [ 'rrp' ], brand: [ 'brand' ], description: [], image: [ 'img' ] } );
+	assert.deepEqual( productFieldsOf( path.join( REPO, 'sites', MAMAS, 'handoff' ) ), { name: [ 'name' ], price: [ 'from' ], rrp: [], brand: [], description: [ 'short' ], image: [ 'img', 'gallery' ], code: [], rating: [] } );
+	assert.deepEqual( productFieldsOf( path.join( REPO, 'sites', EYE, 'handoff' ) ), { name: [ 'name' ], price: [ 'price' ], rrp: [ 'rrp' ], brand: [ 'brand' ], description: [], image: [ 'img' ], code: [ 'code' ], rating: [ 'rating' ] } );
 } );
 
 test( 'MUST FAIL: Mama\'s product skeleton gets one buy box, a bound title and description, and keeps every block outside the buy box', () => {
@@ -42,7 +42,9 @@ test( 'MUST FAIL: Mama\'s product skeleton gets one buy box, a bound title and d
 	assert.equal( treeNodes( got.tree ).filter( ( r ) => /^Add to basket ·/.test( r.node.attributes?.label || '' ) ).length, 0 );
 	const title = treeNodes( got.tree ).find( ( r ) => 'Root/27#0' === refKey( r.node ) ).node;
 	assert.deepEqual( title.attributes.metadata.bindings.content, { source: 'sgs-product/field', args: { key: 'title' } } );
-	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'buy-box', 'gift', 'title', 'description', 'gallery', 'related' ] );
+	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'buy-box', 'gift', 'title', 'description', 'gallery', 'related', 'breadcrumbs' ] );
+	// F-51: the trail "Home / Shop / Zookies" ends at the product's name, so sgs/breadcrumbs builds it for every product.
+	assert.equal( got.placed.find( ( p ) => 'breadcrumbs' === p.id ).ends, 'name' );
 	// F-54: "You might also like" lists the other products, so it is WooCommerce's related products collection of product cards.
 	const rel = got.placed.find( ( p ) => 'related' === p.id );
 	assert.deepEqual( [ rel.at, rel.collection, rel.perPage, rel.list ], [ 'Root/136#0, in place of Root/136#0', 'woocommerce/product-collection/related', 3, 'related' ] );
@@ -93,7 +95,7 @@ test( 'MUST FAIL: Eye Care\'s product and shop are refused, naming the record an
 	// The related lists read the draft's logic and inventory, not the shop parts record, so they are the only pieces placed.
 	assert.deepEqual( p.placed.filter( ( x ) => 'related' === x.id ).map( ( x ) => [ x.id, x.list, x.sameTermAs ] ), [ [ 'related', 'sameBrand', 'product_brand' ], [ 'related', 'related', 'pa_style' ] ] );
 	// F-51: every element showing the product's brand as its whole words is bound to it, a link's address to the brand's page.
-	assert.deepEqual( [ ...new Set( p.placed.map( ( x ) => x.id ) ) ], [ 'related', 'brand' ] );
+	assert.deepEqual( [ ...new Set( p.placed.map( ( x ) => x.id ) ) ], [ 'related', 'breadcrumbs', 'brand', 'code', 'rating' ] );
 	assert.ok( p.placed.filter( ( x ) => 'brand' === x.id ).some( ( x ) => /label <- sgs-product\/field brand; url <- sgs-product\/field brand_url/.test( x.bind ) ) );
 	assert.equal( countBlocks( p.tree, 'sgs/buybox' ), countBlocks( product.tree, 'sgs/buybox' ) );
 	assert.match( p.problems.join( '\n' ), /disagree on buybox-add-to-basket \(Eye Care Birmingham\/396\)/ );

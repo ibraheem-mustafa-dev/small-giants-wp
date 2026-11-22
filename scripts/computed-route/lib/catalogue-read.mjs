@@ -22,7 +22,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { embeddedManifest } from './intake-routing.mjs';
 import { UNREAD, catalogueSources, valueOf } from './catalogue-source.mjs';
-import { descriptionField, facetFields, imageFields, recordLists } from './catalogue-records.mjs';
+import { codeField, descriptionField, facetFields, imageFields, recordLists } from './catalogue-records.mjs';
 import { basketLines, keyOptions, lineFor, lineKeys } from './catalogue-options.mjs';
 import { omittedChoices } from './catalogue-omitted.mjs';
 import { cardFacts } from './catalogue-card-facts.mjs';
@@ -263,6 +263,8 @@ export function readCatalogue( { repo, client, rows } ) {
 		const lines = basketLines( ctx, list, file );
 		const omitted = omittedChoices( ctx, lines, list, file );
 		const card = cardFacts( ctx, list, [ ...taken, img.image, img.gallery, desc, catField, brandField, ...facets.map( ( f ) => f.field ) ].filter( Boolean ) );
+		// The product's code (lib/catalogue-records.mjs::codeField), the same field the product page's binding reads (lib/template-pieces-context.mjs::productFieldsOf).
+		const code = codeField( list.records, [ ...taken, 'brand', desc, img.image, img.gallery ].filter( Boolean ) );
 		card.notes.forEach( ( n ) => notes.push( n ) );
 		const first = out.products.length;
 		for ( const r of list.records ) {
@@ -285,6 +287,7 @@ export function readCatalogue( { repo, client, rows } ) {
 				variations,
 				menuOrder: out.products.length,
 				...( Object.keys( card.valuesOf( r ) ).length ? { card: card.valuesOf( r ) } : {} ),
+				...( code ? { code: r[ code ] } : {} ),
 			} );
 		}
 		omitted.forEach( ( o ) => {

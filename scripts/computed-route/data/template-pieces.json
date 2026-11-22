@@ -32,7 +32,10 @@
 				{ "id": "description", "binds": { "source": "sgs-product/field", "key": "short_description" }, "required": false, "kind": "product-field", "find": { "field": "description" } },
 				{ "id": "gallery", "block": "sgs/buybox", "required": false, "kind": "product-field", "find": { "field": "image", "surface": "buybox" } },
 				{ "id": "related", "block": "woocommerce/product-collection", "required": false, "once": false, "kind": "related" },
-				{ "id": "brand", "binds": { "source": "sgs-product/field", "key": "brand" }, "required": false, "once": false, "kind": "product-field", "find": { "field": "brand", "every": true, "linkKey": "brand_url" } }
+				{ "id": "breadcrumbs", "block": "sgs/breadcrumbs", "required": false, "kind": "breadcrumbs" },
+				{ "id": "brand", "binds": { "source": "sgs-product/field", "key": "brand" }, "required": false, "once": false, "kind": "product-field", "find": { "field": "brand", "every": true, "linkKey": "brand_url" } },
+				{ "id": "code", "binds": { "source": "sgs-product/field", "key": "meta._sgs_code" }, "required": false, "once": false, "kind": "product-field", "find": { "field": "code", "every": true } },
+				{ "id": "rating", "block": "woocommerce/product-rating", "required": false, "kind": "rating" }
 			]
 		},
 		"product-search-results": {

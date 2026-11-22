@@ -80,6 +80,7 @@
         "rrp": { "type": ["number", "null"], "minimum": 0 },
         "shortDescription": { "type": ["string", "null"] },
         "menuOrder": { "type": "integer", "minimum": 0, "description": "The product's place in the draft's record lists (the shop's own order), written as its menu_order." },
+        "code": { "type": "string", "minLength": 1, "description": "The product's code (a model or reference number, lib/catalogue-records.mjs::codeField), written as _sgs_code." },
         "card": { "type": "object", "additionalProperties": false, "description": "The per-product words the draft's product card shows (lib/catalogue-card-facts.mjs), written as the card's per-product meta.", "properties": { "badge": { "type": "string", "minLength": 1, "description": "_sgs_card_badge" }, "note": { "type": "string", "minLength": 1, "description": "_sgs_card_price_note" }, "label": { "type": "string", "minLength": 1, "description": "_sgs_card_cta_label" }, "action": { "enum": ["add", "page"], "description": "_sgs_card_cta_action" } } },
         "image": { "$ref": "#/$defs/image" },
         "gallery": { "type": "array", "items": { "$ref": "#/$defs/image" } },

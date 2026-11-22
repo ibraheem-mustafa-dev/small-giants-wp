@@ -154,14 +154,15 @@ test( 'the committed map names the product page\'s buy box and bound title and t
 	assert.deepEqual( product.map( ( p ) => [ p.id, p.block ?? null, p.binds?.key ?? null, p.kind, p.required ] ), [
 		[ 'buy-box', 'sgs/buybox', null, 'buybox', true ], [ 'gift', 'sgs/gift-order', null, 'gift', false ], [ 'title', 'sgs/heading', 'title', 'product-field', true ], [ 'price', null, 'price', 'product-field', false ],
 		[ 'description', null, 'short_description', 'product-field', false ], [ 'gallery', 'sgs/buybox', null, 'product-field', false ],
-		[ 'related', 'woocommerce/product-collection', null, 'related', false ], [ 'brand', null, 'brand', 'product-field', false ],
+		[ 'related', 'woocommerce/product-collection', null, 'related', false ], [ 'breadcrumbs', 'sgs/breadcrumbs', null, 'breadcrumbs', false ], [ 'brand', null, 'brand', 'product-field', false ],
+		[ 'code', null, 'meta._sgs_code', 'product-field', false ], [ 'rating', 'woocommerce/product-rating', null, 'rating', false ],
 	] );
 	assert.ok( product.filter( ( p ) => p.binds ).every( ( p ) => 'sgs-product/field' === p.binds.source ) );
 	const title = { name: 'sgs/heading', attributes: { metadata: { bindings: { content: { source: 'sgs-product/field', args: { key: 'title' } } } } }, innerBlocks: [] };
 	assert.equal( countPiece( [ node( 'sgs/heading' ), title ], product.find( ( p ) => 'title' === p.id ) ), 1 );
 	const shop = piecesFor( 'archive-product', data ).filter( ( p ) => 'shop-sort' === p.kind );
 	assert.deepEqual( shop.map( ( p ) => p.block ), [ 'woocommerce/catalog-sorting', 'woocommerce/product-results-count' ] );
-	for ( const kind of [ 'buybox', 'gift', 'product-field', 'shop-sort', 'order', 'related' ] ) {
+	for ( const kind of [ 'buybox', 'gift', 'product-field', 'shop-sort', 'order', 'related', 'breadcrumbs', 'rating' ] ) {
 		assert.ok( fs.existsSync( path.join( path.dirname( PIECES_FILE ), '..', 'lib', `template-piece-${ kind }.mjs` ) ), kind );
 	}
 } );

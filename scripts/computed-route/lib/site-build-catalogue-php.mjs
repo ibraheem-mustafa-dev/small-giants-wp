@@ -69,7 +69,7 @@ $sgs_variesby = function ( $value ) {
 };
 `;
 
-// The read: per product { draftId, id, how, fixture, type, status, sku, price, image, gallery, categories, brand, rrp,
+// The read: per product { draftId, id, how, fixture, type, status, sku, price, image, gallery, categories, brand, rrp, code (`_sgs_code`),
 // draftMeta, photoToCome (the `_sgs_photo_to_come` marker), menuOrder, card (the four `_sgs_card_*` metas: badge, note, label, action), attributes (pa_ slugs), variesBy (per attribute taxonomy,
 // the `_sgs_variesby_value` of each of the product's terms, '' for none, as the preflight reads it), variations (SKUs),
 // permalink, facets (per facet slug, its term names), variationAttributes (the attribute taxonomies that are a choice),
@@ -119,7 +119,7 @@ foreach ( $in as $p ) {
 		$brand = taxonomy_exists( 'product_brand' ) ? wp_get_object_terms( $id, 'product_brand', array( 'fields' => 'names' ) ) : array();
 		$row += array( 'fixture' => $sgs_is_fixture( $id ), 'type' => $wc ? $wc->get_type() : get_post_type( $id ), 'status' => get_post_status( $id ), 'sku' => (string) get_post_meta( $id, '_sku', true ),
 			'price' => $wc ? (string) $wc->get_regular_price() : '', 'image' => $sgs_file_exists( get_post_thumbnail_id( $id ) ) ? (int) get_post_thumbnail_id( $id ) : 0, 'imageNoFile' => get_post_thumbnail_id( $id ) && ! $sgs_file_exists( get_post_thumbnail_id( $id ) ) ? (int) get_post_thumbnail_id( $id ) : 0, 'gallery' => $wc ? count( array_filter( $wc->get_gallery_image_ids(), $sgs_file_exists ) ) : 0,
-			'categories' => is_wp_error( $cats ) ? array() : $cats, 'brand' => is_wp_error( $brand ) ? array() : $brand, 'rrp' => (string) get_post_meta( $id, '_sgs_rrp', true ),
+			'categories' => is_wp_error( $cats ) ? array() : $cats, 'brand' => is_wp_error( $brand ) ? array() : $brand, 'rrp' => (string) get_post_meta( $id, '_sgs_rrp', true ), 'code' => (string) get_post_meta( $id, '_sgs_code', true ),
 			'draftMeta' => (string) get_post_meta( $id, '_sgs_draft_product', true ), 'photoToCome' => '' !== (string) get_post_meta( $id, '_sgs_photo_to_come', true ), 'attributes' => $attrs, 'variesBy' => (object) $vb, 'variations' => $vars, 'permalink' => (string) get_permalink( $id ),
 			'variationAttributes' => $vattrs, 'attributeTerms' => (object) $aterms, 'variationRows' => $rows );
 		$row['facets'] = $sgs_product_facets( $id );
@@ -317,6 +317,8 @@ foreach ( $steps as $s ) {
 	}
 	update_post_meta( $id, '_sgs_draft_product', $p['draftId'] );
 	if ( null !== $p['rrp'] && '' === (string) get_post_meta( $id, '_sgs_rrp', true ) ) { update_post_meta( $id, '_sgs_rrp', $p['rrp'] ); }
+	// The product's code (the product page binds meta._sgs_code), only where the product has none, on a product the route made.
+	if ( $ours && '' !== (string) ( $p['code'] ?? '' ) && '' === (string) get_post_meta( $id, '_sgs_code', true ) ) { update_post_meta( $id, '_sgs_code', sanitize_text_field( (string) $p['code'] ) ); }
 	if ( $p['categories'] && ! wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'ids', 'exclude' => array( (int) get_option( 'default_product_cat' ) ) ) ) ) { wp_set_object_terms( $id, $p['categories'], 'product_cat' ); }
 	if ( $p['brand'] && taxonomy_exists( 'product_brand' ) && ! wp_get_object_terms( $id, 'product_brand', array( 'fields' => 'ids' ) ) ) { wp_set_object_terms( $id, array( $p['brand'] ), 'product_brand' ); }
 	foreach ( $p['attributes'] as $a ) {
