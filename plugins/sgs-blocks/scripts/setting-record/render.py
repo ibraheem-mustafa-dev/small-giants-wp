@@ -162,6 +162,20 @@ def harness_args(fixture: dict, fixtures_dir: Path) -> tuple:
     return tuple(out)
 
 
+def portable_args(args, fixtures_dir: Path) -> list:
+    """The runner arguments with the fixtures folder and the cache folder written as <fixtures> and <cache>."""
+    roots = [(str(Path(fixtures_dir).resolve()), '<fixtures>'), (str(Path(CACHE_ROOT).resolve()), '<cache>')]
+    out = []
+    for a in args:
+        a = str(a)
+        for root, token in roots:
+            if a.lower().startswith(root.lower()):
+                a = token + a[len(root):].replace('\\', '/')
+                break
+        out.append(a)
+    return out
+
+
 def fixture_files(fixture: dict, fixtures_dir: Path) -> list:
     h = fixture.get('harness') or {}
     return [Path(f) if Path(f).is_absolute() else fixtures_dir / f for k, f in h.items() if k.endswith('File') and f]
@@ -175,6 +189,10 @@ class Renderer:
         self.harness = plugin / 'scripts' / 'qa' / 'lib' / 'render-css-harness.php'
         self.fixture = fixture
         self.extra = harness_args(fixture, fixtures_dir)
+        # the runner arguments as the cache key holds them: a stand-in file by its place beside fixtures.json or in the
+        # cache, not by this checkout's path (its content is in self.hash), so another checkout of the same code (a gate's
+        # temporary worktree) finds the same renders
+        self.key_extra = portable_args(self.extra, fixtures_dir)
         related = None
         if short:
             names = re.findall(r'"name": "sgs/([a-z0-9-]+)"', json.dumps([fixture.get('inner') or [], fixture.get('parents') or [], fixture.get('paintStates') or []]))
@@ -188,7 +206,7 @@ class Renderer:
         self.included = set()  # every plugin PHP file any render here loaded (the block's, its children's, its parents')
 
     def render(self, slug: str, attrs: dict, content: str = '', inner=None) -> dict:
-        key_parts = [slug, attrs, content, inner, list(self.extra), self.post] + ([self.options] if self.options else [])
+        key_parts = [slug, attrs, content, inner, list(self.key_extra), self.post] + ([self.options] if self.options else [])
         key = hashlib.md5(json.dumps(key_parts, sort_keys=True).encode()).hexdigest()
         cf = self.cache / f'{key}.json'
         if cf.is_file():

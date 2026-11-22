@@ -554,3 +554,12 @@ def test_the_diff_says_which_render_holds_a_rule():
     pls, _info = D.diff_placements((rb, {}), (rm, {}), 'demo', [])
     sides = {p['tiers'][0]: p['side'] for p in pls if p.get('mechanism') == 'run-css'}
     assert sides == {'@media(max-width:767.98px)': 'base', '@media(max-width:2.98px)': 'changed'}
+
+
+
+def test_the_render_cache_key_does_not_hold_the_checkouts_path(tmp_path, monkeypatch):
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path / 'cache')
+    fixture = {'harness': {'postFile': 'fixtures/menu-post.json'}}
+    one, two = tmp_path / 'a' / 'setting-record', tmp_path / 'b' / 'setting-record'
+    keys = [RN.portable_args(RN.harness_args(fixture, d), d) for d in (one, two)]
+    assert keys[0] == keys[1] and '<fixtures>/fixtures/menu-post.json' in keys[0]
