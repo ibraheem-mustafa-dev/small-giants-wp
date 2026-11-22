@@ -229,7 +229,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		r.handovers ? handover.push( ...r.handovers ) : r.handover && handover.push( r.handover );
 		const node = base( e, block, a );
 		// A half of a menu drawn in two halves reads its outer element and bar at its own element (lib/skeleton-split-menu.mjs):
-		// the far side's half, which has none, at the group holding its links.
+		// the far side's half, which has none, at the group holding its links (as its slots only, below).
 		const splitAt = r.split ? m.byKey[ r.split.readAt ] : null;
 		splitAt && splitAt !== e && Object.assign( node, { draftRef: finder( splitAt ), draftFingerprint: m.fingerprint( splitAt ) } );
 		// A linked form reads nothing from the draft: the saved form's own surface holds its look (Spec 48 §2). Nor does a
@@ -273,6 +273,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// Each half's bar at its own element, and the far side's items at its first link.
 		const halves = splitAt && R.splitMenu?.slots ? splitSlots( { at: splitAt, link: splitAt !== e ? e : null, finder, settings: R.splitMenu.slots, calibrated: calSettings( block ) } ) : null;
 		halves && Object.assign( slots, halves.slots );
+		// The far half's outer element is the group the group's own container reads too, so the half reads its parts only
+		// (lib/fill-skeleton.mjs: draftSlotsOnly): its bar gap and items, never the group's root.
+		splitAt && splitAt !== e && Object.keys( halves?.slots || {} ).length && ( delete node.draftRef, delete node.draftFingerprint, node.draftSlotsOnly = true );
 		halves?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...halves.notes ] );
 		drawnSvgParts( m.kids( e ), ( k ) => m.isPart( k ) ).forEach( ( k ) => {
 			const key = calKeys( block ).filter( ( c ) => new RegExp( `(^|> )svg$` ).test( c ) ).sort( ( x, y ) => x.length - y.length )[ 0 ];

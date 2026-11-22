@@ -349,7 +349,9 @@ export function planSpacing( st, rec ) {
 	if ( ! kids.length || ! rec.targets.length ) {
 		return;
 	}
-	const measured = kids.filter( ( c ) => st.nodes[ c ].targets.length );
+	// A child that reads its slots only (`draftSlotsOnly`) has no box of its own to measure: it counts as unmeasured, so the list is
+	// partial and the gap is the parent's own read, never the distance between the neighbours the child's box would sit between.
+	const measured = kids.filter( ( c ) => st.nodes[ c ].targets.some( ( t ) => '' === t.slot ) );
 	const unmeasured = kids.length - measured.length;
 	const holder = gapTarget( st, rec );
 	// A child whose own draft element is not drawn at a width but which holds blocks drawn there (a block the skeleton placed

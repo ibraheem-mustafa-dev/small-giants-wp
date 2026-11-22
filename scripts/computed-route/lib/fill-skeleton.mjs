@@ -120,8 +120,9 @@ export function scopeFinder( f, scope ) {
 // scoped, state }: `state` is the slot's `draftSlotStates` entry (a state the block's fixture renders at that path at rest,
 // lib/skeleton-child-slots.mjs::unitSlots), else null; `reveal`, only on a slot the node's `draftSlotReveals` names, is the
 // draft state ({ component, keys }) that shows the slot's element, read with the draft in it (lib/fill-read.mjs::readRevealed).
-// A node with no draftRef has no targets: Fill reads nothing for it,
-// and its children inherit past it.
+// A node with no draftRef has no targets: Fill reads nothing for it, and its children inherit past it. A node marked
+// `draftSlotsOnly` has no draftRef and reads only its draftSlots (each an exact `tpl` finder): its parts' looks come from the
+// elements they name, and its root is read by no one (the block holding the same element reads that root).
 export function skeletonNodes( tree ) {
 	const nodes = [];
 	const go = ( list, parent ) => list.forEach( ( node ) => {
@@ -130,6 +131,11 @@ export function skeletonNodes( tree ) {
 		nodes.push( rec );
 		if ( null !== parent ) {
 			nodes[ parent ].children.push( index );
+		}
+		if ( true === node.draftSlotsOnly && undefined === node.draftRef ) {
+			for ( const [ slot, finder ] of Object.entries( node.draftSlots || {} ) ) {
+				rec.targets.push( { id: `${ index }:${ slot }`, index, slot, finder, scoped: true, state: node.draftSlotStates?.[ slot ] ?? null } );
+			}
 		}
 		if ( undefined !== node.draftRef ) {
 			rec.targets.push( { id: `${ index }:`, index, slot: '', finder: node.draftRef, scoped: false } );
@@ -206,7 +212,20 @@ export function skeletonProblems( tree ) {
 			problems.push( `${ label } draftSlots must be an object of slot path to finder` );
 			continue;
 		}
-		if ( node.draftSlots && Object.keys( node.draftSlots ).length && undefined === node.draftRef ) {
+		if ( undefined !== node.draftSlotsOnly && true !== node.draftSlotsOnly ) {
+			problems.push( `${ label } draftSlotsOnly must be true` );
+		}
+		if ( true === node.draftSlotsOnly ) {
+			if ( undefined !== node.draftRef ) {
+				problems.push( `${ label } draftSlotsOnly reads its slots and not a root, so it takes no draftRef` );
+			}
+			if ( ! node.draftSlots || ! Object.keys( node.draftSlots ).length ) {
+				problems.push( `${ label } draftSlotsOnly needs draftSlots to read` );
+			}
+			for ( const [ slot, finder ] of Object.entries( node.draftSlots || {} ) ) {
+				'tpl' !== finderKind( finder ) && problems.push( `${ label } draftSlotsOnly slot "${ slot }" must be an exact tpl finder, which resolves without a draftRef` );
+			}
+		} else if ( node.draftSlots && Object.keys( node.draftSlots ).length && undefined === node.draftRef ) {
 			problems.push( `${ label } has draftSlots but no draftRef` );
 		}
 		for ( const [ slot, finder ] of Object.entries( node.draftSlots || {} ) ) {
@@ -261,7 +280,7 @@ export function skeletonProblems( tree ) {
 
 // `draftFingerprint` ({ tag, cls, styleHash }) is the skeleton writer's record of the draft element a tpl finder names;
 // Fill moves it into the surface's origin map (originMap) and strips it with the other draft keys.
-const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftPieceParts', 'draftFingerprint', 'draftSlotReveals', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
+const DRAFT_KEYS = [ 'draftRef', 'draftSlotsOnly', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed', 'draftOverlay', 'draftPieceParts', 'draftFingerprint', 'draftSlotReveals', 'itemTemplate', 'widthAlternatives', 'handover', ...ROW_KEYS ];
 
 // The origin map of a skeleton: for every node whose draftRef is a tpl finder, { [cr-ref]: { tpl, fingerprint, slots } }
 // (slots: the slot path to the tpl key of each tpl slot finder). `refs[i]` is the cr-ref of node i (tree.mjs::refOf).

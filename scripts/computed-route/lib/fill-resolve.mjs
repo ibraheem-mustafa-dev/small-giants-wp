@@ -213,7 +213,8 @@ export function fillTree( opts ) {
 			unmapped( st, rec, ref, { property: '(block)', value: '', reason: `uncalibrated: ${ rec.name } has no calibration file` } );
 			continue;
 		}
-		const roots = snapsOf( st, `${ rec.index }:` );
+		// A node that reads only its slots (`draftSlotsOnly`) is readable where any of its slots is read.
+		const roots = true === st.nodes[ rec.index ].node.draftSlotsOnly ? Object.assign( {}, ...rec.targets.map( ( t ) => snapsOf( st, t.id ) ) ) : snapsOf( st, `${ rec.index }:` );
 		if ( ! Object.keys( roots ).length ) {
 			unmapped( st, rec, ref, { property: '(element)', value: json( rec.targets[ 0 ].finder ), reason: 'the draftRef finder resolved no visible element at 375, 768 or 1440' } );
 			continue;

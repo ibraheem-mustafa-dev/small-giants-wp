@@ -127,8 +127,8 @@
 	},
 	{
 		"file": "lib/fill-skeleton.mjs",
-		"find": "const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed',",
-		"replace": "const DRAFT_KEYS = [ 'draftRef', 'draftSlots', 'draftSlotStates', 'draftBandWrappers',",
+		"find": "const DRAFT_KEYS = [ 'draftRef', 'draftSlotsOnly', 'draftSlots', 'draftSlotStates', 'draftBandWrappers', 'draftAbsorbed',",
+		"replace": "const DRAFT_KEYS = [ 'draftRef', 'draftSlotsOnly', 'draftSlots', 'draftSlotStates', 'draftBandWrappers',",
 		"why": "the skeleton's draftAbsorbed key is written into the page"
 	},
 	{
