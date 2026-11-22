@@ -1,6 +1,9 @@
 // The buy box of the product template (Spec 48 FR-48-60, FR-48-96): the run of skeleton nodes the draft's own buy box
 // controls were built as (option pickers, labels, an add-to-basket button: a static imitation that sells nothing)
-// becomes one working `sgs/buybox`, at the position of the first. Everything outside the run stays the draft's own blocks.
+// becomes one working `sgs/buybox`, at the position of the first. Where the draft draws the product's gallery beside an
+// information column holding those controls and the page's h1, the buy box then takes that column and draws the two-column
+// layout itself (takeColumn): the column's other blocks become its inner blocks, the grid its draftRef. Everything else stays
+// the draft's own blocks.
 //
 // Which elements are the buy box comes from the shop parts record (sites/<client>/build/shop-parts.json, surface
 // `piece.find.surface`): every part whose home is a setting of `piece.block` is located on draft elements; their lowest
@@ -29,7 +32,8 @@
 // pass list the run's other paint as the block's missing features (lib/template-pieces-context.mjs::piecesPaint).
 import { countBlocks } from './template-pieces.mjs';
 import { keepsAddToCart } from './template-piece-buybox-flow.mjs';
-import { dcOf, inventoryIndex, locatedKeys, locateParts, nodesWithin, recordSurface, refKey, underFixed } from './template-piece-draft.mjs';
+import { dcOf, inventoryIndex, locatedKeys, locateParts, nodesWithin, recordSurface, refKey, treeNodes, underFixed } from './template-piece-draft.mjs';
+import { SERVED_ROOT } from './key-space.mjs';
 
 // Homes that put a part outside the buy box block (the template part's title, the accordion on its own surface).
 const ELSEWHERE = [ 'part', 'elsewhere' ];
@@ -151,7 +155,152 @@ export function place( ctx, piece ) {
 	const parent = nodes[ 0 ].parent;
 	const removed = nodes.map( ( r ) => refKey( r.node ) );
 	list.splice( first, nodes.length, box );
+	const row = { id: piece.id, block: piece.block, at: `${ parent ? refKey( parent ) || parent.name : 'the top' }, position ${ first }, in place of ${ removed.join( ', ' ) }`, run, missingParts };
+	// The buy box owns the product's information column and draws the two-column layout itself (takeColumn).
+	const builtIn = surface.parts.filter( ( p ) => 'built-in' === p.home?.type && p.home.block === piece.block ).flatMap( ( p ) => locatedKeys( index, p.locators, dcOf( surface.file ) ) );
+	const took = takeColumn( { tree, index, run, box, builtIn } );
+	if ( took.why ) {
+		notes.push( `${ key }: ${ piece.block } stays inside the draft's information column: ${ took.why }` );
+	} else {
+		const multi = notes.findIndex( ( x ) => x.includes( 'has no draftRef and Fill reads no look' ) );
+		multi >= 0 && notes.splice( multi, 1 );
+		row.at = `${ took.grid }, in place of the grid holding the gallery ${ took.side } and the information column ${ took.column } (the column's ${ took.before } block(s) before the controls and ${ took.after } after them are the buy box's inner blocks; the controls were ${ removed.join( ', ' ) })`;
+		row.own = took.own;
+		took.drawn.length && ( row.run = [ ...run, ...took.drawn ] );
+		notes.push( ...took.notes.map( ( x ) => `${ key }: ${ x }` ) );
+	}
 	// `run` and `missingParts` (each missing-features part of the record to the elements of the run it is located on) let the
-	// paint check after the pass (lib/template-pieces-context.mjs::piecesPaint) list the run's unread paint as missing features.
-	return { tree, placed: [ { id: piece.id, block: piece.block, at: `${ parent ? refKey( parent ) || parent.name : 'the top' }, position ${ first }, in place of ${ removed.join( ', ' ) }`, run, missingParts } ], notes };
+	// paint check after the pass (lib/template-pieces-context.mjs::piecesPaint) list the run's unread paint as missing features;
+	// `own` (the information column, dropped without its contents) has only its own paint listed.
+	return { tree, placed: [ row ], notes };
+}
+
+// The widths the inventory reads, each with the buy box's device (the per-device keys of `galleryColumnGap`).
+const DEVICE = { 1440: 'desktop', 768: 'tablet', 375: 'mobile' };
+const round2 = ( x ) => Math.round( x * 100 ) / 100;
+
+// The space between two elements drawn side by side at a width, `a` left of `b` on one row (their tops within a pixel), or
+// null when they are not side by side there.
+export function sideGap( a, b, w ) {
+	const A = a?.box?.[ w ];
+	const B = b?.box?.[ w ];
+	if ( ! A || ! B || ! a.visible?.[ w ] || ! b.visible?.[ w ] || Math.abs( A.y - B.y ) > 1 || A.x + A.w > B.x + 0.5 ) {
+		return null;
+	}
+	return round2( B.x - ( A.x + A.w ) );
+}
+
+// The two-column settings of the buy box from the draft's gallery (`side`) and information column (`column`) elements:
+// { attrs, notes } or { why }. `galleryColumnRatio` is the gallery's width over the column's at 1440; `galleryColumnGap` the
+// space between them at each width they sit side by side (one length when those widths agree, else one per device);
+// `stackBelow` `mobile` when they sit side by side from the tablet width up, `tablet` when only at the desktop width.
+export function columnSettings( side, column ) {
+	const widths = Object.keys( DEVICE ).map( Number ).filter( ( w ) => null !== sideGap( side, column, w ) );
+	if ( ! widths.includes( 1440 ) ) {
+		return { why: `the draft does not draw the gallery ${ side.key } beside the column ${ column.key } at 1440` };
+	}
+	const notes = widths.includes( 375 ) ? [ `the draft keeps the gallery ${ side.key } beside the column ${ column.key } at 375, where sgs/buybox stacks them (stackBelow has no phone value)` ] : [];
+	const gaps = Object.fromEntries( widths.filter( ( w ) => 375 !== w ).map( ( w ) => [ DEVICE[ w ], `${ sideGap( side, column, w ) }px` ] ) );
+	return {
+		attrs: {
+			galleryColumnRatio: round2( side.box[ 1440 ].w / column.box[ 1440 ].w ),
+			galleryColumnGap: 1 === new Set( Object.values( gaps ) ).size ? gaps.desktop : gaps,
+			stackBelow: widths.includes( 768 ) ? 'mobile' : 'tablet',
+		},
+		notes,
+	};
+}
+
+// The two-column layout a grid element draws: the child holding the page's one shown h1 is the information column, the other
+// shown child the gallery's side, and columnSettings reads them. { attrs, notes, side, column } or { why }. Fill writes the
+// ratio and the gap this gives on a buy box read at the grid (lib/fill-buybox-columns.mjs).
+export function columnLayout( index, grid ) {
+	const shown = ( k ) => Object.values( index.byKey.get( k )?.visible || {} ).some( Boolean );
+	const h1 = index.elements.filter( ( e ) => 'h1' === e.tag && SERVED_ROOT === e.template && shown( e.key ) );
+	const kids = index.children( grid ).filter( shown );
+	const column = 1 === h1.length ? kids.find( ( k ) => index.within( h1[ 0 ].key, k ) ) : null;
+	const sides = kids.filter( ( k ) => k !== column );
+	if ( ! column || 1 !== sides.length ) {
+		return { why: `the grid ${ grid } does not hold the page's h1 in one child beside one other (${ kids.length } shown children)` };
+	}
+	const got = columnSettings( index.byKey.get( sides[ 0 ] ), index.byKey.get( column ) );
+	return got.why ? got : { ...got, side: sides[ 0 ], column };
+}
+
+// The buy box takes the product's information column (F-50). `sgs/buybox` draws the product's gallery beside its own controls,
+// so the draft's grid holding the gallery and the information column becomes the buy box, and the column's other blocks
+// become its inner blocks: those drawn before the controls (the title, the rating, the description) render above the price
+// (`extrasBeforeCount`), the rest (the assurances) below the add-to-cart form.
+// - The column: the lowest element holding both the controls' run and the page's one shown h1.
+// - The grid: the column's parent, climbing through wrappers that hold only it; it holds one other shown element, the
+//   gallery's side, drawn left of the column at 1440 (columnSettings writes the ratio, gap and stacking from their boxes).
+// - The gallery side's nodes stay, just before the buy box, for the gallery piece (lib/template-piece-product-field.mjs::placeGallery).
+// - The grid is the buy box's draftRef, so Fill reads the two-column wrapper's look at the block's root; the column (and a
+//   wrapper holding only it) is dropped without its contents, listed in `own`.
+// - A block of the column holding an element the buy box draws itself (`builtIn`: the located elements of a part the record homes
+//   as built-in on the block, such as the price) is dropped, not moved: its elements are listed in `drawn` (the row's run).
+// Returns { grid, side, column, before, after, own, drawn, notes } after changing `tree`, or { why } with the tree unchanged.
+export function takeColumn( { tree, index, run, box, builtIn = [] } ) {
+	const shown = ( k ) => Object.values( index.byKey.get( k )?.visible || {} ).some( Boolean );
+	const h1 = index.elements.filter( ( e ) => 'h1' === e.tag && SERVED_ROOT === e.template && shown( e.key ) );
+	if ( 1 !== h1.length ) {
+		return { why: `the page has ${ h1.length } shown h1, so the product's information column is not known` };
+	}
+	const column = index.chain( run[ 0 ] ).find( ( k ) => index.within( h1[ 0 ].key, k ) && run.every( ( r ) => index.within( r, k ) ) );
+	if ( ! column ) {
+		return { why: `no element holds both the controls (${ run.join( ', ' ) }) and the page's h1 ${ h1[ 0 ].key }` };
+	}
+	let inGrid = column;
+	let grid = index.byKey.get( column ).parentKey;
+	while ( index.byKey.has( grid ) && 1 === index.children( grid ).length ) {
+		inGrid = grid;
+		grid = index.byKey.get( grid ).parentKey;
+	}
+	const sides = index.children( grid ).filter( ( k ) => k !== inGrid && shown( k ) );
+	if ( ! index.byKey.has( grid ) || 1 !== sides.length ) {
+		return { why: `the column ${ column } has ${ index.byKey.has( grid ) ? `${ sides.length } shown neighbours in ${ grid }` : 'no parent the inventory holds' }, not one gallery beside it` };
+	}
+	const settings = columnSettings( index.byKey.get( sides[ 0 ] ), index.byKey.get( inGrid ) );
+	if ( settings.why ) {
+		return { why: settings.why };
+	}
+	const all = treeNodes( tree );
+	const boxAt = all.find( ( r ) => r.node === box );
+	const gridAt = all.find( ( r ) => refKey( r.node ) === grid );
+	const inside = nodesWithin( tree, index, [ grid ] );
+	// The span of the tree the buy box replaces: the grid's own node, or the grid's outermost nodes in the buy box's list.
+	if ( gridAt ? ! treeNodes( [ gridAt.node ] ).some( ( r ) => r.node === box ) : inside.some( ( r ) => r.list !== boxAt.list ) ) {
+		return { why: `the grid ${ grid }'s nodes and the buy box do not sit in one place` };
+	}
+	const firstRun = Math.min( ...run.map( ( k ) => index.order( k ) ) );
+	const kids = index.children( column ).filter( ( k ) => ! run.some( ( r ) => index.within( r, k ) || index.within( k, r ) ) );
+	const all2 = nodesWithin( tree, index, kids ).filter( ( r ) => r.node !== box );
+	const drawnBy = ( r ) => builtIn.some( ( k ) => index.within( k, refKey( r.node ) ) );
+	const dropped = all2.filter( drawnBy );
+	const own = all2.filter( ( r ) => ! drawnBy( r ) );
+	const before = own.filter( ( r ) => index.order( refKey( r.node ) ) < firstRun ).map( ( r ) => r.node );
+	const after = own.filter( ( r ) => index.order( refKey( r.node ) ) > firstRun ).map( ( r ) => r.node );
+	const galleryAt = nodesWithin( tree, index, [ sides[ 0 ] ] );
+	// A mark holds the span's place while the nodes leave theirs; the gallery's nodes and the buy box then take it.
+	const list = gridAt ? gridAt.list : boxAt.list;
+	const mark = {};
+	list.splice( list.indexOf( gridAt ? gridAt.node : list.find( ( n ) => n === box || inside.some( ( r ) => r.node === n ) ) ), 1, mark );
+	for ( const r of [ ...own, ...dropped, ...galleryAt, ...inside, boxAt ] ) {
+		r.list.includes( r.node ) && r.list.splice( r.list.indexOf( r.node ), 1 );
+	}
+	list.splice( list.indexOf( mark ), 1, ...galleryAt.map( ( r ) => r.node ), box );
+	box.innerBlocks = [ ...before, ...after ];
+	box.draftRef = { tpl: grid };
+	// The ratio and the gap are style values: Fill reads them at the grid, the buy box's draftRef (the skeleton carries none).
+	Object.assign( box.attributes, { stackBelow: settings.attrs.stackBelow }, before.length ? { extrasBeforeCount: before.length } : {} );
+	return {
+		grid,
+		side: sides[ 0 ],
+		column,
+		before: before.length,
+		after: after.length,
+		own: [ ...new Set( [ column, inGrid ] ) ],
+		drawn: dropped.map( ( r ) => refKey( r.node ) ),
+		notes: [ ...settings.notes, ...( dropped.length ? [ `the column's ${ dropped.map( ( r ) => refKey( r.node ) ).join( ', ' ) } hold${ 1 === dropped.length ? 's' : '' } what ${ box.name } draws itself (${ builtIn.filter( ( k ) => dropped.some( ( r ) => index.within( k, refKey( r.node ) ) ) ).join( ', ' ) }), so ${ 1 === dropped.length ? 'it is' : 'they are' } dropped, not kept beside it` ] : [] ), `${ box.name } draws the gallery beside its controls: galleryColumnRatio ${ settings.attrs.galleryColumnRatio }, galleryColumnGap ${ JSON.stringify( settings.attrs.galleryColumnGap ) }, stackBelow ${ settings.attrs.stackBelow }${ before.length ? `, extrasBeforeCount ${ before.length }` : '' }, read from the grid ${ grid }` ],
+	};
 }

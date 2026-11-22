@@ -1,0 +1,38 @@
+[
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "\tfor ( const rec of nodes.filter( ( r ) => BLOCK === r.name ) ) {",
+		"replace": "\tfor ( const rec of nodes ) {",
+		"why": "every block read at a grid takes the buy box's settings"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "\t\t\tif ( ! attrExists( BLOCK, attr ) ) {",
+		"replace": "\t\t\tif ( false ) {",
+		"why": "a setting the block lacks is written"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "\t\t\tif ( undefined !== held && json( held ) !== json( value ) ) {",
+		"replace": "\t\t\tif ( false ) {",
+		"why": "a value another writer put on the node is overwritten"
+	},
+	{
+		"file": "lib/fill-buybox-columns.mjs",
+		"find": "\t\tif ( ! grid || ! index.byKey.has( grid ) ) {",
+		"replace": "\t\tif ( ! grid ) {",
+		"why": "a draftRef the inventory does not hold is read"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tconst column = 1 === h1.length ? kids.find( ( k ) => index.within( h1[ 0 ].key, k ) ) : null;",
+		"replace": "\tconst column = kids[ 0 ];",
+		"why": "the column is not the child holding the h1"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tif ( ! column || 1 !== sides.length ) {",
+		"replace": "\tif ( ! column ) {",
+		"why": "a grid of more than two children is read as two columns"
+	}
+]

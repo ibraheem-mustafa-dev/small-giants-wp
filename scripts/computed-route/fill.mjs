@@ -63,6 +63,7 @@ import { formWrites, formSources } from './lib/fill-form.mjs';
 import { formDraftFolder } from './lib/fill-form-behaviour.mjs';
 import { listContentWrites, logicReader, applyChildren, markItemChildren } from './lib/fill-list-content.mjs';
 import { loadShopParts, shopPartWrites } from './lib/fill-shop-parts.mjs';
+import { buyboxColumnWrites } from './lib/fill-buybox-columns.mjs';
 import { shopPartTargets } from './lib/fill-shop-targets.mjs';
 import { blockSchema } from './lib/resolve.mjs';
 import { motionDb } from './lib/motion-db.mjs';
@@ -340,6 +341,11 @@ export async function fillSurface( o ) {
 		result.writes.push( ...shop.writes );
 		result.unmapped.push( ...shop.unmapped );
 		result.notes.push( ...shop.notes, ...shopTargets.notes );
+		// F-50: the buy box read at the draft's grid takes its gallery ratio and gap from the grid's two columns (lib/fill-buybox-columns.mjs).
+		const columns = buyboxColumnWrites( { nodes, flat, refOf, inventory, attrExists: ( b, a ) => Object.hasOwn( blockSchema( b ) || {}, a ) } );
+		result.writes.push( ...columns.writes );
+		result.unmapped.push( ...columns.unmapped );
+		result.notes.push( ...columns.notes );
 		// FR-48-8: the draft's scrollbar colours, written to the theme's scrollbar tokens (the same snapshot patch).
 		const bars = scrollbarPatch( { nodes, flat, refOf, reads, snapshot, site: rawSnapshot?.settings?.custom?.scrollbar } );
 		states.patch = mergePatch( states.patch, bars.patch );

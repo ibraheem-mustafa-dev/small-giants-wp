@@ -43,12 +43,18 @@ test( 'MUST FAIL: Mama\'s product skeleton gets one buy box, a bound title and d
 	const title = treeNodes( got.tree ).find( ( r ) => 'Root/27#0' === refKey( r.node ) ).node;
 	assert.deepEqual( title.attributes.metadata.bindings.content, { source: 'sgs-product/field', args: { key: 'title' } } );
 	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'buy-box', 'gift', 'title', 'description', 'gallery' ] );
-	// The gift choice stands directly after the buy box, with the draft's words.
-	const list = treeNodes( got.tree ).find( ( r ) => ( r.node.innerBlocks || [] ).some( ( c ) => 'sgs/buybox' === c.name ) ).node.innerBlocks;
-	const at = list.findIndex( ( c ) => 'sgs/buybox' === c.name );
-	assert.deepEqual( list[ at + 1 ], { name: 'sgs/gift-order', attributes: { basketLabel: 'Send it as a gift', basketHelp: 'Add a note. We’ll leave the prices off.', messagePlaceholder: 'Congratulations, mama!', messageLimit: 200 }, innerBlocks: [], draftRef: { tpl: 'Root/93#0' } } );
+	// The buy box takes the grid holding the gallery and the information column (F-50): the column's blocks before the controls
+	// (eyebrow, title, rating, description) render above the price, the gift between the choices and the form, the assurances
+	// and the accordion below it; the layout's stacking comes from the draft's boxes.
+	const box = treeNodes( got.tree ).find( ( r ) => 'sgs/buybox' === r.node.name ).node;
+	assert.deepEqual( box.draftRef, { tpl: 'Root/15#0' } );
+	assert.deepEqual( box.attributes, { stackBelow: 'mobile', extrasBeforeCount: 4, extrasBeforeCartCount: 1 } );
+	assert.deepEqual( box.innerBlocks.map( ( c ) => refKey( c ) ).slice( 0, 5 ), [ 'Root/26#0', 'Root/27#0', 'Root/28#0', 'Root/30#0', 'Root/93#0' ] );
+	assert.deepEqual( box.innerBlocks[ 4 ], { name: 'sgs/gift-order', attributes: { basketLabel: 'Send it as a gift', basketHelp: 'Add a note. We’ll leave the prices off.', messagePlaceholder: 'Congratulations, mama!', messageLimit: 200 }, innerBlocks: [], draftRef: { tpl: 'Root/93#0' } } );
+	assert.ok( box.innerBlocks.slice( 5 ).map( ( c ) => refKey( c ) ).includes( 'Root/109#0' ) );
+	assert.equal( countBlocks( got.tree, 'sgs/hero' ), 0 );
 	// Every node outside the buy box and the gallery is kept, in order.
-	const removed = new Set( got.placed.flatMap( ( p ) => String( p.at.split( 'in place of' )[ 1 ] ?? '' ).match( /Root\/\d+#\d+/g ) || [] ) );
+	const removed = new Set( got.placed.flatMap( ( p ) => String( p.at ).match( /Root\/\d+#\d+/g ) || [] ) );
 	const gone = refs( before ).filter( ( k ) => ! refs( got.tree ).includes( k ) );
 	assert.deepEqual( refs( before ).filter( ( k ) => ! gone.includes( k ) ), refs( got.tree ).filter( ( k ) => refs( before ).includes( k ) ) );
 	const index = inventoryIndex( input.inventory );

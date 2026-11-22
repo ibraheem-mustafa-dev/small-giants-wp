@@ -5,6 +5,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { place } from '../lib/template-piece-product-field.mjs';
+import { hiddenPictureHoles, inventoryIndex } from '../lib/template-piece-draft.mjs';
 import { countBlocks } from '../lib/template-pieces.mjs';
 
 const BIND = ( key ) => ( { source: 'sgs-product/field', key } );
@@ -141,4 +142,44 @@ test( 'MUST FAIL: with no buy box, or a picture region holding the h1, the draft
 	assert.equal( mixed.tree, undefined );
 	assert.match( mixed.notes[ 0 ], /share Root\/3#0, which also holds the page's h1/ );
 	assert.equal( countBlocks( TREE(), 'sgs/media' ), 1 );
+} );
+
+// F-50's gallery half: the main picture drawn only in a branch hidden at rest, a picture inside the buy box's controls, and a
+// gallery region no node is built from.
+const GALLERY_BOX = { ...GALLERY, find: { field: 'image', surface: 'buybox' } };
+const HIDDEN_MAIN = '<div style="aspect-ratio:1" data-dc-tpl="4"><sc-if value="{{ hasImg }}" data-dc-tpl="48"><div data-dc-tpl="49" style="background-image:{{ mainImg }}"></div></sc-if><span data-dc-tpl="5" style="background-image:{{ mainImg }}">baked with love</span>';
+const noThumbs = ( over = {} ) => INVENTORY.elements.filter( ( e ) => ! [ 21, 23 ].includes( e.tpl ) ).map( ( e ) => ( over[ e.tpl ] ? { ...e, ...over[ e.tpl ] } : e ) );
+
+test( 'MUST FAIL: a main picture drawn only in a branch hidden at rest is read from the snippet of the element holding it', () => {
+	const elements = noThumbs( { 4: { snippet: HIDDEN_MAIN }, 3: { snippet: `<div data-dc-tpl="3">${ HIDDEN_MAIN }` } } );
+	const index = inventoryIndex( { elements } );
+	assert.deepEqual( hiddenPictureHoles( index, index.byKey.get( 'Root/4#0' ) ), [ 'mainImg' ] );
+	// Negative controls: the ancestor whose snippet also holds it does not read it, and a shown element's tag (5) is never read here.
+	assert.deepEqual( hiddenPictureHoles( index, index.byKey.get( 'Root/3#0' ) ), [] );
+	const got = place( ctx( { inventory: { elements } } ), GALLERY );
+	assert.match( got.placed[ 0 ].at, /in place of the draft's gallery Root\/3#0 \(nodes Root\/4#0, Root\/5#0\)/ );
+	assert.match( place( ctx( { inventory: { elements: noThumbs( { 4: { snippet: '<div style="aspect-ratio:1">' } } ) } } ), GALLERY ).notes[ 0 ], /no element shows the product's own pictures/ );
+} );
+
+test( 'MUST FAIL: a picture inside the buy box\'s controls is never the gallery, and a region no node is built from is not placed', () => {
+	const TILE = el( 30, 6, 'button', '{{ p.name }}', { words: 'Zookies', snippet: '<button style="background-image:{{ mainImg }}">' } );
+	const ADD = el( 31, 6, 'button', 'Add', { words: 'Add' } );
+	const elements = [ ...noThumbs( { 4: { snippet: '<div>' } } ), TILE, ADD ];
+	const shopParts = { surfaces: [ { kind: 'buybox', file: 'Product.dc.html', parts: [
+		{ id: 'buybox-option-picker', home: { type: 'setting', block: 'sgs/buybox', settings: [ 'pickerStyle' ] }, locators: [ 'Product/30' ], sample: [ '{{ p.name }}' ] },
+		{ id: 'buybox-add-to-basket', home: { type: 'setting', block: 'sgs/buybox', settings: [ 'addToCartLabel' ] }, locators: [ 'Product/31' ], sample: [ 'Add' ] },
+	] } ] };
+	const tree = TREE();
+	tree[ 0 ].innerBlocks[ 0 ].innerBlocks.push( n( 'sgs/button', 30, { label: 'Zookies' } ) );
+	const got = place( ctx( { tree, inventory: { elements }, shopParts } ), GALLERY_BOX );
+	assert.equal( got.tree, undefined );
+	assert.match( got.notes[ 0 ], /the gallery is not placed: every element showing the product's pictures \(Root\/30#0\) is inside the buy box's controls/ );
+	// Negative control: without the record surface the tile is taken (the old reading), so the refusal is the run's.
+	assert.ok( place( ctx( { tree: structuredClone( tree ), inventory: { elements } } ), GALLERY ).placed );
+	// A gallery region whose nodes are already gone places nothing and says so (before: "placed ... (nodes )").
+	const bare = TREE();
+	bare[ 0 ].innerBlocks[ 0 ].innerBlocks.splice( 0, 3 );
+	const none = place( ctx( { tree: bare } ), GALLERY );
+	assert.equal( none.tree, undefined );
+	assert.match( none.notes[ 0 ], /the gallery is not placed: no node of the tree is built from the draft's gallery Root\/3#0/ );
 } );

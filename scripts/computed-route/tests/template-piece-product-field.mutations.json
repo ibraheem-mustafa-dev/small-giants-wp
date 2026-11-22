@@ -1,24 +1,164 @@
 [
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tnode.attributes.metadata = { ...meta, bindings: { ...( meta.bindings || {} ), [ attr ]: { source: bind.source, args: { key: bind.key } } } };", "replace": "", "why": "nothing is bound"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( disagree.length || 1 !== located.length || ! h1 || located[ 0 ] !== h1.key ) {", "replace": "\tif ( ! located.length ) {", "why": "a title located off the page's h1 is bound"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( ! at || at.node.name !== piece.block ) {", "replace": "\tif ( ! at ) {", "why": "an h1 built as another block is bound as the title"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( ! surface || ! parts.length ) {", "replace": "\tif ( ! surface ) {", "why": "no title part is not refused"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( built.length > 1 ) {", "replace": "\tif ( false ) {", "why": "a price shown twice is guessed"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( 1 !== holesOf( e.srcOwnText ).length || String( e.srcOwnText ).replace( /\\{\\{[^}]*\\}\\}/g, '' ).trim() ) {", "replace": "\tif ( false ) {", "why": "a price among words is replaced by the binding"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( ! fields.length ) {\n\t\treturn note(", "replace": "\tif ( false ) {\n\t\treturn note(", "why": "a field the records lack is looked for"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( 1 !== countBlocks( tree, piece.block ) ) {", "replace": "\tif ( false ) {", "why": "the gallery is removed with no buy box to show the pictures"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( ! region || h1 || nodes.some( ( r ) => countBlocks( [ r.node ], piece.block ) ) ) {", "replace": "\tif ( ! region ) {", "why": "a picture region holding the h1 is removed"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\t\tr.list.splice( r.list.indexOf( r.node ), 1 );", "replace": "", "why": "the draft's gallery stays beside the buy box's"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\t\tnotes: worded.length ?", "replace": "\t\tnotes: false ?", "why": "the gallery's own words go unnamed"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tconst h1 = index.elements.filter( ( e ) => 'h1' === e.tag && OWN === e.template && shown( e ) );", "replace": "\tconst h1 = index.elements.filter( ( e ) => 'h1' === e.tag );\n\treturn h1[ 0 ] || null;", "why": "the page's h1 is any h1"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tconst attr = wordsSetting( node, element );", "replace": "\tconst attr = Object.keys( node.attributes )[ 0 ];", "why": "the first setting is bound, not the words setting"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "\tif ( ! L ) {", "replace": "\tif ( false ) {", "why": "a draft with no logic is read"},
-	{"file": "lib/template-piece-draft.mjs", "find": "\t\tif ( 'MemberExpression' === n.type && ! n.computed && fields.includes( n.property.name ) && 'Identifier' === n.object.type && roots.has( resolveName( L, n.object )?.decl ) ) {", "replace": "\t\tif ( 'MemberExpression' === n.type && ! n.computed && fields.includes( n.property.name ) ) {", "why": "a field of any record counts as the shown product's"},
-	{"file": "lib/template-piece-draft.mjs", "find": "\t\t\tif ( 'CallExpression' === call?.type && call.arguments[ 0 ] === r.fn && 'MemberExpression' === call.callee.type && readsField( L, call.callee.object, roots, fields, depth + 1, seen ) ) {", "replace": "\t\t\tif ( false ) {", "why": "a thumbnail loop over the gallery is not followed"},
-	{"file": "lib/template-piece-draft.mjs", "find": "\tif ( 2 === parts.length && fields.includes( parts[ 1 ] ) && [ ...declsOf( L, parts[ 0 ] ) ].some( ( d ) => roots.has( d ) ) ) {", "replace": "\tif ( 2 === parts.length && fields.includes( parts[ 1 ] ) ) {", "why": "another product's description is bound"},
-	{"file": "lib/template-piece-draft.mjs", "find": "const PICTURE_ATTRS = [ 'style', 'src', 'srcset' ];", "replace": "const PICTURE_ATTRS = [ 'src', 'srcset' ];", "why": "a background picture is not read"},
-	{"file": "lib/template-piece-draft.mjs", "find": "export const openTag = ( snippet ) => /^<[^>]*/.exec( String( snippet || '' ) )?.[ 0 ] || '';", "replace": "export const openTag = ( snippet ) => /^<[^>]*>/.exec( String( snippet || '' ) )?.[ 0 ] || '';", "why": "an opening tag the inventory cut short is not read"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "(nodes ${ removed.join( ', ' ) })`, run: region } ],", "replace": "(nodes ${ removed.join( ', ' ) })` } ],", "why": "the gallery names no replaced elements, so its unread paint stays a problem"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "at.node.attributes.level = 'h1';", "replace": "", "why": "the bound title keeps the skeleton's level"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "at.node.attributes.level = 'h1';", "replace": "at.node.attributes.level ??= 'h1';", "why": "a title the skeleton built at h2 stays h2"}
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tnode.attributes.metadata = { ...meta, bindings: { ...( meta.bindings || {} ), [ attr ]: { source: bind.source, args: { key: bind.key } } } };",
+		"replace": "",
+		"why": "nothing is bound"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( disagree.length || 1 !== located.length || ! h1 || located[ 0 ] !== h1.key ) {",
+		"replace": "\tif ( ! located.length ) {",
+		"why": "a title located off the page's h1 is bound"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( ! at || at.node.name !== piece.block ) {",
+		"replace": "\tif ( ! at ) {",
+		"why": "an h1 built as another block is bound as the title"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( ! surface || ! parts.length ) {",
+		"replace": "\tif ( ! surface ) {",
+		"why": "no title part is not refused"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( built.length > 1 ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a price shown twice is guessed"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( 1 !== holesOf( e.srcOwnText ).length || String( e.srcOwnText ).replace( /\\{\\{[^}]*\\}\\}/g, '' ).trim() ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a price among words is replaced by the binding"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( ! fields.length ) {\n\t\treturn note(",
+		"replace": "\tif ( false ) {\n\t\treturn note(",
+		"why": "a field the records lack is looked for"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( 1 !== countBlocks( tree, piece.block ) ) {",
+		"replace": "\tif ( false ) {",
+		"why": "the gallery is removed with no buy box to show the pictures"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( ! region || h1 || nodes.some( ( r ) => countBlocks( [ r.node ], piece.block ) ) || region.some( inBox ) ) {",
+		"replace": "\tif ( ! region ) {",
+		"why": "a picture region holding the h1 is removed"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\t\tr.list.splice( r.list.indexOf( r.node ), 1 );",
+		"replace": "",
+		"why": "the draft's gallery stays beside the buy box's"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\t\tnotes: worded.length ?",
+		"replace": "\t\tnotes: false ?",
+		"why": "the gallery's own words go unnamed"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tconst h1 = index.elements.filter( ( e ) => 'h1' === e.tag && OWN === e.template && shown( e ) );",
+		"replace": "\tconst h1 = index.elements.filter( ( e ) => 'h1' === e.tag );\n\treturn h1[ 0 ] || null;",
+		"why": "the page's h1 is any h1"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tconst attr = wordsSetting( node, element );",
+		"replace": "\tconst attr = Object.keys( node.attributes )[ 0 ];",
+		"why": "the first setting is bound, not the words setting"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( ! L ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a draft with no logic is read"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "\t\tif ( 'MemberExpression' === n.type && ! n.computed && fields.includes( n.property.name ) && 'Identifier' === n.object.type && roots.has( resolveName( L, n.object )?.decl ) ) {",
+		"replace": "\t\tif ( 'MemberExpression' === n.type && ! n.computed && fields.includes( n.property.name ) ) {",
+		"why": "a field of any record counts as the shown product's"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "\t\t\tif ( 'CallExpression' === call?.type && call.arguments[ 0 ] === r.fn && 'MemberExpression' === call.callee.type && readsField( L, call.callee.object, roots, fields, depth + 1, seen ) ) {",
+		"replace": "\t\t\tif ( false ) {",
+		"why": "a thumbnail loop over the gallery is not followed"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "\tif ( 2 === parts.length && fields.includes( parts[ 1 ] ) && [ ...declsOf( L, parts[ 0 ] ) ].some( ( d ) => roots.has( d ) ) ) {",
+		"replace": "\tif ( 2 === parts.length && fields.includes( parts[ 1 ] ) ) {",
+		"why": "another product's description is bound"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "const PICTURE_ATTRS = [ 'style', 'src', 'srcset' ];",
+		"replace": "const PICTURE_ATTRS = [ 'src', 'srcset' ];",
+		"why": "a background picture is not read"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "export const openTag = ( snippet ) => /^<[^>]*/.exec( String( snippet || '' ) )?.[ 0 ] || '';",
+		"replace": "export const openTag = ( snippet ) => /^<[^>]*>/.exec( String( snippet || '' ) )?.[ 0 ] || '';",
+		"why": "an opening tag the inventory cut short is not read"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "(nodes ${ removed.join( ', ' ) })`, run: region } ],",
+		"replace": "(nodes ${ removed.join( ', ' ) })` } ],",
+		"why": "the gallery names no replaced elements, so its unread paint stays a problem"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "at.node.attributes.level = 'h1';",
+		"replace": "",
+		"why": "the bound title keeps the skeleton's level"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "at.node.attributes.level = 'h1';",
+		"replace": "at.node.attributes.level ??= 'h1';",
+		"why": "a title the skeleton built at h2 stays h2"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "...hiddenPictureHoles( index, e ), ",
+		"replace": "",
+		"why": "a main picture drawn only in a hidden branch is not read"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "\t\tdeepest === Number( e.tpl ) && out.push",
+		"replace": "\t\tout.push",
+		"why": "an ancestor reads the picture its descendant draws"
+	},
+	{
+		"file": "lib/template-piece-draft.mjs",
+		"find": "\t\tif ( held.has( n ) ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a shown element's tag is read again as hidden"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "const pictures = drawn.filter( ( k ) => ! inBox( k ) );",
+		"replace": "const pictures = drawn;",
+		"why": "a picture inside the buy box's controls is taken as the gallery"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( ! nodes.length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a gallery no node is built from reports itself placed"
+	}
 ]

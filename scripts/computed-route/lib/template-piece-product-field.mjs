@@ -14,12 +14,16 @@
 //     background or a src hole, a loop of thumbnails over the record's gallery). `sgs/buybox` draws the product's own
 //     gallery beside its controls (theme/sgs-theme/templates/single-product.html: the buy box owns the gallery), so the
 //     draft's gallery region (the element holding those pictures, climbing through wrappers that hold only it) is
-//     removed and the buy box's gallery shows the pictures; with no buy box in the tree the draft's gallery stays.
+//     removed and the buy box's gallery shows the pictures; with no buy box in the tree the draft's gallery stays. A
+//     picture a branch hidden at rest draws (the photo shown only when the record has one, its placeholder drawn instead)
+//     is read from the source of the element holding it (lib/template-piece-draft.mjs::hiddenPictureHoles); a picture
+//     inside the buy box's own controls (a colour tile painted with the photo) is never the gallery; a region no node is
+//     built from is not placed, and says so.
 // The bound setting is the node's own words setting (lib/template-piece-draft.mjs::wordsSetting). An area found twice,
 // or not found, stays as it is and is a note; the required title not found is a problem.
 import { countBlocks } from './template-pieces.mjs';
-import { runOf } from './template-piece-buybox.mjs';
-import { attrHolesOf, dcOf, declsOf, draftLogic, holeReads, holesOf, inventoryIndex, locateParts, loopListOf, nodesWithin, recordSurface, refKey, treeNodes, wordsSetting } from './template-piece-draft.mjs';
+import { locateRun, runOf } from './template-piece-buybox.mjs';
+import { attrHolesOf, dcOf, hiddenPictureHoles, declsOf, draftLogic, holeReads, holesOf, inventoryIndex, locateParts, loopListOf, nodesWithin, recordSurface, refKey, treeNodes, wordsSetting } from './template-piece-draft.mjs';
 
 const FIXED = ( e ) => Object.values( e?.position || {} ).some( ( p ) => 'fixed' === p );
 const shown = ( e ) => Object.values( e?.visible || {} ).some( Boolean );
@@ -126,15 +130,22 @@ function placeGallery( ctx, piece, index, L ) {
 	if ( ! roots ) {
 		return note( fields.length ? 'the page\'s h1 reads no product record\'s name, so the record whose pictures the page shows is unknown' : 'the draft\'s product records have no picture field' );
 	}
-	const pictures = index.elements.filter( ( e ) => OWN === e.template && shown( e ) && [ ...attrHolesOf( e.snippet ), ...holesOf( e.srcOwnText ) ].some( ( h ) => holeReads( L, h, roots, fields, loopListOf( e ) ) ) ).map( ( e ) => e.key );
+	// A picture the buy box's own controls draw (a colour tile painted with the product's photo) is the buy box's, never the gallery.
+	const box = piece.find.surface ? locateRun( ctx, piece.find.surface, piece.block ) : { why: 'the piece names no record surface' };
+	const inBox = ( k ) => ! box.why && box.inRun( k );
+	const drawn = index.elements.filter( ( e ) => OWN === e.template && shown( e ) && [ ...attrHolesOf( e.snippet ), ...hiddenPictureHoles( index, e ), ...holesOf( e.srcOwnText ) ].some( ( h ) => holeReads( L, h, roots, fields, loopListOf( e ) ) ) ).map( ( e ) => e.key );
+	const pictures = drawn.filter( ( k ) => ! inBox( k ) );
 	if ( ! pictures.length ) {
-		return note( `no element shows the product's own pictures, so ${ piece.block } shows its gallery where the draft draws none` );
+		return note( drawn.length ? `the gallery is not placed: every element showing the product's pictures (${ drawn.join( ', ' ) }) is inside the buy box's controls` : `no element shows the product's own pictures, so ${ piece.block } shows its gallery where the draft draws none` );
 	}
 	const region = runOf( index, pictures );
 	const h1 = region && index.elements.some( ( e ) => 'h1' === e.tag && region.some( ( r ) => index.within( e.key, r ) ) );
 	const nodes = region ? nodesWithin( tree, index, region ) : [];
-	if ( ! region || h1 || nodes.some( ( r ) => countBlocks( [ r.node ], piece.block ) ) ) {
-		return note( `the elements showing the product's pictures (${ pictures.join( ', ' ) }) share ${ region ? `${ region.join( ', ' ) }, which also holds ${ h1 ? 'the page\'s h1' : `the ${ piece.block }` }` : 'no element' }, so the draft's gallery stays as drawn` );
+	if ( ! region || h1 || nodes.some( ( r ) => countBlocks( [ r.node ], piece.block ) ) || region.some( inBox ) ) {
+		return note( `the gallery is not placed: the elements showing the product's pictures (${ pictures.join( ', ' ) }) share ${ region ? `${ region.join( ', ' ) }, which also holds ${ h1 ? 'the page\'s h1' : ( region.some( inBox ) ? 'the buy box\'s controls' : `the ${ piece.block }` ) }` : 'no element' }, so the draft's gallery stays as drawn` );
+	}
+	if ( ! nodes.length ) {
+		return note( `the gallery is not placed: no node of the tree is built from the draft's gallery ${ region.join( ', ' ) }, so nothing is replaced` );
 	}
 	const removed = nodes.map( ( r ) => refKey( r.node ) );
 	const worded = nodes.flatMap( ( r ) => treeNodes( [ r.node ] ) ).filter( ( x ) => wordsSetting( x.node, index.byKey.get( refKey( x.node ) ) ) ).map( ( x ) => `${ refKey( x.node ) } "${ index.byKey.get( refKey( x.node ) ).words }"` );

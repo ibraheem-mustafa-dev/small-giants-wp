@@ -1,22 +1,146 @@
 [
-	{"file":"lib/template-pieces-context.mjs","find":"\tif ( ! key ) {","replace":"\tif ( true ) {","why":"the pass never runs"},
-	{"file":"lib/template-pieces-context.mjs","find":"const built = ( k ) => !! k && piecesFor( k, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) );","replace":"const built = ( k ) => !! k && piecesFor( k, data ).length > 0;","why":"a theme piece the skeleton never holds is a problem at propose"},
-	{"file":"lib/template-pieces-context.mjs","find":"export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };","replace":"export const BUILDERS = { buybox, gift, 'product-field': productField, order, 'woo-layout': wooLayout, frame, account };","why":"the shop's builder is not handed to the pass"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\tadd( 'description', descriptionField( ctx, l.records, [ ...taken, img.image, img.gallery ].filter( Boolean ) ) );","replace":"","why":"the description field is not read"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\tadd( 'image', img.gallery );","replace":"","why":"the gallery field is not read"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\tadd( 'price', l.prices.price );","replace":"","why":"the price field is not read"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\tdraftSource: draftPath && fs.existsSync( draftPath ) ? fs.readFileSync( draftPath, 'utf8' ) : null,","replace":"\t\tdraftSource: null,","why":"the draft's logic is not read"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\tshopParts: loadShopParts( buildDir ),","replace":"\t\tshopParts: null,","why":"the shop parts record is not read"},
-	{"file":"lib/template-pieces-context.mjs","find":"\tconst draftFile = entry?.draftIndex || null;","replace":"\tconst draftFile = 'Home.dc.html';","why":"the record's file is checked against the wrong draft"},
-	{"file":"lib/template-pieces-context.mjs","find":"export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };","replace":"export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, 'woo-layout': wooLayout, frame, account };","why":"the order builder is not handed to the pass"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\tfactRecord: pieces.some( ( p ) => FACT_KINDS.includes( p.kind ) ) ? facts || loadFacts( client, { repo } ) : null,","replace":"\t\tfactRecord: facts || loadFacts( client, { repo } ),","why":"every template reads the fact record"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\tfactRecord: pieces.some( ( p ) => FACT_KINDS.includes( p.kind ) ) ? facts || loadFacts( client, { repo } ) : null,","replace":"\t\tfactRecord: null,","why":"the order builder runs without the fact record"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\trootComponent: draftFile ? pageKeyOf( draftFile ) : null,","replace":"\t\trootComponent: null,","why":"the served root component is not named"},
-	{"file":"lib/template-pieces-context.mjs","find":"pieces: piecesFor( key, data ), facts } )","replace":"pieces: piecesFor( key, data ) } )","why":"a fact record already read is not used"},
-	{"file":"lib/template-pieces-context.mjs","find":"\treturn { ...got, problems: [ ...got.problems, ...lint ], template, paint:","replace":"\treturn { ...got, template, paint:","why":"a placed node the skeleton lint refuses passes the pass"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\treturn i < 0 || ! had.splice( i, 1 );","replace":"\t\treturn false;","why":"no placed lint finding is ever reported"},
-	{"file":"lib/template-pieces-context.mjs","find":"\t\treturn i < 0 || ! had.splice( i, 1 );","replace":"\t\treturn true;","why":"a finding the skeleton already had is blamed on a builder"},
-	{"file":"lib/template-piece-buybox.mjs","find":"\tconst box = { name: piece.block, attributes: {}, innerBlocks: [] };","replace":"\tconst box = { name: piece.block, attributes: { stickyBarBackground: '#FFFAF0' }, innerBlocks: [] };","why":"the placed buy box carries a style value Fill refuses"},
-	{"file":"lib/template-piece-shop-sort.mjs","find":"\tconst sorting = { name: piece.block, attributes: {}, innerBlocks: [] };","replace":"\tconst sorting = { name: piece.block, attributes: {}, innerBlocks: [] };\n\tsorting.attributes = { style: { spacing: { margin: '0' } } };","why":"the placed sorting carries a style value Fill refuses"},
-	{"file":"lib/template-pieces-context.mjs","find":"export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };","replace":"export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };","why":"the gift builder is not handed to the pass"}
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\tif ( ! key ) {",
+		"replace": "\tif ( true ) {",
+		"why": "the pass never runs"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "const built = ( k ) => !! k && piecesFor( k, data ).some( ( p ) => ! CHECKED_ONLY.includes( p.kind ) );",
+		"replace": "const built = ( k ) => !! k && piecesFor( k, data ).length > 0;",
+		"why": "a theme piece the skeleton never holds is a problem at propose"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };",
+		"replace": "export const BUILDERS = { buybox, gift, 'product-field': productField, order, 'woo-layout': wooLayout, frame, account };",
+		"why": "the shop's builder is not handed to the pass"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\tadd( 'description', descriptionField( ctx, l.records, [ ...taken, img.image, img.gallery ].filter( Boolean ) ) );",
+		"replace": "",
+		"why": "the description field is not read"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\tadd( 'image', img.gallery );",
+		"replace": "",
+		"why": "the gallery field is not read"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\tadd( 'price', l.prices.price );",
+		"replace": "",
+		"why": "the price field is not read"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\tdraftSource: draftPath && fs.existsSync( draftPath ) ? fs.readFileSync( draftPath, 'utf8' ) : null,",
+		"replace": "\t\tdraftSource: null,",
+		"why": "the draft's logic is not read"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\tshopParts: loadShopParts( buildDir ),",
+		"replace": "\t\tshopParts: null,",
+		"why": "the shop parts record is not read"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\tconst draftFile = entry?.draftIndex || null;",
+		"replace": "\tconst draftFile = 'Home.dc.html';",
+		"why": "the record's file is checked against the wrong draft"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };",
+		"replace": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, 'woo-layout': wooLayout, frame, account };",
+		"why": "the order builder is not handed to the pass"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\tfactRecord: pieces.some( ( p ) => FACT_KINDS.includes( p.kind ) ) ? facts || loadFacts( client, { repo } ) : null,",
+		"replace": "\t\tfactRecord: facts || loadFacts( client, { repo } ),",
+		"why": "every template reads the fact record"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\tfactRecord: pieces.some( ( p ) => FACT_KINDS.includes( p.kind ) ) ? facts || loadFacts( client, { repo } ) : null,",
+		"replace": "\t\tfactRecord: null,",
+		"why": "the order builder runs without the fact record"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\trootComponent: draftFile ? pageKeyOf( draftFile ) : null,",
+		"replace": "\t\trootComponent: null,",
+		"why": "the served root component is not named"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "pieces: piecesFor( key, data ), facts } )",
+		"replace": "pieces: piecesFor( key, data ) } )",
+		"why": "a fact record already read is not used"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\treturn { ...got, problems: [ ...got.problems, ...lint ], template, paint:",
+		"replace": "\treturn { ...got, template, paint:",
+		"why": "a placed node the skeleton lint refuses passes the pass"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\treturn i < 0 || ! had.splice( i, 1 );",
+		"replace": "\t\treturn false;",
+		"why": "no placed lint finding is ever reported"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "\t\treturn i < 0 || ! had.splice( i, 1 );",
+		"replace": "\t\treturn true;",
+		"why": "a finding the skeleton already had is blamed on a builder"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tconst box = { name: piece.block, attributes: {}, innerBlocks: [] };",
+		"replace": "\tconst box = { name: piece.block, attributes: { stickyBarBackground: '#FFFAF0' }, innerBlocks: [] };",
+		"why": "the placed buy box carries a style value Fill refuses"
+	},
+	{
+		"file": "lib/template-piece-shop-sort.mjs",
+		"find": "\tconst sorting = { name: piece.block, attributes: {}, innerBlocks: [] };",
+		"replace": "\tconst sorting = { name: piece.block, attributes: {}, innerBlocks: [] };\n\tsorting.attributes = { style: { spacing: { margin: '0' } } };",
+		"why": "the placed sorting carries a style value Fill refuses"
+	},
+	{
+		"file": "lib/template-pieces-context.mjs",
+		"find": "export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };",
+		"replace": "export const BUILDERS = { buybox, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };",
+		"why": "the gift builder is not handed to the pass"
+	},
+	{
+		"file": "lib/template-piece-gift.mjs",
+		"find": "\tif ( boxRef && index.within( holder, boxRef ) ) {",
+		"replace": "\tif ( false ) {",
+		"why": "the gift inside the buy box's own element stands after it"
+	},
+	{
+		"file": "lib/template-piece-gift.mjs",
+		"find": "\t\tbox.node.attributes.extrasBeforeCartCount = 1;",
+		"replace": "",
+		"why": "the gift renders below the form"
+	},
+	{
+		"file": "lib/template-piece-gift.mjs",
+		"find": "\t\tconst at = Number( box.node.attributes?.extrasBeforeCount ) || 0;",
+		"replace": "\t\tconst at = 0;",
+		"why": "the gift is put before the blocks above the price"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tconst took = takeColumn( { tree, index, run, box, builtIn } );",
+		"replace": "\tconst took = { why: 'off' };",
+		"why": "the buy box never takes the information column"
+	}
 ]

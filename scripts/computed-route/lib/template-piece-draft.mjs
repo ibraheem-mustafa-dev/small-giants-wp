@@ -200,5 +200,25 @@ export function holeReads( L, expr, roots, fields, scope = null ) {
 const PICTURE_ATTRS = [ 'style', 'src', 'srcset' ];
 export const attrHolesOf = ( snippet ) => PICTURE_ATTRS.flatMap( ( a ) => [ ...openTag( snippet ).matchAll( new RegExp( `\\s${ a }="([^"]*)"?`, 'gi' ) ) ].flatMap( ( m ) => holesOf( m[ 1 ] ) ) );
 
+// The picture holes a branch hidden at rest draws inside an element: an `sc-if` the opening read did not show (a product photo
+// drawn only when the record has one, its placeholder shown instead) leaves no inventory element, but its source stays in the
+// snippet of the element holding it. Each tag of the snippet numbered `data-dc-tpl="N"` that the inventory does not hold for
+// the element's component is read (its opening tag's picture holes, attrHolesOf) by the deepest element whose snippet holds
+// it, so an ancestor never reads a picture its descendant draws.
+export function hiddenPictureHoles( index, e ) {
+	const same = index.elements.filter( ( x ) => x.template === e.template );
+	const held = new Set( same.map( ( x ) => Number( x.tpl ) ) );
+	const out = [];
+	for ( const m of String( e?.snippet || '' ).matchAll( /<[a-z][\w-]*\s[^>]*?data-dc-tpl="(\d+)"[^>]*>?/gi ) ) {
+		const n = Number( m[ 1 ] );
+		if ( held.has( n ) ) {
+			continue;
+		}
+		const deepest = Math.max( ...same.filter( ( x ) => String( x.snippet || '' ).includes( `data-dc-tpl="${ n }"` ) ).map( ( x ) => Number( x.tpl ) ) );
+		deepest === Number( e.tpl ) && out.push( ...attrHolesOf( m[ 0 ] ) );
+	}
+	return out;
+}
+
 // The list an element's innermost loop walks (`{{ thumbs }}`), or null.
 export const loopListOf = ( e ) => ( e?.membership || [] ).filter( ( m ) => 'sc-for' === m.kind ).at( -1 )?.list ?? null;

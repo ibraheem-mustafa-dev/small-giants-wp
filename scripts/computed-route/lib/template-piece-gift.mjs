@@ -138,6 +138,17 @@ export function place( ctx, piece ) {
 	}
 	const node = { name: piece.block, attributes, innerBlocks: [], draftRef: { tpl: holder } };
 	const box = boxes[ 0 ];
+	// A buy box whose own draft element holds the tick (it took the information column, lib/template-piece-buybox.mjs::takeColumn)
+	// keeps the gift among its inner blocks, between its choices and its add-to-cart form, as the draft draws it: the first inner
+	// block after those above the price (`extrasBeforeCount`), counted by `extrasBeforeCartCount`.
+	const boxRef = 'string' === typeof box.node.draftRef?.tpl ? box.node.draftRef.tpl : null;
+	if ( boxRef && index.within( holder, boxRef ) ) {
+		const at = Number( box.node.attributes?.extrasBeforeCount ) || 0;
+		box.node.innerBlocks = box.node.innerBlocks || [];
+		box.node.innerBlocks.splice( at, 0, node );
+		box.node.attributes.extrasBeforeCartCount = 1;
+		return { tree, placed: [ { id: piece.id, block: piece.block, at: `inside ${ piece.find.after }, between its choices and its add-to-cart form (inner block ${ at + 1 }, extrasBeforeCartCount 1), read at ${ holder } (the tick ${ tick.key })`, settings: Object.keys( attributes ) } ], notes };
+	}
 	box.list.splice( box.list.indexOf( box.node ) + 1, 0, node );
 	return { tree, placed: [ { id: piece.id, block: piece.block, at: `after ${ piece.find.after }, read at ${ holder } (the tick ${ tick.key })`, settings: Object.keys( attributes ) } ], notes };
 }
