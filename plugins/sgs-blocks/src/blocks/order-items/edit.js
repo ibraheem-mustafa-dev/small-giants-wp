@@ -7,7 +7,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
 import {
 	BOX_UNITS,
@@ -60,12 +60,29 @@ const TEXT_TARGETS = [
 		showStyle: false,
 		showLineHeight: false,
 	},
+	{
+		key: 'total',
+		prefix: 'total',
+		label: __( 'Total row', 'sgs-blocks' ),
+		showStyle: false,
+		showLineHeight: false,
+		showFontFamily: true,
+	},
 ];
 
 // Per-device boxes: [attribute, label].
 const BOXES = [
 	[ 'padding', __( 'Padding', 'sgs-blocks' ) ],
 	[ 'margin', __( 'Margin', 'sgs-blocks' ) ],
+	[ 'rowPadding', __( 'Item row padding', 'sgs-blocks' ) ],
+	[ 'totalsPadding', __( 'Totals padding', 'sgs-blocks' ) ],
+];
+
+const ROW_ALIGN = [
+	{ value: '', label: __( 'Default (centred)', 'sgs-blocks' ) },
+	{ value: 'start', label: __( 'Top', 'sgs-blocks' ) },
+	{ value: 'center', label: __( 'Middle', 'sgs-blocks' ) },
+	{ value: 'end', label: __( 'Bottom', 'sgs-blocks' ) },
 ];
 
 /**
@@ -291,6 +308,37 @@ export default function Edit( { attributes, setAttributes } ) {
 						colourValue={ attributes.rowBorderColour }
 						onColourChange={ ( val ) =>
 							setAttributes( { rowBorderColour: val ?? '' } )
+						}
+					/>
+					<SelectControl
+						label={ __( 'Row alignment', 'sgs-blocks' ) }
+						help={ __( 'Lines up each row’s picture, words and price.', 'sgs-blocks' ) }
+						value={ attributes.rowAlign ?? '' }
+						options={ ROW_ALIGN }
+						onChange={ ( val ) => setAttributes( { rowAlign: val } ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Totals border', 'sgs-blocks' ) }
+					initialOpen={ false }
+				>
+					<SgsBorderControl
+						widthValues={ attributes.totalsBorderWidth ?? {} }
+						onWidthChange={ ( next ) =>
+							setAttributes( { totalsBorderWidth: next } )
+						}
+						styleValue={ attributes.totalsBorderStyle }
+						onStyleChange={ ( val ) =>
+							setAttributes( { totalsBorderStyle: val ?? '' } )
+						}
+						colourLabel={ __( 'Totals border colour', 'sgs-blocks' ) }
+						colourLinked={ true }
+						colourValue={ attributes.totalsBorderColour }
+						onColourChange={ ( val ) =>
+							setAttributes( { totalsBorderColour: val ?? '' } )
 						}
 					/>
 				</PanelBody>

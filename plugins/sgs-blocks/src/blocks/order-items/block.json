@@ -89,7 +89,9 @@
 					"attrMap": {
 						"css:border-width": "rowBorderWidth",
 						"css:border-style": "rowBorderStyle",
-						"css:border-color": "rowBorderColour"
+						"css:border-color": "rowBorderColour",
+						"css:padding": "rowPadding",
+						"css:align-items": "rowAlign"
 					}
 				},
 				"itemName": {
@@ -137,11 +139,16 @@
 					"label": "Totals rows",
 					"order": 7,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "totals",
 					"attrMap": {
-						"css:color": "totalsColour"
+						"css:color": "totalsColour",
+						"css:border-width": "totalsBorderWidth",
+						"css:border-style": "totalsBorderStyle",
+						"css:border-color": "totalsBorderColour",
+						"css:padding": "totalsPadding"
 					}
 				},
 				"total": {
@@ -180,6 +187,10 @@
 					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
 				},
 				"rowBorderColour": {
+					"rule": "states",
+					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
+				},
+				"totalsBorderColour": {
 					"rule": "states",
 					"reason": "Read-only receipt text on the order-confirmation page: no click target, so no hover or focus colour applies."
 				}
@@ -312,6 +323,53 @@
 			"type": "object",
 			"default": {},
 			"description": "Space between item rows per device (CSS length). Empty keeps 1rem."
+		},
+		"rowPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding of each item row per device: {desktop,tablet,mobile} boxes. Empty keeps the stylesheet (1rem under each row)."
+		},
+		"rowAlign": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "start", "center", "end" ],
+			"description": "Vertical alignment of a row's picture, words and price. Empty keeps the stylesheet (centred)."
+		},
+		"totalsBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border round the totals block per device: a box or a tier object of boxes (set the top side alone for a rule above the totals). Empty prints none."
+		},
+		"totalsBorderStyle": {
+			"type": "string",
+			"default": "",
+			"enum": [ "", "none", "solid", "dashed", "dotted", "double" ]
+		},
+		"totalsBorderColour": {
+			"type": "string",
+			"default": ""
+		},
+		"totalsPadding": {
+			"type": "object",
+			"default": {},
+			"description": "Padding of the totals block per device: {desktop,tablet,mobile} boxes. Empty keeps none."
+		},
+		"totalFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Font of the total row. Empty = the totals rows' font."
+		},
+		"totalFontSize": {
+			"type": "object",
+			"default": {}
+		},
+		"totalFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"totalFontWeight": {
+			"type": "string",
+			"default": ""
 		},
 		"rowBorderWidth": {
 			"type": "object",

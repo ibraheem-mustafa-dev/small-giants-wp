@@ -105,6 +105,53 @@ $scoped[]   = sgs_emit_tier_decls(
 	)
 );
 $scoped     = array_merge( $scoped, $row_border['rules'] );
+$scoped[]   = sgs_emit_responsive_css(
+	$row_sel,
+	array(
+		array(
+			'value'        => $attributes['rowPadding'] ?? null,
+			'css'          => 'padding',
+			'box'          => true,
+			'unit_default' => 'px',
+		),
+	)
+);
+$row_align = (string) ( $attributes['rowAlign'] ?? '' );
+if ( in_array( $row_align, array( 'start', 'center', 'end' ), true ) ) {
+	$scoped[] = $row_sel . '{align-items:' . $row_align . ';}';
+}
+
+// Totals block: its border (a top rule when only the top side is set) and padding.
+$totals_sel    = $root_sel . ' .sgs-order-items__totals';
+$totals_border = sgs_border_element_decls(
+	$attributes,
+	'totals',
+	$totals_sel,
+	array(
+		'colour' => array( 'base' => 'totalsBorderColour' ),
+		'radius' => false,
+	)
+);
+$scoped[]      = sgs_emit_tier_decls(
+	$totals_sel,
+	array(
+		'desktop' => $totals_border['base'],
+		'tablet'  => $totals_border['tablet'],
+		'mobile'  => $totals_border['mobile'],
+	)
+);
+$scoped        = array_merge( $scoped, $totals_border['rules'] );
+$scoped[]      = sgs_emit_responsive_css(
+	$totals_sel,
+	array(
+		array(
+			'value'        => $attributes['totalsPadding'] ?? null,
+			'css'          => 'padding',
+			'box'          => true,
+			'unit_default' => 'px',
+		),
+	)
+);
 
 // Text: colour and typography per part.
 $scoped[] = sgs_text_states_css( $root_sel . ' .sgs-order-items__name', $attributes, array( 'base' => 'itemNameColour' ) );
@@ -116,6 +163,7 @@ $parts = array(
 	'itemMeta'  => '.sgs-order-items__meta',
 	'itemPrice' => '.sgs-order-items__price',
 	'totals'    => '.sgs-order-items__totals',
+	'total'     => '.sgs-order-items__total',
 );
 foreach ( $parts as $prefix => $part_sel ) {
 	$scoped[] = sgs_typography_css_rule( $attributes, $prefix, $root_sel . ' ' . $part_sel, '', false, false, $tiered );

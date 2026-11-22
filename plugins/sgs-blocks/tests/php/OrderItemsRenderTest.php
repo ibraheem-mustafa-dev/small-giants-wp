@@ -191,6 +191,35 @@ final class OrderItemsRenderTest extends TestCase {
 		$this->assertStringNotContainsString( '<p>Chocolate</p>', $html, 'option values print as text' );
 	}
 
+	public function test_totals_border_padding_total_type_and_row_look_print_on_their_parts(): void {
+		$html = $this->render(
+			array(
+				'totalsBorderWidth'  => array( 'top' => '1px' ),
+				'totalsBorderColour' => '#e0d6c8',
+				'totalsPadding'      => array( 'desktop' => array( 'top' => '14px' ) ),
+				'totalFontFamily'    => 'Fraunces, serif',
+				'totalFontSize'      => array( 'desktop' => 22 ),
+				'rowPadding'         => array( 'desktop' => array( 'top' => '10px', 'bottom' => '10px' ) ),
+				'rowAlign'           => 'start',
+			),
+			$this->scenario()
+		);
+		$this->assertMatchesRegularExpression( '/\.sgs-order-items__totals\{[^}]*border-style:solid;border-width:1px 0 0 0;border-color:#e0d6c8/', $html, 'a top rule above the totals' );
+		$this->assertMatchesRegularExpression( '/\.sgs-order-items__totals\{[^}]*padding-top:14px/', $html, 'the totals padding' );
+		$this->assertMatchesRegularExpression( '/\.sgs-order-items__total\{[^}]*font-family:Fraunces, serif/', $html, 'the total row font' );
+		$this->assertMatchesRegularExpression( '/\.sgs-order-items__total\{[^}]*font-size:22px/', $html, 'the total row size' );
+		$this->assertMatchesRegularExpression( '/\.sgs-order-items__row\{[^}]*padding-top:10px/', $html, 'the row padding' );
+		$this->assertMatchesRegularExpression( '/\.sgs-order-items__row\{align-items:start;\}/', $html, 'the row alignment' );
+	}
+
+	public function test_the_new_look_settings_print_nothing_while_unset(): void {
+		$html = $this->render( array( 'rowAlign' => 'sideways' ), $this->scenario() );
+		$this->assertStringNotContainsString( 'align-items', $html, 'an unknown alignment prints nothing' );
+		$this->assertDoesNotMatchRegularExpression( '/\.sgs-order-items__totals\{[^}]*(border|padding)/', $html, 'no totals border or padding' );
+		$this->assertDoesNotMatchRegularExpression( '/\.sgs-order-items__total\{[^}]*font-/', $html, 'no total type' );
+		$this->assertDoesNotMatchRegularExpression( '/\.sgs-order-items__row\{[^}]*padding/', $html, 'no row padding' );
+	}
+
 	public function test_no_inline_style_attribute(): void {
 		$html = $this->render( array( 'itemNameColour' => 'primary' ), $this->scenario() );
 		$this->assertSame( 0, preg_match( '/<(?!style\b)[a-z][^>]*\sstyle="/i', $html ), 'no element carries a style attribute' );
