@@ -19,6 +19,9 @@
 //   the node already holds at a part's slot (`taken`) pairs inside that part the same way;
 // - words: where several parts fit, a worded element keeps the parts printing the same words, else the parts printing the
 //   same kind of words (a number, a price, other words);
+// - summary row: a draft control that holds words and a caret (a label and a glyph that points down or turns, as a disclosure
+//   toggle draws it) is a menu's summary row, so it fits the block's disclosure summary part (a `summary` element) even
+//   where that part is out of flow or prints no words of its own; a link with a trailing icon and no caret is not one;
 // - place: where several parts still fit, the part whose box centre inside the block lies nearest the element's centre inside
 //   its host, both as shares of the block's size, when it is near (PLACE_NEAR) and every other part at least twice as far.
 // A part and its sole visible child of the same width are one visible box (a label drawn round a pill). A pairing is used only
@@ -196,6 +199,92 @@ export const flowsOf = ( e ) => {
 	return at.length ? [ ...new Set( at ) ] : [ false ];
 };
 
+// The characters a disclosure caret is typed as (pointing down, up or, for a collapsed row, right); a trailing arrow such as
+// a right angle quote is a link's, not a toggle's.
+const CARET_CHARS = new Set( [ '\u25BE', '\u25BC', '\u25BF', '\u25BD', '\u2304', '\u2335', '\u02C5', '\u2228', '\u23F7', '\u25B4', '\u25B2', '\u23F6', '\u02C4', '\u2227', '\u2303', '\u25B8' ] );
+const SHAPE = /<(polyline|polygon|path|line|circle|rect|ellipse)\b([^>]*)>/gi;
+// The numbers in a points list or a path's arguments ("4-4" is 4 and -4).
+const numbersOf = ( text ) => ( String( text ?? '' ).match( /-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/gi ) || [] ).map( Number );
+
+// Whether a rendered svg draws a chevron: one shape of three corners that do not lie on a line (a polyline of three points,
+// or a path of a move and two lines). An arrow is two shapes, a circle or a plus is more.
+export function drawsChevron( markup ) {
+	const shapes = [ ...String( markup ?? '' ).matchAll( SHAPE ) ];
+	if ( 1 !== shapes.length ) {
+		return false;
+	}
+	const [ , tag, attrs ] = shapes[ 0 ];
+	let pts = [];
+	if ( 'polyline' === tag.toLowerCase() ) {
+		const nums = numbersOf( attrs.match( /\bpoints\s*=\s*["']([^"']*)["']/i )?.[ 1 ] );
+		for ( let i = 0; i + 1 < nums.length; i += 2 ) {
+			pts.push( [ nums[ i ], nums[ i + 1 ] ] );
+		}
+	} else if ( 'path' === tag.toLowerCase() ) {
+		const d = attrs.match( /\bd\s*=\s*["']([^"']*)["']/i )?.[ 1 ] ?? '';
+		if ( /[^MmLlHhVv\d\s,.\-eE]/.test( d ) ) {
+			return false;
+		}
+		let at = [ 0, 0 ];
+		for ( const [ , cmd, args ] of d.matchAll( /([MmLlHhVv])([^MmLlHhVv]*)/g ) ) {
+			const n = numbersOf( args );
+			const rel = cmd === cmd.toLowerCase();
+			const c = cmd.toUpperCase();
+			const step = 'H' === c || 'V' === c ? 1 : 2;
+			for ( let i = 0; i + step <= n.length; i += step ) {
+				const x = 'V' === c ? at[ 0 ] : ( rel ? at[ 0 ] : 0 ) + n[ i ];
+				const y = 'H' === c ? at[ 1 ] : ( rel ? at[ 1 ] : 0 ) + n[ 'V' === c ? i : i + 1 ];
+				at = [ x, y ];
+				pts.push( at );
+			}
+		}
+	}
+	if ( 3 !== pts.length || pts.flat().some( ( v ) => ! Number.isFinite( v ) ) ) {
+		return false;
+	}
+	const [ a, b, c ] = pts;
+	return 0 !== ( ( b[ 0 ] - a[ 0 ] ) * ( c[ 1 ] - a[ 1 ] ) ) - ( ( b[ 1 ] - a[ 1 ] ) * ( c[ 0 ] - a[ 0 ] ) );
+}
+
+// Whether a draft element is a caret: a typed down or up pointer; an svg that draws a chevron; or a glyph holder with no words
+// that turns when the row opens (a transform of its own with a transition on it).
+export function isCaret( e, kids = () => [] ) {
+	const words = String( e.words ?? '' ).trim();
+	if ( words ) {
+		return CARET_CHARS.has( words );
+	}
+	if ( 'svg' === String( e.tag ?? '' ).toLowerCase() && drawsChevron( e.svg ) ) {
+		return true;
+	}
+	const style = String( e.attrs?.style ?? '' );
+	return /transform\s*:[^;]*rotate\(/i.test( style ) && /transition(?:-property)?\s*:[^;]*\btransform\b/i.test( style ) && ! kids( e ).some( ( k ) => ALNUM.test( String( k.words ?? '' ) ) );
+}
+
+// Whether a block's calibrated parts include a disclosure summary part (a control part that is a `summary` element).
+export function drawsSummaryPart( calibration ) {
+	const model = partModel( calibration?.elements || {}, Object.values( calibration?.text || {} ).map( ( x ) => x?.path ).filter( Boolean ), calibration?.parts );
+	return [ ...model.groups.values() ].some( ( g ) => ! g.root && ! g.hidden && 'control' === g.kind && 'summary' === model.parts.get( g.head )?.tag );
+}
+
+// Whether a draft control is a menu's summary row: it holds words (its own or a descendant's, not a lone glyph) and a caret
+// somewhere below it. kids( element ): its children in order.
+export function isSummaryRow( e, kids ) {
+	const tag = String( e.tag ?? '' ).toLowerCase();
+	if ( ! CONTROL_TAGS.has( tag ) && ! CONTROL_ROLES.has( String( e.attrs?.role ?? '' ).toLowerCase() ) ) {
+		return false;
+	}
+	let words = false;
+	let caret = false;
+	const walk = ( x ) => kids( x ).filter( visible ).forEach( ( k ) => {
+		const w = String( k.words ?? '' ).trim();
+		words = words || ( ALNUM.test( w ) && ! glyphy( w ) );
+		caret = caret || isCaret( k, kids );
+		walk( k );
+	} );
+	walk( e );
+	return words && caret;
+}
+
 // What a draft element is, from its tag, role, words and visible children. kids( element ) gives its children.
 export function draftKind( e, kids ) {
 	const tag = String( e.tag ?? '' ).toLowerCase();
@@ -220,10 +309,12 @@ export function draftKind( e, kids ) {
 // The slots and readings of a host's absorbed elements the slot walk left. host: the block's draft element; absorbed:
 // [ { element, looks } ] (`looks: null` is an element whose paint is not in question: it pairs with the part it is whatever
 // the part's settings paint, and is read at every slot the part's settings are calibrated at); kids( element ): its children in order; isNode( element ): true for an element another skeleton node
-// reads (its subtree is that block's); calibration: { elements, settings, text }; finder( element ); taken: the slots the node
+// reads (its subtree is that block's); summaryRows: pair each toggle (a control holding words and a caret, or a copy of a loop
+// that has one) with the block's disclosure summary part, to be called after the ordinary pairing, whose link part a toggle
+// also fills (the settings of the two parts are calibrated apart); calibration: { elements, settings, text }; finder( element ); taken: the slots the node
 // already holds. Returns { slots: { slot: finder }, paired: [ { key, part, slots } ], ambiguous: [ { key, candidates } ],
 // unpainted: [ { key, part, looks } ], pseudo: [ { key, part } ] }.
-export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false, calibration = {}, finder, taken = {} } ) {
+export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false, calibration = {}, finder, taken = {}, summaryRows = false } ) {
 	const out = { slots: {}, paired: [], ambiguous: [], unpainted: [], pseudo: [] };
 	const elements = calibration?.elements || {};
 	if ( ! host || ! absorbed.length || ! Object.keys( elements ).length ) {
@@ -231,6 +322,8 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 	}
 	const model = partModel( elements, Object.values( calibration.text || {} ).map( ( x ) => x?.path ).filter( Boolean ), calibration.parts );
 	const groups = [ ...model.groups.values() ].filter( ( g ) => ! g.root && ! g.hidden );
+	// The block's disclosure summary parts: a control part that is a `summary` element, drawn out of flow or not.
+	const summaries = groups.filter( ( g ) => 'control' === g.kind && 'summary' === model.parts.get( g.head )?.tag );
 	// The host's subtree in document order, stopping at the elements other nodes read.
 	const parent = new Map();
 	const order = [];
@@ -244,6 +337,10 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 	} );
 	walk( host );
 	const kindOf = new Map( order.map( ( e ) => [ e, draftKind( e, kids ) ] ) );
+	// A menu's rows are one repeated element whose copies differ in what they hold (a row with no submenu has no caret), so a
+	// copy that is a summary row makes every copy of its loop a toggle: the summary slots are read at the copy of their position.
+	const rowLoops = new Set( summaries.length ? order.filter( ( e ) => 'control' === kindOf.get( e ) && isSummaryRow( e, ( x ) => kids( x ).filter( ( k ) => ! isNode( k ) ) ) ).map( ( e ) => copylessKey( e.key ) ) : [] );
+	const toggles = new Set( ! summaryRows ? [] : order.filter( ( e ) => 'control' === kindOf.get( e ) && rowLoops.has( copylessKey( e.key ) ) ) );
 	const sameRepeat = ( a, b ) => a === b || copylessKey( a.key ) === copylessKey( b.key ) || ( 'control' === kindOf.get( a ) && 'control' === kindOf.get( b ) && a.tag === b.tag && ( a.attrs?.class ?? '' ) === ( b.attrs?.class ?? '' ) && ( Math.abs( ( boxOf( a ).w ?? -9 ) - ( boxOf( b ).w ?? 9 ) ) <= 2 || Math.abs( ( boxOf( a ).h ?? -9 ) - ( boxOf( b ).h ?? 9 ) ) <= 2 ) );
 	const repGroup = ( e, within = parent.get( e ) ) => kids( within ).filter( ( k ) => visible( k ) && ( kindOf.has( k ) || ! isNode( k ) ) && sameRepeat( e, k ) );
 	const chainOf = ( e ) => {
@@ -297,12 +394,17 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 			}
 			up = up ?? heldPart( e );
 			let cands = groups.filter( ( g ) => g.level === chain.get( e ).length && FITS[ kind ].includes( g.kind ) && ( ! oof || g.oof ) && ( ! up || up.inside.has( g.head ) ) );
-			for ( const tier of [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
-				const kept = cands.filter( tier );
-				kept.length && ( cands = kept );
+			const row = toggles.has( e ) ? cands.filter( ( g ) => summaries.includes( g ) ) : [];
+			if ( row.length ) {
+				cands = row;
+			} else {
+				for ( const tier of [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
+					const kept = cands.filter( tier );
+					kept.length && ( cands = kept );
+				}
+				cands.length > 1 && ( cands = byWords( cands, e ) );
+				cands.length > 1 && ( cands = byPlace( cands, e, host, model.rootBox ) );
 			}
-			cands.length > 1 && ( cands = byWords( cands, e ) );
-			cands.length > 1 && ( cands = byPlace( cands, e, host, model.rootBox ) );
 			result.set( e, banned.has( e ) ? [ banned.get( e ), SHARED ] : forced.has( e ) ? [ forced.get( e ) ] : cands );
 		}
 		let changed = false;

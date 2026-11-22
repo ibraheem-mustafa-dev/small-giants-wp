@@ -4,7 +4,7 @@
 // settings (cache/form-field-tiles.json, cache/mamas-test/form-field-tiles.paint.json), whose markup the draft does not share.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { partModel, draftKind, pairAbsorbed, pairingNotes, glyphy, wordsClass, unpairedRecords } from '../lib/skeleton-part-pairing.mjs';
+import { partModel, draftKind, pairAbsorbed, pairingNotes, glyphy, wordsClass, unpairedRecords, drawsChevron, isCaret, isSummaryRow, drawsSummaryPart } from '../lib/skeleton-part-pairing.mjs';
 import { checkRecords } from '../lib/skeleton-paint-conservation.mjs';
 import { absorbedSlots } from '../lib/skeleton-conserve-slots.mjs';
 import { calPartsFor } from '../lib/skeleton-context.mjs';
@@ -308,4 +308,104 @@ test( 'MUST FAIL (a refused pairing leaves no record): each element several part
 	assert.equal( checked.listed?.kind, 'unpaired', JSON.stringify( checked ) );
 	assert.equal( checkRecords( [ { kind: 'unpaired', block: 'sgs/x', candidates: [] } ], { looks: [ 'background' ], nodes: new Map() } ).bad.length, 1, 'a record naming no candidates is refused' );
 	assert.equal( unpairedRecords( bag( { 375: 'absolute', 1440: 'static' }, { '.trigger': { tpl: 'Root/1#0' } } ), 'sgs/x' ).size, 0, 'a paired element has no record' );
+} );
+
+// A menu whose row is a link and, beside it, a disclosure summary that holds the label and the caret (the drawer menu's
+// accordion row): the summary is drawn out of flow over the row, so the in-flow link part is the one a draft button would fit.
+const ROW = ( k ) => `.bar > .item:nth-of-type(${ k })`;
+const MENU = {
+	elements: {
+		'': flat( 'nav' ), '.bar': flat( 'ul' ),
+		...Object.fromEntries( [ 1, 2 ].flatMap( ( k ) => [
+			[ ROW( k ), flat( 'li' ) ],
+			[ `${ ROW( k ) } > .row`, flat( 'div' ) ],
+			[ `${ ROW( k ) } > .row > .link`, flat( 'a' ) ],
+			[ `${ ROW( k ) } > .row > .link > .text`, flat( 'span' ) ],
+			[ `${ ROW( k ) } > .row > .summary`, flat( 'summary', { _position: 'absolute' } ) ],
+			[ `${ ROW( k ) } > .row > .summary > .caret`, flat( 'span', { width: '40px', 'background-color': 'rgb(1, 2, 3)' } ) ],
+		] ) ),
+	},
+	settings: {
+		linkColour: { slot: `${ ROW( 1 ) } > .row > .link`, slots: [ `${ ROW( 1 ) } > .row > .link`, `${ ROW( 2 ) } > .row > .link` ], property: 'color' },
+		rowGap: { slot: `${ ROW( 1 ) } > .row > .summary`, slots: [ `${ ROW( 1 ) } > .row > .summary`, `${ ROW( 2 ) } > .row > .summary` ], property: 'gap' },
+	},
+	text: {},
+};
+const ROTATING = 'display: flex; transform: rotate(0deg); transition: transform 0.45s;';
+// The caret the draft draws: a wordless glyph holder that turns, a typed character, or a one-shape three-point svg; or none.
+const CARETS = {
+	turning: ( n ) => el( `Root/${ n }#0`, 'span', [], { w: 16, h: 16, attrs: { style: ROTATING } } ),
+	typed: ( n ) => el( `Root/${ n }#0`, 'span', [], { w: 16, h: 16, words: '▾' } ),
+	chevron: ( n ) => ( { ...el( `Root/${ n }#0`, 'svg', [], { w: 16, h: 16 } ), svg: '<svg viewBox="0 0 16 16"><polyline points="4,6 8,10 12,6"/></svg>' } ),
+	arrow: ( n ) => ( { ...el( `Root/${ n }#0`, 'svg', [], { w: 16, h: 16 } ), svg: '<svg viewBox="0 0 16 16"><line x1="3" y1="8" x2="12" y2="8"/><polyline points="8.5,4.5 12,8 8.5,11.5"/></svg>' } ),
+	none: () => null,
+};
+// Two draft rows of the same shape: a button holding a number, a label and a circle that holds the caret.
+const menuRows = ( caret, tag = 'button', attrs = {} ) => {
+	const rows = [ 0, 1 ].map( ( i ) => {
+		const c = caret( 7 );
+		const circle = el( `Root/6#${ i }`, 'span', c ? [ { ...c, key: `Root/7#${ i }` } ] : [], { w: 40, h: 40 } );
+		const control = el( `Root/4#${ i }`, tag, [ el( `Root/5#${ i }`, 'span', [], { words: `Sector ${ i }` } ), circle ], { w: 400, h: 72, attrs } );
+		return el( `Root/3#${ i }`, 'div', [ control ], { w: 400, h: 72 } );
+	} );
+	return { host: el( 'Root/2#0', 'nav', rows ), rows, control: ( i ) => rows[ i ].kids[ 0 ] };
+};
+const SUMMARY = ( k ) => `${ ROW( k ) } > .row > .summary`;
+const LINK = ( k ) => `${ ROW( k ) } > .row > .link`;
+const pairRow = ( m, calibration = MENU, summaryRows = true ) => pairAbsorbed( { host: m.host, absorbed: [ { element: m.control( 0 ), looks: null } ], kids, calibration, finder, summaryRows } );
+
+test( 'MUST FAIL (a words-plus-caret toggle fits only the in-flow link part): a draft control holding a label and a caret is the menu\'s summary row, and its gap is read there', () => {
+	for ( const [ name, caret ] of [ [ 'a turning glyph holder', CARETS.turning ], [ 'a typed caret character', CARETS.typed ], [ 'a chevron svg', CARETS.chevron ] ] ) {
+		const made = pairRow( menuRows( caret ) );
+		assert.deepEqual( made.slots, { [ SUMMARY( 1 ) ]: { tpl: 'Root/4#0' }, [ SUMMARY( 2 ) ]: { tpl: 'Root/4#1' } }, `${ name }: ${ JSON.stringify( made ) }` );
+		assert.deepEqual( made.paired.map( ( p ) => [ p.key, p.part ] ), [ [ 'Root/4#0', '.bar > .item:nth-of-type(n) > .row > .summary' ] ], name );
+	}
+	const ordinary = menuRows( CARETS.turning );
+	assert.deepEqual( Object.keys( pairRow( ordinary, MENU, false ).slots ), [ LINK( 1 ), LINK( 2 ) ], 'the ordinary pairing is unchanged: the link part' );
+	const bySummary = menuRows( CARETS.chevron, 'summary' );
+	assert.deepEqual( Object.keys( pairRow( bySummary ).slots ).sort(), [ SUMMARY( 1 ), SUMMARY( 2 ) ], 'a native summary element holding words and a caret' );
+} );
+
+test( 'negative controls: a link with a trailing arrow, a toggle with no caret, a caret with no words, and a block with no summary part all keep the link part', () => {
+	const linked = ( m ) => ( { [ LINK( 1 ) ]: { tpl: m.control( 0 ).key }, [ LINK( 2 ) ]: { tpl: m.control( 1 ).key } } );
+	const arrow = menuRows( CARETS.arrow, 'a' );
+	assert.deepEqual( pairRow( arrow ).slots, linked( arrow ), 'a plain link with a trailing arrow icon' );
+	const bare = menuRows( CARETS.none );
+	assert.deepEqual( pairRow( bare ).slots, linked( bare ), 'a button with a label and an empty circle' );
+	const silent = menuRows( CARETS.turning );
+	[ 0, 1 ].forEach( ( i ) => ( silent.control( i ).kids = [ silent.control( i ).kids[ 1 ] ] ) );
+	assert.ok( ! Object.keys( pairRow( silent ).slots ).includes( SUMMARY( 1 ) ), 'a caret with no words beside it is no row' );
+	const noSummary = { ...MENU, elements: Object.fromEntries( Object.entries( MENU.elements ).filter( ( [ p ] ) => ! p.includes( '.summary' ) ) ) };
+	const plain = menuRows( CARETS.turning );
+	assert.deepEqual( pairRow( plain, noSummary ).slots, linked( plain ), 'a block that draws no summary part keeps the link' );
+} );
+
+test( 'drawsChevron reads one shape of three corners off a line; isCaret and isSummaryRow read a caret and a words-plus-caret control', () => {
+	const svg = ( inner ) => `<svg viewBox="0 0 16 16">${ inner }</svg>`;
+	assert.ok( drawsChevron( svg( '<polyline points="4,6 8,10 12,6"/>' ) ) );
+	assert.ok( drawsChevron( svg( '<path d="M4 6 L8 10 L12 6" fill="none"/>' ) ), 'a path of a move and two lines' );
+	assert.ok( drawsChevron( svg( '<path d="m4 6 4 4 4-4"/>' ) ), 'relative lines' );
+	assert.ok( ! drawsChevron( svg( '<line x1="3" y1="8" x2="12" y2="8"/><polyline points="8.5,4.5 12,8 8.5,11.5"/>' ) ), 'an arrow is two shapes' );
+	assert.ok( ! drawsChevron( svg( '<polyline points="2,8 8,8 14,8"/>' ) ), 'three points on a line' );
+	assert.ok( ! drawsChevron( svg( '<path d="M4 6 C6 10 10 10 12 6"/>' ) ), 'a curve is not read' );
+	assert.ok( ! drawsChevron( '' ) );
+	assert.ok( isCaret( el( 'a', 'span', [], { words: '▾' } ) ) && ! isCaret( el( 'b', 'span', [], { words: '»' } ) ), 'a typed down pointer, not a trailing quote' );
+	assert.ok( ! isCaret( el( 'c', 'span', [], { attrs: { style: 'transform: rotate(45deg);' } } ) ), 'a rotation with no transition is no turning caret' );
+	const row = menuRows( CARETS.turning );
+	assert.ok( isSummaryRow( row.control( 0 ), kids ) );
+	assert.ok( ! isSummaryRow( menuRows( CARETS.arrow, 'a' ).control( 0 ), kids ) && ! isSummaryRow( el( 'd', 'div', [ el( 'e', 'span', [], { words: 'Label' } ), CARETS.turning( 9 ) ] ), kids ), 'a trailing arrow, or a box that is no control' );
+} );
+
+test( 'MUST FAIL (a loop of rows where only some hold a caret): every copy is a toggle, so the summary slots are read at the copy of their position; the first row may be a plain row', () => {
+	const m = menuRows( CARETS.turning );
+	m.control( 0 ).kids = [ m.control( 0 ).kids[ 0 ] ];
+	const made = pairRow( m );
+	assert.deepEqual( made.slots, { [ SUMMARY( 1 ) ]: { tpl: 'Root/4#0' }, [ SUMMARY( 2 ) ]: { tpl: 'Root/4#1' } }, JSON.stringify( made ) );
+	const plain = menuRows( CARETS.none );
+	assert.ok( ! Object.keys( pairRow( plain ).slots ).includes( SUMMARY( 1 ) ), 'no row holds a caret: the loop stays a link row' );
+} );
+
+test( 'drawsSummaryPart: a calibration with a control part that is a summary element', () => {
+	assert.ok( drawsSummaryPart( MENU ) );
+	assert.ok( ! drawsSummaryPart( BUTTONS ) && ! drawsSummaryPart( {} ) );
 } );

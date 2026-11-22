@@ -39,7 +39,7 @@ import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
 import { DISSOLVED_LOOKS } from './skeleton-rules.mjs';
 import { conservationRows, nodesByRef, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
 import { absorbedSlots } from './skeleton-conserve-slots.mjs';
-import { pairAbsorbed, pairingNotes, unpairedRecords } from './skeleton-part-pairing.mjs';
+import { pairAbsorbed, pairingNotes, unpairedRecords, isSummaryRow, drawsSummaryPart } from './skeleton-part-pairing.mjs';
 import { hostParts } from './skeleton-part-reads.mjs';
 import { copylessKey } from './fact-key.mjs';
 import { slotMapFile } from './cache.mjs';
@@ -591,11 +591,20 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		for ( const e of db && node && host ? [ ...keys ].map( ( k ) => m.byKey[ k ] ).filter( ( x ) => x && ! refNodes.has( x.key ) ) : [] ) {
 			copies.get( copylessKey( e.key ) )?.push( e ) ?? copies.set( copylessKey( e.key ), [ e ] );
 		}
+		const kidsOf = ( x ) => m.kids( x ).filter( ( k ) => 'svg' === k.tag || ! m.isPart( k ) );
+		const cal = calParts( node.name );
 		const extras = [ ...copies.values() ].filter( ( list ) => ! list.some( ( e ) => held.has( JSON.stringify( finder( e ) ) ) ) ).map( ( list ) => ( { element: list[ 0 ], looks: null } ) );
-		if ( ! extras.length ) {
+		// A row that is a toggle (words and a caret) is also the block's disclosure summary row: it is read at that part's slots
+		// after the ordinary pairing has given it the item's link, since the summary row's own settings (the gap between its label
+		// and its caret) are calibrated there only.
+		const toggles = drawsSummaryPart( cal ) ? [ ...copies.values() ].filter( ( list ) => list.some( ( e ) => isSummaryRow( e, kidsOf ) ) ).map( ( list ) => ( { element: list[ 0 ], looks: null } ) ) : [];
+		if ( ! extras.length && ! toggles.length ) {
 			continue;
 		}
-		const pairing = pairAbsorbed( { host, absorbed: extras, kids: ( x ) => m.kids( x ).filter( ( k ) => 'svg' === k.tag || ! m.isPart( k ) ), isNode: ( x ) => refNodes.has( x.key ), calibration: calParts( node.name ), finder, taken: node.draftSlots || {} } );
+		const pair = ( list, taken, summaryRows = false ) => list.length ? pairAbsorbed( { host, absorbed: list, kids: kidsOf, isNode: ( x ) => refNodes.has( x.key ), calibration: cal, finder, taken, summaryRows } ) : { slots: {}, ambiguous: [] };
+		const first = pair( extras, node.draftSlots || {} );
+		const second = pair( toggles, { ...node.draftSlots, ...first.slots }, true );
+		const pairing = { slots: { ...first.slots, ...second.slots }, ambiguous: first.ambiguous };
 		if ( Object.keys( pairing.slots ).length ) {
 			node.draftSlots = { ...node.draftSlots, ...pairing.slots };
 			rowOf[ hostKey ] && ( rowOf[ hostKey ].slots = { ...rowOf[ hostKey ].slots, ...pairing.slots } );
