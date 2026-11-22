@@ -107,10 +107,10 @@ if ( $has_panel ) {
 	// wrapper ($sel) would stop matching the moment the drawer is on screen.
 	$panel_sel         = '.' . $uid . '.sgs-cart__panel';
 	$panel_bg_gradient = (string) ( $attributes['panelBgGradient'] ?? '' );
-	$panel_bg_paint    = sgs_background_paint_decl( $panel_bg_slug, $panel_bg_gradient );
-	if ( '' !== $panel_bg_paint ) {
-		$scoped_css[] = $panel_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $panel_bg_paint . ';}';
-	}
+	// An unset fill, or a palette colour the site does not define, paints the page's surface (never currentColor, the
+	// shared colour helper's fallback, which painted the panel in its own text colour): sgs_cart_panel_bg_paint().
+	$panel_bg_paint    = sgs_cart_panel_bg_paint( $panel_bg_slug, $panel_bg_gradient );
+	$scoped_css[]      = $panel_sel . '::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;' . $panel_bg_paint . ';}';
 	$panel_text_gradient  = (string) ( $attributes['panelTextColourGradient'] ?? '' );
 	$panel_text_effective = sgs_resolve_text_colour_or_gradient( $panel_text_slug, $panel_text_gradient );
 	if ( '' !== $panel_text_effective ) {

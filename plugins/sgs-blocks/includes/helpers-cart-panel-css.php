@@ -14,6 +14,53 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/helpers-cart-panel-items-css.php';
 
 /**
+ * The page's own surface colour, for a panel whose fill is unset or names a palette colour the site does not define: the
+ * site's page background (global styles `color.background`), with the `surface` palette colour and then the browser's own
+ * page colour (`Canvas`) behind it.
+ *
+ * @return string A CSS colour value.
+ */
+function sgs_cart_panel_surface(): string {
+	$fallback = 'var(--wp--preset--color--surface, Canvas)';
+	$page     = function_exists( 'wp_get_global_styles' ) ? wp_get_global_styles( array( 'color', 'background' ) ) : null;
+	$page     = is_string( $page ) ? trim( $page ) : '';
+	if ( preg_match( '/^var:preset\|color\|([a-z0-9-]+)$/', $page, $m ) || preg_match( '/^var\(--wp--preset--color--([a-z0-9-]+)\)$/', $page, $m ) ) {
+		return 'var(--wp--preset--color--' . $m[1] . ', Canvas)';
+	}
+	if ( '' !== $page && sgs_is_css_colour( $page ) ) {
+		$value = sgs_colour_value( $page );
+		return '' === $value ? $fallback : $value;
+	}
+	return $fallback;
+}
+
+/**
+ * The panel's fill declaration: a gradient as set; a raw colour as set; a palette colour with the page surface as its
+ * fallback (the shared colour helper's own fallback is `currentColor`, which paints the panel in its text colour on a site
+ * without that palette colour); and the page surface when the fill is unset.
+ *
+ * @param string $colour   The `panelBg` value.
+ * @param string $gradient The `panelBgGradient` value.
+ * @return string A `background-color` or `background-image` declaration.
+ */
+function sgs_cart_panel_bg_paint( string $colour, string $gradient ): string {
+	$gradient_paint = sgs_background_paint_decl( '', $gradient );
+	if ( '' !== $gradient_paint ) {
+		return $gradient_paint;
+	}
+	$surface  = sgs_cart_panel_surface();
+	$resolved = sgs_colour_value( $colour );
+	if ( '' === $resolved ) {
+		return 'background-color:' . $surface;
+	}
+	$orphan_tail = ', currentColor)';
+	if ( 0 === strpos( $resolved, 'var(--wp--preset--color--' ) && str_ends_with( $resolved, $orphan_tail ) ) {
+		return 'background-color:' . substr( $resolved, 0, -strlen( $orphan_tail ) ) . ', ' . $surface . ')';
+	}
+	return 'background-color:' . $resolved;
+}
+
+/**
  * Scoped CSS for the mini-cart panel's own settings (typography, colours,
  * per-device lengths, padding boxes, shadow, motion), for flyout and drawer.
  *

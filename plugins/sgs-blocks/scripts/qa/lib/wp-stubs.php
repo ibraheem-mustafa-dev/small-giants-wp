@@ -795,6 +795,19 @@ if ( ! function_exists( 'get_queried_object_id' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_template_directory' ) ) {
+	function get_template_directory(): string {
+		// No theme in the harness: a folder with no theme.json (the drawer's heading look hashes the theme's theme.json time).
+		return '';
+	}
+}
+
+if ( ! function_exists( 'get_stylesheet_directory' ) ) {
+	function get_stylesheet_directory(): string {
+		return '';
+	}
+}
+
 if ( ! function_exists( 'wp_get_global_settings' ) ) {
 	function wp_get_global_settings( array $path = array(), array $options = array() ) {
 		// Empty settings tree — every SGS caller (sgs_resolve_palette_hex())
