@@ -59,7 +59,9 @@
           "gap": {
             "desktop": "16px"
           },
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "alignItems": {
             "desktop": "flex-end"
           },

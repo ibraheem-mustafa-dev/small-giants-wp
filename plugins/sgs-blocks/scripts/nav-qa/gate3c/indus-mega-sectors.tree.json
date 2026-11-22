@@ -76,7 +76,9 @@
               "tagName": "div",
               "layout": "flex",
               "flexDirection": "column",
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "minHeight": {
                 "desktop": "282px"
               },
@@ -129,7 +131,9 @@
                       "alignItems": {
                         "desktop": "center"
                       },
-                      "justifyContent": "center",
+                      "justifyContent": {
+                        "desktop": "center"
+                      },
                       "gap": {
                         "desktop": "6px"
                       },
@@ -266,7 +270,9 @@
               "tagName": "div",
               "layout": "flex",
               "flexDirection": "column",
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "minHeight": {
                 "desktop": "282px"
               },
@@ -319,7 +325,9 @@
                       "alignItems": {
                         "desktop": "center"
                       },
-                      "justifyContent": "center",
+                      "justifyContent": {
+                        "desktop": "center"
+                      },
                       "gap": {
                         "desktop": "6px"
                       },
@@ -456,7 +464,9 @@
               "tagName": "div",
               "layout": "flex",
               "flexDirection": "column",
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "minHeight": {
                 "desktop": "282px"
               },
@@ -509,7 +519,9 @@
                       "alignItems": {
                         "desktop": "center"
                       },
-                      "justifyContent": "center",
+                      "justifyContent": {
+                        "desktop": "center"
+                      },
                       "gap": {
                         "desktop": "6px"
                       },
@@ -646,7 +658,9 @@
               "tagName": "div",
               "layout": "flex",
               "flexDirection": "column",
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "minHeight": {
                 "desktop": "282px"
               },
@@ -699,7 +713,9 @@
                       "alignItems": {
                         "desktop": "center"
                       },
-                      "justifyContent": "center",
+                      "justifyContent": {
+                        "desktop": "center"
+                      },
                       "gap": {
                         "desktop": "6px"
                       },

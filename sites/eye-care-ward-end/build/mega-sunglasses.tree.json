@@ -883,7 +883,9 @@
               "tagName": "div",
               "layout": "flex",
               "flexDirection": "column",
-              "justifyContent": "flex-end",
+              "justifyContent": {
+                "desktop": "flex-end"
+              },
               "boxAspectRatio": "16 / 10",
               "backgroundColour": "surface-stage",
               "backgroundOverlayOpacity": {

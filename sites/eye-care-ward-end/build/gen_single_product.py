@@ -125,7 +125,7 @@ MEASURES = [("Lens width", "meta._sgs_frame_eye", "Across one lens at its widest
             ("Bridge", "meta._sgs_frame_bridge", "The gap between the lenses, where the frame sits on your nose."),
             ("Temple length", "meta._sgs_frame_temple", "The arm, from the hinge to the tip, ear bend included.")]
 sizing = [
-    B("sgs/container", dict(layout="flex", justifyContent="space-between", alignItems={'desktop': 'baseline'}, flexWrap="wrap",
+    B("sgs/container", dict(layout="flex", justifyContent={'desktop': 'space-between'}, alignItems={'desktop': 'baseline'}, flexWrap="wrap",
                             gap={"desktop": "14px"}, margin={"desktop": {"bottom": "16px"}}), [
         txt("This pair, measured", **LABEL),
         txt('<a href="#size-guide">Which size am I?</a>', fontSize={"desktop": 13}, fontSizeUnit="px"),

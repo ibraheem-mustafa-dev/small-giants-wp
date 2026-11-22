@@ -5,7 +5,7 @@
       "align": "full",
       "tagName": "div",
       "layout": "flex",
-      "justifyContent": "center",
+      "justifyContent": {"desktop":"center"},
       "backgroundColour": "primary",
       "textColour": "primary-text",
       "badgeStyle": "icon-bare",
@@ -357,7 +357,7 @@
             "attributes": {
               "layout": "flex",
               "flexDirection": "row",
-              "justifyContent": "flex-end",
+              "justifyContent": {"desktop":"flex-end"},
               "alignItems": {"desktop":"center"},
               "gap": {
                 "desktop": "6px"

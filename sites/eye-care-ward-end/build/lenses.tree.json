@@ -646,8 +646,12 @@
                   "titleFontWeight": "400",
                   "titleTextWrap": "wrap",
                   "className": "cr-ref-lenses-27",
-                  "stepGap": "15px",
-                  "numberGap": "16px",
+                  "stepGap": {
+                    "desktop": "15px"
+                  },
+                  "numberGap": {
+                    "desktop": "16px"
+                  },
                   "titleLineHeight": {
                     "mobile": 1.5,
                     "tablet": 1.5,

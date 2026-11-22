@@ -318,7 +318,9 @@
         "name": "sgs/container",
         "attributes": {
           "layout": "flex",
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "alignItems": {
             "desktop": "center"
           },
@@ -585,7 +587,9 @@
         "name": "sgs/container",
         "attributes": {
           "layout": "flex",
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "alignItems": {
             "desktop": "center"
           },

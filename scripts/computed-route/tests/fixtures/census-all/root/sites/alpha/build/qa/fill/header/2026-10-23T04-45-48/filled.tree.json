@@ -37,7 +37,7 @@
               "left": "40px"
             }
           },
-          "justifyContent": "space-between",
+          "justifyContent": {"desktop":"space-between"},
           "contentWidth": {
             "desktop": "1320px"
           },
@@ -559,7 +559,7 @@
           "gap": {
             "desktop": "20px"
           },
-          "justifyContent": "space-between",
+          "justifyContent": {"desktop":"space-between"},
           "padding": {
             "mobile": {
               "right": "20px",

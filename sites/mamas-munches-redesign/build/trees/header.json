@@ -113,7 +113,9 @@
                                     "alignItems": {
                                         "desktop": "center"
                                     },
-                                    "justifyContent": "center",
+                                    "justifyContent": {
+                                        "desktop": "center"
+                                    },
                                     "gap": {
                                         "desktop": "10px"
                                     },
@@ -451,7 +453,9 @@
                             "alignItems": {
                                 "desktop": "center"
                             },
-                            "justifyContent": "flex-end",
+                            "justifyContent": {
+                                "desktop": "flex-end"
+                            },
                             "gap": {
                                 "desktop": "6px",
                                 "tablet": "0px",

@@ -48,7 +48,7 @@ final class GalleryGridWrapperTest extends TestCase {
 				),
 				'gridAutoRows'        => '200px',
 				'alignItems'          => array( 'desktop' => 'center' ),
-				'justifyItems'        => 'start',
+				'justifyItems'        => array( 'desktop' => 'start' ),
 			)
 		);
 		$grid = '/\.sgs-gallery-[0-9a-f]+\.wp-block-sgs-gallery \.sgs-gallery__grid\{';

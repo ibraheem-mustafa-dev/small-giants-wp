@@ -64,7 +64,9 @@
         "name": "sgs/site-header-row",
         "attributes": {
           "rowSlot": "middle",
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "alignItems": {
             "desktop": "center"
           },

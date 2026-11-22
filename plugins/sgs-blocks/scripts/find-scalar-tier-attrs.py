@@ -15,6 +15,7 @@ are reported as MANUAL and fail the check.
 Usage:
   find-scalar-tier-attrs.py --check      exit 1 on any hit
   find-scalar-tier-attrs.py --write      rewrite every hit to the object shape
+  (add --no-box to --check, --write or --survey to leave the box-string rule out: only the scalar-to-tier families are read and written)
   (a line carrying the comment `scalar-tier-allow` is skipped: a test feeding the old shape on purpose)
   find-scalar-tier-attrs.py --survey     census including attributes still scalar in block.json (the migration targets)
   find-scalar-tier-attrs.py --rules      print the derived rules as JSON (input of migrate-scalar-tier-live.php);
@@ -255,7 +256,8 @@ def run(mode):
     if mode == '--survey':
         for b, a, _f, _t, d in pending:
             rules.setdefault(b, {})[a] = d
-    box_rules = R.box_attrs_from_db() or {}
+    # --no-box leaves the box-string rule (another migration's) untouched: only the scalar-to-tier families are read and written.
+    box_rules = {} if '--no-box' in sys.argv else (R.box_attrs_from_db() or {})
     all_hits, box_hits, box_refused = [], [], []
     for rel in tracked_files():
         h, bh, br = scan_file(rel, rules, conv, mode == '--write', box_rules=box_rules)
@@ -397,7 +399,8 @@ def main():
         print(f'REFUSED (not certain, left as stored): {rel}: {name}.{attr} [{tier}] = {raw!r}')
     print(f'{len(box_hits)} box-string value(s), {len(box_refused)} refused')
     if mode == '--write':
-        write_refused(box_refused)
+        if '--no-box' not in argv:
+            write_refused(box_refused)
         return 1 if manual else 0
     return 1 if hits or (enforced and box_hits) else 0
 

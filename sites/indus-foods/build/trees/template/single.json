@@ -105,7 +105,9 @@
         "attributes": {
           "tagName": "div",
           "layout": "flex",
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "flexWrap": "wrap",
           "fontSize": {
             "desktop": "small"

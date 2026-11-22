@@ -170,7 +170,9 @@
           },
           "flexDirection": "row",
           "textColourHover": "primary",
-          "justifyContent": "flex-start",
+          "justifyContent": {
+            "desktop": "flex-start"
+          },
           "splitSource": {
             "desktop": {
               "kind": "image",
@@ -733,7 +735,9 @@
                 "tablet": "572.53px",
                 "desktop": "450.84px"
               },
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "minHeight": {
                 "desktop": "0px"
               },
@@ -950,7 +954,9 @@
                 "tablet": "536.78px",
                 "desktop": "415.09px"
               },
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "minHeight": {
                 "desktop": "0px"
               },
@@ -1157,7 +1163,9 @@
               "gap": {
                 "desktop": "12px"
               },
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "alignItems": {
                 "desktop": "center"
               },
@@ -1246,7 +1254,9 @@
               "gap": {
                 "desktop": "12px"
               },
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "alignItems": {
                 "desktop": "center"
               },
@@ -1991,7 +2001,9 @@
                       "gap": {
                         "desktop": "16px"
                       },
-                      "justifyContent": "space-between",
+                      "justifyContent": {
+                        "desktop": "space-between"
+                      },
                       "alignItems": {
                         "desktop": "center"
                       },
@@ -2074,7 +2086,9 @@
                       "gap": {
                         "desktop": "16px"
                       },
-                      "justifyContent": "space-between",
+                      "justifyContent": {
+                        "desktop": "space-between"
+                      },
                       "alignItems": {
                         "desktop": "center"
                       },
@@ -2157,7 +2171,9 @@
                       "gap": {
                         "desktop": "16px"
                       },
-                      "justifyContent": "space-between",
+                      "justifyContent": {
+                        "desktop": "space-between"
+                      },
                       "alignItems": {
                         "desktop": "center"
                       },
@@ -2240,7 +2256,9 @@
                       "gap": {
                         "desktop": "16px"
                       },
-                      "justifyContent": "space-between",
+                      "justifyContent": {
+                        "desktop": "space-between"
+                      },
                       "alignItems": {
                         "desktop": "center"
                       },
@@ -2327,7 +2345,9 @@
               "gap": {
                 "desktop": "16px"
               },
-              "justifyContent": "space-between",
+              "justifyContent": {
+                "desktop": "space-between"
+              },
               "alignItems": {
                 "desktop": "flex-end"
               },
@@ -2615,7 +2635,9 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-111",
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-start"
                                   },
@@ -2710,7 +2732,9 @@
                                   "gap": {
                                     "desktop": "12px"
                                   },
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-end"
                                   },
@@ -3258,7 +3282,9 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-134",
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-start"
                                   },
@@ -3353,7 +3379,9 @@
                                   "gap": {
                                     "desktop": "12px"
                                   },
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-end"
                                   },
@@ -3746,7 +3774,9 @@
                                     "desktop": "center"
                                   },
                                   "textColour": "custom-text-faint",
-                                  "justifyContent": "center",
+                                  "justifyContent": {
+                                    "desktop": "center"
+                                  },
                                   "alignItems": {
                                     "desktop": "center"
                                   },
@@ -3909,7 +3939,9 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-160",
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-start"
                                   },
@@ -4004,7 +4036,9 @@
                                   "gap": {
                                     "desktop": "12px"
                                   },
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-end"
                                   },
@@ -4342,7 +4376,9 @@
                                     "desktop": "center"
                                   },
                                   "textColour": "custom-text-faint",
-                                  "justifyContent": "center",
+                                  "justifyContent": {
+                                    "desktop": "center"
+                                  },
                                   "alignItems": {
                                     "desktop": "center"
                                   },
@@ -4505,7 +4541,9 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-183",
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-start"
                                   },
@@ -4583,7 +4621,9 @@
                                   "gap": {
                                     "desktop": "12px"
                                   },
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-end"
                                   },
@@ -4871,7 +4911,9 @@
                                     "desktop": "center"
                                   },
                                   "textColour": "custom-text-faint",
-                                  "justifyContent": "center",
+                                  "justifyContent": {
+                                    "desktop": "center"
+                                  },
                                   "alignItems": {
                                     "desktop": "center"
                                   },
@@ -5037,7 +5079,9 @@
                                   "gap": {
                                     "desktop": "10px"
                                   },
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-start"
                                   },
@@ -5165,7 +5209,9 @@
                                   "gap": {
                                     "desktop": "12px"
                                   },
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-end"
                                   },
@@ -5492,7 +5538,9 @@
                                     "desktop": "center"
                                   },
                                   "textColour": "custom-text-faint",
-                                  "justifyContent": "center",
+                                  "justifyContent": {
+                                    "desktop": "center"
+                                  },
                                   "alignItems": {
                                     "desktop": "center"
                                   },
@@ -5655,7 +5703,9 @@
                                   "tagName": "div",
                                   "layout": "flex",
                                   "className": "cr-ref-product-228",
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-start"
                                   },
@@ -5750,7 +5800,9 @@
                                   "gap": {
                                     "desktop": "12px"
                                   },
-                                  "justifyContent": "space-between",
+                                  "justifyContent": {
+                                    "desktop": "space-between"
+                                  },
                                   "alignItems": {
                                     "desktop": "flex-end"
                                   },

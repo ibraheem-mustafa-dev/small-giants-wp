@@ -7,7 +7,7 @@
 				"name": "sgs/site-header-row",
 				"attributes": {
 					"rowSlot": "bar",
-					"justifyContent": "space-between",
+					"justifyContent": {"desktop":"space-between"},
 					"alignItems": {"desktop":"center"}
 				},
 				"innerBlocks": [
@@ -242,7 +242,7 @@
 		"name": "sgs/container",
 		"attributes": {
 			"tagName": "footer",
-			"justifyContent": "space-between",
+			"justifyContent": {"desktop":"space-between"},
 			"alignItems": {"desktop":"center"}
 		},
 		"innerBlocks": [

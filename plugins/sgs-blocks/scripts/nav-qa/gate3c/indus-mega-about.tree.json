@@ -732,7 +732,7 @@
                   "left": "0px"
                 }
               },
-              "justifyContent": "flex-start",
+              "justifyContent": {"desktop":"flex-start"},
               "alignItems": {"desktop":"flex-start"},
               "margin": {
                 "desktop": {
@@ -832,7 +832,7 @@
                   "left": "0px"
                 }
               },
-              "justifyContent": "flex-start",
+              "justifyContent": {"desktop":"flex-start"},
               "alignItems": {"desktop":"flex-start"},
               "margin": {
                 "desktop": {

@@ -187,7 +187,7 @@ def middle_row(children: list[str]) -> str:
         "sgs/site-header-row",
         {
             "rowSlot": "middle",
-            "justifyContent": "space-between",
+            "justifyContent": {'desktop': 'space-between'},
             "padding": {"desktop": {"top": "var(--wp--preset--spacing--30)",
                                     "bottom": "var(--wp--preset--spacing--30)"}},
         },

@@ -174,7 +174,7 @@ test( 'MUST FAIL: whatever a builder places that the skeleton lint refuses is a 
 		if ( 'sorting' !== piece.id ) {
 			return {};
 		}
-		ctx.tree[ 0 ].innerBlocks.push( { name: 'sgs/container', attributes: { justifyContent: 'center' }, innerBlocks: [] } );
+		ctx.tree[ 0 ].innerBlocks.push( { name: 'sgs/container', attributes: { justifyContent: {"desktop":"center"} }, innerBlocks: [] } );
 		return { tree: ctx.tree, placed: [ { id: 'sorting', block: 'sgs/container', at: 'end' } ] };
 	} };
 	const got = piecesPass( { ...input, builders: { 'shop-sort': planted } } );

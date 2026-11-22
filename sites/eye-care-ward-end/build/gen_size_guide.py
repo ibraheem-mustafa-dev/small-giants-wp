@@ -53,7 +53,7 @@ def band(name, value):
     return row([
         txt(name, fontSize={"desktop": 15}, fontSizeUnit="px"),
         txt(value, fontSize={"desktop": 15}, fontSizeUnit="px", textColour="text-muted"),
-    ], pad="16px 20px", layout="flex", justifyContent="space-between", gap={"desktop": "12px"})
+    ], pad="16px 20px", layout="flex", justifyContent={'desktop': 'space-between'}, gap={"desktop": "12px"})
 
 
 tree = [

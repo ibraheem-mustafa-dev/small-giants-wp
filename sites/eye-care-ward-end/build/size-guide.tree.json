@@ -429,7 +429,9 @@
             }
           },
           "layout": "flex",
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "gap": {
             "desktop": "12px"
           },
@@ -474,7 +476,9 @@
             }
           },
           "layout": "flex",
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "gap": {
             "desktop": "12px"
           },
@@ -519,7 +523,9 @@
             }
           },
           "layout": "flex",
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "gap": {
             "desktop": "12px"
           },

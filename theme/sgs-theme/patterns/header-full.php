@@ -14,13 +14,13 @@
 
 <!-- wp:sgs/site-header {"align":"full","backgroundColour":"surface","headerSticky":{"desktop":"on"}} -->
 
-<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"space-between","backgroundColour":"primary","padding":{"desktop":{"top":"8px","bottom":"8px"}},"rowHideOnScroll":{"desktop":"on"}} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":{"desktop":"space-between"},"backgroundColour":"primary","padding":{"desktop":{"top":"8px","bottom":"8px"}},"rowHideOnScroll":{"desktop":"on"}} -->
 <!-- wp:sgs/business-info {"displayType":"phone","textColour":"surface","fontSize":{"desktop":"regular"}} /-->
 <!-- wp:sgs/business-info {"displayType":"email","textColour":"surface","fontSize":{"desktop":"regular"}} /-->
 <!-- wp:sgs/business-info {"displayType":"socials","iconColour":"surface"} /-->
 <!-- /wp:sgs/site-header-row -->
 
-<!-- wp:sgs/site-header-row {"borderWidth":{"bottom":"1px"},"borderStyle":"solid","borderColour":"surface-alt","rowSlot":"middle","justifyContent":"space-between","padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}}} -->
+<!-- wp:sgs/site-header-row {"borderWidth":{"bottom":"1px"},"borderStyle":"solid","borderColour":"surface-alt","rowSlot":"middle","justifyContent":{"desktop":"space-between"},"padding":{"desktop":{"top":"var(--wp--preset--spacing--30)","bottom":"var(--wp--preset--spacing--30)"}}} -->
 <!-- wp:sgs/responsive-logo {"width":300,"linkToHome":true} /-->
 <!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":{"desktop":"28px"}} /-->
 <!-- /wp:sgs/site-header-row -->

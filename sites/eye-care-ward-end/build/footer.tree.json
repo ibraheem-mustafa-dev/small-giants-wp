@@ -749,7 +749,9 @@
           },
           "borderStyle": "solid",
           "borderColour": "border",
-          "justifyContent": "space-between",
+          "justifyContent": {
+            "desktop": "space-between"
+          },
           "padding": {
             "desktop": {
               "top": "16px",

@@ -90,7 +90,9 @@
                                     "alignItems": {
                                         "desktop": "flex-end"
                                     },
-                                    "justifyContent": "space-between",
+                                    "justifyContent": {
+                                        "desktop": "space-between"
+                                    },
                                     "gap": {
                                         "desktop": "12px 24px"
                                     },

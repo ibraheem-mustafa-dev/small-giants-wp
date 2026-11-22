@@ -16,11 +16,11 @@
 ?>
 
 <!-- wp:sgs/site-header {"align":"full","backgroundColour":"surface","headerSticky":{"desktop":"on"},"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}} -->
-<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":"center","backgroundColour":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":{"top":"20px","bottom":"20px"}},"rowShrink":{"desktop":"on"}} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"top","justifyContent":{"desktop":"center"},"backgroundColour":"surface-alt","maxWidth":{"desktop":"640px"},"padding":{"desktop":{"top":"20px","bottom":"20px"}},"rowShrink":{"desktop":"on"}} -->
 <!-- wp:sgs/product-search {"displayMode":"inline","placeholder":"Search products…"} /-->
 <!-- /wp:sgs/site-header-row -->
 
-<!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":"space-between"} -->
+<!-- wp:sgs/site-header-row {"rowSlot":"middle","justifyContent":{"desktop":"space-between"}} -->
 <!-- wp:sgs/responsive-logo {"width":180,"linkToHome":true} /-->
 
 <!-- wp:sgs/nav-bar-menu {"ref":0,"itemColour":"text","gap":{"desktop":"28px"}} /-->

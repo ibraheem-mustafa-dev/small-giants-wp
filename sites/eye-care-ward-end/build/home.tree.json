@@ -451,7 +451,7 @@
           "gap": {
             "desktop": "20px"
           },
-          "justifyContent": "space-between",
+          "justifyContent": {"desktop":"space-between"},
           "layout": "flex",
           "margin": {
             "desktop": {
@@ -2310,7 +2310,7 @@
           "gap": {
             "desktop": "20px"
           },
-          "justifyContent": "space-between",
+          "justifyContent": {"desktop":"space-between"},
           "layout": "flex",
           "margin": {
             "desktop": {
@@ -3368,7 +3368,7 @@
             }
           },
           "flexDirection": "column",
-          "justifyContent": "center",
+          "justifyContent": {"desktop":"center"},
           "layout": "flex",
           "textWrap": "wrap",
           "className": "cr-ref-home-61",
@@ -3511,8 +3511,8 @@
                 "desktop": 1.5
               },
               "numberLineHeightUnit": "em",
-              "numberGap": "16px",
-              "stepGap": "17.5px",
+              "numberGap": {"desktop":"16px"},
+              "stepGap": {"desktop":"17.5px"},
               "padding": {
                 "desktop": {
                   "top": "0",
@@ -3622,7 +3622,7 @@
           "alignItems": {
             "desktop": "center"
           },
-          "justifyContent": "center",
+          "justifyContent": {"desktop":"center"},
           "gap": {
             "desktop": "10px"
           },

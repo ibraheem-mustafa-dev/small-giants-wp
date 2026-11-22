@@ -130,7 +130,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -165,7 +167,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -200,7 +204,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -235,7 +241,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -270,7 +278,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -305,7 +315,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -340,7 +352,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -375,7 +389,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -410,7 +426,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -445,7 +463,9 @@
                   "alignItems": {
                     "desktop": "center"
                   },
-                  "justifyContent": "center",
+                  "justifyContent": {
+                    "desktop": "center"
+                  },
                   "gap": {
                     "desktop": "8px"
                   },
@@ -521,7 +541,9 @@
                   "left": "0px"
                 }
               },
-              "justifyContent": "flex-start",
+              "justifyContent": {
+                "desktop": "flex-start"
+              },
               "alignItems": {
                 "desktop": "flex-start"
               }
@@ -593,7 +615,9 @@
                   "left": "0px"
                 }
               },
-              "justifyContent": "flex-start",
+              "justifyContent": {
+                "desktop": "flex-start"
+              },
               "alignItems": {
                 "desktop": "flex-start"
               },

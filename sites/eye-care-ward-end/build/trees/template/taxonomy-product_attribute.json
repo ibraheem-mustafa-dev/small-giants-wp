@@ -109,7 +109,9 @@
                   "tagName": "div",
                   "className": "sgs-shop-toolbar",
                   "layout": "flex",
-                  "justifyContent": "space-between",
+                  "justifyContent": {
+                    "desktop": "space-between"
+                  },
                   "alignItems": {
                     "desktop": "center"
                   },

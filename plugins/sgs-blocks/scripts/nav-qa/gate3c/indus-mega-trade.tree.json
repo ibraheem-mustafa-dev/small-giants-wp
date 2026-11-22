@@ -509,7 +509,9 @@
                   "left": "0px"
                 }
               },
-              "justifyContent": "flex-start",
+              "justifyContent": {
+                "desktop": "flex-start"
+              },
               "alignItems": {
                 "desktop": "flex-start"
               }
@@ -606,7 +608,9 @@
                   "left": "0px"
                 }
               },
-              "justifyContent": "flex-start",
+              "justifyContent": {
+                "desktop": "flex-start"
+              },
               "alignItems": {
                 "desktop": "flex-start"
               },
