@@ -1,7 +1,7 @@
 [
  {
   "file": "lib/fill-read-collect.mjs",
-  "find": "const light = painted ? [ { ...read( el ), tag: 'img', src: painted, alt: '' } ] : nodes.map( read );",
+  "find": "const light = painted ? ( ( one ) => [ { ...one, tag: 'img', src: painted, alt: '', element: { ...one.element, ownBackground: true } } ] )( read( el ) ) : nodes.map( read );",
   "replace": "const light = nodes.map( read );",
   "why": "a background picture is no media: the card's photo stays blank"
  },
@@ -31,8 +31,8 @@
  },
  {
   "file": "lib/fill-read-collect.mjs",
-  "find": "tag: 'img', src: painted, alt: '' }",
-  "replace": "tag: 'img', src: painted, alt: null }",
+  "find": "tag: 'img', src: painted, alt: '', element",
+  "replace": "tag: 'img', src: painted, alt: null, element",
   "why": "the background picture is not decorative"
  }
 ]
