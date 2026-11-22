@@ -8,7 +8,7 @@ The offline check cannot see a part the block's front-end JavaScript builds, or 
 |---|---|
 | `prove_script_parts.py` | The driver: reads the record entries, builds a plain page and a changed page per setting value (from `../instances.py`, so the test value is the one the check used), runs the browser, judges, writes `verdicts.json` and `summary.json` |
 | `measure.cjs` | Playwright: opens each page, puts the part on screen, reads `getComputedStyle` at 1440, 768 and 375, in parallel tabs |
-| `wp_fixtures.php` | Run once on the scratch site: a branded simple product (20) and a variable product (one variation, 10), both purchasable |
+| `wp_fixtures.php` | Run once on the scratch site: a branded simple product (20) and a variable product (one variation, 10), both purchasable; the simple one links a published choice flow, so its basket line offers "Add options" |
 | `wp_pages.php` | Creates or updates the pages from a `{slug: block markup}` file |
 | `wp_nav_fixtures.php` | Run once on the scratch site: the menu's stand-in posts from `../fixtures/menu-post.json` (the menu, its mega panel, a page) at the ids the fixture's placeholders name; it refuses an id another post type holds |
 

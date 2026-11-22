@@ -1,0 +1,87 @@
+{
+ "block": "sgs/nav-bar-menu",
+ "scriptHash": "eaf67df2cda45b11",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8a9276450, Chromium via Playwright, 1440/768/375 (browser/README.md)",
+ "entries": [
+  {
+   "setting": "submenuCaret",
+   "part": "sgs-nav-bar-menu__mega::after",
+   "props": [
+    "height"
+   ],
+   "state": "open",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "height": "2px"
+     },
+     "changed": {
+      "height": "2px"
+     }
+    },
+    "768": {
+     "plain": {
+      "height": "2px"
+     },
+     "changed": {
+      "height": "2px"
+     }
+    },
+    "375": {
+     "plain": {
+      "height": "auto"
+     },
+     "changed": {
+      "height": "auto"
+     }
+    }
+   },
+   "shown_at_every_width": false,
+   "tested": [
+    "submenuCaret-bool-v0"
+   ]
+  },
+  {
+   "setting": "submenuCaret",
+   "part": "sgs-nav-bar-menu__submenu-root::after",
+   "props": [
+    "height"
+   ],
+   "state": "open",
+   "tiers": [],
+   "verdict": "removed",
+   "values": {
+    "1440": {
+     "plain": {
+      "height": "2px"
+     },
+     "changed": {
+      "height": "2px"
+     }
+    },
+    "768": {
+     "plain": {
+      "height": "2px"
+     },
+     "changed": {
+      "height": "2px"
+     }
+    },
+    "375": {
+     "plain": {
+      "height": "auto"
+     },
+     "changed": {
+      "height": "auto"
+     }
+    }
+   },
+   "shown_at_every_width": false,
+   "tested": [
+    "submenuCaret-bool-v0"
+   ]
+  }
+ ]
+}

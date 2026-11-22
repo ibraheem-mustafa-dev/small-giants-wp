@@ -1,7 +1,7 @@
 {
  "block": "sgs/cart",
- "scriptHash": "f294f8b981685ee4",
- "measured": "2026-11-21, on a local scratch copy of local-mamas running the plugin build of f3733bb1d, Chromium via Playwright, 1440/768/375 (browser/README.md). scriptHash is taken from main at 30b0a2472, whose cart and form folders and src/shared match f3733bb1d byte for byte except 18 part `selector` labels added to cart/block.json (git diff f3733bb1d 30b0a2472).",
+ "scriptHash": "2031463cc1ea1bf5",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8a9276450, Chromium via Playwright, 1440/768/375 (browser/README.md)",
  "entries": [
   {
    "setting": "freeDeliveryBandBg",
@@ -638,6 +638,109 @@
    "tested": [
     "freeDeliveryTextFontWeight-weight-700-v0",
     "freeDeliveryTextFontWeight-weight-700-v0/complete"
+   ]
+  },
+  {
+   "setting": "freeDeliveryTextLineHeight",
+   "part": "sgs-cart__free-delivery-text",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "line-height": "19.84px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "19.84px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "freeDeliveryTextLineHeight-tiers-v0",
+    "freeDeliveryTextLineHeight-tiers-v0/complete"
+   ]
+  },
+  {
+   "setting": "freeDeliveryTextLineHeight",
+   "part": "sgs-cart__free-delivery-text",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "line-height": "19.84px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "freeDeliveryTextLineHeight-tiers-v0",
+    "freeDeliveryTextLineHeight-tiers-v0/complete"
+   ]
+  },
+  {
+   "setting": "freeDeliveryTextLineHeight",
+   "part": "sgs-cart__free-delivery-text",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "line-height": "19.84px"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "line-height": "19.84px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "19.84px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "freeDeliveryTextLineHeight-tiers-v0",
+    "freeDeliveryTextLineHeight-tiers-v0/complete"
    ]
   },
   {
@@ -2313,6 +2416,206 @@
    ]
   },
   {
+   "setting": "itemQtyNumberWidth",
+   "part": "sgs-cart__item-qty-input",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "min-width": "22px"
+     },
+     "changed": {
+      "min-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "min-width": "22px"
+     },
+     "changed": {
+      "min-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemQtyNumberWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemQtyNumberWidth",
+   "part": "sgs-cart__item-qty-input",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "min-width": "22px"
+     },
+     "changed": {
+      "min-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemQtyNumberWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemQtyNumberWidth",
+   "part": "sgs-cart__item-qty-input",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "min-width": "22px"
+     },
+     "changed": {
+      "min-width": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "min-width": "22px"
+     },
+     "changed": {
+      "min-width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "min-width": "22px"
+     },
+     "changed": {
+      "min-width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemQtyNumberWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemQtyNumberWidth",
+   "part": "sgs-cart__item-qty-input",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "width": "27.3125px"
+     },
+     "changed": {
+      "width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "width": "27.3125px"
+     },
+     "changed": {
+      "width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemQtyNumberWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemQtyNumberWidth",
+   "part": "sgs-cart__item-qty-input",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "width": "27.3125px"
+     },
+     "changed": {
+      "width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemQtyNumberWidth-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemQtyNumberWidth",
+   "part": "sgs-cart__item-qty-input",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "width": "27.3125px"
+     },
+     "changed": {
+      "width": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "width": "27.3125px"
+     },
+     "changed": {
+      "width": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "width": "27.3125px"
+     },
+     "changed": {
+      "width": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemQtyNumberWidth-tiers-v0"
+   ]
+  },
+  {
    "setting": "itemQtyRadius",
    "part": "sgs-cart__item-stepper",
    "props": [
@@ -2433,6 +2736,390 @@
    ]
   },
   {
+   "setting": "itemRemoveFontSize",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "font-size": "12.8px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "12.8px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemoveFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemoveFontSize",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "font-size": "12.8px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemoveFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemoveFontSize",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "font-size": "12.8px"
+     },
+     "changed": {
+      "font-size": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "font-size": "12.8px"
+     },
+     "changed": {
+      "font-size": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "font-size": "12.8px"
+     },
+     "changed": {
+      "font-size": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemoveFontSize-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemoveLineHeight",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "line-height": "12.8px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "12.8px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemoveLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemoveLineHeight",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "line-height": "12.8px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemoveLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemoveLineHeight",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "line-height": "12.8px"
+     },
+     "changed": {
+      "line-height": "37px"
+     }
+    },
+    "768": {
+     "plain": {
+      "line-height": "12.8px"
+     },
+     "changed": {
+      "line-height": "23px"
+     }
+    },
+    "375": {
+     "plain": {
+      "line-height": "12.8px"
+     },
+     "changed": {
+      "line-height": "7px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemoveLineHeight-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemovePadding",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "768": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "21px 23px 25px 27px"
+     }
+    },
+    "375": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "3px 5px 7px 9px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemovePadding-box-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemovePadding",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "375": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "3px 5px 7px 9px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemovePadding-box-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemovePadding",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "11px 13px 17px 19px"
+     }
+    },
+    "768": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "21px 23px 25px 27px"
+     }
+    },
+    "375": {
+     "plain": {
+      "padding": "0px"
+     },
+     "changed": {
+      "padding": "3px 5px 7px 9px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemovePadding-box-tiers-v0"
+   ]
+  },
+  {
+   "setting": "itemRemoveTextDecoration",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-width": "0px 0px 1px"
+     },
+     "changed": {
+      "border-width": "0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-width": "0px 0px 1px"
+     },
+     "changed": {
+      "border-width": "0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-width": "0px 0px 1px"
+     },
+     "changed": {
+      "border-width": "0px"
+     }
+    }
+   },
+   "tested": [
+    "itemRemoveTextDecoration-enum-none-v0",
+    "itemRemoveTextDecoration-enum-underline-v0",
+    "itemRemoveTextDecoration-enum-line-through-v0"
+   ]
+  },
+  {
+   "setting": "itemRemoveTextDecoration",
+   "part": "sgs-cart__item-remove",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "768": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    },
+    "375": {
+     "plain": {
+      "text-decoration": "none"
+     },
+     "changed": {
+      "text-decoration": "underline"
+     }
+    }
+   },
+   "tested": [
+    "itemRemoveTextDecoration-enum-none-v0",
+    "itemRemoveTextDecoration-enum-underline-v0",
+    "itemRemoveTextDecoration-enum-line-through-v0"
+   ]
+  },
+  {
    "setting": "itemThumbBg",
    "part": "sgs-cart__item-thumb",
    "props": [
@@ -2510,6 +3197,260 @@
    },
    "tested": [
     "itemThumbRadius-length-v0"
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-cart__item",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "relative"
+     }
+    }
+   },
+   "tested": [
+    "separators-leaves-v0"
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-cart__item::before",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "value",
+   "values": {
+    "1440": {
+     "plain": {
+      "border-color": "rgb(58, 42, 34)",
+      "border-style": "none",
+      "border-width": "0px"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155) rgb(58, 42, 34) rgb(58, 42, 34)",
+      "border-style": "dashed none none",
+      "border-width": "37px 0px 0px"
+     }
+    },
+    "768": {
+     "plain": {
+      "border-color": "rgb(58, 42, 34)",
+      "border-style": "none",
+      "border-width": "0px"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155) rgb(58, 42, 34) rgb(58, 42, 34)",
+      "border-style": "dashed none none",
+      "border-width": "23px 0px 0px"
+     }
+    },
+    "375": {
+     "plain": {
+      "border-color": "rgb(58, 42, 34)",
+      "border-style": "none",
+      "border-width": "0px"
+     },
+     "changed": {
+      "border-color": "rgb(19, 87, 155) rgb(58, 42, 34) rgb(58, 42, 34)",
+      "border-style": "dashed none none",
+      "border-width": "7px 0px 0px"
+     }
+    }
+   },
+   "tested": [
+    "separators-leaves-v0"
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-cart__item::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "768": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    },
+    "375": {
+     "plain": {
+      "content": "none"
+     },
+     "changed": {
+      "content": "\"\""
+     }
+    }
+   },
+   "tested": [
+    "separators-leaves-v0"
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-cart__item::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "-26.5px 0px 143.734px"
+     }
+    },
+    "768": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "-19.5px 0px 150.734px"
+     }
+    },
+    "375": {
+     "plain": {
+      "inset": "auto"
+     },
+     "changed": {
+      "inset": "-11.5px 0px 158.734px"
+     }
+    }
+   },
+   "tested": [
+    "separators-leaves-v0"
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-cart__item::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "768": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    },
+    "375": {
+     "plain": {
+      "pointer-events": "auto"
+     },
+     "changed": {
+      "pointer-events": "none"
+     }
+    }
+   },
+   "tested": [
+    "separators-leaves-v0"
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-cart__item::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "verdict": "proved",
+   "kind": "switched-on",
+   "values": {
+    "1440": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "768": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    },
+    "375": {
+     "plain": {
+      "position": "static"
+     },
+     "changed": {
+      "position": "absolute"
+     }
+    }
+   },
+   "tested": [
+    "separators-leaves-v0"
    ]
   }
  ]

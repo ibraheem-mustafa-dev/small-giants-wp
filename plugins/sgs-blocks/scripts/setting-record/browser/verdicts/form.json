@@ -1,7 +1,7 @@
 {
  "block": "sgs/form",
- "scriptHash": "264c66a3a751e644",
- "measured": "2026-11-21, on a local scratch copy of local-mamas running the plugin build of f3733bb1d, Chromium via Playwright, 1440/768/375 (browser/README.md). scriptHash is taken from main at 30b0a2472, whose cart and form folders and src/shared match f3733bb1d byte for byte except 18 part `selector` labels added to cart/block.json (git diff f3733bb1d 30b0a2472).",
+ "scriptHash": "0aacae48dd4aa08e",
+ "measured": "2026-11-22, on the local scratch site local-mediatest-setrec2 running the plugin build of 8a9276450, Chromium via Playwright, 1440/768/375 (browser/README.md)",
  "entries": [
   {
    "setting": "reviewDetailFontFamily",

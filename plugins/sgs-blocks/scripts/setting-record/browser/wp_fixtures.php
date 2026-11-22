@@ -16,4 +16,9 @@ $vid = $var->save();
 $v = new WC_Product_Variation(); $v->set_parent_id( $vid ); $v->set_attributes( array( 'size' => 'M' ) ); $v->set_regular_price( '10' ); $v->set_status( 'publish' ); $v->set_manage_stock( false ); $v->set_stock_status( 'instock' );
 $vvid = $v->save();
 WC_Product_Variable::sync( $vid );
-echo json_encode( array( 'simple' => $sid, 'variable' => $vid, 'variation' => $vvid, 'brand' => $brand_id ) ), "\n";
+// The branded simple product links a published choice flow, so the bag drawer offers its "Add options" link on that line
+// (includes/cart-item-extensions.php::sgs_cart_item_has_choice_flow, item-row-template.js hasChoiceFlow).
+$flow = get_page_by_path( 'sr-choice-flow', OBJECT, 'sgs_choice_flow' );
+$fid  = $flow ? (int) $flow->ID : (int) wp_insert_post( array( 'post_type' => 'sgs_choice_flow', 'post_status' => 'publish', 'post_name' => 'sr-choice-flow', 'post_title' => 'SR choice flow' ) );
+update_post_meta( $sid, '_sgs_choice_flow', 'sr-choice-flow' );
+echo json_encode( array( 'simple' => $sid, 'variable' => $vid, 'variation' => $vvid, 'brand' => $brand_id, 'flow' => $fid ) ), "\n";
