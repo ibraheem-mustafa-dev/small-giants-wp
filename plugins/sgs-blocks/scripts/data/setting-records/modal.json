@@ -1,0 +1,4357 @@
+{
+ "block": "sgs/modal",
+ "schemaVersion": 2,
+ "parts": [
+  "sgs-modal__trigger",
+  "sgs-modal__dialog",
+  "sgs-modal__close",
+  "sgs-modal__inner"
+ ],
+ "entries": [
+  {
+   "setting": "borderColour",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "sgs-modal__dialog::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "switched-on",
+   "values": [
+    "none"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "switched-on",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "closeColourBackground",
+   "part": "sgs-modal__close::after",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close::after",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "closeColourBackgroundGradient",
+   "part": "sgs-modal__close::after",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close::after",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourBackgroundHover",
+   "part": "sgs-modal__close::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close:has(:focus-visible)::after",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "closeColourBackgroundHover",
+   "part": "sgs-modal__close::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__close:hover::after",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "closeColourBackgroundHoverGradient",
+   "part": "sgs-modal__close::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close:focus-visible::after",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourBackgroundHoverGradient",
+   "part": "sgs-modal__close::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__close:hover::after",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourText",
+   "part": "sgs-modal__close",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "closeColourTextGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourTextGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourTextGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourTextHover",
+   "part": "sgs-modal__close",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "closeColourTextHover",
+   "part": "sgs-modal__close",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__close:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "closeColourTextHoverGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourTextHoverGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__close:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourTextHoverGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close:focus-visible",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourTextHoverGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__close:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourTextHoverGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__close:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeColourTextHoverGradient",
+   "part": "sgs-modal__close",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__close:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "closeStyle",
+   "part": "sgs-modal__close",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-modal__close--glyph:hover",
+   "kind": "switched-on",
+   "values": [
+    "glyph"
+   ]
+  },
+  {
+   "setting": "closeStyle",
+   "part": "sgs-modal__close-glyph",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__close--glyph .sgs-modal__close-glyph",
+   "kind": "switched-on",
+   "values": [
+    "glyph"
+   ]
+  },
+  {
+   "setting": "closeStyle",
+   "part": "sgs-modal__close-glyph",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__close--glyph .sgs-modal__close-glyph",
+   "kind": "switched-on",
+   "values": [
+    "glyph"
+   ]
+  },
+  {
+   "setting": "closeStyle",
+   "part": "sgs-modal__close-glyph",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__close--glyph .sgs-modal__close-glyph",
+   "kind": "switched-on",
+   "values": [
+    "glyph"
+   ]
+  },
+  {
+   "setting": "closeStyle",
+   "part": "sgs-modal__close::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__close--glyph::after",
+   "kind": "switched-on",
+   "values": [
+    "glyph"
+   ]
+  },
+  {
+   "setting": "dialogShadow",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "dialogShadowColour",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "dialogWidth",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "dialogWidth",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "dialogWidth",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--medium",
+   "kind": "switched-on",
+   "values": [
+    "full",
+    "large",
+    "small"
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--medium",
+   "kind": "switched-on",
+   "values": [
+    "full",
+    "large",
+    "small"
+   ]
+  },
+  {
+   "setting": "modalBackground",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "modalBackgroundGradient",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "switched-on",
+   "values": [
+    ""
+   ]
+  },
+  {
+   "setting": "modalBackgroundGradient",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "openDuration",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transition-duration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal.sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    437
+   ]
+  },
+  {
+   "setting": "openEasing",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal.sgs-modal__dialog",
+   "kind": "value",
+   "values": [
+    "linear"
+   ]
+  },
+  {
+   "setting": "openStartScale",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transform"
+   ],
+   "state": "open",
+   "tiers": [
+    "@starting-style"
+   ],
+   "selector": ".sgs-modal.sgs-modal__dialog[open]",
+   "kind": "switched-on",
+   "values": [
+    1.1
+   ]
+  },
+  {
+   "setting": "openStartScale",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal.sgs-modal__dialog:not([open])",
+   "kind": "value",
+   "unproved": "same-value-here",
+   "values": [
+    1.1
+   ]
+  },
+  {
+   "setting": "scrimBlur",
+   "part": "sgs-scrim",
+   "props": [
+    "backdrop-filter"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-scrim",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "scrimBlur",
+   "part": "sgs-scrim",
+   "props": [
+    "backdrop-filter"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-scrim",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "scrimBlur",
+   "part": "sgs-scrim",
+   "props": [
+    "backdrop-filter"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-scrim",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "scrimColour",
+   "part": "sgs-scrim::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-scrim::before",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "scrimColourGradient",
+   "part": "sgs-scrim::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-scrim::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "scrimFadeDuration",
+   "part": "sgs-scrim",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-scrim",
+   "kind": "value",
+   "values": [
+    437
+   ]
+  },
+  {
+   "setting": "scrimFadeDuration",
+   "part": "sgs-scrim",
+   "props": [
+    "transition-duration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-scrim[data-sgs-scrim-on]",
+   "kind": "value",
+   "values": [
+    437
+   ]
+  },
+  {
+   "setting": "scrimOpacity",
+   "part": "sgs-scrim::before",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-scrim::before",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 0.37,
+     "tablet": 0.23,
+     "mobile": 0.07
+    }
+   ]
+  },
+  {
+   "setting": "scrimOpacity",
+   "part": "sgs-scrim::before",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-scrim::before",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 0.37,
+     "tablet": 0.23,
+     "mobile": 0.07
+    }
+   ]
+  },
+  {
+   "setting": "scrimOpacity",
+   "part": "sgs-scrim::before",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-scrim::before",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 0.37,
+     "tablet": 0.23,
+     "mobile": 0.07
+    },
+    {
+     "desktop": 0.37
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-modal",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__close",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen .sgs-modal__close",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "max-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transform"
+   ],
+   "state": "open",
+   "tiers": [
+    "@starting-style"
+   ],
+   "selector": ".sgs-modal.sgs-modal__dialog[open]",
+   "kind": "switched-on",
+   "values": [
+    "default"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transform"
+   ],
+   "state": "open",
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen[open]",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal.sgs-modal__dialog:not([open])",
+   "kind": "value",
+   "unproved": "same-value-here",
+   "values": [
+    "default"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": "open",
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen[open]",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__dialog",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "size",
+   "part": "sgs-modal__inner",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__dialog--fullscreen .sgs-modal__inner",
+   "kind": "switched-on",
+   "values": [
+    "fullscreen"
+   ]
+  },
+  {
+   "setting": "triggerBackground",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "triggerBackgroundGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerBackgroundHover",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "triggerBackgroundHover",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__trigger:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "triggerBackgroundHoverGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger:focus-visible",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerBackgroundHoverGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__trigger:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColour",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "triggerColour",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "triggerColourGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourHover",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "triggerColourHover",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__trigger:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "triggerColourHoverGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourHoverGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__trigger:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourHoverGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger:focus-visible",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourHoverGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__trigger:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourHoverGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-modal .sgs-modal__trigger:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerColourHoverGradient",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-modal .sgs-modal__trigger:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--text-link",
+   "kind": "switched-on",
+   "values": [
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--primary:hover",
+   "kind": "switched-on",
+   "values": [
+    "secondary",
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--primary",
+   "kind": "switched-on",
+   "values": [
+    "secondary",
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--text-link",
+   "kind": "switched-on",
+   "values": [
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--text-link:hover",
+   "kind": "switched-on",
+   "values": [
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--primary",
+   "kind": "switched-on",
+   "values": [
+    "secondary",
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--text-link",
+   "kind": "switched-on",
+   "values": [
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--text-link",
+   "kind": "switched-on",
+   "values": [
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--text-link:hover",
+   "kind": "switched-on",
+   "values": [
+    "text-link"
+   ]
+  },
+  {
+   "setting": "triggerStyle",
+   "part": "sgs-modal__trigger",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-modal__trigger--text-link",
+   "kind": "switched-on",
+   "values": [
+    "text-link"
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "borderColour",
+   "sgs-modal__dialog",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "sgs-modal__dialog::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "sgs-modal__dialog",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "sgs-modal__dialog",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "sgs-modal__dialog",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "sgs-modal__dialog",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackground",
+   "sgs-modal__close::after",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackground",
+   "sgs-modal__close::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackground",
+   "sgs-modal__close::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackground",
+   "sgs-modal__close::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackground",
+   "sgs-modal__close::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackground",
+   "sgs-modal__close::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackground",
+   "sgs-modal__close::after",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundGradient",
+   "sgs-modal__close::after",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundGradient",
+   "sgs-modal__close::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundGradient",
+   "sgs-modal__close::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundGradient",
+   "sgs-modal__close::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundGradient",
+   "sgs-modal__close::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundGradient",
+   "sgs-modal__close::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundGradient",
+   "sgs-modal__close::after",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHover",
+   "sgs-modal__close::after",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "closeColourBackgroundHover",
+   "sgs-modal__close::after",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "closeColourBackgroundHover",
+   "sgs-modal__close::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHover",
+   "sgs-modal__close::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHover",
+   "sgs-modal__close::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHover",
+   "sgs-modal__close::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHover",
+   "sgs-modal__close::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHover",
+   "sgs-modal__close::after",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHoverGradient",
+   "sgs-modal__close::after",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "closeColourBackgroundHoverGradient",
+   "sgs-modal__close::after",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "closeColourBackgroundHoverGradient",
+   "sgs-modal__close::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHoverGradient",
+   "sgs-modal__close::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHoverGradient",
+   "sgs-modal__close::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHoverGradient",
+   "sgs-modal__close::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHoverGradient",
+   "sgs-modal__close::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourBackgroundHoverGradient",
+   "sgs-modal__close::after",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourText",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourTextGradient",
+   "sgs-modal__close",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourTextGradient",
+   "sgs-modal__close",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "closeColourTextGradient",
+   "sgs-modal__close",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourTextGradient",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "closeColourTextGradient",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeColourTextHover",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "closeColourTextHover",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "background-image"
+   ],
+   "focus",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "background-image"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   "focus",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "closeColourTextHoverGradient",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "closeStyle",
+   "sgs-modal__close",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "closeStyle",
+   "sgs-modal__close-glyph",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeStyle",
+   "sgs-modal__close-glyph",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeStyle",
+   "sgs-modal__close-glyph",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "closeStyle",
+   "sgs-modal__close::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "dialogShadow",
+   "sgs-modal__dialog",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "dialogShadow",
+   "sgs-modal__dialog",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "dialogShadow",
+   "sgs-modal__dialog",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "dialogShadowColour",
+   "sgs-modal__dialog",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "dialogWidth",
+   "sgs-modal__dialog",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "dialogWidth",
+   "sgs-modal__dialog",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "dialogWidth",
+   "sgs-modal__dialog",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "dialogWidth",
+   "sgs-modal__dialog",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "maxWidth",
+   "sgs-modal__dialog",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "maxWidth",
+   "sgs-modal__dialog",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "modalBackground",
+   "sgs-modal__dialog",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "modalBackgroundGradient",
+   "sgs-modal__dialog",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "modalBackgroundGradient",
+   "sgs-modal__dialog",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "openDuration",
+   "sgs-modal__dialog",
+   [
+    "transition-duration"
+   ],
+   null,
+   []
+  ],
+  [
+   "openEasing",
+   "sgs-modal__dialog",
+   [
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "openStartScale",
+   "sgs-modal__dialog",
+   [
+    "transform"
+   ],
+   "open",
+   [
+    "@starting-style"
+   ]
+  ],
+  [
+   "openStartScale",
+   "sgs-modal__dialog",
+   [
+    "transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "scrimBlur",
+   "sgs-scrim",
+   [
+    "backdrop-filter"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "scrimBlur",
+   "sgs-scrim",
+   [
+    "backdrop-filter"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "scrimBlur",
+   "sgs-scrim",
+   [
+    "backdrop-filter"
+   ],
+   null,
+   []
+  ],
+  [
+   "scrimColour",
+   "sgs-scrim::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "scrimColourGradient",
+   "sgs-scrim::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "scrimFadeDuration",
+   "sgs-scrim",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "scrimFadeDuration",
+   "sgs-scrim",
+   [
+    "transition-duration"
+   ],
+   null,
+   []
+  ],
+  [
+   "scrimOpacity",
+   "sgs-scrim::before",
+   [
+    "opacity"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "scrimOpacity",
+   "sgs-scrim::before",
+   [
+    "opacity"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "scrimOpacity",
+   "sgs-scrim::before",
+   [
+    "opacity"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__close",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "max-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "transform"
+   ],
+   "open",
+   [
+    "@starting-style"
+   ]
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "transform"
+   ],
+   "open",
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "open",
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__dialog",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "size",
+   "sgs-modal__inner",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerBackground",
+   "sgs-modal__trigger",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerBackgroundGradient",
+   "sgs-modal__trigger",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerBackgroundHover",
+   "sgs-modal__trigger",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "triggerBackgroundHover",
+   "sgs-modal__trigger",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerBackgroundHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "triggerBackgroundHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerColour",
+   "sgs-modal__trigger",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerColour",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerColourGradient",
+   "sgs-modal__trigger",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerColourGradient",
+   "sgs-modal__trigger",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerColourGradient",
+   "sgs-modal__trigger",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "triggerColourGradient",
+   "sgs-modal__trigger",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerColourGradient",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "triggerColourGradient",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerColourHover",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "triggerColourHover",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerColourHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "triggerColourHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerColourHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "triggerColourHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "background-image"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "triggerColourHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerColourHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "triggerColourHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "triggerColourHoverGradient",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerStyle",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not (color: color-mix( in srgb, red 50%, transparent ))"
+   ]
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "text-decoration"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "triggerStyle",
+   "sgs-modal__trigger",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [
+   "closeOnOverlay",
+   "modalRef",
+   "openEasingCustom",
+   "openOnHashLoad",
+   "sgsCollapseVisibility",
+   "sgsConditionCollectionQueryId",
+   "sgsConditionDateEnd",
+   "sgsConditionFormField",
+   "sgsConditionFormOperator",
+   "sgsConditionFormValue",
+   "sgsConditionProductReviews",
+   "sgsConditionUserRole",
+   "sgsCustomCssId",
+   "sgsCustomCssNote",
+   "sgsFocusRests",
+   "sgsHideOnDesktop",
+   "sgsHideOnMobile",
+   "sgsHideOnTablet",
+   "triggerText"
+  ],
+  "replacesBlock": [
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionLoggedIn",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   }
+  ],
+  "partNotNamed": []
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-shared-rules.php": "1ecf0e2ae2c88520",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "src/blocks/heading/render.php": "95cb85f18da54053",
+   "src/blocks/modal/anchor-open-controls.js": "8ff5c194c8b602c3",
+   "src/blocks/modal/block.json": "389370958bd46745",
+   "src/blocks/modal/dialog-style-controls.js": "ab7d299092b35b2d",
+   "src/blocks/modal/edit.js": "00a85c2096a0b2f9",
+   "src/blocks/modal/editor.css": "f6d0b078732a381f",
+   "src/blocks/modal/index.js": "6c5231dc966eb8eb",
+   "src/blocks/modal/modal-core.js": "882ae6b170b97e57",
+   "src/blocks/modal/modal-motion-state.js": "13e5a59f89192c1c",
+   "src/blocks/modal/open-anywhere.js": "bf0733d1a9aabe4d",
+   "src/blocks/modal/open-motion-controls.js": "0c88dcdc5ff95b77",
+   "src/blocks/modal/preview-style.js": "7611417f68ac9e0b",
+   "src/blocks/modal/render.php": "d1d071a5060eefc6",
+   "src/blocks/modal/style.css": "88c4336feb136c91",
+   "src/blocks/modal/view.js": "842fa5ef9faf92ee",
+   "src/blocks/text/render.php": "bae6bf3e5b4852ff",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/heading/style.css": "8aad9d318c64f1e5",
+   "shipped:src/blocks/modal/style.css": "8a4bb4a978c0a144",
+   "shipped:src/blocks/text/style.css": "205323a182969df1",
+   "fixture-entry": "95012026716e7718",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "8645ca712ccef9eb",
+  "theme": "de16fcb0da170069",
+  "classes": [
+   "sgs-child-sizing",
+   "sgs-focus-rests",
+   "sgs-hdg-3fd05fa7",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "sgs-modal",
+   "sgs-modal--no-trigger",
+   "sgs-modal-00fca19a",
+   "sgs-modal-00fca19a-scrim",
+   "sgs-modal-025b1e0c",
+   "sgs-modal-025b1e0c-scrim",
+   "sgs-modal-03cf75c1",
+   "sgs-modal-03cf75c1-scrim",
+   "sgs-modal-064968e5",
+   "sgs-modal-064968e5-scrim",
+   "sgs-modal-06db3a8b-scrim",
+   "sgs-modal-07223c27",
+   "sgs-modal-07223c27-scrim",
+   "sgs-modal-09dd380a",
+   "sgs-modal-09dd380a-scrim",
+   "sgs-modal-0c917c27",
+   "sgs-modal-0c917c27-scrim",
+   "sgs-modal-0d92465a-scrim",
+   "sgs-modal-146b089c",
+   "sgs-modal-146b089c-scrim",
+   "sgs-modal-196ebb80",
+   "sgs-modal-196ebb80-scrim",
+   "sgs-modal-1b6dc3a5",
+   "sgs-modal-1b6dc3a5-scrim",
+   "sgs-modal-1c3e7ef5",
+   "sgs-modal-1c3e7ef5-scrim",
+   "sgs-modal-1d6db1cb-scrim",
+   "sgs-modal-1f78324d",
+   "sgs-modal-1f78324d-scrim",
+   "sgs-modal-2539855f",
+   "sgs-modal-2539855f-scrim",
+   "sgs-modal-2ce80e34",
+   "sgs-modal-2ce80e34-scrim",
+   "sgs-modal-2f3bdbbe",
+   "sgs-modal-2f3bdbbe-scrim",
+   "sgs-modal-35cfb6de",
+   "sgs-modal-35cfb6de-scrim",
+   "sgs-modal-37019bef",
+   "sgs-modal-37019bef-scrim",
+   "sgs-modal-3a23f6de",
+   "sgs-modal-3a23f6de-scrim",
+   "sgs-modal-3a5defc0",
+   "sgs-modal-3a5defc0-scrim",
+   "sgs-modal-3ab0ca42",
+   "sgs-modal-3ab0ca42-scrim",
+   "sgs-modal-3b027f94",
+   "sgs-modal-3b027f94-scrim",
+   "sgs-modal-3be11c99",
+   "sgs-modal-3be11c99-scrim",
+   "sgs-modal-3c0ecdc8-scrim",
+   "sgs-modal-3e8e7263",
+   "sgs-modal-3e8e7263-scrim",
+   "sgs-modal-3ed3552c-scrim",
+   "sgs-modal-4058ae3d",
+   "sgs-modal-4058ae3d-scrim",
+   "sgs-modal-435ee2a1",
+   "sgs-modal-435ee2a1-scrim",
+   "sgs-modal-448de627",
+   "sgs-modal-448de627-scrim",
+   "sgs-modal-48551baa",
+   "sgs-modal-48551baa-scrim",
+   "sgs-modal-48d34026",
+   "sgs-modal-48d34026-scrim",
+   "sgs-modal-51f522bf",
+   "sgs-modal-51f522bf-scrim",
+   "sgs-modal-54c6ac0f",
+   "sgs-modal-54c6ac0f-scrim",
+   "sgs-modal-551a0d62",
+   "sgs-modal-551a0d62-scrim",
+   "sgs-modal-588a94d6",
+   "sgs-modal-588a94d6-scrim",
+   "sgs-modal-5a1a3d4a-scrim",
+   "sgs-modal-60b37e81",
+   "sgs-modal-60b37e81-scrim",
+   "sgs-modal-61d1d023",
+   "sgs-modal-61d1d023-scrim",
+   "sgs-modal-6281d1d3",
+   "sgs-modal-6281d1d3-scrim",
+   "sgs-modal-66c58de6",
+   "sgs-modal-66c58de6-scrim",
+   "sgs-modal-66f66461",
+   "sgs-modal-66f66461-scrim",
+   "sgs-modal-67494479-scrim",
+   "sgs-modal-6864b77f-scrim",
+   "sgs-modal-6e2ef01b",
+   "sgs-modal-6e2ef01b-scrim",
+   "sgs-modal-73dc9b61",
+   "sgs-modal-73dc9b61-scrim",
+   "sgs-modal-7560e32b",
+   "sgs-modal-7560e32b-scrim",
+   "sgs-modal-76f82100",
+   "sgs-modal-76f82100-scrim",
+   "sgs-modal-7e69cce0-scrim",
+   "sgs-modal-7f1286dc",
+   "sgs-modal-7f1286dc-scrim",
+   "sgs-modal-7f998797",
+   "sgs-modal-7f998797-scrim",
+   "sgs-modal-8071b8ef",
+   "sgs-modal-8071b8ef-scrim",
+   "sgs-modal-821fd0e3",
+   "sgs-modal-821fd0e3-scrim",
+   "sgs-modal-83bf0fdf",
+   "sgs-modal-83bf0fdf-scrim",
+   "sgs-modal-84a7b11f",
+   "sgs-modal-84a7b11f-scrim",
+   "sgs-modal-86fe4a0e",
+   "sgs-modal-86fe4a0e-scrim",
+   "sgs-modal-872646f0",
+   "sgs-modal-872646f0-scrim",
+   "sgs-modal-88bbaad2",
+   "sgs-modal-88bbaad2-scrim",
+   "sgs-modal-89099e0f",
+   "sgs-modal-89099e0f-scrim",
+   "sgs-modal-8928a21c",
+   "sgs-modal-8928a21c-scrim",
+   "sgs-modal-8a31fac1",
+   "sgs-modal-8a31fac1-scrim",
+   "sgs-modal-91359efc",
+   "sgs-modal-91359efc-scrim",
+   "sgs-modal-9a792e21",
+   "sgs-modal-9a792e21-scrim",
+   "sgs-modal-9b8dcae3",
+   "sgs-modal-9b8dcae3-scrim",
+   "sgs-modal-9f67ff42",
+   "sgs-modal-9f67ff42-scrim",
+   "sgs-modal-a1530462",
+   "sgs-modal-a1530462-scrim",
+   "sgs-modal-a5f160d9",
+   "sgs-modal-a5f160d9-scrim",
+   "sgs-modal-a668abbd",
+   "sgs-modal-a668abbd-scrim",
+   "sgs-modal-a79e786e-scrim",
+   "sgs-modal-aa9933ec",
+   "sgs-modal-aa9933ec-scrim",
+   "sgs-modal-aaf1c734",
+   "sgs-modal-aaf1c734-scrim",
+   "sgs-modal-b06c8cc1",
+   "sgs-modal-b06c8cc1-scrim",
+   "sgs-modal-b08ef583",
+   "sgs-modal-b08ef583-scrim",
+   "sgs-modal-b51e1050",
+   "sgs-modal-b51e1050-scrim",
+   "sgs-modal-c18cc02a",
+   "sgs-modal-c18cc02a-scrim",
+   "sgs-modal-c3e7d550",
+   "sgs-modal-c3e7d550-scrim",
+   "sgs-modal-c4560ffc",
+   "sgs-modal-c4560ffc-scrim",
+   "sgs-modal-c527a6f9",
+   "sgs-modal-c527a6f9-scrim",
+   "sgs-modal-c61f9a82",
+   "sgs-modal-c61f9a82-scrim",
+   "sgs-modal-cb4af00b",
+   "sgs-modal-cb4af00b-scrim",
+   "sgs-modal-ce899236",
+   "sgs-modal-ce899236-scrim",
+   "sgs-modal-d1a4dd1a",
+   "sgs-modal-d1a4dd1a-scrim",
+   "sgs-modal-d82bc9cb-scrim",
+   "sgs-modal-d8e4f6a7",
+   "sgs-modal-d8e4f6a7-scrim",
+   "sgs-modal-da20a2a4",
+   "sgs-modal-da20a2a4-scrim",
+   "sgs-modal-da4ec499",
+   "sgs-modal-da4ec499-scrim",
+   "sgs-modal-df7d77a5",
+   "sgs-modal-df7d77a5-scrim",
+   "sgs-modal-dffe94af",
+   "sgs-modal-dffe94af-scrim",
+   "sgs-modal-e0ff7072",
+   "sgs-modal-e0ff7072-scrim",
+   "sgs-modal-e3cf0e0a-scrim",
+   "sgs-modal-e55c0c00",
+   "sgs-modal-e55c0c00-scrim",
+   "sgs-modal-e87f1e7f",
+   "sgs-modal-e87f1e7f-scrim",
+   "sgs-modal-e8eb598d",
+   "sgs-modal-e8eb598d-scrim",
+   "sgs-modal-ea8610a8",
+   "sgs-modal-ea8610a8-scrim",
+   "sgs-modal-ec79f82a",
+   "sgs-modal-ec79f82a-scrim",
+   "sgs-modal-f0c4c8a8-scrim",
+   "sgs-modal-f23d7511-scrim",
+   "sgs-modal-f817c167-scrim",
+   "sgs-modal-fef13de6",
+   "sgs-modal-fef13de6-scrim",
+   "sgs-modal-ff0253c7",
+   "sgs-modal-ff0253c7-scrim",
+   "sgs-modal__close",
+   "sgs-modal__close--glyph",
+   "sgs-modal__close-glyph",
+   "sgs-modal__dialog",
+   "sgs-modal__dialog--full",
+   "sgs-modal__dialog--fullscreen",
+   "sgs-modal__dialog--large",
+   "sgs-modal__dialog--medium",
+   "sgs-modal__dialog--small",
+   "sgs-modal__inner",
+   "sgs-modal__trigger",
+   "sgs-modal__trigger--primary",
+   "sgs-modal__trigger--secondary",
+   "sgs-modal__trigger--text-link",
+   "sgs-scrim",
+   "sgs-text-862ca5b2",
+   "wp-block-sgs-heading",
+   "wp-block-sgs-modal",
+   "wp-block-sgs-text"
+  ],
+  "tags": [
+   "button",
+   "dialog",
+   "div",
+   "h2",
+   "line",
+   "p",
+   "span",
+   "style",
+   "svg"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}

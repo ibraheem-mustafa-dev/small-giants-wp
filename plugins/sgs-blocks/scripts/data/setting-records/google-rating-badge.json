@@ -1,0 +1,5914 @@
+{
+ "block": "sgs/google-rating-badge",
+ "schemaVersion": 2,
+ "parts": [
+  "sgs-google-rating-badge__link",
+  "sgs-google-rating-badge__logo",
+  "sgs-google-rating-badge__score",
+  "sgs-google-rating-badge__stars",
+  "sgs-google-rating-badge__caption",
+  "sgs-google-rating-badge__count",
+  "sgs-google-rating-badge__source"
+ ],
+ "entries": [
+  {
+   "setting": "accentStripeColour",
+   "part": "sgs-google-rating-badge__link::before",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link::before",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "accentStripeColourGradient",
+   "part": "sgs-google-rating-badge__link::before",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "alignment",
+   "part": "ROOT",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--align-center",
+   "kind": "value",
+   "values": [
+    "center",
+    "end"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColourHover",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColourHover",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)::before",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__caption)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--card .sgs-google-rating-badge__caption",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "flex-direction"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--stacked .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--stacked .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--card .sgs-google-rating-badge__link",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--stacked .sgs-google-rating-badge__link)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--card .sgs-google-rating-badge__link::before",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--card .sgs-google-rating-badge__link::before",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--card .sgs-google-rating-badge__link::before",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__link::before",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--card .sgs-google-rating-badge__link::before",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__logo",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge__logo",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__logo",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge__logo",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__score)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-google-rating-badge--card .sgs-google-rating-badge__score)",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__stars svg",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge__stars svg",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "badgeStyle",
+   "part": "sgs-google-rating-badge__stars svg",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge__stars svg",
+   "kind": "switched-on",
+   "values": [
+    "card",
+    "pill",
+    "stacked"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourHover",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourHover",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "switched-on",
+   "values": [
+    "none"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "captionColour",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "captionFontFamily",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "captionFontSize",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "captionFontSize",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "captionFontSize",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "captionFontStyle",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    "italic",
+    "normal"
+   ]
+  },
+  {
+   "setting": "captionFontWeight",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "captionLetterSpacing",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "captionLetterSpacing",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "captionLetterSpacing",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "captionLineHeight",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "captionLineHeight",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "captionLineHeight",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "captionTextAlign",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "captionTextAlign",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "captionTextAlign",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "captionTextDecoration",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    "line-through",
+    "none",
+    "underline"
+   ]
+  },
+  {
+   "setting": "captionTextStrokeColour",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "captionTextStrokeColourHover",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "captionTextStrokeColourHover",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "captionTextStrokeWidth",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "captionTextStrokeWidth",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "captionTextStrokeWidth",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "captionTextTransform",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "captionTextWrap",
+   "part": "sgs-google-rating-badge__caption",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__caption",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "fullWidth",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--full-width .sgs-google-rating-badge__link",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "fullWidth",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--full-width .sgs-google-rating-badge__link",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "gap",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "gap",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "gap",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    137
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "position",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--floating",
+   "kind": "switched-on",
+   "values": [
+    "floating"
+   ]
+  },
+  {
+   "setting": "position",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--corner-bottom-right",
+   "kind": "switched-on",
+   "values": [
+    "floating"
+   ]
+  },
+  {
+   "setting": "position",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--floating",
+   "kind": "value",
+   "unproved": "same-value-here",
+   "values": [
+    "floating"
+   ]
+  },
+  {
+   "setting": "position",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--floating",
+   "kind": "switched-on",
+   "values": [
+    "floating"
+   ]
+  },
+  {
+   "setting": "position",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--floating",
+   "kind": "switched-on",
+   "values": [
+    "floating"
+   ]
+  },
+  {
+   "setting": "position",
+   "part": "ROOT",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge--floating",
+   "kind": "switched-on",
+   "values": [
+    "floating"
+   ]
+  },
+  {
+   "setting": "rating",
+   "part": "sgs-google-reviews__star path",
+   "props": [
+    "fill"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star--empty path",
+   "kind": "switched-on",
+   "values": [
+    2.35
+   ]
+  },
+  {
+   "setting": "scoreColour",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "scoreFontFamily",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "scoreFontSize",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "scoreFontSize",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "scoreFontSize",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "scoreFontStyle",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    "italic",
+    "normal"
+   ]
+  },
+  {
+   "setting": "scoreFontWeight",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "scoreLetterSpacing",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "scoreLetterSpacing",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "scoreLetterSpacing",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "scoreLineHeight",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "scoreLineHeight",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "scoreLineHeight",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "scoreTextAlign",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "scoreTextAlign",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "scoreTextAlign",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "scoreTextDecoration",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    "line-through",
+    "none",
+    "underline"
+   ]
+  },
+  {
+   "setting": "scoreTextStrokeColour",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "scoreTextStrokeColourHover",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "scoreTextStrokeColourHover",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "scoreTextStrokeWidth",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "scoreTextStrokeWidth",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "scoreTextStrokeWidth",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "scoreTextTransform",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "scoreTextWrap",
+   "part": "sgs-google-rating-badge__score",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__score",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-google-rating-badge",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsHideOnDesktop",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px)"
+   ],
+   "selector": ".sgs-hide-desktop",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnMobile",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width:767.98px)"
+   ],
+   "selector": ".sgs-hide-mobile",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnTablet",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ],
+   "selector": ".sgs-hide-tablet",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:hover",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadowColour",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowColour",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowColour",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowColourHover",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowColourHover",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:focus-visible",
+   "kind": "switched-on",
+   "unproved": "same-value-here",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "sgs-google-rating-badge__link",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__link:hover",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "starColour",
+   "part": "sgs-google-reviews__star path",
+   "props": [
+    "fill"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star--full path",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "starColour",
+   "part": "sgs-google-reviews__star-fill",
+   "props": [
+    "fill"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge .sgs-google-rating-badge__stars .sgs-google-reviews__star-fill",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "starColourGradient",
+   "part": "sgs-google-reviews__star path",
+   "props": [
+    "fill"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-reviews__star--full path",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "starColourGradient",
+   "part": "sgs-google-reviews__star-fill",
+   "props": [
+    "fill"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-reviews__star-fill",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "accentStripeColour",
+   "sgs-google-rating-badge__link::before",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "accentStripeColourGradient",
+   "sgs-google-rating-badge__link::before",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "alignment",
+   "ROOT",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "sgs-google-rating-badge__link",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourHover",
+   "sgs-google-rating-badge__link",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "backgroundColourHover",
+   "sgs-google-rating-badge__link",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "badgeStyle",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__caption",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__caption",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "align-items"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "flex-direction"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "overflow"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__link::before",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__logo",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__logo",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__score",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__score",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__stars svg",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "badgeStyle",
+   "sgs-google-rating-badge__stars svg",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "sgs-google-rating-badge__link",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourHover",
+   "sgs-google-rating-badge__link",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "borderColourHover",
+   "sgs-google-rating-badge__link",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "borderRadius",
+   "sgs-google-rating-badge__link",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "sgs-google-rating-badge__link",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "sgs-google-rating-badge__link",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "sgs-google-rating-badge__link",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "sgs-google-rating-badge__link",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "sgs-google-rating-badge__link",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionColour",
+   "sgs-google-rating-badge__caption",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionFontFamily",
+   "sgs-google-rating-badge__caption",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionFontSize",
+   "sgs-google-rating-badge__caption",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "captionFontSize",
+   "sgs-google-rating-badge__caption",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "captionFontSize",
+   "sgs-google-rating-badge__caption",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionFontStyle",
+   "sgs-google-rating-badge__caption",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionFontWeight",
+   "sgs-google-rating-badge__caption",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionLetterSpacing",
+   "sgs-google-rating-badge__caption",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "captionLetterSpacing",
+   "sgs-google-rating-badge__caption",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "captionLetterSpacing",
+   "sgs-google-rating-badge__caption",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionLineHeight",
+   "sgs-google-rating-badge__caption",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "captionLineHeight",
+   "sgs-google-rating-badge__caption",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "captionLineHeight",
+   "sgs-google-rating-badge__caption",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionTextAlign",
+   "sgs-google-rating-badge__caption",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "captionTextAlign",
+   "sgs-google-rating-badge__caption",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "captionTextAlign",
+   "sgs-google-rating-badge__caption",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionTextDecoration",
+   "sgs-google-rating-badge__caption",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionTextStrokeColour",
+   "sgs-google-rating-badge__caption",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionTextStrokeColourHover",
+   "sgs-google-rating-badge__caption",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "captionTextStrokeColourHover",
+   "sgs-google-rating-badge__caption",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "captionTextStrokeWidth",
+   "sgs-google-rating-badge__caption",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "captionTextStrokeWidth",
+   "sgs-google-rating-badge__caption",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "captionTextStrokeWidth",
+   "sgs-google-rating-badge__caption",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionTextTransform",
+   "sgs-google-rating-badge__caption",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "captionTextWrap",
+   "sgs-google-rating-badge__caption",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "compactBelow",
+   "sgs-google-rating-badge__caption",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media(max-width:2.98px)"
+   ]
+  ],
+  [
+   "compactBelow",
+   "sgs-google-rating-badge__caption",
+   [
+    "order"
+   ],
+   null,
+   [
+    "@media(max-width:2.98px)"
+   ]
+  ],
+  [
+   "compactBelow",
+   "sgs-google-rating-badge__count",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media(max-width:2.98px)"
+   ]
+  ],
+  [
+   "compactBelow",
+   "sgs-google-rating-badge__score",
+   [
+    "order"
+   ],
+   null,
+   [
+    "@media(max-width:2.98px)"
+   ]
+  ],
+  [
+   "compactBelow",
+   "sgs-google-rating-badge__stars",
+   [
+    "order"
+   ],
+   null,
+   [
+    "@media(max-width:2.98px)"
+   ]
+  ],
+  [
+   "fullWidth",
+   "sgs-google-rating-badge__link",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "fullWidth",
+   "sgs-google-rating-badge__link",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "gap",
+   "sgs-google-rating-badge__link",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "gap",
+   "sgs-google-rating-badge__link",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "gap",
+   "sgs-google-rating-badge__link",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "hideBelow",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media(max-width:2.98px)"
+   ]
+  ],
+  [
+   "minHeight",
+   "sgs-google-rating-badge__link",
+   [
+    "min-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "padding",
+   "sgs-google-rating-badge__link",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "sgs-google-rating-badge__link",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "sgs-google-rating-badge__link",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "position",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "position",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "position",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "position",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "position",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "position",
+   "ROOT",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "rating",
+   "sgs-google-reviews__star path",
+   [
+    "fill"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreColour",
+   "sgs-google-rating-badge__score",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreFontFamily",
+   "sgs-google-rating-badge__score",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreFontSize",
+   "sgs-google-rating-badge__score",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "scoreFontSize",
+   "sgs-google-rating-badge__score",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "scoreFontSize",
+   "sgs-google-rating-badge__score",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreFontStyle",
+   "sgs-google-rating-badge__score",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreFontWeight",
+   "sgs-google-rating-badge__score",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreLetterSpacing",
+   "sgs-google-rating-badge__score",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "scoreLetterSpacing",
+   "sgs-google-rating-badge__score",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "scoreLetterSpacing",
+   "sgs-google-rating-badge__score",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreLineHeight",
+   "sgs-google-rating-badge__score",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "scoreLineHeight",
+   "sgs-google-rating-badge__score",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "scoreLineHeight",
+   "sgs-google-rating-badge__score",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreTextAlign",
+   "sgs-google-rating-badge__score",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "scoreTextAlign",
+   "sgs-google-rating-badge__score",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "scoreTextAlign",
+   "sgs-google-rating-badge__score",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreTextDecoration",
+   "sgs-google-rating-badge__score",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreTextStrokeColour",
+   "sgs-google-rating-badge__score",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreTextStrokeColourHover",
+   "sgs-google-rating-badge__score",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "scoreTextStrokeColourHover",
+   "sgs-google-rating-badge__score",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "scoreTextStrokeWidth",
+   "sgs-google-rating-badge__score",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "scoreTextStrokeWidth",
+   "sgs-google-rating-badge__score",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "scoreTextStrokeWidth",
+   "sgs-google-rating-badge__score",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreTextTransform",
+   "sgs-google-rating-badge__score",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "scoreTextWrap",
+   "sgs-google-rating-badge__score",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ]
+  ],
+  [
+   "shadow",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadow",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "shadow",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "shadow",
+   "sgs-google-rating-badge__link",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "shadow",
+   "sgs-google-rating-badge__link",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "shadowColour",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadowColour",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "shadowColour",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "shadowColourHover",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadowColourHover",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "shadowLiftOnHover",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadowLiftOnHover",
+   "sgs-google-rating-badge__link",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "starColour",
+   "sgs-google-reviews__star path",
+   [
+    "fill"
+   ],
+   null,
+   []
+  ],
+  [
+   "starColour",
+   "sgs-google-reviews__star-fill",
+   [
+    "fill"
+   ],
+   null,
+   []
+  ],
+  [
+   "starColourGradient",
+   "sgs-google-reviews__star path",
+   [
+    "fill"
+   ],
+   null,
+   []
+  ],
+  [
+   "starColourGradient",
+   "sgs-google-reviews__star-fill",
+   [
+    "fill"
+   ],
+   null,
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [
+   "floatingCorner",
+   "floatingOffset",
+   "linkLabel",
+   "listingUrl",
+   "listingUrlSource",
+   "openInNewTab",
+   "placeId",
+   "reviewCount",
+   "sgsCollapseVisibility",
+   "sgsConditionCollectionQueryId",
+   "sgsConditionDateEnd",
+   "sgsConditionFormField",
+   "sgsConditionFormOperator",
+   "sgsConditionFormValue",
+   "sgsConditionProductReviews",
+   "sgsConditionUserRole",
+   "sgsCustomCssId",
+   "sgsCustomCssNote",
+   "showCount",
+   "showSource"
+  ],
+  "replacesBlock": [
+   "dataSource",
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionLoggedIn",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   }
+  ],
+  "partNotNamed": [
+   {
+    "setting": "compactBelow",
+    "part": null,
+    "props": [
+     "display"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:2.98px)"
+    ],
+    "selector": ".sgs-google-rating-badge.wp-block-sgs-google-rating-badge .sgs-google-rating-badge__stars svg:nth-child(n+2)"
+   }
+  ]
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "src/blocks/google-rating-badge/block.json": "6f29d4ea0cba2276",
+   "src/blocks/google-rating-badge/edit.js": "f8652ad02d2b093c",
+   "src/blocks/google-rating-badge/editor.css": "19b3a2233da0a2e3",
+   "src/blocks/google-rating-badge/google-rating-badge-helpers.php": "c7015bf84f8d7bc5",
+   "src/blocks/google-rating-badge/index.js": "089464dfa125da30",
+   "src/blocks/google-rating-badge/render.php": "eaa3ba92f84c24ea",
+   "src/blocks/google-rating-badge/style.css": "126643ef783cc325",
+   "src/blocks/google-reviews/google-reviews-stars.php": "676c63e99af60aa4",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/google-rating-badge/style.css": "bfb070fd79dfed97",
+   "fixture-entry": "22b7cc8de1dc53c5",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "49788a2cd31e2ce8",
+  "theme": "23727f163e7fd81c",
+  "classes": [
+   "sgs-child-sizing",
+   "sgs-focus-rests",
+   "sgs-google-rating-badge",
+   "sgs-google-rating-badge--align-center",
+   "sgs-google-rating-badge--align-end",
+   "sgs-google-rating-badge--align-start",
+   "sgs-google-rating-badge--card",
+   "sgs-google-rating-badge--corner-bottom-right",
+   "sgs-google-rating-badge--floating",
+   "sgs-google-rating-badge--full-width",
+   "sgs-google-rating-badge--pill",
+   "sgs-google-rating-badge--stacked",
+   "sgs-google-rating-badge__caption",
+   "sgs-google-rating-badge__count",
+   "sgs-google-rating-badge__link",
+   "sgs-google-rating-badge__logo",
+   "sgs-google-rating-badge__score",
+   "sgs-google-rating-badge__source",
+   "sgs-google-rating-badge__stars",
+   "sgs-google-reviews__star",
+   "sgs-google-reviews__star--empty",
+   "sgs-google-reviews__star--full",
+   "sgs-google-reviews__star--half",
+   "sgs-google-reviews__star-fill",
+   "sgs-google-reviews__star-outline",
+   "sgs-google-reviews__stars",
+   "sgs-grb-01c4cc6c",
+   "sgs-grb-02c1caeb",
+   "sgs-grb-02e23ec0",
+   "sgs-grb-0469be73",
+   "sgs-grb-057c70a7",
+   "sgs-grb-0587e05d",
+   "sgs-grb-05a3d13c",
+   "sgs-grb-060ca342",
+   "sgs-grb-0681df01",
+   "sgs-grb-071cdafa",
+   "sgs-grb-07606c00",
+   "sgs-grb-07fe1a92",
+   "sgs-grb-094d82ca",
+   "sgs-grb-0962c35b",
+   "sgs-grb-0ad55a43",
+   "sgs-grb-0bafed6e",
+   "sgs-grb-0bbbd667",
+   "sgs-grb-0d1e576c",
+   "sgs-grb-0e36db45",
+   "sgs-grb-0eb410b7",
+   "sgs-grb-0f040cd9",
+   "sgs-grb-0f0652ec",
+   "sgs-grb-0fa61600",
+   "sgs-grb-0fd1d770",
+   "sgs-grb-102aaabb",
+   "sgs-grb-1034d94b",
+   "sgs-grb-1085f908",
+   "sgs-grb-116216e7",
+   "sgs-grb-11d0f951",
+   "sgs-grb-11f71875",
+   "sgs-grb-12648b69",
+   "sgs-grb-130c0daf",
+   "sgs-grb-134eb19d",
+   "sgs-grb-13b62913",
+   "sgs-grb-13c6dd89",
+   "sgs-grb-1472bbe4",
+   "sgs-grb-14e6659a",
+   "sgs-grb-15880f1e",
+   "sgs-grb-167fd1dd",
+   "sgs-grb-16e10ffa",
+   "sgs-grb-1ab52bf3",
+   "sgs-grb-1d5e3186",
+   "sgs-grb-1e2613ce",
+   "sgs-grb-1e3012ae",
+   "sgs-grb-1eaa61fa",
+   "sgs-grb-1eedbd42",
+   "sgs-grb-1fcc299e",
+   "sgs-grb-200b56ff",
+   "sgs-grb-2017d9f4",
+   "sgs-grb-201d64fc",
+   "sgs-grb-20bebfba",
+   "sgs-grb-20e47bea",
+   "sgs-grb-21ef1128",
+   "sgs-grb-22768ef2",
+   "sgs-grb-22efe7f2",
+   "sgs-grb-2393e590",
+   "sgs-grb-23c4bc3b",
+   "sgs-grb-241869e6",
+   "sgs-grb-2425263d",
+   "sgs-grb-2433a6e3",
+   "sgs-grb-24fed442",
+   "sgs-grb-25561d31",
+   "sgs-grb-2654ee3c",
+   "sgs-grb-2688d46c",
+   "sgs-grb-27563339",
+   "sgs-grb-27ee9dc0",
+   "sgs-grb-27feaf37",
+   "sgs-grb-281270cd",
+   "sgs-grb-28375cec",
+   "sgs-grb-28443fd2",
+   "sgs-grb-297639b2",
+   "sgs-grb-2a419fa3",
+   "sgs-grb-2c26fac2",
+   "sgs-grb-2c33434a",
+   "sgs-grb-2c3fa2f0",
+   "sgs-grb-2c8727ff",
+   "sgs-grb-2d5f38da",
+   "sgs-grb-2e6765a9",
+   "sgs-grb-2e777944",
+   "sgs-grb-2e97c606",
+   "sgs-grb-2f1eef9a",
+   "sgs-grb-2f89ba05",
+   "sgs-grb-309825d9",
+   "sgs-grb-31d3c83f",
+   "sgs-grb-3244df77",
+   "sgs-grb-33c1f050",
+   "sgs-grb-34b995ef",
+   "sgs-grb-34bbf4ca",
+   "sgs-grb-35e159c2",
+   "sgs-grb-361d9a8a",
+   "sgs-grb-371ca15b",
+   "sgs-grb-37535e3c",
+   "sgs-grb-37daf705",
+   "sgs-grb-37dd0957",
+   "sgs-grb-37e49bd7",
+   "sgs-grb-3817a277",
+   "sgs-grb-3a3efd0f",
+   "sgs-grb-3d10a107",
+   "sgs-grb-3de18fd6",
+   "sgs-grb-3f92e0c6",
+   "sgs-grb-3fc18291",
+   "sgs-grb-40d30800",
+   "sgs-grb-410802a7",
+   "sgs-grb-41623e9e",
+   "sgs-grb-41781bb5",
+   "sgs-grb-4290a131",
+   "sgs-grb-43826151",
+   "sgs-grb-440220b9",
+   "sgs-grb-45166452",
+   "sgs-grb-459075c6",
+   "sgs-grb-459d56cc",
+   "sgs-grb-466b7b68",
+   "sgs-grb-468c47e3",
+   "sgs-grb-4709fc8d",
+   "sgs-grb-471a49e2",
+   "sgs-grb-4721f264",
+   "sgs-grb-47f80ff3",
+   "sgs-grb-4ae82e26",
+   "sgs-grb-4c1ca2df",
+   "sgs-grb-4d0c24ba",
+   "sgs-grb-4db83e4f",
+   "sgs-grb-4debb8f5",
+   "sgs-grb-4ec1d7c8",
+   "sgs-grb-4f61506d",
+   "sgs-grb-4fc95794",
+   "sgs-grb-508fbb71",
+   "sgs-grb-512a7e08",
+   "sgs-grb-5188a20f",
+   "sgs-grb-51919560",
+   "sgs-grb-532a59d4",
+   "sgs-grb-5374d3e7",
+   "sgs-grb-53f6965f",
+   "sgs-grb-546b3e17",
+   "sgs-grb-57e37ece",
+   "sgs-grb-582c2ab5",
+   "sgs-grb-59523bed",
+   "sgs-grb-59c12741",
+   "sgs-grb-5a348c9b",
+   "sgs-grb-5a66d9e1",
+   "sgs-grb-5be8f269",
+   "sgs-grb-5c0ed19b",
+   "sgs-grb-5c8886cb",
+   "sgs-grb-5c97a793",
+   "sgs-grb-5cb137ce",
+   "sgs-grb-5d6ebcbf",
+   "sgs-grb-5e679975",
+   "sgs-grb-5eaa5ab3",
+   "sgs-grb-5ee73239",
+   "sgs-grb-5f0a635d",
+   "sgs-grb-605edfc9",
+   "sgs-grb-60cad6f3",
+   "sgs-grb-60dbdc62",
+   "sgs-grb-618009a4",
+   "sgs-grb-634e2a8b",
+   "sgs-grb-635ada81",
+   "sgs-grb-64b7f40b",
+   "sgs-grb-64e9bb50",
+   "sgs-grb-657083b2",
+   "sgs-grb-6631160e",
+   "sgs-grb-6656684c",
+   "sgs-grb-669bd1c4",
+   "sgs-grb-684add14",
+   "sgs-grb-687af8d1",
+   "sgs-grb-688a7c68",
+   "sgs-grb-68d86d47",
+   "sgs-grb-6a5a18f4",
+   "sgs-grb-6ac9ae17",
+   "sgs-grb-6c66e4c0",
+   "sgs-grb-6c8625db",
+   "sgs-grb-6e1715b0",
+   "sgs-grb-6f460653",
+   "sgs-grb-701ddf82",
+   "sgs-grb-70b96bdf",
+   "sgs-grb-70f031ab",
+   "sgs-grb-7108d806",
+   "sgs-grb-71b448bf",
+   "sgs-grb-72964134",
+   "sgs-grb-73103438",
+   "sgs-grb-740a0a71",
+   "sgs-grb-74f4c336",
+   "sgs-grb-75dba6d4",
+   "sgs-grb-775d7892",
+   "sgs-grb-7767b613",
+   "sgs-grb-77c14dcd",
+   "sgs-grb-787711d0",
+   "sgs-grb-78a7e83d",
+   "sgs-grb-7b315277",
+   "sgs-grb-7c047982",
+   "sgs-grb-7c94d621",
+   "sgs-grb-7cb88438",
+   "sgs-grb-7d76ed0e",
+   "sgs-grb-804e311d",
+   "sgs-grb-809957e4",
+   "sgs-grb-8148563f",
+   "sgs-grb-81935a91",
+   "sgs-grb-81cfc96b",
+   "sgs-grb-828f77fc",
+   "sgs-grb-82e7f22a",
+   "sgs-grb-83a00484",
+   "sgs-grb-83ff33d7",
+   "sgs-grb-841fa459",
+   "sgs-grb-845e8413",
+   "sgs-grb-84fa5ce1",
+   "sgs-grb-8578c917",
+   "sgs-grb-85bdb2ad",
+   "sgs-grb-85dc725c",
+   "sgs-grb-86bc19d6",
+   "sgs-grb-86de1b35",
+   "sgs-grb-8719ce74",
+   "sgs-grb-87abf985",
+   "sgs-grb-889f4a79",
+   "sgs-grb-8999bf08",
+   "sgs-grb-8a1ba4a8",
+   "sgs-grb-8a6fbe5c",
+   "sgs-grb-8ad343fc",
+   "sgs-grb-8c292eef",
+   "sgs-grb-8c99b3bc",
+   "sgs-grb-8d0e18a2",
+   "sgs-grb-8d4db9b6",
+   "sgs-grb-8e153b04",
+   "sgs-grb-8e4b11c8",
+   "sgs-grb-8fa0c2c8",
+   "sgs-grb-8fc72ad2",
+   "sgs-grb-90ab83b1",
+   "sgs-grb-912bc3e9",
+   "sgs-grb-91539595",
+   "sgs-grb-92010d60",
+   "sgs-grb-92120f2b",
+   "sgs-grb-932b499b",
+   "sgs-grb-93fa0056",
+   "sgs-grb-960c6277",
+   "sgs-grb-960d766a",
+   "sgs-grb-9780651b",
+   "sgs-grb-98c832a8",
+   "sgs-grb-98e208ea",
+   "sgs-grb-9ad7c57f",
+   "sgs-grb-9b527fee",
+   "sgs-grb-9b53ad89",
+   "sgs-grb-9b62b647",
+   "sgs-grb-9b6aac0f",
+   "sgs-grb-9c11879d",
+   "sgs-grb-9ca86da1",
+   "sgs-grb-9cd3f195",
+   "sgs-grb-9daecb6e",
+   "sgs-grb-9e48e980",
+   "sgs-grb-9ead74d5",
+   "sgs-grb-9ec7e3be",
+   "sgs-grb-9f371d0a",
+   "sgs-grb-9f4f4b14",
+   "sgs-grb-9f88f27d",
+   "sgs-grb-a01217db",
+   "sgs-grb-a06768ab",
+   "sgs-grb-a06af577",
+   "sgs-grb-a0b09efe",
+   "sgs-grb-a1cbadaf",
+   "sgs-grb-a2dae589",
+   "sgs-grb-a2e831bf",
+   "sgs-grb-a3dfa7af",
+   "sgs-grb-a48567ea",
+   "sgs-grb-a5ac8fd1",
+   "sgs-grb-a75a096e",
+   "sgs-grb-a7713e69",
+   "sgs-grb-a799d2d9",
+   "sgs-grb-a9162738",
+   "sgs-grb-a9d5ea77",
+   "sgs-grb-aac3e3b8",
+   "sgs-grb-abf18eb7",
+   "sgs-grb-acb69902",
+   "sgs-grb-accfab36",
+   "sgs-grb-ad9b6ff3",
+   "sgs-grb-afe2a3bc",
+   "sgs-grb-b017a908",
+   "sgs-grb-b036a33c",
+   "sgs-grb-b130f715",
+   "sgs-grb-b2f115e5",
+   "sgs-grb-b3ebeb29",
+   "sgs-grb-b4ae7b0f",
+   "sgs-grb-b4b0847e",
+   "sgs-grb-b58b1dbd",
+   "sgs-grb-b681174d",
+   "sgs-grb-b6ecd314",
+   "sgs-grb-b825a638",
+   "sgs-grb-b8ead259",
+   "sgs-grb-b93403a9",
+   "sgs-grb-b982b255",
+   "sgs-grb-ba77a92d",
+   "sgs-grb-bb3c3acb",
+   "sgs-grb-bbeeada9",
+   "sgs-grb-bc26e25e",
+   "sgs-grb-bc7cfc03",
+   "sgs-grb-bd3418e9",
+   "sgs-grb-bda873ac",
+   "sgs-grb-bdddd7c8",
+   "sgs-grb-bddeaa5b",
+   "sgs-grb-be4f0a8d",
+   "sgs-grb-bf0f75d9",
+   "sgs-grb-bf8ecb06",
+   "sgs-grb-bff500ca",
+   "sgs-grb-c1063b2b",
+   "sgs-grb-c14880e2",
+   "sgs-grb-c222d44c",
+   "sgs-grb-c5556c9e",
+   "sgs-grb-c5b1b5fe",
+   "sgs-grb-c6441bdc",
+   "sgs-grb-c6cae5c8",
+   "sgs-grb-c7035538",
+   "sgs-grb-c83e6e0f",
+   "sgs-grb-c874aa27",
+   "sgs-grb-c8d6662d",
+   "sgs-grb-c8eab3da",
+   "sgs-grb-c989d718",
+   "sgs-grb-c99f7688",
+   "sgs-grb-c9c661c5",
+   "sgs-grb-ca0eecaa",
+   "sgs-grb-cb441f27",
+   "sgs-grb-cc0c6d60",
+   "sgs-grb-cc352d17",
+   "sgs-grb-cc48b08c",
+   "sgs-grb-cca0b57a",
+   "sgs-grb-ccd200b1",
+   "sgs-grb-cd681e72",
+   "sgs-grb-cd6f4345",
+   "sgs-grb-ce4cfd17",
+   "sgs-grb-cebd9d5b",
+   "sgs-grb-cf4f38c4",
+   "sgs-grb-cf649646",
+   "sgs-grb-d046c7c9",
+   "sgs-grb-d08a1c9b",
+   "sgs-grb-d1f430f7",
+   "sgs-grb-d2a08be4",
+   "sgs-grb-d34fab93",
+   "sgs-grb-d34fc374",
+   "sgs-grb-d39c62de",
+   "sgs-grb-d498913f",
+   "sgs-grb-d4ab01f9",
+   "sgs-grb-d5066517",
+   "sgs-grb-d60dba82",
+   "sgs-grb-d63304ea",
+   "sgs-grb-d65e8c7a",
+   "sgs-grb-d7665f90",
+   "sgs-grb-d781037d",
+   "sgs-grb-d7f8da90",
+   "sgs-grb-d80f7846",
+   "sgs-grb-d81ef531",
+   "sgs-grb-d86b68d1",
+   "sgs-grb-d92388f9",
+   "sgs-grb-dbc7fc00",
+   "sgs-grb-dbe70d83",
+   "sgs-grb-dbfc65fb",
+   "sgs-grb-dc08b5a7",
+   "sgs-grb-dc3b0bae",
+   "sgs-grb-dce70546",
+   "sgs-grb-dd1b29d5",
+   "sgs-grb-dfc02541",
+   "sgs-grb-dfe49790",
+   "sgs-grb-e0458083",
+   "sgs-grb-e15dc11a",
+   "sgs-grb-e1e6fe98",
+   "sgs-grb-e22faa38",
+   "sgs-grb-e2312818",
+   "sgs-grb-e23f48f3",
+   "sgs-grb-e3ac47fc",
+   "sgs-grb-e41e5d2c",
+   "sgs-grb-e56b73dc",
+   "sgs-grb-e5925c50",
+   "sgs-grb-e5cd6f3b",
+   "sgs-grb-e64be1e0",
+   "sgs-grb-e7059c70",
+   "sgs-grb-e73ac7ef",
+   "sgs-grb-e814e73d",
+   "sgs-grb-e88a91fd",
+   "sgs-grb-eb090c19",
+   "sgs-grb-eb279e8b",
+   "sgs-grb-ebbc0ff7",
+   "sgs-grb-ec3f13e3",
+   "sgs-grb-ec945dee",
+   "sgs-grb-ecb7ec76",
+   "sgs-grb-ed074dc0",
+   "sgs-grb-edbc56b3",
+   "sgs-grb-edd0ae6a",
+   "sgs-grb-ee51f398",
+   "sgs-grb-eef59fd5",
+   "sgs-grb-eefbe976",
+   "sgs-grb-ef2c3c24",
+   "sgs-grb-eff38893",
+   "sgs-grb-f1372bbf",
+   "sgs-grb-f1789b8f",
+   "sgs-grb-f26bae9f",
+   "sgs-grb-f287fb0d",
+   "sgs-grb-f3784f4d",
+   "sgs-grb-f3eaf357",
+   "sgs-grb-f40ab14f",
+   "sgs-grb-f418834d",
+   "sgs-grb-f4f847db",
+   "sgs-grb-f5f3cafa",
+   "sgs-grb-f6722461",
+   "sgs-grb-f6783572",
+   "sgs-grb-f6c2cbd2",
+   "sgs-grb-f881dee9",
+   "sgs-grb-fa7d867b",
+   "sgs-grb-fbbfe740",
+   "sgs-grb-fc18be92",
+   "sgs-grb-fd1f92ad",
+   "sgs-grb-fd31172a",
+   "sgs-grb-fd5ac26d",
+   "sgs-grb-fd97a6be",
+   "sgs-grb-fd99911c",
+   "sgs-grb-fdded418",
+   "sgs-grb-ff1356cb",
+   "sgs-grb-ff785a61",
+   "sgs-grb-ffc138f2",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "sgs-sr-only",
+   "wp-block-sgs-google-rating-badge"
+  ],
+  "tags": [
+   "a",
+   "clippath",
+   "defs",
+   "div",
+   "img",
+   "lineargradient",
+   "path",
+   "rect",
+   "span",
+   "stop",
+   "style",
+   "svg"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}

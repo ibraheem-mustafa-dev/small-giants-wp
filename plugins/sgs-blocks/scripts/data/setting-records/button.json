@@ -1,0 +1,10014 @@
+{
+ "block": "sgs/button",
+ "schemaVersion": 2,
+ "parts": [
+  "sgs-button__label",
+  "sgs-button__icon"
+ ],
+ "entries": [
+  {
+   "setting": "alignSelf",
+   "part": "ROOT",
+   "props": [
+    "align-self"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "auto",
+     "tablet": "flex-start",
+     "mobile": "center"
+    }
+   ]
+  },
+  {
+   "setting": "alignSelf",
+   "part": "ROOT",
+   "props": [
+    "align-self"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "auto",
+     "tablet": "flex-start",
+     "mobile": "center"
+    }
+   ]
+  },
+  {
+   "setting": "alignSelf",
+   "part": "ROOT",
+   "props": [
+    "align-self"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "auto",
+     "tablet": "flex-start",
+     "mobile": "center"
+    },
+    {
+     "desktop": "auto"
+    }
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourHover",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourHover",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourHoverGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:has(:focus-visible)::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourHoverGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "dashed"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-button.sgs-button:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-button.sgs-button:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColourHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColourHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "builtInHoverLift",
+   "part": "ROOT",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "builtInHoverLift",
+   "part": "ROOT",
+   "props": [
+    "transform"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "colourBackground",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourBackground",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourBackground",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourBackgroundGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourBackgroundGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourBackgroundGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourBackgroundHover",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourBackgroundHover",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourBackgroundHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourBackgroundHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourText",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourText",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourText",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextGradient",
+   "part": "ROOT::after",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHover",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourTextHover",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "colourTextHoverGradient",
+   "part": "ROOT::after",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "contentAlign",
+   "part": "ROOT",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "flex-end"
+    }
+   ]
+  },
+  {
+   "setting": "contentAlign",
+   "part": "ROOT",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "flex-end"
+    }
+   ]
+  },
+  {
+   "setting": "contentAlign",
+   "part": "ROOT",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "flex-end"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "customWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "customWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "customWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "fontFamily",
+   "part": "ROOT",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "fontStyle",
+   "part": "ROOT",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "italic"
+   ]
+  },
+  {
+   "setting": "fontWeight",
+   "part": "ROOT",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "fontWeightHover",
+   "part": "ROOT",
+   "props": [
+    "font-weight"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "fontWeightHover",
+   "part": "ROOT",
+   "props": [
+    "font-weight"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "translate"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon[data-sgs-mc~=\"translate\"] > svg",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-button__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-button__icon",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-button__icon",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-button__icon",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-button__icon",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-button__icon",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-button__icon",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "translate"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon[data-sgs-mc~=\"translate\"] > svg",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible .sgs-button__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover .sgs-button__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColour",
+   "part": "sgs-button__icon",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourGradient",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "stroke"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon svg",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible .sgs-button__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourHover",
+   "part": "sgs-button__icon",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover .sgs-button__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "stroke"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible .sgs-button__icon svg",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "stroke"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover .sgs-button__icon svg",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGapHover",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": "focus",
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGapHover",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": "focus",
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGapHover",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGapHover",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": "hover",
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGapHover",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": "hover",
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGapHover",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGapHover",
+   "part": "ROOT",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-button__icon svg",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--outline",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--outline",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--outline",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--outline",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--outline",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--outline",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--outline",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--outline",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "transform"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inheritStyle",
+   "part": "ROOT",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-button__label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:focus:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "always",
+    "hover",
+    "none",
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    "always",
+    "hover",
+    "none",
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors: active)"
+   ],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "hover",
+    "none",
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    "always",
+    "hover",
+    "none",
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "background-origin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "background-position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "background-repeat"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "background-size"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:focus-visible .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "background-size"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button.sgs-button:hover .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "background-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-button.sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-button__label",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button .sgs-button__label",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderlineColour",
+   "part": "ROOT",
+   "props": [
+    "text-decoration-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:focus:not(:focus-visible)",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "linkUnderlineColour",
+   "part": "ROOT",
+   "props": [
+    "text-decoration-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "linkUnderlineColour",
+   "part": "ROOT",
+   "props": [
+    "text-decoration-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "linkUnderlineColourHover",
+   "part": "ROOT",
+   "props": [
+    "text-decoration-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "linkUnderlineColourHover",
+   "part": "ROOT",
+   "props": [
+    "text-decoration-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "linkUnderlineOffset",
+   "part": "ROOT",
+   "props": [
+    "text-underline-offset"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:focus:not(:focus-visible)",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "linkUnderlineOffset",
+   "part": "ROOT",
+   "props": [
+    "text-underline-offset"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "linkUnderlineOffset",
+   "part": "ROOT",
+   "props": [
+    "text-underline-offset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "linkUnderlineThickness",
+   "part": "ROOT",
+   "props": [
+    "text-decoration-thickness"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:focus:not(:focus-visible)",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "linkUnderlineThickness",
+   "part": "ROOT",
+   "props": [
+    "text-decoration-thickness"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "linkUnderlineThickness",
+   "part": "ROOT",
+   "props": [
+    "text-decoration-thickness"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "ROOT",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "ROOT",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "ROOT",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "minWidth",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "minWidth",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "minWidth",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsHideOnDesktop",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px)"
+   ],
+   "selector": ".sgs-hide-desktop",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnMobile",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width:767.98px)"
+   ],
+   "selector": ".sgs-hide-mobile",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnTablet",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ],
+   "selector": ".sgs-hide-tablet",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "absolute",
+     "tablet": "static",
+     "mobile": "absolute"
+    },
+    {
+     "desktop": "relative",
+     "tablet": "static",
+     "mobile": "relative"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "absolute",
+     "tablet": "static",
+     "mobile": "absolute"
+    },
+    {
+     "desktop": "relative",
+     "tablet": "static",
+     "mobile": "relative"
+    },
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "absolute",
+     "tablet": "static",
+     "mobile": "absolute"
+    },
+    {
+     "desktop": "relative",
+     "tablet": "static",
+     "mobile": "relative"
+    },
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "absolute",
+     "tablet": "static",
+     "mobile": "absolute"
+    },
+    {
+     "desktop": "absolute"
+    },
+    {
+     "desktop": "relative",
+     "tablet": "static",
+     "mobile": "relative"
+    },
+    {
+     "desktop": "relative"
+    },
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "sgs-float-position",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "absolute",
+     "tablet": "static",
+     "mobile": "absolute"
+    },
+    {
+     "desktop": "relative",
+     "tablet": "static",
+     "mobile": "relative"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "sgs-float-position",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "sgs-float-position",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "sgs-float-position",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "absolute",
+     "tablet": "static",
+     "mobile": "absolute"
+    },
+    {
+     "desktop": "relative",
+     "tablet": "static",
+     "mobile": "relative"
+    },
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "sgs-float-position",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "absolute",
+     "tablet": "static",
+     "mobile": "absolute"
+    },
+    {
+     "desktop": "relative",
+     "tablet": "static",
+     "mobile": "relative"
+    },
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "sgsPosition",
+   "part": "sgs-float-position",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-float-position.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "absolute",
+     "tablet": "static",
+     "mobile": "absolute"
+    },
+    {
+     "desktop": "absolute"
+    },
+    {
+     "desktop": "relative",
+     "tablet": "static",
+     "mobile": "relative"
+    },
+    {
+     "desktop": "relative"
+    },
+    {
+     "desktop": "static",
+     "tablet": "relative",
+     "mobile": "static"
+    }
+   ]
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "textColumns",
+   "part": "ROOT",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "textDecoration",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "underline"
+   ]
+  },
+  {
+   "setting": "textDecorationHover",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    "underline"
+   ]
+  },
+  {
+   "setting": "textDecorationHover",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "underline"
+   ]
+  },
+  {
+   "setting": "textStrokeColour",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeColourHover",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeColourHover",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-button.sgs-button:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "textTransform",
+   "part": "ROOT",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "textWrap",
+   "part": "ROOT",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "widthType",
+   "part": "ROOT",
+   "props": [
+    "align-self"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--full",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "full",
+     "tablet": "custom",
+     "mobile": "full"
+    },
+    {
+     "desktop": "full"
+    }
+   ]
+  },
+  {
+   "setting": "widthType",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--full",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "full",
+     "tablet": "custom",
+     "mobile": "full"
+    },
+    {
+     "desktop": "full"
+    }
+   ]
+  },
+  {
+   "setting": "widthType",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button--full",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "full",
+     "tablet": "custom",
+     "mobile": "full"
+    },
+    {
+     "desktop": "full"
+    }
+   ]
+  },
+  {
+   "setting": "widthType",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "full",
+     "tablet": "custom",
+     "mobile": "full"
+    },
+    {
+     "desktop": "full"
+    }
+   ]
+  },
+  {
+   "setting": "writingMode",
+   "part": "ROOT",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-button.sgs-button",
+   "kind": "value",
+   "values": [
+    "horizontal-tb",
+    "vertical-lr",
+    "vertical-rl"
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "alignSelf",
+   "ROOT",
+   [
+    "align-self"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "alignSelf",
+   "ROOT",
+   [
+    "align-self"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "alignSelf",
+   "ROOT",
+   [
+    "align-self"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourHover",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "borderColourHover",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "borderColourHoverGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "borderColourHoverGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "borderColourHoverGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "borderColourHoverGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "boxShadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "boxShadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "boxShadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "boxShadowColourHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "boxShadowColourHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "boxShadowHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "boxShadowHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "builtInHoverLift",
+   "ROOT",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "builtInHoverLift",
+   "ROOT",
+   [
+    "transform"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourBackground",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourBackground",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourBackground",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourBackgroundGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourBackgroundGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourBackgroundGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourBackgroundHover",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourBackgroundHover",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourBackgroundHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourBackgroundHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourText",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourText",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourText",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "colourTextGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "colourTextGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT",
+   [
+    "isolation"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextGradient",
+   "ROOT::after",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHover",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourTextHover",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "isolation"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourTextHoverGradient",
+   "ROOT::after",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "contentAlign",
+   "ROOT",
+   [
+    "justify-content"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "contentAlign",
+   "ROOT",
+   [
+    "justify-content"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "contentAlign",
+   "ROOT",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "customWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "customWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "customWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontFamily",
+   "ROOT",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontStyle",
+   "ROOT",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontWeight",
+   "ROOT",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontWeightHover",
+   "ROOT",
+   [
+    "font-weight"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "fontWeightHover",
+   "ROOT",
+   [
+    "font-weight"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon svg",
+   [
+    "translate"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "align-items"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-button__icon",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon svg",
+   [
+    "translate"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "align-items"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-button__icon",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColour",
+   "sgs-button__icon",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourGradient",
+   "sgs-button__icon svg",
+   [
+    "stroke"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourHover",
+   "sgs-button__icon",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHover",
+   "sgs-button__icon",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-button__icon svg",
+   [
+    "stroke"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-button__icon svg",
+   [
+    "stroke"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconGap",
+   "ROOT",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconGap",
+   "ROOT",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconGap",
+   "ROOT",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconGapHover",
+   "ROOT",
+   [
+    "gap"
+   ],
+   "focus",
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconGapHover",
+   "ROOT",
+   [
+    "gap"
+   ],
+   "focus",
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconGapHover",
+   "ROOT",
+   [
+    "gap"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconGapHover",
+   "ROOT",
+   [
+    "gap"
+   ],
+   "hover",
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconGapHover",
+   "ROOT",
+   [
+    "gap"
+   ],
+   "hover",
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconGapHover",
+   "ROOT",
+   [
+    "gap"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconGapHover",
+   "ROOT",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconSize",
+   "sgs-button__icon svg",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconSize",
+   "sgs-button__icon svg",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconSize",
+   "sgs-button__icon svg",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconSize",
+   "sgs-button__icon svg",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconSize",
+   "sgs-button__icon svg",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconSize",
+   "sgs-button__icon svg",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "transform"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "inheritStyle",
+   "ROOT",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "clip"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "clip"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "overflow"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "overflow"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "overflow"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "white-space"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "white-space"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "white-space"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-button__label",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderline",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderline",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   null,
+   [
+    "@media (forced-colors: active)"
+   ]
+  ],
+  [
+   "linkUnderline",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "background-origin"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "background-position"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "background-repeat"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "background-size"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "background-size"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "background-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "linkUnderline",
+   "sgs-button__label",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderlineColour",
+   "ROOT",
+   [
+    "text-decoration-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderlineColour",
+   "ROOT",
+   [
+    "text-decoration-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderlineColour",
+   "ROOT",
+   [
+    "text-decoration-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderlineColourHover",
+   "ROOT",
+   [
+    "text-decoration-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderlineColourHover",
+   "ROOT",
+   [
+    "text-decoration-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderlineOffset",
+   "ROOT",
+   [
+    "text-underline-offset"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderlineOffset",
+   "ROOT",
+   [
+    "text-underline-offset"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderlineOffset",
+   "ROOT",
+   [
+    "text-underline-offset"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderlineThickness",
+   "ROOT",
+   [
+    "text-decoration-thickness"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderlineThickness",
+   "ROOT",
+   [
+    "text-decoration-thickness"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderlineThickness",
+   "ROOT",
+   [
+    "text-decoration-thickness"
+   ],
+   null,
+   []
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "minWidth",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "minWidth",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "minWidth",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsPosition",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsPosition",
+   "sgs-float-position",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "sgs-float-position",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "sgs-float-position",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsPosition",
+   "sgs-float-position",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "sgs-float-position",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsPosition",
+   "sgs-float-position",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "shadowLiftOnHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadowLiftOnHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColumns",
+   "ROOT",
+   [
+    "column-count"
+   ],
+   null,
+   []
+  ],
+  [
+   "textDecoration",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "textDecorationHover",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textDecorationHover",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textStrokeColour",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textStrokeColourHover",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textStrokeColourHover",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "textTransform",
+   "ROOT",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "textWrap",
+   "ROOT",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "widthType",
+   "ROOT",
+   [
+    "align-self"
+   ],
+   null,
+   []
+  ],
+  [
+   "widthType",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "widthType",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "widthType",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "writingMode",
+   "ROOT",
+   [
+    "writing-mode"
+   ],
+   null,
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [
+   "addAfter",
+   "addProductId",
+   "anchor",
+   "ariaLabel",
+   "className",
+   "download",
+   "focusStyle",
+   "icon",
+   "iconPosition",
+   "iconShapeSize",
+   "iconSvg",
+   "iconTitle",
+   "isSubmit",
+   "label",
+   "labelFromSiteInfo",
+   "linkId",
+   "linkKind",
+   "linkSource",
+   "linkTarget",
+   "note",
+   "rel",
+   "sgsCollapseVisibility",
+   "sgsConditionCollectionQueryId",
+   "sgsConditionDateEnd",
+   "sgsConditionFormField",
+   "sgsConditionFormOperator",
+   "sgsConditionFormValue",
+   "sgsConditionProductReviews",
+   "sgsConditionUserRole",
+   "sgsCustomCssId",
+   "sgsCustomCssNote",
+   "sgsInsetBottom",
+   "sgsInsetLeft",
+   "sgsInsetRight",
+   "sgsInsetTop",
+   "url",
+   "visualOnly"
+  ],
+  "replacesBlock": [
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionLoggedIn",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   }
+  ],
+  "partNotNamed": [
+   {
+    "setting": "iconBackground",
+    "part": null,
+    "props": [
+     "translate"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-button.sgs-button .sgs-button__icon[data-sgs-mc~=\"translate\"]"
+   },
+   {
+    "setting": "iconBackgroundHover",
+    "part": null,
+    "props": [
+     "translate"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-button.sgs-button .sgs-button__icon[data-sgs-mc~=\"translate\"]"
+   }
+  ]
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/configurator-picks/class-configurator-groups.php": "f2ac9fe1c11a3a63",
+   "includes/configurator-picks/functions.php": "cc1526a8c66c56f4",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-add-to-basket.php": "9e55175eb678169d",
+   "includes/helpers-button-focus.php": "9efebd417ab52bf8",
+   "includes/helpers-button-icon-circle.php": "9b1361527d91caf6",
+   "includes/helpers-button-icon-gap-hover.php": "772199df930fc7da",
+   "includes/helpers-button-inner-kses.php": "6529a7214b03915c",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-press.php": "cadd75d0b7a7f696",
+   "includes/helpers-button-shared-rules.php": "7e7c43431f4fd41d",
+   "includes/helpers-button-site-info-label.php": "31581ce7431120bf",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-shared-rules.php": "1ecf0e2ae2c88520",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/lucide-icons.php": "d14ea5bbe7383448",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "src/blocks/button/ButtonExtraControls.js": "e0275e72a90199f4",
+   "src/blocks/button/block.json": "2b3e0c9cdf4c2223",
+   "src/blocks/button/components/FocusPreviewToggle.js": "118285696f79594f",
+   "src/blocks/button/edit.js": "862182d09804992d",
+   "src/blocks/button/editor.css": "81e94e7779c26073",
+   "src/blocks/button/focus-style.js": "0d765061c33a093b",
+   "src/blocks/button/icon-circle-preview.js": "d0e5df67cf7add9e",
+   "src/blocks/button/index.js": "11726ffceedcfa1e",
+   "src/blocks/button/preset-names.js": "38f6e8b722e578a8",
+   "src/blocks/button/presets.js": "3970fb446eb18270",
+   "src/blocks/button/preview-style.js": "7afcc6d0a4cf4fef",
+   "src/blocks/button/render.php": "6ac5c631fc503577",
+   "src/blocks/button/save.js": "f734b978d2a2e414",
+   "src/blocks/button/site-info-label.js": "b4967d31cf09012d",
+   "src/blocks/button/style.css": "569540699b9f3bbd",
+   "src/blocks/button/units.js": "f2aa0ecb3f048309",
+   "src/blocks/button/view.js": "d8bac4e3d1823166",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/button/style.css": "569540699b9f3bbd",
+   "fixture:attachments.json": "73e1fa2c8477afd6",
+   "fixture:standin-posts.json": "b01757c23e1ace33",
+   "fixture:product.json": "4b63ad7fcdc66c2b",
+   "fixture-entry": "e667dd8a412cad49",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "e9d1674d5f349b06",
+  "theme": "522d0b6870158173",
+  "classes": [
+   "Sample",
+   "lucide",
+   "lucide-arrow-right",
+   "lucide-star",
+   "sgs-btn-0008dcb5",
+   "sgs-btn-006a53d4",
+   "sgs-btn-00ddc329",
+   "sgs-btn-0100db09",
+   "sgs-btn-01481764",
+   "sgs-btn-01910f33",
+   "sgs-btn-01b65e9a",
+   "sgs-btn-020ce252",
+   "sgs-btn-03919afb",
+   "sgs-btn-04875605",
+   "sgs-btn-049ac94c",
+   "sgs-btn-04bd3758",
+   "sgs-btn-04fdf926",
+   "sgs-btn-053451aa",
+   "sgs-btn-053ceff7",
+   "sgs-btn-05efdd3b",
+   "sgs-btn-069f08b0",
+   "sgs-btn-09ff3999",
+   "sgs-btn-0a292c10",
+   "sgs-btn-0bbbc291",
+   "sgs-btn-0bd04f9b",
+   "sgs-btn-0c504b47",
+   "sgs-btn-0c70b836",
+   "sgs-btn-0c866141",
+   "sgs-btn-0cbf479d",
+   "sgs-btn-0cd3c455",
+   "sgs-btn-0e1766a0",
+   "sgs-btn-0ed6f33e",
+   "sgs-btn-0eed424f",
+   "sgs-btn-0f235f4a",
+   "sgs-btn-0f30f9aa",
+   "sgs-btn-0f8edb0a",
+   "sgs-btn-0f972ed2",
+   "sgs-btn-0ffdfe2c",
+   "sgs-btn-1153bffe",
+   "sgs-btn-1384c845",
+   "sgs-btn-13fe337b",
+   "sgs-btn-1430902e",
+   "sgs-btn-1466cb8b",
+   "sgs-btn-14c1dd46",
+   "sgs-btn-15346f3b",
+   "sgs-btn-155ea75d",
+   "sgs-btn-159d7a72",
+   "sgs-btn-15b50234",
+   "sgs-btn-161c749d",
+   "sgs-btn-18345de8",
+   "sgs-btn-18729599",
+   "sgs-btn-1896c260",
+   "sgs-btn-18c2a533",
+   "sgs-btn-18caaa1e",
+   "sgs-btn-19ae8d52",
+   "sgs-btn-19e8468d",
+   "sgs-btn-1a8a7cdc",
+   "sgs-btn-1bc84e89",
+   "sgs-btn-1c573380",
+   "sgs-btn-1c7d1763",
+   "sgs-btn-1ca367b4",
+   "sgs-btn-1d19990a",
+   "sgs-btn-1d56b367",
+   "sgs-btn-1e40ca90",
+   "sgs-btn-1e568550",
+   "sgs-btn-1e7e9dff",
+   "sgs-btn-1eb7a4c1",
+   "sgs-btn-1f079ee7",
+   "sgs-btn-21151d42",
+   "sgs-btn-21ac3b10",
+   "sgs-btn-21cc15e7",
+   "sgs-btn-21fe491b",
+   "sgs-btn-220877f3",
+   "sgs-btn-223de06f",
+   "sgs-btn-241471f6",
+   "sgs-btn-24307a2c",
+   "sgs-btn-247338e9",
+   "sgs-btn-24ca3ffd",
+   "sgs-btn-25e79b2e",
+   "sgs-btn-26705edf",
+   "sgs-btn-26fff9a4",
+   "sgs-btn-270d99e6",
+   "sgs-btn-275f2271",
+   "sgs-btn-27dafc5d",
+   "sgs-btn-28b038e9",
+   "sgs-btn-28dc0ff3",
+   "sgs-btn-28f89f07",
+   "sgs-btn-291c7133",
+   "sgs-btn-29fbbab9",
+   "sgs-btn-2a4d04a9",
+   "sgs-btn-2aa1076b",
+   "sgs-btn-2ac6569d",
+   "sgs-btn-2b6438dc",
+   "sgs-btn-2bd5e069",
+   "sgs-btn-2ca2980c",
+   "sgs-btn-2caf1c44",
+   "sgs-btn-2d20b482",
+   "sgs-btn-2dce2136",
+   "sgs-btn-2fb3bdb1",
+   "sgs-btn-2ff65446",
+   "sgs-btn-311a96db",
+   "sgs-btn-31b762de",
+   "sgs-btn-3216dce2",
+   "sgs-btn-321e4879",
+   "sgs-btn-3241632b",
+   "sgs-btn-3337e608",
+   "sgs-btn-33e636c7",
+   "sgs-btn-341d2143",
+   "sgs-btn-3480b49f",
+   "sgs-btn-34a0f29e",
+   "sgs-btn-34e6efff",
+   "sgs-btn-34f4a998",
+   "sgs-btn-3736f864",
+   "sgs-btn-377404d7",
+   "sgs-btn-379f4527",
+   "sgs-btn-37ad3967",
+   "sgs-btn-381770fe",
+   "sgs-btn-3973c08c",
+   "sgs-btn-39fb21af",
+   "sgs-btn-3a1ac590",
+   "sgs-btn-3bde9f7b",
+   "sgs-btn-3c8be4b3",
+   "sgs-btn-3ca37a77",
+   "sgs-btn-3ccf0d37",
+   "sgs-btn-3de0d303",
+   "sgs-btn-3e6c1a73",
+   "sgs-btn-3eb6d5b6",
+   "sgs-btn-3ebd86bd",
+   "sgs-btn-3f1daabd",
+   "sgs-btn-3f98ee8c",
+   "sgs-btn-3ff4a351",
+   "sgs-btn-400ce2e4",
+   "sgs-btn-4022cdfb",
+   "sgs-btn-40924a4b",
+   "sgs-btn-40a895ca",
+   "sgs-btn-40edf800",
+   "sgs-btn-412c4708",
+   "sgs-btn-418dff35",
+   "sgs-btn-421207f5",
+   "sgs-btn-424e6367",
+   "sgs-btn-438896b1",
+   "sgs-btn-43e8266d",
+   "sgs-btn-44463f53",
+   "sgs-btn-44e75beb",
+   "sgs-btn-4528e274",
+   "sgs-btn-456d0674",
+   "sgs-btn-468ce6be",
+   "sgs-btn-46e6a690",
+   "sgs-btn-48a6bb44",
+   "sgs-btn-48dc368b",
+   "sgs-btn-49bce79b",
+   "sgs-btn-4b4a136a",
+   "sgs-btn-4b7c670a",
+   "sgs-btn-4ba43b41",
+   "sgs-btn-4cd3eed1",
+   "sgs-btn-4d96f481",
+   "sgs-btn-4ef98e46",
+   "sgs-btn-4f94efcc",
+   "sgs-btn-4fba1742",
+   "sgs-btn-50f784ff",
+   "sgs-btn-5120ae61",
+   "sgs-btn-5193f81c",
+   "sgs-btn-52955411",
+   "sgs-btn-52d1c7ab",
+   "sgs-btn-5307932a",
+   "sgs-btn-53c1baa6",
+   "sgs-btn-53d8271d",
+   "sgs-btn-542514f9",
+   "sgs-btn-546f65c2",
+   "sgs-btn-549bac2b",
+   "sgs-btn-55dbcb99",
+   "sgs-btn-5647ff8d",
+   "sgs-btn-57190e3d",
+   "sgs-btn-573f6b7d",
+   "sgs-btn-579291b0",
+   "sgs-btn-584b26b8",
+   "sgs-btn-593c65b1",
+   "sgs-btn-59fd6c7d",
+   "sgs-btn-5a05a2e4",
+   "sgs-btn-5a0a9989",
+   "sgs-btn-5bb67be3",
+   "sgs-btn-5bdb916d",
+   "sgs-btn-5c2081a3",
+   "sgs-btn-5d5b49e7",
+   "sgs-btn-5db2f8bd",
+   "sgs-btn-5dfb81b4",
+   "sgs-btn-5fa1a7ee",
+   "sgs-btn-5fb47276",
+   "sgs-btn-5fcbb450",
+   "sgs-btn-5fddf359",
+   "sgs-btn-6018724d",
+   "sgs-btn-61523947",
+   "sgs-btn-616c694a",
+   "sgs-btn-61db32f7",
+   "sgs-btn-62574cfd",
+   "sgs-btn-6318d2bc",
+   "sgs-btn-63393aa6",
+   "sgs-btn-63840271",
+   "sgs-btn-63a24285",
+   "sgs-btn-64814fcd",
+   "sgs-btn-649a4170",
+   "sgs-btn-64d56e52",
+   "sgs-btn-64e7b43e",
+   "sgs-btn-6528a9e8",
+   "sgs-btn-65b27e1c",
+   "sgs-btn-65bf8fe2",
+   "sgs-btn-66861321",
+   "sgs-btn-66b3af71",
+   "sgs-btn-67519648",
+   "sgs-btn-67a49d0c",
+   "sgs-btn-6869f2e7",
+   "sgs-btn-694b73a6",
+   "sgs-btn-6954ca7f",
+   "sgs-btn-6957e0eb",
+   "sgs-btn-695d829b",
+   "sgs-btn-6a1fa738",
+   "sgs-btn-6a92b650",
+   "sgs-btn-6b3f3959",
+   "sgs-btn-6b44f43b",
+   "sgs-btn-6b4dd05e",
+   "sgs-btn-6b5a9848",
+   "sgs-btn-6b6eec40",
+   "sgs-btn-6ba96cc9",
+   "sgs-btn-6cee0df6",
+   "sgs-btn-6e13330b",
+   "sgs-btn-6ee94687",
+   "sgs-btn-6f6976b8",
+   "sgs-btn-7025d324",
+   "sgs-btn-70345039",
+   "sgs-btn-7054019f",
+   "sgs-btn-705e7554",
+   "sgs-btn-707dd66b",
+   "sgs-btn-70b12e33",
+   "sgs-btn-70da7a55",
+   "sgs-btn-70ee2b39",
+   "sgs-btn-7117896f",
+   "sgs-btn-7117f833",
+   "sgs-btn-719b51dc",
+   "sgs-btn-72fb1db3",
+   "sgs-btn-738fe471",
+   "sgs-btn-73c4a907",
+   "sgs-btn-73e05ab8",
+   "sgs-btn-7405e83e",
+   "sgs-btn-746a31e5",
+   "sgs-btn-75236117",
+   "sgs-btn-754c761a",
+   "sgs-btn-7805ea03",
+   "sgs-btn-785255dd",
+   "sgs-btn-7862d014",
+   "sgs-btn-788447d3",
+   "sgs-btn-7890aab0",
+   "sgs-btn-78acceb0",
+   "sgs-btn-78b9e4fa",
+   "sgs-btn-7925f3a0",
+   "sgs-btn-7a04d0dd",
+   "sgs-btn-7a3ffb27",
+   "sgs-btn-7a47c0b4",
+   "sgs-btn-7a7ac914",
+   "sgs-btn-7ac2d3e4",
+   "sgs-btn-7adfcd1f",
+   "sgs-btn-7b25d370",
+   "sgs-btn-7c16308b",
+   "sgs-btn-7c5ff120",
+   "sgs-btn-7d63b7bd",
+   "sgs-btn-7e1f9233",
+   "sgs-btn-7e8afbde",
+   "sgs-btn-804636ab",
+   "sgs-btn-812342fe",
+   "sgs-btn-813eede8",
+   "sgs-btn-828f4173",
+   "sgs-btn-82c77dfd",
+   "sgs-btn-82d3a000",
+   "sgs-btn-82f3b585",
+   "sgs-btn-82f9f731",
+   "sgs-btn-8326d001",
+   "sgs-btn-84405a34",
+   "sgs-btn-84439abc",
+   "sgs-btn-8492088e",
+   "sgs-btn-84b17367",
+   "sgs-btn-861d8b2e",
+   "sgs-btn-86478c09",
+   "sgs-btn-86ff3c04",
+   "sgs-btn-872714e1",
+   "sgs-btn-8849d5d1",
+   "sgs-btn-898087d4",
+   "sgs-btn-8aa32253",
+   "sgs-btn-8b2d59a0",
+   "sgs-btn-8bc087d4",
+   "sgs-btn-8d439a83",
+   "sgs-btn-8eb5dc6d",
+   "sgs-btn-8f22af57",
+   "sgs-btn-8f870b57",
+   "sgs-btn-8fce6980",
+   "sgs-btn-8fea0ddd",
+   "sgs-btn-90eea05a",
+   "sgs-btn-9188f0cf",
+   "sgs-btn-91ed0a99",
+   "sgs-btn-91f44006",
+   "sgs-btn-91fe9223",
+   "sgs-btn-938cccb1",
+   "sgs-btn-93fb4826",
+   "sgs-btn-95c04441",
+   "sgs-btn-96094f24",
+   "sgs-btn-965a9eea",
+   "sgs-btn-9788f3b7",
+   "sgs-btn-9815147b",
+   "sgs-btn-9847b064",
+   "sgs-btn-9894c99b",
+   "sgs-btn-989588f4",
+   "sgs-btn-997d1a39",
+   "sgs-btn-997ecaf1",
+   "sgs-btn-9a7445f3",
+   "sgs-btn-9aa4a81f",
+   "sgs-btn-9ad43524",
+   "sgs-btn-9b42ac11",
+   "sgs-btn-9b81448a",
+   "sgs-btn-9ba49aae",
+   "sgs-btn-9bda3354",
+   "sgs-btn-9c2dfcad",
+   "sgs-btn-9c454c2c",
+   "sgs-btn-9ca46dd0",
+   "sgs-btn-9cacf28e",
+   "sgs-btn-9cf3246c",
+   "sgs-btn-9d0baee3",
+   "sgs-btn-9da5d71a",
+   "sgs-btn-9de622c3",
+   "sgs-btn-9df5833f",
+   "sgs-btn-9e0bb061",
+   "sgs-btn-9f9e3858",
+   "sgs-btn-9ffd0e0a",
+   "sgs-btn-a0309a17",
+   "sgs-btn-a1b355f8",
+   "sgs-btn-a2601562",
+   "sgs-btn-a3035237",
+   "sgs-btn-a32e083e",
+   "sgs-btn-a3c07221",
+   "sgs-btn-a4b7b0e9",
+   "sgs-btn-a559f4be",
+   "sgs-btn-a59424f6",
+   "sgs-btn-a5d4133e",
+   "sgs-btn-a5db3b07",
+   "sgs-btn-a69d15ee",
+   "sgs-btn-a7b57177",
+   "sgs-btn-a7bd6eb0",
+   "sgs-btn-a8307a42",
+   "sgs-btn-ac22fcbb",
+   "sgs-btn-ad044fb3",
+   "sgs-btn-ad22bef3",
+   "sgs-btn-ad37b035",
+   "sgs-btn-ad9ce60e",
+   "sgs-btn-ae3b5ef2",
+   "sgs-btn-aea0b790",
+   "sgs-btn-aed5ecbf",
+   "sgs-btn-af0d6774",
+   "sgs-btn-af1a62b2",
+   "sgs-btn-af9cae3d",
+   "sgs-btn-b0794b37",
+   "sgs-btn-b1c2d543",
+   "sgs-btn-b2640aa6",
+   "sgs-btn-b287ea9e",
+   "sgs-btn-b3490d3e",
+   "sgs-btn-b36527fc",
+   "sgs-btn-b3a5afa5",
+   "sgs-btn-b46166df",
+   "sgs-btn-b496d5c4",
+   "sgs-btn-b513d8fc",
+   "sgs-btn-b5c72860",
+   "sgs-btn-b5d6766e",
+   "sgs-btn-b65952c4",
+   "sgs-btn-b6a45be3",
+   "sgs-btn-b6aefa85",
+   "sgs-btn-b7e04766",
+   "sgs-btn-b808d980",
+   "sgs-btn-b853ab5d",
+   "sgs-btn-b91f128f",
+   "sgs-btn-b93d2cae",
+   "sgs-btn-b99de0be",
+   "sgs-btn-b9a6e468",
+   "sgs-btn-baa08801",
+   "sgs-btn-bb07ecee",
+   "sgs-btn-bb41ca14",
+   "sgs-btn-bb43fdae",
+   "sgs-btn-bc1b596b",
+   "sgs-btn-bc417753",
+   "sgs-btn-bc4853e3",
+   "sgs-btn-bc75cc08",
+   "sgs-btn-bc8002d0",
+   "sgs-btn-bde91c4a",
+   "sgs-btn-be2ffbcd",
+   "sgs-btn-be996ec3",
+   "sgs-btn-bf63fb9f",
+   "sgs-btn-bf65e65f",
+   "sgs-btn-bf6eba0f",
+   "sgs-btn-bfc49807",
+   "sgs-btn-c00361b6",
+   "sgs-btn-c06508f9",
+   "sgs-btn-c0675dcb",
+   "sgs-btn-c06e12de",
+   "sgs-btn-c08d1e63",
+   "sgs-btn-c0c972cf",
+   "sgs-btn-c0d7f1a7",
+   "sgs-btn-c20f2ff9",
+   "sgs-btn-c26c421e",
+   "sgs-btn-c3064f52",
+   "sgs-btn-c39e0a56",
+   "sgs-btn-c3bb9d78",
+   "sgs-btn-c4150cd2",
+   "sgs-btn-c41af361",
+   "sgs-btn-c44a0abf",
+   "sgs-btn-c589bd26",
+   "sgs-btn-c5940364",
+   "sgs-btn-c5d6df08",
+   "sgs-btn-c6417d8e",
+   "sgs-btn-c67d763a",
+   "sgs-btn-c7399de3",
+   "sgs-btn-c73c9829",
+   "sgs-btn-c7680444",
+   "sgs-btn-c7bca35a",
+   "sgs-btn-c7d42185",
+   "sgs-btn-c94a24d2",
+   "sgs-btn-c9851122",
+   "sgs-btn-c985f17f",
+   "sgs-btn-ca27b0de",
+   "sgs-btn-cb855e65",
+   "sgs-btn-cdb3ce77",
+   "sgs-btn-ced5a995",
+   "sgs-btn-cf224d92",
+   "sgs-btn-cff2e180",
+   "sgs-btn-d0ab85a2",
+   "sgs-btn-d0f7d6c0",
+   "sgs-btn-d183bac7",
+   "sgs-btn-d2a0e573",
+   "sgs-btn-d2fcb3ea",
+   "sgs-btn-d352a9bf",
+   "sgs-btn-d4947866",
+   "sgs-btn-d49d3c43",
+   "sgs-btn-d4b4a83a",
+   "sgs-btn-d5f38b58",
+   "sgs-btn-d65688aa",
+   "sgs-btn-d6ab3255",
+   "sgs-btn-d79876c4",
+   "sgs-btn-d7c2a0ed",
+   "sgs-btn-d8bf170c",
+   "sgs-btn-d96bcdd2",
+   "sgs-btn-db5fd758",
+   "sgs-btn-db986731",
+   "sgs-btn-db9bd7d3",
+   "sgs-btn-dbb8de61",
+   "sgs-btn-dbe98623",
+   "sgs-btn-dc5cdb54",
+   "sgs-btn-dc654924",
+   "sgs-btn-dc830ee6",
+   "sgs-btn-dd09720f",
+   "sgs-btn-dddb2372",
+   "sgs-btn-de1ca515",
+   "sgs-btn-de63b3e7",
+   "sgs-btn-e0299d39",
+   "sgs-btn-e040e2cb",
+   "sgs-btn-e153ee93",
+   "sgs-btn-e1836e73",
+   "sgs-btn-e248bd17",
+   "sgs-btn-e2cfcac0",
+   "sgs-btn-e2f5143b",
+   "sgs-btn-e3de7826",
+   "sgs-btn-e4c6cca1",
+   "sgs-btn-e4d058ea",
+   "sgs-btn-e4f351b5",
+   "sgs-btn-e50071d4",
+   "sgs-btn-e552379d",
+   "sgs-btn-e5fa988d",
+   "sgs-btn-e5ff6074",
+   "sgs-btn-e64dbe63",
+   "sgs-btn-e6c6dbfb",
+   "sgs-btn-e757bcf7",
+   "sgs-btn-e7907fac",
+   "sgs-btn-e834c63b",
+   "sgs-btn-eb338b2a",
+   "sgs-btn-eb42d1df",
+   "sgs-btn-eb4f69a6",
+   "sgs-btn-eba11c63",
+   "sgs-btn-ec4f14bb",
+   "sgs-btn-ec6391bf",
+   "sgs-btn-ece48665",
+   "sgs-btn-ed6f1855",
+   "sgs-btn-ed72855f",
+   "sgs-btn-ed9319f7",
+   "sgs-btn-ed9579b2",
+   "sgs-btn-ef7717f1",
+   "sgs-btn-efbde84d",
+   "sgs-btn-efcb8d56",
+   "sgs-btn-eff1a9cd",
+   "sgs-btn-f0f5866c",
+   "sgs-btn-f209bc14",
+   "sgs-btn-f275dc71",
+   "sgs-btn-f35e9640",
+   "sgs-btn-f381d8bb",
+   "sgs-btn-f39c7253",
+   "sgs-btn-f50719ec",
+   "sgs-btn-f512efe2",
+   "sgs-btn-f584d8a7",
+   "sgs-btn-f5ce2f63",
+   "sgs-btn-f609e7c3",
+   "sgs-btn-f6bd82e1",
+   "sgs-btn-f6f0b582",
+   "sgs-btn-f6fd531f",
+   "sgs-btn-f77012cf",
+   "sgs-btn-f77466a6",
+   "sgs-btn-f87aa3cd",
+   "sgs-btn-f947c3a4",
+   "sgs-btn-f9932026",
+   "sgs-btn-fa46afe4",
+   "sgs-btn-fa610e02",
+   "sgs-btn-fa81b0d0",
+   "sgs-btn-fab658cd",
+   "sgs-btn-fbfc1330",
+   "sgs-btn-fcca9699",
+   "sgs-btn-fcd48293",
+   "sgs-btn-fcfe0a33",
+   "sgs-btn-fd2a85a3",
+   "sgs-btn-fd311c07",
+   "sgs-btn-fd4a630a",
+   "sgs-btn-fdee3c01",
+   "sgs-btn-fdf5a9b5",
+   "sgs-btn-fef4e216",
+   "sgs-btn-ff98d31f",
+   "sgs-btn-ffacd846",
+   "sgs-btn-ffb01f89",
+   "sgs-button",
+   "sgs-button--full",
+   "sgs-button--hover-still",
+   "sgs-button--outline",
+   "sgs-button--primary",
+   "sgs-button--still",
+   "sgs-button--visual-only",
+   "sgs-button__icon",
+   "sgs-button__label",
+   "sgs-button__note",
+   "sgs-child-sizing",
+   "sgs-float-position",
+   "sgs-focus--duotone",
+   "sgs-focus--signature",
+   "sgs-focus-rests",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "sgs-m-ef516d11d0",
+   "text",
+   "wp-block-sgs-button"
+  ],
+  "tags": [
+   "a",
+   "defs",
+   "lineargradient",
+   "path",
+   "span",
+   "stop",
+   "style",
+   "svg"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}

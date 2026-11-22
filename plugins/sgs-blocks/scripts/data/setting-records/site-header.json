@@ -1,0 +1,7786 @@
+{
+ "block": "sgs/site-header",
+ "schemaVersion": 2,
+ "parts": [],
+ "entries": [
+  {
+   "setting": "backgroundAlt",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourScrolled",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColourScrolled",
+   "part": "ROOT",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": ".is-header-scrolled",
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header.is-header-scrolled",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColourScrolledGradient",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourScrolledGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": ".is-header-scrolled",
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header.is-header-scrolled",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundDecorative",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "backgroundFit",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    },
+    {
+     "desktop": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "backgroundFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header > .sgs-bg-media .sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "backgroundFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header > .sgs-bg-media .sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "backgroundFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-media .sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    },
+    {
+     "desktop": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "backgroundLoading",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "backgroundOpacity",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": 0.37,
+     "tablet": 0.23,
+     "mobile": 0.07
+    },
+    {
+     "desktop": 0.37
+    }
+   ]
+  },
+  {
+   "setting": "backgroundOpacity",
+   "part": "sgs-bg-media",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header > .sgs-bg-media",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": 0.37,
+     "tablet": 0.23,
+     "mobile": 0.07
+    }
+   ]
+  },
+  {
+   "setting": "backgroundOpacity",
+   "part": "sgs-bg-media",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header > .sgs-bg-media",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": 0.37,
+     "tablet": 0.23,
+     "mobile": 0.07
+    }
+   ]
+  },
+  {
+   "setting": "backgroundOpacity",
+   "part": "sgs-bg-media",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-media",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": 0.37,
+     "tablet": 0.23,
+     "mobile": 0.07
+    },
+    {
+     "desktop": 0.37
+    }
+   ]
+  },
+  {
+   "setting": "backgroundOverlayBlend",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "multiply"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayColour",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayColour",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-overlay",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayColour",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-overlay",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayColourHover",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayColourHover",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-site-header:focus-visible > .sgs-bg-overlay",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayColourHover",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-site-header:hover > .sgs-bg-overlay",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayGradient",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayGradient",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-overlay",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayGradient",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-overlay",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayGradientHover",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "backgroundOverlayOpacity",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "backgroundOverlayOpacity",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header > .sgs-bg-overlay",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "backgroundOverlayOpacity",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header > .sgs-bg-overlay",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "backgroundOverlayOpacity",
+   "part": "sgs-bg-overlay",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-overlay",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "backgroundPinned",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "backgroundPinned",
+   "part": "sgs-bg-media",
+   "props": [
+    "background-attachment"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-bg-media--pinned",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "backgroundPinned",
+   "part": "sgs-bg-media",
+   "props": [
+    "background-attachment"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (-webkit-touch-callout: inherit)"
+   ],
+   "selector": ".sgs-bg-media--pinned",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "backgroundPinned",
+   "part": "sgs-bg-media",
+   "props": [
+    "background-attachment"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-bg-media--pinned",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "backgroundPinned",
+   "part": "sgs-bg-media",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-media",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "backgroundPinned",
+   "part": "sgs-bg-media",
+   "props": [
+    "background-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header > .sgs-bg-media",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "backgroundSource",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": {
+      "kind": "image",
+      "id": 9001,
+      "url": "https://example.test/wp-content/uploads/calibration.jpg"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "backgroundSvgLayer",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "backgroundSvgPartsTrigger",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "backgroundSvgTextShadow",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "bgSvgContent",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "bgSvgMinHeight",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "137px"
+   ]
+  },
+  {
+   "setting": "bgSvgMinHeight",
+   "part": "ROOT",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-container--has-svg-min-height",
+   "kind": "value",
+   "values": [
+    "137px"
+   ]
+  },
+  {
+   "setting": "bgSvgOpacity",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    37
+   ]
+  },
+  {
+   "setting": "bgSvgOpacity",
+   "part": "sgs-container__svg-bg",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-container__svg-bg",
+   "kind": "value",
+   "values": [
+    37
+   ]
+  },
+  {
+   "setting": "bgSvgPosition",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "foreground"
+   ]
+  },
+  {
+   "setting": "bgSvgPosition",
+   "part": "ROOT",
+   "props": [
+    "z-index"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ":where(.sgs-container:not(.sgs-container--svg-foreground)) > :where(:focus-within)",
+   "kind": "switched-on",
+   "values": [
+    "foreground"
+   ]
+  },
+  {
+   "setting": "bgSvgPosition",
+   "part": "ROOT",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-container--svg-foreground) > *",
+   "kind": "switched-on",
+   "values": [
+    "foreground"
+   ]
+  },
+  {
+   "setting": "bgSvgPosition",
+   "part": "sgs-container__svg-bg",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-container--svg-foreground .sgs-container__svg-bg",
+   "kind": "switched-on",
+   "values": [
+    "foreground"
+   ]
+  },
+  {
+   "setting": "bgSvgTextShadow",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "bgSvgTextShadow",
+   "part": "ROOT",
+   "props": [
+    "text-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-container--svg-text-shadow) > *",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "none"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "sgs-container__inner",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header>.sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "sgs-container__inner",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header>.sgs-container__inner",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "sgs-container__inner",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header>.sgs-container__inner",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "sgs-container__inner",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header>.sgs-container__inner",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "contrastSafe",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "force-solid",
+     "tablet": "force-solid",
+     "mobile": "force-solid"
+    },
+    {
+     "desktop": "force-solid"
+    }
+   ]
+  },
+  {
+   "setting": "contrastSafe",
+   "part": "ROOT",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "force-solid",
+     "tablet": "force-solid",
+     "mobile": "force-solid"
+    },
+    {
+     "desktop": "force-solid"
+    }
+   ]
+  },
+  {
+   "setting": "fillOnDark",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "fillOnDarkGradient",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "fillOnLight",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "fillOnLightGradient",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "fluidScale",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "enabled": true,
+     "breakpoint": 1439
+    }
+   ]
+  },
+  {
+   "setting": "fluidScale",
+   "part": "ROOT",
+   "props": [
+    "zoom"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1439px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "enabled": true,
+     "breakpoint": 1439
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    },
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    },
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    },
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloat",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    },
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerFloatCollapse",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "enabled": true,
+     "breakpoint": 767
+    }
+   ]
+  },
+  {
+   "setting": "headerFloatInset",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    },
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    },
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    },
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-container__inner",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu__item",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-container__inner",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-container__inner>:not(.sgs-nav-bar-menu,.sgs-site-header-row,.sgs-container__inner)",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-nav-bar-menu",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-nav-bar-menu",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-nav-bar-menu__bar",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu__item",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-nav-bar-menu__bar",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu__bar",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-nav-bar-menu__mega-panel-wrap",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu__mega-panel-wrap",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-nav-bar-menu__mega-panel-wrap",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu__mega-panel-wrap",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-nav-bar-menu__submenu-wrap",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu__submenu-wrap",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-nav-bar-menu__submenu-wrap",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-nav-bar-menu__submenu-wrap",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-site-header-row",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-site-header-row>:not(.sgs-nav-bar-menu,.sgs-site-header-row,.sgs-container__inner)",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "off",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerPassThrough",
+   "part": "sgs-site-header-row",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header .sgs-site-header-row",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-duration"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-duration"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "on",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-fill-mode"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-fill-mode"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "on",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    },
+    {
+     "desktop": "on",
+     "tablet": "on",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-range"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-range"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "on",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-timeline"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerShrink",
+   "part": "ROOT",
+   "props": [
+    "animation-timeline"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on",
+     "tablet": "on",
+     "mobile": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerSticky",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    },
+    {
+     "desktop": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerSticky",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerSticky",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerSticky",
+   "part": "ROOT",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerSticky",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerSticky",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "off",
+     "tablet": "on",
+     "mobile": "off"
+    }
+   ]
+  },
+  {
+   "setting": "headerSticky",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "on"
+    }
+   ]
+  },
+  {
+   "setting": "headerTransparentDirection",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "solid-first"
+   ]
+  },
+  {
+   "setting": "inkDuration",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    437
+   ]
+  },
+  {
+   "setting": "inkEasing",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "custom",
+    "default",
+    "drafts",
+    "ease-in",
+    "ease-in-out",
+    "ease-out",
+    "emphasised",
+    "linear",
+    "quart-out",
+    "spring",
+    "standard"
+   ]
+  },
+  {
+   "setting": "inkEasingCustom",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "cubic-bezier(0.1, 0.7, 0.3, 0.9)"
+   ]
+  },
+  {
+   "setting": "inkOnDark",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "inkOnLight",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "ROOT",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "ROOT",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "ROOT",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "minHeight",
+   "part": "sgs-container__inner",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-container--sized > .sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-container__inner",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-site-header>.sgs-container__inner",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-container__inner",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-site-header>.sgs-container__inner",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-container__inner",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header>.sgs-container__inner",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "rowsAlign",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "scrolledOffset",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    37
+   ]
+  },
+  {
+   "setting": "scrolledTrigger",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "direction"
+   ]
+  },
+  {
+   "setting": "sgsCollapseVisibility",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "sgsConditionCollectionQueryId",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    7
+   ]
+  },
+  {
+   "setting": "sgsConditionDateEnd",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "sgsConditionFormField",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "sgsConditionFormOperator",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "sgsConditionFormValue",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "sgsConditionLoggedIn",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "logged-out"
+   ]
+  },
+  {
+   "setting": "sgsConditionProductReviews",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "has",
+    "none-yet"
+   ]
+  },
+  {
+   "setting": "sgsConditionUserRole",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    [
+     "sample1234"
+    ]
+   ]
+  },
+  {
+   "setting": "sgsCustomCssId",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "sample1234"
+   ]
+  },
+  {
+   "setting": "sgsCustomCssNote",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsHideOnDesktop",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnDesktop",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px)"
+   ],
+   "selector": ".sgs-hide-desktop",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnMobile",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnMobile",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width:767.98px)"
+   ],
+   "selector": ".sgs-hide-mobile",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnTablet",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnTablet",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ],
+   "selector": ".sgs-hide-tablet",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-site-header:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-site-header:hover",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "ROOT",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-site-header:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "ROOT",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-site-header:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadowColour",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-site-header:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-site-header:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowColourHover",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-site-header:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-site-header:hover",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "shadowScrolled",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadowScrolled",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": ".is-header-scrolled",
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header.is-header-scrolled",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadowScrolled",
+   "part": "ROOT",
+   "props": [
+    "outline"
+   ],
+   "state": ".is-header-scrolled",
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header.is-header-scrolled:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadowScrolled",
+   "part": "ROOT",
+   "props": [
+    "outline-offset"
+   ],
+   "state": ".is-header-scrolled",
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header.is-header-scrolled:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadowScrolled",
+   "part": "ROOT",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadowScrolledColour",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "shadowScrolledColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": ".is-header-scrolled",
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header.is-header-scrolled",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "surfaceBlur",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "surfaceOpacity",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    0.37
+   ]
+  },
+  {
+   "setting": "surfaceSaturate",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "surfaceSaturate",
+   "part": "ROOT",
+   "props": [
+    "backdrop-filter"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "surfaceTone",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "dark",
+    "light"
+   ]
+  },
+  {
+   "setting": "surfaceTone",
+   "part": "sgs-responsive-logo img",
+   "props": [
+    "filter"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-on-light .sgs-responsive-logo.sgs-responsive-logo--colour-auto img:not(.sgs-responsive-logo__dark)",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "dark",
+    "light"
+   ]
+  },
+  {
+   "setting": "surfaceTone",
+   "part": "sgs-responsive-logo__dark",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-on-light .sgs-responsive-logo.sgs-responsive-logo--has-dark-logo .sgs-responsive-logo__dark",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "dark",
+    "light"
+   ]
+  },
+  {
+   "setting": "surfaceTone",
+   "part": "sgs-responsive-logo__image",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-on-light .sgs-responsive-logo.sgs-responsive-logo--has-dark-logo .sgs-responsive-logo__image--desktop",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "dark",
+    "light"
+   ]
+  },
+  {
+   "setting": "surfaceTone",
+   "part": "sgs-responsive-logo__svg svg",
+   "props": [
+    "filter"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-on-light .sgs-responsive-logo.sgs-responsive-logo--colour-auto .sgs-responsive-logo__svg--inline svg",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "dark",
+    "light"
+   ]
+  },
+  {
+   "setting": "surfaceTone",
+   "part": "sgs-responsive-logo__svg",
+   "props": [
+    "visibility"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-on-light .sgs-responsive-logo.sgs-responsive-logo--has-dark-logo .sgs-responsive-logo__svg--inline",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "dark",
+    "light"
+   ]
+  },
+  {
+   "setting": "textColour",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColour",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourScrolled",
+   "part": "ROOT",
+   "props": [
+    "animation-name"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (animation-timeline: scroll())"
+   ],
+   "selector": ".sgs-site-header.sgs-site-header",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourScrolled",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": ".is-header-scrolled",
+   "tiers": [],
+   "selector": ".sgs-site-header.sgs-site-header.is-header-scrolled",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "backgroundAlt",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundColour",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundColour",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourScrolled",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundColourScrolled",
+   "ROOT",
+   [
+    "background-color",
+    "background-image"
+   ],
+   ".is-header-scrolled",
+   []
+  ],
+  [
+   "backgroundColourScrolledGradient",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundColourScrolledGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   ".is-header-scrolled",
+   []
+  ],
+  [
+   "backgroundDecorative",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundFit",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "backgroundFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "backgroundFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundLoading",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundOpacity",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundOpacity",
+   "sgs-bg-media",
+   [
+    "opacity"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "backgroundOpacity",
+   "sgs-bg-media",
+   [
+    "opacity"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "backgroundOpacity",
+   "sgs-bg-media",
+   [
+    "opacity"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundOverlayBlend",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundOverlayColour",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundOverlayColour",
+   "sgs-bg-overlay",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundOverlayColour",
+   "sgs-bg-overlay",
+   [
+    "opacity"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundOverlayColourHover",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundOverlayColourHover",
+   "sgs-bg-overlay",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "backgroundOverlayColourHover",
+   "sgs-bg-overlay",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "backgroundOverlayGradient",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundOverlayGradient",
+   "sgs-bg-overlay",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundOverlayGradient",
+   "sgs-bg-overlay",
+   [
+    "opacity"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundOverlayGradientHover",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundOverlayOpacity",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundOverlayOpacity",
+   "sgs-bg-overlay",
+   [
+    "opacity"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "backgroundOverlayOpacity",
+   "sgs-bg-overlay",
+   [
+    "opacity"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "backgroundOverlayOpacity",
+   "sgs-bg-overlay",
+   [
+    "opacity"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundPinned",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundPinned",
+   "sgs-bg-media",
+   [
+    "background-attachment"
+   ],
+   null,
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "backgroundPinned",
+   "sgs-bg-media",
+   [
+    "background-attachment"
+   ],
+   null,
+   [
+    "@supports (-webkit-touch-callout: inherit)"
+   ]
+  ],
+  [
+   "backgroundPinned",
+   "sgs-bg-media",
+   [
+    "background-attachment"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundPinned",
+   "sgs-bg-media",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundPinned",
+   "sgs-bg-media",
+   [
+    "background-position"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundPinned",
+   "sgs-bg-media",
+   [
+    "background-repeat"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundPinned",
+   "sgs-bg-media",
+   [
+    "background-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundSource",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundSvgLayer",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundSvgPartsTrigger",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "backgroundSvgTextShadow",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "bgSvgContent",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "bgSvgMinHeight",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "bgSvgMinHeight",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "bgSvgOpacity",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "bgSvgOpacity",
+   "sgs-container__svg-bg",
+   [
+    "opacity"
+   ],
+   null,
+   []
+  ],
+  [
+   "bgSvgPosition",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "bgSvgPosition",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "bgSvgPosition",
+   "ROOT",
+   [
+    "z-index"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "bgSvgPosition",
+   "ROOT",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "bgSvgPosition",
+   "sgs-container__svg-bg",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "bgSvgTextShadow",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "bgSvgTextShadow",
+   "ROOT",
+   [
+    "text-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "contentWidth",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "contentWidth",
+   "sgs-container__inner",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "contentWidth",
+   "sgs-container__inner",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "contentWidth",
+   "sgs-container__inner",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "contentWidth",
+   "sgs-container__inner",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "contrastSafe",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "contrastSafe",
+   "ROOT",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "fillOnDark",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "fillOnDarkGradient",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "fillOnLight",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "fillOnLightGradient",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "fluidScale",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "fluidScale",
+   "ROOT",
+   [
+    "zoom"
+   ],
+   null,
+   [
+    "@media(min-width:1439px)"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerFloat",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerFloatCollapse",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerFloatInset",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "sgs-container__inner",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "sgs-container__inner",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__bar",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__bar",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__item",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__item",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__mega-panel-wrap",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__mega-panel-wrap",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__submenu-wrap",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__submenu-wrap",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__toggle-wrap",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "sgs-nav-bar-menu__toggle-wrap",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerPassThrough",
+   "sgs-site-header-row",
+   [
+    "pointer-events"
+   ],
+   null,
+   [
+    "@media (min-width:1024px),(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerPassThrough",
+   "sgs-site-header-row",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-duration"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-duration"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-fill-mode"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-fill-mode"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-range"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-range"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-timeline"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "animation-timeline"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "padding"
+   ],
+   ".is-header-shrunk",
+   [
+    "@supports not (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "padding"
+   ],
+   ".is-header-shrunk",
+   [
+    "@supports not (animation-timeline: scroll())",
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "padding"
+   ],
+   ".is-header-shrunk",
+   [
+    "@supports not (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@supports not (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@supports not (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@supports not (animation-timeline: scroll())",
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@supports not (animation-timeline: scroll())",
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerShrink",
+   "ROOT",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@supports not (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerSticky",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "headerSticky",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerSticky",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerSticky",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerSticky",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "headerSticky",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "headerSticky",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "headerTransparentDirection",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "inkDuration",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "inkEasing",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "inkEasingCustom",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "inkOnDark",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "inkOnLight",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "flex-direction"
+   ],
+   null,
+   []
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "minHeight",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "minHeight",
+   "sgs-container__inner",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "minHeight",
+   "sgs-container__inner",
+   [
+    "min-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "padding",
+   "sgs-container__inner",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "sgs-container__inner",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "sgs-container__inner",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "rowsAlign",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "scrolledOffset",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "scrolledTrigger",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsCollapseVisibility",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsConditionCollectionQueryId",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsConditionDateEnd",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsConditionFormField",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsConditionFormOperator",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsConditionFormValue",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsConditionLoggedIn",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsConditionProductReviews",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsConditionUserRole",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsCustomCssId",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsCustomCssNote",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-nav-bar-menu__burger",
+   [
+    "background-color"
+   ],
+   "focus",
+   [
+    "@supports not (background-color: color-mix(in srgb, currentColor 8%, transparent))"
+   ]
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ]
+  ],
+  [
+   "shadow",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "shadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "shadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "shadow",
+   "ROOT",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "shadow",
+   "ROOT",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "shadowColour",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "shadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "shadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "shadowColourHover",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "shadowLiftOnHover",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "shadowLiftOnHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadowLiftOnHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "shadowScrolled",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "shadowScrolled",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   ".is-header-scrolled",
+   []
+  ],
+  [
+   "shadowScrolled",
+   "ROOT",
+   [
+    "outline"
+   ],
+   ".is-header-scrolled",
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "shadowScrolled",
+   "ROOT",
+   [
+    "outline-offset"
+   ],
+   ".is-header-scrolled",
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "shadowScrolled",
+   "ROOT",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@supports not (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "shadowScrolled",
+   "ROOT",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "shadowScrolledColour",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "shadowScrolledColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   ".is-header-scrolled",
+   []
+  ],
+  [
+   "surfaceBlur",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "surfaceOpacity",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "surfaceSaturate",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "surfaceSaturate",
+   "ROOT",
+   [
+    "backdrop-filter"
+   ],
+   null,
+   []
+  ],
+  [
+   "surfaceTone",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "surfaceTone",
+   "sgs-responsive-logo img",
+   [
+    "filter"
+   ],
+   null,
+   []
+  ],
+  [
+   "surfaceTone",
+   "sgs-responsive-logo__dark",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "surfaceTone",
+   "sgs-responsive-logo__image",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "surfaceTone",
+   "sgs-responsive-logo__svg svg",
+   [
+    "filter"
+   ],
+   null,
+   []
+  ],
+  [
+   "surfaceTone",
+   "sgs-responsive-logo__svg",
+   [
+    "visibility"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColour",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "textColour",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourScrolled",
+   "ROOT",
+   [
+    "animation-name"
+   ],
+   null,
+   [
+    "@supports (animation-timeline: scroll())"
+   ]
+  ],
+  [
+   "textColourScrolled",
+   "ROOT",
+   [
+    "color"
+   ],
+   ".is-header-scrolled",
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [],
+  "replacesBlock": [
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   },
+   {
+    "setting": "headerTransparent",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "headerShrink",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "headerHideOnScroll",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "sectionInk",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "zIndex",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "backgroundRepeat",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "backgroundTileSize",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "backgroundFocal",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "backgroundSvgParts",
+    "why": "a list no source of the plugin reads item by item (no `array_map( ..., (array) $x[ + name + ] )`): no generic item"
+   },
+   {
+    "setting": "backgroundPlayback",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   }
+  ],
+  "partNotNamed": [
+   {
+    "setting": "rowsAlign",
+    "part": null,
+    "props": [
+     "flex-basis",
+     "flex-grow",
+     "flex-shrink"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:767.98px)"
+    ],
+    "selector": ".sgs-site-header.sgs-site-header > *"
+   },
+   {
+    "setting": "rowsAlign",
+    "part": null,
+    "props": [
+     "min-height"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:767.98px)"
+    ],
+    "selector": ":where(.sgs-site-header.sgs-site-header > *)"
+   },
+   {
+    "setting": "rowsAlign",
+    "part": null,
+    "props": [
+     "flex-basis",
+     "flex-grow",
+     "flex-shrink"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:1023.98px)"
+    ],
+    "selector": ".sgs-site-header.sgs-site-header > *"
+   },
+   {
+    "setting": "rowsAlign",
+    "part": null,
+    "props": [
+     "min-height"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:1023.98px)"
+    ],
+    "selector": ":where(.sgs-site-header.sgs-site-header > *)"
+   }
+  ]
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-container-wrapper.php": "eb50641bc169ad55",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/container-pin-edge-css.php": "106d319c8ad0c702",
+   "includes/container-scroll-row-css.php": "d1bfcfa233fc6bb1",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-fit.php": "be39699a1b3dacaf",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-grid-item.php": "66040be25e3cbb0d",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-logo-media.php": "0f157267489077f4",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-accessible-label.php": "098bae458d6d974d",
+   "includes/helpers-nav-bar-motion-model.php": "7ec08aa7b902de17",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-shared-rules.php": "1ecf0e2ae2c88520",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-ground.php": "1a5dd0aae08c3fff",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tier-queries.php": "1ef6213308907a28",
+   "includes/helpers-tiered-border.php": "4b400eee9c531e70",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/lucide-icons.php": "d14ea5bbe7383448",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/background-css.php": "d427257f69bbc625",
+   "includes/media/class-sgs-background-media.php": "e6ef00dd2b060dda",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-background.php": "093be1f920818d43",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-item-slot.php": "dacc480d11981004",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/nav-detach-chip.php": "a919efe98c9bf048",
+   "includes/nav-drawer-menu-disabled-item.php": "9208688e9db7a17c",
+   "includes/nav-drawer-menu-extras-css.php": "8f7522a706955450",
+   "includes/nav-drawer-menu-items.php": "af7355c5726a1041",
+   "includes/nav-drawer-menu-ornament-frames.php": "da225455b6b092f2",
+   "includes/nav-drawer-menu-ornament-reveal-css.php": "97f23e70f3be7fe1",
+   "includes/nav-drawer-menu-parity-css.php": "8ce5555a01e502c4",
+   "includes/nav-drawer-menu-row-extras.php": "ae0bb6b0f503d2ca",
+   "includes/nav-menu-caret-css.php": "d6196514f9a24835",
+   "includes/nav-menu-css.php": "1c54fabaabb972e7",
+   "includes/nav-menu-item-border-featured-css.php": "c2b2c831a3657bd7",
+   "includes/nav-menu-item-hover-scope-css.php": "cd28f83a3cc6406f",
+   "includes/nav-menu-item-padding-css.php": "7f133cb56c85182f",
+   "includes/nav-menu-item-transition-css.php": "5613c7510e51afbb",
+   "includes/nav-menu-markup.php": "8451e79ed4267821",
+   "includes/nav-menu-separators.php": "5b1e6c2b6ab68ea0",
+   "includes/nav-menu-submenu-css.php": "8b624afa585ccd41",
+   "includes/nav-menu-submenu-link-css.php": "cf5305847be98238",
+   "includes/nav-menu-treatments.php": "c89b158a4f554c1a",
+   "includes/nav-menu-trigger-css.php": "ce3d65eace2ab518",
+   "includes/nav-trigger-surface-css.php": "8b6bfaf8abf01c1d",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/sgs-header-float-css.php": "4e739aa68a67cfc9",
+   "includes/sgs-header-fluid-scale.php": "d54d2df977156f63",
+   "includes/sgs-header-force-solid.php": "a67b8bf2f51817fc",
+   "includes/sgs-header-ink-css.php": "b7678aa2588ce3eb",
+   "includes/sgs-header-ink-helpers.php": "765e722ec3ca5636",
+   "includes/sgs-header-pass-through.php": "7f982bc02b12359b",
+   "includes/sgs-header-rows-align-css.php": "f9f50b41e4afd2c7",
+   "includes/sgs-header-scroll-trigger.php": "44b7abdd289ec3cb",
+   "includes/sgs-header-z-index.php": "9813cf6d219102b8",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "includes/wp-icons.php": "ef5bf2f450b1a415",
+   "src/blocks/container/render.php": "effcc40bdcd04ea8",
+   "src/blocks/nav-bar-menu/render.php": "9c9fa4864188e04a",
+   "src/blocks/responsive-logo/render.php": "2d20d29f72d9285c",
+   "src/blocks/site-header-row/render.php": "5df25477a103f350",
+   "src/blocks/site-header/block.json": "822814868f4be0a0",
+   "src/blocks/site-header/components/FloatControls.js": "c26e31b6cbd7098e",
+   "src/blocks/site-header/components/FluidScaleControls.js": "90b57ba97b95a85d",
+   "src/blocks/site-header/components/RowsAlignControl.js": "163c60b89ea77230",
+   "src/blocks/site-header/edit.js": "e265d97128d6aefc",
+   "src/blocks/site-header/editor.css": "894c63eade4a9040",
+   "src/blocks/site-header/float-preview.js": "f743f835e1e63249",
+   "src/blocks/site-header/index.js": "4942aec1e09bb123",
+   "src/blocks/site-header/preview-style.js": "f51325928ee49fea",
+   "src/blocks/site-header/render.php": "0cfec2229123cb8b",
+   "src/blocks/site-header/save.js": "2c6c184e9c5ff604",
+   "src/blocks/site-header/scroll-change-panel.js": "32bcc24a9da70594",
+   "src/blocks/site-header/section-ink-panel.js": "25650a5342967e72",
+   "src/blocks/site-header/style.css": "7912b84bc2c245da",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/container/style.css": "7b071c27fd168f8c",
+   "shipped:src/blocks/nav-bar-menu/style.css": "f96121e56a1efc51",
+   "shipped:src/blocks/responsive-logo/style.scss": "44977f418df5158d",
+   "shipped:src/blocks/site-header-row/style.css": "65bb75a92da70bef",
+   "shipped:src/blocks/site-header/style.css": "dd26940df4a310b0",
+   "fixture:menu-post.json": "a1e548637bfd9465",
+   "fixture-entry": "1666a237aa0e7afa",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "78fc8622dec9945b",
+  "theme": "2e106fff11b0fb2d",
+  "classes": [
+   "has-global-padding",
+   "screen-reader-text",
+   "sgs-band-cap-4b581ffe",
+   "sgs-band-cap-8d3d06c6",
+   "sgs-band-cap-f3a75f58",
+   "sgs-band-gutter",
+   "sgs-band-layout-48ad7070",
+   "sgs-band-pad-b4a513f5",
+   "sgs-band-pad-c1849b6e",
+   "sgs-band-width-88e6daa5",
+   "sgs-band-width-b4a8f62a",
+   "sgs-bg-media",
+   "sgs-bg-media--painted",
+   "sgs-bg-media--pinned",
+   "sgs-bg-overlay",
+   "sgs-container",
+   "sgs-container--fit-band",
+   "sgs-container--flex",
+   "sgs-container--has-bg-image",
+   "sgs-container--has-bg-svg",
+   "sgs-container--has-svg-min-height",
+   "sgs-container--section-pad",
+   "sgs-container--sized",
+   "sgs-container--svg-background",
+   "sgs-container--svg-foreground",
+   "sgs-container--svg-text-shadow",
+   "sgs-container-027bc3f2",
+   "sgs-container-02904eac",
+   "sgs-container-03202452",
+   "sgs-container-046b26cc",
+   "sgs-container-06abb9b5",
+   "sgs-container-06e4fb10",
+   "sgs-container-08915d58",
+   "sgs-container-09b7f9b8",
+   "sgs-container-0a6290d7",
+   "sgs-container-0a89edd8",
+   "sgs-container-0b42621c",
+   "sgs-container-0c4cac68",
+   "sgs-container-10a37cd8",
+   "sgs-container-14ce52ad",
+   "sgs-container-15511724",
+   "sgs-container-190e3152",
+   "sgs-container-19f1869d",
+   "sgs-container-1d58245a",
+   "sgs-container-1f0b1544",
+   "sgs-container-1f25ca6e",
+   "sgs-container-1fc5f28c",
+   "sgs-container-1fe164ad",
+   "sgs-container-2010e26a",
+   "sgs-container-20568927",
+   "sgs-container-207bcc17",
+   "sgs-container-209d3eb6",
+   "sgs-container-217d6cc9",
+   "sgs-container-23a7a437",
+   "sgs-container-24bcd87a",
+   "sgs-container-25423876",
+   "sgs-container-26706b39",
+   "sgs-container-28bd5843",
+   "sgs-container-28c46013",
+   "sgs-container-2b38acd0",
+   "sgs-container-2e4a2a8b",
+   "sgs-container-2ed7772a",
+   "sgs-container-2fbbad56",
+   "sgs-container-302c373e",
+   "sgs-container-3104d2cb",
+   "sgs-container-31b6658e",
+   "sgs-container-325fadf8",
+   "sgs-container-33c26e38",
+   "sgs-container-34d0317e",
+   "sgs-container-3503baf0",
+   "sgs-container-352ad3e4",
+   "sgs-container-37593bc0",
+   "sgs-container-388763ca",
+   "sgs-container-3a31a516",
+   "sgs-container-3abd9aeb",
+   "sgs-container-3b935240",
+   "sgs-container-3bb4874a",
+   "sgs-container-3cdd3a44",
+   "sgs-container-3d39659c",
+   "sgs-container-3d433663",
+   "sgs-container-3d5cc4f0",
+   "sgs-container-3dc68515",
+   "sgs-container-3ebdd892",
+   "sgs-container-3fb39aca",
+   "sgs-container-40d545e4",
+   "sgs-container-41b754d7",
+   "sgs-container-437249da",
+   "sgs-container-43b1999f",
+   "sgs-container-46682514",
+   "sgs-container-47beb114",
+   "sgs-container-48b22730",
+   "sgs-container-499baa45",
+   "sgs-container-4a6446ce",
+   "sgs-container-4b91d402",
+   "sgs-container-4c58a947",
+   "sgs-container-4d22711b",
+   "sgs-container-4dd7e25a",
+   "sgs-container-4fd0b42d",
+   "sgs-container-501edee4",
+   "sgs-container-50366eb6",
+   "sgs-container-508209fb",
+   "sgs-container-5292d902",
+   "sgs-container-55bd11b4",
+   "sgs-container-55feacf6",
+   "sgs-container-5682d0dd",
+   "sgs-container-58fafe98",
+   "sgs-container-5b629935",
+   "sgs-container-5b9c3dd2",
+   "sgs-container-5c674b7c",
+   "sgs-container-5ced2866",
+   "sgs-container-5d43880d",
+   "sgs-container-5d6cedd5",
+   "sgs-container-5d7a6113",
+   "sgs-container-5df78c4e",
+   "sgs-container-61063d30",
+   "sgs-container-611a5f77",
+   "sgs-container-6330c45d",
+   "sgs-container-63a854f2",
+   "sgs-container-63b66e3f",
+   "sgs-container-66007b61",
+   "sgs-container-67170c5b",
+   "sgs-container-674235df",
+   "sgs-container-683579fe",
+   "sgs-container-6909704d",
+   "sgs-container-6a0d806b",
+   "sgs-container-6ab0da68",
+   "sgs-container-6ae595e0",
+   "sgs-container-6c05104a",
+   "sgs-container-6c680acc",
+   "sgs-container-6ebe5038",
+   "sgs-container-6f17f9f8",
+   "sgs-container-6f5fd539",
+   "sgs-container-70b3c9e0",
+   "sgs-container-727d3b1a",
+   "sgs-container-73701b9a",
+   "sgs-container-74e6389e",
+   "sgs-container-7523eba1",
+   "sgs-container-754883fd",
+   "sgs-container-76048cb5",
+   "sgs-container-7604bb37",
+   "sgs-container-76e172ca",
+   "sgs-container-78e61162",
+   "sgs-container-792552bc",
+   "sgs-container-7971d0f5",
+   "sgs-container-7a302e53",
+   "sgs-container-7bd39b34",
+   "sgs-container-7be69113",
+   "sgs-container-7ef00888",
+   "sgs-container-816395c6",
+   "sgs-container-81b30c29",
+   "sgs-container-85201877",
+   "sgs-container-872ee02f",
+   "sgs-container-885eef28",
+   "sgs-container-898d3fd0",
+   "sgs-container-8a00be7b",
+   "sgs-container-8a26e2b0",
+   "sgs-container-8a6d675e",
+   "sgs-container-8bd1cc10",
+   "sgs-container-8ef1dfd1",
+   "sgs-container-8f68262b",
+   "sgs-container-920e1759",
+   "sgs-container-92944aaa",
+   "sgs-container-94e09da9",
+   "sgs-container-952bb8f9",
+   "sgs-container-95d6f5b8",
+   "sgs-container-9964b9c1",
+   "sgs-container-9c984883",
+   "sgs-container-9d0919f7",
+   "sgs-container-9dcd3c7a",
+   "sgs-container-9f3d4c51",
+   "sgs-container-a02ee6c9",
+   "sgs-container-a1361e37",
+   "sgs-container-a17ea234",
+   "sgs-container-a27eba0c",
+   "sgs-container-a2b52363",
+   "sgs-container-a2d1d41e",
+   "sgs-container-a3184607",
+   "sgs-container-a4044064",
+   "sgs-container-a5551678",
+   "sgs-container-a5585234",
+   "sgs-container-a5d12445",
+   "sgs-container-a7d8b433",
+   "sgs-container-a8bc215c",
+   "sgs-container-a8c06daf",
+   "sgs-container-aa741579",
+   "sgs-container-aa7879fd",
+   "sgs-container-ab08df03",
+   "sgs-container-abff55b0",
+   "sgs-container-af3b2745",
+   "sgs-container-b1cfdc44",
+   "sgs-container-b282f4a2",
+   "sgs-container-b63b5904",
+   "sgs-container-b700a9f3",
+   "sgs-container-b7bc9085",
+   "sgs-container-b80deaa5",
+   "sgs-container-b836b841",
+   "sgs-container-bbd70afa",
+   "sgs-container-be3e107a",
+   "sgs-container-beddcac5",
+   "sgs-container-c14f55a7",
+   "sgs-container-c1abca05",
+   "sgs-container-c40fdc56",
+   "sgs-container-c42a24a5",
+   "sgs-container-c480539d",
+   "sgs-container-c4923052",
+   "sgs-container-c56639ed",
+   "sgs-container-c5e5fd92",
+   "sgs-container-c608dda6",
+   "sgs-container-c972b01a",
+   "sgs-container-cc33ded9",
+   "sgs-container-ce27fa29",
+   "sgs-container-ce9b5d60",
+   "sgs-container-cf4a9bd8",
+   "sgs-container-cfecb6ff",
+   "sgs-container-d065154f",
+   "sgs-container-d08261b0",
+   "sgs-container-d09203d9",
+   "sgs-container-d0939904",
+   "sgs-container-d1eb2a41",
+   "sgs-container-d305cbff",
+   "sgs-container-d3a9f342",
+   "sgs-container-d4666a46",
+   "sgs-container-d4e4e6b4",
+   "sgs-container-d6d587a7",
+   "sgs-container-d85f01ca",
+   "sgs-container-d895bcae",
+   "sgs-container-d9e0c667",
+   "sgs-container-da6c80c0",
+   "sgs-container-dbf0e90e",
+   "sgs-container-dcf4af41",
+   "sgs-container-dff05b76",
+   "sgs-container-e064255b",
+   "sgs-container-e0f3eedc",
+   "sgs-container-e143661b",
+   "sgs-container-e1c78eef",
+   "sgs-container-e475e443",
+   "sgs-container-e579d342",
+   "sgs-container-e5c2152d",
+   "sgs-container-e5c21817",
+   "sgs-container-e66c3e00",
+   "sgs-container-e6d5f927",
+   "sgs-container-e808b586",
+   "sgs-container-e809b49d",
+   "sgs-container-e812ad60",
+   "sgs-container-e86505e9",
+   "sgs-container-ea7b7aab",
+   "sgs-container-eb27ba56",
+   "sgs-container-eb649618",
+   "sgs-container-ece08c79",
+   "sgs-container-ed3ad57e",
+   "sgs-container-ed92a6ad",
+   "sgs-container-edb19eba",
+   "sgs-container-edd3d1af",
+   "sgs-container-edfa7fd5",
+   "sgs-container-eea23556",
+   "sgs-container-f03a5770",
+   "sgs-container-f04acefb",
+   "sgs-container-f084d52b",
+   "sgs-container-f0d8895d",
+   "sgs-container-f0e14b32",
+   "sgs-container-f1f4f8fa",
+   "sgs-container-f3765270",
+   "sgs-container-f38b83f1",
+   "sgs-container-f8f15af1",
+   "sgs-container-f9990a12",
+   "sgs-container-fa00ba85",
+   "sgs-container-fb7350e4",
+   "sgs-container-fbbed0b4",
+   "sgs-container-fdc6958d",
+   "sgs-container-fe7c27fc",
+   "sgs-container-fea89a50",
+   "sgs-container-ffd41ee6",
+   "sgs-container__content-band",
+   "sgs-container__inner",
+   "sgs-container__svg-bg",
+   "sgs-cst-58fafe98",
+   "sgs-focus-rests",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "sgs-media-el",
+   "sgs-media-picture",
+   "sgs-media-sib",
+   "sgs-media-sib--image",
+   "sgs-nav-bar-menu",
+   "sgs-nav-bar-menu-e1e0b9d1",
+   "sgs-nav-bar-menu__badge",
+   "sgs-nav-bar-menu__bar",
+   "sgs-nav-bar-menu__burger",
+   "sgs-nav-bar-menu__burger--icon-and-text",
+   "sgs-nav-bar-menu__burger--icon-before",
+   "sgs-nav-bar-menu__burger-bar",
+   "sgs-nav-bar-menu__burger-bar-1",
+   "sgs-nav-bar-menu__burger-bar-2",
+   "sgs-nav-bar-menu__burger-icon",
+   "sgs-nav-bar-menu__burger-icon--two-bar",
+   "sgs-nav-bar-menu__burger-text",
+   "sgs-nav-bar-menu__item",
+   "sgs-nav-bar-menu__item--disabled",
+   "sgs-nav-bar-menu__link",
+   "sgs-nav-bar-menu__link-text",
+   "sgs-nav-bar-menu__toggle-wrap",
+   "sgs-on-dark",
+   "sgs-on-light",
+   "sgs-row-behaviour",
+   "sgs-sh-027bc3f2",
+   "sgs-sh-02904eac",
+   "sgs-sh-03202452",
+   "sgs-sh-046b26cc",
+   "sgs-sh-06abb9b5",
+   "sgs-sh-06e4fb10",
+   "sgs-sh-08915d58",
+   "sgs-sh-09b7f9b8",
+   "sgs-sh-0a6290d7",
+   "sgs-sh-0a89edd8",
+   "sgs-sh-0b42621c",
+   "sgs-sh-0c4cac68",
+   "sgs-sh-10a37cd8",
+   "sgs-sh-14ce52ad",
+   "sgs-sh-15511724",
+   "sgs-sh-190e3152",
+   "sgs-sh-19f1869d",
+   "sgs-sh-1d58245a",
+   "sgs-sh-1f0b1544",
+   "sgs-sh-1f25ca6e",
+   "sgs-sh-1fc5f28c",
+   "sgs-sh-1fe164ad",
+   "sgs-sh-2010e26a",
+   "sgs-sh-20568927",
+   "sgs-sh-207bcc17",
+   "sgs-sh-209d3eb6",
+   "sgs-sh-217d6cc9",
+   "sgs-sh-23a7a437",
+   "sgs-sh-24bcd87a",
+   "sgs-sh-25423876",
+   "sgs-sh-26706b39",
+   "sgs-sh-28bd5843",
+   "sgs-sh-28c46013",
+   "sgs-sh-2b38acd0",
+   "sgs-sh-2e4a2a8b",
+   "sgs-sh-2ed7772a",
+   "sgs-sh-2fbbad56",
+   "sgs-sh-302c373e",
+   "sgs-sh-3104d2cb",
+   "sgs-sh-31b6658e",
+   "sgs-sh-325fadf8",
+   "sgs-sh-33c26e38",
+   "sgs-sh-34d0317e",
+   "sgs-sh-3503baf0",
+   "sgs-sh-352ad3e4",
+   "sgs-sh-37593bc0",
+   "sgs-sh-388763ca",
+   "sgs-sh-3a31a516",
+   "sgs-sh-3abd9aeb",
+   "sgs-sh-3b935240",
+   "sgs-sh-3bb4874a",
+   "sgs-sh-3cdd3a44",
+   "sgs-sh-3d39659c",
+   "sgs-sh-3d433663",
+   "sgs-sh-3d5cc4f0",
+   "sgs-sh-3dc68515",
+   "sgs-sh-3ebdd892",
+   "sgs-sh-3fb39aca",
+   "sgs-sh-40d545e4",
+   "sgs-sh-41b754d7",
+   "sgs-sh-437249da",
+   "sgs-sh-43b1999f",
+   "sgs-sh-46682514",
+   "sgs-sh-47beb114",
+   "sgs-sh-48b22730",
+   "sgs-sh-499baa45",
+   "sgs-sh-4a6446ce",
+   "sgs-sh-4b91d402",
+   "sgs-sh-4c58a947",
+   "sgs-sh-4d22711b",
+   "sgs-sh-4dd7e25a",
+   "sgs-sh-4fd0b42d",
+   "sgs-sh-501edee4",
+   "sgs-sh-50366eb6",
+   "sgs-sh-508209fb",
+   "sgs-sh-5292d902",
+   "sgs-sh-55bd11b4",
+   "sgs-sh-55feacf6",
+   "sgs-sh-5682d0dd",
+   "sgs-sh-5b629935",
+   "sgs-sh-5b9c3dd2",
+   "sgs-sh-5c674b7c",
+   "sgs-sh-5ced2866",
+   "sgs-sh-5d43880d",
+   "sgs-sh-5d6cedd5",
+   "sgs-sh-5d7a6113",
+   "sgs-sh-5df78c4e",
+   "sgs-sh-61063d30",
+   "sgs-sh-611a5f77",
+   "sgs-sh-6330c45d",
+   "sgs-sh-63a854f2",
+   "sgs-sh-63b66e3f",
+   "sgs-sh-66007b61",
+   "sgs-sh-67170c5b",
+   "sgs-sh-674235df",
+   "sgs-sh-683579fe",
+   "sgs-sh-6909704d",
+   "sgs-sh-6a0d806b",
+   "sgs-sh-6ab0da68",
+   "sgs-sh-6ae595e0",
+   "sgs-sh-6c05104a",
+   "sgs-sh-6c680acc",
+   "sgs-sh-6ebe5038",
+   "sgs-sh-6f17f9f8",
+   "sgs-sh-70b3c9e0",
+   "sgs-sh-727d3b1a",
+   "sgs-sh-73701b9a",
+   "sgs-sh-74e6389e",
+   "sgs-sh-7523eba1",
+   "sgs-sh-754883fd",
+   "sgs-sh-76048cb5",
+   "sgs-sh-7604bb37",
+   "sgs-sh-76e172ca",
+   "sgs-sh-78e61162",
+   "sgs-sh-792552bc",
+   "sgs-sh-7971d0f5",
+   "sgs-sh-7a302e53",
+   "sgs-sh-7bd39b34",
+   "sgs-sh-7be69113",
+   "sgs-sh-7ef00888",
+   "sgs-sh-816395c6",
+   "sgs-sh-81b30c29",
+   "sgs-sh-85201877",
+   "sgs-sh-872ee02f",
+   "sgs-sh-885eef28",
+   "sgs-sh-898d3fd0",
+   "sgs-sh-8a00be7b",
+   "sgs-sh-8a26e2b0",
+   "sgs-sh-8a6d675e",
+   "sgs-sh-8bd1cc10",
+   "sgs-sh-8ef1dfd1",
+   "sgs-sh-8f68262b",
+   "sgs-sh-920e1759",
+   "sgs-sh-92944aaa",
+   "sgs-sh-94e09da9",
+   "sgs-sh-952bb8f9",
+   "sgs-sh-95d6f5b8",
+   "sgs-sh-9964b9c1",
+   "sgs-sh-9c984883",
+   "sgs-sh-9d0919f7",
+   "sgs-sh-9dcd3c7a",
+   "sgs-sh-9f3d4c51",
+   "sgs-sh-a02ee6c9",
+   "sgs-sh-a1361e37",
+   "sgs-sh-a17ea234",
+   "sgs-sh-a27eba0c",
+   "sgs-sh-a2b52363",
+   "sgs-sh-a2d1d41e",
+   "sgs-sh-a3184607",
+   "sgs-sh-a4044064",
+   "sgs-sh-a5551678",
+   "sgs-sh-a5585234",
+   "sgs-sh-a5d12445",
+   "sgs-sh-a7d8b433",
+   "sgs-sh-a8bc215c",
+   "sgs-sh-a8c06daf",
+   "sgs-sh-aa741579",
+   "sgs-sh-aa7879fd",
+   "sgs-sh-ab08df03",
+   "sgs-sh-abff55b0",
+   "sgs-sh-af3b2745",
+   "sgs-sh-b1cfdc44",
+   "sgs-sh-b282f4a2",
+   "sgs-sh-b63b5904",
+   "sgs-sh-b700a9f3",
+   "sgs-sh-b7bc9085",
+   "sgs-sh-b80deaa5",
+   "sgs-sh-b836b841",
+   "sgs-sh-bbd70afa",
+   "sgs-sh-be3e107a",
+   "sgs-sh-beddcac5",
+   "sgs-sh-c14f55a7",
+   "sgs-sh-c1abca05",
+   "sgs-sh-c40fdc56",
+   "sgs-sh-c42a24a5",
+   "sgs-sh-c480539d",
+   "sgs-sh-c4923052",
+   "sgs-sh-c56639ed",
+   "sgs-sh-c5e5fd92",
+   "sgs-sh-c608dda6",
+   "sgs-sh-c972b01a",
+   "sgs-sh-cc33ded9",
+   "sgs-sh-ce27fa29",
+   "sgs-sh-ce9b5d60",
+   "sgs-sh-cf4a9bd8",
+   "sgs-sh-cfecb6ff",
+   "sgs-sh-d065154f",
+   "sgs-sh-d08261b0",
+   "sgs-sh-d09203d9",
+   "sgs-sh-d0939904",
+   "sgs-sh-d1eb2a41",
+   "sgs-sh-d305cbff",
+   "sgs-sh-d3a9f342",
+   "sgs-sh-d4666a46",
+   "sgs-sh-d4e4e6b4",
+   "sgs-sh-d6d587a7",
+   "sgs-sh-d85f01ca",
+   "sgs-sh-d895bcae",
+   "sgs-sh-d9e0c667",
+   "sgs-sh-da6c80c0",
+   "sgs-sh-dbf0e90e",
+   "sgs-sh-dcf4af41",
+   "sgs-sh-dff05b76",
+   "sgs-sh-e064255b",
+   "sgs-sh-e0f3eedc",
+   "sgs-sh-e143661b",
+   "sgs-sh-e1c78eef",
+   "sgs-sh-e475e443",
+   "sgs-sh-e579d342",
+   "sgs-sh-e5c2152d",
+   "sgs-sh-e5c21817",
+   "sgs-sh-e66c3e00",
+   "sgs-sh-e6d5f927",
+   "sgs-sh-e808b586",
+   "sgs-sh-e809b49d",
+   "sgs-sh-e812ad60",
+   "sgs-sh-e86505e9",
+   "sgs-sh-ea7b7aab",
+   "sgs-sh-eb27ba56",
+   "sgs-sh-eb649618",
+   "sgs-sh-ece08c79",
+   "sgs-sh-ed3ad57e",
+   "sgs-sh-ed92a6ad",
+   "sgs-sh-edb19eba",
+   "sgs-sh-edd3d1af",
+   "sgs-sh-edfa7fd5",
+   "sgs-sh-eea23556",
+   "sgs-sh-f03a5770",
+   "sgs-sh-f04acefb",
+   "sgs-sh-f084d52b",
+   "sgs-sh-f0d8895d",
+   "sgs-sh-f0e14b32",
+   "sgs-sh-f1f4f8fa",
+   "sgs-sh-f3765270",
+   "sgs-sh-f38b83f1",
+   "sgs-sh-f8f15af1",
+   "sgs-sh-f9990a12",
+   "sgs-sh-fa00ba85",
+   "sgs-sh-fb7350e4",
+   "sgs-sh-fbbed0b4",
+   "sgs-sh-fdc6958d",
+   "sgs-sh-fe7c27fc",
+   "sgs-sh-fea89a50",
+   "sgs-sh-ffd41ee6",
+   "sgs-shr-6f5fd539",
+   "sgs-site-header",
+   "sgs-site-header-row",
+   "sgs-site-header-row--middle",
+   "sgs-site-header-row__content-band",
+   "sgs-site-header__content-band",
+   "wp-block-sgs-container",
+   "wp-block-sgs-nav-bar-menu",
+   "wp-block-sgs-site-header",
+   "wp-block-sgs-site-header-row"
+  ],
+  "tags": [
+   "button",
+   "circle",
+   "div",
+   "header",
+   "img",
+   "li",
+   "nav",
+   "picture",
+   "span",
+   "style",
+   "svg",
+   "ul"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}

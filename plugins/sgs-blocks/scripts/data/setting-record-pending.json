@@ -1,0 +1,4 @@
+{
+ "_about": "Blocks another session is changing whose setting record is rewritten when the change lands: {\"sgs/<block>\": {\"owner\": \"<session>\", \"reason\": \"...\", \"until\": \"YYYY-MM-DD\"}}. A lapsed date fails the gate (setting-record/changed.py).",
+ "blocks": {}
+}

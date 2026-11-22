@@ -1,0 +1,8984 @@
+{
+ "block": "sgs/business-info",
+ "schemaVersion": 2,
+ "parts": [
+  "sgs-business-info__link",
+  "sgs-business-info__icon",
+  "sgs-business-info__label",
+  "sgs-business-info__text"
+ ],
+ "entries": [
+  {
+   "setting": "attributionHoverColour",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "attributionHoverColourFallback",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourHover",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:has(:focus-visible)",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourHover",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourHoverGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:focus-visible::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourHoverGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    "none"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "ROOT",
+   "props": [
+    "align-items"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-phone",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-phone",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-business-phone, .sgs-business-email)",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-phone",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row",
+   "kind": "switched-on",
+   "values": [
+    "hours"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    "hours"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    "hours"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    "hours"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    "hours"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    "hours"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "-webkit-text-fill-color"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors: active)"
+   ],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "-webkit-text-fill-color"
+   ],
+   "state": null,
+   "tiers": [
+    "@media print"
+   ],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "-webkit-text-fill-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors: active)"
+   ],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [
+    "@media print"
+   ],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-position"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-position"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-attribution .sgs-business-info__link:hover",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-repeat"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "transform"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-attribution .sgs-business-info__link:hover::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "transform-origin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "displayType",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "switched-on",
+   "values": [
+    "attribution"
+   ]
+  },
+  {
+   "setting": "fontFamily",
+   "part": "ROOT",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "fontStyle",
+   "part": "ROOT",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "italic"
+   ]
+  },
+  {
+   "setting": "fontWeight",
+   "part": "ROOT",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row",
+   "kind": "switched-on"
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours",
+   "props": [
+    "align-items"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours",
+   "props": [
+    "flex-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "align-items"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__day",
+   "kind": "switched-on"
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "hoursCondensedInline",
+   "part": "sgs-business-hours__time",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed-inline .sgs-business-hours__time",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "hoursLayout",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours--condensed .sgs-business-hours__day",
+   "kind": "switched-on",
+   "values": [
+    "rows"
+   ]
+  },
+  {
+   "setting": "hoursRowJustify",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__row",
+   "kind": "value",
+   "values": [
+    "flex-start"
+   ]
+  },
+  {
+   "setting": "hoursRowPadding",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-hours__row",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "hoursRowPadding",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-hours__row",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "hoursRowPadding",
+   "part": "sgs-business-hours__row",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-hours__row",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "hoursTodayBackground",
+   "part": "sgs-business-info__hours-row",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today",
+   "kind": "value",
+   "unproved": "script-built-part",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "hoursTodayColour",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today .sgs-business-hours__day",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "hoursTodayColour",
+   "part": "sgs-business-hours__time",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today .sgs-business-hours__time",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "hoursTodayColour",
+   "part": "sgs-business-info__hours-row",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today",
+   "kind": "value",
+   "unproved": "script-built-part",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "hoursTodayWeight",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today .sgs-business-hours__day",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "300",
+    "400",
+    "500",
+    "600",
+    "700",
+    "800",
+    "900"
+   ]
+  },
+  {
+   "setting": "hoursTodayWeight",
+   "part": "sgs-business-hours__time",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today .sgs-business-hours__time",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "300",
+    "400",
+    "500",
+    "600",
+    "700",
+    "800",
+    "900"
+   ]
+  },
+  {
+   "setting": "hoursTodayWeight",
+   "part": "sgs-business-info__hours-row",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__row.sgs-business-info__hours-row--today",
+   "kind": "value",
+   "unproved": "script-built-part",
+   "values": [
+    "300",
+    "400",
+    "500",
+    "600",
+    "700",
+    "800",
+    "900"
+   ]
+  },
+  {
+   "setting": "iconColour",
+   "part": "sgs-business-info__icon",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourGradient",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "stroke"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__icon svg",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHover",
+   "part": "sgs-business-info__icon",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:focus-visible .sgs-business-info__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourHover",
+   "part": "sgs-business-info__icon",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover .sgs-business-info__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "stroke"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:focus-visible .sgs-business-info__icon svg",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "stroke"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover .sgs-business-info__icon svg",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-email",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-email",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-email",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-email",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-email",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-email",
+   "kind": "value",
+   "unproved": "part-not-rendered",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-info__link",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-info__link",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-info__link",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-phone",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-phone",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-phone",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-phone",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconGap",
+   "part": "sgs-business-phone",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-phone",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "iconSize",
+   "part": "sgs-business-info__icon svg",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__icon svg",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "overflow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "white-space"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "tablet"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "mobile"
+   ]
+  },
+  {
+   "setting": "labelCollapse",
+   "part": "sgs-business-info__label",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__label",
+   "kind": "switched-on",
+   "values": [
+    "all"
+   ]
+  },
+  {
+   "setting": "labelColour",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "labelColourGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourHover",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "labelColourHover",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info .sgs-business-hours__day:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "labelColourHoverGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourHoverGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info .sgs-business-hours__day:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourHoverGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day:focus-visible",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourHoverGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info .sgs-business-hours__day:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourHoverGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourHoverGradient",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info .sgs-business-hours__day:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelFontWeight",
+   "part": "sgs-business-hours__day",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours__day",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-height"
+   ],
+   "state": ".is-style-button",
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-height"
+   ],
+   "state": ".is-style-button",
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-height"
+   ],
+   "state": ".is-style-button",
+   "tiers": [],
+   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info__link",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    }
+   ]
+  },
+  {
+   "setting": "linkMinHeight",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link::after",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    {
+     "desktop": "137px",
+     "tablet": "123px",
+     "mobile": "107px"
+    },
+    {
+     "desktop": "137px"
+    }
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "ROOT a",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "hover"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "ROOT a",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info.sgs-business-info a:hover",
+   "kind": "switched-on",
+   "values": [
+    "hover"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "ROOT a",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors: active)"
+   ],
+   "selector": ".sgs-business-info.sgs-business-info a",
+   "kind": "switched-on",
+   "values": [
+    "hover",
+    "none",
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "ROOT a",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a",
+   "kind": "switched-on",
+   "values": [
+    "always",
+    "hover",
+    "none",
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "background-origin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "background-position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "background-repeat"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "background-size"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a:focus-visible .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "background-size"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info.sgs-business-info a:hover .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "background-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-business-info.sgs-business-info a .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderline",
+   "part": "sgs-business-info__text",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a .sgs-business-info__text",
+   "kind": "switched-on",
+   "values": [
+    "sweep"
+   ]
+  },
+  {
+   "setting": "linkUnderlineColour",
+   "part": "ROOT a",
+   "props": [
+    "text-decoration-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "linkUnderlineColourHover",
+   "part": "ROOT a",
+   "props": [
+    "text-decoration-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "linkUnderlineColourHover",
+   "part": "ROOT a",
+   "props": [
+    "text-decoration-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info.sgs-business-info a:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "linkUnderlineOffset",
+   "part": "ROOT a",
+   "props": [
+    "text-underline-offset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "linkUnderlineThickness",
+   "part": "ROOT a",
+   "props": [
+    "text-decoration-thickness"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info a",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "value",
+   "values": [
+    {
+     "row": {
+      "style": "dashed",
+      "width": {
+       "desktop": "37px",
+       "tablet": "23px",
+       "mobile": "7px"
+      },
+      "colour": "#13579b"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "value",
+   "values": [
+    {
+     "row": {
+      "style": "dashed",
+      "width": {
+       "desktop": "37px",
+       "tablet": "23px",
+       "mobile": "7px"
+      },
+      "colour": "#13579b"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "value",
+   "values": [
+    {
+     "row": {
+      "style": "dashed",
+      "width": {
+       "desktop": "37px",
+       "tablet": "23px",
+       "mobile": "7px"
+      },
+      "colour": "#13579b"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    {
+     "row": {
+      "style": "dashed",
+      "width": {
+       "desktop": "37px",
+       "tablet": "23px",
+       "mobile": "7px"
+      },
+      "colour": "#13579b"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    {
+     "row": {
+      "style": "dashed",
+      "width": {
+       "desktop": "37px",
+       "tablet": "23px",
+       "mobile": "7px"
+      },
+      "colour": "#13579b"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "separators",
+   "part": "sgs-business-hours__row::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info .sgs-business-hours > .sgs-business-hours__row:not(:first-child)::before",
+   "kind": "switched-on",
+   "values": [
+    {
+     "row": {
+      "style": "dashed",
+      "width": {
+       "desktop": "37px",
+       "tablet": "23px",
+       "mobile": "7px"
+      },
+      "colour": "#13579b"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "value",
+   "unproved": "same-value-here",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "value",
+   "unproved": "same-value-here",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "value",
+   "unproved": "same-value-here",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": ".is-style-button",
+   "tiers": [],
+   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-business-info__link",
+   "props": [
+    "background-position"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-business-info__link",
+   "props": [
+    "color"
+   ],
+   "state": ".is-style-button",
+   "tiers": [],
+   "selector": ".wp-block-sgs-business-info.is-style-button .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-business-info__link::after",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-attribution .sgs-business-info__link:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))::after",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "textAfter",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info--inline-text",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "textAfter",
+   "part": "sgs-business-info__link",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info--inline-text .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "textAfter",
+   "part": "sgs-business-info__link",
+   "props": [
+    "vertical-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info--inline-text .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "textBefore",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info.sgs-business-info--inline-text",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "textBefore",
+   "part": "sgs-business-info__link",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info--inline-text .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "textBefore",
+   "part": "sgs-business-info__link",
+   "props": [
+    "vertical-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info--inline-text .sgs-business-info__link",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "textColour",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHover",
+   "part": "ROOT a",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info a:not(.wp-element-button):focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourHover",
+   "part": "ROOT a",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info a:not(.wp-element-button):hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourHover",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourHover",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT a",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info a:not(.wp-element-button):focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT a",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info a:not(.wp-element-button):hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:focus-visible",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColumns",
+   "part": "ROOT",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "textDecoration",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "line-through",
+    "none",
+    "underline"
+   ]
+  },
+  {
+   "setting": "textStrokeColour",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeColourHover",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-business-info:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeColourHover",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-business-info:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "textTransform",
+   "part": "ROOT",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "textWrap",
+   "part": "ROOT",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "writingMode",
+   "part": "ROOT",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-business-info",
+   "kind": "value",
+   "values": [
+    "horizontal-tb",
+    "vertical-lr",
+    "vertical-rl"
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "attributionHoverColour",
+   "sgs-business-info__link::after",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "attributionHoverColourFallback",
+   "sgs-business-info__link",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourHover",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "borderColourHover",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "borderColourHoverGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "borderColourHoverGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "borderColourHoverGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "borderColourHoverGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "ROOT",
+   [
+    "align-items"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "ROOT",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-hours__row",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-hours__row::before",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-hours__row::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-hours__row::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-hours__row::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-hours__row::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "-webkit-text-fill-color"
+   ],
+   null,
+   [
+    "@media (forced-colors: active)"
+   ]
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "-webkit-text-fill-color"
+   ],
+   null,
+   [
+    "@media print"
+   ]
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "-webkit-text-fill-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@media (forced-colors: active)"
+   ]
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@media print"
+   ]
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-position"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-position"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-position"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-repeat"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "background-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "transform"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "transform-origin"
+   ],
+   null,
+   []
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "displayType",
+   "sgs-business-info__link::after",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontFamily",
+   "ROOT",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontStyle",
+   "ROOT",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontWeight",
+   "ROOT",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours",
+   [
+    "align-items"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours",
+   [
+    "flex-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__day",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row",
+   [
+    "align-items"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row::before",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row::before",
+   [
+    "opacity"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__row::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursCondensedInline",
+   "sgs-business-hours__time",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursLayout",
+   "sgs-business-hours__day",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursRowJustify",
+   "sgs-business-hours__row",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursRowPadding",
+   "sgs-business-hours__row",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "hoursRowPadding",
+   "sgs-business-hours__row",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "hoursRowPadding",
+   "sgs-business-hours__row",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursTodayBackground",
+   "sgs-business-info__hours-row",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursTodayColour",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursTodayColour",
+   "sgs-business-hours__time",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursTodayColour",
+   "sgs-business-info__hours-row",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursTodayWeight",
+   "sgs-business-hours__day",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursTodayWeight",
+   "sgs-business-hours__time",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "hoursTodayWeight",
+   "sgs-business-info__hours-row",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColour",
+   "sgs-business-info__icon",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourGradient",
+   "sgs-business-info__icon svg",
+   [
+    "stroke"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourHover",
+   "sgs-business-info__icon",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHover",
+   "sgs-business-info__icon",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-business-info__icon svg",
+   [
+    "stroke"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-business-info__icon svg",
+   [
+    "stroke"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconGap",
+   "sgs-business-email",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconGap",
+   "sgs-business-email",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconGap",
+   "sgs-business-email",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconGap",
+   "sgs-business-info__link",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconGap",
+   "sgs-business-info__link",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconGap",
+   "sgs-business-info__link",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconGap",
+   "sgs-business-phone",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconGap",
+   "sgs-business-phone",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconGap",
+   "sgs-business-phone",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconSize",
+   "sgs-business-info__icon svg",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconSize",
+   "sgs-business-info__icon svg",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconSize",
+   "sgs-business-info__icon svg",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconSize",
+   "sgs-business-info__icon svg",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "iconSize",
+   "sgs-business-info__icon svg",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "iconSize",
+   "sgs-business-info__icon svg",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "clip"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "clip"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "overflow"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "overflow"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "overflow"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "position"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "white-space"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "white-space"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "white-space"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelCollapse",
+   "sgs-business-info__label",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColour",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColourGradient",
+   "sgs-business-hours__day",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColourGradient",
+   "sgs-business-hours__day",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "labelColourGradient",
+   "sgs-business-hours__day",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColourGradient",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "labelColourGradient",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColourHover",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "labelColourHover",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "labelColourHoverGradient",
+   "sgs-business-hours__day",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "labelColourHoverGradient",
+   "sgs-business-hours__day",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "labelColourHoverGradient",
+   "sgs-business-hours__day",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "labelColourHoverGradient",
+   "sgs-business-hours__day",
+   [
+    "background-image"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "labelColourHoverGradient",
+   "sgs-business-hours__day",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "labelColourHoverGradient",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "labelColourHoverGradient",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "labelColourHoverGradient",
+   "sgs-business-hours__day",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "labelFontWeight",
+   "sgs-business-hours__day",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-height"
+   ],
+   ".is-style-button",
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-height"
+   ],
+   ".is-style-button",
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-height"
+   ],
+   ".is-style-button",
+   []
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link::after",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link::after",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "linkMinHeight",
+   "sgs-business-info__link::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "ROOT a",
+   [
+    "text-decoration"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderline",
+   "ROOT a",
+   [
+    "text-decoration"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderline",
+   "ROOT a",
+   [
+    "text-decoration"
+   ],
+   null,
+   [
+    "@media (forced-colors: active)"
+   ]
+  ],
+  [
+   "linkUnderline",
+   "ROOT a",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "background-origin"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "background-position"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "background-repeat"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "background-size"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "background-size"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "background-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "linkUnderline",
+   "sgs-business-info__text",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderlineColour",
+   "ROOT a",
+   [
+    "text-decoration-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderlineColourHover",
+   "ROOT a",
+   [
+    "text-decoration-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "linkUnderlineColourHover",
+   "ROOT a",
+   [
+    "text-decoration-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "linkUnderlineOffset",
+   "ROOT a",
+   [
+    "text-underline-offset"
+   ],
+   null,
+   []
+  ],
+  [
+   "linkUnderlineThickness",
+   "ROOT a",
+   [
+    "text-decoration-thickness"
+   ],
+   null,
+   []
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "separators",
+   "sgs-business-hours__row::before",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "separators",
+   "sgs-business-hours__row::before",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "separators",
+   "sgs-business-hours__row::before",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "separators",
+   "sgs-business-hours__row::before",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "separators",
+   "sgs-business-hours__row::before",
+   [
+    "inset"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "separators",
+   "sgs-business-hours__row::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-business-info__link",
+   [
+    "background-color",
+    "background-image"
+   ],
+   ".is-style-button",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-business-info__link",
+   [
+    "background-position"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-business-info__link",
+   [
+    "color"
+   ],
+   ".is-style-button",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-business-info__link::after",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textAfter",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "textAfter",
+   "sgs-business-info__link",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "textAfter",
+   "sgs-business-info__link",
+   [
+    "vertical-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "textBefore",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "textBefore",
+   "sgs-business-info__link",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "textBefore",
+   "sgs-business-info__link",
+   [
+    "vertical-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColour",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourHover",
+   "ROOT a",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHover",
+   "ROOT a",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHover",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHover",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT a",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT a",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColumns",
+   "ROOT",
+   [
+    "column-count"
+   ],
+   null,
+   []
+  ],
+  [
+   "textDecoration",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "textStrokeColour",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textStrokeColourHover",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textStrokeColourHover",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "textTransform",
+   "ROOT",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "textWrap",
+   "ROOT",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "writingMode",
+   "ROOT",
+   [
+    "writing-mode"
+   ],
+   null,
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [
+   "addressLink",
+   "copyrightPrefix",
+   "flexWrap",
+   "hoursClosedLabel",
+   "hoursDayNames",
+   "hoursShowClosed",
+   "mapFilter",
+   "mapFilterPreset",
+   "mapHeight",
+   "mapSource",
+   "mapZoom",
+   "openStatusClosedBackground",
+   "openStatusClosedDot",
+   "openStatusClosedLabel",
+   "openStatusClosedText",
+   "openStatusClosesLabel",
+   "openStatusDotPulse",
+   "openStatusDotPulseDuration",
+   "openStatusDotPulseWhen",
+   "openStatusLinePattern",
+   "openStatusOpenBackground",
+   "openStatusOpenDot",
+   "openStatusOpenLabel",
+   "openStatusOpenText",
+   "openStatusOpensLabel",
+   "openStatusOpensPattern",
+   "openStatusReopensLabel",
+   "openStatusShowLine",
+   "openStatusShowPill",
+   "sgsCollapseVisibility",
+   "sgsConditionCollectionQueryId",
+   "sgsConditionDateEnd",
+   "sgsConditionFormField",
+   "sgsConditionFormOperator",
+   "sgsConditionFormValue",
+   "sgsConditionProductReviews",
+   "sgsConditionUserRole",
+   "sgsCustomCssId",
+   "sgsCustomCssNote",
+   "showIcon"
+  ],
+  "replacesBlock": [
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionLoggedIn",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   }
+  ],
+  "partNotNamed": []
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-business-info-map.php": "7ec851ba8eda08a9",
+   "includes/helpers-business-info-open-status.php": "2d303e2d7cfacc2e",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/lucide-icons.php": "d14ea5bbe7383448",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "src/blocks/business-info/OpenStatusPanels.js": "80eb13f2ddfb6bae",
+   "src/blocks/business-info/block.json": "9f591f8c6c08a196",
+   "src/blocks/business-info/edit.js": "1175d606f1e1464a",
+   "src/blocks/business-info/editor.css": "ff00443135ad1f44",
+   "src/blocks/business-info/hours-today.js": "117e9f2ea55cdc78",
+   "src/blocks/business-info/index.js": "80b727b8767f423e",
+   "src/blocks/business-info/open-status-logic.js": "377082e6cf1b13fb",
+   "src/blocks/business-info/options.php": "11a5d38590a8ba34",
+   "src/blocks/business-info/render.php": "a82842f4d8e7c0c7",
+   "src/blocks/business-info/style.css": "86b699722557d716",
+   "src/blocks/business-info/view.js": "ffd2498d336d9791",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/business-info/style.css": "5b6aaecc977a0d74",
+   "fixture-entry": "edb17026114469b6",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "7bd272beb86043f7",
+  "theme": "922cbcd5e2610f8b",
+  "classes": [
+   "lucide",
+   "lucide-phone",
+   "sgs-biz-003a3070",
+   "sgs-biz-003bb744",
+   "sgs-biz-00b0622a",
+   "sgs-biz-00bdef4c",
+   "sgs-biz-01355e8e",
+   "sgs-biz-01bb0cba",
+   "sgs-biz-02034b32",
+   "sgs-biz-021f94f5",
+   "sgs-biz-02b5d0c8",
+   "sgs-biz-033085ea",
+   "sgs-biz-035b375a",
+   "sgs-biz-03a9fa24",
+   "sgs-biz-03c9ed0d",
+   "sgs-biz-04cc6396",
+   "sgs-biz-05074d3b",
+   "sgs-biz-0582d390",
+   "sgs-biz-0590e89f",
+   "sgs-biz-05a36ffc",
+   "sgs-biz-05bf45dd",
+   "sgs-biz-06857025",
+   "sgs-biz-074077a8",
+   "sgs-biz-08aff807",
+   "sgs-biz-08b225a5",
+   "sgs-biz-08e01666",
+   "sgs-biz-09aecfbd",
+   "sgs-biz-09bbb682",
+   "sgs-biz-0ad61646",
+   "sgs-biz-0ad8ef27",
+   "sgs-biz-0bdce7e9",
+   "sgs-biz-0c64c2fd",
+   "sgs-biz-0c7aeab8",
+   "sgs-biz-0c988dc4",
+   "sgs-biz-0cd28d29",
+   "sgs-biz-0d17b22c",
+   "sgs-biz-0d7840b4",
+   "sgs-biz-0daf5e87",
+   "sgs-biz-0e3541b6",
+   "sgs-biz-0e4e8e25",
+   "sgs-biz-0ee8bb2b",
+   "sgs-biz-1021a4a8",
+   "sgs-biz-102be275",
+   "sgs-biz-1161905c",
+   "sgs-biz-11f7c8ad",
+   "sgs-biz-12e281e0",
+   "sgs-biz-1346d23a",
+   "sgs-biz-134709af",
+   "sgs-biz-139be1b3",
+   "sgs-biz-14000d73",
+   "sgs-biz-14095194",
+   "sgs-biz-149ba16e",
+   "sgs-biz-154605c5",
+   "sgs-biz-15b81d4f",
+   "sgs-biz-16f350ba",
+   "sgs-biz-16fd4a13",
+   "sgs-biz-17c9bdb2",
+   "sgs-biz-17e29512",
+   "sgs-biz-17f252b4",
+   "sgs-biz-187e9435",
+   "sgs-biz-1a2547d9",
+   "sgs-biz-1a270333",
+   "sgs-biz-1a29a78e",
+   "sgs-biz-1a38c3b5",
+   "sgs-biz-1ab091f3",
+   "sgs-biz-1ae01354",
+   "sgs-biz-1c159bb2",
+   "sgs-biz-1d311e88",
+   "sgs-biz-1d64fa26",
+   "sgs-biz-1dc8434e",
+   "sgs-biz-1f96c74b",
+   "sgs-biz-1fba436d",
+   "sgs-biz-20a7e857",
+   "sgs-biz-21dbfa4c",
+   "sgs-biz-22c90a3e",
+   "sgs-biz-235c2e38",
+   "sgs-biz-23b8c87f",
+   "sgs-biz-24f9be7e",
+   "sgs-biz-251e3ee3",
+   "sgs-biz-26b3923c",
+   "sgs-biz-26bdfb1c",
+   "sgs-biz-26ddcb57",
+   "sgs-biz-270f8f58",
+   "sgs-biz-27fd7e5e",
+   "sgs-biz-28399a34",
+   "sgs-biz-29e465af",
+   "sgs-biz-2a4d27c4",
+   "sgs-biz-2a97dc11",
+   "sgs-biz-2abaa03c",
+   "sgs-biz-2b2c1164",
+   "sgs-biz-2b7319f0",
+   "sgs-biz-2d03caba",
+   "sgs-biz-2db2060d",
+   "sgs-biz-2fe32c0e",
+   "sgs-biz-301ec6ff",
+   "sgs-biz-3024664f",
+   "sgs-biz-3048668f",
+   "sgs-biz-30bdc284",
+   "sgs-biz-311584c4",
+   "sgs-biz-31856d4b",
+   "sgs-biz-31953e81",
+   "sgs-biz-33171fc3",
+   "sgs-biz-339ee8ce",
+   "sgs-biz-33ef2c5f",
+   "sgs-biz-3492e53e",
+   "sgs-biz-34f2e819",
+   "sgs-biz-354c1104",
+   "sgs-biz-3656a625",
+   "sgs-biz-379f7dea",
+   "sgs-biz-37a251d7",
+   "sgs-biz-39998047",
+   "sgs-biz-39ea9360",
+   "sgs-biz-3a17482f",
+   "sgs-biz-3a40753f",
+   "sgs-biz-3adf238a",
+   "sgs-biz-3afa4395",
+   "sgs-biz-3c57323a",
+   "sgs-biz-3cab88b2",
+   "sgs-biz-3cc47a1f",
+   "sgs-biz-3ccca4e5",
+   "sgs-biz-3d810287",
+   "sgs-biz-3dfd2b12",
+   "sgs-biz-3e09d7af",
+   "sgs-biz-3e20c760",
+   "sgs-biz-3ee14617",
+   "sgs-biz-3f336e8c",
+   "sgs-biz-3f36986c",
+   "sgs-biz-3fd6dc33",
+   "sgs-biz-41bb14b2",
+   "sgs-biz-41fd108b",
+   "sgs-biz-426ee161",
+   "sgs-biz-42851886",
+   "sgs-biz-438ee886",
+   "sgs-biz-43e8a6e5",
+   "sgs-biz-44ca3f23",
+   "sgs-biz-44e8b745",
+   "sgs-biz-44f8029a",
+   "sgs-biz-45ee64f5",
+   "sgs-biz-46420301",
+   "sgs-biz-46788da5",
+   "sgs-biz-46d546ff",
+   "sgs-biz-46e00fa0",
+   "sgs-biz-478de41b",
+   "sgs-biz-47ecade4",
+   "sgs-biz-47fe2901",
+   "sgs-biz-486ef8a2",
+   "sgs-biz-494e6005",
+   "sgs-biz-49b85b32",
+   "sgs-biz-49fbc7cd",
+   "sgs-biz-4a30a901",
+   "sgs-biz-4ad2b625",
+   "sgs-biz-4add0e22",
+   "sgs-biz-4b03e4f3",
+   "sgs-biz-4be29a57",
+   "sgs-biz-4c11749b",
+   "sgs-biz-4cca21b1",
+   "sgs-biz-4cf6faaf",
+   "sgs-biz-4d3939db",
+   "sgs-biz-4d4ea24f",
+   "sgs-biz-4d5d0900",
+   "sgs-biz-50103d2b",
+   "sgs-biz-507334fc",
+   "sgs-biz-50ac125f",
+   "sgs-biz-5240f043",
+   "sgs-biz-52cb4afa",
+   "sgs-biz-53643927",
+   "sgs-biz-53d902a9",
+   "sgs-biz-551c8cc5",
+   "sgs-biz-55a141c6",
+   "sgs-biz-575b396f",
+   "sgs-biz-578ca8fe",
+   "sgs-biz-57f49671",
+   "sgs-biz-58a33f63",
+   "sgs-biz-59ee3f0b",
+   "sgs-biz-59f597b7",
+   "sgs-biz-5a2f6e7c",
+   "sgs-biz-5a31036e",
+   "sgs-biz-5a789f71",
+   "sgs-biz-5b154285",
+   "sgs-biz-5b154add",
+   "sgs-biz-5cb94a6f",
+   "sgs-biz-5d10312f",
+   "sgs-biz-5d1308fd",
+   "sgs-biz-5d216211",
+   "sgs-biz-5da29486",
+   "sgs-biz-5dc2789d",
+   "sgs-biz-5ed4f208",
+   "sgs-biz-5ee9e1ff",
+   "sgs-biz-5f19f442",
+   "sgs-biz-5fa6e39d",
+   "sgs-biz-5fc42546",
+   "sgs-biz-5fcf6fcc",
+   "sgs-biz-5fec05a1",
+   "sgs-biz-6184ce20",
+   "sgs-biz-618d2fa2",
+   "sgs-biz-6263adb5",
+   "sgs-biz-62696f0a",
+   "sgs-biz-627fd355",
+   "sgs-biz-62fd3211",
+   "sgs-biz-634a8853",
+   "sgs-biz-64460527",
+   "sgs-biz-6466dc52",
+   "sgs-biz-64c3cb59",
+   "sgs-biz-6527812e",
+   "sgs-biz-6543a355",
+   "sgs-biz-65864f42",
+   "sgs-biz-65a12561",
+   "sgs-biz-669893b8",
+   "sgs-biz-67417d96",
+   "sgs-biz-678fb43a",
+   "sgs-biz-68b66cb0",
+   "sgs-biz-68e1b75b",
+   "sgs-biz-69211ce1",
+   "sgs-biz-6994940d",
+   "sgs-biz-69a1956f",
+   "sgs-biz-69feedfc",
+   "sgs-biz-6b51a2fa",
+   "sgs-biz-6be0bff8",
+   "sgs-biz-6c39119c",
+   "sgs-biz-6c59ef54",
+   "sgs-biz-6c840404",
+   "sgs-biz-6ccd2b9e",
+   "sgs-biz-6d7ac7f2",
+   "sgs-biz-6dafea81",
+   "sgs-biz-6e0fc085",
+   "sgs-biz-7063ba95",
+   "sgs-biz-70fca845",
+   "sgs-biz-7103f12e",
+   "sgs-biz-7467c563",
+   "sgs-biz-74901932",
+   "sgs-biz-750b4e50",
+   "sgs-biz-753e2a8b",
+   "sgs-biz-7709a84b",
+   "sgs-biz-78173678",
+   "sgs-biz-782b3d72",
+   "sgs-biz-7845c336",
+   "sgs-biz-78b1888d",
+   "sgs-biz-78b392c0",
+   "sgs-biz-78db9853",
+   "sgs-biz-78fae968",
+   "sgs-biz-7909d499",
+   "sgs-biz-7a1e7f8b",
+   "sgs-biz-7a4561b3",
+   "sgs-biz-7b55afac",
+   "sgs-biz-7b5acf5f",
+   "sgs-biz-7bdd747b",
+   "sgs-biz-7c064a76",
+   "sgs-biz-7c2c1136",
+   "sgs-biz-7c505b96",
+   "sgs-biz-7cabe567",
+   "sgs-biz-7d0dd304",
+   "sgs-biz-7dfabb6d",
+   "sgs-biz-7e7aaa68",
+   "sgs-biz-7f11128e",
+   "sgs-biz-7fdde304",
+   "sgs-biz-806752a2",
+   "sgs-biz-807d1c8b",
+   "sgs-biz-80925929",
+   "sgs-biz-8139fb3e",
+   "sgs-biz-81fb0bfa",
+   "sgs-biz-83185f06",
+   "sgs-biz-8356f545",
+   "sgs-biz-839933c0",
+   "sgs-biz-83a75dae",
+   "sgs-biz-83df7daf",
+   "sgs-biz-845385da",
+   "sgs-biz-8508e194",
+   "sgs-biz-85284e15",
+   "sgs-biz-855f9118",
+   "sgs-biz-859ba51e",
+   "sgs-biz-863a2b76",
+   "sgs-biz-86eb0f24",
+   "sgs-biz-881ae52a",
+   "sgs-biz-883ad0c5",
+   "sgs-biz-88c9114f",
+   "sgs-biz-895e83da",
+   "sgs-biz-897f88ea",
+   "sgs-biz-898a24fc",
+   "sgs-biz-89c69d7f",
+   "sgs-biz-89e50018",
+   "sgs-biz-8a01265f",
+   "sgs-biz-8a3f39fa",
+   "sgs-biz-8aa774a3",
+   "sgs-biz-8b03da96",
+   "sgs-biz-8bfa75ba",
+   "sgs-biz-8c390155",
+   "sgs-biz-8c5c62f8",
+   "sgs-biz-8cc720c7",
+   "sgs-biz-8d3a8c3e",
+   "sgs-biz-8d4fc306",
+   "sgs-biz-8de545af",
+   "sgs-biz-8f850234",
+   "sgs-biz-8f851a0e",
+   "sgs-biz-903152a0",
+   "sgs-biz-92758b26",
+   "sgs-biz-928bb051",
+   "sgs-biz-9292a9a5",
+   "sgs-biz-92e5e2c0",
+   "sgs-biz-94365d98",
+   "sgs-biz-943930a9",
+   "sgs-biz-944220d5",
+   "sgs-biz-94730c8d",
+   "sgs-biz-9563cd4a",
+   "sgs-biz-956db27f",
+   "sgs-biz-95c7d007",
+   "sgs-biz-95d2ce78",
+   "sgs-biz-9634dd9e",
+   "sgs-biz-964b6e4a",
+   "sgs-biz-968c7d55",
+   "sgs-biz-977759db",
+   "sgs-biz-9782d0c4",
+   "sgs-biz-980940aa",
+   "sgs-biz-983bf6be",
+   "sgs-biz-9863a2c2",
+   "sgs-biz-99495c85",
+   "sgs-biz-9a0c1661",
+   "sgs-biz-9acc245d",
+   "sgs-biz-9b1eddab",
+   "sgs-biz-9bc8383a",
+   "sgs-biz-9c5bcc90",
+   "sgs-biz-9c7d4c88",
+   "sgs-biz-9d00a124",
+   "sgs-biz-9e087ca6",
+   "sgs-biz-9fc4c80f",
+   "sgs-biz-9fcda9e8",
+   "sgs-biz-a0e52e3a",
+   "sgs-biz-a1fa302c",
+   "sgs-biz-a25e3253",
+   "sgs-biz-a26a9653",
+   "sgs-biz-a2800bc1",
+   "sgs-biz-a2a8479f",
+   "sgs-biz-a2cfdbd6",
+   "sgs-biz-a31e7f15",
+   "sgs-biz-a3718a96",
+   "sgs-biz-a51ffeaf",
+   "sgs-biz-a5afb9da",
+   "sgs-biz-a60b6c6b",
+   "sgs-biz-a61b355f",
+   "sgs-biz-a7b6e49a",
+   "sgs-biz-a8082888",
+   "sgs-biz-a89fd2b0",
+   "sgs-biz-a9688fb0",
+   "sgs-biz-ab610ac3",
+   "sgs-biz-abd13dd4",
+   "sgs-biz-acad7c87",
+   "sgs-biz-ace9a4f1",
+   "sgs-biz-ada9019f",
+   "sgs-biz-ae198822",
+   "sgs-biz-ae56ab77",
+   "sgs-biz-ae76aacd",
+   "sgs-biz-b11d674c",
+   "sgs-biz-b2425ef9",
+   "sgs-biz-b31928dc",
+   "sgs-biz-b4772ee3",
+   "sgs-biz-b5d3f32d",
+   "sgs-biz-b66ac4c9",
+   "sgs-biz-b6c60c38",
+   "sgs-biz-b6de7ca9",
+   "sgs-biz-b78b4406",
+   "sgs-biz-b7fa135b",
+   "sgs-biz-b7fa65e4",
+   "sgs-biz-b88f7b95",
+   "sgs-biz-b9de9e5e",
+   "sgs-biz-bac46a70",
+   "sgs-biz-bb83c381",
+   "sgs-biz-bbbed529",
+   "sgs-biz-bc326189",
+   "sgs-biz-bc51d056",
+   "sgs-biz-bd19e75e",
+   "sgs-biz-bdb713e7",
+   "sgs-biz-bf515e81",
+   "sgs-biz-bf620588",
+   "sgs-biz-bf979031",
+   "sgs-biz-bfb588d2",
+   "sgs-biz-bfe1ea8d",
+   "sgs-biz-c108b8a7",
+   "sgs-biz-c2441e9f",
+   "sgs-biz-c28da3f2",
+   "sgs-biz-c2f84f00",
+   "sgs-biz-c403b1f3",
+   "sgs-biz-c4676ae4",
+   "sgs-biz-c5bc4412",
+   "sgs-biz-c74edf60",
+   "sgs-biz-c751bca6",
+   "sgs-biz-c78327fe",
+   "sgs-biz-c8340756",
+   "sgs-biz-c84e6246",
+   "sgs-biz-c860506a",
+   "sgs-biz-c8f03920",
+   "sgs-biz-c90183a0",
+   "sgs-biz-c92e7e35",
+   "sgs-biz-c9c01882",
+   "sgs-biz-c9c143dd",
+   "sgs-biz-ca00f730",
+   "sgs-biz-ca098445",
+   "sgs-biz-ca0a030c",
+   "sgs-biz-cab30bd3",
+   "sgs-biz-caf4c3c2",
+   "sgs-biz-cb4ef90e",
+   "sgs-biz-cbcfc5a5",
+   "sgs-biz-cc7fa75b",
+   "sgs-biz-cc8af6cc",
+   "sgs-biz-ccf1a83b",
+   "sgs-biz-cd0f8298",
+   "sgs-biz-cd15d358",
+   "sgs-biz-cdcab343",
+   "sgs-biz-ce180436",
+   "sgs-biz-cee29b38",
+   "sgs-biz-cf642343",
+   "sgs-biz-d08dcc57",
+   "sgs-biz-d11764c9",
+   "sgs-biz-d12277b3",
+   "sgs-biz-d227a55b",
+   "sgs-biz-d2d32b4c",
+   "sgs-biz-d360f8b0",
+   "sgs-biz-d3645dc6",
+   "sgs-biz-d3fc4994",
+   "sgs-biz-d43a848f",
+   "sgs-biz-d444d288",
+   "sgs-biz-d5289d7a",
+   "sgs-biz-d53e4ab6",
+   "sgs-biz-d569d09b",
+   "sgs-biz-d6074841",
+   "sgs-biz-d62ecc6d",
+   "sgs-biz-d6c01921",
+   "sgs-biz-d7e0d7e7",
+   "sgs-biz-d804ab73",
+   "sgs-biz-d80e1188",
+   "sgs-biz-d8c92ec7",
+   "sgs-biz-d90b91f3",
+   "sgs-biz-d9221f77",
+   "sgs-biz-da13b6fc",
+   "sgs-biz-dabed9c3",
+   "sgs-biz-db230e22",
+   "sgs-biz-dbdea9ce",
+   "sgs-biz-dc4fe696",
+   "sgs-biz-ddc60ec1",
+   "sgs-biz-ddfb40a3",
+   "sgs-biz-de96ae32",
+   "sgs-biz-e0b6b41a",
+   "sgs-biz-e0dbffe4",
+   "sgs-biz-e179b313",
+   "sgs-biz-e1d985a0",
+   "sgs-biz-e200394c",
+   "sgs-biz-e24dea17",
+   "sgs-biz-e2ab96dd",
+   "sgs-biz-e33942f7",
+   "sgs-biz-e37994cd",
+   "sgs-biz-e3a11239",
+   "sgs-biz-e3fdef63",
+   "sgs-biz-e409768b",
+   "sgs-biz-e42fc841",
+   "sgs-biz-e4354436",
+   "sgs-biz-e50ac999",
+   "sgs-biz-e5e510ce",
+   "sgs-biz-e5f7f3b6",
+   "sgs-biz-e65ce7de",
+   "sgs-biz-e73ecc6e",
+   "sgs-biz-e740fdda",
+   "sgs-biz-e8128f23",
+   "sgs-biz-e82bb22e",
+   "sgs-biz-e9613c38",
+   "sgs-biz-e9840e0a",
+   "sgs-biz-eab863d7",
+   "sgs-biz-eac0d5e4",
+   "sgs-biz-eacce277",
+   "sgs-biz-eb9665a9",
+   "sgs-biz-ecad576f",
+   "sgs-biz-ece457fa",
+   "sgs-biz-ed6158cc",
+   "sgs-biz-edb3e377",
+   "sgs-biz-ef52233d",
+   "sgs-biz-f032b4a1",
+   "sgs-biz-f0fd1793",
+   "sgs-biz-f1625d7d",
+   "sgs-biz-f44ec69f",
+   "sgs-biz-f4c33689",
+   "sgs-biz-f5755ea2",
+   "sgs-biz-f58f8de7",
+   "sgs-biz-f5cff857",
+   "sgs-biz-f66a06fa",
+   "sgs-biz-f66c65d9",
+   "sgs-biz-f69413f9",
+   "sgs-biz-f6d4814e",
+   "sgs-biz-f739277a",
+   "sgs-biz-f73c9b2f",
+   "sgs-biz-f92aeb6b",
+   "sgs-biz-f949a893",
+   "sgs-biz-f964911c",
+   "sgs-biz-f98d9ff1",
+   "sgs-biz-f99fe5b6",
+   "sgs-biz-f9ab1c26",
+   "sgs-biz-f9c1b703",
+   "sgs-biz-fa71e5dc",
+   "sgs-biz-faae83ff",
+   "sgs-biz-fbb3d8c4",
+   "sgs-biz-fbc3ad60",
+   "sgs-biz-fc937b3f",
+   "sgs-biz-fca61849",
+   "sgs-biz-fcd12f07",
+   "sgs-biz-fdabdfe5",
+   "sgs-biz-fefecee3",
+   "sgs-biz-ff0193cb",
+   "sgs-biz-ff0ed36a",
+   "sgs-biz-ffc48a11",
+   "sgs-business-attribution",
+   "sgs-business-hours",
+   "sgs-business-hours--condensed",
+   "sgs-business-hours--condensed-inline",
+   "sgs-business-hours__day",
+   "sgs-business-hours__row",
+   "sgs-business-hours__time",
+   "sgs-business-info",
+   "sgs-business-info--inline-text",
+   "sgs-business-info-wrap",
+   "sgs-business-info-wrap--attribution",
+   "sgs-business-info-wrap--hours",
+   "sgs-business-info-wrap--open-status",
+   "sgs-business-info-wrap--phone",
+   "sgs-business-info__after",
+   "sgs-business-info__before",
+   "sgs-business-info__icon",
+   "sgs-business-info__label",
+   "sgs-business-info__link",
+   "sgs-business-info__text",
+   "sgs-business-phone",
+   "sgs-child-sizing",
+   "sgs-focus-rests",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "sgs-open-status",
+   "sgs-open-status__dot",
+   "sgs-open-status__label",
+   "sgs-open-status__line",
+   "sgs-open-status__pill",
+   "wp-block-sgs-business-info"
+  ],
+  "tags": [
+   "a",
+   "dd",
+   "defs",
+   "div",
+   "dl",
+   "dt",
+   "lineargradient",
+   "p",
+   "path",
+   "span",
+   "stop",
+   "style",
+   "svg"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}

@@ -1,0 +1,7551 @@
+{
+ "block": "sgs/countdown-timer",
+ "schemaVersion": 2,
+ "parts": [],
+ "entries": [
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT::after",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColour",
+   "part": "ROOT::after",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT::after",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "backgroundColourGradient",
+   "part": "ROOT::after",
+   "props": [
+    "z-index"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "none"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "expiredFontFamily",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "expiredFontSize",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "expiredFontSize",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "expiredFontSize",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "expiredFontStyle",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "italic"
+   ]
+  },
+  {
+   "setting": "expiredFontWeight",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "expiredLetterSpacing",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "expiredLetterSpacing",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "expiredLetterSpacing",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "expiredLineHeight",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "expiredLineHeight",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "expiredLineHeight",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "expiredTextAlign",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "expiredTextAlign",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "expiredTextAlign",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "expiredTextColumns",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "expiredTextDecoration",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "line-through",
+    "none",
+    "underline"
+   ]
+  },
+  {
+   "setting": "expiredTextStrokeColour",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "expiredTextStrokeColourHover",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "expiredTextStrokeColourHover",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "expiredTextStrokeWidth",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "expiredTextStrokeWidth",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "expiredTextStrokeWidth",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "expiredTextTransform",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "expiredTextWrap",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "expiredWritingMode",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "horizontal-tb",
+    "vertical-lr",
+    "vertical-rl"
+   ]
+  },
+  {
+   "setting": "fontFamily",
+   "part": "ROOT",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "fontStyle",
+   "part": "ROOT",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "italic"
+   ]
+  },
+  {
+   "setting": "fontWeight",
+   "part": "ROOT",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "labelColour",
+   "part": "sgs-countdown__label",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "labelColourGradient",
+   "part": "sgs-countdown__label",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourGradient",
+   "part": "sgs-countdown__label",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelColourGradient",
+   "part": "sgs-countdown__label",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown__label",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "labelFontFamily",
+   "part": "sgs-countdown__label",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "labelFontSize",
+   "part": "sgs-countdown__label",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "labelFontSize",
+   "part": "sgs-countdown__label",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "labelFontSize",
+   "part": "sgs-countdown__label",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "labelFontStyle",
+   "part": "sgs-countdown__label",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "italic"
+   ]
+  },
+  {
+   "setting": "labelFontWeight",
+   "part": "sgs-countdown__label",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "labelLetterSpacing",
+   "part": "sgs-countdown__label",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "labelLetterSpacing",
+   "part": "sgs-countdown__label",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "labelLetterSpacing",
+   "part": "sgs-countdown__label",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "labelLineHeight",
+   "part": "sgs-countdown__label",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "labelLineHeight",
+   "part": "sgs-countdown__label",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "labelLineHeight",
+   "part": "sgs-countdown__label",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "labelTextAlign",
+   "part": "sgs-countdown__label",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "labelTextAlign",
+   "part": "sgs-countdown__label",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "labelTextAlign",
+   "part": "sgs-countdown__label",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "labelTextColumns",
+   "part": "sgs-countdown__label",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "labelTextDecoration",
+   "part": "sgs-countdown__label",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "line-through",
+    "none",
+    "underline"
+   ]
+  },
+  {
+   "setting": "labelTextStrokeColour",
+   "part": "sgs-countdown__label",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "labelTextStrokeColourHover",
+   "part": "sgs-countdown__label",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "labelTextStrokeColourHover",
+   "part": "sgs-countdown__label",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "labelTextStrokeWidth",
+   "part": "sgs-countdown__label",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "labelTextStrokeWidth",
+   "part": "sgs-countdown__label",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "labelTextStrokeWidth",
+   "part": "sgs-countdown__label",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "labelTextTransform",
+   "part": "sgs-countdown__label",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "labelTextWrap",
+   "part": "sgs-countdown__label",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "labelWritingMode",
+   "part": "sgs-countdown__label",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__label",
+   "kind": "value",
+   "values": [
+    "horizontal-tb",
+    "vertical-lr",
+    "vertical-rl"
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "numberColour",
+   "part": "sgs-countdown__number",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "numberColourGradient",
+   "part": "sgs-countdown__number",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "numberColourGradient",
+   "part": "sgs-countdown__number",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "numberColourGradient",
+   "part": "sgs-countdown__number",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "numberFontFamily",
+   "part": "sgs-countdown__number",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "numberFontSize",
+   "part": "sgs-countdown__number",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "numberFontSize",
+   "part": "sgs-countdown__number",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "numberFontSize",
+   "part": "sgs-countdown__number",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "numberFontStyle",
+   "part": "sgs-countdown__number",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "italic"
+   ]
+  },
+  {
+   "setting": "numberFontWeight",
+   "part": "sgs-countdown__number",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "numberLetterSpacing",
+   "part": "sgs-countdown__number",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "numberLetterSpacing",
+   "part": "sgs-countdown__number",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "numberLetterSpacing",
+   "part": "sgs-countdown__number",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "numberLineHeight",
+   "part": "sgs-countdown__number",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "numberLineHeight",
+   "part": "sgs-countdown__number",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "numberLineHeight",
+   "part": "sgs-countdown__number",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "numberTextAlign",
+   "part": "sgs-countdown__number",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "numberTextAlign",
+   "part": "sgs-countdown__number",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "numberTextAlign",
+   "part": "sgs-countdown__number",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "numberTextColumns",
+   "part": "sgs-countdown__number",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "numberTextDecoration",
+   "part": "sgs-countdown__number",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "line-through",
+    "none",
+    "underline"
+   ]
+  },
+  {
+   "setting": "numberTextStrokeColour",
+   "part": "sgs-countdown__number",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "numberTextStrokeColourHover",
+   "part": "sgs-countdown__number",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "numberTextStrokeColourHover",
+   "part": "sgs-countdown__number",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "numberTextStrokeWidth",
+   "part": "sgs-countdown__number",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "numberTextStrokeWidth",
+   "part": "sgs-countdown__number",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "numberTextStrokeWidth",
+   "part": "sgs-countdown__number",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "numberTextTransform",
+   "part": "sgs-countdown__number",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "numberTextWrap",
+   "part": "sgs-countdown__number",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "numberWritingMode",
+   "part": "sgs-countdown__number",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__number",
+   "kind": "value",
+   "values": [
+    "horizontal-tb",
+    "vertical-lr",
+    "vertical-rl"
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsHideOnDesktop",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px)"
+   ],
+   "selector": ".sgs-hide-desktop",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnMobile",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width:767.98px)"
+   ],
+   "selector": ".sgs-hide-mobile",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnTablet",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ],
+   "selector": ".sgs-hide-tablet",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "textColour",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColour",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "box-decoration-break"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHover",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourHover",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourHover",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourHover",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover .sgs-countdown__expired",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "box-decoration-break"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "box-decoration-break"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "margin"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "margin"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "max-width"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "max-width"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "width"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColourHoverGradient",
+   "part": "sgs-countdown__expired",
+   "props": [
+    "width"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover .sgs-countdown__expired",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "textColumns",
+   "part": "ROOT",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "textDecoration",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "line-through",
+    "none",
+    "underline"
+   ]
+  },
+  {
+   "setting": "textStrokeColour",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeColourHover",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeColourHover",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-countdown-timer.wp-block-sgs-countdown-timer:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "textTransform",
+   "part": "ROOT",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "textWrap",
+   "part": "ROOT",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "writingMode",
+   "part": "ROOT",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-countdown-timer.wp-block-sgs-countdown-timer",
+   "kind": "value",
+   "values": [
+    "horizontal-tb",
+    "vertical-lr",
+    "vertical-rl"
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "backgroundColour",
+   "ROOT",
+   [
+    "isolation"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "ROOT::after",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "ROOT::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "ROOT::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "ROOT::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "ROOT::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "ROOT::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColour",
+   "ROOT::after",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT",
+   [
+    "isolation"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT::after",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "backgroundColourGradient",
+   "ROOT::after",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredFontFamily",
+   "sgs-countdown__expired",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredFontSize",
+   "sgs-countdown__expired",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "expiredFontSize",
+   "sgs-countdown__expired",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "expiredFontSize",
+   "sgs-countdown__expired",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredFontStyle",
+   "sgs-countdown__expired",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredFontWeight",
+   "sgs-countdown__expired",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredLetterSpacing",
+   "sgs-countdown__expired",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "expiredLetterSpacing",
+   "sgs-countdown__expired",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "expiredLetterSpacing",
+   "sgs-countdown__expired",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredLineHeight",
+   "sgs-countdown__expired",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "expiredLineHeight",
+   "sgs-countdown__expired",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "expiredLineHeight",
+   "sgs-countdown__expired",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredTextAlign",
+   "sgs-countdown__expired",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "expiredTextAlign",
+   "sgs-countdown__expired",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "expiredTextAlign",
+   "sgs-countdown__expired",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredTextColumns",
+   "sgs-countdown__expired",
+   [
+    "column-count"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredTextDecoration",
+   "sgs-countdown__expired",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredTextStrokeColour",
+   "sgs-countdown__expired",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredTextStrokeColourHover",
+   "sgs-countdown__expired",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "expiredTextStrokeColourHover",
+   "sgs-countdown__expired",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "expiredTextStrokeWidth",
+   "sgs-countdown__expired",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "expiredTextStrokeWidth",
+   "sgs-countdown__expired",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "expiredTextStrokeWidth",
+   "sgs-countdown__expired",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredTextTransform",
+   "sgs-countdown__expired",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredTextWrap",
+   "sgs-countdown__expired",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "expiredWritingMode",
+   "sgs-countdown__expired",
+   [
+    "writing-mode"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontFamily",
+   "ROOT",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontStyle",
+   "ROOT",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontWeight",
+   "ROOT",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColour",
+   "sgs-countdown__label",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColourGradient",
+   "sgs-countdown__label",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColourGradient",
+   "sgs-countdown__label",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "labelColourGradient",
+   "sgs-countdown__label",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelColourGradient",
+   "sgs-countdown__label",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "labelColourGradient",
+   "sgs-countdown__label",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelFontFamily",
+   "sgs-countdown__label",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelFontSize",
+   "sgs-countdown__label",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelFontSize",
+   "sgs-countdown__label",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelFontSize",
+   "sgs-countdown__label",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelFontStyle",
+   "sgs-countdown__label",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelFontWeight",
+   "sgs-countdown__label",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelLetterSpacing",
+   "sgs-countdown__label",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelLetterSpacing",
+   "sgs-countdown__label",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelLetterSpacing",
+   "sgs-countdown__label",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelLineHeight",
+   "sgs-countdown__label",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelLineHeight",
+   "sgs-countdown__label",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelLineHeight",
+   "sgs-countdown__label",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelTextAlign",
+   "sgs-countdown__label",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelTextAlign",
+   "sgs-countdown__label",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelTextAlign",
+   "sgs-countdown__label",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelTextColumns",
+   "sgs-countdown__label",
+   [
+    "column-count"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelTextDecoration",
+   "sgs-countdown__label",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelTextStrokeColour",
+   "sgs-countdown__label",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelTextStrokeColourHover",
+   "sgs-countdown__label",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "labelTextStrokeColourHover",
+   "sgs-countdown__label",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "labelTextStrokeWidth",
+   "sgs-countdown__label",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "labelTextStrokeWidth",
+   "sgs-countdown__label",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "labelTextStrokeWidth",
+   "sgs-countdown__label",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelTextTransform",
+   "sgs-countdown__label",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelTextWrap",
+   "sgs-countdown__label",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "labelWritingMode",
+   "sgs-countdown__label",
+   [
+    "writing-mode"
+   ],
+   null,
+   []
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberColour",
+   "sgs-countdown__number",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberColourGradient",
+   "sgs-countdown__number",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberColourGradient",
+   "sgs-countdown__number",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "numberColourGradient",
+   "sgs-countdown__number",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberColourGradient",
+   "sgs-countdown__number",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "numberColourGradient",
+   "sgs-countdown__number",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberFontFamily",
+   "sgs-countdown__number",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberFontSize",
+   "sgs-countdown__number",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "numberFontSize",
+   "sgs-countdown__number",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "numberFontSize",
+   "sgs-countdown__number",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberFontStyle",
+   "sgs-countdown__number",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberFontWeight",
+   "sgs-countdown__number",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberLetterSpacing",
+   "sgs-countdown__number",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "numberLetterSpacing",
+   "sgs-countdown__number",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "numberLetterSpacing",
+   "sgs-countdown__number",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberLineHeight",
+   "sgs-countdown__number",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "numberLineHeight",
+   "sgs-countdown__number",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "numberLineHeight",
+   "sgs-countdown__number",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberTextAlign",
+   "sgs-countdown__number",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "numberTextAlign",
+   "sgs-countdown__number",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "numberTextAlign",
+   "sgs-countdown__number",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberTextColumns",
+   "sgs-countdown__number",
+   [
+    "column-count"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberTextDecoration",
+   "sgs-countdown__number",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberTextStrokeColour",
+   "sgs-countdown__number",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberTextStrokeColourHover",
+   "sgs-countdown__number",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "numberTextStrokeColourHover",
+   "sgs-countdown__number",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "numberTextStrokeWidth",
+   "sgs-countdown__number",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "numberTextStrokeWidth",
+   "sgs-countdown__number",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "numberTextStrokeWidth",
+   "sgs-countdown__number",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberTextTransform",
+   "sgs-countdown__number",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberTextWrap",
+   "sgs-countdown__number",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "numberWritingMode",
+   "sgs-countdown__number",
+   [
+    "writing-mode"
+   ],
+   null,
+   []
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColour",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColour",
+   "sgs-countdown__expired",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "box-decoration-break"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourGradient",
+   "sgs-countdown__expired",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColourHover",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHover",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHover",
+   "sgs-countdown__expired",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHover",
+   "sgs-countdown__expired",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "ROOT",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "background-image"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "box-decoration-break"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "box-decoration-break"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "color"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "margin"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "margin"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "max-width"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "max-width"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "width"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textColourHoverGradient",
+   "sgs-countdown__expired",
+   [
+    "width"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textColumns",
+   "ROOT",
+   [
+    "column-count"
+   ],
+   null,
+   []
+  ],
+  [
+   "textDecoration",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "textStrokeColour",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textStrokeColourHover",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textStrokeColourHover",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "textTransform",
+   "ROOT",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "textWrap",
+   "ROOT",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "writingMode",
+   "ROOT",
+   [
+    "writing-mode"
+   ],
+   null,
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [
+   "cardStyle",
+   "digitStyle",
+   "evergreenHours",
+   "evergreenMinutes",
+   "evergreenMode",
+   "expiredMessage",
+   "sgsCollapseVisibility",
+   "sgsConditionCollectionQueryId",
+   "sgsConditionDateEnd",
+   "sgsConditionFormField",
+   "sgsConditionFormOperator",
+   "sgsConditionFormValue",
+   "sgsConditionProductReviews",
+   "sgsConditionUserRole",
+   "sgsCustomCssId",
+   "sgsCustomCssNote",
+   "showDays",
+   "showHours",
+   "showMinutes",
+   "showSeconds",
+   "targetDate"
+  ],
+  "replacesBlock": [
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionLoggedIn",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   }
+  ],
+  "partNotNamed": []
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "src/blocks/countdown-timer/block.json": "a3b0a2c8ec61c797",
+   "src/blocks/countdown-timer/edit.js": "fa79fab1d8655011",
+   "src/blocks/countdown-timer/editor.css": "3c44276ef65c3789",
+   "src/blocks/countdown-timer/index.js": "089464dfa125da30",
+   "src/blocks/countdown-timer/render.php": "8172f098b58a54a3",
+   "src/blocks/countdown-timer/style.css": "aa5cb88415bc264c",
+   "src/blocks/countdown-timer/view.js": "9bf5bcf22d34bd19",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/countdown-timer/style.css": "652e45d52932b05b",
+   "fixture-entry": "c4e17330625aa374",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "19adde48a3290588",
+  "theme": "66f14d3f661a5f97",
+  "classes": [
+   "sgs-cd-0457848c",
+   "sgs-cd-054b42fd",
+   "sgs-cd-05993ffb",
+   "sgs-cd-06349f09",
+   "sgs-cd-07fe9ab3",
+   "sgs-cd-08d6e458",
+   "sgs-cd-092907aa",
+   "sgs-cd-0965a984",
+   "sgs-cd-09cb44b8",
+   "sgs-cd-0ff725d7",
+   "sgs-cd-13862d70",
+   "sgs-cd-146359be",
+   "sgs-cd-185bef9d",
+   "sgs-cd-18fd0806",
+   "sgs-cd-1ae6e6b1",
+   "sgs-cd-1b9b5e1c",
+   "sgs-cd-1ff1253e",
+   "sgs-cd-21a273e7",
+   "sgs-cd-23812eaa",
+   "sgs-cd-247129cc",
+   "sgs-cd-24f25d49",
+   "sgs-cd-278e6b3d",
+   "sgs-cd-27b37ea3",
+   "sgs-cd-2a0cb1a9",
+   "sgs-cd-2b54187d",
+   "sgs-cd-2cf06db1",
+   "sgs-cd-2d3dbb87",
+   "sgs-cd-2dcf8c12",
+   "sgs-cd-2f062034",
+   "sgs-cd-3006cfca",
+   "sgs-cd-313456c5",
+   "sgs-cd-325fe96a",
+   "sgs-cd-33cf43f7",
+   "sgs-cd-34994724",
+   "sgs-cd-35ecc3ae",
+   "sgs-cd-372bf7f3",
+   "sgs-cd-3917ec0e",
+   "sgs-cd-393a0a89",
+   "sgs-cd-39a0e4a7",
+   "sgs-cd-3a22e0c0",
+   "sgs-cd-3a972acf",
+   "sgs-cd-3aa1664f",
+   "sgs-cd-3b039edf",
+   "sgs-cd-3eab69bf",
+   "sgs-cd-409511bd",
+   "sgs-cd-40d6d028",
+   "sgs-cd-4188a193",
+   "sgs-cd-41d29abc",
+   "sgs-cd-449f25bd",
+   "sgs-cd-4970629d",
+   "sgs-cd-4989ed21",
+   "sgs-cd-4a2adc53",
+   "sgs-cd-4a66da4e",
+   "sgs-cd-4c4bea03",
+   "sgs-cd-4ca69490",
+   "sgs-cd-4cbad963",
+   "sgs-cd-4deeea31",
+   "sgs-cd-545f7011",
+   "sgs-cd-54f4d0ac",
+   "sgs-cd-56c77ff4",
+   "sgs-cd-57a16396",
+   "sgs-cd-5b8e1da2",
+   "sgs-cd-5c28f629",
+   "sgs-cd-5ddb0667",
+   "sgs-cd-5e7b161c",
+   "sgs-cd-5ed6f7a4",
+   "sgs-cd-5ef88214",
+   "sgs-cd-5f0cc6a2",
+   "sgs-cd-617f021f",
+   "sgs-cd-62571304",
+   "sgs-cd-62d5f849",
+   "sgs-cd-6549b939",
+   "sgs-cd-654d23ca",
+   "sgs-cd-66976ffb",
+   "sgs-cd-68a4cc42",
+   "sgs-cd-6a144497",
+   "sgs-cd-6a1f0893",
+   "sgs-cd-6dc8355c",
+   "sgs-cd-6ece2687",
+   "sgs-cd-6febc7ba",
+   "sgs-cd-730697d7",
+   "sgs-cd-73f62a33",
+   "sgs-cd-749c0043",
+   "sgs-cd-7503198a",
+   "sgs-cd-75fdbf3b",
+   "sgs-cd-76252055",
+   "sgs-cd-7afc6b30",
+   "sgs-cd-7cad7d47",
+   "sgs-cd-7d18c976",
+   "sgs-cd-7fffdb80",
+   "sgs-cd-8313cae7",
+   "sgs-cd-83bb6f85",
+   "sgs-cd-84a36bbd",
+   "sgs-cd-853bec49",
+   "sgs-cd-8577a177",
+   "sgs-cd-863b0356",
+   "sgs-cd-86f62221",
+   "sgs-cd-88108833",
+   "sgs-cd-8ad65293",
+   "sgs-cd-8d61b4af",
+   "sgs-cd-8dc1e9b2",
+   "sgs-cd-90b4b102",
+   "sgs-cd-929af3f3",
+   "sgs-cd-9364b13a",
+   "sgs-cd-94004581",
+   "sgs-cd-96ef5b34",
+   "sgs-cd-98ac5d60",
+   "sgs-cd-9bcfb9eb",
+   "sgs-cd-9bfc32cb",
+   "sgs-cd-9d8be451",
+   "sgs-cd-9e229f54",
+   "sgs-cd-a058c49f",
+   "sgs-cd-a069be0d",
+   "sgs-cd-a0fe4f6b",
+   "sgs-cd-a19100cf",
+   "sgs-cd-a209ff4e",
+   "sgs-cd-a22f8412",
+   "sgs-cd-a2c8fce7",
+   "sgs-cd-a36d929c",
+   "sgs-cd-a3c11689",
+   "sgs-cd-a4a2bbc9",
+   "sgs-cd-a76e9b99",
+   "sgs-cd-a7925fe6",
+   "sgs-cd-a7eeb3ab",
+   "sgs-cd-a8027433",
+   "sgs-cd-a8361076",
+   "sgs-cd-a95e88c6",
+   "sgs-cd-a9d47861",
+   "sgs-cd-ac686ce5",
+   "sgs-cd-aeeee45a",
+   "sgs-cd-af29d954",
+   "sgs-cd-afed7ff2",
+   "sgs-cd-b0bf9cbc",
+   "sgs-cd-b1e819d5",
+   "sgs-cd-b2148ee4",
+   "sgs-cd-b4d75c55",
+   "sgs-cd-b705aa1c",
+   "sgs-cd-b7de6503",
+   "sgs-cd-b8fa7701",
+   "sgs-cd-b96c0068",
+   "sgs-cd-bc0b7a4f",
+   "sgs-cd-bc0d2696",
+   "sgs-cd-bc73d83f",
+   "sgs-cd-befd50c9",
+   "sgs-cd-c0f2ca0e",
+   "sgs-cd-c1687d8e",
+   "sgs-cd-c17a0476",
+   "sgs-cd-c19e8f0e",
+   "sgs-cd-c5f35a2a",
+   "sgs-cd-c8bd3758",
+   "sgs-cd-c99344c8",
+   "sgs-cd-cbe6255c",
+   "sgs-cd-ccb9a1a7",
+   "sgs-cd-cd6043b1",
+   "sgs-cd-ce04694b",
+   "sgs-cd-cf264582",
+   "sgs-cd-cf3518db",
+   "sgs-cd-d036de24",
+   "sgs-cd-d2448fbf",
+   "sgs-cd-d47c19ee",
+   "sgs-cd-d542e1a9",
+   "sgs-cd-d6a0e7a4",
+   "sgs-cd-da528759",
+   "sgs-cd-da659546",
+   "sgs-cd-dbe45e95",
+   "sgs-cd-dd783d59",
+   "sgs-cd-de3d6cc0",
+   "sgs-cd-dfa4dd72",
+   "sgs-cd-dfcfbefe",
+   "sgs-cd-e0aeea74",
+   "sgs-cd-e2b330d1",
+   "sgs-cd-e3610c7b",
+   "sgs-cd-e62df99b",
+   "sgs-cd-e667b1b3",
+   "sgs-cd-e76e1493",
+   "sgs-cd-e81acd1c",
+   "sgs-cd-e93d9236",
+   "sgs-cd-e9dfe569",
+   "sgs-cd-eb4bc8b9",
+   "sgs-cd-eb7338c3",
+   "sgs-cd-eb7e9633",
+   "sgs-cd-ecde30ee",
+   "sgs-cd-edb3ebae",
+   "sgs-cd-f714b447",
+   "sgs-cd-f768c7cf",
+   "sgs-cd-f8778d8e",
+   "sgs-cd-fa1a52be",
+   "sgs-cd-fc4a0649",
+   "sgs-cd-fd214c1a",
+   "sgs-cd-fdfbf97b",
+   "sgs-cd-ff9f5332",
+   "sgs-child-sizing",
+   "sgs-countdown",
+   "sgs-countdown--digit-simple",
+   "sgs-countdown--elevated",
+   "sgs-countdown__days",
+   "sgs-countdown__expired",
+   "sgs-countdown__grid",
+   "sgs-countdown__hours",
+   "sgs-countdown__label",
+   "sgs-countdown__minutes",
+   "sgs-countdown__number",
+   "sgs-countdown__seconds",
+   "sgs-countdown__unit",
+   "sgs-focus-rests",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "wp-block-sgs-countdown-timer"
+  ],
+  "tags": [
+   "div",
+   "span",
+   "style"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}

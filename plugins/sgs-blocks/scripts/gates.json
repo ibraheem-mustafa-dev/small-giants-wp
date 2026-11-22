@@ -2510,5 +2510,25 @@
     "added_commit": null,
     "budget_ms": 6500,
     "order": 284
+  },
+  {
+    "id": "setting-record-changed",
+    "cmd": "python scripts/setting-record/check.py --changed --no-proof",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 285,
+    "tier_reason": "Every build: the blocks a change touches (setting-record/changed.py), each re-rendered and compared with its committed record without the proof (the record's proofKeys make that exact); an untouched library takes seconds. Never the whole library (Bean, 2026-11-22)."
+  },
+  {
+    "id": "setting-record-changed-proof",
+    "cmd": "python scripts/setting-record/check.py --changed",
+    "tier": "full",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 3000,
+    "order": 286,
+    "tier_reason": "Pre-deploy: the same blocks with the cascade proof (seconds to minutes a block); a change every block loads re-renders the canaries and proves one only if its output moved. Never the whole library (Bean, 2026-11-22)."
   }
 ]

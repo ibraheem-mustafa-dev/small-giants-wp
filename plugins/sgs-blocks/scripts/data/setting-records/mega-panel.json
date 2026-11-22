@@ -1,0 +1,6704 @@
+{
+ "block": "sgs/mega-panel",
+ "schemaVersion": 2,
+ "parts": [
+  "sgs-mega-panel__content"
+ ],
+ "entries": [
+  {
+   "setting": "asideWidth",
+   "part": "sgs-mega-aside",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-aside",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "asideWidth",
+   "part": "sgs-mega-aside",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-aside",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel:not( .sgs-mega-panel--aside-sep-none ) .sgs-mega-aside",
+   "kind": "value"
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "brandsEyebrowColour",
+   "part": "sgs-mega-panel__eyebrow",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel > .sgs-mega-panel__eyebrow",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "brandsEyebrowFontFamily",
+   "part": "sgs-mega-panel__eyebrow",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel > .sgs-mega-panel__eyebrow",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "brandsEyebrowFontSize",
+   "part": "sgs-mega-panel__eyebrow",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel > .sgs-mega-panel__eyebrow",
+   "kind": "value",
+   "values": [
+    37
+   ]
+  },
+  {
+   "setting": "brandsEyebrowFontWeight",
+   "part": "sgs-mega-panel__eyebrow",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel > .sgs-mega-panel__eyebrow",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "brandsEyebrowLetterSpacing",
+   "part": "sgs-mega-panel__eyebrow",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel > .sgs-mega-panel__eyebrow",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "brandsEyebrowLineHeight",
+   "part": "sgs-mega-panel__eyebrow",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel > .sgs-mega-panel__eyebrow",
+   "kind": "value",
+   "values": [
+    37
+   ]
+  },
+  {
+   "setting": "brandsEyebrowPadding",
+   "part": "sgs-mega-panel__eyebrow",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel > .sgs-mega-panel__eyebrow",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "brandsEyebrowTextTransform",
+   "part": "sgs-mega-panel__eyebrow",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel > .sgs-mega-panel__eyebrow",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none"
+   ]
+  },
+  {
+   "setting": "colourScheme",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-scheme=\"dark\"]",
+   "kind": "switched-on",
+   "values": [
+    "auto",
+    "dark"
+   ]
+  },
+  {
+   "setting": "colourScheme",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-scheme=\"dark\"]",
+   "kind": "switched-on",
+   "values": [
+    "auto",
+    "dark"
+   ]
+  },
+  {
+   "setting": "groupBorderColour",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradient",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "content"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "content"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "inset"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "inset"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "margin"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "margin"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "padding"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "padding"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "position"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourGradientHover",
+   "part": "sgs-mega-group::before",
+   "props": [
+    "position"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "groupBorderColourHover",
+   "part": "sgs-mega-aside",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-aside",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "groupBorderColourHover",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "groupBorderColourHover",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "groupGap",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-panel__content",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "groupGap",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-panel__content",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "groupGap",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-panel__content",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "groupPadding",
+   "part": "sgs-mega-group",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style] .sgs-mega-group",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "groupTransitionDuration",
+   "part": "sgs-mega-group",
+   "props": [
+    "transition-duration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style] .sgs-mega-group",
+   "kind": "value",
+   "values": [
+    "437"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackground",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconBackgroundGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconBackgroundGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='columns' ] .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconBackgroundHover",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".wp-block-sgs-mega-panel[ data-mega-style='cards' ] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColour",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHover",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourHover",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-clip"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-clip"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible) .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "isolation"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "content"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "content"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "inset"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "inset"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible) .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "position"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "position"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "z-index"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "iconColourHoverGradient",
+   "part": "sgs-icon-list__icon::after",
+   "props": [
+    "z-index"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon::after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "itemPaddingShiftHover",
+   "part": "sgs-icon-list__item",
+   "props": [
+    "padding"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .sgs-mega-group .sgs-icon-list__item:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "itemPaddingShiftHover",
+   "part": "sgs-icon-list__item",
+   "props": [
+    "padding"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group .sgs-icon-list__item:hover",
+   "kind": "switched-on",
+   "values": [
+    "37px"
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "panelBg",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "panelBg",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "switched-on",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "panelBgGradient",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "panelCardLift",
+   "part": "sgs-mega-group",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible",
+   "kind": "value",
+   "values": [
+    "7"
+   ]
+  },
+  {
+   "setting": "panelCardLift",
+   "part": "sgs-mega-group",
+   "props": [
+    "transform"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover",
+   "kind": "value",
+   "values": [
+    "7"
+   ]
+  },
+  {
+   "setting": "panelPadding",
+   "part": "ROOT",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ":where(.sgs-icon-list__item:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__text)",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-button",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-button",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-button",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-button",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-button",
+   "props": [
+    "text-decoration"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-button",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-button:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon",
+   "kind": "switched-on"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible) .sgs-icon-list__icon",
+   "kind": "switched-on"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-icon-list__item:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-icon-list__item:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-mega-aside",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-aside:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-mega-aside",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-aside:has(:focus-visible):where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible",
+   "kind": "switched-on"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-mega-group",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible",
+   "kind": "switched-on"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "opacity"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)::after",
+   "kind": "switched-on"
+  },
+  {
+   "setting": "sgsHideOnDesktop",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px)"
+   ],
+   "selector": ".sgs-hide-desktop",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnMobile",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width:767.98px)"
+   ],
+   "selector": ".sgs-hide-mobile",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnTablet",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ],
+   "selector": ".sgs-hide-tablet",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "shadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "shadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-icon-list__icon",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-icon-list__item",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .sgs-mega-group .sgs-icon-list__icon",
+   "kind": "value",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-icon-list__item",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .sgs-mega-group .sgs-icon-list__item",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]) .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:has(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "transform"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "transform"
+   ],
+   "state": "hover",
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "transform"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "opacity"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:focus-visible::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "opacity"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group:hover::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "opacity"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (prefers-reduced-motion: reduce)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-group::after",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-group::after",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "align-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-panel__content",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .sgs-mega-group .sgs-icon-list__item",
+   "kind": "value",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "flex-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .sgs-mega-panel__content",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-panel__content",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-panel__content",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "style",
+   "part": "sgs-mega-panel__content",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"cards\"] .sgs-mega-panel__content",
+   "kind": "switched-on",
+   "values": [
+    "Sample text"
+   ]
+  },
+  {
+   "setting": "surfaceOpacity",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    0.37
+   ]
+  },
+  {
+   "setting": "surfaceSaturate",
+   "part": "ROOT",
+   "props": [
+    "backdrop-filter"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "asideWidth",
+   "sgs-mega-aside",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "asideWidth",
+   "sgs-mega-aside",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "sgs-mega-aside",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "sgs-mega-group",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "brandsEyebrowColour",
+   "sgs-mega-panel__eyebrow",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "brandsEyebrowFontFamily",
+   "sgs-mega-panel__eyebrow",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "brandsEyebrowFontSize",
+   "sgs-mega-panel__eyebrow",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "brandsEyebrowFontWeight",
+   "sgs-mega-panel__eyebrow",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "brandsEyebrowLetterSpacing",
+   "sgs-mega-panel__eyebrow",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "brandsEyebrowLineHeight",
+   "sgs-mega-panel__eyebrow",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "brandsEyebrowPadding",
+   "sgs-mega-panel__eyebrow",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "brandsEyebrowTextTransform",
+   "sgs-mega-panel__eyebrow",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourScheme",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourScheme",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "colourScheme",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColour",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradient",
+   "sgs-mega-group::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group",
+   [
+    "position"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group",
+   [
+    "position"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "-webkit-mask"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "-webkit-mask"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "border-radius"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "border-radius"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "content"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "content"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "inset"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "inset"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "margin"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "margin"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "mask-composite"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "mask-composite"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "padding"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "padding"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "pointer-events"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "pointer-events"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "position"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourGradientHover",
+   "sgs-mega-group::before",
+   [
+    "position"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupBorderColourHover",
+   "sgs-mega-aside",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupBorderColourHover",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "groupBorderColourHover",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "groupGap",
+   "sgs-mega-panel__content",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "groupGap",
+   "sgs-mega-panel__content",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "groupGap",
+   "sgs-mega-panel__content",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupPadding",
+   "sgs-mega-group",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "groupTransitionDuration",
+   "sgs-mega-group",
+   [
+    "transition-duration"
+   ],
+   null,
+   []
+  ],
+  [
+   "headings",
+   "sgs-heading",
+   [
+    "clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "headings",
+   "sgs-heading",
+   [
+    "clip-path"
+   ],
+   null,
+   []
+  ],
+  [
+   "headings",
+   "sgs-heading",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "headings",
+   "sgs-heading",
+   [
+    "overflow"
+   ],
+   null,
+   []
+  ],
+  [
+   "headings",
+   "sgs-heading",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "headings",
+   "sgs-heading",
+   [
+    "white-space"
+   ],
+   null,
+   []
+  ],
+  [
+   "headings",
+   "sgs-heading",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconBackground",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconBackgroundGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconBackgroundGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconBackgroundHover",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColour",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "iconColourGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourGradient",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   null,
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "iconColourGradient",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourHover",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHover",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-clip"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-clip"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   "hover",
+   [
+    "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+   ]
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "isolation"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "border-radius"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "border-radius"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "content"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "content"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "inset"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "inset"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "pointer-events"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "pointer-events"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "position"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "position"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "z-index"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "iconColourHoverGradient",
+   "sgs-icon-list__icon::after",
+   [
+    "z-index"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "itemPaddingShiftHover",
+   "sgs-icon-list__item",
+   [
+    "padding"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "itemPaddingShiftHover",
+   "sgs-icon-list__item",
+   [
+    "padding"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "panelBg",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "panelBg",
+   "ROOT",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "panelBgGradient",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "panelCardLift",
+   "sgs-mega-group",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "panelCardLift",
+   "sgs-mega-group",
+   [
+    "transform"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "panelPadding",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-button",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-button",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-button",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-button",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-button",
+   [
+    "text-decoration"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-button",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-icon-list__icon",
+   [
+    "transform"
+   ],
+   "focus",
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-icon-list__icon",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-icon-list__item",
+   [
+    "padding"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-mega-aside",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-mega-aside",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-mega-group",
+   [
+    "transform"
+   ],
+   "focus",
+   [
+    "@media ( prefers-reduced-motion: reduce )"
+   ]
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-mega-group",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-mega-group::after",
+   [
+    "opacity"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ]
+  ],
+  [
+   "shadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "shadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "clip-path"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "overflow"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "white-space"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-heading",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "height"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__icon",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__item",
+   [
+    "align-items"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__item",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__item",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__item",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-icon-list__item",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "transform"
+   ],
+   "focus",
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "transform"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "transform"
+   ],
+   "hover",
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "transform"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "style",
+   "sgs-mega-group",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "opacity"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "opacity"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "opacity"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@media (prefers-reduced-motion: reduce)"
+   ]
+  ],
+  [
+   "style",
+   "sgs-mega-group::after",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-panel__content",
+   [
+    "align-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-panel__content",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-panel__content",
+   [
+    "flex-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-panel__content",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "style",
+   "sgs-mega-panel__content",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "style",
+   "sgs-mega-panel__content",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   []
+  ],
+  [
+   "surfaceOpacity",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "surfaceSaturate",
+   "ROOT",
+   [
+    "backdrop-filter"
+   ],
+   null,
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [
+   "asideSeparator",
+   "brandsEyebrow",
+   "drawerAsideOrder",
+   "drawerBg",
+   "drawerBgGradient",
+   "drawerCardBg",
+   "drawerCardBgGradient",
+   "drawerCardBorderColour",
+   "drawerCardBorderColourGradient",
+   "drawerCardCompact",
+   "drawerCardDescColour",
+   "drawerCardGap",
+   "drawerCardHoverLift",
+   "drawerCardHoverRotate",
+   "drawerCardLayout",
+   "drawerCardLinkBg",
+   "drawerCardLinkColour",
+   "drawerCardLinkShiftHover",
+   "drawerCardLinkSize",
+   "drawerCardMediaHeight",
+   "drawerCardMediaRatio",
+   "drawerCardPadding",
+   "drawerCardRadius",
+   "drawerCardSpacing",
+   "drawerCardTagFontFamily",
+   "drawerCardTagLetterSpacing",
+   "drawerCardTagMargin",
+   "drawerCardTagPadding",
+   "drawerCardTagRadius",
+   "drawerCardTagSize",
+   "drawerCardThumbSize",
+   "drawerCardTitleLineHeight",
+   "drawerCardTitleSize",
+   "drawerHoverDuration",
+   "drawerHoverEasing",
+   "drawerHoverEasingCustom",
+   "drawerLinkBg",
+   "drawerLinkBgGradient",
+   "drawerLinkDescColour",
+   "drawerLinkDescColourGradient",
+   "drawerLinkDescSize",
+   "drawerLinkDivider",
+   "drawerLinkDividerGradient",
+   "drawerLinkHoverBg",
+   "drawerLinkHoverBgGradient",
+   "drawerLinkLabelColour",
+   "drawerLinkLabelColourGradient",
+   "drawerLinkLabelSize",
+   "drawerLinkMinHeight",
+   "drawerLinkNumColour",
+   "drawerLinkNumColourGradient",
+   "drawerLinkNumFontFamily",
+   "drawerLinkNumSize",
+   "drawerLinkNumWeight",
+   "drawerLinkPaddingY",
+   "drawerLinkRadius",
+   "drawerLinkTextShiftHover",
+   "drawerLinkTrailingColour",
+   "drawerLinkTrailingColourHover",
+   "drawerLinkTrailingIcon",
+   "drawerShellPadding",
+   "drawerShellRadius",
+   "drawerShellShadow",
+   "drawerShellShadowColour",
+   "drawerTileBorderColour",
+   "drawerTileBorderColourHover",
+   "iconBackgroundGradientHover",
+   "sgsCollapseVisibility",
+   "sgsConditionCollectionQueryId",
+   "sgsConditionDateEnd",
+   "sgsConditionFormField",
+   "sgsConditionFormOperator",
+   "sgsConditionFormValue",
+   "sgsConditionProductReviews",
+   "sgsConditionUserRole",
+   "sgsCustomCssId",
+   "sgsCustomCssNote",
+   "surfaceBlur",
+   "variant",
+   "viewAllPlacement"
+  ],
+  "replacesBlock": [
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionLoggedIn",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   }
+  ],
+  "partNotNamed": [
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "position"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "height"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "width"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "clip-path"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "white-space"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "clip"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "overflow"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "flex-basis",
+     "flex-grow",
+     "flex-shrink"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .wp-block-sgs-card-grid"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "min-width"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"] .wp-block-sgs-card-grid"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "font-family"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group) > .wp-block-sgs-heading.wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "font-size"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group) > .wp-block-sgs-heading.wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "font-weight"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group) > .wp-block-sgs-heading.wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "letter-spacing"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group) > .wp-block-sgs-heading.wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "text-transform"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group) > .wp-block-sgs-heading.wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group) > .wp-block-sgs-heading.wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "margin"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group) > .wp-block-sgs-heading.wp-block-sgs-heading"
+   },
+   {
+    "setting": "style",
+    "part": null,
+    "props": [
+     "line-height"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-mega-panel.wp-block-sgs-mega-panel[data-mega-style=\"columns\"]:not(.sgs-mega-panel--headings-off) .sgs-mega-group) > .wp-block-sgs-heading.wp-block-sgs-heading"
+   },
+   {
+    "setting": "headings",
+    "part": null,
+    "props": [
+     "position"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "headings",
+    "part": null,
+    "props": [
+     "height"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "headings",
+    "part": null,
+    "props": [
+     "width"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "headings",
+    "part": null,
+    "props": [
+     "clip-path"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "headings",
+    "part": null,
+    "props": [
+     "white-space"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "headings",
+    "part": null,
+    "props": [
+     "clip"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "headings",
+    "part": null,
+    "props": [
+     "overflow"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-mega-panel.wp-block-sgs-mega-panel .sgs-mega-group > .wp-block-sgs-heading"
+   },
+   {
+    "setting": "accentBackgroundImage",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before"
+   },
+   {
+    "setting": "accentBackgroundImage",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [
+     "@media ( prefers-reduced-motion: reduce )"
+    ],
+    "selector": ".wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before"
+   },
+   {
+    "setting": "accentBackgroundImageGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before"
+   },
+   {
+    "setting": "accentBackgroundImageGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [
+     "@media ( prefers-reduced-motion: reduce )"
+    ],
+    "selector": ".wp-block-sgs-mega-panel .sgs-mega-aside[ data-spotlight ]::before"
+   },
+   {
+    "setting": "panelBg",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-mega-panel[ data-mega-scheme='dark' ]"
+   },
+   {
+    "setting": "panelBg",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-mega-panel[ data-mega-scheme='dark' ]"
+   },
+   {
+    "setting": "panelBgGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-mega-panel[ data-mega-scheme='dark' ]"
+   },
+   {
+    "setting": "surfaceOpacity",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-mega-panel[ data-mega-scheme='dark' ]"
+   }
+  ]
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-container-wrapper.php": "eb50641bc169ad55",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/container-pin-edge-css.php": "106d319c8ad0c702",
+   "includes/container-scroll-row-css.php": "d1bfcfa233fc6bb1",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-add-to-basket.php": "9e55175eb678169d",
+   "includes/helpers-button-focus.php": "9efebd417ab52bf8",
+   "includes/helpers-button-icon-circle.php": "9b1361527d91caf6",
+   "includes/helpers-button-icon-gap-hover.php": "772199df930fc7da",
+   "includes/helpers-button-inner-kses.php": "6529a7214b03915c",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-press.php": "cadd75d0b7a7f696",
+   "includes/helpers-button-shared-rules.php": "7e7c43431f4fd41d",
+   "includes/helpers-button-site-info-label.php": "31581ce7431120bf",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-fit.php": "be39699a1b3dacaf",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-grid-item.php": "66040be25e3cbb0d",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-shared-rules.php": "1ecf0e2ae2c88520",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-ground.php": "1a5dd0aae08c3fff",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tier-queries.php": "1ef6213308907a28",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/lucide-icons.php": "d14ea5bbe7383448",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/background-css.php": "d427257f69bbc625",
+   "includes/media/class-sgs-background-media.php": "e6ef00dd2b060dda",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/fixed-thumb-fit.php": "911194484a9af149",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-background.php": "093be1f920818d43",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/mega-panel-drawer-extras-css.php": "b9094c8917c9d056",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "includes/wp-icons.php": "ef5bf2f450b1a415",
+   "src/blocks/button/render.php": "6ac5c631fc503577",
+   "src/blocks/container/render.php": "effcc40bdcd04ea8",
+   "src/blocks/heading/render.php": "95cb85f18da54053",
+   "src/blocks/icon-list/render.php": "193f159a12ecc388",
+   "src/blocks/label/render.php": "e2e9516385f93417",
+   "src/blocks/mega-aside/render.php": "2025e0e6537172ad",
+   "src/blocks/mega-group/render.php": "cc06ac6a0a3358e6",
+   "src/blocks/mega-panel/DrawerHoverControls.js": "d576651447861659",
+   "src/blocks/mega-panel/DrawerShellControls.js": "d84a38ea94d93b4f",
+   "src/blocks/mega-panel/block.json": "61683231c1efaeea",
+   "src/blocks/mega-panel/drawer-preview-extras.js": "2dc404c290d0b1a0",
+   "src/blocks/mega-panel/drawer-preview.js": "e8a8eca439905d8f",
+   "src/blocks/mega-panel/edit.js": "cab503d8128b6bd4",
+   "src/blocks/mega-panel/editor.css": "40d7100347950a50",
+   "src/blocks/mega-panel/index.js": "e87f8de8a88574ff",
+   "src/blocks/mega-panel/render.php": "aec31c7e6b0e6d2b",
+   "src/blocks/mega-panel/save.js": "acdf047c22d8127b",
+   "src/blocks/mega-panel/section-colour-rows.js": "eafb2a2415035103",
+   "src/blocks/mega-panel/style.css": "81a46f67306b31e5",
+   "src/blocks/mega-panel/view.js": "221f03916457c419",
+   "src/blocks/text/render.php": "bae6bf3e5b4852ff",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/button/style.css": "569540699b9f3bbd",
+   "shipped:src/blocks/container/style.css": "7b071c27fd168f8c",
+   "shipped:src/blocks/heading/style.css": "8aad9d318c64f1e5",
+   "shipped:src/blocks/icon-list/style.css": "46ca0d1a17613e6b",
+   "shipped:src/blocks/label/style.css": "1021b7e0a152147f",
+   "shipped:src/blocks/mega-aside/style.css": "da4f6808b54b70e9",
+   "shipped:src/blocks/mega-group/style.css": "7b630dc5b9bd90a4",
+   "shipped:src/blocks/mega-panel/style.css": "cfd450ffc0a7a207",
+   "shipped:src/blocks/text/style.css": "205323a182969df1",
+   "fixture-entry": "29725cb6bc2f1c8a",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "02ca569c61942ad3",
+  "theme": "5757dde4ffd3fa15",
+  "classes": [
+   "has-global-padding",
+   "lucide",
+   "lucide-check",
+   "sgs-band-cap-f3a75f58",
+   "sgs-band-width-88e6daa5",
+   "sgs-btn-a35f3169",
+   "sgs-button",
+   "sgs-button--primary",
+   "sgs-button--still",
+   "sgs-button__label",
+   "sgs-container",
+   "sgs-container--section-pad",
+   "sgs-container--sized",
+   "sgs-container-58fafe98",
+   "sgs-container-cde11923",
+   "sgs-container__content-band",
+   "sgs-container__inner",
+   "sgs-cst-58fafe98",
+   "sgs-cst-cde11923",
+   "sgs-focus-rests",
+   "sgs-hdg-f2b1a535",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "sgs-icon-list",
+   "sgs-icon-list--icon-medium",
+   "sgs-icon-list--marker-icon",
+   "sgs-icon-list__icon",
+   "sgs-icon-list__item",
+   "sgs-icon-list__item--linked",
+   "sgs-icon-list__item-link",
+   "sgs-icon-list__text",
+   "sgs-ilist-ef775d38",
+   "sgs-lbl-0f9729b2",
+   "sgs-mega-aside",
+   "sgs-mega-aside-f0773e3c",
+   "sgs-mega-group",
+   "sgs-mega-panel",
+   "sgs-mega-panel-00368903",
+   "sgs-mega-panel-006b7548",
+   "sgs-mega-panel-010104fb",
+   "sgs-mega-panel-0122496e",
+   "sgs-mega-panel-0125db22",
+   "sgs-mega-panel-021dc2bd",
+   "sgs-mega-panel-027202a7",
+   "sgs-mega-panel-031fc61e",
+   "sgs-mega-panel-038f6ae0",
+   "sgs-mega-panel-040a7ec2",
+   "sgs-mega-panel-043b19a0",
+   "sgs-mega-panel-04945ab6",
+   "sgs-mega-panel-05070d4a",
+   "sgs-mega-panel-06215c08",
+   "sgs-mega-panel-063d410e",
+   "sgs-mega-panel-0641ca54",
+   "sgs-mega-panel-0686efca",
+   "sgs-mega-panel-068a3bf8",
+   "sgs-mega-panel-069be862",
+   "sgs-mega-panel-069dc193",
+   "sgs-mega-panel-06a0ce25",
+   "sgs-mega-panel-06a305c0",
+   "sgs-mega-panel-06af6573",
+   "sgs-mega-panel-06fd5c5e",
+   "sgs-mega-panel-078be22d",
+   "sgs-mega-panel-07addb70",
+   "sgs-mega-panel-07afaa34",
+   "sgs-mega-panel-0819538c",
+   "sgs-mega-panel-086b1575",
+   "sgs-mega-panel-08865e1e",
+   "sgs-mega-panel-08ec8847",
+   "sgs-mega-panel-09488c80",
+   "sgs-mega-panel-09c629fe",
+   "sgs-mega-panel-09cb138b",
+   "sgs-mega-panel-09d26fae",
+   "sgs-mega-panel-0a17871e",
+   "sgs-mega-panel-0a84a9c8",
+   "sgs-mega-panel-0a8c3f98",
+   "sgs-mega-panel-0a939b15",
+   "sgs-mega-panel-0ac1d819",
+   "sgs-mega-panel-0acf7f30",
+   "sgs-mega-panel-0b1b76c3",
+   "sgs-mega-panel-0b5625b8",
+   "sgs-mega-panel-0b782ad4",
+   "sgs-mega-panel-0b7a8267",
+   "sgs-mega-panel-0bd55353",
+   "sgs-mega-panel-0c1c281c",
+   "sgs-mega-panel-0c238441",
+   "sgs-mega-panel-0c573c22",
+   "sgs-mega-panel-0c5ab990",
+   "sgs-mega-panel-0c5aeafe",
+   "sgs-mega-panel-0d34d1c2",
+   "sgs-mega-panel-0da7c420",
+   "sgs-mega-panel-0db71b62",
+   "sgs-mega-panel-0dc91b11",
+   "sgs-mega-panel-102252fc",
+   "sgs-mega-panel-105e86ec",
+   "sgs-mega-panel-10b0e75e",
+   "sgs-mega-panel-111233e6",
+   "sgs-mega-panel-1308e847",
+   "sgs-mega-panel-133276fc",
+   "sgs-mega-panel-1354265c",
+   "sgs-mega-panel-13910249",
+   "sgs-mega-panel-14191c24",
+   "sgs-mega-panel-14311edd",
+   "sgs-mega-panel-147a90c1",
+   "sgs-mega-panel-14b3efd6",
+   "sgs-mega-panel-14f5eaa6",
+   "sgs-mega-panel-159136b0",
+   "sgs-mega-panel-1635d752",
+   "sgs-mega-panel-16416d16",
+   "sgs-mega-panel-16e512ec",
+   "sgs-mega-panel-16f2dd1c",
+   "sgs-mega-panel-16f5e0c5",
+   "sgs-mega-panel-177d1ec2",
+   "sgs-mega-panel-179dd146",
+   "sgs-mega-panel-17c026ff",
+   "sgs-mega-panel-17d25b0f",
+   "sgs-mega-panel-17e8cb97",
+   "sgs-mega-panel-1803b1c2",
+   "sgs-mega-panel-18384ab8",
+   "sgs-mega-panel-18794451",
+   "sgs-mega-panel-18f29168",
+   "sgs-mega-panel-1902eee3",
+   "sgs-mega-panel-19139bd4",
+   "sgs-mega-panel-19348ffd",
+   "sgs-mega-panel-19a65733",
+   "sgs-mega-panel-19e0407c",
+   "sgs-mega-panel-19e6e599",
+   "sgs-mega-panel-1a13267d",
+   "sgs-mega-panel-1ab7e8f4",
+   "sgs-mega-panel-1ac67b67",
+   "sgs-mega-panel-1adfce4e",
+   "sgs-mega-panel-1b1aad3c",
+   "sgs-mega-panel-1b4ba591",
+   "sgs-mega-panel-1b561b55",
+   "sgs-mega-panel-1b8a3af7",
+   "sgs-mega-panel-1bb347eb",
+   "sgs-mega-panel-1be48723",
+   "sgs-mega-panel-1bff27df",
+   "sgs-mega-panel-1c61f7ae",
+   "sgs-mega-panel-1c806b7e",
+   "sgs-mega-panel-1ce01b17",
+   "sgs-mega-panel-1d3395eb",
+   "sgs-mega-panel-1d4438fb",
+   "sgs-mega-panel-1dc42222",
+   "sgs-mega-panel-1e2b12b9",
+   "sgs-mega-panel-1e72a2ad",
+   "sgs-mega-panel-1eae6325",
+   "sgs-mega-panel-1ece5e19",
+   "sgs-mega-panel-1f037597",
+   "sgs-mega-panel-1f2210b8",
+   "sgs-mega-panel-2020af23",
+   "sgs-mega-panel-206833da",
+   "sgs-mega-panel-2072dedc",
+   "sgs-mega-panel-20821df4",
+   "sgs-mega-panel-216d0093",
+   "sgs-mega-panel-2177f374",
+   "sgs-mega-panel-2183ba12",
+   "sgs-mega-panel-21b95d64",
+   "sgs-mega-panel-21c69b95",
+   "sgs-mega-panel-2268cfff",
+   "sgs-mega-panel-2296d216",
+   "sgs-mega-panel-22e0e5f6",
+   "sgs-mega-panel-22fb7fcb",
+   "sgs-mega-panel-23100b1a",
+   "sgs-mega-panel-231eebb9",
+   "sgs-mega-panel-238116ea",
+   "sgs-mega-panel-23c91290",
+   "sgs-mega-panel-23d62858",
+   "sgs-mega-panel-23d9c752",
+   "sgs-mega-panel-240ebc62",
+   "sgs-mega-panel-24c6908b",
+   "sgs-mega-panel-24dd4435",
+   "sgs-mega-panel-253d4b09",
+   "sgs-mega-panel-2559c0b2",
+   "sgs-mega-panel-25ce2efd",
+   "sgs-mega-panel-264603fc",
+   "sgs-mega-panel-268612c4",
+   "sgs-mega-panel-26a72066",
+   "sgs-mega-panel-26ce36c0",
+   "sgs-mega-panel-26f49d68",
+   "sgs-mega-panel-2710e14b",
+   "sgs-mega-panel-271b5529",
+   "sgs-mega-panel-2735a23d",
+   "sgs-mega-panel-274cf529",
+   "sgs-mega-panel-27967560",
+   "sgs-mega-panel-279dfd03",
+   "sgs-mega-panel-28116648",
+   "sgs-mega-panel-2853fd14",
+   "sgs-mega-panel-2856df04",
+   "sgs-mega-panel-286196fc",
+   "sgs-mega-panel-2890c85b",
+   "sgs-mega-panel-28ceaea2",
+   "sgs-mega-panel-29291e63",
+   "sgs-mega-panel-29819e6c",
+   "sgs-mega-panel-29880323",
+   "sgs-mega-panel-29dab5da",
+   "sgs-mega-panel-2a4010c1",
+   "sgs-mega-panel-2aad50c3",
+   "sgs-mega-panel-2b2a03cf",
+   "sgs-mega-panel-2b5949a2",
+   "sgs-mega-panel-2b95f763",
+   "sgs-mega-panel-2baab604",
+   "sgs-mega-panel-2c1e1587",
+   "sgs-mega-panel-2c290b15",
+   "sgs-mega-panel-2c5675f3",
+   "sgs-mega-panel-2c614a57",
+   "sgs-mega-panel-2cac88c4",
+   "sgs-mega-panel-2caedb7c",
+   "sgs-mega-panel-2cc54b28",
+   "sgs-mega-panel-2cc7f46a",
+   "sgs-mega-panel-2cce24d6",
+   "sgs-mega-panel-2d673aa3",
+   "sgs-mega-panel-2d76feed",
+   "sgs-mega-panel-2d8bcd25",
+   "sgs-mega-panel-2dfd1e70",
+   "sgs-mega-panel-2e3b8500",
+   "sgs-mega-panel-2e6d2138",
+   "sgs-mega-panel-2ed8e7c0",
+   "sgs-mega-panel-2f06b599",
+   "sgs-mega-panel-2f23453e",
+   "sgs-mega-panel-2f3a5658",
+   "sgs-mega-panel-2f465f95",
+   "sgs-mega-panel-2f68af2a",
+   "sgs-mega-panel-2f772e87",
+   "sgs-mega-panel-2f895759",
+   "sgs-mega-panel-2f8dcc90",
+   "sgs-mega-panel-2fd9e65c",
+   "sgs-mega-panel-30dca9a6",
+   "sgs-mega-panel-30e0c7ce",
+   "sgs-mega-panel-30eaf3ac",
+   "sgs-mega-panel-3217e1b5",
+   "sgs-mega-panel-3244a746",
+   "sgs-mega-panel-328b77bc",
+   "sgs-mega-panel-32a933b2",
+   "sgs-mega-panel-32d396fd",
+   "sgs-mega-panel-32e997fc",
+   "sgs-mega-panel-33472dbc",
+   "sgs-mega-panel-3377c959",
+   "sgs-mega-panel-3473ea7e",
+   "sgs-mega-panel-347975db",
+   "sgs-mega-panel-34d674ea",
+   "sgs-mega-panel-34dfc3c7",
+   "sgs-mega-panel-34ede215",
+   "sgs-mega-panel-34f77cc7",
+   "sgs-mega-panel-351f9672",
+   "sgs-mega-panel-3550a3e3",
+   "sgs-mega-panel-3594a981",
+   "sgs-mega-panel-35be747f",
+   "sgs-mega-panel-3669426d",
+   "sgs-mega-panel-36848c44",
+   "sgs-mega-panel-36898620",
+   "sgs-mega-panel-372dc0e0",
+   "sgs-mega-panel-37842031",
+   "sgs-mega-panel-38023362",
+   "sgs-mega-panel-3805cd65",
+   "sgs-mega-panel-39063f6d",
+   "sgs-mega-panel-39576293",
+   "sgs-mega-panel-39851f38",
+   "sgs-mega-panel-3a07089a",
+   "sgs-mega-panel-3a3d1d1a",
+   "sgs-mega-panel-3a3e159c",
+   "sgs-mega-panel-3b10c00f",
+   "sgs-mega-panel-3b582e12",
+   "sgs-mega-panel-3ba51bbd",
+   "sgs-mega-panel-3c01e8da",
+   "sgs-mega-panel-3c0639a4",
+   "sgs-mega-panel-3c4a3eda",
+   "sgs-mega-panel-3ca6856d",
+   "sgs-mega-panel-3cc14f6e",
+   "sgs-mega-panel-3cc24834",
+   "sgs-mega-panel-3d78c257",
+   "sgs-mega-panel-3dc8c20e",
+   "sgs-mega-panel-3de4eb77",
+   "sgs-mega-panel-3e4d7aca",
+   "sgs-mega-panel-3edc83e0",
+   "sgs-mega-panel-3ee179fb",
+   "sgs-mega-panel-3f235fdc",
+   "sgs-mega-panel-3f68e91b",
+   "sgs-mega-panel-40144f85",
+   "sgs-mega-panel-40790ed5",
+   "sgs-mega-panel-40fd6b06",
+   "sgs-mega-panel-417aae5d",
+   "sgs-mega-panel-41802ba9",
+   "sgs-mega-panel-4192ab52",
+   "sgs-mega-panel-422554fc",
+   "sgs-mega-panel-42748147",
+   "sgs-mega-panel-427a89a2",
+   "sgs-mega-panel-428192c4",
+   "sgs-mega-panel-42824274",
+   "sgs-mega-panel-42a5b84b",
+   "sgs-mega-panel-42e6a618",
+   "sgs-mega-panel-43b81577",
+   "sgs-mega-panel-43eee304",
+   "sgs-mega-panel-443c1f9e",
+   "sgs-mega-panel-44af50d6",
+   "sgs-mega-panel-4533e4ba",
+   "sgs-mega-panel-45557480",
+   "sgs-mega-panel-458604f3",
+   "sgs-mega-panel-4586957e",
+   "sgs-mega-panel-458ebdc3",
+   "sgs-mega-panel-45b20a29",
+   "sgs-mega-panel-4630d0cb",
+   "sgs-mega-panel-466c954e",
+   "sgs-mega-panel-4716b135",
+   "sgs-mega-panel-47579cbf",
+   "sgs-mega-panel-4795fde2",
+   "sgs-mega-panel-47eb798d",
+   "sgs-mega-panel-481d82bb",
+   "sgs-mega-panel-482e0cc7",
+   "sgs-mega-panel-487af006",
+   "sgs-mega-panel-49554938",
+   "sgs-mega-panel-4a8cf694",
+   "sgs-mega-panel-4a936acb",
+   "sgs-mega-panel-4aa3adfb",
+   "sgs-mega-panel-4b656b6d",
+   "sgs-mega-panel-4bb19097",
+   "sgs-mega-panel-4bbc37b9",
+   "sgs-mega-panel-4be64b07",
+   "sgs-mega-panel-4c22b3a2",
+   "sgs-mega-panel-4c6f1d15",
+   "sgs-mega-panel-4d15e4b7",
+   "sgs-mega-panel-4d5edc84",
+   "sgs-mega-panel-4df645b4",
+   "sgs-mega-panel-4dfda370",
+   "sgs-mega-panel-4e1454a6",
+   "sgs-mega-panel-4f67cb4a",
+   "sgs-mega-panel-4fb65b0d",
+   "sgs-mega-panel-504ea166",
+   "sgs-mega-panel-506442cf",
+   "sgs-mega-panel-50b34062",
+   "sgs-mega-panel-50e8fd37",
+   "sgs-mega-panel-51200f99",
+   "sgs-mega-panel-51359e59",
+   "sgs-mega-panel-5167cccd",
+   "sgs-mega-panel-51bc3bec",
+   "sgs-mega-panel-51dfbcdb",
+   "sgs-mega-panel-52146d3e",
+   "sgs-mega-panel-526ff293",
+   "sgs-mega-panel-528ee2a2",
+   "sgs-mega-panel-52b62f09",
+   "sgs-mega-panel-52d92154",
+   "sgs-mega-panel-539cd9c6",
+   "sgs-mega-panel-53f16393",
+   "sgs-mega-panel-5414f5dd",
+   "sgs-mega-panel-543abe07",
+   "sgs-mega-panel-548c91a3",
+   "sgs-mega-panel-550f66dd",
+   "sgs-mega-panel-558f69f0",
+   "sgs-mega-panel-55b7f9b4",
+   "sgs-mega-panel-5634aa0c",
+   "sgs-mega-panel-566365d9",
+   "sgs-mega-panel-56928c0b",
+   "sgs-mega-panel-56d726f6",
+   "sgs-mega-panel-57139c75",
+   "sgs-mega-panel-578b4a78",
+   "sgs-mega-panel-57aa38f9",
+   "sgs-mega-panel-57b003b4",
+   "sgs-mega-panel-57d5efb6",
+   "sgs-mega-panel-57f0b4a6",
+   "sgs-mega-panel-580e5a07",
+   "sgs-mega-panel-58174cc5",
+   "sgs-mega-panel-5843af09",
+   "sgs-mega-panel-5853059f",
+   "sgs-mega-panel-58adb928",
+   "sgs-mega-panel-58d67a3c",
+   "sgs-mega-panel-58de6167",
+   "sgs-mega-panel-5918d048",
+   "sgs-mega-panel-591fceba",
+   "sgs-mega-panel-5926ea82",
+   "sgs-mega-panel-5951ae6e",
+   "sgs-mega-panel-5952d2cf",
+   "sgs-mega-panel-5993c950",
+   "sgs-mega-panel-59960917",
+   "sgs-mega-panel-5a1a0713",
+   "sgs-mega-panel-5a208f58",
+   "sgs-mega-panel-5a8f54ad",
+   "sgs-mega-panel-5a9bda0d",
+   "sgs-mega-panel-5aeba900",
+   "sgs-mega-panel-5ba2ebe7",
+   "sgs-mega-panel-5ba3dcfc",
+   "sgs-mega-panel-5c75bc0c",
+   "sgs-mega-panel-5c84ffe9",
+   "sgs-mega-panel-5cff80cc",
+   "sgs-mega-panel-5d5944ba",
+   "sgs-mega-panel-5d65eed0",
+   "sgs-mega-panel-5d9673fc",
+   "sgs-mega-panel-5db23cbd",
+   "sgs-mega-panel-5db36bcf",
+   "sgs-mega-panel-5de511ab",
+   "sgs-mega-panel-5e26140d",
+   "sgs-mega-panel-5e5a7590",
+   "sgs-mega-panel-5e6a372a",
+   "sgs-mega-panel-5e925095",
+   "sgs-mega-panel-5e95752f",
+   "sgs-mega-panel-5ea97be8",
+   "sgs-mega-panel-5ec3f73b",
+   "sgs-mega-panel-5ee3b5dd",
+   "sgs-mega-panel-5ef788c4",
+   "sgs-mega-panel-5f164044",
+   "sgs-mega-panel-5f607f20",
+   "sgs-mega-panel-5f9bd163",
+   "sgs-mega-panel-6011ee7c",
+   "sgs-mega-panel-601763a5",
+   "sgs-mega-panel-60339f79",
+   "sgs-mega-panel-606b550c",
+   "sgs-mega-panel-608aaf14",
+   "sgs-mega-panel-6115d720",
+   "sgs-mega-panel-611bb1e6",
+   "sgs-mega-panel-6167f6ff",
+   "sgs-mega-panel-6174f161",
+   "sgs-mega-panel-6179f616",
+   "sgs-mega-panel-6196b958",
+   "sgs-mega-panel-61cc8908",
+   "sgs-mega-panel-624e6618",
+   "sgs-mega-panel-634a1d6f",
+   "sgs-mega-panel-6364ca18",
+   "sgs-mega-panel-64165a6d",
+   "sgs-mega-panel-64c4a280",
+   "sgs-mega-panel-6541d345",
+   "sgs-mega-panel-6564b36b",
+   "sgs-mega-panel-65fa8555",
+   "sgs-mega-panel-6619feec",
+   "sgs-mega-panel-665fe69e",
+   "sgs-mega-panel-66e49e97",
+   "sgs-mega-panel-67384739",
+   "sgs-mega-panel-67757a3b",
+   "sgs-mega-panel-67d81f02",
+   "sgs-mega-panel-6822453b",
+   "sgs-mega-panel-68a71e76",
+   "sgs-mega-panel-68f53762",
+   "sgs-mega-panel-6945e178",
+   "sgs-mega-panel-69880688",
+   "sgs-mega-panel-69d76960",
+   "sgs-mega-panel-6a6609e4",
+   "sgs-mega-panel-6a76cb6a",
+   "sgs-mega-panel-6a8aa28d",
+   "sgs-mega-panel-6ac88f3d",
+   "sgs-mega-panel-6b46b155",
+   "sgs-mega-panel-6bba0e36",
+   "sgs-mega-panel-6bed78ab",
+   "sgs-mega-panel-6c0971aa",
+   "sgs-mega-panel-6c7392ad",
+   "sgs-mega-panel-6cbaa70f",
+   "sgs-mega-panel-6d0906e4",
+   "sgs-mega-panel-6d32753a",
+   "sgs-mega-panel-6daaf48f",
+   "sgs-mega-panel-6df40f88",
+   "sgs-mega-panel-6e829272",
+   "sgs-mega-panel-6ea14d4b",
+   "sgs-mega-panel-6ec668a5",
+   "sgs-mega-panel-6ef2840d",
+   "sgs-mega-panel-6fa84580",
+   "sgs-mega-panel-707f30e3",
+   "sgs-mega-panel-712ae2cb",
+   "sgs-mega-panel-725b7fc2",
+   "sgs-mega-panel-725d42af",
+   "sgs-mega-panel-726105bf",
+   "sgs-mega-panel-7264c625",
+   "sgs-mega-panel-7265d5ff",
+   "sgs-mega-panel-731b39ed",
+   "sgs-mega-panel-7372690c",
+   "sgs-mega-panel-73b141da",
+   "sgs-mega-panel-73e4a1c9",
+   "sgs-mega-panel-73f079b0",
+   "sgs-mega-panel-73f15889",
+   "sgs-mega-panel-744580fd",
+   "sgs-mega-panel-744f777f",
+   "sgs-mega-panel-74592a7b",
+   "sgs-mega-panel-7481d5ba",
+   "sgs-mega-panel-749bb458",
+   "sgs-mega-panel-74ef1a62",
+   "sgs-mega-panel-758395f8",
+   "sgs-mega-panel-75dedde8",
+   "sgs-mega-panel-766a24b4",
+   "sgs-mega-panel-767bd70a",
+   "sgs-mega-panel-7706dbaf",
+   "sgs-mega-panel-7743be3b",
+   "sgs-mega-panel-77572db3",
+   "sgs-mega-panel-775fa948",
+   "sgs-mega-panel-777e07ff",
+   "sgs-mega-panel-790d412a",
+   "sgs-mega-panel-79e48879",
+   "sgs-mega-panel-7a2be832",
+   "sgs-mega-panel-7a62d9a9",
+   "sgs-mega-panel-7a8b7a95",
+   "sgs-mega-panel-7aba6261",
+   "sgs-mega-panel-7b3ec228",
+   "sgs-mega-panel-7b52605c",
+   "sgs-mega-panel-7b67d7f9",
+   "sgs-mega-panel-7b80c6bf",
+   "sgs-mega-panel-7ba03629",
+   "sgs-mega-panel-7ba58fca",
+   "sgs-mega-panel-7bbe9d39",
+   "sgs-mega-panel-7bc368ab",
+   "sgs-mega-panel-7c1c1add",
+   "sgs-mega-panel-7c498302",
+   "sgs-mega-panel-7c6c5998",
+   "sgs-mega-panel-7c942922",
+   "sgs-mega-panel-7cd43caf",
+   "sgs-mega-panel-7d27abe7",
+   "sgs-mega-panel-7d3eced5",
+   "sgs-mega-panel-7d7b0489",
+   "sgs-mega-panel-7da0dc96",
+   "sgs-mega-panel-7df61aae",
+   "sgs-mega-panel-7e0be382",
+   "sgs-mega-panel-7e20a679",
+   "sgs-mega-panel-7e54ac8b",
+   "sgs-mega-panel-7e559e01",
+   "sgs-mega-panel-7e56455c",
+   "sgs-mega-panel-7ee98a08",
+   "sgs-mega-panel-7f649eef",
+   "sgs-mega-panel-7f823c11",
+   "sgs-mega-panel-7fc76553",
+   "sgs-mega-panel-804203ad",
+   "sgs-mega-panel-80b5a4c5",
+   "sgs-mega-panel-819f213f",
+   "sgs-mega-panel-81a4da7f",
+   "sgs-mega-panel-81ad6110",
+   "sgs-mega-panel-81b1319f",
+   "sgs-mega-panel-822095b5",
+   "sgs-mega-panel-82664b37",
+   "sgs-mega-panel-827e543b",
+   "sgs-mega-panel-836c9521",
+   "sgs-mega-panel-8372e603",
+   "sgs-mega-panel-83913b10",
+   "sgs-mega-panel-839e3411",
+   "sgs-mega-panel-83fc826f",
+   "sgs-mega-panel-84159f6d",
+   "sgs-mega-panel-84278f1d",
+   "sgs-mega-panel-842fccff",
+   "sgs-mega-panel-84ae1142",
+   "sgs-mega-panel-8533f262",
+   "sgs-mega-panel-855402c6",
+   "sgs-mega-panel-862742a5",
+   "sgs-mega-panel-8627b50b",
+   "sgs-mega-panel-862b5099",
+   "sgs-mega-panel-86c3f7c3",
+   "sgs-mega-panel-8723941a",
+   "sgs-mega-panel-8757aada",
+   "sgs-mega-panel-8784e805",
+   "sgs-mega-panel-87907a17",
+   "sgs-mega-panel-87977ba1",
+   "sgs-mega-panel-87ca2972",
+   "sgs-mega-panel-87f9fe85",
+   "sgs-mega-panel-8862031d",
+   "sgs-mega-panel-88b033f4",
+   "sgs-mega-panel-8927cdc6",
+   "sgs-mega-panel-8a1974c9",
+   "sgs-mega-panel-8a5df747",
+   "sgs-mega-panel-8aa6b121",
+   "sgs-mega-panel-8af28467",
+   "sgs-mega-panel-8bc5dd6b",
+   "sgs-mega-panel-8bf12bd8",
+   "sgs-mega-panel-8bf8feef",
+   "sgs-mega-panel-8ca4cc1e",
+   "sgs-mega-panel-8d72df48",
+   "sgs-mega-panel-8ddd78f3",
+   "sgs-mega-panel-8e37d992",
+   "sgs-mega-panel-8e5f546d",
+   "sgs-mega-panel-8efc3519",
+   "sgs-mega-panel-8f22dc32",
+   "sgs-mega-panel-8f38fc4c",
+   "sgs-mega-panel-8f4fa078",
+   "sgs-mega-panel-8f7e8df7",
+   "sgs-mega-panel-9037c943",
+   "sgs-mega-panel-90562e9b",
+   "sgs-mega-panel-91435185",
+   "sgs-mega-panel-917436c9",
+   "sgs-mega-panel-9181c8dc",
+   "sgs-mega-panel-91b3ef29",
+   "sgs-mega-panel-91dc9e80",
+   "sgs-mega-panel-9203be68",
+   "sgs-mega-panel-9205b283",
+   "sgs-mega-panel-92283112",
+   "sgs-mega-panel-925c5fbc",
+   "sgs-mega-panel-92b32c9f",
+   "sgs-mega-panel-938d2e04",
+   "sgs-mega-panel-939d5a64",
+   "sgs-mega-panel-93a2a8d4",
+   "sgs-mega-panel-93f846f5",
+   "sgs-mega-panel-94d2b7f1",
+   "sgs-mega-panel-9560c2ab",
+   "sgs-mega-panel-95c57645",
+   "sgs-mega-panel-967ef62a",
+   "sgs-mega-panel-96a5a62d",
+   "sgs-mega-panel-96e76d94",
+   "sgs-mega-panel-9702a8a7",
+   "sgs-mega-panel-9722e12c",
+   "sgs-mega-panel-9723d86c",
+   "sgs-mega-panel-97767093",
+   "sgs-mega-panel-9790b5d5",
+   "sgs-mega-panel-97e50b95",
+   "sgs-mega-panel-97e8633b",
+   "sgs-mega-panel-98658094",
+   "sgs-mega-panel-9877faa6",
+   "sgs-mega-panel-98b39ba0",
+   "sgs-mega-panel-98b3f4e9",
+   "sgs-mega-panel-98fbfa7e",
+   "sgs-mega-panel-991cd973",
+   "sgs-mega-panel-99b58320",
+   "sgs-mega-panel-99c4a788",
+   "sgs-mega-panel-9a104922",
+   "sgs-mega-panel-9a8379df",
+   "sgs-mega-panel-9ae43349",
+   "sgs-mega-panel-9af203fb",
+   "sgs-mega-panel-9b41e7c5",
+   "sgs-mega-panel-9b540ae1",
+   "sgs-mega-panel-9ba58ac7",
+   "sgs-mega-panel-9bc0b05b",
+   "sgs-mega-panel-9bf6328c",
+   "sgs-mega-panel-9c690dae",
+   "sgs-mega-panel-9c6b23bb",
+   "sgs-mega-panel-9c7b11fe",
+   "sgs-mega-panel-9ca82596",
+   "sgs-mega-panel-9d3cd8be",
+   "sgs-mega-panel-9dc16a85",
+   "sgs-mega-panel-9ddfdeb5",
+   "sgs-mega-panel-9de03f4f",
+   "sgs-mega-panel-9e8237b1",
+   "sgs-mega-panel-9ec7de3f",
+   "sgs-mega-panel-9ed97c59",
+   "sgs-mega-panel-9f56dc05",
+   "sgs-mega-panel-9f62177c",
+   "sgs-mega-panel-9f63d75c",
+   "sgs-mega-panel-a0639be9",
+   "sgs-mega-panel-a069a84d",
+   "sgs-mega-panel-a0999269",
+   "sgs-mega-panel-a1148294",
+   "sgs-mega-panel-a16eaa32",
+   "sgs-mega-panel-a1ea9d6c",
+   "sgs-mega-panel-a29e59f8",
+   "sgs-mega-panel-a2feca30",
+   "sgs-mega-panel-a31d7077",
+   "sgs-mega-panel-a43c0918",
+   "sgs-mega-panel-a44bea0c",
+   "sgs-mega-panel-a46e615f",
+   "sgs-mega-panel-a46eb20e",
+   "sgs-mega-panel-a5786625",
+   "sgs-mega-panel-a5befa6a",
+   "sgs-mega-panel-a602e32d",
+   "sgs-mega-panel-a644f90e",
+   "sgs-mega-panel-a6f40ba9",
+   "sgs-mega-panel-a709bd56",
+   "sgs-mega-panel-a79e7db9",
+   "sgs-mega-panel-a7b1a0b7",
+   "sgs-mega-panel-a7d24c45",
+   "sgs-mega-panel-a7e6f5b6",
+   "sgs-mega-panel-a8031171",
+   "sgs-mega-panel-a80d8951",
+   "sgs-mega-panel-a8558e7a",
+   "sgs-mega-panel-a890f330",
+   "sgs-mega-panel-a894bb81",
+   "sgs-mega-panel-a89e5349",
+   "sgs-mega-panel-a94f075d",
+   "sgs-mega-panel-a95a4870",
+   "sgs-mega-panel-a9867c74",
+   "sgs-mega-panel-a9ad41db",
+   "sgs-mega-panel-a9b5f177",
+   "sgs-mega-panel-a9ba9f28",
+   "sgs-mega-panel-a9ca6303",
+   "sgs-mega-panel-a9d3ba69",
+   "sgs-mega-panel-a9f75d78",
+   "sgs-mega-panel-aa119c05",
+   "sgs-mega-panel-aa28f3ab",
+   "sgs-mega-panel-aa363f29",
+   "sgs-mega-panel-aac3ff08",
+   "sgs-mega-panel-ab724658",
+   "sgs-mega-panel-ac31ad01",
+   "sgs-mega-panel-ac4ce7f0",
+   "sgs-mega-panel-acf7432e",
+   "sgs-mega-panel-acff6c9d",
+   "sgs-mega-panel-ad06b12b",
+   "sgs-mega-panel-ad0aba34",
+   "sgs-mega-panel-ad2ebd2f",
+   "sgs-mega-panel-ada7e3e6",
+   "sgs-mega-panel-ae074dbd",
+   "sgs-mega-panel-ae2e5c47",
+   "sgs-mega-panel-ae4a46c4",
+   "sgs-mega-panel-ae6c261e",
+   "sgs-mega-panel-af49adea",
+   "sgs-mega-panel-af7bd047",
+   "sgs-mega-panel-afee59b3",
+   "sgs-mega-panel-b0022b88",
+   "sgs-mega-panel-b013468a",
+   "sgs-mega-panel-b052e4dc",
+   "sgs-mega-panel-b05cd7ed",
+   "sgs-mega-panel-b0f18b75",
+   "sgs-mega-panel-b13a7129",
+   "sgs-mega-panel-b1952379",
+   "sgs-mega-panel-b26bc565",
+   "sgs-mega-panel-b2d350da",
+   "sgs-mega-panel-b2d38269",
+   "sgs-mega-panel-b36b675d",
+   "sgs-mega-panel-b3b46651",
+   "sgs-mega-panel-b3f366ee",
+   "sgs-mega-panel-b41bc975",
+   "sgs-mega-panel-b42666f0",
+   "sgs-mega-panel-b45aee01",
+   "sgs-mega-panel-b534c71a",
+   "sgs-mega-panel-b5499fb0",
+   "sgs-mega-panel-b54e5c4b",
+   "sgs-mega-panel-b6033ad5",
+   "sgs-mega-panel-b633fc79",
+   "sgs-mega-panel-b640c9c4",
+   "sgs-mega-panel-b6653a72",
+   "sgs-mega-panel-b6989795",
+   "sgs-mega-panel-b6f8f219",
+   "sgs-mega-panel-b77e6e8c",
+   "sgs-mega-panel-b7e61f38",
+   "sgs-mega-panel-b80efe38",
+   "sgs-mega-panel-b849f3b0",
+   "sgs-mega-panel-b855c99f",
+   "sgs-mega-panel-b8a404a7",
+   "sgs-mega-panel-b926cc66",
+   "sgs-mega-panel-b9517ff6",
+   "sgs-mega-panel-b95bab3d",
+   "sgs-mega-panel-b96fa91a",
+   "sgs-mega-panel-b99f8563",
+   "sgs-mega-panel-b9adf03e",
+   "sgs-mega-panel-ba0d516d",
+   "sgs-mega-panel-ba2f42d8",
+   "sgs-mega-panel-ba88b133",
+   "sgs-mega-panel-ba8feabc",
+   "sgs-mega-panel-bad168c6",
+   "sgs-mega-panel-bb3cbb12",
+   "sgs-mega-panel-bb4d1852",
+   "sgs-mega-panel-bc58a0a6",
+   "sgs-mega-panel-bd0eb637",
+   "sgs-mega-panel-bd21cdd1",
+   "sgs-mega-panel-bd31df52",
+   "sgs-mega-panel-bd3878d8",
+   "sgs-mega-panel-bd54da91",
+   "sgs-mega-panel-bd5cc09e",
+   "sgs-mega-panel-bdb6a0e7",
+   "sgs-mega-panel-bdb8aba7",
+   "sgs-mega-panel-be06a7d7",
+   "sgs-mega-panel-be1e1df7",
+   "sgs-mega-panel-be1fa1f6",
+   "sgs-mega-panel-be569ae0",
+   "sgs-mega-panel-be61e8ab",
+   "sgs-mega-panel-beb11f63",
+   "sgs-mega-panel-bed0d175",
+   "sgs-mega-panel-bf46267d",
+   "sgs-mega-panel-bf7405f3",
+   "sgs-mega-panel-bf79d12e",
+   "sgs-mega-panel-bf9e34f8",
+   "sgs-mega-panel-c0036e66",
+   "sgs-mega-panel-c0783dc5",
+   "sgs-mega-panel-c091df75",
+   "sgs-mega-panel-c0957fdd",
+   "sgs-mega-panel-c0a57489",
+   "sgs-mega-panel-c0e666b8",
+   "sgs-mega-panel-c1c166ab",
+   "sgs-mega-panel-c228ff9d",
+   "sgs-mega-panel-c230465b",
+   "sgs-mega-panel-c29e8f88",
+   "sgs-mega-panel-c2e7e584",
+   "sgs-mega-panel-c2ea17e0",
+   "sgs-mega-panel-c2f4ab95",
+   "sgs-mega-panel-c2f7e9a5",
+   "sgs-mega-panel-c2f91a94",
+   "sgs-mega-panel-c30f0fc0",
+   "sgs-mega-panel-c323553d",
+   "sgs-mega-panel-c367ba29",
+   "sgs-mega-panel-c422bef5",
+   "sgs-mega-panel-c44dcc83",
+   "sgs-mega-panel-c4b4c322",
+   "sgs-mega-panel-c4f4654a",
+   "sgs-mega-panel-c55e327e",
+   "sgs-mega-panel-c5dac161",
+   "sgs-mega-panel-c5e80f19",
+   "sgs-mega-panel-c605f459",
+   "sgs-mega-panel-c65985e5",
+   "sgs-mega-panel-c6a8958c",
+   "sgs-mega-panel-c71560c9",
+   "sgs-mega-panel-c71bc4c3",
+   "sgs-mega-panel-c785c2ef",
+   "sgs-mega-panel-c7c2f327",
+   "sgs-mega-panel-c8611f2a",
+   "sgs-mega-panel-c918db0a",
+   "sgs-mega-panel-c996beb0",
+   "sgs-mega-panel-c9fa44bd",
+   "sgs-mega-panel-ca163173",
+   "sgs-mega-panel-ca763526",
+   "sgs-mega-panel-cbce4b0d",
+   "sgs-mega-panel-cbe60969",
+   "sgs-mega-panel-cc0906be",
+   "sgs-mega-panel-cc0a2659",
+   "sgs-mega-panel-cc43479b",
+   "sgs-mega-panel-cca5ece0",
+   "sgs-mega-panel-ccadfe7a",
+   "sgs-mega-panel-ccb11320",
+   "sgs-mega-panel-ccbbf2e9",
+   "sgs-mega-panel-cd86d7ac",
+   "sgs-mega-panel-cd894648",
+   "sgs-mega-panel-ce5171f7",
+   "sgs-mega-panel-ce7f40ce",
+   "sgs-mega-panel-cf49d750",
+   "sgs-mega-panel-cf54f967",
+   "sgs-mega-panel-cf6dc27e",
+   "sgs-mega-panel-d03193ee",
+   "sgs-mega-panel-d19ec631",
+   "sgs-mega-panel-d1ed4192",
+   "sgs-mega-panel-d22db50d",
+   "sgs-mega-panel-d23c285e",
+   "sgs-mega-panel-d2802c8c",
+   "sgs-mega-panel-d2cc3c7c",
+   "sgs-mega-panel-d328f8e5",
+   "sgs-mega-panel-d334d226",
+   "sgs-mega-panel-d357a574",
+   "sgs-mega-panel-d366bdc4",
+   "sgs-mega-panel-d39f6b85",
+   "sgs-mega-panel-d3a5cf2f",
+   "sgs-mega-panel-d4132cb0",
+   "sgs-mega-panel-d491fba7",
+   "sgs-mega-panel-d49a54f7",
+   "sgs-mega-panel-d4a6fa92",
+   "sgs-mega-panel-d4b7940b",
+   "sgs-mega-panel-d502ee35",
+   "sgs-mega-panel-d5436fb4",
+   "sgs-mega-panel-d59329cc",
+   "sgs-mega-panel-d59ed270",
+   "sgs-mega-panel-d5a7eb5a",
+   "sgs-mega-panel-d62a64ea",
+   "sgs-mega-panel-d654f169",
+   "sgs-mega-panel-d69009d9",
+   "sgs-mega-panel-d753fd1d",
+   "sgs-mega-panel-d759626d",
+   "sgs-mega-panel-d7d4248b",
+   "sgs-mega-panel-d7f656bb",
+   "sgs-mega-panel-d8126a7f",
+   "sgs-mega-panel-d837e73c",
+   "sgs-mega-panel-d83b1bcd",
+   "sgs-mega-panel-d848cc74",
+   "sgs-mega-panel-d896507a",
+   "sgs-mega-panel-d8afefe3",
+   "sgs-mega-panel-d8f78c90",
+   "sgs-mega-panel-d8f860ba",
+   "sgs-mega-panel-d91d4032",
+   "sgs-mega-panel-d9a48bbe",
+   "sgs-mega-panel-d9e97e7f",
+   "sgs-mega-panel-da00972e",
+   "sgs-mega-panel-da529d4f",
+   "sgs-mega-panel-dab91a98",
+   "sgs-mega-panel-dac71b53",
+   "sgs-mega-panel-daff6c74",
+   "sgs-mega-panel-db706adb",
+   "sgs-mega-panel-db9ffa95",
+   "sgs-mega-panel-dbedbb85",
+   "sgs-mega-panel-dbf4699f",
+   "sgs-mega-panel-dc5a160f",
+   "sgs-mega-panel-dcdb45a9",
+   "sgs-mega-panel-dd30551a",
+   "sgs-mega-panel-dd3cad9a",
+   "sgs-mega-panel-dd3e764b",
+   "sgs-mega-panel-dd420016",
+   "sgs-mega-panel-dd997347",
+   "sgs-mega-panel-dd9b4859",
+   "sgs-mega-panel-ddab319c",
+   "sgs-mega-panel-ddd15b76",
+   "sgs-mega-panel-de42c4d6",
+   "sgs-mega-panel-de7126bf",
+   "sgs-mega-panel-dea423ad",
+   "sgs-mega-panel-deb3a55c",
+   "sgs-mega-panel-dee72ae8",
+   "sgs-mega-panel-df16490b",
+   "sgs-mega-panel-df77f32f",
+   "sgs-mega-panel-dfdbd585",
+   "sgs-mega-panel-e0005058",
+   "sgs-mega-panel-e0252e6c",
+   "sgs-mega-panel-e036e6f5",
+   "sgs-mega-panel-e05b0fd6",
+   "sgs-mega-panel-e079cf4c",
+   "sgs-mega-panel-e17c1482",
+   "sgs-mega-panel-e1ab8446",
+   "sgs-mega-panel-e264da0b",
+   "sgs-mega-panel-e2ee55c7",
+   "sgs-mega-panel-e36d4926",
+   "sgs-mega-panel-e3d22451",
+   "sgs-mega-panel-e472f1ee",
+   "sgs-mega-panel-e4b3769d",
+   "sgs-mega-panel-e4cccc80",
+   "sgs-mega-panel-e4dede8b",
+   "sgs-mega-panel-e519bf45",
+   "sgs-mega-panel-e526ca52",
+   "sgs-mega-panel-e52fceb2",
+   "sgs-mega-panel-e55b6a23",
+   "sgs-mega-panel-e61c2e0b",
+   "sgs-mega-panel-e64afc0a",
+   "sgs-mega-panel-e688b27b",
+   "sgs-mega-panel-e690f42f",
+   "sgs-mega-panel-e753d35e",
+   "sgs-mega-panel-e762c186",
+   "sgs-mega-panel-e77211e6",
+   "sgs-mega-panel-e7a38c11",
+   "sgs-mega-panel-e8394a4f",
+   "sgs-mega-panel-e849568f",
+   "sgs-mega-panel-e85910d1",
+   "sgs-mega-panel-e8635af4",
+   "sgs-mega-panel-e8af00e3",
+   "sgs-mega-panel-e8c1c70a",
+   "sgs-mega-panel-e9192246",
+   "sgs-mega-panel-e91d46b9",
+   "sgs-mega-panel-e9c0573c",
+   "sgs-mega-panel-ea06dfbc",
+   "sgs-mega-panel-ea0b5e9f",
+   "sgs-mega-panel-ea7c601d",
+   "sgs-mega-panel-ea91db2e",
+   "sgs-mega-panel-eaad27a2",
+   "sgs-mega-panel-eb95ba88",
+   "sgs-mega-panel-eba8f20b",
+   "sgs-mega-panel-ebafdc25",
+   "sgs-mega-panel-ec36fc1b",
+   "sgs-mega-panel-ec98a20d",
+   "sgs-mega-panel-ecbb42a1",
+   "sgs-mega-panel-ece16616",
+   "sgs-mega-panel-ed23fb94",
+   "sgs-mega-panel-eddf3d4d",
+   "sgs-mega-panel-ee75a993",
+   "sgs-mega-panel-ef303b10",
+   "sgs-mega-panel-efb2b6fe",
+   "sgs-mega-panel-efd19483",
+   "sgs-mega-panel-effc6e0d",
+   "sgs-mega-panel-f0233c95",
+   "sgs-mega-panel-f03ab2ed",
+   "sgs-mega-panel-f08a2cb4",
+   "sgs-mega-panel-f0a9c88d",
+   "sgs-mega-panel-f143a118",
+   "sgs-mega-panel-f1474bc8",
+   "sgs-mega-panel-f22e0212",
+   "sgs-mega-panel-f241ec5b",
+   "sgs-mega-panel-f24a832d",
+   "sgs-mega-panel-f291891c",
+   "sgs-mega-panel-f2a2f62a",
+   "sgs-mega-panel-f2a65ff1",
+   "sgs-mega-panel-f2ae9878",
+   "sgs-mega-panel-f2ddd643",
+   "sgs-mega-panel-f3457e45",
+   "sgs-mega-panel-f382f744",
+   "sgs-mega-panel-f396f100",
+   "sgs-mega-panel-f3a83fc9",
+   "sgs-mega-panel-f41edf0f",
+   "sgs-mega-panel-f41f32b6",
+   "sgs-mega-panel-f4491742",
+   "sgs-mega-panel-f4cfd89e",
+   "sgs-mega-panel-f58cef9d",
+   "sgs-mega-panel-f5d62df2",
+   "sgs-mega-panel-f6a4e568",
+   "sgs-mega-panel-f6a5e39b",
+   "sgs-mega-panel-f6bf7cff",
+   "sgs-mega-panel-f6f1a53f",
+   "sgs-mega-panel-f70ff8d8",
+   "sgs-mega-panel-f72bde11",
+   "sgs-mega-panel-f73a12e2",
+   "sgs-mega-panel-f786ed32",
+   "sgs-mega-panel-f7cde362",
+   "sgs-mega-panel-f836d6f1",
+   "sgs-mega-panel-f903b1b8",
+   "sgs-mega-panel-f967e011",
+   "sgs-mega-panel-f9c24a56",
+   "sgs-mega-panel-fa1b6fa5",
+   "sgs-mega-panel-fa832aa0",
+   "sgs-mega-panel-faae3e3d",
+   "sgs-mega-panel-faf07eb2",
+   "sgs-mega-panel-fc32a20b",
+   "sgs-mega-panel-fc3756fe",
+   "sgs-mega-panel-fc49f502",
+   "sgs-mega-panel-fcd824f4",
+   "sgs-mega-panel-fcdf4de5",
+   "sgs-mega-panel-fd244b6d",
+   "sgs-mega-panel-fd2e3a19",
+   "sgs-mega-panel-fd63edf5",
+   "sgs-mega-panel-fd761b19",
+   "sgs-mega-panel-fd767653",
+   "sgs-mega-panel-fd885f84",
+   "sgs-mega-panel-fe054e1a",
+   "sgs-mega-panel-fe141a3e",
+   "sgs-mega-panel-fe5538e7",
+   "sgs-mega-panel-fe991570",
+   "sgs-mega-panel-febb4b50",
+   "sgs-mega-panel-ff5aeacb",
+   "sgs-mega-panel-ffde4b01",
+   "sgs-mega-panel__content",
+   "sgs-mega-panel__eyebrow",
+   "sgs-on-dark",
+   "sgs-text-01f939a4",
+   "sgs-text-8b043a9c",
+   "sgs-text-aba6262e",
+   "sgs-text-eab4bc51",
+   "wp-block-sgs-button",
+   "wp-block-sgs-container",
+   "wp-block-sgs-heading",
+   "wp-block-sgs-icon-list",
+   "wp-block-sgs-label",
+   "wp-block-sgs-mega-aside",
+   "wp-block-sgs-mega-group",
+   "wp-block-sgs-mega-panel",
+   "wp-block-sgs-text"
+  ],
+  "tags": [
+   "a",
+   "div",
+   "h3",
+   "li",
+   "p",
+   "path",
+   "span",
+   "style",
+   "svg",
+   "ul"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}

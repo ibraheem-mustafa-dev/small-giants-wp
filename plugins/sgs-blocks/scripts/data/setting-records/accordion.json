@@ -1,0 +1,6657 @@
+{
+ "block": "sgs/accordion",
+ "schemaVersion": 2,
+ "parts": [],
+ "entries": [
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion--card .sgs-accordion-item",
+   "kind": "switched-on",
+   "values": [
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item",
+   "props": [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-accordion--bordered .sgs-accordion-item)",
+   "kind": "switched-on",
+   "values": [
+    "bordered",
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-accordion--bordered .sgs-accordion-item)",
+   "kind": "switched-on",
+   "values": [
+    "bordered",
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-accordion--card .sgs-accordion-item:hover",
+   "kind": "switched-on",
+   "values": [
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion--card .sgs-accordion-item",
+   "kind": "switched-on",
+   "values": [
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion--bordered .sgs-accordion-item + .sgs-accordion-item",
+   "kind": "switched-on",
+   "values": [
+    "bordered",
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-accordion--card .sgs-accordion-item:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-accordion--card .sgs-accordion-item:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item__content",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "selector": ".sgs-accordion-item__content",
+   "kind": "switched-on",
+   "values": [
+    "bordered",
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item__content",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion-item__content",
+   "kind": "switched-on",
+   "values": [
+    "bordered",
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item__header",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width: 767.98px)"
+   ],
+   "selector": ".sgs-accordion-item__header",
+   "kind": "switched-on",
+   "values": [
+    "bordered",
+    "card"
+   ]
+  },
+  {
+   "setting": "accordionStyle",
+   "part": "sgs-accordion-item__header",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion-item__header",
+   "kind": "switched-on",
+   "values": [
+    "bordered",
+    "card"
+   ]
+  },
+  {
+   "setting": "alignContent",
+   "part": "ROOT",
+   "props": [
+    "align-content"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "center"
+    }
+   ]
+  },
+  {
+   "setting": "alignContent",
+   "part": "ROOT",
+   "props": [
+    "align-content"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "center"
+    }
+   ]
+  },
+  {
+   "setting": "alignContent",
+   "part": "ROOT",
+   "props": [
+    "align-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "center"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "alignItems",
+   "part": "ROOT",
+   "props": [
+    "align-items"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "flex-end",
+     "mobile": "flex-start"
+    }
+   ]
+  },
+  {
+   "setting": "alignItems",
+   "part": "ROOT",
+   "props": [
+    "align-items"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "flex-end",
+     "mobile": "flex-start"
+    }
+   ]
+  },
+  {
+   "setting": "alignItems",
+   "part": "ROOT",
+   "props": [
+    "align-items"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "flex-end",
+     "mobile": "flex-start"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "none"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowColour",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "categoryEyebrowFontFamily",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "categoryEyebrowFontSize",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowFontSize",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowFontSize",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowFontWeight",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "categoryEyebrowLetterSpacing",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowLetterSpacing",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowLetterSpacing",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowLineHeight",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowLineHeight",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowLineHeight",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "categoryEyebrowTextTransform",
+   "part": "sgs-accordion-item__eyebrow",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__eyebrow",
+   "kind": "value",
+   "unproved": "part-printed-elsewhere",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "columns",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "columns",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "columns",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    },
+    {
+     "desktop": "repeat(4, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "sgs-container__inner",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion>.sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "sgs-container__inner",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion>.sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "sgs-container__inner",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion>.sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "contentWidth",
+   "part": "sgs-container__inner",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion>.sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "flexDirection",
+   "part": "ROOT",
+   "props": [
+    "flex-direction"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    "column",
+    "row"
+   ]
+  },
+  {
+   "setting": "flexDirection",
+   "part": "ROOT",
+   "props": [
+    "flex-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "column"
+   ]
+  },
+  {
+   "setting": "flexWrap",
+   "part": "ROOT",
+   "props": [
+    "flex-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    "nowrap"
+   ]
+  },
+  {
+   "setting": "fontFamily",
+   "part": "ROOT",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "fontSize",
+   "part": "ROOT",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "fontStyle",
+   "part": "ROOT",
+   "props": [
+    "font-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "italic"
+   ]
+  },
+  {
+   "setting": "fontWeight",
+   "part": "ROOT",
+   "props": [
+    "font-weight"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "700"
+   ]
+  },
+  {
+   "setting": "gap",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "gap",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "gap",
+   "part": "ROOT",
+   "props": [
+    "gap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "gridTemplateColumns",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "gridTemplateColumns",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "gridTemplateColumns",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    },
+    {
+     "desktop": "repeat(4, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "gridTemplateRows",
+   "part": "ROOT",
+   "props": [
+    "grid-template-rows"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "gridTemplateRows",
+   "part": "ROOT",
+   "props": [
+    "grid-template-rows"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "gridTemplateRows",
+   "part": "ROOT",
+   "props": [
+    "grid-template-rows"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "repeat(4, 1fr)",
+     "tablet": "repeat(3, 1fr)",
+     "mobile": "repeat(2, 1fr)"
+    },
+    {
+     "desktop": "repeat(4, 1fr)"
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleFontFamily",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "font-family"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    "Georgia, serif"
+   ]
+  },
+  {
+   "setting": "itemTitleFontSize",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleFontSize",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleFontSize",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "font-size"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleLetterSpacing",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleLetterSpacing",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleLetterSpacing",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleLineHeight",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleLineHeight",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "itemTitleLineHeight",
+   "part": "sgs-accordion-item__title",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item__title",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "justifyContent",
+   "part": "ROOT",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "flex-end"
+    }
+   ]
+  },
+  {
+   "setting": "justifyContent",
+   "part": "ROOT",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "flex-end"
+    }
+   ]
+  },
+  {
+   "setting": "justifyContent",
+   "part": "ROOT",
+   "props": [
+    "justify-content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "space-between",
+     "mobile": "flex-end"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    "flex",
+    "grid",
+    "stack"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "ROOT",
+   "props": [
+    "flex-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "flex",
+    "stack"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "grid"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "grid"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "ROOT",
+   "props": [
+    "grid-template-columns"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    "grid"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "ROOT",
+   "props": [
+    "min-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-container--fit>*,.sgs-container--fit-band>.sgs-container__inner>*)",
+   "kind": "switched-on",
+   "values": [
+    "flex",
+    "grid",
+    "stack"
+   ]
+  },
+  {
+   "setting": "layout",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ":where(.sgs-container--fit>*,.sgs-container--fit-band>.sgs-container__inner>*)",
+   "kind": "switched-on",
+   "values": [
+    "flex",
+    "grid",
+    "stack"
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "letterSpacing",
+   "part": "ROOT",
+   "props": [
+    "letter-spacing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    }
+   ]
+  },
+  {
+   "setting": "lineHeight",
+   "part": "ROOT",
+   "props": [
+    "line-height"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": 37,
+     "tablet": 23,
+     "mobile": 7
+    },
+    {
+     "desktop": 37
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "margin",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-container__inner",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion>.sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-container__inner",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion>.sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "padding",
+   "part": "sgs-container__inner",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion>.sgs-container__inner",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     },
+     "tablet": {
+      "top": "21px",
+      "right": "23px",
+      "bottom": "25px",
+      "left": "27px"
+     },
+     "mobile": {
+      "top": "3px",
+      "right": "5px",
+      "bottom": "7px",
+      "left": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "top": "11px",
+      "right": "13px",
+      "bottom": "17px",
+      "left": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "panelDuration",
+   "part": "sgs-accordion-item",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (interpolate-size: allow-keywords)",
+    "@supports selector(::details-content)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item::details-content",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    437
+   ]
+  },
+  {
+   "setting": "panelEasing",
+   "part": "sgs-accordion-item",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (interpolate-size: allow-keywords)",
+    "@supports selector(::details-content)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item::details-content",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "default",
+    "drafts",
+    "ease",
+    "ease-in",
+    "ease-in-out",
+    "ease-out",
+    "emphasised",
+    "linear",
+    "quart-out",
+    "spring",
+    "standard"
+   ]
+  },
+  {
+   "setting": "panelEasingCustom",
+   "part": "sgs-accordion-item",
+   "props": [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   "state": null,
+   "tiers": [
+    "@supports (interpolate-size: allow-keywords)",
+    "@supports selector(::details-content)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion .sgs-accordion-item::details-content",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "cubic-bezier(0.1, 0.7, 0.3, 0.9)"
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-accordion",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsHideOnDesktop",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px)"
+   ],
+   "selector": ".sgs-hide-desktop",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnMobile",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width:767.98px)"
+   ],
+   "selector": ".sgs-hide-mobile",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnTablet",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ],
+   "selector": ".sgs-hide-tablet",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    }
+   ]
+  },
+  {
+   "setting": "textAlign",
+   "part": "ROOT",
+   "props": [
+    "text-align"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "center",
+     "tablet": "right",
+     "mobile": "left"
+    },
+    {
+     "desktop": "center"
+    }
+   ]
+  },
+  {
+   "setting": "textColumns",
+   "part": "ROOT",
+   "props": [
+    "column-count"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    3
+   ]
+  },
+  {
+   "setting": "textDecoration",
+   "part": "ROOT",
+   "props": [
+    "text-decoration"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "line-through",
+    "none",
+    "underline"
+   ]
+  },
+  {
+   "setting": "textIndent",
+   "part": "ROOT",
+   "props": [
+    "text-indent"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)",
+   "kind": "value",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    "37px"
+   ],
+   "accepted": "proved on sgs/container, sgs/form"
+  },
+  {
+   "setting": "textStrokeColour",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeColourHover",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion:focus-visible",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeColourHover",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-accordion.wp-block-sgs-accordion:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "textStrokeWidth",
+   "part": "ROOT",
+   "props": [
+    "-webkit-text-stroke-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "textTransform",
+   "part": "ROOT",
+   "props": [
+    "text-transform"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "capitalize",
+    "lowercase",
+    "none",
+    "uppercase"
+   ]
+  },
+  {
+   "setting": "textWrap",
+   "part": "ROOT",
+   "props": [
+    "text-wrap"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "balance",
+    "nowrap",
+    "pretty",
+    "stable",
+    "wrap"
+   ]
+  },
+  {
+   "setting": "writingMode",
+   "part": "ROOT",
+   "props": [
+    "writing-mode"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-accordion.wp-block-sgs-accordion",
+   "kind": "value",
+   "values": [
+    "horizontal-tb",
+    "vertical-lr",
+    "vertical-rl"
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "accordionStyle",
+   "sgs-accordion-item",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item",
+   [
+    "border-color",
+    "border-style",
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item__content",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media (max-width: 767.98px)"
+   ]
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item__content",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item__header",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media (max-width: 767.98px)"
+   ]
+  ],
+  [
+   "accordionStyle",
+   "sgs-accordion-item__header",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "alignContent",
+   "ROOT",
+   [
+    "align-content"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "alignContent",
+   "ROOT",
+   [
+    "align-content"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "alignContent",
+   "ROOT",
+   [
+    "align-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "alignItems",
+   "ROOT",
+   [
+    "align-items"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "alignItems",
+   "ROOT",
+   [
+    "align-items"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "alignItems",
+   "ROOT",
+   [
+    "align-items"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "categoryEyebrowColour",
+   "sgs-accordion-item__eyebrow",
+   [
+    "color"
+   ],
+   null,
+   []
+  ],
+  [
+   "categoryEyebrowFontFamily",
+   "sgs-accordion-item__eyebrow",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "categoryEyebrowFontSize",
+   "sgs-accordion-item__eyebrow",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "categoryEyebrowFontSize",
+   "sgs-accordion-item__eyebrow",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "categoryEyebrowFontSize",
+   "sgs-accordion-item__eyebrow",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "categoryEyebrowFontWeight",
+   "sgs-accordion-item__eyebrow",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "categoryEyebrowLetterSpacing",
+   "sgs-accordion-item__eyebrow",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "categoryEyebrowLetterSpacing",
+   "sgs-accordion-item__eyebrow",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "categoryEyebrowLetterSpacing",
+   "sgs-accordion-item__eyebrow",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "categoryEyebrowLineHeight",
+   "sgs-accordion-item__eyebrow",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "categoryEyebrowLineHeight",
+   "sgs-accordion-item__eyebrow",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "categoryEyebrowLineHeight",
+   "sgs-accordion-item__eyebrow",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "categoryEyebrowTextTransform",
+   "sgs-accordion-item__eyebrow",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "columns",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "columns",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "columns",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   []
+  ],
+  [
+   "contentWidth",
+   "sgs-container__inner",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "contentWidth",
+   "sgs-container__inner",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "contentWidth",
+   "sgs-container__inner",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "contentWidth",
+   "sgs-container__inner",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "flexDirection",
+   "ROOT",
+   [
+    "flex-direction"
+   ],
+   null,
+   []
+  ],
+  [
+   "flexDirection",
+   "ROOT",
+   [
+    "flex-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "flexWrap",
+   "ROOT",
+   [
+    "flex-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontFamily",
+   "ROOT",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "fontSize",
+   "ROOT",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontStyle",
+   "ROOT",
+   [
+    "font-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "fontWeight",
+   "ROOT",
+   [
+    "font-weight"
+   ],
+   null,
+   []
+  ],
+  [
+   "gap",
+   "ROOT",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "gap",
+   "ROOT",
+   [
+    "gap"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "gap",
+   "ROOT",
+   [
+    "gap"
+   ],
+   null,
+   []
+  ],
+  [
+   "gridTemplateColumns",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "gridTemplateColumns",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "gridTemplateColumns",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   []
+  ],
+  [
+   "gridTemplateRows",
+   "ROOT",
+   [
+    "grid-template-rows"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "gridTemplateRows",
+   "ROOT",
+   [
+    "grid-template-rows"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "gridTemplateRows",
+   "ROOT",
+   [
+    "grid-template-rows"
+   ],
+   null,
+   []
+  ],
+  [
+   "itemTitleFontFamily",
+   "sgs-accordion-item__title",
+   [
+    "font-family"
+   ],
+   null,
+   []
+  ],
+  [
+   "itemTitleFontSize",
+   "sgs-accordion-item__title",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "itemTitleFontSize",
+   "sgs-accordion-item__title",
+   [
+    "font-size"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "itemTitleFontSize",
+   "sgs-accordion-item__title",
+   [
+    "font-size"
+   ],
+   null,
+   []
+  ],
+  [
+   "itemTitleLetterSpacing",
+   "sgs-accordion-item__title",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "itemTitleLetterSpacing",
+   "sgs-accordion-item__title",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "itemTitleLetterSpacing",
+   "sgs-accordion-item__title",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "itemTitleLineHeight",
+   "sgs-accordion-item__title",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "itemTitleLineHeight",
+   "sgs-accordion-item__title",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "itemTitleLineHeight",
+   "sgs-accordion-item__title",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "justifyContent",
+   "ROOT",
+   [
+    "justify-content"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "justifyContent",
+   "ROOT",
+   [
+    "justify-content"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "justifyContent",
+   "ROOT",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "layout",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "layout",
+   "ROOT",
+   [
+    "flex-direction"
+   ],
+   null,
+   []
+  ],
+  [
+   "layout",
+   "ROOT",
+   [
+    "flex-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "layout",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "layout",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "layout",
+   "ROOT",
+   [
+    "grid-template-columns"
+   ],
+   null,
+   []
+  ],
+  [
+   "layout",
+   "ROOT",
+   [
+    "min-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "layout",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "letterSpacing",
+   "ROOT",
+   [
+    "letter-spacing"
+   ],
+   null,
+   []
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "lineHeight",
+   "ROOT",
+   [
+    "line-height"
+   ],
+   null,
+   []
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "margin",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "padding",
+   "sgs-container__inner",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "sgs-container__inner",
+   [
+    "padding"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "padding",
+   "sgs-container__inner",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "panelDuration",
+   "sgs-accordion-item",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@supports (interpolate-size: allow-keywords)",
+    "@supports selector(::details-content)"
+   ]
+  ],
+  [
+   "panelEasing",
+   "sgs-accordion-item",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@supports (interpolate-size: allow-keywords)",
+    "@supports selector(::details-content)"
+   ]
+  ],
+  [
+   "panelEasingCustom",
+   "sgs-accordion-item",
+   [
+    "transition-delay",
+    "transition-duration",
+    "transition-property",
+    "transition-timing-function"
+   ],
+   null,
+   [
+    "@supports (interpolate-size: allow-keywords)",
+    "@supports selector(::details-content)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "textAlign",
+   "ROOT",
+   [
+    "text-align"
+   ],
+   null,
+   []
+  ],
+  [
+   "textColumns",
+   "ROOT",
+   [
+    "column-count"
+   ],
+   null,
+   []
+  ],
+  [
+   "textDecoration",
+   "ROOT",
+   [
+    "text-decoration"
+   ],
+   null,
+   []
+  ],
+  [
+   "textIndent",
+   "ROOT",
+   [
+    "text-indent"
+   ],
+   null,
+   []
+  ],
+  [
+   "textStrokeColour",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "textStrokeColourHover",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "textStrokeColourHover",
+   "ROOT",
+   [
+    "-webkit-text-stroke-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "textStrokeWidth",
+   "ROOT",
+   [
+    "-webkit-text-stroke-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "textTransform",
+   "ROOT",
+   [
+    "text-transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "textWrap",
+   "ROOT",
+   [
+    "text-wrap"
+   ],
+   null,
+   []
+  ],
+  [
+   "writingMode",
+   "ROOT",
+   [
+    "writing-mode"
+   ],
+   null,
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [
+   "allowMultiple",
+   "categoryEyebrowAlways",
+   "closeIcon",
+   "contentPadding",
+   "defaultOpen",
+   "faqSchema",
+   "filterAllLabel",
+   "filterBandBackground",
+   "filterBandBorderColour",
+   "filterBandBorderStyle",
+   "filterBandBorderWidth",
+   "filterBandFullWidth",
+   "filterBandPadding",
+   "filterChipBackground",
+   "filterChipBackgroundPressed",
+   "filterChipBorderColour",
+   "filterChipColour",
+   "filterChipColourPressed",
+   "filterChipFontFamily",
+   "filterChipFontSize",
+   "filterChipRadius",
+   "filterChipSelectedOffsetX",
+   "filterChipSelectedOffsetY",
+   "filterChipSelectedShadow",
+   "filterChipSelectedShadowColour",
+   "filterChipShadow",
+   "filterChipShadowColour",
+   "filterChips",
+   "filterChipsJustify",
+   "filterChipsLabel",
+   "filterChipsPadding",
+   "filterChipsWrap",
+   "filterCountColour",
+   "filterCountSingular",
+   "filterCountTemplate",
+   "filterEmptyLink",
+   "filterEmptyMessage",
+   "filterEnabled",
+   "filterSearch",
+   "filterSearchAlign",
+   "filterSearchBackground",
+   "filterSearchFontFamily",
+   "filterSearchFontSize",
+   "filterSearchHeight",
+   "filterSearchIcon",
+   "filterSearchIconColour",
+   "filterSearchIconOffset",
+   "filterSearchIconSize",
+   "filterSearchLabel",
+   "filterSearchMaxWidth",
+   "filterSearchPadding",
+   "filterSearchPlaceholder",
+   "filterSearchShadow",
+   "filterSearchShadowColour",
+   "gridAutoRows",
+   "headerBackground",
+   "headerBackgroundGradient",
+   "headerBackgroundHover",
+   "headerBackgroundHoverGradient",
+   "headerBackgroundOpen",
+   "headerColour",
+   "headerColourGradient",
+   "headerColourHover",
+   "headerColourHoverGradient",
+   "headerColourOpen",
+   "headerFontWeight",
+   "headerFontWeightOpen",
+   "headerGap",
+   "headerMinHeight",
+   "headerPadding",
+   "iconCircleBackground",
+   "iconCircleBackgroundOpen",
+   "iconCircleBorderColour",
+   "iconCircleBorderColourOpen",
+   "iconCircleBorderWidth",
+   "iconCircleSize",
+   "iconColour",
+   "iconColourGradient",
+   "iconColourHover",
+   "iconColourHoverGradient",
+   "iconPosition",
+   "iconRotation",
+   "iconSize",
+   "iconStrokeWidth",
+   "itemBackgroundOpen",
+   "itemShadow",
+   "itemShadowColour",
+   "itemShadowOpen",
+   "itemShadowOpenColour",
+   "openIcon",
+   "scrollToOpened",
+   "scrollToOpenedGap",
+   "sgsCollapseVisibility",
+   "sgsConditionCollectionQueryId",
+   "sgsConditionDateEnd",
+   "sgsConditionFormField",
+   "sgsConditionFormOperator",
+   "sgsConditionFormValue",
+   "sgsConditionProductReviews",
+   "sgsConditionUserRole",
+   "sgsCustomCssId",
+   "sgsCustomCssNote"
+  ],
+  "replacesBlock": [
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionLoggedIn",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   },
+   {
+    "setting": "justifyItems",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   }
+  ],
+  "partNotNamed": [
+   {
+    "setting": "layout",
+    "part": null,
+    "props": [
+     "min-height"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-container--fit>*,.sgs-container--fit-band>.sgs-container__inner>*)"
+   },
+   {
+    "setting": "layout",
+    "part": null,
+    "props": [
+     "min-width"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ":where(.sgs-container--fit>*,.sgs-container--fit-band>.sgs-container__inner>*)"
+   }
+  ]
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/accordion-default-open.php": "c8d797e6d2253cc1",
+   "includes/accordion-filter.php": "7edfe44eb7014811",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-container-wrapper.php": "eb50641bc169ad55",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/container-scroll-row-css.php": "d1bfcfa233fc6bb1",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-fit.php": "be39699a1b3dacaf",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-grid-item.php": "66040be25e3cbb0d",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-shared-rules.php": "1ecf0e2ae2c88520",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-ground.php": "1a5dd0aae08c3fff",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tier-queries.php": "1ef6213308907a28",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/lucide-icons.php": "d14ea5bbe7383448",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/background-css.php": "d427257f69bbc625",
+   "includes/media/class-sgs-background-media.php": "e6ef00dd2b060dda",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-background.php": "093be1f920818d43",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "src/blocks/accordion-item/render.php": "b28aec7aa4c1683a",
+   "src/blocks/accordion/FilterCanvasBar.js": "b6ee365f5a7933e8",
+   "src/blocks/accordion/FilterPanel.js": "2152ec376fed0f0f",
+   "src/blocks/accordion/FilterStyleFields.js": "00326f847bde831e",
+   "src/blocks/accordion/block.json": "94e17e1f23dcfae2",
+   "src/blocks/accordion/edit.js": "d10df84f39993449",
+   "src/blocks/accordion/editor.css": "11069c7fa5490af7",
+   "src/blocks/accordion/filter.js": "b6524880f17061f7",
+   "src/blocks/accordion/index.js": "15297f1156418bf7",
+   "src/blocks/accordion/preview-style.js": "929aab0d25892777",
+   "src/blocks/accordion/render.php": "4238a79bd420a4da",
+   "src/blocks/accordion/save.js": "3110ca5f19f02d05",
+   "src/blocks/accordion/scroll-to-opened.js": "8eb07a496cb4592c",
+   "src/blocks/accordion/style.css": "d0b565e084d1691d",
+   "src/blocks/accordion/view.js": "499cecedf97209b4",
+   "src/blocks/text/render.php": "bae6bf3e5b4852ff",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/accordion/style.css": "ac16222529d519d4",
+   "shipped:src/blocks/text/style.css": "205323a182969df1",
+   "fixture-entry": "961296b085a5afab",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "8a34e793ad421186",
+  "theme": "b53c3272ee02c1e1",
+  "classes": [
+   "has-global-padding",
+   "lucide",
+   "lucide-chevron-down",
+   "lucide-chevron-up",
+   "sgs-accordion",
+   "sgs-accordion--bordered",
+   "sgs-accordion--card",
+   "sgs-accordion--flush",
+   "sgs-accordion--icon-column",
+   "sgs-accordion--icon-right",
+   "sgs-accordion-009d4281",
+   "sgs-accordion-01c00267",
+   "sgs-accordion-0215f954",
+   "sgs-accordion-02b45ec3",
+   "sgs-accordion-02dc4497",
+   "sgs-accordion-039bfd1d",
+   "sgs-accordion-06400015",
+   "sgs-accordion-072c046f",
+   "sgs-accordion-07e186df",
+   "sgs-accordion-0913f7f3",
+   "sgs-accordion-0aa01e2d",
+   "sgs-accordion-0aa5853e",
+   "sgs-accordion-0bff697b",
+   "sgs-accordion-0c249320",
+   "sgs-accordion-0d036e6a",
+   "sgs-accordion-0f935948",
+   "sgs-accordion-0f990005",
+   "sgs-accordion-10db824a",
+   "sgs-accordion-11960db3",
+   "sgs-accordion-11c4bf66",
+   "sgs-accordion-125d4d0a",
+   "sgs-accordion-1349b1d6",
+   "sgs-accordion-137af597",
+   "sgs-accordion-143ecb45",
+   "sgs-accordion-16e881e9",
+   "sgs-accordion-176bbeb7",
+   "sgs-accordion-17b26217",
+   "sgs-accordion-17b83bc6",
+   "sgs-accordion-17c373af",
+   "sgs-accordion-1887624d",
+   "sgs-accordion-198cead4",
+   "sgs-accordion-1a10b8a3",
+   "sgs-accordion-1aa948ac",
+   "sgs-accordion-1c16fbad",
+   "sgs-accordion-1c7858e0",
+   "sgs-accordion-1cdf598a",
+   "sgs-accordion-1defacd3",
+   "sgs-accordion-1e537c6c",
+   "sgs-accordion-1fe93bbe",
+   "sgs-accordion-217b3b88",
+   "sgs-accordion-21805718",
+   "sgs-accordion-218f641a",
+   "sgs-accordion-226e2df6",
+   "sgs-accordion-227227fb",
+   "sgs-accordion-2322cce2",
+   "sgs-accordion-2392b98f",
+   "sgs-accordion-23a449ed",
+   "sgs-accordion-24453afb",
+   "sgs-accordion-253b8617",
+   "sgs-accordion-257fa498",
+   "sgs-accordion-26132250",
+   "sgs-accordion-26217b0e",
+   "sgs-accordion-284f7726",
+   "sgs-accordion-28c711bf",
+   "sgs-accordion-29f9009b",
+   "sgs-accordion-2afa62ee",
+   "sgs-accordion-2c1224b1",
+   "sgs-accordion-2c171551",
+   "sgs-accordion-2ca20eaf",
+   "sgs-accordion-2e7e7dd8",
+   "sgs-accordion-2f995a6f",
+   "sgs-accordion-322997f3",
+   "sgs-accordion-32fed479",
+   "sgs-accordion-33ee4c73",
+   "sgs-accordion-356e6838",
+   "sgs-accordion-3666497e",
+   "sgs-accordion-392cfe3a",
+   "sgs-accordion-39a08496",
+   "sgs-accordion-3ac87aa9",
+   "sgs-accordion-3bb77027",
+   "sgs-accordion-3bd90ca8",
+   "sgs-accordion-3bfbec08",
+   "sgs-accordion-3c5ff1b3",
+   "sgs-accordion-3c8a9d9f",
+   "sgs-accordion-3d0671ca",
+   "sgs-accordion-40ea2965",
+   "sgs-accordion-40f393f2",
+   "sgs-accordion-41eed7be",
+   "sgs-accordion-430d68f0",
+   "sgs-accordion-43b12b7c",
+   "sgs-accordion-43c87273",
+   "sgs-accordion-43e047fd",
+   "sgs-accordion-44e178a2",
+   "sgs-accordion-4597c456",
+   "sgs-accordion-4a629f72",
+   "sgs-accordion-4acc89b4",
+   "sgs-accordion-4b50615c",
+   "sgs-accordion-4b947640",
+   "sgs-accordion-4bcc5e61",
+   "sgs-accordion-4ecef370",
+   "sgs-accordion-50b5b2d2",
+   "sgs-accordion-51639da3",
+   "sgs-accordion-5220aa1f",
+   "sgs-accordion-533b9d78",
+   "sgs-accordion-569560e5",
+   "sgs-accordion-56e29245",
+   "sgs-accordion-56e4d4b4",
+   "sgs-accordion-58215cf8",
+   "sgs-accordion-58486d14",
+   "sgs-accordion-592dd4c4",
+   "sgs-accordion-5a7742f3",
+   "sgs-accordion-5b2ff2a3",
+   "sgs-accordion-5b504e36",
+   "sgs-accordion-5bcaf883",
+   "sgs-accordion-5be40874",
+   "sgs-accordion-5e075f7a",
+   "sgs-accordion-6019e470",
+   "sgs-accordion-63516fa6",
+   "sgs-accordion-63f1f23a",
+   "sgs-accordion-646067ef",
+   "sgs-accordion-64bc5777",
+   "sgs-accordion-65d6e27d",
+   "sgs-accordion-66085087",
+   "sgs-accordion-668186dd",
+   "sgs-accordion-68d35baa",
+   "sgs-accordion-692e25e6",
+   "sgs-accordion-6d8fd2cc",
+   "sgs-accordion-6ee51d4b",
+   "sgs-accordion-6f97da19",
+   "sgs-accordion-6f9a1406",
+   "sgs-accordion-71ec1cd1",
+   "sgs-accordion-72c1fff4",
+   "sgs-accordion-7538ee6e",
+   "sgs-accordion-75bbd9d0",
+   "sgs-accordion-7679cf81",
+   "sgs-accordion-77ab5659",
+   "sgs-accordion-78502609",
+   "sgs-accordion-79310569",
+   "sgs-accordion-7989ae0d",
+   "sgs-accordion-7a35ab11",
+   "sgs-accordion-7a7873ca",
+   "sgs-accordion-7af3ce5d",
+   "sgs-accordion-7d0767da",
+   "sgs-accordion-7e4d4d56",
+   "sgs-accordion-7ebef031",
+   "sgs-accordion-7f02dcb1",
+   "sgs-accordion-806c5c2a",
+   "sgs-accordion-80704320",
+   "sgs-accordion-80a3dc88",
+   "sgs-accordion-822de388",
+   "sgs-accordion-824f6ae6",
+   "sgs-accordion-84b212da",
+   "sgs-accordion-85a9bc2e",
+   "sgs-accordion-85d81ff3",
+   "sgs-accordion-86a589ce",
+   "sgs-accordion-872f42ef",
+   "sgs-accordion-87315814",
+   "sgs-accordion-876c3099",
+   "sgs-accordion-877d1ed8",
+   "sgs-accordion-8846bfd1",
+   "sgs-accordion-89499cdf",
+   "sgs-accordion-89d368aa",
+   "sgs-accordion-8a4fe2b3",
+   "sgs-accordion-8bc08bea",
+   "sgs-accordion-8c79898f",
+   "sgs-accordion-8d0bcf5a",
+   "sgs-accordion-8ee60ca2",
+   "sgs-accordion-91b43e09",
+   "sgs-accordion-927b4d87",
+   "sgs-accordion-92ffbd1a",
+   "sgs-accordion-9349f532",
+   "sgs-accordion-939c08ff",
+   "sgs-accordion-959ddae7",
+   "sgs-accordion-972584cd",
+   "sgs-accordion-989cc504",
+   "sgs-accordion-9b091349",
+   "sgs-accordion-9c565f7b",
+   "sgs-accordion-9cb1ae53",
+   "sgs-accordion-9d881c1e",
+   "sgs-accordion-9da46095",
+   "sgs-accordion-9e4c54f7",
+   "sgs-accordion-9e6388c7",
+   "sgs-accordion-9e7aa10c",
+   "sgs-accordion-9fdd3142",
+   "sgs-accordion-a14c51c0",
+   "sgs-accordion-a21f56a5",
+   "sgs-accordion-a2696ae5",
+   "sgs-accordion-a58073bf",
+   "sgs-accordion-a5b7f5b9",
+   "sgs-accordion-a64684aa",
+   "sgs-accordion-a69c4067",
+   "sgs-accordion-a6c9669b",
+   "sgs-accordion-a7044eec",
+   "sgs-accordion-a7a02388",
+   "sgs-accordion-a857c10b",
+   "sgs-accordion-a990ca11",
+   "sgs-accordion-a9d69629",
+   "sgs-accordion-aa89c1aa",
+   "sgs-accordion-aaf733cf",
+   "sgs-accordion-aaf86697",
+   "sgs-accordion-abcf01bf",
+   "sgs-accordion-ac786a9d",
+   "sgs-accordion-ad26dd0a",
+   "sgs-accordion-ae3156f9",
+   "sgs-accordion-aeaf1e6b",
+   "sgs-accordion-af8c1fdc",
+   "sgs-accordion-afa359d6",
+   "sgs-accordion-b01c8ff6",
+   "sgs-accordion-b0af424a",
+   "sgs-accordion-b1c25cca",
+   "sgs-accordion-b247faa6",
+   "sgs-accordion-b3af9dd4",
+   "sgs-accordion-b3fe22cb",
+   "sgs-accordion-b4893f69",
+   "sgs-accordion-b4cee122",
+   "sgs-accordion-b59f18d2",
+   "sgs-accordion-ba3100b5",
+   "sgs-accordion-bc7ab3b2",
+   "sgs-accordion-bcb93e1f",
+   "sgs-accordion-bcfffc4b",
+   "sgs-accordion-bd402077",
+   "sgs-accordion-bdd37a8b",
+   "sgs-accordion-bddc2c65",
+   "sgs-accordion-c0382133",
+   "sgs-accordion-c0d4ca8b",
+   "sgs-accordion-c10aa045",
+   "sgs-accordion-c1428a44",
+   "sgs-accordion-c26c0817",
+   "sgs-accordion-c35bc120",
+   "sgs-accordion-c4529d7d",
+   "sgs-accordion-c592ecb8",
+   "sgs-accordion-c5dc7ed2",
+   "sgs-accordion-c61d5d84",
+   "sgs-accordion-c6e7219e",
+   "sgs-accordion-c88f2b6d",
+   "sgs-accordion-c8bc3fe4",
+   "sgs-accordion-c8e9ef68",
+   "sgs-accordion-ca3f8fda",
+   "sgs-accordion-ca899495",
+   "sgs-accordion-cbd9cca8",
+   "sgs-accordion-cc8b4f09",
+   "sgs-accordion-ccb8d973",
+   "sgs-accordion-ccc53a32",
+   "sgs-accordion-ce11dab4",
+   "sgs-accordion-ce7d7b53",
+   "sgs-accordion-cf2929c3",
+   "sgs-accordion-d114501d",
+   "sgs-accordion-d133cb2d",
+   "sgs-accordion-d1411bb8",
+   "sgs-accordion-d24da788",
+   "sgs-accordion-d4a25df9",
+   "sgs-accordion-d57e8783",
+   "sgs-accordion-d715de5b",
+   "sgs-accordion-d8664da6",
+   "sgs-accordion-d971d182",
+   "sgs-accordion-d990ae31",
+   "sgs-accordion-da000bd8",
+   "sgs-accordion-dd6acbf9",
+   "sgs-accordion-de00a627",
+   "sgs-accordion-de8f8761",
+   "sgs-accordion-dfe16e85",
+   "sgs-accordion-e05cdae4",
+   "sgs-accordion-e328b25e",
+   "sgs-accordion-e32b3b44",
+   "sgs-accordion-e4696640",
+   "sgs-accordion-e524eaef",
+   "sgs-accordion-e53ff3a9",
+   "sgs-accordion-e67c0f1f",
+   "sgs-accordion-e684dea1",
+   "sgs-accordion-e6dfaf1f",
+   "sgs-accordion-e7084f52",
+   "sgs-accordion-e7ff9662",
+   "sgs-accordion-e8ba5aea",
+   "sgs-accordion-e9817483",
+   "sgs-accordion-e9839eab",
+   "sgs-accordion-ea546840",
+   "sgs-accordion-ead9ee2c",
+   "sgs-accordion-eb6df490",
+   "sgs-accordion-ecf7f1bc",
+   "sgs-accordion-eddfdbca",
+   "sgs-accordion-efe93ee1",
+   "sgs-accordion-f2a0c962",
+   "sgs-accordion-f2bdef12",
+   "sgs-accordion-f2c893a7",
+   "sgs-accordion-f3d92cab",
+   "sgs-accordion-f3dbb599",
+   "sgs-accordion-f417fb38",
+   "sgs-accordion-f4bb6b20",
+   "sgs-accordion-f5839e9f",
+   "sgs-accordion-f81e3293",
+   "sgs-accordion-f9343e8b",
+   "sgs-accordion-f98bacf5",
+   "sgs-accordion-fa61516d",
+   "sgs-accordion-fab67885",
+   "sgs-accordion-fbc51296",
+   "sgs-accordion-fbff5964",
+   "sgs-accordion-fe5e9ac7",
+   "sgs-accordion-fe60b25e",
+   "sgs-accordion-fedbba3d",
+   "sgs-accordion-ff247b10",
+   "sgs-accordion-ffee28a5",
+   "sgs-accordion-item",
+   "sgs-accordion-item--bordered",
+   "sgs-accordion-item-7db4150f",
+   "sgs-accordion-item-f42b1df3",
+   "sgs-accordion-item__content",
+   "sgs-accordion-item__header",
+   "sgs-accordion-item__icon-close",
+   "sgs-accordion-item__icon-open",
+   "sgs-accordion-item__icons",
+   "sgs-accordion-item__title",
+   "sgs-accordion__chip",
+   "sgs-accordion__chips",
+   "sgs-accordion__content-band",
+   "sgs-accordion__count",
+   "sgs-accordion__count-text",
+   "sgs-accordion__empty",
+   "sgs-accordion__filter",
+   "sgs-accordion__search",
+   "sgs-accordion__search-input",
+   "sgs-accordion__sr-only",
+   "sgs-band-cap-4b581ffe",
+   "sgs-band-cap-8d3d06c6",
+   "sgs-band-gutter",
+   "sgs-band-pad-b4a513f5",
+   "sgs-band-pad-c1849b6e",
+   "sgs-band-width-b4a8f62a",
+   "sgs-child-sizing",
+   "sgs-container",
+   "sgs-container--fit",
+   "sgs-container--flex",
+   "sgs-container--grid",
+   "sgs-container--stack",
+   "sgs-container-009d4281",
+   "sgs-container-01c00267",
+   "sgs-container-0215f954",
+   "sgs-container-02b45ec3",
+   "sgs-container-02dc4497",
+   "sgs-container-039bfd1d",
+   "sgs-container-06400015",
+   "sgs-container-072c046f",
+   "sgs-container-07e186df",
+   "sgs-container-0913f7f3",
+   "sgs-container-0aa01e2d",
+   "sgs-container-0aa5853e",
+   "sgs-container-0bff697b",
+   "sgs-container-0c249320",
+   "sgs-container-0d036e6a",
+   "sgs-container-0f935948",
+   "sgs-container-0f990005",
+   "sgs-container-10db824a",
+   "sgs-container-11960db3",
+   "sgs-container-11c4bf66",
+   "sgs-container-125d4d0a",
+   "sgs-container-1349b1d6",
+   "sgs-container-137af597",
+   "sgs-container-143ecb45",
+   "sgs-container-16e881e9",
+   "sgs-container-176bbeb7",
+   "sgs-container-17b26217",
+   "sgs-container-17b83bc6",
+   "sgs-container-17c373af",
+   "sgs-container-1887624d",
+   "sgs-container-198cead4",
+   "sgs-container-1a10b8a3",
+   "sgs-container-1aa948ac",
+   "sgs-container-1c16fbad",
+   "sgs-container-1c7858e0",
+   "sgs-container-1cdf598a",
+   "sgs-container-1defacd3",
+   "sgs-container-1e537c6c",
+   "sgs-container-1fe93bbe",
+   "sgs-container-217b3b88",
+   "sgs-container-21805718",
+   "sgs-container-218f641a",
+   "sgs-container-226e2df6",
+   "sgs-container-227227fb",
+   "sgs-container-2322cce2",
+   "sgs-container-2392b98f",
+   "sgs-container-23a449ed",
+   "sgs-container-24453afb",
+   "sgs-container-253b8617",
+   "sgs-container-257fa498",
+   "sgs-container-26132250",
+   "sgs-container-26217b0e",
+   "sgs-container-284f7726",
+   "sgs-container-28c711bf",
+   "sgs-container-29f9009b",
+   "sgs-container-2afa62ee",
+   "sgs-container-2c1224b1",
+   "sgs-container-2c171551",
+   "sgs-container-2ca20eaf",
+   "sgs-container-2e7e7dd8",
+   "sgs-container-2f995a6f",
+   "sgs-container-322997f3",
+   "sgs-container-32fed479",
+   "sgs-container-33ee4c73",
+   "sgs-container-356e6838",
+   "sgs-container-3666497e",
+   "sgs-container-392cfe3a",
+   "sgs-container-39a08496",
+   "sgs-container-3ac87aa9",
+   "sgs-container-3bb77027",
+   "sgs-container-3bd90ca8",
+   "sgs-container-3bfbec08",
+   "sgs-container-3c5ff1b3",
+   "sgs-container-3c8a9d9f",
+   "sgs-container-3d0671ca",
+   "sgs-container-40ea2965",
+   "sgs-container-40f393f2",
+   "sgs-container-41eed7be",
+   "sgs-container-430d68f0",
+   "sgs-container-43b12b7c",
+   "sgs-container-43c87273",
+   "sgs-container-43e047fd",
+   "sgs-container-44e178a2",
+   "sgs-container-4597c456",
+   "sgs-container-4a629f72",
+   "sgs-container-4acc89b4",
+   "sgs-container-4b50615c",
+   "sgs-container-4b947640",
+   "sgs-container-4bcc5e61",
+   "sgs-container-4ecef370",
+   "sgs-container-50b5b2d2",
+   "sgs-container-51639da3",
+   "sgs-container-5220aa1f",
+   "sgs-container-533b9d78",
+   "sgs-container-569560e5",
+   "sgs-container-56e29245",
+   "sgs-container-56e4d4b4",
+   "sgs-container-58215cf8",
+   "sgs-container-58486d14",
+   "sgs-container-592dd4c4",
+   "sgs-container-5a7742f3",
+   "sgs-container-5b2ff2a3",
+   "sgs-container-5b504e36",
+   "sgs-container-5bcaf883",
+   "sgs-container-5be40874",
+   "sgs-container-5e075f7a",
+   "sgs-container-6019e470",
+   "sgs-container-63516fa6",
+   "sgs-container-63f1f23a",
+   "sgs-container-646067ef",
+   "sgs-container-64bc5777",
+   "sgs-container-65d6e27d",
+   "sgs-container-66085087",
+   "sgs-container-668186dd",
+   "sgs-container-68d35baa",
+   "sgs-container-692e25e6",
+   "sgs-container-6d8fd2cc",
+   "sgs-container-6ee51d4b",
+   "sgs-container-6f97da19",
+   "sgs-container-6f9a1406",
+   "sgs-container-71ec1cd1",
+   "sgs-container-72c1fff4",
+   "sgs-container-7538ee6e",
+   "sgs-container-75bbd9d0",
+   "sgs-container-7679cf81",
+   "sgs-container-77ab5659",
+   "sgs-container-78502609",
+   "sgs-container-79310569",
+   "sgs-container-7989ae0d",
+   "sgs-container-7a35ab11",
+   "sgs-container-7a7873ca",
+   "sgs-container-7af3ce5d",
+   "sgs-container-7d0767da",
+   "sgs-container-7e4d4d56",
+   "sgs-container-7ebef031",
+   "sgs-container-7f02dcb1",
+   "sgs-container-806c5c2a",
+   "sgs-container-80704320",
+   "sgs-container-80a3dc88",
+   "sgs-container-822de388",
+   "sgs-container-824f6ae6",
+   "sgs-container-84b212da",
+   "sgs-container-85a9bc2e",
+   "sgs-container-85d81ff3",
+   "sgs-container-86a589ce",
+   "sgs-container-872f42ef",
+   "sgs-container-87315814",
+   "sgs-container-876c3099",
+   "sgs-container-877d1ed8",
+   "sgs-container-8846bfd1",
+   "sgs-container-89499cdf",
+   "sgs-container-89d368aa",
+   "sgs-container-8a4fe2b3",
+   "sgs-container-8bc08bea",
+   "sgs-container-8c79898f",
+   "sgs-container-8d0bcf5a",
+   "sgs-container-8ee60ca2",
+   "sgs-container-91b43e09",
+   "sgs-container-927b4d87",
+   "sgs-container-92ffbd1a",
+   "sgs-container-9349f532",
+   "sgs-container-939c08ff",
+   "sgs-container-959ddae7",
+   "sgs-container-972584cd",
+   "sgs-container-989cc504",
+   "sgs-container-9b091349",
+   "sgs-container-9c565f7b",
+   "sgs-container-9cb1ae53",
+   "sgs-container-9d881c1e",
+   "sgs-container-9da46095",
+   "sgs-container-9e4c54f7",
+   "sgs-container-9e6388c7",
+   "sgs-container-9e7aa10c",
+   "sgs-container-9fdd3142",
+   "sgs-container-a14c51c0",
+   "sgs-container-a21f56a5",
+   "sgs-container-a2696ae5",
+   "sgs-container-a58073bf",
+   "sgs-container-a5b7f5b9",
+   "sgs-container-a64684aa",
+   "sgs-container-a69c4067",
+   "sgs-container-a6c9669b",
+   "sgs-container-a7044eec",
+   "sgs-container-a7a02388",
+   "sgs-container-a857c10b",
+   "sgs-container-a990ca11",
+   "sgs-container-a9d69629",
+   "sgs-container-aa89c1aa",
+   "sgs-container-aaf733cf",
+   "sgs-container-aaf86697",
+   "sgs-container-abcf01bf",
+   "sgs-container-ac786a9d",
+   "sgs-container-ad26dd0a",
+   "sgs-container-ae3156f9",
+   "sgs-container-aeaf1e6b",
+   "sgs-container-af8c1fdc",
+   "sgs-container-afa359d6",
+   "sgs-container-b01c8ff6",
+   "sgs-container-b0af424a",
+   "sgs-container-b1c25cca",
+   "sgs-container-b247faa6",
+   "sgs-container-b3af9dd4",
+   "sgs-container-b3fe22cb",
+   "sgs-container-b4893f69",
+   "sgs-container-b4cee122",
+   "sgs-container-b59f18d2",
+   "sgs-container-ba3100b5",
+   "sgs-container-bc7ab3b2",
+   "sgs-container-bcb93e1f",
+   "sgs-container-bcfffc4b",
+   "sgs-container-bd402077",
+   "sgs-container-bdd37a8b",
+   "sgs-container-bddc2c65",
+   "sgs-container-c0382133",
+   "sgs-container-c0d4ca8b",
+   "sgs-container-c10aa045",
+   "sgs-container-c1428a44",
+   "sgs-container-c26c0817",
+   "sgs-container-c35bc120",
+   "sgs-container-c4529d7d",
+   "sgs-container-c592ecb8",
+   "sgs-container-c5dc7ed2",
+   "sgs-container-c61d5d84",
+   "sgs-container-c6e7219e",
+   "sgs-container-c88f2b6d",
+   "sgs-container-c8bc3fe4",
+   "sgs-container-c8e9ef68",
+   "sgs-container-ca3f8fda",
+   "sgs-container-ca899495",
+   "sgs-container-cbd9cca8",
+   "sgs-container-cc8b4f09",
+   "sgs-container-ccb8d973",
+   "sgs-container-ccc53a32",
+   "sgs-container-ce11dab4",
+   "sgs-container-ce7d7b53",
+   "sgs-container-cf2929c3",
+   "sgs-container-d114501d",
+   "sgs-container-d133cb2d",
+   "sgs-container-d1411bb8",
+   "sgs-container-d24da788",
+   "sgs-container-d4a25df9",
+   "sgs-container-d57e8783",
+   "sgs-container-d715de5b",
+   "sgs-container-d8664da6",
+   "sgs-container-d971d182",
+   "sgs-container-d990ae31",
+   "sgs-container-da000bd8",
+   "sgs-container-dd6acbf9",
+   "sgs-container-de00a627",
+   "sgs-container-de8f8761",
+   "sgs-container-dfe16e85",
+   "sgs-container-e05cdae4",
+   "sgs-container-e328b25e",
+   "sgs-container-e32b3b44",
+   "sgs-container-e4696640",
+   "sgs-container-e524eaef",
+   "sgs-container-e53ff3a9",
+   "sgs-container-e67c0f1f",
+   "sgs-container-e684dea1",
+   "sgs-container-e6dfaf1f",
+   "sgs-container-e7084f52",
+   "sgs-container-e7ff9662",
+   "sgs-container-e8ba5aea",
+   "sgs-container-e9817483",
+   "sgs-container-e9839eab",
+   "sgs-container-ea546840",
+   "sgs-container-ead9ee2c",
+   "sgs-container-eb6df490",
+   "sgs-container-ecf7f1bc",
+   "sgs-container-eddfdbca",
+   "sgs-container-efe93ee1",
+   "sgs-container-f2a0c962",
+   "sgs-container-f2bdef12",
+   "sgs-container-f2c893a7",
+   "sgs-container-f3d92cab",
+   "sgs-container-f3dbb599",
+   "sgs-container-f417fb38",
+   "sgs-container-f4bb6b20",
+   "sgs-container-f5839e9f",
+   "sgs-container-f81e3293",
+   "sgs-container-f9343e8b",
+   "sgs-container-f98bacf5",
+   "sgs-container-fa61516d",
+   "sgs-container-fab67885",
+   "sgs-container-fbc51296",
+   "sgs-container-fbff5964",
+   "sgs-container-fe5e9ac7",
+   "sgs-container-fe60b25e",
+   "sgs-container-fedbba3d",
+   "sgs-container-ff247b10",
+   "sgs-container-ffee28a5",
+   "sgs-container__inner",
+   "sgs-focus-rests",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "sgs-text-6e908b24",
+   "sgs-text-9a9bd801",
+   "wp-block-sgs-accordion",
+   "wp-block-sgs-accordion-item",
+   "wp-block-sgs-text"
+  ],
+  "tags": [
+   "button",
+   "details",
+   "div",
+   "input",
+   "label",
+   "p",
+   "path",
+   "span",
+   "style",
+   "summary",
+   "svg"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}

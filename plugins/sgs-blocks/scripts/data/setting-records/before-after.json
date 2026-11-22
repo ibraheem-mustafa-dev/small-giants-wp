@@ -1,0 +1,4988 @@
+{
+ "block": "sgs/before-after",
+ "schemaVersion": 2,
+ "parts": [],
+ "entries": [
+  {
+   "setting": "afterFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "afterFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "afterFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    },
+    {
+     "desktop": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "beforeFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "beforeFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "beforeFit",
+   "part": "sgs-media-el",
+   "props": [
+    "object-fit"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-media-el",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "contain",
+     "tablet": "cover",
+     "mobile": "contain"
+    },
+    {
+     "desktop": "contain"
+    }
+   ]
+  },
+  {
+   "setting": "borderColour",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "background-clip"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT",
+   "props": [
+    "border-color"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "-webkit-mask"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "background-color",
+    "background-image"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "value",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "content"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "inset"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "mask-composite"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "padding"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "pointer-events"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderColourGradient",
+   "part": "ROOT::before",
+   "props": [
+    "position"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after::before",
+   "kind": "switched-on",
+   "values": [
+    "linear-gradient(90deg, #13579b 0%, #9b1357 100%)"
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderRadius",
+   "part": "ROOT",
+   "props": [
+    "border-radius"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     },
+     "tablet": {
+      "topLeft": "21px",
+      "topRight": "23px",
+      "bottomRight": "25px",
+      "bottomLeft": "27px"
+     },
+     "mobile": {
+      "topLeft": "3px",
+      "topRight": "5px",
+      "bottomRight": "7px",
+      "bottomLeft": "9px"
+     }
+    },
+    {
+     "desktop": {
+      "topLeft": "11px",
+      "topRight": "13px",
+      "bottomRight": "17px",
+      "bottomLeft": "19px"
+     }
+    }
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    "dashed",
+    "dotted",
+    "double",
+    "groove",
+    "inset",
+    "none",
+    "outset",
+    "ridge"
+   ]
+  },
+  {
+   "setting": "borderStyle",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    "none"
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-style"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "borderWidth",
+   "part": "ROOT",
+   "props": [
+    "border-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "top": "11px",
+     "right": "13px",
+     "bottom": "17px",
+     "left": "19px"
+    }
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after:has(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after:hover",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "outline"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadow",
+   "part": "ROOT",
+   "props": [
+    "outline-offset"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (forced-colors:active)"
+   ],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after:not(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after:has(:focus-visible)",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColour",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColourHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after:has(:focus-visible)",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowColourHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after:hover",
+   "kind": "value",
+   "values": [
+    "#13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after:has(:focus-visible)",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "boxShadowHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after:hover",
+   "kind": "switched-on",
+   "values": [
+    "0 0 0 3px #13579b"
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "margin"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "maxWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    },
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(min-width:1024px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "grid-column"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "min-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fill"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fill",
+     "tablet": "fit",
+     "mobile": "fill"
+    },
+    {
+     "desktop": "fixed",
+     "tablet": "fit",
+     "mobile": "fixed"
+    },
+    {
+     "desktop": "span",
+     "tablet": "fit",
+     "mobile": "span"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildSizing",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "fit",
+     "tablet": "fill",
+     "mobile": "fit"
+    },
+    {
+     "desktop": "fit"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "ROOT",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "value",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "box-sizing"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "max-width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:1023.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [
+    "@media(max-width:767.98px)"
+   ],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsChildWidth",
+   "part": "sgs-child-sizing",
+   "props": [
+    "width"
+   ],
+   "state": null,
+   "tiers": [],
+   "selector": ".sgs-child-sizing.sgs-before-after",
+   "kind": "switched-on",
+   "values": [
+    {
+     "desktop": "37px",
+     "tablet": "23px",
+     "mobile": "7px"
+    },
+    {
+     "desktop": "37px"
+    }
+   ]
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/button, sgs/mega-aside"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/button, sgs/mega-aside"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "ROOT",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .wp-block-sgs-before-after__handle-dashicon",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/button, sgs/icon-list, sgs/mega-panel, sgs/nav-drawer"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsFocusRests",
+   "part": "sgs-info-toggle",
+   "props": [
+    "color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-info-toggle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))",
+   "kind": "switched-on",
+   "unproved": "part-not-rendered",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/choice-flow, sgs/choice-flow-question, sgs/form-step"
+  },
+  {
+   "setting": "sgsHideOnDesktop",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:1024px)"
+   ],
+   "selector": ".sgs-hide-desktop",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnMobile",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (max-width:767.98px)"
+   ],
+   "selector": ".sgs-hide-mobile",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "sgsHideOnTablet",
+   "part": "ROOT",
+   "props": [
+    "display"
+   ],
+   "state": null,
+   "tiers": [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ],
+   "selector": ".sgs-hide-tablet",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".sgs-before-after.wp-block-sgs-before-after:has(:focus-visible)",
+   "kind": "switched-on",
+   "unproved": "same-value-here",
+   "values": [
+    true
+   ],
+   "accepted": "proved on sgs/button, sgs/container, sgs/hero, sgs/physics-canvas, sgs/post-grid"
+  },
+  {
+   "setting": "shadowLiftOnHover",
+   "part": "ROOT",
+   "props": [
+    "box-shadow"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after:hover",
+   "kind": "switched-on",
+   "values": [
+    true
+   ]
+  },
+  {
+   "setting": "showLabels",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "showLabels",
+   "part": "ROOT",
+   "props": [
+    "background-color"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "showLabels",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "focus",
+   "tiers": [],
+   "selector": ".wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "showLabels",
+   "part": "ROOT",
+   "props": [
+    "background-image"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    false
+   ]
+  },
+  {
+   "setting": "showLabels",
+   "part": "ROOT",
+   "props": [
+    "transform"
+   ],
+   "state": "hover",
+   "tiers": [],
+   "selector": ":where(:root:not(.sgs-touch-input)) .wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle",
+   "kind": "switched-on",
+   "unproved": "rule-needs-absent-markup",
+   "values": [
+    false
+   ]
+  }
+ ],
+ "proofKeys": [
+  [
+   "afterFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "afterFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "afterFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   []
+  ],
+  [
+   "beforeFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "beforeFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "beforeFit",
+   "sgs-media-el",
+   [
+    "object-fit"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColour",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "background-clip"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "border-color"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "-webkit-mask"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "background-color",
+    "background-image"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "content"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "mask-composite"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderColourGradient",
+   "ROOT::before",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "borderRadius",
+   "ROOT",
+   [
+    "border-radius"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderStyle",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-style"
+   ],
+   null,
+   []
+  ],
+  [
+   "borderWidth",
+   "ROOT",
+   [
+    "border-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "outline"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "boxShadow",
+   "ROOT",
+   [
+    "outline-offset"
+   ],
+   null,
+   [
+    "@media (forced-colors:active)"
+   ]
+  ],
+  [
+   "boxShadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "boxShadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "boxShadowColour",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   null,
+   []
+  ],
+  [
+   "boxShadowColourHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "boxShadowColourHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "boxShadowHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "boxShadowHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "margin"
+   ],
+   null,
+   []
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "maxWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   [
+    "@media(min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "grid-column"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "min-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildSizing",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "ROOT",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "box-sizing"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "flex-basis",
+    "flex-grow",
+    "flex-shrink"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "max-width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:1023.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   [
+    "@media(max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsChildWidth",
+   "sgs-child-sizing",
+   [
+    "width"
+   ],
+   null,
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "ROOT",
+   [
+    "stroke"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsFocusRests",
+   "sgs-info-toggle",
+   [
+    "color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "sgsHideOnDesktop",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:1024px)"
+   ]
+  ],
+  [
+   "sgsHideOnMobile",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (max-width:767.98px)"
+   ]
+  ],
+  [
+   "sgsHideOnTablet",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   [
+    "@media (min-width:768px) and (max-width:1023.98px)"
+   ]
+  ],
+  [
+   "shadowLiftOnHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "shadowLiftOnHover",
+   "ROOT",
+   [
+    "box-shadow"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "background-color"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "focus",
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "background-image"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "display"
+   ],
+   null,
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "flex-direction"
+   ],
+   null,
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "inset"
+   ],
+   null,
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "justify-content"
+   ],
+   null,
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "padding"
+   ],
+   null,
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "pointer-events"
+   ],
+   null,
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "position"
+   ],
+   null,
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "transform"
+   ],
+   "hover",
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "transform"
+   ],
+   null,
+   []
+  ],
+  [
+   "showLabels",
+   "ROOT",
+   [
+    "z-index"
+   ],
+   null,
+   []
+  ]
+ ],
+ "accounted": {
+  "testedNoPaint": [
+   "afterAlt",
+   "afterDecorative",
+   "afterLabel",
+   "afterLoading",
+   "afterSource",
+   "beforeAlt",
+   "beforeDecorative",
+   "beforeLabel",
+   "beforeLoading",
+   "beforeSource",
+   "freeDrag",
+   "handleIconName",
+   "handleIconSource",
+   "sgsCollapseVisibility",
+   "sgsConditionCollectionQueryId",
+   "sgsConditionDateEnd",
+   "sgsConditionFormField",
+   "sgsConditionFormOperator",
+   "sgsConditionFormValue",
+   "sgsConditionProductReviews",
+   "sgsConditionUserRole",
+   "sgsCustomCssId",
+   "sgsCustomCssNote"
+  ],
+  "replacesBlock": [
+   "sgsConditionDateStart",
+   "sgsConditionDays",
+   "sgsConditionLoggedIn",
+   "sgsConditionReferrer",
+   "sgsConditionUrlParam"
+  ],
+  "unvalued": [
+   {
+    "setting": "sgsCustomCss",
+    "why": "free CSS the client writes: it paints whatever its text says, so no placement can be recorded for it (includes/custom-css.php::render_custom_css)"
+   },
+   {
+    "setting": "beforeFocal",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "beforePlayback",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "afterFocal",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   },
+   {
+    "setting": "afterPlayback",
+    "why": "a per-device value of unknown kind: the code compares it against no value the generator can use"
+   }
+  ],
+  "partNotNamed": [
+   {
+    "setting": "labelColour",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelColourGradient",
+    "part": null,
+    "props": [
+     "background-clip"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelColourGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [
+     "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelColourGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": null,
+    "tiers": [
+     "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelColourHover",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:hover"
+   },
+   {
+    "setting": "labelColourHover",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:focus-visible"
+   },
+   {
+    "setting": "labelColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-clip"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:focus-visible"
+   },
+   {
+    "setting": "labelColourHoverGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:hover"
+   },
+   {
+    "setting": "labelColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:hover"
+   },
+   {
+    "setting": "labelColourHoverGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "hover",
+    "tiers": [
+     "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:hover"
+   },
+   {
+    "setting": "labelColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "hover",
+    "tiers": [
+     "@supports not ((background-clip:text) or (-webkit-background-clip:text))"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:hover"
+   },
+   {
+    "setting": "labelColourHoverGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:focus-visible"
+   },
+   {
+    "setting": "labelColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:focus-visible"
+   },
+   {
+    "setting": "labelColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-clip"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:hover"
+   },
+   {
+    "setting": "labelBackgroundColour",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label::after"
+   },
+   {
+    "setting": "labelBackgroundColourGradient",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label::after"
+   },
+   {
+    "setting": "labelBackgroundColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label::after"
+   },
+   {
+    "setting": "labelFontSize",
+    "part": null,
+    "props": [
+     "font-size"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:1023.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelFontSize",
+    "part": null,
+    "props": [
+     "font-size"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelFontSize",
+    "part": null,
+    "props": [
+     "font-size"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:767.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelFontWeight",
+    "part": null,
+    "props": [
+     "font-weight"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelFontStyle",
+    "part": null,
+    "props": [
+     "font-style"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelLineHeight",
+    "part": null,
+    "props": [
+     "line-height"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "clip-path"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-reverse=\"1\"]:not( [data-orientation=\"vertical\"] ) .wp-block-sgs-before-after__after-wrap"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "flex-direction"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__labels"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "inset"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__divider"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "transform"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__divider"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "width"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "height"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "cursor"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__range"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "writing-mode"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__range"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "direction"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__range"
+   },
+   {
+    "setting": "orientation",
+    "part": null,
+    "props": [
+     "transform"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ":where(:root:not(.sgs-touch-input)) .wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__handle"
+   },
+   {
+    "setting": "reverseDirection",
+    "part": null,
+    "props": [
+     "clip-path"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-reverse=\"1\"]:not( [data-orientation=\"vertical\"] ) .wp-block-sgs-before-after__after-wrap"
+   },
+   {
+    "setting": "reverseDirection",
+    "part": null,
+    "props": [
+     "order"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-reverse=\"1\"] .wp-block-sgs-before-after__label--after"
+   },
+   {
+    "setting": "startPosition",
+    "part": null,
+    "props": [
+     "clip-path"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__after-wrap"
+   },
+   {
+    "setting": "startPosition",
+    "part": null,
+    "props": [
+     "inset"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__divider"
+   },
+   {
+    "setting": "dividerColour",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColour",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColour",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColourHover",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColourHover",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__range:hover ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__range:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) ~ .wp-block-sgs-before-after__divider .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerWidth",
+    "part": null,
+    "props": [
+     "width"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "dividerWidth",
+    "part": null,
+    "props": [
+     "height"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after[data-orientation=\"vertical\"] .wp-block-sgs-before-after__divider-line"
+   },
+   {
+    "setting": "handleColour",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle"
+   },
+   {
+    "setting": "handleColour",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover"
+   },
+   {
+    "setting": "handleColour",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))"
+   },
+   {
+    "setting": "handleColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle"
+   },
+   {
+    "setting": "handleColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover"
+   },
+   {
+    "setting": "handleColourGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))"
+   },
+   {
+    "setting": "handleColourHover",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover"
+   },
+   {
+    "setting": "handleColourHover",
+    "part": null,
+    "props": [
+     "background-color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))"
+   },
+   {
+    "setting": "handleColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover"
+   },
+   {
+    "setting": "handleColourHoverGradient",
+    "part": null,
+    "props": [
+     "background-image"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *))"
+   },
+   {
+    "setting": "handleIconColour",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle svg"
+   },
+   {
+    "setting": "handleIconColour",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover svg"
+   },
+   {
+    "setting": "handleIconColour",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) svg"
+   },
+   {
+    "setting": "handleIconColour",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColour",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover .wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColour",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColourGradient",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle svg"
+   },
+   {
+    "setting": "handleIconColourGradient",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover svg"
+   },
+   {
+    "setting": "handleIconColourGradient",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) svg"
+   },
+   {
+    "setting": "handleIconColourGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColourGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover .wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColourGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColourHover",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover svg"
+   },
+   {
+    "setting": "handleIconColourHover",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) svg"
+   },
+   {
+    "setting": "handleIconColourHover",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover .wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColourHover",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColourHoverGradient",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover svg"
+   },
+   {
+    "setting": "handleIconColourHoverGradient",
+    "part": null,
+    "props": [
+     "stroke"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) svg"
+   },
+   {
+    "setting": "handleIconColourHoverGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:hover .wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "handleIconColourHoverGradient",
+    "part": null,
+    "props": [
+     "color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".wp-block-sgs-before-after__handle:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-rests *)) .wp-block-sgs-before-after__handle-dashicon"
+   },
+   {
+    "setting": "height",
+    "part": null,
+    "props": [
+     "height"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:1023.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__stage"
+   },
+   {
+    "setting": "height",
+    "part": null,
+    "props": [
+     "height"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:767.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__stage"
+   },
+   {
+    "setting": "height",
+    "part": null,
+    "props": [
+     "height"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__stage"
+   },
+   {
+    "setting": "labelFontFamily",
+    "part": null,
+    "props": [
+     "font-family"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextTransform",
+    "part": null,
+    "props": [
+     "text-transform"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextDecoration",
+    "part": null,
+    "props": [
+     "text-decoration"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelLetterSpacing",
+    "part": null,
+    "props": [
+     "letter-spacing"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:767.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelLetterSpacing",
+    "part": null,
+    "props": [
+     "letter-spacing"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelLetterSpacing",
+    "part": null,
+    "props": [
+     "letter-spacing"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:1023.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextAlign",
+    "part": null,
+    "props": [
+     "text-align"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:767.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextAlign",
+    "part": null,
+    "props": [
+     "text-align"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextAlign",
+    "part": null,
+    "props": [
+     "text-align"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:1023.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextWrap",
+    "part": null,
+    "props": [
+     "text-wrap"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextStrokeWidth",
+    "part": null,
+    "props": [
+     "-webkit-text-stroke-width"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextStrokeWidth",
+    "part": null,
+    "props": [
+     "-webkit-text-stroke-width"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:1023.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextStrokeWidth",
+    "part": null,
+    "props": [
+     "-webkit-text-stroke-width"
+    ],
+    "state": null,
+    "tiers": [
+     "@media(max-width:767.98px)"
+    ],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextStrokeColour",
+    "part": null,
+    "props": [
+     "-webkit-text-stroke-color"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelTextStrokeColourHover",
+    "part": null,
+    "props": [
+     "-webkit-text-stroke-color"
+    ],
+    "state": "hover",
+    "tiers": [],
+    "selector": ":where(:root:not(.sgs-touch-input)) .sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:hover"
+   },
+   {
+    "setting": "labelTextStrokeColourHover",
+    "part": null,
+    "props": [
+     "-webkit-text-stroke-color"
+    ],
+    "state": "focus",
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label:focus-visible"
+   },
+   {
+    "setting": "labelTextColumns",
+    "part": null,
+    "props": [
+     "column-count"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   },
+   {
+    "setting": "labelWritingMode",
+    "part": null,
+    "props": [
+     "writing-mode"
+    ],
+    "state": null,
+    "tiers": [],
+    "selector": ".sgs-before-after.wp-block-sgs-before-after .wp-block-sgs-before-after__label"
+   }
+  ]
+ },
+ "stamp": {
+  "version": 2,
+  "inputs": {
+   "assets/css/accordion-filter.css": "1bae515f798524b3",
+   "assets/css/device-toggle.css": "23d9bfd781a843c0",
+   "assets/css/extensions.css": "4849d9290eeec3d1",
+   "assets/css/fx-cursor-field.css": "0bbfb68e9e3fe204",
+   "assets/css/fx-curtain.css": "a3fcae4f7d77f407",
+   "assets/css/fx-generative-background.css": "00638d3f4d8adeae",
+   "assets/css/fx-glare.css": "36c5cec870cdc655",
+   "assets/css/fx-grid-dots.css": "c45c821c2d47454e",
+   "assets/css/fx-horizontal-panel.css": "37c7acc1d00f5482",
+   "assets/css/fx-lottie.css": "d69941471fd3c95a",
+   "assets/css/fx-magnet.css": "5ffc378498ab5893",
+   "assets/css/fx-marquee.css": "2710593e4e4e88a8",
+   "assets/css/fx-morph.css": "73b9afd62a1133c3",
+   "assets/css/fx-motion-path.css": "480cd5641bd3681a",
+   "assets/css/fx-parallax.css": "6769abc3e93e3389",
+   "assets/css/fx-particles.css": "1c80f9da72612db9",
+   "assets/css/fx-ripple.css": "5fcf4e7a1b77fa8b",
+   "assets/css/fx-scroll-progress.css": "8eb296b6e0bd3f9a",
+   "assets/css/fx-sheen.css": "3f77924556f66417",
+   "assets/css/fx-surface-treatment.css": "46a43c357976973c",
+   "assets/css/fx-wave-gradient.css": "9a8c474181ba98bd",
+   "assets/css/gift-card.css": "7a29a487d1ea3fd0",
+   "assets/css/header-behaviours.css": "fca3a1bf15a3f13d",
+   "assets/css/inline-formats.css": "38c1fcc6922fb2d5",
+   "assets/css/media-base.css": "507debce6831e297",
+   "assets/css/media-bg.css": "b00ff3667087b3e6",
+   "assets/css/media-mask.css": "385a496cda91084a",
+   "assets/css/media-overlay.css": "6fa941823bc888de",
+   "assets/css/media-video.css": "acfc1090b5dfcc3c",
+   "assets/css/motion-pause.css": "1694d98cc208cb9d",
+   "assets/css/motion-thumbnails.css": "4bb286079e9466a5",
+   "assets/css/motion-triggers.css": "3fd7e6dcaa4f39a9",
+   "assets/css/motion.css": "f129d3e3cac572e9",
+   "assets/css/slider-nav.css": "cadb6ab7a9551f5b",
+   "assets/css/smooth-scroll.css": "892f59c62a4c00ea",
+   "assets/css/view-transitions.css": "4a1dd6e06dc6df8e",
+   "includes/account/helpers-account-render-css.php": "447adbdfdb08aee0",
+   "includes/account/helpers-account-signed-out.php": "3769fe25051fc25b",
+   "includes/child-sizing.php": "c2b1106e5cfd6170",
+   "includes/choice-flow-term-details.php": "996ded889b0e0d2d",
+   "includes/class-card-grid-template.php": "5d8e13453a51384d",
+   "includes/class-configurator-meta.php": "aa73c17b1680d211",
+   "includes/class-custom-css-scoper.php": "c12d0fe387bffaed",
+   "includes/class-product-field-variations.php": "97b175d93c3c85c5",
+   "includes/class-product-manifest.php": "99e771eac60671c1",
+   "includes/class-sgs-breakpoints.php": "b3c1a56b8613ef5a",
+   "includes/class-sgs-focus-rests.php": "edabbe21b821491c",
+   "includes/class-sgs-media-element.php": "ddb8a2a0235a729d",
+   "includes/class-sgs-mega-menu-cpt.php": "d20b6d6d72af830f",
+   "includes/class-sgs-nav-menu-source.php": "8063483572966b8f",
+   "includes/class-sgs-schema.php": "8a3d23ee378e5aed",
+   "includes/class-sgs-site-info-binding.php": "ad0d2810482d16aa",
+   "includes/class-sgs-site-info-logo.php": "64237aabca32207e",
+   "includes/class-sgs-site-info.php": "ea8c767cfb32c45c",
+   "includes/class-sgs-toast.php": "5689e0bdb6523c87",
+   "includes/class-turnstile.php": "0e8098400173a2e1",
+   "includes/conditional-field.php": "570c2adea887fad9",
+   "includes/conditional-visibility.php": "727e163ae3c2e34e",
+   "includes/custom-css.php": "a8c5f86fe5b7599f",
+   "includes/device-visibility.php": "faf5e3341db8dfeb",
+   "includes/float-position.php": "1892bf13b37d222b",
+   "includes/forms/field-focus-css.php": "a8079c372161930e",
+   "includes/forms/field-name-scope.php": "64aa33a768f4e994",
+   "includes/forms/field-render-helpers.php": "eea1168eb99638e3",
+   "includes/fx-cursor-field.php": "87828682aae4dc02",
+   "includes/fx-flip-woocommerce.php": "ec13f2edaecf67b7",
+   "includes/fx-generative-background.php": "8492dd789cb7344c",
+   "includes/fx-grid-dots.php": "bf17ea0f6ad70f8c",
+   "includes/fx-magnet.php": "17de0ebf0467701a",
+   "includes/fx-particles.php": "c5aaef28bf3e7dfe",
+   "includes/fx-path-routes.php": "6539314c65ddf2b5",
+   "includes/fx-root-offset.php": "0c9ceb310ba0d0c7",
+   "includes/fx-shape-routes.php": "f812252207a832d1",
+   "includes/fx-surface-treatment.php": "7331a90b077ee40c",
+   "includes/fx-token-match.php": "4448ca38d1d804ce",
+   "includes/fx-wave-gradient.php": "bba3996481faa78a",
+   "includes/heading-anchors.php": "6f0e41dc40ba22f5",
+   "includes/helpers-border-style.php": "2839af0503a5e5e7",
+   "includes/helpers-box.php": "19664024d2ae69ca",
+   "includes/helpers-brand-glyphs.php": "e9f728a3a2d126f1",
+   "includes/helpers-brand-logo.php": "b02a52f78ec8fcf5",
+   "includes/helpers-button-note.php": "01156e55aa38ca12",
+   "includes/helpers-button-preset-names.php": "42e392b948a8bcc0",
+   "includes/helpers-button-style.php": "c86342566245b6d6",
+   "includes/helpers-carousel-dots.php": "110c75f2e7cab342",
+   "includes/helpers-cart-panel-css.php": "7c06b9d430c523c8",
+   "includes/helpers-cart-panel-extras.php": "1e0a7279e3e5a4fd",
+   "includes/helpers-cart-panel-items-css.php": "ea80924dbeace99a",
+   "includes/helpers-cart-panel.php": "be6483dab310cdc9",
+   "includes/helpers-colour-parse.php": "2705d7d2f6ab81f5",
+   "includes/helpers-colour-variants.php": "85d954f45e6b3d6e",
+   "includes/helpers-colour-wcag.php": "e150b5a55ec1195c",
+   "includes/helpers-configurator-pricing.php": "141b9154d20735bb",
+   "includes/helpers-container-separators.php": "647fc44ed3c88437",
+   "includes/helpers-container.php": "b18aa0cfff812547",
+   "includes/helpers-css-safety.php": "e2cb4ac716e263d7",
+   "includes/helpers-css-sizing-keyword.php": "1e8ea3394b4489c2",
+   "includes/helpers-diagram-geometry.php": "12979739f6e882ba",
+   "includes/helpers-empty-tab.php": "c76349b19cc0b40d",
+   "includes/helpers-end-shape.php": "26f3ec99215c1e5e",
+   "includes/helpers-flex-wrap.php": "7f72f39c35ed8756",
+   "includes/helpers-free-delivery.php": "a5c3edcdbc434a80",
+   "includes/helpers-global-settings.php": "98dfa765458e36fe",
+   "includes/helpers-gradient-tone.php": "8b6e9515d1009f01",
+   "includes/helpers-hover-links.php": "595f48ab42af1a8a",
+   "includes/helpers-hover-state.php": "0953b306cc8e7d86",
+   "includes/helpers-icon-shadow.php": "d10e313f56673230",
+   "includes/helpers-icon.php": "b36eb65779dd68d8",
+   "includes/helpers-image-dimensions.php": "75c87a39f895bef5",
+   "includes/helpers-info-toggle.php": "927353141858acd6",
+   "includes/helpers-inline-formats.php": "a8307a4add35a72a",
+   "includes/helpers-instance-scope-hash.php": "9ce0b0d1e59e1be4",
+   "includes/helpers-item-effects.php": "a850d6048ff3ca32",
+   "includes/helpers-link-source.php": "37f5df20055c70fa",
+   "includes/helpers-link-underline.php": "1c32e2ef1828de6a",
+   "includes/helpers-link.php": "ad01409302ba5de7",
+   "includes/helpers-list-markers.php": "0699ca6db948293b",
+   "includes/helpers-measured-diagram.php": "1b67529bb5b41d61",
+   "includes/helpers-media-element.php": "9f3e6fccf5e362b9",
+   "includes/helpers-mega-render.php": "48b688575b8bfc24",
+   "includes/helpers-motion-easing.php": "e759b63e422adcd2",
+   "includes/helpers-nav-drawer-motion-model.php": "da19fa5a8af00bd8",
+   "includes/helpers-order-pickup.php": "7287f65a150d1147",
+   "includes/helpers-preselect-url.php": "d6d8e4fa4b553c1e",
+   "includes/helpers-responsive.php": "e4fca037ec7837c2",
+   "includes/helpers-reviews-inline.php": "4a821f5be56b0a9e",
+   "includes/helpers-row-behaviour.php": "ab25405ff36a6678",
+   "includes/helpers-scoped-instance-vars.php": "d06bd15808c36509",
+   "includes/helpers-scrim.php": "4d6a13f16243b91a",
+   "includes/helpers-scrollbar.php": "07f9116d8e56353e",
+   "includes/helpers-separators-css.php": "478f6a4d7bcc5900",
+   "includes/helpers-separators-hover-css.php": "39c8fcfb8c985128",
+   "includes/helpers-separators-line-css.php": "baca16d155afb3d0",
+   "includes/helpers-separators.php": "50b7babb5815b580",
+   "includes/helpers-shadow-filter.php": "23446e1d5ca57fc4",
+   "includes/helpers-shadow-hover.php": "9964c78f52c2c4d8",
+   "includes/helpers-shadow-layers.php": "0bc69ba1c33750e0",
+   "includes/helpers-site-info-binding.php": "35fc8a8ca31be043",
+   "includes/helpers-site-info-items.php": "6331a8fff0500db4",
+   "includes/helpers-stars.php": "391324ca319a132b",
+   "includes/helpers-state-motion-model.php": "d1ac1f253f6d5d86",
+   "includes/helpers-stretched-link.php": "0963669f91807592",
+   "includes/helpers-surface-tone.php": "bc6fec434e61c191",
+   "includes/helpers-svg-document.php": "5ddc24b95dd9064f",
+   "includes/helpers-svg-gradient.php": "658a962a2775ca32",
+   "includes/helpers-svg-instance-scope.php": "822f9811951d3aca",
+   "includes/helpers-svg-kses.php": "ff07412a9e5bbcb5",
+   "includes/helpers-svg-parts.php": "bff494e5d106fd7e",
+   "includes/helpers-svg-scope-css-reader.php": "f3aeb1a014702235",
+   "includes/helpers-text-shadow.php": "84f45ace7240160c",
+   "includes/helpers-tokens.php": "2ac88c27dd7b4d58",
+   "includes/helpers-typography.php": "9d45de192b5d25e4",
+   "includes/helpers-value-ladder.php": "db7e3824aa289bc4",
+   "includes/hover-effects/block-link.php": "0c092d11e6a90a50",
+   "includes/hover-effects/link-overlay.php": "2de93c5c5715b61a",
+   "includes/lottie-render.php": "27f05a8b577bb7e8",
+   "includes/lucide-icons.php": "d14ea5bbe7383448",
+   "includes/media/atoms/box-shape.php": "f70e63e6e198df7f",
+   "includes/media/atoms/caption.php": "b73754eb095aa7b8",
+   "includes/media/atoms/filter.php": "045abf8a477d583f",
+   "includes/media/atoms/focal-point.php": "90f232ee37d5cbce",
+   "includes/media/atoms/layout.php": "7068a92270a163de",
+   "includes/media/atoms/link.php": "8a679137bd63b1e0",
+   "includes/media/atoms/meaning.php": "a75a2f35076930ca",
+   "includes/media/atoms/media-padding.php": "8147fbcdd1c96b66",
+   "includes/media/atoms/object-fit.php": "ece87a4ab55d61df",
+   "includes/media/atoms/opacity.php": "aef92991b97f22fe",
+   "includes/media/atoms/overlay.php": "d94678c7a4abaae9",
+   "includes/media/atoms/shadow.php": "6624a129e5d6eb49",
+   "includes/media/atoms/shape.php": "963101e79a102fd2",
+   "includes/media/atoms/sizing.php": "36f995eab7e2198d",
+   "includes/media/atoms/source.php": "189a1afeb510648b",
+   "includes/media/atoms/svg-presentation.php": "c38e235d9204c932",
+   "includes/media/atoms/video-behaviour.php": "0999e2c061eb15ef",
+   "includes/media/class-sgs-media-priority.php": "0ef9e0b05521ea80",
+   "includes/media/cover-crop.php": "ece168a9489999db",
+   "includes/media/emit-none.php": "8903f751afba2ed0",
+   "includes/media/hidden-render.php": "f39dff5458298df6",
+   "includes/media/layout-width.php": "7d95ff80f9162ba7",
+   "includes/media/media-values.php": "31a59811c954486d",
+   "includes/media/render-chrome.php": "b6d37ac64b046708",
+   "includes/media/render-picture.php": "31a9a0a48e9b5e16",
+   "includes/media/render-slot.php": "4b8161e8fe59b360",
+   "includes/media/render-sources.php": "67ecf4d89213d771",
+   "includes/media/tier-embed.php": "32d8be4a7f8057e4",
+   "includes/media/tier-svg.php": "204453d78ccf89a4",
+   "includes/motion/class-sgs-fold-scan.php": "02a255350e1e8eaf",
+   "includes/motion/class-sgs-motion-assets.php": "9050fa3dd3fdcd48",
+   "includes/motion/class-sgs-motion-background-lottie.php": "1b908d3d1bb80f53",
+   "includes/motion/class-sgs-motion-base-transitions.php": "c6dd4e3067f8e832",
+   "includes/motion/class-sgs-motion-clip-edge.php": "ef38cfabca0adf18",
+   "includes/motion/class-sgs-motion-custom-target.php": "0d8c4198e7c2acb5",
+   "includes/motion/class-sgs-motion-delegate.php": "dff91e8c17144cdb",
+   "includes/motion/class-sgs-motion-device-scope.php": "f594f8fe15b3d994",
+   "includes/motion/class-sgs-motion-draw-asset.php": "2860bd6eb1d8a6ac",
+   "includes/motion/class-sgs-motion-editor-canvas.php": "c73d27bb35e90877",
+   "includes/motion/class-sgs-motion-effect-properties.php": "ea956424d2183e86",
+   "includes/motion/class-sgs-motion-emitter.php": "3fb1864f3431e7c9",
+   "includes/motion/class-sgs-motion-field-types.php": "748355967e2fcf2b",
+   "includes/motion/class-sgs-motion-focus-state.php": "7acd98f1a3f62c1d",
+   "includes/motion/class-sgs-motion-fold.php": "7aa840a2786071ab",
+   "includes/motion/class-sgs-motion-fx-emitter.php": "3b5f3a28dea12e36",
+   "includes/motion/class-sgs-motion-fx-grammar.php": "18eb4e6ef243b372",
+   "includes/motion/class-sgs-motion-keyframes.php": "1ac6723dff024608",
+   "includes/motion/class-sgs-motion-layer-drops.php": "c6834b8ccd4976b3",
+   "includes/motion/class-sgs-motion-layers.php": "b95daaf1ec2efe06",
+   "includes/motion/class-sgs-motion-limits.php": "5272e20b50b46af9",
+   "includes/motion/class-sgs-motion-loop-assets.php": "608146dfba1fa1f2",
+   "includes/motion/class-sgs-motion-loop-delays.php": "e1d55d4f5076c390",
+   "includes/motion/class-sgs-motion-loop-inherit.php": "4736a51c2e19767a",
+   "includes/motion/class-sgs-motion-markup.php": "f4eb75e278b1c705",
+   "includes/motion/class-sgs-motion-renderer.php": "4038c965fc6a845b",
+   "includes/motion/class-sgs-motion-reveal-default.php": "831a95ee8a51ad65",
+   "includes/motion/class-sgs-motion-ring-guard.php": "329182e53093be19",
+   "includes/motion/class-sgs-motion-rotation.php": "5bb49b3afeb43455",
+   "includes/motion/class-sgs-motion-shared-element.php": "2bbed22df3c62543",
+   "includes/motion/class-sgs-motion-stagger.php": "22f6834ca47997ee",
+   "includes/motion/class-sgs-motion-story-styles.php": "f29a9a96bd9b0c21",
+   "includes/motion/class-sgs-motion-targets.php": "8181f7a5e3fd6a7d",
+   "includes/motion/class-sgs-motion-trigger-open-state.php": "a140e0b48597cad6",
+   "includes/motion/field-types/class-sgs-motion-document.php": "02d39899cf371a26",
+   "includes/motion/field-types/class-sgs-motion-field-css.php": "bb68b6b8aafac5ff",
+   "includes/motion/field-types/class-sgs-motion-json-key.php": "1de0b77df768893f",
+   "includes/motion/field-types/class-sgs-motion-schema-eval.php": "b8a41145bb610497",
+   "includes/motion/motion-defs-script.php": "69a89d38bdf043f6",
+   "includes/motion/scroll-ownership.php": "100e01e7fa3971db",
+   "includes/motion/support-registration.php": "80a096f7c80fbe48",
+   "includes/price-trim-zeros.php": "18bf58dbdb99ca1d",
+   "includes/product-card-media.php": "ce1ddd81b9f568b1",
+   "includes/product-card-no-photo.php": "0873b87fda2f6ccc",
+   "includes/product-collection-empty-detection.php": "f44b7ae2508d5f63",
+   "includes/product-field-values.php": "ebd5a3deff129347",
+   "includes/render-helpers.php": "019bc0678477e652",
+   "includes/section-anchored-layers.php": "326a6d06b9486584",
+   "includes/shape-dividers.php": "f5d9fa3cabfdcc8c",
+   "includes/sweep-css.php": "d8fbb9e23c9b1195",
+   "includes/time-text.php": "ccfd867fe8d95a9a",
+   "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
+   "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
+   "includes/wp-icons.php": "ef5bf2f450b1a415",
+   "src/blocks/before-after/block.json": "d6c99346f7a883e8",
+   "src/blocks/before-after/edit.js": "5da9624cf698bd5e",
+   "src/blocks/before-after/editor.css": "b62bc81d299e1a6f",
+   "src/blocks/before-after/index.js": "e87f8de8a88574ff",
+   "src/blocks/before-after/media-render.php": "8ebd7e8daadaf9dd",
+   "src/blocks/before-after/render.php": "484393ab9664e2b7",
+   "src/blocks/before-after/save.js": "03d2a1a7e11c879b",
+   "src/blocks/before-after/style.css": "22bd5b60b3355560",
+   "src/blocks/before-after/view.js": "56e416b735e7581b",
+   "src/shared/info-toggle.css": "210a5fa94dc11c4a",
+   "shipped:src/blocks/before-after/style.css": "81dc8d5b5ad664cd",
+   "fixture-entry": "e944921f225241e2",
+   "fixture-shared": "61d9f70d4bb7e36a"
+  },
+  "outputs": "4cfcacb628e86074",
+  "theme": "38ba5ed81e6c7c59",
+  "classes": [
+   "lucide",
+   "lucide-chevrons-left-right",
+   "sgs-before-after-002346cf",
+   "sgs-before-after-002346cf-after",
+   "sgs-before-after-002346cf-before",
+   "sgs-before-after-0104235f",
+   "sgs-before-after-0104235f-after",
+   "sgs-before-after-0104235f-before",
+   "sgs-before-after-031fb59d",
+   "sgs-before-after-031fb59d-after",
+   "sgs-before-after-031fb59d-before",
+   "sgs-before-after-03e7dc18",
+   "sgs-before-after-03e7dc18-after",
+   "sgs-before-after-03e7dc18-before",
+   "sgs-before-after-05656c24",
+   "sgs-before-after-05656c24-after",
+   "sgs-before-after-05656c24-before",
+   "sgs-before-after-085529d7",
+   "sgs-before-after-085529d7-after",
+   "sgs-before-after-085529d7-before",
+   "sgs-before-after-0af60c18",
+   "sgs-before-after-0af60c18-after",
+   "sgs-before-after-0af60c18-before",
+   "sgs-before-after-0d6e7ccb",
+   "sgs-before-after-0d6e7ccb-after",
+   "sgs-before-after-0d6e7ccb-before",
+   "sgs-before-after-1386647e",
+   "sgs-before-after-1386647e-after",
+   "sgs-before-after-1386647e-before",
+   "sgs-before-after-15bf03e9",
+   "sgs-before-after-15bf03e9-after",
+   "sgs-before-after-15bf03e9-before",
+   "sgs-before-after-1bc8466c",
+   "sgs-before-after-1bc8466c-after",
+   "sgs-before-after-1bc8466c-before",
+   "sgs-before-after-1c015318",
+   "sgs-before-after-1c015318-after",
+   "sgs-before-after-1c015318-before",
+   "sgs-before-after-1de75c8d",
+   "sgs-before-after-1de75c8d-after",
+   "sgs-before-after-1de75c8d-before",
+   "sgs-before-after-206e4e18",
+   "sgs-before-after-206e4e18-after",
+   "sgs-before-after-206e4e18-before",
+   "sgs-before-after-22c80cbd",
+   "sgs-before-after-22c80cbd-after",
+   "sgs-before-after-22c80cbd-before",
+   "sgs-before-after-24566d2f",
+   "sgs-before-after-24566d2f-after",
+   "sgs-before-after-24566d2f-before",
+   "sgs-before-after-2470632d",
+   "sgs-before-after-2470632d-after",
+   "sgs-before-after-2470632d-before",
+   "sgs-before-after-25768e8a",
+   "sgs-before-after-25768e8a-after",
+   "sgs-before-after-25768e8a-before",
+   "sgs-before-after-25d295fc",
+   "sgs-before-after-25d295fc-after",
+   "sgs-before-after-25d295fc-before",
+   "sgs-before-after-29609166",
+   "sgs-before-after-29609166-after",
+   "sgs-before-after-29609166-before",
+   "sgs-before-after-2a5eb229",
+   "sgs-before-after-2a5eb229-after",
+   "sgs-before-after-2a5eb229-before",
+   "sgs-before-after-2ac3122b",
+   "sgs-before-after-2ac3122b-after",
+   "sgs-before-after-2ac3122b-before",
+   "sgs-before-after-2e79a33e",
+   "sgs-before-after-2e79a33e-after",
+   "sgs-before-after-2e79a33e-before",
+   "sgs-before-after-2f02c84e",
+   "sgs-before-after-2f02c84e-after",
+   "sgs-before-after-2f02c84e-before",
+   "sgs-before-after-2fee78be",
+   "sgs-before-after-2fee78be-after",
+   "sgs-before-after-2fee78be-before",
+   "sgs-before-after-31c7e128",
+   "sgs-before-after-31c7e128-after",
+   "sgs-before-after-31c7e128-before",
+   "sgs-before-after-332133ab",
+   "sgs-before-after-332133ab-after",
+   "sgs-before-after-332133ab-before",
+   "sgs-before-after-35d99a58",
+   "sgs-before-after-35d99a58-after",
+   "sgs-before-after-35d99a58-before",
+   "sgs-before-after-381d57ea",
+   "sgs-before-after-381d57ea-after",
+   "sgs-before-after-381d57ea-before",
+   "sgs-before-after-38c72aeb",
+   "sgs-before-after-38c72aeb-after",
+   "sgs-before-after-38c72aeb-before",
+   "sgs-before-after-3c051054",
+   "sgs-before-after-3c051054-after",
+   "sgs-before-after-3c051054-before",
+   "sgs-before-after-3c3d2de3",
+   "sgs-before-after-3c3d2de3-after",
+   "sgs-before-after-3c3d2de3-before",
+   "sgs-before-after-3d07d62b",
+   "sgs-before-after-3d07d62b-after",
+   "sgs-before-after-3d07d62b-before",
+   "sgs-before-after-42eabb7f",
+   "sgs-before-after-42eabb7f-after",
+   "sgs-before-after-42eabb7f-before",
+   "sgs-before-after-43a89a7c",
+   "sgs-before-after-43a89a7c-after",
+   "sgs-before-after-43a89a7c-before",
+   "sgs-before-after-44baf98d",
+   "sgs-before-after-44baf98d-after",
+   "sgs-before-after-44baf98d-before",
+   "sgs-before-after-4620e7bd",
+   "sgs-before-after-4620e7bd-after",
+   "sgs-before-after-4620e7bd-before",
+   "sgs-before-after-4964d387",
+   "sgs-before-after-4964d387-after",
+   "sgs-before-after-4964d387-before",
+   "sgs-before-after-4d390fef",
+   "sgs-before-after-4d390fef-after",
+   "sgs-before-after-4d390fef-before",
+   "sgs-before-after-505f1e64",
+   "sgs-before-after-505f1e64-after",
+   "sgs-before-after-505f1e64-before",
+   "sgs-before-after-5351f137",
+   "sgs-before-after-5351f137-after",
+   "sgs-before-after-5351f137-before",
+   "sgs-before-after-59d52647",
+   "sgs-before-after-59d52647-after",
+   "sgs-before-after-59d52647-before",
+   "sgs-before-after-59e1b5f7",
+   "sgs-before-after-59e1b5f7-after",
+   "sgs-before-after-59e1b5f7-before",
+   "sgs-before-after-5c2f3e61",
+   "sgs-before-after-5c2f3e61-after",
+   "sgs-before-after-5c2f3e61-before",
+   "sgs-before-after-5e3f743a",
+   "sgs-before-after-5e3f743a-after",
+   "sgs-before-after-5e3f743a-before",
+   "sgs-before-after-60d82a9a",
+   "sgs-before-after-60d82a9a-after",
+   "sgs-before-after-60d82a9a-before",
+   "sgs-before-after-625f0001",
+   "sgs-before-after-625f0001-after",
+   "sgs-before-after-625f0001-before",
+   "sgs-before-after-63a2f580",
+   "sgs-before-after-63a2f580-after",
+   "sgs-before-after-63a2f580-before",
+   "sgs-before-after-6730200c",
+   "sgs-before-after-6730200c-after",
+   "sgs-before-after-6730200c-before",
+   "sgs-before-after-68d32060",
+   "sgs-before-after-68d32060-after",
+   "sgs-before-after-68d32060-before",
+   "sgs-before-after-6944a9c9",
+   "sgs-before-after-6944a9c9-after",
+   "sgs-before-after-6944a9c9-before",
+   "sgs-before-after-696195aa",
+   "sgs-before-after-696195aa-after",
+   "sgs-before-after-696195aa-before",
+   "sgs-before-after-696e03b4",
+   "sgs-before-after-696e03b4-after",
+   "sgs-before-after-696e03b4-before",
+   "sgs-before-after-6c1c7ec3",
+   "sgs-before-after-6c1c7ec3-after",
+   "sgs-before-after-6c1c7ec3-before",
+   "sgs-before-after-6c3811b3",
+   "sgs-before-after-6c3811b3-after",
+   "sgs-before-after-6c3811b3-before",
+   "sgs-before-after-6d06f960",
+   "sgs-before-after-6d06f960-after",
+   "sgs-before-after-6d06f960-before",
+   "sgs-before-after-6e3d065c",
+   "sgs-before-after-6e3d065c-after",
+   "sgs-before-after-6e3d065c-before",
+   "sgs-before-after-7baa076d",
+   "sgs-before-after-7baa076d-after",
+   "sgs-before-after-7baa076d-before",
+   "sgs-before-after-7f7c0529",
+   "sgs-before-after-7f7c0529-after",
+   "sgs-before-after-7f7c0529-before",
+   "sgs-before-after-7f8f39a2",
+   "sgs-before-after-7f8f39a2-after",
+   "sgs-before-after-7f8f39a2-before",
+   "sgs-before-after-81dfa24d",
+   "sgs-before-after-81dfa24d-after",
+   "sgs-before-after-81dfa24d-before",
+   "sgs-before-after-82d5ac68",
+   "sgs-before-after-82d5ac68-after",
+   "sgs-before-after-82d5ac68-before",
+   "sgs-before-after-83bf0dfe",
+   "sgs-before-after-83bf0dfe-after",
+   "sgs-before-after-83bf0dfe-before",
+   "sgs-before-after-89c7d4b9",
+   "sgs-before-after-89c7d4b9-after",
+   "sgs-before-after-89c7d4b9-before",
+   "sgs-before-after-8a86313c",
+   "sgs-before-after-8a86313c-after",
+   "sgs-before-after-8a86313c-before",
+   "sgs-before-after-8d2e1272",
+   "sgs-before-after-8d2e1272-after",
+   "sgs-before-after-8d2e1272-before",
+   "sgs-before-after-904c2765",
+   "sgs-before-after-904c2765-after",
+   "sgs-before-after-904c2765-before",
+   "sgs-before-after-917b5ba0",
+   "sgs-before-after-917b5ba0-after",
+   "sgs-before-after-917b5ba0-before",
+   "sgs-before-after-937e2f53",
+   "sgs-before-after-937e2f53-after",
+   "sgs-before-after-937e2f53-before",
+   "sgs-before-after-96b423f4",
+   "sgs-before-after-96b423f4-after",
+   "sgs-before-after-96b423f4-before",
+   "sgs-before-after-9909dd61",
+   "sgs-before-after-9909dd61-after",
+   "sgs-before-after-9909dd61-before",
+   "sgs-before-after-9944be17",
+   "sgs-before-after-9944be17-after",
+   "sgs-before-after-9944be17-before",
+   "sgs-before-after-9a1711ce",
+   "sgs-before-after-9a1711ce-after",
+   "sgs-before-after-9a1711ce-before",
+   "sgs-before-after-9a73ba26",
+   "sgs-before-after-9a73ba26-after",
+   "sgs-before-after-9a73ba26-before",
+   "sgs-before-after-9b4de687",
+   "sgs-before-after-9b4de687-after",
+   "sgs-before-after-9b4de687-before",
+   "sgs-before-after-a5ead7a0",
+   "sgs-before-after-a5ead7a0-after",
+   "sgs-before-after-a5ead7a0-before",
+   "sgs-before-after-a7d8163f",
+   "sgs-before-after-a7d8163f-after",
+   "sgs-before-after-a7d8163f-before",
+   "sgs-before-after-a8247814",
+   "sgs-before-after-a8247814-after",
+   "sgs-before-after-a8247814-before",
+   "sgs-before-after-a9704d02",
+   "sgs-before-after-a9704d02-after",
+   "sgs-before-after-a9704d02-before",
+   "sgs-before-after-aa991724",
+   "sgs-before-after-aa991724-after",
+   "sgs-before-after-aa991724-before",
+   "sgs-before-after-b727daab",
+   "sgs-before-after-b727daab-after",
+   "sgs-before-after-b727daab-before",
+   "sgs-before-after-ba100429",
+   "sgs-before-after-ba100429-after",
+   "sgs-before-after-ba100429-before",
+   "sgs-before-after-bf77395a",
+   "sgs-before-after-bf77395a-after",
+   "sgs-before-after-bf77395a-before",
+   "sgs-before-after-c199386a",
+   "sgs-before-after-c199386a-after",
+   "sgs-before-after-c199386a-before",
+   "sgs-before-after-c36c57d9",
+   "sgs-before-after-c36c57d9-after",
+   "sgs-before-after-c36c57d9-before",
+   "sgs-before-after-c467c561",
+   "sgs-before-after-c467c561-after",
+   "sgs-before-after-c467c561-before",
+   "sgs-before-after-c753eb83",
+   "sgs-before-after-c753eb83-after",
+   "sgs-before-after-c753eb83-before",
+   "sgs-before-after-c8ad5f42",
+   "sgs-before-after-c8ad5f42-after",
+   "sgs-before-after-c8ad5f42-before",
+   "sgs-before-after-ca466ec4",
+   "sgs-before-after-ca466ec4-after",
+   "sgs-before-after-ca466ec4-before",
+   "sgs-before-after-cfce264a",
+   "sgs-before-after-cfce264a-after",
+   "sgs-before-after-cfce264a-before",
+   "sgs-before-after-d57ba8e5",
+   "sgs-before-after-d57ba8e5-after",
+   "sgs-before-after-d57ba8e5-before",
+   "sgs-before-after-d6020031",
+   "sgs-before-after-d6020031-after",
+   "sgs-before-after-d6020031-before",
+   "sgs-before-after-d6142a11",
+   "sgs-before-after-d6142a11-after",
+   "sgs-before-after-d6142a11-before",
+   "sgs-before-after-d61feb45",
+   "sgs-before-after-d61feb45-after",
+   "sgs-before-after-d61feb45-before",
+   "sgs-before-after-d9b8f431",
+   "sgs-before-after-d9b8f431-after",
+   "sgs-before-after-d9b8f431-before",
+   "sgs-before-after-db67c7e6",
+   "sgs-before-after-db67c7e6-after",
+   "sgs-before-after-db67c7e6-before",
+   "sgs-before-after-dd48a9d9",
+   "sgs-before-after-dd48a9d9-after",
+   "sgs-before-after-dd48a9d9-before",
+   "sgs-before-after-dd5da141",
+   "sgs-before-after-dd5da141-after",
+   "sgs-before-after-dd5da141-before",
+   "sgs-before-after-de49caea",
+   "sgs-before-after-de49caea-after",
+   "sgs-before-after-de49caea-before",
+   "sgs-before-after-defe92d1",
+   "sgs-before-after-defe92d1-after",
+   "sgs-before-after-defe92d1-before",
+   "sgs-before-after-e073070d",
+   "sgs-before-after-e073070d-after",
+   "sgs-before-after-e073070d-before",
+   "sgs-before-after-e0ee83b6",
+   "sgs-before-after-e0ee83b6-after",
+   "sgs-before-after-e0ee83b6-before",
+   "sgs-before-after-e117d1aa",
+   "sgs-before-after-e117d1aa-after",
+   "sgs-before-after-e117d1aa-before",
+   "sgs-before-after-e4685030",
+   "sgs-before-after-e4685030-after",
+   "sgs-before-after-e4685030-before",
+   "sgs-before-after-e61493e7",
+   "sgs-before-after-e61493e7-after",
+   "sgs-before-after-e61493e7-before",
+   "sgs-before-after-e693f880",
+   "sgs-before-after-e693f880-after",
+   "sgs-before-after-e693f880-before",
+   "sgs-before-after-e9b16845",
+   "sgs-before-after-e9b16845-after",
+   "sgs-before-after-e9b16845-before",
+   "sgs-before-after-ec05b2b3",
+   "sgs-before-after-ec05b2b3-after",
+   "sgs-before-after-ec05b2b3-before",
+   "sgs-before-after-ec5555f0",
+   "sgs-before-after-ec5555f0-after",
+   "sgs-before-after-ec5555f0-before",
+   "sgs-before-after-ee4ef1d5",
+   "sgs-before-after-ee4ef1d5-after",
+   "sgs-before-after-ee4ef1d5-before",
+   "sgs-before-after-ef97b76e",
+   "sgs-before-after-ef97b76e-after",
+   "sgs-before-after-ef97b76e-before",
+   "sgs-before-after-f1c719d3",
+   "sgs-before-after-f1c719d3-after",
+   "sgs-before-after-f1c719d3-before",
+   "sgs-before-after-f3c34c2d",
+   "sgs-before-after-f3c34c2d-after",
+   "sgs-before-after-f3c34c2d-before",
+   "sgs-before-after-f42113e3",
+   "sgs-before-after-f42113e3-after",
+   "sgs-before-after-f42113e3-before",
+   "sgs-before-after-f6631adb",
+   "sgs-before-after-f6631adb-after",
+   "sgs-before-after-f6631adb-before",
+   "sgs-before-after-f758fa6e",
+   "sgs-before-after-f758fa6e-after",
+   "sgs-before-after-f758fa6e-before",
+   "sgs-before-after-f833649c",
+   "sgs-before-after-f833649c-after",
+   "sgs-before-after-f833649c-before",
+   "sgs-before-after-f93bee4b",
+   "sgs-before-after-f93bee4b-after",
+   "sgs-before-after-f93bee4b-before",
+   "sgs-before-after-fad39a2c",
+   "sgs-before-after-fad39a2c-after",
+   "sgs-before-after-fad39a2c-before",
+   "sgs-before-after-fb3cd47a",
+   "sgs-before-after-fb3cd47a-after",
+   "sgs-before-after-fb3cd47a-before",
+   "sgs-before-after-fcd953d8",
+   "sgs-before-after-fcd953d8-after",
+   "sgs-before-after-fcd953d8-before",
+   "sgs-before-after-ffbe0307",
+   "sgs-before-after-ffbe0307-after",
+   "sgs-before-after-ffbe0307-before",
+   "sgs-child-sizing",
+   "sgs-focus-proxy",
+   "sgs-focus-rests",
+   "sgs-focus-scope",
+   "sgs-focus-source",
+   "sgs-hide-desktop",
+   "sgs-hide-mobile",
+   "sgs-hide-tablet",
+   "sgs-media",
+   "sgs-media--renderer",
+   "sgs-media-el",
+   "sgs-screen-reader-text",
+   "wp-block-sgs-before-after",
+   "wp-block-sgs-before-after__after-wrap",
+   "wp-block-sgs-before-after__divider",
+   "wp-block-sgs-before-after__divider-line",
+   "wp-block-sgs-before-after__handle",
+   "wp-block-sgs-before-after__label",
+   "wp-block-sgs-before-after__label--after",
+   "wp-block-sgs-before-after__label--before",
+   "wp-block-sgs-before-after__labels",
+   "wp-block-sgs-before-after__range",
+   "wp-block-sgs-before-after__range-label",
+   "wp-block-sgs-before-after__side",
+   "wp-block-sgs-before-after__side--after",
+   "wp-block-sgs-before-after__side--before",
+   "wp-block-sgs-before-after__stage"
+  ],
+  "tags": [
+   "defs",
+   "div",
+   "img",
+   "input",
+   "label",
+   "lineargradient",
+   "path",
+   "polyline",
+   "span",
+   "stop",
+   "style",
+   "svg"
+  ],
+  "check": "c030c080f86b8234"
+ }
+}
