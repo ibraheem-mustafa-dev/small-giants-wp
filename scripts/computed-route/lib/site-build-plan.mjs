@@ -46,6 +46,25 @@ export function keepsWooContent( row ) {
 	return [ 'cart', 'checkout' ].includes( wooContentRole( row ) );
 }
 
+// Whether the draft draws no page for WooCommerce's `slug` template (cart, checkout), from the client's surfaces.json
+// (`surfaces`): the template's own surface is marked unplayed (lib/manifest-build.mjs::buildManifest), or, with no surface of
+// its own, every row naming the template has a page surface marked noDraft. Such a template is never built as a copy:
+// WooCommerce's own template stands (FR-48-87; a draft whose basket is only a drawer, gap G-1). A template whose own surface
+// is played is drawn, whatever its rows' entries say.
+export function undrawnWooTemplate( slug, rows, surfaces ) {
+	if ( ! keepsWooContent( { postType: 'page', template: slug } ) ) {
+		return false;
+	}
+	const entries = Object.entries( surfaces || {} );
+	const own = entries.filter( ( [ , e ] ) => e?.target?.template === slug );
+	if ( own.length ) {
+		return own.every( ( [ , e ] ) => e?.copy?.unplayed );
+	}
+	const pageEntry = ( r ) => entries.find( ( [ k, e ] ) => ( Number.isInteger( r.id ) && e?.target?.postId === r.id ) || k === r.slug )?.[ 1 ];
+	const mine = rowsOf( rows, slug );
+	return mine.length > 0 && mine.every( ( r ) => pageEntry( r )?.noDraft );
+}
+
 // Whether a surface is one of WooCommerce's own cart or checkout PAGES, which the site run never Fills, builds or walks: the
 // surface's target is not a template and its row keeps WooCommerce's content. The cloned layout of those pages is the
 // template-cart / template-checkout surfaces (target.template), which are walked. site-run.mjs and the manifest builder
@@ -239,8 +258,13 @@ ${ parent ? rowKey( parent ) : '' }` ] ??= [] ).push( row );
 	const uncopied = [];
 	// The templates a manifest surface builds (the site run's copies). A copy file under trees/template/ with no surface
 	// here is a stale tree and is never read, so a template the manifest stopped building is not recreated.
-	const surfaced = new Set( Object.values( readSurfaces( repo, client ) ).map( ( e ) => e?.target?.template ).filter( Boolean ) );
+	const surfaces = readSurfaces( repo, client );
+	const surfaced = new Set( Object.values( surfaces ).map( ( e ) => e?.target?.template ).filter( Boolean ) );
 	for ( const slug of servedTemplates( rows ) ) {
+		if ( undrawnWooTemplate( slug, rows, surfaces ) ) {
+			notes.push( `template:${ slug }: no draft surface plays the ${ slug } template, so WooCommerce's own template stands and the site build makes no copy of it (FR-48-87)` );
+			continue;
+		}
 		const how = copySource( rows, slug );
 		const mine = rowsOf( rows, slug );
 		const sources = 'single' === slug ? mine.filter( ( r ) => 'post' === r.postType ).slice( 0, 1 ) : mine;

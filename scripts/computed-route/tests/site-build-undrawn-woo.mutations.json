@@ -1,0 +1,12 @@
+[
+	{"file": "lib/site-build-plan.mjs", "find": "if ( undrawnWooTemplate( slug, rows, surfaces ) ) {", "replace": "if ( false ) {", "why": "an undrawn cart template is copied and stops the build"},
+	{"file": "lib/site-build-plan.mjs", "find": "if ( undrawnWooTemplate( slug, rows, surfaces ) ) {", "replace": "if ( COMMERCE_ROLES[ slug ] ) {", "why": "every commerce template is skipped, so a drawn one with no region no longer stops"},
+	{"file": "lib/site-build-plan.mjs", "find": "if ( ! keepsWooContent( { postType: 'page', template: slug } ) ) {", "replace": "if ( false ) {", "why": "the shop template counts as WooCommerce's kept content"},
+	{"file": "lib/site-build-plan.mjs", "find": "return own.every( ( [ , e ] ) => e?.copy?.unplayed );", "replace": "return true;", "why": "a played template surface is taken as undrawn"},
+	{"file": "lib/site-build-plan.mjs", "find": "return own.every( ( [ , e ] ) => e?.copy?.unplayed );", "replace": "return false;", "why": "an unplayed template surface is taken as drawn"},
+	{"file": "lib/site-build-plan.mjs", "find": "if ( own.length ) {", "replace": "if ( false ) {", "why": "a played template surface no longer wins over its rows' noDraft entries"},
+	{"file": "lib/site-build-plan.mjs", "find": "( Number.isInteger( r.id ) && e?.target?.postId === r.id ) || k === r.slug", "replace": "k === r.slug", "why": "a row's page surface is no longer found by its post id"},
+	{"file": "lib/site-build-plan.mjs", "find": "( Number.isInteger( r.id ) && e?.target?.postId === r.id ) || k === r.slug", "replace": "( Number.isInteger( r.id ) && e?.target?.postId === r.id ) || true", "why": "any entry is taken as the row's page surface"},
+	{"file": "lib/site-build-plan.mjs", "find": "return mine.length > 0 && mine.every( ( r ) => pageEntry( r )?.noDraft );", "replace": "return mine.every( ( r ) => pageEntry( r )?.noDraft );", "why": "a template no row names is taken as undrawn"},
+	{"file": "lib/site-build-plan.mjs", "find": "return mine.length > 0 && mine.every( ( r ) => pageEntry( r )?.noDraft );", "replace": "return mine.length > 0;", "why": "a row whose page surface is drawn is taken as undrawn"}
+]
