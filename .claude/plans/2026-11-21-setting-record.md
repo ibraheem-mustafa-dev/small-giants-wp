@@ -36,7 +36,7 @@ Read this plan and `git log --oneline -20`; take the first task whose Status is 
 
 ## First action
 
-Task 2's completion (below): read `E:\sgs-tmp\setting-record-task2\lane1-report.md` and `git -C E:\sgs-tmp\wt-setrec-t2b status` (five minutes), then continue from "Completion, where it stands".
+Task 3: check for the general cloning session's message that plugin round 6 is published (its new database sha256); until it arrives, build Task 3's script and gate changes, which need no reseed (five minutes to check).
 
 ## Tasks
 
@@ -63,42 +63,22 @@ Task 2's completion (below): read `E:\sgs-tmp\setting-record-task2\lane1-report.
   - Every `script-built-part` entry is settled: 121 proved in Chromium.
   - Every Lane D mechanism is general, with a must-fail test.
   - `check.py --self-test` kills 4 of 4.
-- **Status:** reopened for the completion below (first pass done 2026-11-21; completion in progress, unpushed).
-- **Completion (Bean, 2026-11-22): zero unproven entries on the four blocks, and every setting accounted for, before Task 3.** "Every cause has a mechanism" was short of the aim. Every entry must be proved, or removed with code evidence. Every setting must be in the record, tested with no paint, reported as one that removes or replaces the block, or untested with a reason citing the code. Each mechanism is general, with a must-fail test.
-  - **G1, per-device overrides** (cart `triggerStyleMobile`, `triggerStyleTablet`): `proof.py::override_sweep` tries every override value over every desktop value. An entry no combination moves is removed with the combinations named.
-  - **G2, states the render never shows:** values read from the code, stand-in records, script-set states held, and the proof's matching faults fixed (below).
-  - **G3, a value from the parent block:** `proof.py::parent_shell` draws the block inside its fixture's `parents`.
-  - **G4, a token no page defines:** `proof.py::token_test` gives each undefined custom property its own placeholder value on the page root.
-  - **G5, untested settings:** every extension setting is tried. Object, choice and content-ID settings are valued from the code. `check.py` reports `testedNoPaint`, `replacesBlock` and `unvalued`.
-- **Completion, where it stands (2026-11-22, 03:30):** nothing is pushed. All work is in worktree `E:\sgs-tmp\wt-setrec-t2b` (detached, on `origin/main` from about 01:30).
-  - **Commit `ed28d79e4`, local:** G1, G3, G4 and the G5 extension settings.
-  - **Commit `56325321f`, local:**
-    - Values read from code: `block-source-scan` binds helper arguments and reads data-attribute and condition literals; `instances.py` and `leaf_values.py` value every setting of the four blocks.
-    - Runner stand-ins, opt-in: `get_post` by id as `WP_Post`, a product, a mega-menu panel, the motion filter, `nocache_headers`.
-    - `check.py::replaces_block`.
-  - **Uncommitted (Lane 1):** `proof.py`, `cascade.py`, `computed.py`, a new `scriptsets.py`, `tests/test_proof_faults.py`, and the `tests/test_completion.py` and README edits. Its report goes to `E:\sgs-tmp\setting-record-task2\lane1-report.md`, its measuring run to `records-l1\` and `reports-l1\`. Its fixes:
-    - match a rule whose selector names the instance class differently from the page (`diff.py::uid_map` aliasing);
-    - compare every element of the part and count a rule matching only the plain page;
-    - evaluate `@supports`;
-    - demand every token a rule needs in completion;
-    - match the rule's own subject;
-    - treat a setting switching a paint off as proved;
-    - remove a rule that can never match (cart `panelViewColourHover` on an anchor the label's kses strips);
-    - hold script-set states (form completed steps, nav `.is-detached`);
-    - remove an override entry after a full sweep moves nothing.
-  - **Known bug, to fix first:** `proof.py::token_test` gives placeholders only to custom properties the winning declaration names directly. A token reached through another variable gets none, so three `sgs/button` `inheritStyle` entries were wrongly removed in `reports-c1`: transform at hover and at focus, and the transitions. In each, `var(--sgs-btn-lift-hover, …)` is set by the preset class to `var(--wp--custom--button-presets--<preset>--hover-lift)`. Fix: give a placeholder to every custom property the page reads that no rule, theme or render defines, at any depth. The must-fail test is this button case.
-  - **Measured so far (`reports-c1`, before Lanes 1 to 3):** theme-value 0, part printed elsewhere 0, 310 unproven of 3,443. The rise came from newly tested extension settings: conditional visibility's per-part entries, which `replaces_block` now stops, and render crashes, now stubbed.
-  - **Left, in order:**
-    1. Integrate Lane 1. Fix the token bug.
-    2. Run `python -m pytest plugins/sgs-blocks/scripts/setting-record/tests` and the scanner's `plugins/sgs-blocks/scripts/tests/test_block_source_scan_*.py`.
-    3. Run the four blocks with `--write-dir`, and trace every remaining unproven entry to zero.
-    4. Prove the browser verdicts still apply (`proof.browser` in each report).
-    5. Check every removal's evidence by hand for wrong removals, as the button case showed.
-    6. Run the no-flag before/after: `E:\sgs-tmp\setting-record-task2\baseline.sh` on a clean `origin/main` checkout and on the worktree, then `compare.py`, plus `button-preset-parity.py --before --after`. The runner changed again, and some stubs are now defined without a flag.
-    7. Run `/code-review` on the completion's commits.
-    8. Run the repo's fast gates. `check-length-unit-partners` failed on main from Task 1 until `6ed5bdbaf`; a new runtime-built unit name in `leaf_values.py` or `instances.py` needs an `ALLOW_RUNTIME` entry.
-    9. Check the four blocks against their rewritten records with the proof on, and run `--self-test`.
-    10. Commit, rebase and push. Tell the cloning session (`small-giants-wp-3f`) about the runner change.
+- **Status:** done, with its completion (pushed to `main` 2026-11-22, the commits titled `setting record` from `feat(setting record): per-device override sweep` on).
+- **Completion (Bean, 2026-11-22): zero unproven entries on the four blocks, and every setting accounted for.** Every entry is proved, or removed with code evidence; every setting is in the record, tested with no paint (`testedNoPaint`), reported as one that removes or replaces the block (`replacesBlock`), or untested with a reason (`unvalued`). Each mechanism is general, with a must-fail test (`tests/test_proof_faults.py`, `test_completion.py`, `test_lane_d.py`). The README's cause table names every mechanism.
+  - **Results** (records in `E:\sgs-tmp\setting-record-task2\records-c6\`, reports in `reports-c6\`; measured on `main` at `8a9276450`): 3,059 entries, **0 unproven**; 2,906 proved offline, 147 more proved in Chromium (cart 95, form 52), 24 re-filed, 159 removed offline and 2 in Chromium. `unvalued` is empty on all four; `testedNoPaint` 215 settings; `replacesBlock` 22 (the five visibility conditions on each block, the menu's `ref`, the form's `formIsLinked`).
+
+    | Block | Entries | Unproven | Removed | Tested, no paint | Replaces the block |
+    |---|---|---|---|---|---|
+    | sgs/button | 296 | 0 | 16 | 41 | 5 |
+    | sgs/cart | 916 | 0 | 46 | 82 | 5 |
+    | sgs/form | 1,102 | 0 | 38 | 53 | 6 |
+    | sgs/nav-bar-menu | 745 | 0 (2 removed in Chromium) | 59 | 39 | 6 |
+
+  - **Removals, checked by hand by kind:** a fallback under `@supports not (...)` a current Chromium never takes (42); a rule that restates the value the plain page already has, seen at two values of the setting (38); a per-device override swept over every value it overrides that never moves the part (16, cart `triggerStyleTablet`/`Mobile`); the same winning declaration with and without the setting, also with a second value and at the probe widths (35); a class no source prints (26, `sgs-form-field__error-message`, Task 5); a rule that can match nothing (4: an `a` inside an `a`, an `a` inside an element every template fills with escaped text).
+  - **Wrong removals found and fixed on the way** (each now a must-fail test): a test value equal to the block's own value (cart `panelTitleFontWeight`); a phone-only setting the block's own narrow-container rule hid at 375px (form `stepNamesHidden`: widths between the sampled screens are now probed); a script-set class held on both pages (cart `hideWhenEmpty`, `showZero`); a placeholder of the wrong kind (button `inheritStyle` transitions); a token another setting of the block defines (menu `featuredBgHover`).
+  - **No-flag before/after** (clean `main` at `8a9276450` against the record worktree, `baseline.sh` and `compare.py` in `E:\sgs-tmp\setting-record-task2\`): 206 block renders byte-identical; `check-custom-colour-survives`, `check-motion-part-render-paths` and the button migration probe identical; `button-preset-parity` 312 of 312 the same; PHPUnit 5,199 tests with identical per-test results apart from 39 icon-library tests, which run the icon generator and fail where `plugins/sgs-blocks/node_modules` is not installed (the generator prints "lucide-static icons directory not found. Run npm install"; the record worktree has none, the clean checkout has).
+  - **Gates:** suites 303 and 64 (scanner) passed; `check.py --self-test` 4 of 4 caught; `check-length-unit-partners`, `check-no-client-names` and `check-md-wrap` pass; `/code-review` (medium): ten findings, all fixed with tests.
+  - **The browser pass** now also settles `script-set-token` entries and the menu (`browser/measure.cjs` opens the probed item's own panel); `--write-verdicts <build>` writes `browser/verdicts/<block>.json` stamped with the code hash. The scratch site is `local-mediatest-setrec2` (port 8166), built from `E:\sgs-tmp\wt-setrec-build` (a worktree with `node_modules`, for the next round's build). `main`'s fast gate tier was failing on other sessions' cart and container work, so that build ran webpack and the post-build steps without the gate step, for the scratch site only.
 - **First pass, results (2026-11-21):** records in `E:\sgs-tmp\setting-record-task2\records\` (reports in `reports-join\`).
   - **Unproven, Task 1 to Task 2's first pass:** 620 to 237.
 
@@ -130,9 +110,9 @@ Task 2's completion (below): read `E:\sgs-tmp\setting-record-task2\lane1-report.
 ### Task 3: Every block's record, seeded and gated
 - **Why:** the route needs every block's record, kept right on every change. **Read first:** `dbschema/seed_reference_data.py`, `dbschema/schema.sql`, `scripts/build-with-gates.mjs`.
 - **Changes:** one data file per block filled by script (agreement plus cause, as the trial did); tables `setting_placements`, `block_part_order`, `block_part_defaults` and `seed_reference_data.py::_seed_setting_records`; the check in the fast tier for changed blocks and the full tier for all.
-  - The browser pass runs once per plugin round, before that round's records are written (Bean, 2026-11-21): one unattended command makes a scratch copy of `local-mamas`, runs `browser/prove_script_parts.py` on every entry left `script-built-part` or `part-printed-elsewhere` across the blocks, writes `browser/verdicts/<block>.json` and drops the copy (about 20 minutes). A verdict is applied only while its block's folder and `src/shared` hash the same (`check.py::script_hash`), so between rounds a changed block's script-built entries fall back to unproven, which is safe (the route never acts on an unproven kind). The pass knows how to put the cart's and form's script-built parts on screen; a block with new ones needs its own steps in `browser/measure.cjs`.
-  - Render a block inside its fixture's `parents` (the `parents` key is in `fixtures.json` but nothing renders it yet), so a rule scoped by the parent (`sgs/nav-bar-menu`'s `triggerSurface` on `.sgs-site-header-row:has(.sgs-nav-bar-menu)`, cause `part-printed-elsewhere`) is proved offline instead of in the browser.
-  - The four blocks' records written by Task 2 (`E:\sgs-tmp\setting-record-task2\records\`) are the first four data files; rewrite them from the code at the reseed, as every other block's.
+  - The browser pass runs once per plugin round, before that round's records are written (Bean, 2026-11-21): one unattended command makes a scratch copy of `local-mamas`, runs `browser/prove_script_parts.py --write-verdicts <build>` on every entry left `script-built-part` or `script-set-token` across the blocks, and drops the copy (about 20 minutes; Task 2's pass took 3 minutes for the cart's 95). A verdict is applied only while its block's folder and `src/shared` hash the same (`check.py::script_hash`), so between rounds a changed block's script-built entries fall back to unproven, which is safe (the route never acts on an unproven kind). The pass knows how to put the cart's, the form's and the menu's script-built parts on screen; a block with new ones needs its own steps in `browser/measure.cjs`.
+  - The four blocks' records written by Task 2 (`E:\sgs-tmp\setting-record-task2\records-c6\`) are the first four data files; rewrite them from the code at the reseed, as every other block's. Expect new unproven entries on other blocks: each needs the fixture or mechanism work Task 2 did for these four (a fixture that switches every part on, stand-ins for the records a setting names).
+  - A setting that names a breakpoint (`sgs/nav-bar-menu` `collapsePoint`) records the tiers of its test value (`max-width: 2.98px` for a value of 3); decide whether such an entry's tier is stored as the setting's own.
 - **Touches:** data files, schema, framework DB reseed, build gates.
 - **Done when:** `check.py --all` passes with zero untraced entries and every switched-on entry proved by the cascade (as in Task 1), and a planted fault fails `npm run build`. Every entry still unproven carries its cause, settled by Task 2's mechanisms where one applies (README).
 - **Depends on:** 2
@@ -148,7 +128,7 @@ Task 2's completion (below): read `E:\sgs-tmp\setting-record-task2\lane1-report.
 
 ### Task 5: Block faults the check found (next plugin round)
 - **Why:** real faults, fixed to the standards above. **Read first:** REPORT.md "Block faults found".
-- **Changes:** `sgs/form` error-text rule styling a class nothing prints; the file input covering the file label's hover rules; step circles reading a progress colour set outside them; undeclared parts (button, cart, form, menu) generated into `supports.sgs.elements` from the check's list.
+- **Changes:** `sgs/form` error-text rule styling a class nothing prints; the file input covering the file label's hover rules; step circles reading a progress colour set outside them (`form/render.php` prints `--sgs-progress-colour` on `.sgs-form__progress`, and the step numbers sit in its sibling `.sgs-form__progress-steps`, so the active circle always shows the theme's primary); a menu hidden by a visibility condition still printing its detached burger (`nav-bar-menu/render.php` queues it for `wp_footer` before `includes/conditional-visibility.php::check_conditional_visibility` empties the block, so `includes/nav-detach-chip.php::sgs_nav_detach_chip_print_footer` prints it on a page where the menu is hidden); undeclared parts (button, cart, form, menu) generated into `supports.sgs.elements` from the check's list.
 - **Touches:** those blocks.
 - **Done when:** the check reports no block fault and no undeclared part for them.
 - **Depends on:** 1

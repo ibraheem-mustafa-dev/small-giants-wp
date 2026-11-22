@@ -47,7 +47,7 @@ Built and closed (2026-10-18; Bean signed Gate 9). Open: FR-38A-33's `hover.effe
 
 **Handover standard:** Spec 48A v1.5 (`handoff-check.mjs`); the files you upload to a Claude Design project are `claude-design-handoff/CLAUDE.md`, `WHAT-WE-BUILD.md` and `handoff-schema/` (a ready copy is in `E:\sgs-tmp\general-cloning\upload\`). Open: edit the Eye Care draft to mirror the live site (Spec 48A FR-48A-11).
 
-**Calibration replacement:** `plans/2026-11-21-setting-record.md`: Task 1 done; Task 2 reopened for zero unproven entries, its work unpushed in `E:\sgs-tmp\wt-setrec-t2b` (plan, "Completion, where it stands"); Task 3's reseed after plugin round 6's publish.
+**Calibration replacement:** `plans/2026-11-21-setting-record.md`: Tasks 1 and 2 done (Task 2: zero unproven entries on the four blocks, every setting accounted for); Task 3 next, its reseed after plugin round 6's publish.
 
 - **Mirror runs:** set a mirror's login after a refresh with `node scripts/local-wp/reset-login.mjs <mirror>`. Build the site on the mirror and copy it with `scripts/local-wp/push-to-remote.sh` (Hostinger's edge 403s editor bursts). A site build against a mirror nulls the page map's ids it did not adopt (`lib/site-build-map.mjs::rowsForSite`): restore `page-map.json` from git after one, and run template copies with `--templates-only`. Edit shared scripts (`scripts/wp-build-page.js` and the like) in a worktree, never the main checkout, while another track's run uses them.
 - **Uncommitted on purpose:** `sites/*/build/qa/parity/template-order-confirmation.fill*.mjs` hold a test order's key.
