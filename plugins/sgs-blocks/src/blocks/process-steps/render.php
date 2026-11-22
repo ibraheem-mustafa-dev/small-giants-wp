@@ -524,9 +524,10 @@ foreach (
 		$root_sel . ' ' . $sgs_ps_margin_target,
 		array(
 			array(
-				'value' => $attributes[ $sgs_ps_margin_attr ],
-				'css'   => 'margin',
-				'box'   => true,
+				'value'        => $attributes[ $sgs_ps_margin_attr ],
+				'css'          => 'margin',
+				'box'          => true,
+				'unit_default' => 'px',
 			),
 		)
 	);

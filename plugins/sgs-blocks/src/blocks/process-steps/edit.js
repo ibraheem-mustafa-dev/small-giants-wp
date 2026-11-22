@@ -686,6 +686,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<ResponsiveControl label={ __( 'Description maximum width', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
+								scale="spacing"
 								label={ __( 'Description maximum width', 'sgs-blocks' ) }
 								hideLabelFromVision
 								help={ __( 'Empty lets the description fill its step.', 'sgs-blocks' ) }
@@ -934,6 +935,13 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							</ResponsiveControl>
 						</ToolsPanelItem>
 						<ToolsPanelItem
+							label={ __( 'Wrap steps', 'sgs-blocks' ) }
+							hasValue={ () => !! attributes.flexWrap }
+							onDeselect={ () => setAttributes( { flexWrap: '' } ) }
+						>
+							<FlexWrapControl label={ __( 'Wrap steps', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
+						</ToolsPanelItem>
+						<ToolsPanelItem
 							label={ __( 'Align parts within a step', 'sgs-blocks' ) }
 							hasValue={ () => !! stepAlignItems && Object.keys( stepAlignItems ).length > 0 }
 							onDeselect={ () => setAttributes( { stepAlignItems: undefined } ) }
@@ -943,29 +951,23 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								value={ stepAlignItems }
 								onChange={ ( obj ) => setAttributes( { stepAlignItems: obj } ) }
 							>
-								{ ( { tier, ownValue, setOwnValue } ) => (
-									<SelectControl
+								{ ( { ownValue, setOwnValue } ) => (
+									<ToggleGroupControl
+										label={ __( 'Align parts within a step', 'sgs-blocks' ) }
+										hideLabelFromVision
 										value={ ownValue || '' }
-										options={ [
-											{
-												label: 'desktop' === tier ? __( 'Centre (default)', 'sgs-blocks' ) : __( '— inherit —', 'sgs-blocks' ),
-												value: '',
-											},
-											...STEP_ALIGN_OPTIONS,
-										] }
 										onChange={ ( raw ) => setOwnValue( raw || undefined ) }
+										isBlock
+										isDeselectable
 										__nextHasNoMarginBottom
 										__next40pxDefaultSize
-									/>
+									>
+										{ STEP_ALIGN_OPTIONS.map( ( option ) => (
+											<ToggleGroupControlOption key={ option.value } value={ option.value } label={ option.label } />
+										) ) }
+									</ToggleGroupControl>
 								) }
 							</ResponsiveOverride>
-						</ToolsPanelItem>
-						<ToolsPanelItem
-							label={ __( 'Wrap steps', 'sgs-blocks' ) }
-							hasValue={ () => !! attributes.flexWrap }
-							onDeselect={ () => setAttributes( { flexWrap: '' } ) }
-						>
-							<FlexWrapControl label={ __( 'Wrap steps', 'sgs-blocks' ) } value={ attributes.flexWrap } onChange={ ( val ) => setAttributes( { flexWrap: val } ) } />
 						</ToolsPanelItem>
 						{ 'list' === layout && (
 							<ToolsPanelItem
