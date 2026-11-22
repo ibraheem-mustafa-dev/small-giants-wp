@@ -127,3 +127,33 @@ test( 'a value the setting does not store is not written and is named; a tier wh
 	const hiddenOnPhone = { ...below, visible: { 375: false, 768: true, 1440: true } };
 	assert.deepEqual( heroSplitOrder( { media: hiddenOnPhone, words, rule } ).value, { tablet: 'content-first' } );
 } );
+
+// rules.hero.splitMedia: a picture too small to fill a column (an icon in an advice card, a thumbnail) and one inside a link
+// or button (a control's own mark) are no split media: the hero stays plain and does not absorb them.
+const SMALL = { ...CONTACT, 8: { 375: { x: 19, y: 117, w: 20, h: 20 }, 768: { x: 524, y: 164, w: 20, h: 20 }, 1440: { x: 1085, y: 166, w: 20, h: 20 } } };
+const linked = ( boxes ) => {
+	const inv = inventory( boxes );
+	const img = inv.elements.find( ( e ) => 'Root/8#0' === e.key );
+	const wrap = { ...inv.elements.find( ( e ) => 'Root/7#0' ), key: 'Root/9#0', tpl: 9, tag: 'a', srcTag: 'a', words: '', allText: '', attrs: { href: '/x' }, parentKey: 'Root/3#0', depth: 3, snippet: '<a data-dc-tpl="9"></a>' };
+	img.parentKey = 'Root/9#0';
+	img.depth = 4;
+	inv.elements.splice( inv.elements.indexOf( img ), 0, wrap );
+	return proposeSkeleton( { inventory: inv, facts, surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', db, calSettings } );
+};
+const rowOf = ( r, key ) => r.proposal.rows.find( ( x ) => x.key === key );
+
+test( 'MUST FAIL: a 20px icon in a hero is no split picture: the hero is plain and the icon is not absorbed into it', () => {
+	const r = run( SMALL );
+	assert.equal( heroOf( r ).attributes.variant, undefined );
+	assert.equal( heroOf( r ).draftSlots?.[ MEDIA ], undefined );
+	assert.notEqual( rowOf( r, 'Root/8#0' ).rule, 'heroInner', 'the icon is built, not dropped into the hero' );
+	// Negative control: the same hero with its real picture is the split hero.
+	assert.equal( heroOf( run( CONTACT ) ).attributes.variant, 'split' );
+} );
+
+test( 'MUST FAIL: a picture inside a link is no split picture even when it is wide', () => {
+	const r = linked( CONTACT );
+	assert.equal( heroOf( r ).attributes.variant, undefined );
+	// Negative control: the same picture outside a link is the split hero.
+	assert.equal( heroOf( run( CONTACT ) ).attributes.variant, 'split' );
+} );

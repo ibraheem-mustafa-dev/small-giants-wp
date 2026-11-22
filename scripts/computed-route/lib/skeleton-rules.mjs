@@ -975,6 +975,21 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// wrapper itself). Badges inside a section are labels.
 	const pageSection = ( e, block ) => 'section' !== facts.composition[ block ]?.container_kind || ( 'page' === surface.kind && ! pageWrapper( e ) && ( 1 === e.depth || ( !! m.byKey[ e.parentKey ] && wrapperOfPage( m.byKey[ e.parentKey ] ) ) ) );
 	const isMedia = ( k ) => 'img' === k.tag || ( k.tag.includes( '-' ) && !! specHit( R.mediaElement, k.tag ) );
+	// A picture too small to fill a column of the hero (an icon in an advice card, a thumbnail) and one inside a link or button
+	// (a control's own mark) are no split media (rules.hero.splitMedia): the hero neither takes them as its picture nor absorbs them.
+	const fillsColumn = ( p, hero ) => {
+		const SM = R.hero?.splitMedia;
+		if ( ! SM ) {
+			return true;
+		}
+		const widest = ( x ) => Math.max( 0, ...Object.values( x.box || {} ).map( ( b ) => b?.w || 0 ) );
+		for ( let up = m.byKey[ p.parentKey ]; up && up !== hero; up = m.byKey[ up.parentKey ] ) {
+			if ( [ 'a', 'button' ].includes( view.realTag( up ) ) ) {
+				return false;
+			}
+		}
+		return widest( p ) >= Math.max( SM.minWidthPx ?? 0, widest( hero ) * ( SM.minWidthShare ?? 0 ) );
+	};
 	// A hero's collage stages and their layers (lib/skeleton-hero-collage.mjs), read once per hero.
 	const collages = new Map();
 	const collageOf = ( hero ) => {
@@ -1440,7 +1455,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 				}
 				return false;
 			};
-			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );
+			const pictures = desc( e ).filter( isMedia ).filter( ( p ) => ! backdrop.includes( p ) && ! collage.layerOf.has( p.key ) && ! inHeading( p ) && fillsColumn( p, e ) );
 			const media = pictures.length > 0;
 			// A split hero's order per device is the draft's (lib/skeleton-hero-order.mjs): its picture against every worded
 			// element outside a picture, at each device's width.
@@ -1499,6 +1514,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			// A collage keeps its stage as a container and each absolutely placed child as a decorative image layer; what sits
 			// inside a layer is classified as anywhere else (the pictures are media blocks, not the hero's split media).
 			const collage = collageOf( m.byKey[ hero.key ] );
+			const isHeroMedia = ( k ) => isMedia( k ) && fillsColumn( k, m.byKey[ hero.key ] );
 			if ( collage.stages.has( e.key ) ) {
 				return v( 'heroCollage', { block: R.heroCollage.block } );
 			}
@@ -1508,19 +1524,19 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( collage.rows.has( e.key ) ) {
 				return v( 'heroCollageRow', { block: R.heroCollageRow?.block } );
 			}
-			if ( isMedia( e ) ) {
+			if ( isHeroMedia( e ) ) {
 				// A picture laid behind the hero's content is its background (rules.heroBackdrop), not a part of its split media.
 				return behindContent( { hero: m.byKey[ hero.key ], picture: e, m, desc } ) ? v( 'heroBackdrop', { action: 'absorbed', into: hero.key } ) : v( 'heroInner', { action: 'absorbed', into: hero.key } );
 			}
 			// A wrapper laying two or more items side by side is a row (a button group, a row of labels), not a layout
 			// wrapper: it stays, and the scoring proposes it (the multi-button for buttons, a container for labels).
 			// The row that holds the hero's image is the hero's own split (content beside media), which the hero lays out.
-			const row = kidsB.length > 1 && ! m.stacked( kidsB ) && ! desc( e ).some( isMedia );
+			const row = kidsB.length > 1 && ! m.stacked( kidsB ) && ! desc( e ).some( isHeroMedia );
 			// An item of such a row inside the hero (the column of a grid or flex row that is no split: its other cell holds no
 			// picture, a tilted card pile) is that row's cell: unwrapping it would hand its items to the row as cells of their own.
 			const rowOf = ( x ) => {
 				const items = m.blockKids( x );
-				return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isMedia );
+				return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isHeroMedia );
 			};
 			const cell = m.byKey[ e.parentKey ] && m.byKey[ e.parentKey ].key !== hero.key && rowOf( m.byKey[ e.parentKey ] );
 			if ( cell ) {
@@ -1533,17 +1549,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const heroEl = m.byKey[ hero.key ];
 			const underMedia = ( k ) => {
 				for ( let x = m.byKey[ k.parentKey ]; x && x !== heroEl; x = m.byKey[ x.parentKey ] ) {
-					if ( isMedia( x ) ) {
+					if ( isHeroMedia( x ) ) {
 						return true;
 					}
 				}
 				return false;
 			};
 			const mine = new Set( desc( e ) );
-			const holdsContent = desc( heroEl ).filter( ( k ) => m.words( k ) && ! isMedia( k ) && ! underMedia( k ) ).every( ( k ) => mine.has( k ) );
-			const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) && holdsContent && R.heroInner?.contentSetting ? { hostSetting: R.heroInner.contentSetting } : {};
+			const holdsContent = desc( heroEl ).filter( ( k ) => m.words( k ) && ! isHeroMedia( k ) && ! underMedia( k ) ).every( ( k ) => mine.has( k ) );
+			const column = kidsB.length > 1 && ! desc( e ).some( isHeroMedia ) && holdsContent && R.heroInner?.contentSetting ? { hostSetting: R.heroInner.contentSetting } : {};
 			// A wrapper holding the hero's picture is the split's media side, which the hero lays out itself (`hostLays`).
-			const lays = desc( e ).some( isMedia ) ? { hostLays: hero.key } : {};
+			const lays = desc( e ).some( isHeroMedia ) ? { hostLays: hero.key } : {};
 			return ! m.words( e ) && kidsB.length && ! row ? v( 'heroInner', { action: 'unwrap', ...column, ...lays } ) : null;
 		},
 	];
