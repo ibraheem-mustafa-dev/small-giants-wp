@@ -8,6 +8,7 @@ import { ringScale } from '../lib/apply-motion-loops.mjs';
 import { fadeWidth } from '../lib/apply-family-motion.mjs';
 import { openDb } from '../lib/db.mjs';
 import { defaultRule } from '../lib/apply-motion-default.mjs';
+import { splitParts } from '../lib/apply-motion-parts.mjs';
 import { judge } from '../apply.mjs';
 
 const db = openDb();
@@ -72,18 +73,34 @@ test( 'a marquee wrapper mask gives the edge fade width', () => {
 	assert.equal( fadeWidth( 'none' ), null );
 } );
 
-test( 'a hero descendant call becomes the split hero media parts, the media column for the frame and the image for the innermost', () => {
+test( 'a hero descendant call becomes the split hero media parts, the media column for the frame and the image element (split-media) for the innermost', () => {
 	const mk = ( tpl, frames, options ) => ( { key: target.ref, own: false, tpl, frames, options } );
 	const frame = mk( '216', [ { opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'none' } ], { duration: 1100, delay: 200, easing: 'ease' } );
 	const image = mk( '217', [ { transform: 'scale(1.18)' }, { transform: 'scale(1)' } ], { duration: 1600, delay: 200, easing: 'ease' } );
 	const items = motion.decide( { target, block: 'sgs/hero', saved: { variant: 'split' }, draft: at( { box: { y: 100 } } ), animate: at( [ frame, image ] ), recordsIndex: new Map(), records: [], db, rawSnapshot } );
 	const doc = items.find( ( i ) => 'op' === i.status ).writes[ 0 ].value;
-	assert.deepEqual( Object.keys( doc.elements ).sort(), [ 'media', 'split-image' ] );
-	assert.equal( doc.elements[ 'split-image' ].entrance.base.values.duration, 1600 );
+	assert.deepEqual( Object.keys( doc.elements ).sort(), [ 'media', 'split-media' ] );
+	assert.equal( doc.elements[ 'split-media' ].entrance.base.values.duration, 1600 );
 	assert.equal( doc.elements.media.entrance.base.values.duration, 1100 );
 	// Negative control: a hero the draft animates nothing on gets no op.
 	const none = motion.decide( { target, block: 'sgs/hero', saved: { variant: 'split' }, draft: at( { box: { y: 100 } } ), animate: at( [] ), recordsIndex: new Map(), records: [], db, rawSnapshot } );
 	assert.deepEqual( none, [] );
+} );
+
+test( 'splitParts: the innermost one-shot goes to split-image where the block offers it, else to split-media; a lone one-shot stays the frame', () => {
+	const one = ( tpl, duration ) => ( { tpl, frames: [ { opacity: 0 }, { opacity: 1 } ], options: { duration } } );
+	const at3 = ( list ) => ( { 1440: { one: [], loops: [], inner: list }, 768: { one: [], loops: [], inner: [] }, 375: { one: [], loops: [], inner: [] } } );
+	const offered = ( ...names ) => ( { targetsOf: () => names.map( ( target ) => ( { target } ) ) } );
+	const run = ( names, list ) => splitParts( { block: 'sgs/hero', saved: { variant: 'split' }, mdb: offered( ...names ), calls: at3( list ) } );
+	const both = [ one( '216', 1100 ), one( '217', 1600 ) ];
+	assert.deepEqual( Object.keys( run( [ 'media', 'split-media' ], both ) ).sort(), [ 'media', 'root', 'split-media' ] );
+	assert.deepEqual( [ ...run( [ 'media', 'split-media' ], both )[ 'split-media' ].tpls ].sort(), [ '216', '217' ] );
+	assert.equal( run( [ 'media', 'split-media' ], both )[ 'split-media' ].calls[ 1440 ].one[ 0 ].options.duration, 1600 );
+	assert.equal( run( [ 'media', 'split-media', 'split-image' ], both )[ 'split-image' ].calls[ 1440 ].one[ 0 ].options.duration, 1600 );
+	assert.equal( run( [ 'media', 'split-media', 'split-image' ], both )[ 'split-media' ].calls[ 1440 ].one.length, 0 );
+	const lone = run( [ 'media', 'split-media' ], [ one( '216', 1100 ) ] );
+	assert.equal( lone.media.calls[ 1440 ].one.length, 1 );
+	assert.equal( lone[ 'split-media' ].calls[ 1440 ].one.length, 0 );
 } );
 
 test( 'a frame entrance saved on the image element moves to the media column, and a second run is equal', () => {
@@ -96,8 +113,8 @@ test( 'a frame entrance saved on the image element moves to the media column, an
 	stale.elements[ 'split-media' ] = { entrance: structuredClone( first.elements.media.entrance ) };
 	delete stale.elements.media;
 	const moved = motion.decide( args( { variant: 'split', sgsMotion: stale } ) ).find( ( i ) => 'op' === i.status ).writes[ 0 ].value;
-	assert.equal( moved.elements[ 'split-media' ]?.entrance, undefined );
-	assert.ok( moved.elements.media.entrance );
+	assert.equal( moved.elements.media.entrance.base.values.duration, 1100, 'the frame entrance sits on the media column' );
+	assert.equal( moved.elements[ 'split-media' ].entrance.base.values.duration, 1600, 'the image element keeps its own entrance, not the frame own' );
 	assert.equal( motion.decide( args( { variant: 'split', sgsMotion: first } ) ).some( ( i ) => 'op' === i.status ), false );
 } );
 

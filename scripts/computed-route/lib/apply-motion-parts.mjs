@@ -2,9 +2,10 @@
 // on the paired element itself is the root's. A call that lands on a descendant of a hero belongs to the hero's media
 // parts: in a split hero the outer element (the frame) is the `media` column (`.sgs-hero__media`), and every loop stays on
 // `split-media` (the media node, where the block's parallax and float settings sit); the innermost one-shot is the
-// image, `split-image`. `split-media` and `split-image` are two classes of one element, so a frame entrance saved on
-// either competes with the image's own; a hero that is not a split has the single `media` part. The part names come from
-// the framework DB (lib/motion-db.mjs::targetsOf).
+// image: `split-image` where the block offers that part, else `split-media`, which is the image element itself
+// (`.sgs-hero__media .sgs-media-el`) once the block has no separate image part. A frame entrance saved on the image's part
+// competes with the image's own; a hero that is not a split has the single `media` part. The part names come from the
+// framework DB (lib/motion-db.mjs::targetsOf).
 import { endless } from './apply-motion-calls.mjs';
 
 const WIDTHS = [ 1440, 768, 375 ];
@@ -20,13 +21,14 @@ export function splitParts( { block, saved, mdb, calls } ) {
 	}
 	const split = 'split' === saved.variant && names.has( 'split-media' );
 	const oneShot = [ ...new Set( inner.filter( ( { c } ) => ! endless( c ) ).map( ( { c } ) => Number( c.tpl ) ) ) ].filter( Number.isFinite ).sort( ( a, b ) => a - b );
-	const imageTpl = split && names.has( 'split-image' ) && oneShot.length > 1 ? oneShot[ oneShot.length - 1 ] : null;
+	const imagePart = names.has( 'split-image' ) ? 'split-image' : 'split-media';
+	const imageTpl = split && oneShot.length > 1 ? oneShot[ oneShot.length - 1 ] : null;
 	// The frame's one-shot goes to the media column where the block offers it; its tpls also stay on split-media so the media
 	// node's behaviours (parallax) still find their records.
 	const frame = split && names.has( 'media' );
 	for ( const { w, c } of inner ) {
 		const image = split && Number( c.tpl ) === imageTpl;
-		const name = split ? ( image ? 'split-image' : ( frame && ! endless( c ) ? 'media' : 'split-media' ) ) : ( names.has( 'media' ) ? 'media' : null );
+		const name = split ? ( image ? imagePart : ( frame && ! endless( c ) ? 'media' : 'split-media' ) ) : ( names.has( 'media' ) ? 'media' : null );
 		if ( ! name ) {
 			continue;
 		}
