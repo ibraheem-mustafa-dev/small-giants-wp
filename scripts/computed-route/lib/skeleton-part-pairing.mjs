@@ -406,6 +406,12 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 			if ( row.length ) {
 				cands = row;
 			} else {
+				// A disclosure summary part is a menu row that opens a submenu: a control with no caret and no words beside one
+				// (a plain link, even with a trailing arrow) is never it, whether or not the summary is drawn out of flow.
+				if ( 'control' === kind && summaries.length && ! isSummaryRow( e, ( x ) => kids( x ).filter( ( k ) => ! isNode( k ) ) ) ) {
+					const kept = cands.filter( ( g ) => ! summaries.includes( g ) );
+					kept.length && ( cands = kept );
+				}
 				for ( const tier of [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
 					const kept = cands.filter( tier );
 					kept.length && ( cands = kept );

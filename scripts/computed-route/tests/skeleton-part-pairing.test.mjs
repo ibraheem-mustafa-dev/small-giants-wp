@@ -405,6 +405,19 @@ test( 'negative controls: a link with a trailing arrow, a toggle with no caret, 
 	assert.deepEqual( pairRow( plain, noSummary ).slots, linked( plain ), 'a block that draws no summary part keeps the link' );
 } );
 
+test( 'MUST FAIL: a plain link with a trailing arrow is never the disclosure summary part, even when the summary is drawn in flow', () => {
+	// The summary part drawn in flow (not out of flow) fits the link as well as the link part does, by kind and flow alone.
+	const inFlow = { ...MENU, elements: Object.fromEntries( Object.entries( MENU.elements ).map( ( [ p, v ] ) => [ p, p.endsWith( '.summary' ) ? flat( 'summary' ) : v ] ) ) };
+	const linked = ( m ) => ( { [ LINK( 1 ) ]: { tpl: m.control( 0 ).key }, [ LINK( 2 ) ]: { tpl: m.control( 1 ).key } } );
+	const arrow = menuRows( CARETS.arrow, 'a' );
+	const made = pairRow( arrow, inFlow, false );
+	assert.deepEqual( made.slots, linked( arrow ), JSON.stringify( made.ambiguous ) );
+	assert.deepEqual( made.ambiguous, [] );
+	// Negative control: a words-plus-caret row is still the summary row (summaryRows), and in flow it is still ambiguous nowhere.
+	const caret = menuRows( CARETS.chevron );
+	assert.deepEqual( Object.keys( pairRow( caret, inFlow ).slots ).sort(), [ SUMMARY( 1 ), SUMMARY( 2 ) ] );
+} );
+
 test( 'drawsChevron reads one shape of three corners off a line; isCaret and isSummaryRow read a caret and a words-plus-caret control', () => {
 	const svg = ( inner ) => `<svg viewBox="0 0 16 16">${ inner }</svg>`;
 	assert.ok( drawsChevron( svg( '<polyline points="4,6 8,10 12,6"/>' ) ) );
