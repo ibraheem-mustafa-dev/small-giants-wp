@@ -1420,8 +1420,15 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
 	},
 	"sgs/commerce-note": {
-		"attributes": {},
-		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+		"attributes": {
+			"text": "Free returns on every order",
+			"linkLabel": "Read our returns policy",
+			"linkUrl": "https://example.test/returns/"
+		},
+		"notes": [
+			"src/blocks/commerce-note/render.php returns before printing anything while the text and the link are both empty ($sgs_note_text, $sgs_note_link), so the entry holds a text, a link label and a link address: both parts, sgs-commerce-note__text and sgs-commerce-note__link, print (the link through sgs_link_attributes, which returns '' for an empty address and prints no <a>).",
+			"No runner stand-in is needed: the block reads no site state."
+		]
 	},
 	"sgs/container": {
 		"attributes": {
@@ -1631,12 +1638,13 @@
 			"threshold": 2,
 			"placeholder": "Search brands",
 			"taxonomy": "product_brand",
-			"searchMode": "taxonomy-terms"
+			"searchMode": "taxonomy-terms",
+			"showCounts": true
 		},
 		"harness": {
 			"taxonomies": {
-				"product_cat": {
-					"label": "Category",
+				"product_brand": {
+					"label": "Brand",
 					"object_types": [
 						"product"
 					],
@@ -1661,9 +1669,15 @@
 						}
 					]
 				}
-			}
+			},
+			"renderFile": "fixtures/filter-search-wc.php"
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": [
+			"Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json; the entry was then corrected, as follows.",
+			"The attributes name taxonomy product_brand in taxonomy-terms mode, but the stand-in registry held product_cat only: src/blocks/filter-search/resolve-taxonomy-terms.php::sgs_filter_search_resolve_taxonomy_terms returns null (render.php returns, nothing prints) unless taxonomy_exists() and get_object_taxonomies( 'product' ) hold the name. harness.taxonomies now registers product_brand against the product object type (the runner's taxonomies file; wp-stubs.php::taxonomy_exists, get_object_taxonomies, get_taxonomy, get_terms) with three terms: the list prints, and the search input prints because the term count (3) reaches the threshold (render.php::$show_input, threshold 2).",
+			"showCounts is true, so each term row prints its count (resolve-taxonomy-terms.php::$show_counts).",
+			"The runner's stubs lack add_query_arg(), which builds each term's toggle link (resolve-taxonomy-terms.php::sgs_filter_search_resolve_taxonomy_terms): fixtures/filter-search-wc.php declares it (only when absent) and requires the block's render.php."
+		]
 	},
 	"sgs/form-field-address": {
 		"attributes": {
@@ -2104,8 +2118,24 @@
 		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json."
 	},
 	"sgs/free-delivery-bar": {
-		"attributes": {},
-		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+		"attributes": {
+			"freeDeliveryThresholdOverride": "75",
+			"freeDeliveryHideWhenEmpty": true
+		},
+		"variants": [
+			{},
+			{
+				"freeDeliveryThresholdOverride": "30"
+			}
+		],
+		"harness": {
+			"renderFile": "fixtures/free-delivery-bar-wc.php"
+		},
+		"notes": [
+			"src/blocks/free-delivery-bar/render.php returns before printing unless sgs_free_delivery_threshold() answers a number above 0: the override attribute answers it without WooCommerce's shipping zones (includes/helpers-free-delivery.php::sgs_free_delivery_threshold).",
+			"The basket state ($state) is read only on the cart or checkout page (is_cart() or is_checkout(), WC()->cart): fixtures/free-delivery-bar-wc.php stands in a cart page with a basket of 45.00 (get_subtotal, get_subtotal_tax, is_empty, needs_shipping). The card then prints the message with the amount left, the fill's --sgs-free-delivery-bar-pct and aria-valuenow, and (hideWhenEmpty on, basket not empty) no hidden attribute.",
+			"The second variant lowers the override to 30, below the basket: the card reaches the complete state (includes/helpers-free-delivery.php::sgs_free_delivery_progress, render.php::$classes), which adds sgs-free-delivery-bar--complete and the success message."
+		]
 	},
 	"sgs/gallery": {
 		"attributes": {
@@ -2115,35 +2145,63 @@
 			"showCaptions": true,
 			"mediaItems": [
 				{
-					"id": 3459,
-					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-					"alt": "Sample image",
 					"type": "image",
-					"mime": "image/jpeg",
-					"caption": "Caption 1"
+					"alt": "One",
+					"caption": "First",
+					"source": {
+						"desktop": {
+							"kind": "image",
+							"id": 11,
+							"url": "https://example.test/g1.jpg"
+						}
+					}
 				},
 				{
-					"id": 4080,
-					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/lc-pixel.png",
-					"alt": "Second sample image",
 					"type": "image",
-					"mime": "image/png",
-					"caption": "Caption 2"
+					"alt": "Two",
+					"caption": "Second",
+					"source": {
+						"desktop": {
+							"kind": "image",
+							"id": 12,
+							"url": "https://example.test/g2.jpg"
+						}
+					}
 				},
 				{
-					"id": 3459,
-					"url": "https://sandybrown-nightingale-600381.hostingersite.com/wp-content/uploads/2026/09/cookies-stacked-5.jpeg",
-					"alt": "Sample image",
 					"type": "image",
-					"mime": "image/jpeg",
-					"caption": "Caption 3"
+					"alt": "Three",
+					"caption": "Third",
+					"source": {
+						"desktop": {
+							"kind": "image",
+							"url": "https://example.test/g3.jpg",
+							"width": 1200,
+							"height": 800
+						}
+					}
+				},
+				{
+					"type": "video",
+					"alt": "",
+					"caption": "Clip",
+					"source": {
+						"desktop": {
+							"kind": "video",
+							"url": "https://example.test/v.mp4"
+						}
+					}
 				}
 			]
 		},
 		"variants": [
 			{},
 			{
-				"layout": "carousel"
+				"layout": {
+					"desktop": "carousel",
+					"tablet": "carousel",
+					"mobile": "carousel"
+				}
 			}
 		],
 		"harness": {
@@ -2152,11 +2210,25 @@
 				"12": "https://example.test/g2.jpg"
 			}
 		},
-		"notes": "Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json."
+		"notes": [
+			"Seeded by seed_fixtures.py from calibration-fixtures.json and render-paths.json; the entry was then corrected, as follows.",
+			"The second variant held layout as the string \"carousel\", but layout is a per-device object ({desktop,tablet,mobile}, block.json attributes.layout): instances.py::_object_values reads the held value's desktop tier and raised AttributeError ('str' object has no attribute 'get'). The variant now holds the object, carousel at every device, because sgs_gallery_layout_tiers honours a carousel only when all three tiers are carousel (src/blocks/gallery/render.php::$sgs_gal_tiers).",
+			"mediaItems held the retired flat shape (id, url, mime at the item's top level); render.php::$images reads each item's picture or video from source.<device> ({kind,id,url,width,height}), so the old items drew nothing. They now follow the render paths' attachment and media-slot paths: two images with an attachment id (11 and 12, in harness.attachments, so wp_get_attachment_image() draws them), an image with no id (the shared media renderer draws it) and a video (the media renderer's video markup). showCaptions is true, so each item draws its caption; enableLightbox is true by default, so each tile sits in the lightbox trigger."
+		]
 	},
 	"sgs/gift-order": {
-		"attributes": {},
-		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+		"attributes": {
+			"basketHelp": "We wrap it for you",
+			"messagePlaceholder": "Write a short note"
+		},
+		"harness": {
+			"renderFile": "fixtures/gift-order-wc.php"
+		},
+		"notes": [
+			"src/blocks/gift-order/render.php returns before printing unless the class SGS\\Blocks\\Gift_Order\\Gift_Order_Store_Api exists, and prints its own parts (switch, checkbox, help line, note field, count, error line) only on a single-product page (includes/gift-order/helpers-gift-order-product.php::sgs_gift_order_is_product_page reads is_product(); elsewhere it prints one empty placeholder for the Cart and Checkout blocks' component): fixtures/gift-order-wc.php loads includes/gift-order/class-gift-order-session.php and class-gift-order-store-api.php and answers is_product() true.",
+			"basketHelp holds text, so the help line prints (includes/gift-order/helpers-gift-order-product.php::sgs_gift_order_product_html, $config['basketHelp'] !== ''), and messagePlaceholder holds a placeholder for the note field.",
+			"The stand-in WooCommerce session (WC_Session::get for the key sgs_gift_order; includes/gift-order/class-gift-order-session.php::get) holds on true, a name and a note, so the fields print open (no hidden attribute on sgs-gift-order__fields) with the note and its count line. checked() and esc_textarea(), which the runner's stubs lack, are defined in the stand-in file."
+		]
 	},
 	"sgs/google-rating-badge": {
 		"attributes": {
@@ -3474,11 +3546,26 @@
 	},
 	"sgs/order-items": {
 		"attributes": {},
-		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+		"harness": {
+			"renderFile": "fixtures/order-items-wc.php",
+			"attachmentsFile": "fixtures/attachments.json"
+		},
+		"notes": [
+			"src/blocks/order-items/render.php returns before printing on the front end unless \\SGS\\Blocks\\Order_Binding::viewable_order() answers an order (the runner's get_query_var() answers every query var as unset, so the real class's order-received lookup cannot be reached): fixtures/order-items-wc.php declares an Order_Binding that answers one order.",
+			"The order carries what includes/order-items/helpers-order-items.php::sgs_order_items_data reads, so every part prints: two lines (the first with a picture, attachment 9001 in fixtures/attachments.json, drawn through includes/product-card-media.php::sgs_pcm_render as the thumb slot, and two options, drawn with their labels because the shop's wording option is unset; the second with no options), a delivery method and cost (the label note), a discount, a gift card amount (sgs_order_items_gift_card_pence reads Gift_Card_Order::fee_amounts, stood in by a class of that name) and a total. Every show* flag defaults to true."
+		]
 	},
 	"sgs/pay-later-message": {
-		"attributes": {},
-		"notes": "Seeded by seed_fixtures.py from no calibration fixture."
+		"attributes": {
+			"countryCode": "GB"
+		},
+		"harness": {
+			"renderFile": "fixtures/pay-later-message-wc.php"
+		},
+		"notes": [
+			"src/blocks/pay-later-message/render.php returns before printing unless class_exists( 'WC_Stripe' ) and includes/commerce-blocks/helpers-pay-later.php::sgs_pay_later_method_enabled finds an enabled gateway stripe_<method> in WC()->payment_gateways()->payment_gateways(): fixtures/pay-later-message-wc.php declares WC_Stripe and a gateway list that answers every stripe_<method> as enabled, so each method the check tries (klarna, afterpay_clearpay, affirm) prints. Commerce_Blocks_Assets::enqueue() only queues a script, so a no-op class stands in.",
+			"The block's own markup is one empty div carrying data-block-name and data-config: the message is drawn by the React component (src/commerce-blocks/pay-later/component.js), which the offline render does not run, so the block has no part to record here."
+		]
 	},
 	"sgs/physics-canvas": {
 		"attributes": {
