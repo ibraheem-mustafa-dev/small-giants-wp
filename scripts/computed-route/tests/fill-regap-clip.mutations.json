@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/fill-regap.mjs",
-		"find": "siblings: clipOf( ctx, target ), fluid: null",
+		"find": "siblings: { ...clipOf( ctx, target ), ...offsetsOf( ctx, target ) }, fluid: null",
 		"replace": "siblings: {}, fluid: null",
 		"why": "the re-asked resolver is blind to the draft's background-clip again"
 	},

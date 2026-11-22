@@ -53,6 +53,10 @@ const clipOf = ( ctx, target ) => {
 	return Object.keys( clip ).length ? { 'background-clip': clip } : {};
 };
 
+// The element's `top` and `bottom` per width: the offsets that name the edge a sticky element sticks to
+// (lib/resolve-enum.mjs::pinEdges).
+const offsetsOf = ( ctx, target ) => Object.fromEntries( [ 'top', 'bottom' ].map( ( p ) => [ p, Object.fromEntries( WIDTHS.map( ( w ) => [ w, ctx.reads.widths?.[ w ]?.[ target.id ]?.styles?.[ p ] ] ).filter( ( [ , v ] ) => v ) ) ] ).filter( ( [ , v ] ) => Object.keys( v ).length ) );
+
 // Runs the resolver on { width: value } for `prop` on the element at `slot`. The generic resolver's own entry point
 // (lib/fill-prop.mjs::resolveProperty), with no baseline, so every width given is judged. The font size an em value is read
 // against is `target`'s, else `fallback`'s (the row's own element, when `target` is the written element and has no font-size
@@ -62,7 +66,7 @@ export function reresolve( { rec, node, target, fallback = null, slot, prop, dra
 	const fontOf = ( t ) => Object.fromEntries( WIDTHS.map( ( w ) => [ w, parseFloat( ctx.reads.widths?.[ w ]?.[ t.id ]?.styles?.[ 'font-size' ] ) ] ).filter( ( [ , v ] ) => v ) );
 	const own = fontOf( target );
 	const fontPx = Object.keys( own ).length || ! fallback ? own : fontOf( fallback );
-	return resolver( { node, block: rec.name, prop, draft, baseline: () => NO_BASELINE, state, slots: [ slot ], calibration, db: ctx.db, snapshot: ctx.snapshot ?? null, log: [], fontPx, siblings: clipOf( ctx, target ), fluid: null, declared: {} } );
+	return resolver( { node, block: rec.name, prop, draft, baseline: () => NO_BASELINE, state, slots: [ slot ], calibration, db: ctx.db, snapshot: ctx.snapshot ?? null, log: [], fontPx, siblings: { ...clipOf( ctx, target ), ...offsetsOf( ctx, target ) }, fluid: null, declared: {} } );
 }
 
 // Writes a resolver result into the node and records each write; returns the number of settings changed.

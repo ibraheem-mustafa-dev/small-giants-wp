@@ -62,3 +62,35 @@ export function mapTiers( row, def, calibrationSetting, prop, tiers ) {
 	}
 	return { tiers: out };
 }
+
+// A pin setting whose list names the edge a sticky element sticks to (top, bottom) and no `sticky`: the draft's `position: sticky` is
+// the edge its offset names at that tier's width (`top` set: top; else `bottom` set: bottom; both: top), `static` and `relative` are
+// no pin ("none" where the list holds it). A sticky element with neither offset set has no edge to pin to, so the row says so and
+// nothing is written; any other position is not one of the list. Returns { tiers } or { error }, or null where the setting is no
+// pin setting (prop is not position, or the list lacks top and bottom, or holds the keyword itself). `siblings`: the element's
+// other properties by width ({ top: { 1440: '20px' }, bottom: { 1440: 'auto' } }).
+export function pinEdges( row, def, prop, tiers, siblings ) {
+	const list = enumValues( row, def );
+	if ( 'position' !== prop || ! list.includes( 'top' ) || ! list.includes( 'bottom' ) || list.includes( 'sticky' ) ) {
+		return null;
+	}
+	const set = ( v ) => undefined !== v && '' !== String( v ).trim() && 'auto' !== String( v ).trim();
+	const out = {};
+	for ( const [ t, raw ] of Object.entries( tiers ) ) {
+		const at = WIDTH_OF[ t ];
+		if ( 'sticky' === raw ) {
+			const edge = set( siblings?.top?.[ at ] ) ? 'top' : set( siblings?.bottom?.[ at ] ) ? 'bottom' : null;
+			if ( ! edge ) {
+				return { error: `position sticky at ${ at }px names no edge (its top and bottom are not set), so ${ row.attr_name } has no edge to pin to` };
+			}
+			out[ t ] = edge;
+		} else if ( [ 'static', 'relative' ].includes( raw ) && ( list.includes( 'none' ) || ! list.length ) ) {
+			out[ t ] = 'none';
+		} else if ( list.includes( String( raw ) ) ) {
+			out[ t ] = raw;
+		} else {
+			return { error: `${ raw } is not one of ${ list.join( ', ' ) }` };
+		}
+	}
+	return { tiers: out };
+}

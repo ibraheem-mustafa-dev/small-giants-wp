@@ -20,7 +20,8 @@
 // Which blocks and settings take part comes from the framework DB and the block's calibration, never from a list.
 // A row naming several nodes (`nodes`) is judged and written on each. Returns { writes, unmapped (the rows left), answered
 // (lib/fill-regap.mjs::answer: each row written or settled, with the read widths it answers), notes, ledger }.
-import { ONE_VALUE_EVERY_WIDTH, LOOSE, ownElementSetting } from './resolve.mjs';
+import { ONE_VALUE_EVERY_WIDTH, LOOSE, ownElementSetting, blockSchema } from './resolve.mjs';
+import { pinEdges } from './resolve-enum.mjs';
 import { siblings, candidates } from './db.mjs';
 import { setAttr } from './tree.mjs';
 import { mediaRule, scopedCssPuts, snapThreshold, snapEntry, ownBreakpoint, collapseAttributes } from './fill-width-gate.mjs';
@@ -296,6 +297,14 @@ function ladder( { row, hit, nodes, flat, ctx, out, scope, entries, date, collap
 	}
 	if ( tiered.length ) {
 		const r = tiered[ 0 ];
+		// A pin setting holds the edge a sticky element sticks to, never the keyword: the edge its offset names at each width, and no
+		// write (the row stays) where the draft's sticky element names none.
+		const sibs = Object.fromEntries( [ 'top', 'bottom' ].map( ( p ) => [ p, Object.fromEntries( widths.map( ( w ) => [ w, reads.widths?.[ w ]?.[ home.id ]?.styles?.[ p ] ] ) ) ] ) );
+		const pin = pinEdges( r, blockSchema( rec.name )?.[ r.attr_name ], prop, Object.fromEntries( widths.map( ( w ) => [ TIER_OF[ w ], values[ w ] ] ) ), sibs );
+		if ( pin?.error ) {
+			return false;
+		}
+		pin && widths.forEach( ( w ) => ( values[ w ] = pin.tiers[ TIER_OF[ w ] ] ) );
 		const tiers = {};
 		let carried = null;
 		for ( const w of [ ...widths ].reverse() ) {
