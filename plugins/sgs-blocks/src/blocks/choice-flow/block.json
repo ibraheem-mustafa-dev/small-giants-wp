@@ -488,7 +488,7 @@
 		},
 		"stageNoteIconCircleSize": {
 			"type": "object",
-			"description": "Diameter of the help note's icon disc in px, per device {desktop,tablet,mobile} (16 to 96). The icon keeps its own 18px inside it. Empty keeps the stylesheet's 34px."
+			"description": "Diameter of the help note's icon disc, per device {desktop,tablet,mobile}, each a CSS length such as 40px or 2.5rem (a bare number is read as px). The icon keeps its own 18px inside it. Empty keeps the stylesheet's 34px."
 		},
 		"progressColour": {
 			"type": "string",

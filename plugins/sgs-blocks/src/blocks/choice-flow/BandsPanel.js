@@ -13,9 +13,10 @@
 
 import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, RangeControl } from '@wordpress/components';
-import { ResponsiveOverride, TierBorderControl, fillRow } from '../../components';
-import { colourVar, tierBoxLonghands, tierValueOf, usePreviewTier } from '../../utils';
+import { PanelBody } from '@wordpress/components';
+import { ResponsiveOverride, SgsLengthControl, TierBorderControl, fillRow } from '../../components';
+import { colourVar, tierBoxLonghands, usePreviewTier } from '../../utils';
+import { tierLengthPreview } from '../../utils/cssLength';
 import { TierPadding, cssText, tierBorderPreview } from '../choice-flow-question/OptionCardPanels';
 
 /**
@@ -52,18 +53,14 @@ export default function BandsPanel( { attributes, setAttributes } ) {
 					value={ attributes.stageNoteIconCircleSize }
 					onChange={ ( obj ) => setAttributes( { stageNoteIconCircleSize: obj } ) }
 				>
-					{ ( { ownValue, setOwnValue } ) => (
-						<RangeControl
-							label={ __( 'Help note icon disc size (px)', 'sgs-blocks' ) }
+					{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+						<SgsLengthControl
+							label={ __( 'Help note icon disc size', 'sgs-blocks' ) }
 							help={ __( 'The disc behind the help note’s icon in the showcase layout. Empty keeps 34px; the icon keeps its own size.', 'sgs-blocks' ) }
-							value={ 'number' === typeof ownValue ? ownValue : undefined }
-							onChange={ ( val ) => setOwnValue( val ) }
-							min={ 16 }
-							max={ 96 }
-							step={ 1 }
-							allowReset
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							presets={ false }
+							value={ ownValue ?? '' }
+							placeholder={ inherited ? effectiveValue : '' }
+							onChange={ ( val ) => setOwnValue( val || undefined ) }
 						/>
 					) }
 				</ResponsiveOverride>
@@ -119,18 +116,14 @@ function bandFill( value ) {
 }
 
 /**
- * The help note's icon disc diameter at a tier, as `sgs_choice_flow_note_icon_size_css()` accepts it (16 to 96 px).
+ * The help note's icon disc diameter at a tier, as `sgs_choice_flow_note_icon_size_css()` prints it: a CSS length (a bare number is px).
  *
- * @param {Object} value {desktop, tablet, mobile} sizes in px.
+ * @param {Object} value {desktop, tablet, mobile} lengths.
  * @param {string} tier  The previewed device.
  * @return {string|undefined} CSS length, or undefined when unset.
  */
 function noteIconSize( value, tier ) {
-	const size = tierValueOf( value, tier, ( raw ) => {
-		const n = Number( raw );
-		return Number.isFinite( n ) && n >= 16 && n <= 96 ? n : undefined;
-	} );
-	return undefined === size ? undefined : `${ Math.round( size * 100 ) / 100 }px`;
+	return tierLengthPreview( value, tier );
 }
 
 /**

@@ -39,10 +39,19 @@ final class ChoiceFlowNoteIconSizeTest extends TestCase {
 	}
 
 	/**
-	 * Unset, or out of the 16 to 96 range, prints nothing.
+	 * A length with its unit prints as written (the shape the shared length control stores).
 	 */
-	public function test_unset_or_out_of_range_prints_nothing(): void {
+	public function test_a_length_string_prints_with_its_unit(): void {
+		$css = $this->render_block( 'sgs/choice-flow', array( 'stageNoteIconCircleSize' => array( 'desktop' => '2.5rem', 'mobile' => '40px' ) ) )['css'];
+		$this->assertMatchesRegularExpression( '/summary-note-icon\{width:2\.5rem;height:2\.5rem;?\}/', $css );
+		$this->assertMatchesRegularExpression( '/@media[^{]*\{[^{]*summary-note-icon\{width:40px;height:40px;?\}/', $css );
+	}
+
+	/**
+	 * Unset, or an unsafe value, prints nothing.
+	 */
+	public function test_unset_or_unsafe_prints_nothing(): void {
 		$this->assertStringNotContainsString( 'summary-note-icon{', $this->render_block( 'sgs/choice-flow', array() )['css'] );
-		$this->assertStringNotContainsString( 'summary-note-icon{', $this->render_block( 'sgs/choice-flow', array( 'stageNoteIconCircleSize' => array( 'desktop' => 400 ) ) )['css'] );
+		$this->assertStringNotContainsString( 'summary-note-icon{', $this->render_block( 'sgs/choice-flow', array( 'stageNoteIconCircleSize' => array( 'desktop' => '40px;color:red' ) ) )['css'] );
 	}
 }

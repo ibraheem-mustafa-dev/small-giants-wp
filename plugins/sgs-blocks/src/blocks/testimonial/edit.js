@@ -1393,7 +1393,7 @@ export default function Edit( {
 					} )() }
 				</PanelBody>
 				<PanelBody
-					title={ __( 'Card shadow', 'sgs-blocks' ) }
+					title={ __( 'Quote box', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
 					<ShadowControl
