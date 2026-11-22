@@ -152,6 +152,8 @@ def _curve(value: str) -> tuple | None:
 # --- scale presets -----------------------------------------------------------------------------------------
 
 SCALE_SIZE = {"fontSizes": 6, "spacing": 8}
+# The largest size `small` may be, as a share of the body size: 7/8, the 14px a 16px body gives a secondary line.
+SMALL_MAX_OF_BODY = 0.875
 SPACING_WORDS = frozenset({"space", "gap"})
 
 
@@ -261,7 +263,11 @@ def pick_font_scale(rows: list[dict], slots: list[str], usage: dict[str, int], b
                     literals: dict[str, int]) -> dict[str, dict]:
     """``{slot: row}`` for the font sizes, ascending strictly in slot order (SGS block defaults read the slugs by meaning).
 
-    ``regular`` is the body token. ``small`` is the smallest token in use below body. The slots above body ascend and ``hero``
+    ``regular`` is the body token. ``small`` is the draft's most used secondary size: of the tokens at most ``SMALL_MAX_OF_BODY``
+    of body (the 14px of a 16px body; a size just under body is body text, not a secondary line) the one with the most uses, the
+    smaller on a tie, so a one-off chip size never becomes the size every secondary line of the theme reads (a draft whose
+    smallest size is also its most used keeps it). No token in use there falls back to the smallest token under the cap, and no
+    token under the cap to the tokens below body. The slots above body ascend and ``hero``
     is the largest heading token (else the largest token); the ones between take the most used tokens above body, and when the
     draft has fewer distinct tokens there than slots the draft's most used literal sizes between the neighbours (a row with
     ``token`` None, recorded as null in ``presetTokens``)."""
@@ -278,8 +284,10 @@ def pick_font_scale(rows: list[dict], slots: list[str], usage: dict[str, int], b
     b = val(body)
     below = [r for r in rows if val(r) < b and r["token"] != body["token"]]
     if below and cut:
-        in_use = [r for r in below if usage.get(r["token"], 0) > 0] or below
-        out[names[0]] = min(in_use, key=lambda r: (val(r), order[r["token"]]))
+        secondary = [r for r in below if val(r) <= b * SMALL_MAX_OF_BODY] or below
+        in_use = [r for r in secondary if usage.get(r["token"], 0) > 0]
+        out[names[0]] = max(in_use, key=lambda r: (usage[r["token"]], -val(r), -order[r["token"]])) if in_use else min(
+            secondary, key=lambda r: (val(r), order[r["token"]]))
     if names[0] not in out and cut:
         text = next((t for t, _ in sorted(literals.items(), key=lambda kv: (-kv[1], kv[0])) if float(t[:-2]) < b), f"{max(round(b * 0.75), 1):g}px")
         out[names[0]] = {"token": None, "value": text, "name": "Size " + text[:-2]}

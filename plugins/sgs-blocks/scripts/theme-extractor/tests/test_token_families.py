@@ -185,3 +185,37 @@ def test_negative_control_a_slot_smaller_than_the_one_before_it_fails_the_gate(t
     snap, _, _ = run(tmp_path, ":root{--gap-1:8px}", typo)
     snap["settings"]["typography"]["fontSizes"][2]["size"] = "10px"
     assert any("not larger than the slot before it" in p for p in roster.problems(snap, {"fontSizes": ["small", "regular", "large"], "spacing": []}))
+
+
+def _small(tmp_path, typography_css, html=""):
+    snap, _, _ = run(tmp_path, ":root{--gap-1:8px}", typography_css, html)
+    return sizes(snap, "fontSizes")["small"]["size"], snap["settings"]["custom"]["presetTokens"]["fontSizes"]["small"]
+
+
+def test_small_is_the_most_used_secondary_size_never_a_one_off_chip_size(tmp_path):
+    """MUST FAIL on the old code: the smallest token in use became ``small``, so a 9.5px chip used twice sized every
+    secondary line of the theme (a draft with a 16px body, 12px to 15px text used dozens of times and one 9.5px chip)."""
+    typo = (":root{--size-9-5:9.5px;--size-12:12px;--size-13:13px;--size-14:14px;--size-15:15px;--text-base:16px;--size-18:18px;"
+            "--size-22:22px;--size-28:28px;--size-hero:clamp(42px,4.4vw,72px)}" + chr(10) + "body{font-size:var(--text-base)}")
+    uses = {"size-9-5": 2, "size-12": 52, "size-13": 79, "size-14": 46, "size-15": 78, "text-base": 17}
+    html = "".join(f"<p style='font-size:var(--{tok})'></p>" * n for tok, n in uses.items())
+    value, token = _small(tmp_path, typo, html)
+    assert (value, token) == ("13px", "size-13")
+
+
+def test_small_never_reads_a_size_just_under_body(tmp_path):
+    """A 15px size used most is body text on a 16px body, not a secondary line: the cap is 7/8 of body (14px)."""
+    typo = ":root{--size-12:12px;--size-14:14px;--size-15:15px;--text-base:16px;--size-22:22px;--size-28:28px}" + chr(10) + "body{font-size:var(--text-base)}"
+    html = "".join(f"<p style='font-size:var(--{tok})'></p>" * n for tok, n in {"size-12": 5, "size-14": 20, "size-15": 90}.items())
+    assert _small(tmp_path, typo, html)[0] == "14px"
+
+
+def test_negative_control_a_draft_whose_smallest_size_is_also_its_most_used_keeps_it(tmp_path):
+    typo = ":root{--size-11:11px;--size-13:13px;--size-14:14px;--text-base:16px;--size-22:22px}" + chr(10) + "body{font-size:var(--text-base)}"
+    html = "".join(f"<p style='font-size:var(--{tok})'></p>" * n for tok, n in {"size-11": 30, "size-13": 10, "size-14": 4}.items())
+    assert _small(tmp_path, typo, html)[0] == "11px"
+
+
+def test_negative_control_with_no_size_in_use_the_smallest_token_under_the_cap_is_small(tmp_path):
+    typo = ":root{--size-12:12px;--size-13:13px;--text-base:16px;--size-22:22px}" + chr(10) + "body{font-size:var(--text-base)}"
+    assert _small(tmp_path, typo)[0] == "12px"
