@@ -9,6 +9,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
 import ServerSideRender from '../../components/ServerSideRender';
+import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import {
 	BOX_UNITS,
 	MediaElementPanel,
@@ -384,6 +385,7 @@ export default function Edit( { attributes, setAttributes } ) {
 								<SgsBoxControl
 									label={ label }
 									hideLabelFromVision
+									defaults={ spacingDefaultsFor( 'sgs/order-items', attr ) }
 									values={
 										ownValue && 'object' === typeof ownValue
 											? ownValue

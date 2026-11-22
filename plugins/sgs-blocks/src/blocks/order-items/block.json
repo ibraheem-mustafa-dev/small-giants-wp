@@ -165,6 +165,11 @@
 					}
 				}
 			},
+			"spacingDefaults": {
+				"rowPadding": {
+					"bottom": "var(--wp--preset--spacing--30)"
+				}
+			},
 			"colourExemptions": {
 				"itemNameColour": {
 					"rule": "states",
