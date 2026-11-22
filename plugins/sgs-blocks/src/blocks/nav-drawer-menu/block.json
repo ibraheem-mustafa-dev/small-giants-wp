@@ -1875,8 +1875,7 @@
 		},
 		"itemGap": {
 			"type": "object",
-			"default": {},
-			"description": "The gap between the parts of a link row (ornament, label, badge, trailing icon) per device: one length, or `row column` as the shared gap control stores it. `gap` on `.sgs-nav-drawer-menu__link`, the whole of a plain link row, so it is what separates a label from its trailing arrow (the accordion expander of a whole-row toggle has submenuCaretGap). Empty keeps the row as it is today (no gap). Emitted by includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css()."
+			"description": "The gap between the parts of a link row (ornament, label, badge, trailing icon) per device: one length, or `row column` as the shared gap control stores it. `gap` on `.sgs-nav-drawer-menu__link`, the whole of a plain link row, so it is what separates a label from its trailing arrow (the accordion expander of a whole-row toggle has submenuCaretGap). Unset keeps the row as it is today (no gap); it has no default so the block's instance hash does not move. Emitted by includes/nav-menu-item-padding-css.php::sgs_nav_item_padding_css()."
 		},
 		"itemBadgeFontSize": {
 			"type": "object",

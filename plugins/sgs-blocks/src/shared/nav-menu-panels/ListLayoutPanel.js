@@ -77,7 +77,7 @@ export default function ListLayoutPanel( {
 					padding: {},
 					...( showMargin ? { margin: {} } : {} ),
 					...( showItemPadding ? { itemPadding: {}, itemMinHeight: {}, itemBadgePadding: {}, itemBadgeBorderRadius: '', itemBadgeGap: '' } : {} ),
-					...( showItemGap ? { itemGap: {} } : {} ),
+					...( showItemGap ? { itemGap: undefined } : {} ),
 					...( showSubmenuLinkPadding ? { submenuLinkPadding: {} } : {} ),
 					...( showFlexWrap ? { flexWrap: '' } : {} ),
 				} )

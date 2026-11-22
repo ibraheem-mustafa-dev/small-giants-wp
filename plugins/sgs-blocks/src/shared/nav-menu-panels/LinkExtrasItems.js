@@ -109,7 +109,7 @@ export default function LinkExtrasItems( {
 				<ToolsPanelItem
 					hasValue={ () => Object.keys( itemGap ?? {} ).length > 0 }
 					label={ __( 'Row gap', 'sgs-blocks' ) }
-					onDeselect={ () => setAttributes( { itemGap: {} } ) }
+					onDeselect={ () => setAttributes( { itemGap: undefined } ) }
 				>
 					<ResponsiveOverride
 						value={ itemGap }
