@@ -252,6 +252,11 @@ export function templateSurfaces( rows ) {
 	return out;
 }
 
+// The fields of a generated entry that say where the surface lives: the site, its credentials and the post or template it builds.
+// They follow this run's page map and --site, never a kept entry's, so an entry kept from another copy of the site (its post
+// ids belong to that copy) points at this site's posts once the manifest is applied.
+const placeOf = ( entry ) => ( { site: entry.site, envFile: entry.envFile, envKey: entry.envKey, target: entry.target } );
+
 // Builds the manifest. `target` is the calibration target ({ envFile, envKey }), `entryFiles` the export's entry drafts
 // (`entryFile` for an export with one); each surface takes the draft draftFor names.
 // `only` limits the run to those keys. `facts` is the client's fact record (`state[<dc>]` gives statesOf its context). Returns { entries, unresolved, unmatched, pointer, dropped, disagree, skipped, added, stale, noIntake, noFacts, noDraft, unplayed }; throws when two rows give one key.
@@ -302,7 +307,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 		const have = Object.hasOwn( existing, c.key ) ? existing[ c.key ] : null;
 		const added = have ? Object.keys( entry ).filter( ( f ) => ! Object.hasOwn( have, f ) ) : [];
 		added.length && ( out.added[ c.key ] = added );
-		entries[ c.key ] = have ? { ...entry, ...have, copy: c.copy } : entry;
+		entries[ c.key ] = have ? { ...entry, ...have, ...placeOf( entry ), copy: c.copy } : entry;
 	}
 	const filled = copies.filter( ( c ) => 'fill' === c.copy.from );
 	for ( const row of [ ...rows, ...filled.map( ( c ) => ( { ...c.row, templateOf: c } ) ) ] ) {
@@ -387,7 +392,7 @@ export function buildManifest( { client, site, rows, records, intake = null, fac
 			const stale = intakeSurface && Object.hasOwn( have, 'intakeSurface' ) && ! Object.hasOwn( intake.skeletons, have.intakeSurface );
 			// A template copy's source is generated truth, as it is for a copy that reads no draft: a copy once made from the page
 			// shell is Filled at its row once the row matches a record.
-			entries[ key ] = { ...entry, ...have, ...( isTemplate ? { copy: row.templateOf.copy } : {} ), ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
+			entries[ key ] = { ...entry, ...have, ...placeOf( entry ), ...( isTemplate ? { copy: row.templateOf.copy } : {} ), ...( noDraft ? { noDraft } : {} ), ...( stale ? { intakeSurface } : {} ) };
 			noDraft || delete entries[ key ].noDraft;
 			// An existing entry's walker fields do not survive for a page the run never walks: a re-apply drops them.
 			walked || ( delete entries[ key ].walker, delete entries[ key ].walkerFull );

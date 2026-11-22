@@ -103,6 +103,20 @@ test( 'an existing entry keeps its hand-set fields and gains only missing ones',
 	assert.equal( out.added.home.includes( 'tree' ), false );
 } );
 
+test( 'MUST FAIL: a kept entry takes this run\'s site, credentials and post id, so a manifest applied on another copy of the site points at that copy\'s layout posts', () => {
+	const stale = { site: 'old-site', envFile: '.claude/secrets/old.env', envKey: 'OLD', target: { postId: 176 }, tree: 'custom.json' };
+	const rows = [ row( 'sgs_header', 'header', 6135 ), row( 'sgs_footer', 'footer', 6133 ), row( 'sgs_drawer', 'drawer-menu', 6137 ) ];
+	const out = run( rows, [], { existing: { header: { ...stale }, footer: { ...stale, target: { postId: 6133 } }, 'drawer-menu': { ...stale } } } );
+	assert.deepEqual( [ 'header', 'footer', 'drawer-menu' ].map( ( k ) => out.entries[ k ].target ), [ { postId: 6135 }, { postId: 6133 }, { postId: 6137 } ] );
+	assert.deepEqual( [ out.entries.header.site, out.entries.header.envFile, out.entries.header.envKey ], [ 'x-test', target.envFile, target.envKey ] );
+	assert.equal( out.entries.header.tree, 'custom.json', 'a hand-set field is still kept' );
+} );
+
+test( 'a kept entry already pointing at this run\'s site and post is unchanged (negative control)', () => {
+	const entries = run( [ row( 'page', 'home', 6 ) ] ).entries;
+	assert.deepEqual( run( [ row( 'page', 'home', 6 ) ], [], { existing: entries } ).entries, entries );
+} );
+
 test( 'two rows giving one key is a hard error naming both', () => {
 	assert.throws( () => run( [ row( 'sgs_mega_menu', 'mega-a', 1 ), row( 'sgs_mega_menu', 'a', 2 ) ] ), /sgs_mega_menu:mega-a and sgs_mega_menu:a both give the key mega-a/ );
 } );
