@@ -2033,6 +2033,13 @@
 						"parentOfAnchor": "price"
 					}
 				},
+				"repeatedAmounts": {
+					"from": "page",
+					"match": {
+						"repeats": true,
+						"hasAmount": true
+					}
+				},
 				"rrpPrice": {
 					"from": "priceRow",
 					"match": {
@@ -2045,6 +2052,18 @@
 			"parts": {
 				"price-row": {
 					"sameAs": "priceRow"
+				},
+				"loose-price": {
+					"from": "page",
+					"match": {
+						"text": "currency",
+						"scope": "page",
+						"notInside": {
+							"control": true
+						},
+						"notInAnchor": "repeatedAmounts"
+					},
+					"pick": "first"
 				},
 				"rrp-price": {
 					"sameAs": "rrpPrice"

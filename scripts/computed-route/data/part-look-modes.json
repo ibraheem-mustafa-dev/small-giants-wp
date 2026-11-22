@@ -167,11 +167,14 @@
 				{
 					"setting": "showPriceRow",
 					"value": false,
-					"whenAbsent": "price-row",
+					"whenAbsent": [
+						"price-row",
+						"loose-price"
+					],
 					"neighbours": [
 						"add-to-cart"
 					],
-					"note": "price-row is the parent of the price the shop parts record locates by structure (its `price` rule); a draft that draws the price only inside its controls (a pack tile, the add button) has none, and a draft that draws a price row keeps the block's own"
+					"note": "price-row is the parent of the price the shop parts record locates by structure (its `price` rule); a draft that draws the price only inside its controls (a pack tile, the add button) has none, and a draft that draws a price row keeps the block's own. loose-price (a bare amount on the page outside every control and every repeated card) must be absent too: a price the record does not locate (\"From £9.50\", a price inside a condition) keeps the row"
 				},
 				{
 					"setting": "rrpMetaKey",

@@ -1,12 +1,6 @@
 [
 	{
 		"file": "data/part-look-modes.json",
-		"find": "\"whenAbsent\": \"price-row\",\n\t\t\t\t\t\"neighbours\": [\n\t\t\t\t\t\t\"add-to-cart\"\n\t\t\t\t\t],",
-		"replace": "\"whenAbsent\": \"price-row\",",
-		"why": "a failed read turns the price row off"
-	},
-	{
-		"file": "data/part-look-modes.json",
 		"find": "\"value\": \"_sgs_rrp\",",
 		"replace": "\"value\": \"_rrp\",",
 		"why": "the RRP is read from a key the catalogue does not write"
@@ -28,5 +22,17 @@
 		"find": "\"setting\": \"showStockStatus\",\n\t\t\t\t\t\"value\": true,\n\t\t\t\t\t\"whenFound\": \"stock\"",
 		"replace": "\"setting\": \"showStockStatus\",\n\t\t\t\t\t\"value\": true,\n\t\t\t\t\t\"whenFound\": \"add-to-cart\"",
 		"why": "the stock line is turned on where the draft draws none"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"price-row\",\n\t\t\t\t\t\t\"loose-price\"\n\t\t\t\t\t],",
+		"replace": "\"price-row\"\n\t\t\t\t\t],",
+		"why": "a price the record does not locate is switched off"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"loose-price\"\n\t\t\t\t\t],\n\t\t\t\t\t\"neighbours\": [\n\t\t\t\t\t\t\"add-to-cart\"\n\t\t\t\t\t],",
+		"replace": "\"loose-price\"\n\t\t\t\t\t],",
+		"why": "a failed read turns the price row off"
 	}
 ]

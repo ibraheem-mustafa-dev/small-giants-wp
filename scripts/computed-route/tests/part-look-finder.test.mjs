@@ -302,3 +302,14 @@ test( 'MUST FAIL: the price row, RRP, saving pill, stock line and gallery saving
 		assert.deepEqual( bare[ part ], [], part );
 	}
 } );
+
+// Review fix: a price the shop parts record does not locate ("From £9.50", drawn as words around a value) is still a loose bare amount
+// on the page; amounts inside a control (the add button, an option tile) or inside a repeated card are not.
+test( 'MUST FAIL: a bare amount outside every control and repeated card is a loose price; amounts in buttons and cards are not', async () => {
+	const pill = ( t ) => `<button type="button"><span>${ t }</span><span><span>£9.50</span></span></button>`;
+	const cards = '<div><div class="c"><p>Trio</p><p><span>£5</span></p></div><div class="c"><p>Box</p><p><span>£15</span></p></div></div>';
+	const page = ( price ) => BUY( `<div><h1><span>Zookies</span></h1>${ price }<div><div>1 · How many</div><div>${ pill( 'Eight' ) }${ pill( 'Twenty' ) }</div></div><button data-dc-tpl="108" type="button">Add to basket · <span>£21.50</span></button></div>${ cards }` );
+	const extra = { shopParts: { 'buybox-add-to-basket': [ { dc: 'Product', tpl: '108' } ] }, rootName: 'Product' };
+	assert.deepEqual( ( await locateIn( page( '<p>From <span>£9.50</span></p>' ), 'buybox', extra ) )[ 'loose-price' ].map( ( i ) => i.text ), [ '£9.50' ] );
+	assert.deepEqual( ( await locateIn( page( '' ), 'buybox', extra ) )[ 'loose-price' ], [], 'prices only inside the controls and the cards' );
+} );

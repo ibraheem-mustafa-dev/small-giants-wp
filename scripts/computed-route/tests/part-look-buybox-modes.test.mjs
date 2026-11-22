@@ -52,3 +52,9 @@ test( 'negative controls: no add button found reads no absence; a badge with no 
 	assert.equal( written( two ).stockInStockLabel, undefined );
 	assert.ok( two.gaps.some( ( g ) => 'stockInStockLabel' === g.setting ) );
 } );
+
+test( 'MUST FAIL: a price drawn but not located (a loose bare amount outside the controls) keeps the block\'s price row', () => {
+	const r = run( { ...MAMAS, 'loose-price': at( '£9.50' ) } );
+	assert.equal( written( r ).showPriceRow, undefined );
+	assert.deepEqual( r.settings.showPriceRow, { code: 'drawn' } );
+} );

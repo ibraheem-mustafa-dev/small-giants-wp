@@ -40,5 +40,17 @@
 		"find": ",\n\t\t\t\t\t\t\"notInside\": {\n\t\t\t\t\t\t\t\"repeats\": true\n\t\t\t\t\t\t}",
 		"replace": "",
 		"why": "a repeated card's badge stands in for the gallery's"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"scope\": \"page\",\n\t\t\t\t\t\t\"notInside\": {\n\t\t\t\t\t\t\t\"control\": true\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"notInAnchor\": \"repeatedAmounts\"",
+		"replace": "\"scope\": \"page\",\n\t\t\t\t\t\t\"notInAnchor\": \"repeatedAmounts\"",
+		"why": "an amount inside a control is a loose price"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "},\n\t\t\t\t\t\t\"notInAnchor\": \"repeatedAmounts\"",
+		"replace": "}",
+		"why": "a repeated card's price is a loose price"
 	}
 ]
