@@ -2602,6 +2602,7 @@ def _load_element_manifest_reverse(
                         "css_layer": element_layer,
                         "manifest_css_key": None,
                         "source": "prefix",
+                        "prefix": prefix,
                     }
     return out
 
@@ -2793,6 +2794,85 @@ def _manifest_role_verdict(
     if len(css_keys) == 1:
         return "color" if css_keys[0] in colour_terminal else None
     return "styling" if existing_role in (None, "color") else None
+
+
+def _slot_element(manifest_hit: "dict | None", bem_element: "str | None") -> "str | None":
+    """The css_element an attr is written with: the block manifest's explicit attrMap
+    declaration, else the BEM element its rendered selector shows, else the manifest's
+    prefix-convention element, else None."""
+    if manifest_hit and manifest_hit.get("source") == "attrMap":
+        return manifest_hit["css_element"]
+    return bem_element or (manifest_hit["css_element"] if manifest_hit else None)
+
+
+def _ambiguity_slot(
+    props: "set[str]", state: "str | None", tier: "str | None",
+    bem_element: "str | None", manifest_hit: "dict | None",
+) -> "tuple | None":
+    """The slot an attr occupies for the ambiguity net: (properties, state, tier, the
+    manifest's element or None), or None when a BEM-observed element already tells it
+    apart (that attr is never refused)."""
+    if bem_element:
+        return None
+    # An element counts as telling attrs apart only when the manifest states it: an
+    # attrMap entry, or a non-empty prefix. A bare (empty) prefix claims attrs by a
+    # case-insensitive suffix coincidence (trust-bar's `badge-label` takes
+    # `textColourGradient`), so it stays "no element" and is refused as before.
+    element = _slot_element(manifest_hit, None)
+    if manifest_hit and manifest_hit.get("source") != "attrMap" and not manifest_hit.get("prefix"):
+        element = None
+    return (tuple(sorted(props)), state, tier, element)
+
+
+def _ambiguous_slot_members(
+    candidates: "dict[str, tuple | None]", anchored: "set[str]", established: "set[tuple]",
+) -> "dict[str, tuple]":
+    """attr -> slot for every candidate the ambiguity net refuses.
+
+    `candidates` maps each newly routed attr to its `_ambiguity_slot` (None = a BEM
+    element distinguishes it, never refused); `anchored` are the attrs whose composer
+    result names one selector (a slot's one owner, refused only against another owner);
+    `established` are the slots an attr outside the candidates already holds.
+
+    Two attrs on one (properties, state, tier) with no element to tell them apart are
+    refused together. An attr whose manifest element is the only one on its
+    (properties, state, tier, element) is spared, because the live resolver groups by
+    css_element too (that is the ambiguity the net exists to prevent); an attr with no
+    element is refused exactly as before, whatever the others' elements."""
+    slot_map: "dict[tuple, set[str]]" = defaultdict(set)
+    owners: "dict[tuple, set[str]]" = defaultdict(set)
+    for attr, slot in candidates.items():
+        if slot is None:
+            continue
+        (owners if attr in anchored else slot_map)[slot[:3]].add(attr)
+    established3 = {s[:3] for s in established}
+    refused: "dict[str, tuple]" = {}
+    for base in set(slot_map) | set(owners):
+        members = set(slot_map.get(base, ()))
+        slot_owners = owners.get(base, set())
+        if len(slot_owners) > 1:
+            members |= slot_owners
+        elif not slot_owners and len(members) < 2 and base not in established3:
+            continue
+        for attr in members:
+            refused[attr] = candidates[attr]
+    sharing: "dict[tuple, int]" = defaultdict(int)
+    for slot in candidates.values():
+        if slot is not None:
+            sharing[slot] += 1
+    return {
+        attr: slot for attr, slot in refused.items()
+        if slot[3] is None or sharing[slot] > 1 or slot in established
+    }
+
+
+def _family_route_refused(slot: "tuple | None", held: "set[tuple]") -> bool:
+    """True when a family-composer route lands on a slot another shape holds without an
+    element (`held` = the other attrs' slots): same 3-part slot, and either it has no
+    manifest element or another attr holds the same element too."""
+    if slot is None:
+        return False
+    return slot[:3] in {h[:3] for h in held} and (slot[3] is None or slot in held)
 
 
 def extract_css_property_and_layer() -> dict:
@@ -2990,10 +3070,20 @@ def extract_css_property_and_layer() -> dict:
                     )
 
         # ---- Ambiguity safety net (db-consistency F6): two attrs of this block on
-        # the identical (css_property, css_state, css_tier) with no css_element to
-        # tell them apart cannot be routed (the live resolver would pick one by rowid
-        # order), so both are refused. Checked for the attrs Shape F (composer
-        # fallback) and Shape G routed, and for every supplementary-pass route.
+        # the identical (css_property, css_state, css_tier) slot AND the same
+        # css_element (none, for an attr no element claims) cannot be routed (the live
+        # resolver would pick one by rowid order), so both are refused. An attr whose
+        # element differs from the other's is a different slot and survives: the
+        # element is the BEM-observed one, else the one the block's own manifest
+        # declares (attrMap, else its prefix convention; `_slot_element`).
+        # Checked for the attrs Shape F (composer fallback) and Shape G routed, and for
+        # every supplementary-pass route.
+        def _slot_of(a: str) -> "tuple | None":
+            return _ambiguity_slot(
+                resolved[(slug, a)], resolved_state.get((slug, a)), resolved_tier.get((slug, a)),
+                resolved_bem_element.get((slug, a)), manifest_by_block.get(slug, {}).get(a),
+            )
+
         _new_shape_attrs = (composer_routed | set(config_map_props)) & block_attr_names
         _established_slots: "set[tuple]" = set()
         if only is not None:
@@ -3001,58 +3091,38 @@ def extract_css_property_and_layer() -> dict:
             # is refused, never the primary.
             _new_shape_attrs = {a for a in only if (slug, a) in resolved}
             _established_slots = {
-                (tuple(sorted(resolved[(slug, a)])), resolved_state.get((slug, a)), resolved_tier.get((slug, a)))
-                for a in block_attr_names - only
-                if (slug, a) in resolved and (slug, a) not in resolved_bem_element
+                _slot_of(a) for a in block_attr_names - only
+                if (slug, a) in resolved and _slot_of(a) is not None
             }
         if _new_shape_attrs:
-            _slot_map: "dict[tuple, set[str]]" = defaultdict(set)
-            _anchors: "dict[tuple, set[str]]" = defaultdict(set)
-            for _attr in _new_shape_attrs:
-                if (slug, _attr) not in resolved:
-                    continue
-                if (slug, _attr) in resolved_bem_element:
-                    continue  # has a distinguishing element — cannot collide here
-                _slot = (
-                    tuple(sorted(resolved[(slug, _attr)])),
-                    resolved_state.get((slug, _attr)),
-                    resolved_tier.get((slug, _attr)),
+            _candidates = {a: _slot_of(a) for a in _new_shape_attrs if (slug, a) in resolved}
+            # The selector a composer's result lands on tells an unelemented attr apart:
+            # the primary pass keeps it as the slot's one owner (never writing that
+            # element: a shared-wrapper element name can equal another element's) and
+            # refuses any other unelemented contender.
+            _anchored = {
+                a for a, sl in _candidates.items()
+                if only is None and sl is not None and len(ev["extra_elements"].get(a, ())) == 1
+            }
+            for _attr, _slot in _ambiguous_slot_members(_candidates, _anchored, _established_slots).items():
+                resolved.pop((slug, _attr), None)
+                resolved_state.pop((slug, _attr), None)
+                resolved_bem_element.pop((slug, _attr), None)
+                resolved_tier.pop((slug, _attr), None)
+                unresolved_reasons[(slug, _attr)] = (
+                    f"ambiguous: shares the ({','.join(_slot[0])}, state={_slot[1]}, tier={_slot[2]}) slot "
+                    "with another attribute and no css_element tells them apart"
                 )
-                if only is None and len(ev["extra_elements"].get(_attr, ())) == 1:
-                    # The selector its composer result lands on tells it apart. The
-                    # primary pass keeps it as the slot's one owner (never writing
-                    # that element: a shared-wrapper element name can equal another
-                    # element's) and refuses any other unelemented contender.
-                    _anchors[_slot].add(_attr)
-                    continue
-                _slot_map[_slot].add(_attr)
-            for _slot in set(_slot_map) | set(_anchors):
-                _members = set(_slot_map.get(_slot, ()))
-                _owners = _anchors.get(_slot, set())
-                if len(_owners) > 1:
-                    _members |= _owners
-                elif not _owners and len(_members) < 2 and _slot not in _established_slots:
-                    continue
-                for _attr in _members:
-                    resolved.pop((slug, _attr), None)
-                    resolved_state.pop((slug, _attr), None)
-                    resolved_bem_element.pop((slug, _attr), None)
-                    resolved_tier.pop((slug, _attr), None)
-                    unresolved_reasons[(slug, _attr)] = (
-                        f"ambiguous: shares the ({','.join(_slot[0])}, state={_slot[1]}, tier={_slot[2]}) slot "
-                        "with another attribute and no css_element tells them apart"
-                    )
         # A family-composer route (CR6 P2-f) with no element must not land on a slot another shape already routes
         # without an element (sgs/icon `padding` against `backgroundPadding`): refuse it, never the established route.
-        _family_new = {a for a in ev.get("family_routed", ()) if a in block_attr_names and (slug, a) in resolved and (slug, a) not in resolved_bem_element}
+        _family_new = {a for a in ev.get("family_routed", ()) if a in block_attr_names and (slug, a) in resolved and _slot_of(a) is not None}
         if only is None and _family_new:
-            _slot_of = lambda a: (tuple(sorted(resolved[(slug, a)])), resolved_state.get((slug, a)), resolved_tier.get((slug, a)))  # noqa: E731
             _held = {
                 _slot_of(a) for a in block_attr_names - _family_new
-                if (slug, a) in resolved and (slug, a) not in resolved_bem_element
+                if (slug, a) in resolved and _slot_of(a) is not None
             }
             for _attr in _family_new:
-                if _slot_of(_attr) in _held:
+                if _family_route_refused(_slot_of(_attr), _held):
                     _slot = _slot_of(_attr)
                     for _store in (resolved, resolved_state, resolved_bem_element, resolved_tier):
                         _store.pop((slug, _attr), None)
@@ -3224,14 +3294,7 @@ def extract_css_property_and_layer() -> dict:
         #      the `media` element's `prefix: "image"` + "layout" cluster claiming
         #      it). BEM evidence overrides this guess when they disagree.
         bem_element = resolved_bem_element.get((slug, attr))
-        if manifest_hit and manifest_hit.get("source") == "attrMap":
-            element = manifest_hit["css_element"]
-        elif bem_element:
-            element = bem_element
-        elif manifest_hit:
-            element = manifest_hit["css_element"]
-        else:
-            element = None
+        element = _slot_element(manifest_hit, bem_element)
         # css_layer (L1-L4) — computed AFTER element resolution so it keys on the FINAL
         # resolved element (Bean, 2026-07-23). Priority:
         #   1. the final element's own declared manifest `layer` — handles a BEM-resolved
