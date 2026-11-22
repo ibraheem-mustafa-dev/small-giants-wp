@@ -4,8 +4,8 @@
  * render-path gate, scripts/check-motion-part-render-paths.py, renders sgs/product-card's bound simple-product card
  * with it).
  *
- * WHAT IT IS: the read-only accessors a bound card reads off a `WC_Product` (name, price HTML, image ID, type, short
- * description, stock, rating) answering with the values in the product file, and the `wc_get_product()` lookup that
+ * WHAT IT IS: the read-only accessors a bound card reads off a `WC_Product` (name, price HTML, image ID and image, type,
+ * short description, stock, rating) answering with the values in the product file, and the `wc_get_product()` lookup that
  * returns it for its own ID. Every value is the fixture's input, never computed commerce: no tax, no variations, no
  * cart. A variable product (`"type": "variable"`) answers `is_type( 'variable' )` and its two variation prices and
  * nothing more, so on its own it renders the read-only card (WC_VERSION is undefined); with `--manifest-file`
@@ -82,6 +82,28 @@ if ( ! class_exists( 'WC_Product' ) ) {
 		}
 		public function get_image_id() {
 			return (int) ( $this->data['image_id'] ?? 0 );
+		}
+		/**
+		 * WC_Product::get_image(): the product's picture as an <img>, the caller's attributes kept (its `class` joins the
+		 * image's own). With an image_id it is wp_get_attachment_image()'s answer; without one it is WooCommerce's placeholder
+		 * image (wc_placeholder_img(): classes `woocommerce-placeholder wp-post-image`).
+		 */
+		public function get_image( $size = 'woocommerce_thumbnail', $attr = array(), $placeholder = true ) {
+			$attr = is_array( $attr ) ? $attr : array();
+			$id   = $this->get_image_id();
+			if ( $id && function_exists( 'wp_get_attachment_image' ) ) {
+				return (string) wp_get_attachment_image( $id, $size, false, $attr );
+			}
+			if ( ! $placeholder ) {
+				return '';
+			}
+			$attr['class'] = trim( 'woocommerce-placeholder wp-post-image ' . ( $attr['class'] ?? '' ) );
+			$attr          = array_merge( array( 'src' => 'https://example.test/wp-content/uploads/woocommerce-placeholder.png', 'alt' => '' ), $attr );
+			$out           = '<img';
+			foreach ( $attr as $k => $v ) {
+				$out .= ' ' . $k . '="' . htmlspecialchars( (string) $v, ENT_QUOTES ) . '"';
+			}
+			return $out . ' />';
 		}
 		/** The file's `type` (default simple), as WC_Product::get_type(). */
 		public function get_type() {

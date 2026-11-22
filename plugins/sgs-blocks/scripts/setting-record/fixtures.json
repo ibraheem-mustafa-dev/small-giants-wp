@@ -115,7 +115,10 @@
 			"panelInstalmentsCount": 3,
 			"panelSlideEasingCustom": "cubic-bezier(0.2, 0.7, 0.2, 1)",
 			"displayMode": "flyout",
-			"emptyProductId": "{{product}}"
+			"emptyProductId": "{{product}}",
+			"upsellProductId": "{{product}}",
+			"upsellTitle": "Goes well with",
+			"upsellText": "A case for your new frames."
 		},
 		"variants": [
 			{},
@@ -152,7 +155,8 @@
 		},
 		"notes": [
 			"panelTaxNote holds text and panelShowViewCart is true, so the tax note and the View basket link render (both off in calibration's fixture).",
-			"emptyProductId names the product stand-in, so the empty basket's add button (sgs-cart__panel-empty-cta, printed by includes/helpers-cart-panel-extras.php::sgs_cart_empty_state_html only for a published product, cart/render.php) renders."
+			"emptyProductId names the product stand-in, so the empty basket's add button (sgs-cart__panel-empty-cta, printed by includes/helpers-cart-panel-extras.php::sgs_cart_empty_state_html only for a published product, cart/render.php) renders.",
+			"upsellProductId names the product stand-in, with a title and a line of text, so the basket's upsell row (includes/helpers-cart-panel-extras.php::sgs_cart_upsell_html, cart/render.php $upsell_pid: a published product) renders with its image (WC_Product::get_image, the stand-in's placeholder picture), title, body and add button."
 		]
 	},
 	"sgs/form": {

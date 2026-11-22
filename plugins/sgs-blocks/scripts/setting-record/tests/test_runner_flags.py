@@ -142,6 +142,18 @@ def test_product_stand_in_serves_the_carts_empty_state_product():
     assert 'data-sgs-cart-empty-add="9301"' in wp['html']
 
 
+def test_must_fail_product_stand_in_draws_its_picture_for_the_carts_upsell_row():
+    # cart/render.php's upsell row calls WC_Product::get_image(); the stand-in had none, so a render naming an upsell
+    # product stopped on the missing method and the row's entries were part-not-rendered.
+    fx = FX['sgs/cart']
+    attrs = RN.fill(fx['attributes'])
+    extra = ('--stub-woocommerce', '--render-file', str(SR / fx['harness']['renderFile']), '--product-file', str(SR / fx['harness']['productFile']))
+    wp = raw('sgs/cart', attrs, '--wp-fidelity', extra=extra)
+    assert wp['ok'], wp.get('error')
+    assert 'class="woocommerce-placeholder wp-post-image sgs-cart__panel-upsell-image"' in wp['html']
+    assert 'sgs-cart__panel-upsell-body' in wp['html']
+
+
 def test_product_stand_in_serves_the_buttons_add_to_basket():
     attrs = {'label': 'Add', 'url': '/x/', 'linkSource': 'add-to-basket', 'addProductId': RN.PLACEHOLDERS['{{product}}']}
     extra = ('--product-file', str(SR / FX['sgs/button']['harness']['productFile']))
