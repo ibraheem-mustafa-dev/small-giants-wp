@@ -1208,13 +1208,29 @@ def script_set_tokens(plugin, tokens) -> list:
     return out
 
 
+_EASING_TOKEN = re.compile(r'eas(?:e|ing)|timing', re.I)
+_TIME_TOKEN = re.compile(r'transition|duration|delay|speed', re.I)
+_COLOUR_TOKEN = re.compile(r'colou?r|-bg\b|background|fill|stroke|border-c', re.I)
+
+
 def token_values(tokens, names) -> tuple:
     """A placeholder value for each custom property no page here defines, distinct from every other and of the kind the
-    entry's properties take (a colour for a colour property, else a length)."""
+    property itself holds, read from its name first (an easing token gets a cubic-bezier, a transition, duration or delay
+    token a time, a colour token a colour), else from the entry's properties (a colour for a colour property, else a
+    length). A placeholder of the wrong kind makes the declaration invalid on both pages alike (a length where a transition
+    wants a time), which would hide the switch the test is for."""
     colour = any(_COLOUR_PROP.search(n.lstrip('_')) for n in names)
     out = []
     for i, t in enumerate(sorted(tokens)):
-        out.append((t, f'rgb({17 + i}, {29 + 2 * i}, {41 + 3 * i})' if colour else f'{1001 + i}px'))
+        if _EASING_TOKEN.search(t):
+            v = f'cubic-bezier(0.{11 + i}, 0.2, 0.3, 1)'
+        elif _TIME_TOKEN.search(t):
+            v = f'{1001 + i}ms'
+        elif _COLOUR_TOKEN.search(t) or colour:
+            v = f'rgb({17 + i}, {29 + 2 * i}, {41 + 3 * i})'
+        else:
+            v = f'{1001 + i}px'
+        out.append((t, v))
     return tuple(out)
 
 

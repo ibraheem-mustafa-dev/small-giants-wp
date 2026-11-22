@@ -385,3 +385,26 @@ def test_a_colour_read_through_different_tokens_is_still_not_restating():
     run, key = run_of(html, base, html, base + '.sgs-demo .sgs-demo__input{border-color:var(--other, #ccc)}', e, True, ['.sgs-demo .sgs-demo__input'])
     out, rep = PR.prove(SHORT, run)
     assert rep['counts']['removed'] == 0
+
+
+# ---------------------------------------------------------------- a placeholder of the token's own kind
+def test_must_fail_a_preset_that_switches_its_transition_tokens_is_proved():
+    # The button's inheritStyle: each preset class points --sgs-btn-transition-duration at its own preset token
+    # (--wp--custom--button-presets--<preset>--hover-transition), undefined here. Breaks while every placeholder is a colour
+    # or a length: a length in a transition's time slot makes the declaration invalid on both pages alike.
+    html_b = ROOT_HTML.format('').replace('sgs-demo sgs-demo-1a2b3c4d', 'sgs-demo sgs-demo-1a2b3c4d sgs-demo--outline')
+    html_c = ROOT_HTML.format('').replace('sgs-demo sgs-demo-1a2b3c4d', 'sgs-demo sgs-demo-1a2b3c4d sgs-demo--primary')
+    css = ('.sgs-demo{transition:color var(--sgs-demo-dur, 0.18s) var(--sgs-demo-ease, ease)}'
+           '.sgs-demo--outline{--sgs-demo-dur:var(--wp--custom--presets--outline--hover-transition, 0.18s);--sgs-demo-ease:var(--wp--custom--presets--outline--hover-easing, ease)}'
+           '.sgs-demo--primary{--sgs-demo-dur:var(--wp--custom--presets--primary--hover-transition, 0.18s);--sgs-demo-ease:var(--wp--custom--presets--primary--hover-easing, ease)}')
+    e = entry(setting='inheritStyle', props=('transition-duration', 'transition-timing-function'))
+    run, key = run_of(html_b, css, html_c, css, e, 'primary', ['.sgs-demo--primary'])
+    out, rep = PR.prove(SHORT, run)
+    assert rep['counts']['removed'] == 0 and 'unproved' not in out[key], rep
+    assert out[key]['kind'] == 'switched-on'
+
+
+def test_placeholders_take_the_kind_their_token_names():
+    vals = dict(PR.token_values({'--x--hover-easing', '--x--hover-transition', '--x--bg-colour', '--x--gap'}, ['transition']))
+    assert vals['--x--hover-easing'].startswith('cubic-bezier(') and vals['--x--hover-transition'].endswith('ms')
+    assert vals['--x--bg-colour'].startswith('rgb(') and vals['--x--gap'].endswith('px')

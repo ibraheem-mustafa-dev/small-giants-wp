@@ -4,7 +4,7 @@
 //   node measure.cjs <jobs.json> <results.json> <tabs> <session-dir>
 //   node measure.cjs sessions <site-url> <session-dir> <simple-id> <variable-id> <variation-id>   (makes the two basket sessions)
 //
-// A job: {id, url, kind: 'cart'|'form', session: 'progress'|'complete' (cart only), widths: [1440, 768, 375], probes: [{id, part, props: [...], state: null|'hover'|'focus', pseudo: null|'::before'}]}
+// A job: {id, url, kind: 'cart'|'form'|'nav-bar-menu', session: 'progress'|'complete' (cart only), widths: [1440, 768, 375], probes: [{id, part, props: [...], state: null|'hover'|'focus', pseudo: null|'::before'}]}
 // The browser comes from NODE_PATH (an existing Playwright install); nothing is linked or installed here.
 const fs = require( 'fs' );
 const { chromium } = require( 'playwright' );
@@ -12,7 +12,7 @@ const { chromium } = require( 'playwright' );
 const [ , , jobsFile, outFile, tabsArg, sessionDir ] = process.argv;
 const jobs = 'sessions' === jobsFile ? [] : JSON.parse( fs.readFileSync( jobsFile, 'utf8' ) );
 const tabs = Math.max( 1, parseInt( tabsArg || '4', 10 ) );
-const SCOPE = { cart: 'main .sgs-cart', form: 'main .sgs-form' };
+const SCOPE = { cart: 'main .sgs-cart', form: 'main .sgs-form', 'nav-bar-menu': 'main .sgs-nav-bar-menu' };
 
 // Wait for animations and transitions to finish (a flyout sliding in, a bar filling), up to a limit; a looping one never ends.
 async function settle( page, ms = 3000 ) {
@@ -62,6 +62,26 @@ async function putFormOnScreen( page ) {
 	await settle( page );
 }
 
+// The menu's submenu: the visitor points at (or clicks) the first item that opens a panel, and mega-disclosure.js sizes the
+// hover bridge under it (--sgs-mm-bridge-h). Below the collapse point the bar is folded into the burger and no item is on
+// screen: nothing is opened there, so the bridge is read closed on both pages alike.
+async function putNavOnScreen( page ) {
+	await page.locator( SCOPE[ 'nav-bar-menu' ] ).first().waitFor( { state: 'attached', timeout: 15000 } );
+	const trigger = page.locator( `${ SCOPE[ 'nav-bar-menu' ] } .sgs-nav-bar-menu__bar [data-sgs-mega-trigger]` ).first();
+	if ( ! ( await trigger.count() ) || ! ( await trigger.isVisible() ) ) { await settle( page, 800 ); return; }
+	if ( 'true' !== ( await trigger.getAttribute( 'aria-expanded' ) ) ) {
+		await trigger.hover( { timeout: 5000 } ).catch( () => {} );
+		await page.waitForTimeout( 400 );
+		if ( 'true' !== ( await trigger.getAttribute( 'aria-expanded' ) ) ) { await trigger.click( { timeout: 5000 } ).catch( () => {} ); }
+	}
+	await page.waitForFunction( ( sel ) => { const t = document.querySelector( sel ); return t && 'true' === t.getAttribute( 'aria-expanded' ); },
+		`${ SCOPE[ 'nav-bar-menu' ] } .sgs-nav-bar-menu__bar [data-sgs-mega-trigger]`, { timeout: 5000 } );
+	await settle( page, 1500 );
+	await page.waitForTimeout( 300 );
+}
+
+const PUT = { cart: putCartOnScreen, form: putFormOnScreen, 'nav-bar-menu': putNavOnScreen };
+
 // Reads one probe: every element carrying the part class inside the block, the property values, optionally under a forced state.
 async function readProbe( page, cdp, kind, probe ) {
 	if ( probe.scan ) {
@@ -85,7 +105,8 @@ async function readProbe( page, cdp, kind, probe ) {
 	}
 	const selector = `${ SCOPE[ kind ] } .${ probe.part }`;
 	let nodeIds = [];
-	const forced = probe.state ? ( 'hover' === probe.state ? [ 'hover' ] : [ 'focus', 'focus-visible' ] ) : [];
+	// hover and focus are forced; any other state (a submenu `open`) is the one the page was put in (putNavOnScreen)
+	const forced = 'hover' === probe.state ? [ 'hover' ] : ( 'focus' === probe.state ? [ 'focus', 'focus-visible' ] : [] );
 	if ( forced.length ) {
 		const { root } = await cdp.send( 'DOM.getDocument', { depth: -1 } );
 		( { nodeIds } = await cdp.send( 'DOM.querySelectorAll', { nodeId: root.nodeId, selector } ) );
@@ -113,12 +134,12 @@ async function runJob( browser, job ) {
 		const cdp = await ctx.newCDPSession( page );
 		await cdp.send( 'DOM.enable' );
 		await cdp.send( 'CSS.enable' );
-		await ( 'cart' === job.kind ? putCartOnScreen( page ) : putFormOnScreen( page ) );
+		await PUT[ job.kind ]( page );
 		for ( const width of job.widths ) {
 			await page.setViewportSize( { width, height: 900 } );
 			await page.waitForTimeout( 350 );
 			// A resize can close the flyout; open it again before reading.
-			if ( 'cart' === job.kind ) { await putCartOnScreen( page ); } else { await settle( page, 1500 ); }
+			if ( 'form' === job.kind ) { await settle( page, 1500 ); } else { await PUT[ job.kind ]( page ); }
 			const probes = {};
 			for ( const probe of job.probes ) { probes[ probe.id ] = await readProbe( page, cdp, job.kind, probe ); }
 			res.widths[ width ] = probes;

@@ -38,11 +38,14 @@ SETREC = HERE.parent
 sys.path.insert(0, str(SETREC))
 
 import instances as inst  # noqa: E402  (the generator the offline check uses: the same test values)
+import render as RN  # noqa: E402  (the placeholders' stand-in ids)
 
 WIDTHS = {'desktop': 1440, 'tablet': 768, 'mobile': 375}
 ALL_WIDTHS = [1440, 768, 375]
 DEFAULT_RECORDS = Path('E:/sgs-tmp/setting-record-task1/records-final')
 SCRIPT_BUILT = 'script-built-part'
+# the causes this pass settles: a part a script builds, and a value a script writes (a custom property it sets)
+BROWSER_CAUSES = (SCRIPT_BUILT, 'script-set-token')
 # The cart's item rows are drawn only for what the block's panel is set to show (render.php's data-* attributes read by
 # panel-render.js): a stepper, the text Remove link, Save for later and Add options. Both pages of a pair get the same
 # switches, so the setting under test is the only difference; a switch the pair itself sets or the plan's base sets is kept.
@@ -64,6 +67,15 @@ def blk(name: str, attrs: dict, inner: list | None = None) -> str:
 def markup(block: str, attrs: dict) -> str:
     if block == 'cart':
         return blk('cart', attrs)
+    if block == 'nav-bar-menu':
+        # inside the fixture's parents (a header and its row), as the offline check draws it, with the stand-in posts the
+        # placeholders name (--setup-nav puts them on the scratch site at those ids)
+        fx = inst.load_fixtures().get('sgs/nav-bar-menu') or {}
+        out = blk('nav-bar-menu', RN.fill(attrs))
+        for p in reversed(fx.get('parents') or []):
+            sibs = [blk(s['name'].split('/', 1)[1], RN.fill(s.get('attributes') or {})) for s in p.get('siblings') or []]
+            out = blk(p['name'].split('/', 1)[1], RN.fill(p.get('attributes') or {}), [out] + sibs)
+        return out
     steps = [blk('form-step', {'label': 'Your details'}, [blk(n, a) for n, a in FORM_FIELDS]),
              blk('form-step', {'label': 'Review'}, [blk('form-review', {'heading': 'Review your information', 'headingLevel': 'h3'})])]
     return blk('form', attrs, steps)
@@ -215,7 +227,7 @@ class Pair:
 
 def load_entries(records_dir: Path, block: str) -> list[dict]:
     rec = json.loads((records_dir / f'{block}.json').read_text(encoding='utf-8'))
-    return [dict(e, block=rec['block']) for e in rec['entries'] if e.get('unproved') == SCRIPT_BUILT]
+    return [dict(e, block=rec['block']) for e in rec['entries'] if e.get('unproved') in BROWSER_CAUSES]
 
 
 def with_switches(block: str, attrs: dict, default: dict) -> dict:
@@ -282,8 +294,9 @@ def jobs_for(pairs: list[Pair], pages: Pages, site: Site, scan: bool = False) ->
             if scan:
                 probes[f'scan|{",".join(e["props"])}'] = {'id': f'scan|{",".join(e["props"])}', 'scan': True, 'part': '', 'props': e['props'], 'state': None, 'pseudo': None}
             else:
-                probes[probe_id(e)] = {'id': probe_id(e), 'part': e['part'], 'props': e['props'], 'state': e.get('state'),
-                                       'pseudo': '::' + m.group(1) if (m := re.search(r'::?(before|after)$', e.get('selector') or '')) else None}
+                part, _, pse = e['part'].partition('::')
+                pseudo = '::' + pse if pse else ('::' + m.group(1) if (m := re.search(r'::?(before|after)$', e.get('selector') or '')) else None)
+                probes[probe_id(e)] = {'id': probe_id(e), 'part': part, 'props': e['props'], 'state': e.get('state'), 'pseudo': pseudo}
         if not widths:
             continue
         for side, attrs in (('plain', p.plain_attrs), ('changed', p.changed_attrs)):
@@ -367,11 +380,12 @@ def main(argv=None) -> int:
     ap.add_argument('--site', default='local-mediatest-setrec')
     ap.add_argument('--url', default='http://localhost:8165')
     ap.add_argument('--out', type=Path, required=True)
-    ap.add_argument('--block', default='all', choices=['cart', 'form', 'all'])
+    ap.add_argument('--block', default='all', choices=['cart', 'form', 'nav-bar-menu', 'all'])
     ap.add_argument('--records-dir', type=Path, default=DEFAULT_RECORDS)
     ap.add_argument('--tabs', type=int, default=6)
     ap.add_argument('--tune', action='store_true')
     ap.add_argument('--setup', action='store_true')
+    ap.add_argument('--setup-nav', action='store_true', help="once per scratch site: the menu's stand-in posts at the ids its placeholders name")
     ap.add_argument('--sessions', type=Path, help='folder holding cart-progress.json and cart-complete.json (default: the folder above --out)')
     ap.add_argument('--limit', type=int, default=0, help='only the first N settings of each block (a trial run)')
     a = ap.parse_args(argv)
@@ -381,12 +395,16 @@ def main(argv=None) -> int:
     site = Site(a.site, a.url)
     t_start = time.time()
 
+    if a.setup_nav:
+        print(site.wp('eval-file', wsl_path(HERE / 'wp_nav_fixtures.php'), wsl_path(SETREC / 'fixtures' / 'menu-post.json')))
+        return 0
+
     if a.setup:
         print(site.wp('eval-file', wsl_path(HERE / 'wp_fixtures.php')))
         print('now: node measure.cjs sessions <url> <out> <simple> <variable> <variation>')
         return 0
 
-    blocks = ['cart', 'form'] if a.block == 'all' else [a.block]
+    blocks = ['cart', 'form', 'nav-bar-menu'] if a.block == 'all' else [a.block]
     plans, entries, pairs = {}, [], []
     for b in blocks:
         plans[b] = inst.plan(b)

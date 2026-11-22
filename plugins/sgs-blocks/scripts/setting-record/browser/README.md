@@ -1,6 +1,6 @@
 # Browser pass for script-built parts
 
-The offline check cannot see a part the block's front-end JavaScript builds, so its record entries carry `"unproved": "script-built-part"`. This folder settles them in a real Chromium on a local scratch WordPress site.
+The offline check cannot see a part the block's front-end JavaScript builds, or a value a script writes, so those record entries carry `"unproved": "script-built-part"` or `"unproved": "script-set-token"`. This folder settles them in a real Chromium on a local scratch WordPress site.
 
 ## Files
 
@@ -10,6 +10,7 @@ The offline check cannot see a part the block's front-end JavaScript builds, so 
 | `measure.cjs` | Playwright: opens each page, puts the part on screen, reads `getComputedStyle` at 1440, 768 and 375, in parallel tabs |
 | `wp_fixtures.php` | Run once on the scratch site: a branded simple product (20) and a variable product (one variation, 10), both purchasable |
 | `wp_pages.php` | Creates or updates the pages from a `{slug: block markup}` file |
+| `wp_nav_fixtures.php` | Run once on the scratch site: the menu's stand-in posts from `../fixtures/menu-post.json` (the menu, its mega panel, a page) at the ids the fixture's placeholders name; it refuses an id another post type holds |
 
 ## Run
 
@@ -17,6 +18,7 @@ The offline check cannot see a part the block's front-end JavaScript builds, so 
 wsl -d Ubuntu -u root -- bash /mnt/<drive>/<worktree>/scripts/local-wp/scratch-mirror.sh create local-mamas local-mediatest-<name> <port>
 scripts/local-wp/sync-build.sh local-mediatest-<name>                   # a built plugins/sgs-blocks/build first
 python prove_script_parts.py --site local-mediatest-<name> --url http://localhost:<port> --out DIR --setup     # products
+python prove_script_parts.py --site local-mediatest-<name> --url http://localhost:<port> --out DIR --setup-nav # the menu's posts
 node measure.cjs sessions http://localhost:<port> DIR <simple-id> <variable-id> <variation-id>                  # two baskets
 python prove_script_parts.py --site local-mediatest-<name> --url http://localhost:<port> --out DIR/run --tune   # or --tabs N
 ```
@@ -26,6 +28,7 @@ Playwright comes from an existing install: set `NODE_PATH` to a `node_modules` t
 ## How a part gets on screen
 
 - **sgs/cart** (`src/blocks/cart/view.js`, `panel-render.js`, `free-delivery.js`, `item-row-template.js`): the page holds one flyout cart. A saved browser session carries a real WooCommerce basket (made with the add-to-cart link), the visitor clicks the trigger, `panel-render.js` reads the Store API and draws the rows and the free-delivery bar. Two baskets: `progress` (under the free-shipping minimum, so the bar says how much is left) and `complete` (over it, so the bar shows the unlocked state, which has its own rule `.sgs-cart__free-delivery--complete .sgs-cart__free-delivery-text`); the bar's settings are read under both. The rows draw a stepper, the text Remove link, Save for later and Add options only when the block's panel is set to show them (`render.php` data attributes), so both pages of every pair carry those switches (`CART_SWITCHES`), never overriding a switch the pair itself sets.
+- **sgs/nav-bar-menu** (`src/shared/nav-interactivity/mega-disclosure.js`): the page holds the menu inside the fixture's header and row (as the offline check draws it, `../proof.py::parent_shell`). The visitor points at the first item of the bar that opens a panel (clicking when pointing does not open it), and the script sizes the hover bridge under it (`--sgs-mm-bridge-h`, the panel's top less the item's bottom). Below the collapse point the bar is folded into the burger and nothing is opened, so an entry is read closed there on both pages alike. A state other than hover or focus (`open`) is the one the page was put in.
 - **sgs/form** (`src/blocks/form/view.js`, `review-cards.js`): a two-step form; the visitor fills the first step and presses Next (`actions.nextStep`), `populateReview` draws one card per earlier step with `.sgs-form-review__term` and `__detail` rows.
 
 Each part is read on every element carrying its class inside the block (`main .sgs-cart` or `main .sgs-form`, so the theme's own header cart is never read). A state (hover, focus) is held with the DevTools protocol (`CSS.forcePseudoState`), which a pointer or a non-focusable `dt`/`dd` could not give.
