@@ -279,7 +279,13 @@ export function takeColumn( { tree, index, run, box, builtIn = [] } ) {
 		return { why: `the grid ${ grid }'s nodes and the buy box do not sit in one place` };
 	}
 	const firstRun = Math.min( ...run.map( ( k ) => index.order( k ) ) );
-	const kids = index.children( column ).filter( ( k ) => ! run.some( ( r ) => index.within( r, k ) || index.within( k, r ) ) );
+	// The column's own content is every element under it that neither holds nor sits in the run: the children of the column and
+	// of each wrapper between the column and the controls (`wrappers`, whose own paint is dropped with the column's), so a note
+	// drawn beside the controls inside such a wrapper is kept, never lost with the wrapper.
+	const holdsRun = ( k ) => run.some( ( r ) => index.within( r, k ) );
+	const inRun = ( k ) => run.some( ( r ) => index.within( k, r ) );
+	const wrappers = index.elements.map( ( e ) => e.key ).filter( ( k ) => k !== column && index.within( k, column ) && holdsRun( k ) && ! inRun( k ) );
+	const kids = [ column, ...wrappers ].flatMap( ( k ) => index.children( k ) ).filter( ( k ) => ! holdsRun( k ) && ! inRun( k ) );
 	const all2 = nodesWithin( tree, index, kids ).filter( ( r ) => r.node !== box );
 	const drawnBy = ( r ) => builtIn.some( ( k ) => index.within( k, refKey( r.node ) ) );
 	const dropped = all2.filter( drawnBy );
@@ -287,6 +293,16 @@ export function takeColumn( { tree, index, run, box, builtIn = [] } ) {
 	const before = own.filter( ( r ) => index.order( refKey( r.node ) ) < firstRun ).map( ( r ) => r.node );
 	const after = own.filter( ( r ) => index.order( refKey( r.node ) ) > firstRun ).map( ( r ) => r.node );
 	const galleryAt = nodesWithin( tree, index, [ sides[ 0 ] ] );
+	// Conservation: every node the replaced span holds is kept (moved into the buy box, left for the gallery piece), dropped as what
+	// the buy box draws itself, or built from an element taken away without its contents (the grid, the column, a wrapper); any
+	// other would vanish, so the takeover is refused with its name.
+	const keptNodes = new Set( [ ...own, ...dropped, ...galleryAt ].flatMap( ( r ) => treeNodes( [ r.node ] ).map( ( x ) => x.node ) ) );
+	const takenAway = new Set( [ grid, column, inGrid, ...wrappers ] );
+	const spanNodes = ( gridAt ? treeNodes( [ gridAt.node ] ) : inside.flatMap( ( r ) => treeNodes( [ r.node ] ) ) ).map( ( x ) => x.node );
+	const lost = spanNodes.filter( ( n ) => n !== box && ! keptNodes.has( n ) && ! takenAway.has( refKey( n ) ) );
+	if ( lost.length ) {
+		return { why: `taking the column would drop ${ lost.map( ( n ) => refKey( n ) || n.name ).join( ', ' ) }, which the buy box neither keeps nor draws` };
+	}
 	// A mark holds the span's place while the nodes leave theirs; the gallery's nodes and the buy box then take it.
 	const list = gridAt ? gridAt.list : boxAt.list;
 	const mark = {};
@@ -305,7 +321,7 @@ export function takeColumn( { tree, index, run, box, builtIn = [] } ) {
 		column,
 		before: before.length,
 		after: after.length,
-		own: [ ...new Set( [ column, inGrid ] ) ],
+		own: [ ...new Set( [ column, inGrid, ...wrappers ] ) ],
 		drawn: dropped.map( ( r ) => refKey( r.node ) ),
 		notes: [ ...settings.notes, ...( dropped.length ? [ `the column's ${ dropped.map( ( r ) => refKey( r.node ) ).join( ', ' ) } hold${ 1 === dropped.length ? 's' : '' } what ${ box.name } draws itself (${ builtIn.filter( ( k ) => dropped.some( ( r ) => index.within( k, refKey( r.node ) ) ) ).join( ', ' ) }), so ${ 1 === dropped.length ? 'it is' : 'they are' } dropped, not kept beside it` ] : [] ), `${ box.name } draws the gallery beside its controls: galleryColumnRatio ${ settings.attrs.galleryColumnRatio }, galleryColumnGap ${ JSON.stringify( settings.attrs.galleryColumnGap ) }, stackBelow ${ settings.attrs.stackBelow }${ before.length ? `, extrasBeforeCount ${ before.length }` : '' }, read from the grid ${ grid }` ],
 	};

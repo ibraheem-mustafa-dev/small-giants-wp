@@ -1,21 +1,140 @@
 [
-	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( 1 !== h1.length ) {", "replace": "\tif ( false ) {", "why": "a page with two h1 still has its column taken"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "Math.abs( A.y - B.y ) > 1 || ", "replace": "", "why": "a gallery drawn above the column counts as beside it"},
-	{"file": "lib/template-piece-buybox.mjs", "find": " || A.x + A.w > B.x + 0.5 ) {", "replace": " ) {", "why": "a gallery drawn right of the column counts as left of it"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "! a.visible?.[ w ] || ", "replace": "", "why": "a hidden gallery counts as drawn"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "stackBelow: widths.includes( 768 ) ? 'mobile' : 'tablet',", "replace": "stackBelow: 'mobile',", "why": "a draft stacked at the tablet width is side by side there"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "galleryColumnGap: 1 === new Set( Object.values( gaps ) ).size ? gaps.desktop : gaps,", "replace": "galleryColumnGap: gaps,", "why": "one gap at every width is written per device"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "galleryColumnRatio: round2( side.box[ 1440 ].w / column.box[ 1440 ].w ),", "replace": "galleryColumnRatio: round2( column.box[ 1440 ].w / side.box[ 1440 ].w ),", "why": "the ratio is read the wrong way round"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "const notes = widths.includes( 375 ) ?", "replace": "const notes = false ?", "why": "a draft side by side on phones is not named"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "\tbox.draftRef = { tpl: grid };", "replace": "", "why": "Fill reads no root look for the buy box"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "before.length ? { extrasBeforeCount: before.length } : {}", "replace": "{}", "why": "the blocks above the controls render below the form"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "const dropped = all2.filter( drawnBy );", "replace": "const dropped = [];", "why": "the draft's price row stays beside the buy box's own"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "filter( ( p ) => 'built-in' === p.home?.type && p.home.block === piece.block )", "replace": "filter( () => false )", "why": "no part the block draws itself is known"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "\tif ( ! index.byKey.has( grid ) || 1 !== sides.length ) {", "replace": "\tif ( ! index.byKey.has( grid ) ) {", "why": "a grid of three is taken as gallery beside column"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "list.splice( list.indexOf( mark ), 1, ...galleryAt.map( ( r ) => r.node ), box );", "replace": "list.splice( list.indexOf( mark ), 1, box );", "why": "the gallery's nodes are lost instead of left for the gallery piece"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "\tbox.innerBlocks = [ ...before, ...after ];", "replace": "\tbox.innerBlocks = [ ...after, ...before ];", "why": "the inner blocks lose the draft's order"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "\t\ttook.drawn.length && ( row.run = [ ...run, ...took.drawn ] );\n", "replace": "", "why": "the dropped price row's paint is owned by no piece"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "\t\trow.own = took.own;\n", "replace": "", "why": "the dropped column's own paint is owned by no piece"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "\t\tmulti >= 0 && notes.splice( multi, 1 );", "replace": "", "why": "the stale 'no draftRef' note stays"},
-	{"file": "lib/template-piece-buybox.mjs", "find": "\tconst list = gridAt ? gridAt.list : boxAt.list;", "replace": "\tconst list = boxAt.list;", "why": "a grid with a node of its own is not replaced"}
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tif ( 1 !== h1.length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a page with two h1 still has its column taken"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "Math.abs( A.y - B.y ) > 1 || ",
+		"replace": "",
+		"why": "a gallery drawn above the column counts as beside it"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": " || A.x + A.w > B.x + 0.5 ) {",
+		"replace": " ) {",
+		"why": "a gallery drawn right of the column counts as left of it"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "! a.visible?.[ w ] || ",
+		"replace": "",
+		"why": "a hidden gallery counts as drawn"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "stackBelow: widths.includes( 768 ) ? 'mobile' : 'tablet',",
+		"replace": "stackBelow: 'mobile',",
+		"why": "a draft stacked at the tablet width is side by side there"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "galleryColumnGap: 1 === new Set( Object.values( gaps ) ).size ? gaps.desktop : gaps,",
+		"replace": "galleryColumnGap: gaps,",
+		"why": "one gap at every width is written per device"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "galleryColumnRatio: round2( side.box[ 1440 ].w / column.box[ 1440 ].w ),",
+		"replace": "galleryColumnRatio: round2( column.box[ 1440 ].w / side.box[ 1440 ].w ),",
+		"why": "the ratio is read the wrong way round"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "const notes = widths.includes( 375 ) ?",
+		"replace": "const notes = false ?",
+		"why": "a draft side by side on phones is not named"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tbox.draftRef = { tpl: grid };",
+		"replace": "",
+		"why": "Fill reads no root look for the buy box"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "before.length ? { extrasBeforeCount: before.length } : {}",
+		"replace": "{}",
+		"why": "the blocks above the controls render below the form"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "const dropped = all2.filter( drawnBy );",
+		"replace": "const dropped = [];",
+		"why": "the draft's price row stays beside the buy box's own"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "filter( ( p ) => 'built-in' === p.home?.type && p.home.block === piece.block )",
+		"replace": "filter( () => false )",
+		"why": "no part the block draws itself is known"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tif ( ! index.byKey.has( grid ) || 1 !== sides.length ) {",
+		"replace": "\tif ( ! index.byKey.has( grid ) ) {",
+		"why": "a grid of three is taken as gallery beside column"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "list.splice( list.indexOf( mark ), 1, ...galleryAt.map( ( r ) => r.node ), box );",
+		"replace": "list.splice( list.indexOf( mark ), 1, box );",
+		"why": "the gallery's nodes are lost instead of left for the gallery piece"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tbox.innerBlocks = [ ...before, ...after ];",
+		"replace": "\tbox.innerBlocks = [ ...after, ...before ];",
+		"why": "the inner blocks lose the draft's order"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\t\ttook.drawn.length && ( row.run = [ ...run, ...took.drawn ] );\n",
+		"replace": "",
+		"why": "the dropped price row's paint is owned by no piece"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\t\trow.own = took.own;\n",
+		"replace": "",
+		"why": "the dropped column's own paint is owned by no piece"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\t\tmulti >= 0 && notes.splice( multi, 1 );",
+		"replace": "",
+		"why": "the stale 'no draftRef' note stays"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tconst list = gridAt ? gridAt.list : boxAt.list;",
+		"replace": "\tconst list = boxAt.list;",
+		"why": "a grid with a node of its own is not replaced"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tconst kids = [ column, ...wrappers ].flatMap( ( k ) => index.children( k ) )",
+		"replace": "\tconst kids = [ column ].flatMap( ( k ) => index.children( k ) )",
+		"why": "a note inside a wrapper beside the controls is lost"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\tif ( lost.length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a node nothing keeps vanishes with the takeover"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": "\t\town: [ ...new Set( [ column, inGrid, ...wrappers ] ) ],",
+		"replace": "\t\town: [ ...new Set( [ column, inGrid ] ) ],",
+		"why": "a wrapper's own paint is owned by no piece"
+	},
+	{
+		"file": "lib/template-piece-buybox.mjs",
+		"find": " && ! takenAway.has( refKey( n ) ) );",
+		"replace": " );",
+		"why": "the grid's and the column's own nodes count as lost"
+	}
 ]

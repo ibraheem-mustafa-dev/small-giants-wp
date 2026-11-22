@@ -98,3 +98,34 @@ test( 'MUST FAIL: a grid with a node of its own is replaced whole, the column\'s
 	assert.deepEqual( names( got.tree[ 0 ].innerBlocks[ 1 ].innerBlocks ), [ 'sgs/heading Root/6#0', 'sgs/text Root/7#0', 'sgs/text Root/14#0' ] );
 	assert.equal( countBlocks( got.tree, 'sgs/hero' ), 0 );
 } );
+
+// Review fix: the controls inside a wrapper in the column (column > [ h1, wrapper > [ note, options, add row, note ] ]).
+const WRAPPED = { elements: [
+	el( 1, null, 'main' ), el( 2, 1, 'div' ), el( 3, 2, 'div', '', { box: SIDE } ), el( 4, 3, 'div' ),
+	el( 5, 2, 'div', '', { box: COL } ), el( 6, 5, 'h1', '{{ p.name }}', { words: 'Zookies' } ),
+	el( 30, 5, 'div' ), el( 31, 30, 'p', 'Pick a size' ),
+	el( 8, 30, 'div' ), el( 9, 8, 'span', 'Size' ), el( 10, 8, 'div' ), el( 11, 10, 'button', '{{ o.name }}', { words: 'Small' } ),
+	el( 12, 30, 'div' ), el( 13, 12, 'button', '{{ addLabel }}', { words: 'Add to basket' } ), el( 32, 30, 'p', 'Free delivery' ),
+] };
+const WRAPPED_TREE = () => [ n( 'sgs/container', 1, {}, [ n( 'sgs/media', 4 ), n( 'sgs/heading', 6, { content: 'Zookies' } ), n( 'sgs/text', 31, { text: 'Pick a size' } ), n( 'sgs/label', 9, { text: 'Size' } ), n( 'sgs/option-picker', 10, {}, [ n( 'sgs/button', 11 ) ] ), n( 'sgs/button', 13, { label: 'Add to basket' } ), n( 'sgs/text', 32, { text: 'Free delivery' } ) ] ) ];
+
+test( 'MUST FAIL: a note beside the controls inside a wrapper in the column is kept among the buy box\'s inner blocks, in order', () => {
+	const got = place( ctx( { tree: WRAPPED_TREE(), inventory: WRAPPED } ), PIECE );
+	const box = got.tree[ 0 ].innerBlocks[ 1 ];
+	assert.deepEqual( names( box.innerBlocks ), [ 'sgs/heading Root/6#0', 'sgs/text Root/31#0', 'sgs/text Root/32#0' ] );
+	assert.equal( box.attributes.extrasBeforeCount, 2 );
+	// The wrapper is taken away without its contents, so its own paint is listed with the column's.
+	assert.deepEqual( got.placed[ 0 ].own, [ 'Root/5#0', 'Root/30#0' ] );
+} );
+
+test( 'MUST FAIL: a takeover that would drop a node it neither keeps nor draws is refused and changes nothing', () => {
+	// The grid's own node holds a node built from no element the inventory holds: it sits in the replaced span and nothing keeps it.
+	const tree = [ n( 'sgs/container', 1, {}, [ n( 'sgs/hero', 2, { layout: 'grid' }, [
+		n( 'sgs/media', 4 ), n( 'sgs/text', 99, { text: 'Read at no element the inventory holds' } ),
+		n( 'sgs/container', 5, {}, [ n( 'sgs/heading', 6, { content: 'Zookies' } ), n( 'sgs/label', 9, { text: 'Size' } ), n( 'sgs/option-picker', 10 ), n( 'sgs/button', 13, { label: 'Add to basket' } ) ] ),
+	] ) ] ) ];
+	const got = place( ctx( { tree } ), PIECE );
+	assert.match( got.notes.join( '\n' ), /stays inside the draft's information column: taking the column would drop Root\/99#0, which the buy box neither keeps nor draws/ );
+	assert.ok( JSON.stringify( got.tree ).includes( 'Root/99#0' ), 'the node is still in the tree' );
+	assert.equal( got.placed[ 0 ].own, undefined );
+} );
