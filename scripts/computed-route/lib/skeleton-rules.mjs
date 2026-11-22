@@ -874,8 +874,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			// A typed emoji or glyph disc is the icon block's emoji: its character, never written as the icon's brand name.
 			if ( emojiOnly( e ) || glyphDisc( e, st ) ) {
+				// An icon block that cannot hold the character (no emoji settings in the rule, or its source has no emoji) would draw
+				// nothing and send the glyph into the icon's name, so the glyph stays the text it is.
 				const attributes = emojiAttrs( R.solitaryIcon?.block, m.words( e ).trim() );
-				return v( 'solitaryIcon', { block: R.solitaryIcon?.block, ...( Object.keys( attributes ).length ? { attributes, drawsWords: true } : {} ) } );
+				if ( Object.keys( attributes ).length ) {
+					return v( 'solitaryIcon', { block: R.solitaryIcon?.block, attributes, drawsWords: true } );
+				}
 			}
 			return iconOnly( e ) || bindingGlyph( e ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null;
 		},

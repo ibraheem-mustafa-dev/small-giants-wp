@@ -1076,6 +1076,16 @@ test( 'MUST FAIL: a glyph disc inside a whole-card link is an icon; a glyph that
 	assert.notEqual( iconAt( discIn( [ E( 'span', { words: 'Back' } ) ] ), '←' )?.block, 'sgs/icon', 'an arrow beside one label' );
 } );
 
+test( 'MUST FAIL: when the icon block cannot hold an emoji (no emoji settings in the rule), a glyph disc and a lone emoji stay text, never an empty icon', () => {
+	const noEmoji = () => { const f = facts(); delete f.decisions.rules.solitaryIcon.emoji; return f; };
+	const bare = ( words, style ) => run( section( [ E( 'span', { words, style, box: { x: 0, y: 0, w: 32, h: 32 } } ), E( 'p', { words: 'Brewer’s yeast gives you B-vitamins' } ) ] ), { facts: noEmoji() } );
+	assert.notEqual( iconAt( bare( '✓', DISC ), '✓' )?.block, 'sgs/icon', 'a disc with no emoji settings' );
+	assert.notEqual( iconAt( bare( '❤️', 'color:#c00' ), '❤️' )?.block, 'sgs/icon', 'a lone emoji with no emoji settings' );
+	assert.deepEqual( nodes( bare( '✓', DISC ) ).filter( ( x ) => 'sgs/icon' === x.name ), [] );
+	// Negative control: with the rule present the same disc is the emoji icon.
+	assert.equal( iconAt( disc( '✓' ), '✓' ).block, 'sgs/icon' );
+} );
+
 test( 'negative control: a plus, an opening quote, a glyph in an unpainted box, a box that is not round or square, a glyph in a link or button and the rule removed stay text', () => {
 	const text = ( r, g ) => 'sgs/icon' !== iconAt( r, g )?.block;
 	assert.ok( text( disc( '+' ), '+' ), 'a plus is a control' );
