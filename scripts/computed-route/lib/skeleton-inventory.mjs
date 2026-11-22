@@ -528,7 +528,9 @@ export function summarise( { runs, shots, skipped, url, root, uaPadding = null }
 	const records = withWidthOnly( runs ).map( ( r ) => {
 		const { i, ...rest } = r;
 		const id = recId( r );
-		return { ...rest, box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, displayAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, at( w, id )?.display ?? null ] ) ), resolved: { 375: at( 375, id )?.resolved ?? null, 768: at( 768, id )?.resolved ?? null, 1440: r.resolved ?? null }, layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
+		// The words the element draws at each width, kept only where they differ (a script value that is shorter on a phone).
+		const wordsAt = Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, at( w, id )?.words ?? '' ] ) );
+		return { ...rest, ...( new Set( Object.values( wordsAt ).filter( Boolean ) ).size > 1 ? { wordsAt } : {} ), box: { 375: at( 375, id )?.box ?? null, 768: at( 768, id )?.box ?? null, 1440: r.box }, visible: { 375: at( 375, id )?.visible ?? false, 768: at( 768, id )?.visible ?? false, 1440: r.visible }, position: { 375: at( 375, id )?.position ?? null, 768: at( 768, id )?.position ?? null, 1440: r.position ?? null }, displayAt: Object.fromEntries( INVENTORY_WIDTHS.map( ( w ) => [ w, at( w, id )?.display ?? null ] ) ), resolved: { 375: at( 375, id )?.resolved ?? null, 768: at( 768, id )?.resolved ?? null, 1440: r.resolved ?? null }, layoutChanged375: at( 375, id )?.layoutChanged ?? null, screenshots: r.reveal ? {} : shots[ r.key ] || {} };
 	} );
 	// The opening state's elements stay a list of their own; what only a state shows is kept beside it (lib/reveal-merge.mjs).
 	const elements = records.filter( ( r ) => ! r.reveal );

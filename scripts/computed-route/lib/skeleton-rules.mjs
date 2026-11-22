@@ -1114,6 +1114,24 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return 'header' === surface.kind && !! top && ! [ top, ...desc( top ) ].some( ( d ) => 'nav' === d.tag || logoish( d ) );
 	};
 
+	// Whether an element of a header surface or inside a header element sits in the header (a page template draws its own
+	// header as a `<header>`), and holds no link or button above it on the way up.
+	const inHeader = ( e ) => 'header' === surface.kind || ancestors( e ).some( ( a ) => 'header' === view.realTag( a ) );
+	const ancestors = ( e ) => {
+		const out = [];
+		for ( let p = m.byKey[ e.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
+			out.push( p );
+		}
+		return out;
+	};
+	// The rendered markup of the first SVG in or beside an element's words (lib/skeleton-inventory.mjs::svgMarkupOf), and the
+	// kept icon markup of it.
+	const markupOf = ( k ) => [ k, ...desc( k ) ].flatMap( ( d ) => m.kids( d ) ).find( ( c ) => 'svg' === c.tag )?.svg;
+	const iconOf = ( k ) => {
+		const markup = markupOf( k );
+		return markup ? keptSvg( markup ) : null;
+	};
+
 	const STRUCTURES = [
 		// A choice flow's root is sgs/choice-flow, whatever its surfaces.json kind (a modal, a form): the flow draws its frame, and
 		// its steps are composed from the record (lib/skeleton-choice-flow-tree.mjs), so the draft elements are absorbed.
@@ -1301,11 +1319,6 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( labels.length < ( S.minItems ?? 2 ) || ! labels.every( label ) || ! kidsB.every( ( k ) => lettered( k ) || ! m.blockKids( k ).length ) || m.stacked( kidsB ) ) {
 				return null;
 			}
-			const markupOf = ( k ) => [ k, ...desc( k ) ].flatMap( ( d ) => m.kids( d ) ).find( ( c ) => 'svg' === c.tag )?.svg;
-			const iconOf = ( k ) => {
-				const markup = markupOf( k );
-				return markup ? keptSvg( markup ) : null;
-			};
 			const texts = onceOfLoop( labels.map( all ) );
 			const shown = labels.slice( 0, texts.length );
 			const items = shown.map( ( k ) => {
@@ -1320,6 +1333,28 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const size = S.style?.iconSize && style === S.style.icons && 1 === sizes.size ? [ ...sizes ][ 0 ] : null;
 			const decided = style ? { [ S.style.setting ]: style, ...( null !== size ? { [ S.style.iconSize ]: size } : {} ) } : null;
 			return v( 'headerStripBar', { block: S.block, absorb: true, attributes: { [ S.items.setting ]: items, ...( style ? { [ S.style.setting ]: style } : {} ) }, ...( decided ? { decided } : {} ), firstItem: labels[ 0 ].key } );
+		},
+		// A lone label with a glyph before its words in a header (rules.headerStripBar.loneLabel) is a trust bar of one item: the
+		// glyph is the item's icon (the rendered SVG) and the words its label, so the glyph is drawn and no longer unread. The
+		// label is no link, button, heading, number or business detail, sits in no control, and its glyph comes first.
+		( { e, kidsB } ) => {
+			const S = R.headerStripBar;
+			const L = S?.loneLabel;
+			if ( ! L || ! m.words( e ) || kidsB.length || [ 'a', 'button' ].includes( e.tag ) || HEADING.test( e.tag ) || interactive( e ) || numberOnly( e ) || m.words( e ).split( ' ' ).length > ( S.maxWords ?? 12 ) || businessDetail( e ) || ! inHeader( e ) || ancestors( e ).some( ( a ) => [ 'a', 'button' ].includes( view.realTag( a ) ) || interactive( a ) ) ) {
+				return null;
+			}
+			const svg = m.kids( e ).find( ( k ) => 'svg' === k.tag );
+			const after = ( e.snippet || '' ).replace( /^<[^>]*>\s*/, '' );
+			if ( ! svg || ! after.startsWith( '<svg' ) || ! iconOf( e ) ) {
+				return null;
+			}
+			// The words at each width: the widest width's words are the item's label, the shorter ones the note.
+			const wide = e.wordsAt?.[ 1440 ] || e.wordsAt?.[ 768 ] || e.wordsAt?.[ 375 ] || '';
+			const shorter = Object.entries( e.wordsAt || {} ).filter( ( [ , x ] ) => x && x !== wide );
+			const style = S.style && S.style.icons;
+			const size = S.style?.iconSize ? statedSvgSize( markupOf( e ) ) : null;
+			const decided = style ? { [ S.style.setting ]: style, ...( null !== size ? { [ S.style.iconSize ]: size } : {} ) } : null;
+			return v( 'headerStripBar', { block: S.block, absorb: true, drawsWords: true, attributes: { [ S.items.setting ]: [ { [ S.items.text ]: wide || m.words( e ), [ S.items.svg ]: iconOf( e ) } ], ...( style ? { [ S.style.setting ]: style } : {} ) }, ...( decided ? { decided } : {} ), firstItem: e.key, reason: `${ S.reason }; ${ L.reason }`, ...( shorter.length ? { handover: { owner: 'content-page', kind: 'text', detail: `the label reads differently by width (${ shorter.map( ( [ w, x ] ) => `"${ x }" at ${ w }px` ).join( ', ' ) }, "${ wide }" elsewhere): the trust bar's item holds one label, so type the shorter words as a second bar shown only at those widths` } } : {} ) } );
 		},
 		// A link to a messaging app holding the app's mark and words is the app's button block, floating where fixed to the
 		// viewport, its card style for a title over a line; words alone are a text link reading the app's Site Info address

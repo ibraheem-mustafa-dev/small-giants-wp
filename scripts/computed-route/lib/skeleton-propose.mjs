@@ -213,7 +213,8 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const drawn = m.blockKids( e ).length ? ( r.absorb ? `rule ${ r.rule }` : cls.drawsChildren( block ) ) : null;
 		// A rule that sets a display type (a business detail) carries the block's settings itself: no generic text attribute. A
 		// verdict whose words are the element's own beside a child the block draws (a label's leading dot: `wordsOwn`) keeps them.
-		const own = r.rule && ! r.wordsOwn && ( drawn || top.attributes?.displayType );
+		// A verdict that is the element's own words drawn by the block (`drawsWords`: a lone label that is a trust bar's item) takes no generic text setting and builds no body block for them.
+		const own = r.rule && ! r.wordsOwn && ( drawn || r.drawsWords || top.attributes?.displayType );
 		const { a, handover, formats = [] } = own ? { a: {}, handover: [] } : contentAttrs( block, e, top );
 		// A navigation block's collapse point is the width the draft shows its navigation at.
 		const collapseAttr = 'nav' === e.tag ? R.navigation?.collapseAttribute?.[ block ] : null;
@@ -383,7 +384,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		node.innerBlocks = e !== m.root ? buildChildren( e, block ) : R.headerSlots && block === R.headerSlots.block ? buildHeaderRows( e, block ) : R.footerSlots && block === R.footerSlots.block ? buildFooterRows( e, block ) : buildChildren( e, block );
 		// The element's own words in a block that holds its body as inner blocks (rules.wrappedWords): one body child holding them,
 		// read at the same draft element (a review's text inside sgs/quote, which would otherwise print its placeholder body).
-		if ( ! node.innerBlocks.length && ! r.split && wrappedBody( block, e ) ) {
+		if ( ! node.innerBlocks.length && ! r.split && ! r.drawsWords && wrappedBody( block, e ) ) {
 			const W = R.wrappedWords;
 			const text = skeletonSettings( facts, W.block ).text;
 			text && ( node.innerBlocks = [ base( e, W.block, { [ text ]: m.textWithBreaks( e ).includes( '<br>' ) ? m.textWithBreaks( e ) : m.words( e ) } ) ] );

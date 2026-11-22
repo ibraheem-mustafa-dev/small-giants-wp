@@ -477,3 +477,60 @@ test( 'a header strip of plain labels is a word-only trust bar; links, a page se
 	const bar2 = run( inv( [ ...header(), el( 'Root/6#0', 'Root/2#0', 'div', '', { depth: 2, display: 'flex' } ), el( 'Root/7#0', 'Root/6#0', 'span', 'Family run since 1962', { depth: 3, box: boxes( 100, 20, 100, 0 ) } ), el( 'Root/8#0', 'Root/6#0', 'span', 'Fitted by hand here', { depth: 3, box: boxes( 100, 20, 100, 120 ) } ) ] ) );
 	assert.ok( ! bar2.proposal.rows.some( ( x ) => 'headerStripBar' === x.rule ) );
 } );
+
+// rules.headerStripBar.loneLabel: one label whose glyph comes before its words, in a header (a header surface, or a page
+// template's own `<header>`), is a trust bar of one item with its icon: the lock before "Secure checkout" in a checkout
+// template's top bar. Its words at each width are `wordsAt` (lib/skeleton-inventory.mjs::summarise).
+const LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="5" y="11" width="14" height="10" rx="2"></rect></svg>';
+const withGlyph = ( x ) => ( { ...x, snippet: x.snippet.replace( /^(<span[^>]*>)/, `$1${ LOCK.replace( '<svg', '<svg data-dc-tpl="31"' ) }` ) } );
+const lone = ( { words = 'Secure checkout', tag = 'span', glyphFirst = true, wordsAt = null, inLink = false, glyph = true } = {} ) => {
+	const label = el( 'Root/30#0', inLink ? 'Root/29#0' : 'Root/28#0', tag, words, { depth: 3, display: 'flex', box: boxes( 100, 20, 120, 600 ) } );
+	glyphFirst && glyph && ( label.snippet = label.snippet.replace( />/, `>${ LOCK }` ) );
+	! glyphFirst && ( label.snippet = label.snippet.replace( `>${ words }<`, `>${ words }${ LOCK }<` ) );
+	wordsAt && ( label.wordsAt = wordsAt );
+	const svg = glyph ? [ { ...el( 'Root/31#0', 'Root/30#0', 'svg', '', { depth: 4 } ), svg: LOCK } ] : [];
+	return [ el( 'Root/28#0', 'Root/1#0', 'div', '', { depth: 1, display: 'grid' } ), ...( inLink ? [ el( 'Root/29#0', 'Root/28#0', 'a', '', { depth: 2, attrs: { href: '/x' } } ) ] : [] ), label, ...svg ];
+};
+const pageHeader = ( kids, tag = 'header' ) => [ el( 'Root/1#0', null, tag, '', { depth: 0, box: boxes( 90, 60 ) } ), ...kids ];
+const onPage = ( elements ) => proposeSkeleton( { inventory: inv( elements ), facts: facts(), surface: 'checkout', surfaceKind: 'page', surfaceName: 'Checkout', db } );
+const nodeFor = ( r, key ) => flat( r.skeleton ).find( ( n ) => key === n.draftRef?.tpl );
+const noLone = () => {
+	const f = facts();
+	f.decisions = structuredClone( f.decisions );
+	delete f.decisions.rules.headerStripBar.loneLabel;
+	return f;
+};
+
+test( 'MUST FAIL: a lone label with its glyph before its words in a template\'s header is a trust bar of one item with its icon, and the glyph is no longer unread', () => {
+	const r = onPage( pageHeader( lone() ) );
+	const bar = nodeFor( r, 'Root/30#0' );
+	assert.equal( bar?.name, 'sgs/trust-bar' );
+	assert.deepEqual( bar.attributes.items.map( ( x ) => x.label ), [ 'Secure checkout' ] );
+	assert.match( bar.attributes.items[ 0 ].iconSvg, /<rect x="5"/ );
+	assert.deepEqual( [ bar.attributes.badgeStyle, bar.decided.badgeStyle ], [ 'icon-bare', 'icon-bare' ] );
+	assert.deepEqual( bar.innerBlocks, [], 'the item draws the words: no text block is built for them' );
+	assert.equal( r.proposal.rows.find( ( x ) => 'Root/30#0' === x.key ).rule, 'headerStripBar' );
+	assert.deepEqual( r.problems.filter( ( p ) => /unread/.test( p ) ), [] );
+	// The rule removed: the label is text again, as before.
+	assert.equal( nodeFor( proposeSkeleton( { inventory: inv( pageHeader( lone() ) ), facts: noLone(), surface: 'checkout', surfaceKind: 'page', surfaceName: 'Checkout', db } ), 'Root/30#0' )?.name, 'sgs/text' );
+} );
+
+test( 'MUST FAIL: the same label on a header surface is a trust bar too, and a label whose words differ by width is noted for the content page', () => {
+	const r = run( inv( pageHeader( lone( { wordsAt: { 375: 'Secure', 768: 'Secure checkout', 1440: 'Secure checkout' } } ) ) ) );
+	const bar = nodeFor( r, 'Root/30#0' );
+	assert.equal( bar?.name, 'sgs/trust-bar' );
+	assert.match( JSON.stringify( bar.handover ), /Secure\\" at 375px/ );
+	assert.deepEqual( bar.attributes.items.map( ( x ) => x.label ), [ 'Secure checkout' ], 'the item holds the widest words' );
+	assert.equal( nodeFor( run( inv( pageHeader( lone() ) ) ), 'Root/30#0' ).handover, undefined, 'words alike at every width need no note' );
+} );
+
+test( 'negative control: the glyph after the words, no glyph, a link or button around the label, a heading, outside any header and a label of a page body are not this rule', () => {
+	const is = ( r ) => 'sgs/trust-bar' === nodeFor( r, 'Root/30#0' )?.name;
+	assert.equal( is( onPage( pageHeader( lone( { glyphFirst: false } ) ) ) ), false, 'the glyph after its words' );
+	assert.equal( is( onPage( pageHeader( lone( { glyph: false } ) ) ) ), false, 'no glyph' );
+	assert.equal( is( onPage( pageHeader( lone( { inLink: true } ) ) ) ), false, 'inside a link' );
+	assert.equal( is( onPage( pageHeader( lone( { tag: 'a' } ) ) ) ), false, 'a link' );
+	assert.equal( is( onPage( pageHeader( lone( { tag: 'h2' } ) ) ) ), false, 'a heading' );
+	assert.equal( is( onPage( pageHeader( lone(), 'main' ) ) ), false, 'a page body that is no header' );
+	assert.equal( is( onPage( pageHeader( lone( { words: '2' } ) ) ) ), false, 'a number' );
+} );

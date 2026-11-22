@@ -647,6 +647,9 @@
 			"items": { "setting": "items", "text": "label", "svg": "iconSvg" },
 			"style": { "setting": "badgeStyle", "icons": "icon-bare", "plain": "text-only", "iconSize": "iconBareSize" },
 			"itemSlots": [ "itemGap", "labelFontSize" ],
+			"loneLabel": {
+				"reason": "a lone label whose glyph comes before its words, in a header (a header surface, or a template's own header element), outside any link or button, is a trust bar of one item: the glyph is the item's icon, drawn bare, and the words its label; a label that reads differently at other widths is noted for the content page"
+			},
 			"reason": "a run of two or more labels side by side in a strip above or below a header's main bar (its top or bottom row), each a short line of words that is no link, button, heading, number or business detail and draws at most a glyph beside its words, is one sgs/trust-bar inside that row: each label is an item, its glyph the item's icon (the rendered SVG, a loop doubled for its scroll read once), the icons drawn bare as the draft draws them (at the size its SVGs state on their root, when every label states the same one: `style.iconSize`) or the words alone when no label has one, and the first label is where Fill reads the items' spacing and type. A header strip is no page section, so the trust bar's section rule (trustBar) and its marquee rule never place it there; a glyph with no letter between two labels is their separator, never an item"
 		},
 		"hero": {
