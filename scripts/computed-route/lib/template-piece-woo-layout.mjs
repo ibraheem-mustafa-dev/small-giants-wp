@@ -23,6 +23,9 @@
 //     handler: a wallet button's work is its payment provider's) and a divider (an element whose own words sit between two
 //     or more empty boxes) are WooCommerce's block's own; a heading and plain text before it are the draft's.
 // A region holding any other part is left as it is, with a note naming the part.
+// The region's own width cap and centring (Mama's checkout grid: max-width 1160px, margin auto) belong to no node once the block
+// stands for it, so the node built from the region's parent element names the region in its `draftBandWrappers`: Fill reads the
+// region's box as that node's content band (lib/fill-band.mjs), which holds the block and the form column's head kept above it.
 // Outside the region, a heading or text holding a piece whose words are a count of the list the region's lines loop over (the
 // basket's `{{ count }}`, `items.reduce( ( a, x ) => a + x.qty, 0 )` over the `items` the lines loop) is the live basket count
 // (basketCounts): the node becomes a row holding its own words and an `sgs/text` drawing the "Basket count" format
@@ -265,7 +268,17 @@ export function place( ctx, piece ) {
 		}
 		return n.innerBlocks?.length ? { ...n, innerBlocks: split( n.innerBlocks ) } : n;
 	} );
-	const pruned = split( prune( tree ) );
+	const parentKey = m.byKey[ region ].parentKey;
+	let banded = null;
+	const band = ( list ) => ( list || [] ).map( ( n ) => {
+		if ( parentKey && keyOf( n ) === parentKey ) {
+			banded = n;
+			const had = ( n.draftBandWrappers || [] ).some( ( f ) => f?.tpl === region );
+			return had ? n : { ...n, draftBandWrappers: [ ...( n.draftBandWrappers || [] ), { tpl: region } ] };
+		}
+		return n.innerBlocks?.length ? { ...n, innerBlocks: band( n.innerBlocks ) } : n;
+	} );
+	const pruned = band( split( prune( tree ) ) );
 	if ( ! block ) {
 		return leave( 'the tree holds no core/post-content placed at the region' );
 	}
@@ -312,6 +325,7 @@ export function place( ctx, piece ) {
 			...kept.map( ( h ) => `${ ctx.key }: ${ h.t.key } (${ h.kind }) at the head of the form column stays the draft's own, above the block` ),
 			...dropped.map( ( d ) => `${ ctx.key }: ${ d } is dropped: an element inside the region the block stands in for` ),
 			...counted,
+			...( banded ? [ `${ ctx.key }: ${ keyOf( banded ) } reads the region ${ region } as its content band (its width cap and centring)` ] : [] ),
 			...notes,
 		],
 	};

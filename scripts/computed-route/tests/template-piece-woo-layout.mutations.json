@@ -28,7 +28,7 @@
 	{"file": "lib/template-piece-woo-layout.mjs", "find": "( 'sc-else' === t.tag && i === at + 1 )", "replace": "false", "why": "the else of the region's branch is not its other branch"},
 	{"file": "lib/template-piece-woo-layout.mjs", "find": ".some( ( l ) => lists.has( l ) )", "replace": ".length > 0", "why": "a sibling counting another list is taken as the other branch"},
 	{"file": "lib/template-piece-woo-layout.mjs", "find": "if ( ! lists.size ) {", "replace": "if ( false ) {", "why": "a branch counting no list still has other branches"},
-	{"file":"lib/template-piece-woo-layout.mjs","find":"const pruned = split( prune( tree ) );","replace":"const pruned = prune( tree );","why":"the basket count stays inside the heading as its rendered number"},
+	{"file":"lib/template-piece-woo-layout.mjs","find":"const pruned = band( split( prune( tree ) ) );","replace":"const pruned = band( prune( tree ) );","why":"the basket count stays inside the heading as its rendered number"},
 	{"file":"lib/template-piece-woo-layout.mjs","find":"if ( inRegion( t ) || ! host ||","replace":"if ( ! host ||","why":"a count inside the region the block stands for is split out too"},
 	{"file":"lib/template-piece-woo-layout.mjs","find":"! ws( String( host.words ?? '' ).replace( /\\{\\{[^}]*\\}\\}/g, '' ) )","replace":"! ws( String( host.words ?? '' ) )","why":"a holder whose only words are the count is split"},
 	{"file":"lib/template-piece-woo-layout.mjs","find":"countedDecls( L, h.expr ).some( ( d ) => lines.has( d ) )","replace":"countedDecls( L, h.expr ).length > 0","why":"a count of any list is taken as the basket count"},
@@ -40,5 +40,8 @@
 	{"file":"lib/template-piece-woo-layout.mjs","find":"! String( h.detail || '' ).includes( `{{ ${ expr } }}` ) && ","replace":"","why":"the handover about the code-filled count stays"},
 	{"file":"lib/template-piece-woo-layout.mjs","find":"...counted,","replace":"","why":"the split is not noted"},
 	{"file":"lib/shop-parts-logic.mjs","find":"return n.callee.object;","replace":"return n.arguments[ 0 ];","why":"a reduce counts its reducer, not its list"},
-	{"file":"lib/shop-parts-logic.mjs","find":"return values.length && decls.every( Boolean ) ? [ ...new Set( decls ) ] : [];","replace":"return [ ...new Set( decls.filter( Boolean ) ) ];","why":"a binding counting nothing is taken to count"}
+	{"file":"lib/shop-parts-logic.mjs","find":"return values.length && decls.every( Boolean ) ? [ ...new Set( decls ) ] : [];","replace":"return [ ...new Set( decls.filter( Boolean ) ) ];","why":"a binding counting nothing is taken to count"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "const pruned = band( split( prune( tree ) ) );", "replace": "const pruned = split( prune( tree ) );", "why": "the region's width cap belongs to no node"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "if ( parentKey && keyOf( n ) === parentKey ) {", "replace": "if ( parentKey ) {", "why": "the first node of the tree reads the region as its band"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "...( banded ? [ `${ ctx.key }: ${ keyOf( banded ) } reads the region ${ region } as its content band (its width cap and centring)` ] : [] ),", "replace": "", "why": "the band is not noted"}
 ]

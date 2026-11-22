@@ -217,6 +217,11 @@ test( 'MUST FAIL: Mama\'s checkout read from its page: its own bar as the templa
 	] );
 	assert.deepEqual( got.tree[ 1 ].innerBlocks[ 2 ].draftStandsFor, { tpl: 'Root/17#0' } );
 	assert.equal( got.tree[ 1 ].innerBlocks[ 2 ].widthVariants, undefined );
+	// MUST FAIL (F-26): the main reads the column grid it holds as its content band, so the grid's 1160px cap and centring are kept
+	// around the block and the eyebrow and heading above it; no other node names a band wrapper.
+	assert.deepEqual( got.tree[ 1 ].draftBandWrappers, [ { tpl: 'Root/17#0' } ] );
+	assert.deepEqual( nodes( got.tree ).filter( ( n ) => n.draftBandWrappers ).length, 1 );
+	assert.ok( got.notes.some( ( n ) => /Root\/16#0 reads the region Root\/17#0 as its content band/.test( n ) ), got.notes.join( '\n' ) );
 	for ( const gone of [ 'Root/19#0', 'Root/20#0', 'Root/21#0', 'Root/6#0' ] ) {
 		assert.equal( refs( got.tree ).includes( gone ), false, gone );
 	}
@@ -260,8 +265,10 @@ test( 'Mama\'s basket: the Cart block stands in for the grid of lines and summar
 	assert.deepEqual( got.problems, [] );
 	const block = nodes( got.tree ).find( ( n ) => 'core/post-content' === n.name );
 	assert.deepEqual( block.draftStandsFor, { tpl: 'Root/22#0' } );
-	const strip = ( tree ) => JSON.parse( JSON.stringify( tree, ( k, val ) => ( 'draftStandsFor' === k ? undefined : val ) ) );
+	const strip = ( tree ) => JSON.parse( JSON.stringify( tree, ( k, val ) => ( [ 'draftStandsFor', 'draftBandWrappers' ].includes( k ) ? undefined : val ) ) );
 	assert.deepEqual( strip( got.tree ), input.tree );
+	// The grid's parent reads the grid as its content band.
+	assert.deepEqual( nodes( got.tree ).filter( ( n ) => n.draftBandWrappers ).map( ( n ) => [ n.draftRef.tpl, n.draftBandWrappers ] ), [ [ 'Root/9#0', [ { tpl: 'Root/22#0' } ] ] ] );
 	assert.ok( got.notes.some( ( n ) => /keeps the shared header and footer parts/.test( n ) ) );
 	// MUST FAIL: the empty basket (sc-if empty, items.length === 0, beside the grid's hasItems, items.length > 0) is the block's
 	// drawing too, so its draft elements are in the run.
