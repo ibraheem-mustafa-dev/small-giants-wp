@@ -30,12 +30,15 @@ STAMP_VERSION = 2
 
 def check_hash(plugin: Path) -> str:
     """One hash of the check's own code (scripts/setting-record: its modules, scripts, runner hooks and schema, not the
-    fixtures or tests) and of the offline runner (scripts/qa/lib): a change to either reaches every block alike."""
+    fixtures or tests), the scanner modules it imports (scripts/block-source-scan, scripts/lib/block_source_files.py)
+    and the offline runner (scripts/qa/lib): a change to any reaches every block alike."""
     plugin = Path(plugin)
     files = [f for pat in ('*.py', '*.js', '*.php', 'record.schema.json') for f in (plugin / 'scripts' / 'setting-record').glob(pat)]
+    files += list((plugin / 'scripts' / 'block-source-scan').glob('*.py'))
+    files += [plugin / 'scripts' / 'lib' / 'block_source_files.py']
     files += list((plugin / 'scripts' / 'qa' / 'lib').glob('*.php'))
     h = hashlib.md5()
-    for f in sorted(set(files), key=lambda f: f.name):
+    for f in sorted(set(files), key=lambda f: f.as_posix()):
         h.update(f.name.encode())
         h.update(file_hash(f).encode())
     return h.hexdigest()[:16]
@@ -182,7 +185,7 @@ def core_files(stamps: dict) -> set:
     return set.intersection(*sets) if len(sets) >= CORE_MIN else set()
 
 
-def refresh_core(plugin: Path, records_dir: Path) -> list:
+def refresh_core(plugin: Path, records_dir: Path, skip=()) -> list:
     """Brings every record's core inputs and check hash to the files as they are now, once the canaries have shown that
     the core change moves nothing (check.py --changed --restamp). Returns the records rewritten."""
     plugin = Path(plugin)
@@ -193,7 +196,7 @@ def refresh_core(plugin: Path, records_dir: Path) -> list:
     out = []
     for f, d in docs.items():
         st = d.get('stamp')
-        if not st or not st.get('inputs'):
+        if not st or not st.get('inputs') or f.name in skip:
             continue
         new = dict(st, check=now_check, inputs={k: (file_hash(plugin / k) if k in core else h) for k, h in st['inputs'].items()})
         if new != st:

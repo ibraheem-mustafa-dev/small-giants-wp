@@ -28,8 +28,7 @@
    "unproved": "script-built-part",
    "values": [
     "#13579b"
-   ],
-   "accepted": "proved on sgs/form"
+   ]
   },
   {
    "setting": "fieldBackground",
@@ -91,8 +90,7 @@
      "bottomRight": "17px",
      "bottomLeft": "19px"
     }
-   ],
-   "accepted": "proved on sgs/form"
+   ]
   },
   {
    "setting": "fieldBorderRadius",
@@ -133,8 +131,7 @@
     "none",
     "outset",
     "ridge"
-   ],
-   "accepted": "proved on sgs/form"
+   ]
   },
   {
    "setting": "fieldBorderStyle",
@@ -149,8 +146,7 @@
    "unproved": "script-built-part",
    "values": [
     "none"
-   ],
-   "accepted": "proved on sgs/form"
+   ]
   },
   {
    "setting": "fieldBorderStyle",
@@ -224,8 +220,7 @@
      "bottom": "17px",
      "left": "19px"
     }
-   ],
-   "accepted": "proved on sgs/form"
+   ]
   },
   {
    "setting": "fieldBorderWidth",
@@ -5587,6 +5582,6 @@
    "style",
    "textarea"
   ],
-  "check": "287cd9ad95e2e2be"
+  "check": "00207896689d27d1"
  }
 }

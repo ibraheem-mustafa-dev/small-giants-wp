@@ -25,7 +25,8 @@ def part_role(block: str, part: str) -> str:
     if part == 'ROOT':
         return 'ROOT'
     base = part.split()[0]
-    if not base.startswith(f'sgs-{short}'):
+    own = base == f'sgs-{short}' or base.startswith((f'sgs-{short}__', f'sgs-{short}--'))
+    if not own:  # another block's class that only shares the prefix (sgs-form-review__term on sgs/form) is shared
         return 'shared:' + part
     return 'own:' + (base.split('__', 1)[1] if '__' in base else base)
 

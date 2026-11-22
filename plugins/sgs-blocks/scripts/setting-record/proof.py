@@ -368,8 +368,18 @@ class Fingerprints:
                     for name in {prop, *(CP.expand(prop, 'initial') if not prop.startswith('--') else ())}:
                         self.index.setdefault(name, []).append(rule)
         self.base = [ST.check_hash(run['plugin']), pages.frame, pages.theme.get('error')]
+        self.corpus = corpus(str(run['plugin']))
+        self.mentions = {}  # token -> [(file, hash)] of the front-end files whose text holds it
 
-    def rules_for(self, names) -> list:
+    def files_naming(self, token: str) -> list:
+        """The plugin's and theme's front-end files that mention a token (a part's class, its element name, a custom
+        property): where the proof's part_source and script_holds look for what prints a part or sets a value."""
+        import stamp as ST
+        if token not in self.mentions:
+            self.mentions[token] = [(rel, ST.text_hash(text)) for rel, text in self.corpus if token in text]
+        return self.mentions[token]
+
+    def rules_for(self, names, varnames=None) -> list:
         seen, todo, out = set(), list(names), set()
         while todo:
             n = todo.pop()
@@ -379,13 +389,20 @@ class Fingerprints:
             for rule in self.index.get(n, ()):
                 out.add(rule)
                 todo.extend(VAR_REF.findall(rule[1]))
+        if varnames is not None:
+            varnames.update(n for n in seen if n.startswith('--'))
         return sorted(out)
 
     def of(self, e: dict, names, pairs) -> str:
         import stamp as ST
         res = self.run['results']
         renders = [[(res.get(j) or {}).get('html', ''), (res.get(j) or {}).get('css', '')] for pair in pairs for j in pair]
-        return ST.text_hash(json.dumps([self.base, cache_key(e), renders, self.rules_for(names)], default=str))
+        varnames = set()
+        rules = self.rules_for(names, varnames)
+        base = e['part'].split('::')[0].split()[0] if e['part'] != 'ROOT' else ''
+        tokens = sorted({t for t in (base, base.split('__', 1)[1] if '__' in base else '') if t} | varnames)
+        sources = {t: self.files_naming(t) for t in tokens}
+        return ST.text_hash(json.dumps([self.base, cache_key(e), renders, rules, sources], default=str))
 
 
 def longhands(props) -> list:

@@ -75,7 +75,26 @@ def plan(plugin: Path, records_dir: Path, fixtures_file: Path, today: dt.date | 
     full = sorted(b for b, r in sel.items() if r['own'])
     core = any(r['core'] for r in sel.values())
     canary = [b for b in CANARIES if core and b in live and b not in full]
-    return {'full': full, 'canary': canary, 'reasons': sel, 'problems': problems}
+    return {'full': full, 'canary': canary, 'reasons': sel, 'problems': problems, 'staleVerdicts': stale_verdicts(plugin, live)}
+
+
+def stale_verdicts(plugin: Path, live) -> list:
+    """[(block, why)] for each block whose browser verdicts (browser/verdicts/<block>.json) were measured on code that has
+    changed since (check.py::script_hash: its folder, front-end scripts included, and src/shared). Its record still holds
+    the browser's kinds; the offline check cannot see a script's effect, so only the browser pass, or a rewrite that
+    turns those entries back to unproven, makes it true again."""
+    import check as CK
+    out = []
+    for f in sorted(CK.BROWSER_VERDICTS.glob('*.json')):
+        block = f'sgs/{f.stem}'
+        if block not in live:
+            continue
+        doc = json.loads(f.read_text(encoding='utf-8'))
+        if doc.get('scriptHash') != CK.script_hash(Path(plugin), f.stem):
+            out.append((block, f'its browser verdicts were measured on code that has changed since (src/blocks/{f.stem} or '
+                               f'src/shared): run the browser pass for it (setting-record/browser/README.md), or rewrite the '
+                               f'record so those entries are unproven again: {fix_command(block)}'))
+    return out
 
 
 def fix_command(block: str) -> str:

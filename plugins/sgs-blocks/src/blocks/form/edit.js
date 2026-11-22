@@ -696,9 +696,8 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }${ false === stretchButtonsNarrow ? ' sgs-form--no-narrow-stretch' : '' }${ 'inline' === attributes.stepLayout ? ' sgs-form--stepper-inline' : '' }${ attributes.gap && Object.values( attributes.gap ).some( ( v ) => '' !== String( v ?? '' ).trim() ) ? ' sgs-form--has-gap' : '' }`,
 	} );
 
-	// The blocks a form's own children may be: block.json's `allowedBlocks`, the one list (the editor read a copy that
-	// had lost the date, number, hidden and address fields). Unlike sgs/container it is never relaxed to "no
-	// restriction": a form's children are always form-structural (steps, fields, review), and a stray sgs/hero dropped
+	// The blocks a form's own children may be: block.json's `allowedBlocks`, the one list. Unlike sgs/container it is
+	// never relaxed to "no restriction": a form's children are always form-structural (steps, fields, review), and a stray sgs/hero dropped
 	// into a form would break its step and field layout and its submission handling.
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-form__inner' },

@@ -542,7 +542,8 @@ def main(argv=None) -> int:
         if not all(ids):
             raise SystemExit('the wishlist needs the three scratch products (--setup, --setup-content)')
         os.environ['SR_WISHLIST_IDS'] = ','.join(ids)
-    BROWSER_STANDINS['{{image.url}}'] = site.wp('post', 'get', str(BROWSER_STANDINS['{{image}}']), '--field=guid').strip()
+    if not (a.setup or a.setup_nav or a.setup_content):  # a fresh site has no image until the setup steps have run
+        BROWSER_STANDINS['{{image.url}}'] = site.wp('post', 'get', str(BROWSER_STANDINS['{{image}}']), '--field=guid').strip()
 
     if a.setup_nav:
         print(site.wp('eval-file', wsl_path(HERE / 'wp_nav_fixtures.php'), wsl_path(SETREC / 'fixtures' / 'menu-post.json')))

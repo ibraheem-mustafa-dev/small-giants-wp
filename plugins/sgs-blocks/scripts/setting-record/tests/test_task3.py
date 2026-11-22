@@ -682,3 +682,76 @@ def test_the_writer_keeps_each_outcome_beside_its_key_and_reads_it_back():
     keys = [list(k[:2]) + [list(k[2]), k[3], list(k[4])]]
     reuse = dict(zip((json.dumps(x) for x in keys), lst))
     assert reuse[PR.cache_key({'setting': 'textColour', 'part': 'ROOT', 'props': ('color',), 'state': None, 'tiers': ()})]['v'] == 'proved'
+
+
+
+# ---------------------------------------------------------------- second review (2026-11-22)
+def test_a_block_failing_its_coverage_floor_is_never_restamped(monkeypatch, tmp_path):
+    rec = tmp_path / 'demo.json'
+    doc = {'block': 'sgs/demo', 'schemaVersion': 2, 'parts': [], 'entries': [], 'proofKeys': [],
+           'stamp': {'version': 2, 'inputs': {}, 'outputs': 'old', 'theme': 'old'}}
+    assert CK.schema_errors(doc, need_kind=True) == []  # so only the floor can fail it
+    rec.write_text(json.dumps(doc), encoding='utf-8')
+    run = {'entries': {}, 'unnamed': [], 'defaultHtml': '', 'results': {}, 'sheetFiles': [], 'renderer': SimpleNamespace(included=set()),
+           'plan': {'fixture': {}},
+           'stats': {'block': 'sgs/demo', 'coverage': {'rootPrinted': False, 'defaultEmpty': True, 'defaultRendered': True},
+                     'renderFailedOnly': [], 'testedNoPaint': [], 'replacesBlock': [], 'unvalued': []}}
+    monkeypatch.setattr(CK, 'run_block', lambda *a, **k: run)
+    monkeypatch.setattr(CK, 'parts_check', lambda *a: {'order': [], 'declaredNotPrinted': [], 'declaredScriptBuilt': [], 'printedNotDeclared': []})
+    monkeypatch.setattr(PR, 'prove', lambda short, run: ({}, {'blind': [], 'removed': [], 'cache': {}}))
+    monkeypatch.setattr(CK, 'apply_browser_verdicts', lambda *a: None)
+    args = SimpleNamespace(fixtures=tmp_path / 'none.json', instances=None, instances_dir=None, plugin=PLUGIN, no_proof=False, restamp=True,
+                           record=rec, record_dir=None, write=None, write_dir=None, out=tmp_path / 'r', strict_parts=False, fresh=False)
+    assert CK.check_block(args, 'demo') == 1
+    assert json.loads(rec.read_text(encoding='utf-8'))['stamp']['outputs'] == 'old'
+
+
+def test_the_check_hash_covers_the_scanner_modules_the_check_imports(tmp_path):
+    plugin = tmp_path / 'plugin'
+    scan = plugin / 'scripts' / 'block-source-scan'
+    scan.mkdir(parents=True)
+    (scan / 'reference.py').write_text('WIDTHS = (375,)', encoding='utf-8')
+    before = ST.check_hash(plugin)
+    (scan / 'reference.py').write_text('WIDTHS = (375, 768)', encoding='utf-8')
+    assert ST.check_hash(plugin) != before
+
+
+def test_a_class_that_only_shares_the_block_prefix_is_not_the_blocks_own_part():
+    assert AC.part_role('sgs/form', 'sgs-form-review__term') == 'shared:sgs-form-review__term'
+    assert AC.part_role('sgs/form', 'sgs-form__step') == 'own:step'
+    assert AC.part_role('sgs/form', 'sgs-form--compact') == 'own:sgs-form--compact'
+
+
+def test_browser_verdicts_measured_on_older_code_are_reported(monkeypatch, tmp_path):
+    folder = tmp_path / 'verdicts'
+    folder.mkdir()
+    (folder / 'cart.json').write_text(json.dumps({'block': 'sgs/cart', 'scriptHash': 'measured-on-old-code'}), encoding='utf-8')
+    monkeypatch.setattr(CK, 'BROWSER_VERDICTS', folder)
+    stale = CH.stale_verdicts(PLUGIN, {'sgs/cart': {}})
+    assert [b for b, _ in stale] == ['sgs/cart'] and 'browser pass' in stale[0][1]
+    (folder / 'cart.json').write_text(json.dumps({'block': 'sgs/cart', 'scriptHash': CK.script_hash(PLUGIN, 'cart')}), encoding='utf-8')
+    assert CH.stale_verdicts(PLUGIN, {'sgs/cart': {}}) == []
+
+
+def test_a_script_that_starts_naming_the_part_moves_its_fingerprint():
+    fps = _fps('.sgs-demo__track{color:red}')
+    entry = {**ENTRY, 'part': 'sgs-demo__track'}
+    fps.corpus = [('src/blocks/demo/view.js', 'el.className = "sgs-demo__bar";')]
+    fp = fps.of(entry, ['color'], [('b', 'c')])
+    fps.corpus, fps.mentions = [('src/blocks/demo/view.js', 'el.className = "sgs-demo__track";')], {}
+    assert fps.of(entry, ['color'], [('b', 'c')]) != fp
+
+
+
+def test_a_browser_verdict_depends_on_the_front_end_only(tmp_path):
+    plugin = tmp_path / 'wp' / 'plugins' / 'sgs-blocks'
+    blk = plugin / 'src' / 'blocks' / 'demo'
+    blk.mkdir(parents=True)
+    (blk / 'block.json').write_text('{"name": "sgs/demo"}', encoding='utf-8')
+    (blk / 'view.js').write_text('document.body.dataset.x = 1;', encoding='utf-8')
+    (blk / 'edit.js').write_text("import { useBlockProps } from '@wordpress/block-editor';", encoding='utf-8')
+    before = CK.script_hash(plugin, 'demo')
+    (blk / 'edit.js').write_text("import { useBlockProps } from '@wordpress/block-editor'; // changed", encoding='utf-8')
+    assert CK.script_hash(plugin, 'demo') == before  # an editor change: the browser measured nothing of it
+    (blk / 'view.js').write_text('document.body.dataset.x = 2;', encoding='utf-8')
+    assert CK.script_hash(plugin, 'demo') != before

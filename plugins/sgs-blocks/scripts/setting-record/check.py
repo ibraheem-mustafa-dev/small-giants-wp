@@ -52,13 +52,21 @@ def key(e: dict) -> tuple:
 
 
 def script_hash(plugin: Path, short: str) -> str:
-    """What a browser verdict depends on beyond the offline render: the block's own folder (its render, stylesheets and
-    front-end scripts) and src/shared (the scripts and styles blocks share)."""
+    """What a browser verdict depends on beyond the offline render: the front end of the block's own folder and of
+    src/shared (render, stylesheets, block.json, and every script a visitor's page can run: proof.py::front_end_reachable).
+    The editor's files (its entries index.js, edit.js and editor.js, its stylesheets, scripts only the editor reaches)
+    are left out: an editor change does not change what the browser measured."""
     import hashlib
+    import proof as PR
+    plugin = Path(plugin)
+    front = PR.front_end_reachable(str(plugin))
     h = hashlib.md5()
     for base in (plugin / 'src' / 'blocks' / short, plugin / 'src' / 'shared'):
         for f in sorted(p for p in base.rglob('*') if p.is_file()):
-            h.update(f.relative_to(plugin).as_posix().encode())
+            rel = f.relative_to(plugin).as_posix()
+            if f.name in PR.EDITOR_FILES or 'editor' in f.name.lower() or (f.suffix in ('.js', '.mjs', '.jsx', '.ts', '.tsx') and rel not in front):
+                continue
+            h.update(rel.encode())
             h.update(f.read_bytes().replace(b'\r\n', b'\n'))
     return h.hexdigest()[:16]
 
@@ -445,10 +453,15 @@ def check_changed(args) -> int:
         worst = check_block(args, args.blocks[0]) if len(blocks) == 1 else check_many(args)
     else:
         print(f'setting record: no block touched ({len(CH.load_records(records_dir))} records)')
-    if getattr(args, 'restamp', False) and p['canary'] and worst == 0:
-        # the canaries carried the core change without a finding: every record's core inputs are current again
-        print(f'core change accepted on {", ".join(p["canary"])}: {len(ST.refresh_core(args.plugin, records_dir))} stamps refreshed')
-    return max(worst, 1 if p['problems'] else 0)
+    for b, why in p['staleVerdicts']:
+        print(f'{"FAIL" if not args.no_proof else "WARN"} {b}: {why}', file=sys.stderr)
+    stale_fails = bool(p['staleVerdicts']) and not args.no_proof  # the full tier (pre-deploy) fails on them
+    if getattr(args, 'restamp', False) and p['canary'] and worst == 0 and not p['problems']:
+        # the canaries carried the core change without a finding: every record's core inputs are current again (a block
+        # on the pending list keeps its stamp: it was not checked under the new core)
+        refreshed = ST.refresh_core(args.plugin, records_dir, skip={f"{b.split('/', 1)[1]}.json" for b in CH.load_pending()})
+        print(f'core change accepted on {", ".join(p["canary"])}: {len(refreshed)} stamps refreshed')
+    return max(worst, 1 if (p['problems'] or stale_fails) else 0)
 
 
 # ---------------------------------------------------------------- one block
@@ -461,6 +474,7 @@ def check_block(args, block: str) -> int:
     entries = run['entries']
     plain_keys = sorted(run['entries'], key=json.dumps)  # what the plain comparison sees, before the proof
     proof = None
+    restamp_doc = None
     if not args.no_proof:
         import proof as PR
         tp = time.time()
@@ -535,10 +549,7 @@ def check_block(args, block: str) -> int:
         elif getattr(args, 'restamp', False):
             if args.no_proof:
                 raise SystemExit('--restamp needs the proof: a stamp says the record was checked in full against these files')
-            doc['stamp'] = new_stamp(args, short, run, fixtures)
-            doc['proofCache'] = cache_list(plain_keys, proof_cache)
-            record_file.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
-            report['restamped'] = str(record_file)
+            restamp_doc = doc  # written below, once the coverage floor has passed too
     cov = run['stats']['coverage']
     floor = [] if cov['rootPrinted'] else ['the default render ' + ('is empty' if cov['defaultEmpty'] else 'does not print the block root')]
     if run['stats']['renderFailedOnly']:
@@ -547,6 +558,12 @@ def check_block(args, block: str) -> int:
     for f in floor:
         print(f'sgs/{short}: {f}: its fixture must render the block (fixtures.json; README, Reading a report)')
     bad = bad or bool(floor)
+    if restamp_doc is not None and not bad:
+        restamp_doc['stamp'] = new_stamp(args, short, run, fixtures)
+        restamp_doc['proofKeys'] = [list(k[:2]) + [list(k[2]), k[3], list(k[4])] for k in plain_keys]
+        restamp_doc['proofCache'] = cache_list(plain_keys, proof_cache)
+        record_file.write_text(json.dumps(restamp_doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
+        report['restamped'] = str(record_file)
     report['parts'] = parts
     if proof is not None:
         report['proof'] = proof
