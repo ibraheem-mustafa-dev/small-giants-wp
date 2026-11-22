@@ -128,13 +128,47 @@ test( 'MUST FAIL: each group heading carries the theme\'s heading class and the 
 	assert.equal( heading( 'Shade' ).attributes.level, 'h3' );
 	assert.equal( heading( 'Shade' ).draftRef.tpl, 'Root/8#0', 'the heading reads the draft\'s group label' );
 	assert.ok( heading( 'Shade' ).draftFingerprint );
-	assert.deepEqual( [ after( 'Shade' ).attributes.displayStyle, after( 'Shade' ).innerBlocks[ 0 ].name ], [ 'woocommerce/product-filter-chips', 'woocommerce/product-filter-chips' ] );
+	assert.deepEqual( [ after( 'Shade' ).attributes.displayStyle, after( 'Shade' ).innerBlocks.at( -1 ).name ], [ 'woocommerce/product-filter-chips', 'woocommerce/product-filter-chips' ] );
 	assert.deepEqual( [ after( 'Fit' ).attributes.displayStyle, after( 'Fit' ).innerBlocks[ 0 ].name ], [ 'woocommerce/product-filter-checkbox-list', 'woocommerce/product-filter-checkbox-list' ], 'a group showing checkboxes is a checkbox list' );
 	assert.deepEqual( { queryType: after( 'Kind' ).attributes.queryType, sortOrder: after( 'Kind' ).attributes.sortOrder }, { queryType: 'or', sortOrder: 'menu_order-asc' } );
 	assert.equal( after( 'Brand' ).attributes.taxonomy, 'product_brand' );
 	assert.equal( after( 'Price' ).innerBlocks[ 0 ].name, 'woocommerce/product-filter-price-slider' );
 	assert.equal( JSON.stringify( pf ).includes( '"facet"' ), false, 'the facet marker never reaches the tree' );
 	assert.equal( JSON.stringify( pf ).includes( 'draftKey' ), false, 'the label marker never reaches the tree' );
+} );
+
+// F-32: each group is drawn the way the draft draws it: the heading's count, option counts only where options show numbers,
+// the draft's search box inside the filter it narrows, and a one-choice row with an "all" first as the segmented look.
+test( 'MUST FAIL: each group is built the way the draft draws it: heading count, option counts, search box, segmented row', () => {
+	const rail = RAIL.filter( ( e ) => ! /#[03]$/.test( e.key ) || ! /^Root\/(6|7|8|10|11|12|13)#/.test( e.key ) );
+	const drawn = [
+		...group( 0, 'Shade', [ { tag: 'input', attrs: { type: 'search', placeholder: 'Search shades' } }, { tag: 'button', words: 'All' }, { tag: 'button', words: 'Ink' }, { tag: 'button', words: 'Sand' } ] ),
+		...group( 3, 'Brand', [ { tag: 'span', words: 'Acme' }, { tag: 'span', words: '4' }, { tag: 'span', words: 'Bolt' }, { tag: 'span', words: '2' } ] ),
+		el( 'Root/9#3', 'Root/7#3', 'span', '40', { depth: 6, loop: 6 } ),
+	];
+	const at = rail.findIndex( ( e ) => 'Root/6#1' === e.key );
+	const elements = SHOP.filter( ( e ) => ! RAIL.includes( e ) );
+	elements.splice( 3, 0, ...rail.slice( 0, at ), ...drawn.slice( 0, drawn.findIndex( ( e ) => 'Root/6#3' === e.key ) ), ...rail.slice( at ), ...drawn.slice( drawn.findIndex( ( e ) => 'Root/6#3' === e.key ) ) );
+	const { skeleton, problems } = run( elements, SHOP_ROLE() );
+	assert.deepEqual( problems, [] );
+	const pf = find( skeleton, named( 'woocommerce/product-filters' ) );
+	const heading = ( label ) => pf.innerBlocks.find( ( n ) => 'sgs/heading' === n.name && label === n.attributes.content );
+	const after = ( label ) => pf.innerBlocks[ pf.innerBlocks.indexOf( heading( label ) ) + 1 ];
+	assert.match( heading( 'Shade' ).attributes.className, / sgs-filter-segmented$/ );
+	assert.match( heading( 'Brand' ).attributes.className, /\bsgs-filter-count\b/ );
+	const search = after( 'Shade' ).innerBlocks[ 0 ];
+	assert.deepEqual( { name: search.name, attributes: search.attributes, ref: search.draftRef.tpl }, { name: 'sgs/filter-search', attributes: { searchMode: 'attribute-chips', threshold: 2, placeholder: 'Search shades', attributeId: 21 }, ref: 'Root/11#0' } );
+	assert.equal( after( 'Brand' ).attributes.showCounts, true, 'options showing numbers show counts' );
+	// Negative controls: a group with no numbers shows none, no box means no search, terms with no "all" first are no segmented row.
+	assert.equal( after( 'Shade' ).attributes.showCounts, false );
+	assert.equal( after( 'Kind' ).attributes.showCounts, false );
+	assert.ok( ! after( 'Kind' ).innerBlocks.some( ( n ) => 'sgs/filter-search' === n.name ) );
+	assert.doesNotMatch( heading( 'Kind' ).attributes.className, /segmented|count/ );
+	const plain = run( SHOP, SHOP_ROLE() );
+	const pf2 = find( plain.skeleton, named( 'woocommerce/product-filters' ) );
+	const h2 = pf2.innerBlocks.find( ( n ) => 'Shade' === n.attributes.content );
+	assert.doesNotMatch( h2.attributes.className, /segmented/, 'Ink and Sand with no "all" first are chips' );
+	assert.equal( pf2.innerBlocks[ pf2.innerBlocks.indexOf( pf2.innerBlocks.find( ( n ) => 'Brand' === n.attributes.content ) ) + 1 ].attributes.showCounts, false, '"Acme 4" in one word run is no count' );
 } );
 
 test( 'MUST FAIL: a facet\'s attribute id comes from the site\'s record; a site without one is a problem, no site writes none', () => {

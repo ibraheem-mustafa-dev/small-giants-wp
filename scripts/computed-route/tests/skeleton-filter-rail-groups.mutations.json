@@ -1,0 +1,11 @@
+[
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "const optionCounts = ( x ) => body( x ).filter( isNumber ).length >= 2;", "replace": "const optionCounts = ( x ) => true;", "why": "every group shows option counts, numbers drawn or not"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "const optionCounts = ( x ) => body( x ).filter( isNumber ).length >= 2;", "replace": "const optionCounts = ( x ) => body( x ).filter( isNumber ).length >= 0;", "why": "a group whose options show no number shows counts"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "headCount( x ) && rule.heading.countClass,", "replace": "rule.heading.countClass,", "why": "every heading shows a count"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "'facet' === x.kind && segmented( x ) && rule.heading.segmentedClass", "replace": "'facet' === x.kind && rule.heading.segmentedClass", "why": "every facet group is a segmented row"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "return options.length >= 3 && ! terms.has( squash( m.words( options[ 0 ] ) ) ) &&", "replace": "return options.length >= 2 &&", "why": "a row of terms with no all first is a segmented row"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "const box = rule.search ? searchBox( x ) : null;", "replace": "const box = null;", "why": "the draft's search box is not built"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "[ '', 'text', 'search' ].includes( attr( c, 'type' ).toLowerCase() )", "replace": "true", "why": "a checkbox is taken for a search box"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "...( placeholder ? { placeholder } : {} ),", "replace": "", "why": "the search box loses the draft's placeholder"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "innerBlocks: [], draftKey: box.key, ...( x.facet ? { facet: x.facet.slug } : {} ) };", "replace": "innerBlocks: [], draftKey: box.key };", "why": "the search box carries no attribute id"}
+]

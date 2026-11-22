@@ -191,10 +191,10 @@ export function decisionsProblems( facts ) {
 	if ( r.filterRail ) {
 		const f = r.filterRail;
 		const names = JSON.stringify( [ f.filters, f.groups, Object.values( f.displayStyles || {} ).map( ( name ) => ( { name } ) ) ] ).match( /"name":"[^"]+"/g )?.map( ( x ) => x.slice( 8, -1 ) ) || [];
-		[ f.block, f.heading?.block, ...names ].filter( ( slug ) => ! slug?.startsWith( 'woocommerce/' ) ).forEach( ( slug ) => known( slug, 'rules.filterRail' ) );
+		[ f.block, f.heading?.block, f.search?.block, ...names ].filter( ( slug ) => slug && ! slug.startsWith( 'woocommerce/' ) ).forEach( ( slug ) => known( slug, 'rules.filterRail' ) );
 		// `className` and `anchor` are WordPress block supports, never framework-database settings.
 		const supports = new Set( [ 'className', 'anchor' ] );
-		[ [ f.block, Object.keys( f.attributes || {} ) ], [ f.heading?.block, [ 'content', ...Object.keys( f.heading?.attributes || {} ) ] ] ].forEach( ( [ block, attrs ] ) => attrs.filter( ( a ) => block && ! supports.has( a ) && ! facts.attr( block, a ) ).forEach( ( a ) => problems.push( `rules.filterRail writes ${ a } on ${ block }, a setting it does not have` ) ) );
+		[ [ f.block, Object.keys( f.attributes || {} ) ], [ f.heading?.block, [ 'content', ...Object.keys( f.heading?.attributes || {} ) ] ], [ f.search?.block, [ ...Object.keys( f.search?.attributes || {} ), ...( f.search ? [ 'placeholder', 'taxonomy' ] : [] ) ] ] ].forEach( ( [ block, attrs ] ) => attrs.filter( ( a ) => block && ! supports.has( a ) && ! facts.attr( block, a ) ).forEach( ( a ) => problems.push( `rules.filterRail writes ${ a } on ${ block }, a setting it does not have` ) ) );
 		[ 'facet', 'price', 'brand', 'category' ].filter( ( k ) => ! f.groups?.[ k ]?.name ).forEach( ( k ) => problems.push( `rules.filterRail.groups.${ k } must name its block` ) );
 		[ 'choice', 'checkbox' ].filter( ( k ) => ! f.displayStyles?.[ k ] ).forEach( ( k ) => problems.push( `rules.filterRail.displayStyles.${ k } must name a block` ) );
 		f.ownAlternativeBelow && ( ! /^sgs_\w+$/.test( f.ownAlternativeBelow.setting || '' ) || 'theme-mod' !== f.ownAlternativeBelow.scope ) && problems.push( 'rules.filterRail.ownAlternativeBelow must name an sgs_ theme option (setting) with scope theme-mod' );

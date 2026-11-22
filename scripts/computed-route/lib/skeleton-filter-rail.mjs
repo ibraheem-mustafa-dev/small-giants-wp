@@ -16,7 +16,12 @@
 //     categories); any other group (an on-off switch row, a group the catalogue holds nothing for) is listed in the notes;
 //   - each group is a heading (the label, read at the draft's label element so Fill takes its look) followed by its filter,
 //     in the draft's order; a group the draft shows open starts open (the heading's open class), a facet with swatches
-//     takes the swatch look, and a group showing checkboxes is a checkbox list, else chips.
+//     takes the swatch look, and a group showing checkboxes is a checkbox list, else chips;
+//   - each group is drawn the way the draft draws it at rest (F-32): a number beside the label is the heading's count class,
+//     the options' counts are shown only when two or more options show a number, a text box above the options is a search
+//     box (rules.filterRail.search, its placeholder the draft's, inside the filter it narrows, read at the draft's box), and a
+//     facet's row of three or more buttons whose first is no term of the facet (an "all") and the rest its terms is the
+//     heading's segmented class.
 // A facet's filter names its attribute by slug (`facet`); the site's attribute id is a carried id (lib/skeleton-carried.mjs),
 // recorded by the catalogue step for each written facet and for each variation axis a facet names (a product's colour
 // picker and the shop's Colour filter are one attribute, `pa_colour`).
@@ -160,18 +165,45 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	const open = ( x ) => m.els.some( ( c ) => c.parentKey === x.group.key && shown( c ) && ! ( c === x.label || under( x.label, c ) ) );
 	const checkboxes = ( x ) => m.els.some( ( c ) => shown( c ) && under( c, x.group ) && 'input' === c.tag && 'checkbox' === attr( c, 'type' ).toLowerCase() );
 	const copy = ( n ) => ( { name: n.name, attributes: { ...( n.attributes || {} ) }, innerBlocks: ( n.innerBlocks || [] ).map( copy ) } );
+	// How the draft draws a group (F-32), read from what it shows at rest: the row holding its label, the numbers beside the label
+	// and beside its options, a text box above its options, and a one-choice row whose first option is no term (an "all").
+	const labelRow = ( x ) => ancestors( x.label ).find( ( a ) => a.parentKey === x.group.key ) || x.label;
+	const isNumber = ( c ) => /^\(?\d+\)?$/.test( squash( m.words( c ) ) );
+	const body = ( x ) => m.els.filter( ( c ) => shown( c ) && c !== x.group && under( c, x.group ) && ! under( c, labelRow( x ) ) );
+	const headCount = ( x ) => m.els.some( ( c ) => shown( c ) && under( c, labelRow( x ) ) && isNumber( c ) );
+	const optionCounts = ( x ) => body( x ).filter( isNumber ).length >= 2;
+	const searchBox = ( x ) => body( x ).find( ( c ) => 'input' === c.tag && [ '', 'text', 'search' ].includes( attr( c, 'type' ).toLowerCase() ) ) || null;
+	const segmented = ( x ) => {
+		const options = body( x ).filter( ( c ) => 'button' === c.tag );
+		const terms = new Set( ( x.facet?.terms || [] ).map( ( t ) => squash( t.name ) ) );
+		return options.length >= 3 && ! terms.has( squash( m.words( options[ 0 ] ) ) ) && options.slice( 1 ).every( ( o ) => terms.has( squash( m.words( o ) ) ) );
+	};
 	const heading = ( x, swatches ) => ( {
 		name: rule.heading.block,
-		attributes: { ...rule.heading.attributes, content: squash( m.words( x.label ) ), className: [ rule.heading.className, open( x ) && rule.heading.openClass, swatches && rule.heading.swatchClass ].filter( Boolean ).join( ' ' ) },
+		attributes: { ...rule.heading.attributes, content: squash( m.words( x.label ) ), className: [ rule.heading.className, open( x ) && rule.heading.openClass, swatches && rule.heading.swatchClass, headCount( x ) && rule.heading.countClass, 'facet' === x.kind && segmented( x ) && rule.heading.segmentedClass ].filter( Boolean ).join( ' ' ) },
 		innerBlocks: [],
 		draftKey: x.label.key,
 	} );
+	// The group's search box: the draft's text box above its options, narrowing them (searchMode attribute-chips, shown at once).
+	const searchOf = ( x, filter ) => {
+		const box = rule.search ? searchBox( x ) : null;
+		if ( ! box ) {
+			return null;
+		}
+		const placeholder = attr( box, 'placeholder' );
+		return { name: rule.search.block, attributes: { ...rule.search.attributes, ...( placeholder ? { placeholder } : {} ), ...( filter.attributes.taxonomy ? { taxonomy: filter.attributes.taxonomy } : {} ) }, innerBlocks: [], draftKey: box.key, ...( x.facet ? { facet: x.facet.slug } : {} ) };
+	};
+	const shaped = ( x, filter ) => {
+		const search = searchOf( x, filter );
+		const counts = 'price' !== x.kind && 'showCounts' in ( filter.attributes || {} ) ? { showCounts: optionCounts( x ) } : {};
+		return { ...filter, attributes: { ...filter.attributes, ...counts }, innerBlocks: [ ...( search ? [ search ] : [] ), ...filter.innerBlocks ] };
+	};
 	const filterOf = ( x ) => {
 		if ( 'facet' !== x.kind ) {
-			return copy( rule.groups[ x.kind ] );
+			return shaped( x, copy( rule.groups[ x.kind ] ) );
 		}
 		const style = rule.displayStyles[ checkboxes( x ) ? 'checkbox' : 'choice' ];
-		return { ...copy( rule.groups.facet ), attributes: { ...rule.groups.facet.attributes, displayStyle: style }, innerBlocks: [ { name: style, attributes: {}, innerBlocks: [] } ], facet: x.facet.slug };
+		return { ...shaped( x, { ...copy( rule.groups.facet ), attributes: { ...rule.groups.facet.attributes, displayStyle: style }, innerBlocks: [ { name: style, attributes: {}, innerBlocks: [] } ] } ), facet: x.facet.slug };
 	};
 	const inner = [ { ...copy( rule.filters ), innerBlocks: [ ...copy( rule.filters ).innerBlocks, ...groups.flatMap( ( x ) => [ heading( x, x.facet?.terms?.some( ( t ) => t.swatch ) ), filterOf( x ) ] ) ] } ];
 	const said = groups.map( ( x ) => ( x.facet ? `${ x.facet.label } (attribute ${ x.facet.slug })` : `${ squash( m.words( x.label ) ) } (${ x.kind })` ) );

@@ -155,7 +155,8 @@
 					}
 				]
 			},
-			"heading": { "block": "sgs/heading", "attributes": { "level": "h3" }, "className": "sgs-shop-filters__group-heading", "openClass": "sgs-filter-open", "swatchClass": "sgs-filter-swatches" },
+			"heading": { "block": "sgs/heading", "attributes": { "level": "h3" }, "className": "sgs-shop-filters__group-heading", "openClass": "sgs-filter-open", "swatchClass": "sgs-filter-swatches", "countClass": "sgs-filter-count", "segmentedClass": "sgs-filter-segmented" },
+			"search": { "block": "sgs/filter-search", "attributes": { "searchMode": "attribute-chips", "threshold": 2 } },
 			"displayStyles": { "choice": "woocommerce/product-filter-chips", "checkbox": "woocommerce/product-filter-checkbox-list" },
 			"groups": {
 				"facet": { "name": "woocommerce/product-filter-attribute", "attributes": { "queryType": "or", "showCounts": true, "sortOrder": "menu_order-asc" } },
