@@ -563,3 +563,11 @@ def test_the_render_cache_key_does_not_hold_the_checkouts_path(tmp_path, monkeyp
     one, two = tmp_path / 'a' / 'setting-record', tmp_path / 'b' / 'setting-record'
     keys = [RN.portable_args(RN.harness_args(fixture, d), d) for d in (one, two)]
     assert keys[0] == keys[1] and '<fixtures>/fixtures/menu-post.json' in keys[0]
+
+
+
+def test_the_stamp_hashes_the_plans_renders_not_the_proofs(monkeypatch):
+    run = fake_run(monkeypatch, '<div class="sgs-demo">hi</div>')
+    plain = ST.outputs_hash(run['planResults'])
+    run['results']['proof-completion'] = {'ok': True, 'html': '<div class="sgs-demo extra"></div>'}  # what the proof adds
+    assert ST.outputs_hash(run['planResults']) == plain and ST.outputs_hash(run['results']) != plain

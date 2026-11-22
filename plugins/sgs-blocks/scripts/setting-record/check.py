@@ -236,7 +236,10 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
              'noPaintButPlaced': sorted((tested - recorded - replaced) & set(pl.get('rows') or [])),
              'coverage': {'defaultRendered': bool(d0.get('ok')), 'defaultEmpty': not (d0.get('html') or '').strip(),
                           'rootPrinted': root_printed}}
-    return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'sides': sides, 'selectors': sels, 'results': results, 'children': children, 'plugin': plugin, 'jobs': jobs, 'defaultHtml': d0.get('html', ''), 'stats': stats,
+    # the plan's own renders, before the proof adds its own (proof.py::Pages stores completions and parent renders in
+    # `results`): the stamp's output hash and rendered classes read these, as the gate's re-render does
+    return {'entries': entries, 'unnamed': unnamed, 'pairs': pairs, 'sides': sides, 'selectors': sels, 'results': results,
+            'planResults': dict(results), 'children': children, 'plugin': plugin, 'jobs': jobs, 'defaultHtml': d0.get('html', ''), 'stats': stats,
             'log': log, 'aliases': aliases, 'sheets': sheets, 'renderer': rn, 'plan': pl, 'slug': slug, 'content': content, 'inner': inner, 'sheetFiles': sheet_files}
 
 
@@ -385,7 +388,7 @@ def new_stamp(args, short: str, run: dict, fixtures: dict) -> dict:
     import stamp as ST
     import theme as TH
     return ST.make_stamp(args.plugin, short, fixtures.get(f'sgs/{short}') or {}, fixtures.get('_shared') or {},
-                         args.fixtures.parent, run['results'], run['renderer'].included,
+                         args.fixtures.parent, run.get('planResults') or run['results'], run['renderer'].included,
                          run.get('proofSheetFiles') or run['sheetFiles'], TH.theme_css(Path(args.plugin).resolve().parents[1]))
 
 
@@ -426,7 +429,7 @@ def check_changed(args) -> int:
         short = b.split('/', 1)[1]
         run = run_block(short, args.plugin, fixtures, args.fixtures.parent, None)
         stamped = (json.loads((records_dir / f'{short}.json').read_text(encoding='utf-8')).get('stamp') or {}).get('outputs')
-        if ST.outputs_hash(run['results']) != stamped:
+        if ST.outputs_hash(run['planResults']) != stamped:
             print(f'{b}: a file every block loads changed and its renders moved: checked')
             blocks.append(b)
         else:
