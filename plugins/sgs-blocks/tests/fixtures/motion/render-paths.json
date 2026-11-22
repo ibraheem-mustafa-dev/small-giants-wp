@@ -223,6 +223,7 @@
   "buybox": {
    "base": {
     "productId": 52,
+    "instalmentsNote": "Or 3 payments of %s",
     "rrpMetaKey": "_sgs_rrp",
     "showLadder": true,
     "gallerySavingBadge": true
