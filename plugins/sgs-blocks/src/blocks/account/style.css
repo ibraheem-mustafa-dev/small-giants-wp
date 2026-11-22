@@ -390,11 +390,25 @@ a.sgs-account__quick-card:focus-visible:where(:not(.sgs-focus-rests, .sgs-focus-
 	min-width: 44px;
 }
 
-/* WooCommerce's clearfix (`.col2-set::before/::after { content: " "; display: table }`) becomes two extra flex or grid
-   items wherever the block lays a .col2-set out as a flex row or a grid, pushing the second card onto a new row. */
-.sgs-account .col2-set::before,
-.sgs-account .col2-set::after {
+/* WooCommerce's clearfix (`.woocommerce .col2-set::before/::after { content: " "; display: table }`, 0,2,1, loaded after
+   this sheet) becomes two extra flex or grid items wherever the block lays a .col2-set out as a flex row or a grid,
+   pushing the second card onto a new row. Each rule here outranks it: a doubled class or the form's id. */
+.sgs-account .woocommerce-Addresses.col2-set::before,
+.sgs-account .woocommerce-Addresses.col2-set::after,
+.sgs-account #customer_login.col2-set::before,
+.sgs-account #customer_login.col2-set::after {
 	content: none;
+}
+
+/* WooCommerce floats the two columns at 48% (`.woocommerce .col2-set .col-1`, 0,3,0) and the lost-password form's
+   first and last rows at 47% (`.woocommerce form .form-row-first`, 0,2,1). The block lays these out itself: an address
+   card fills its grid cell, a tabs-layout column fills the one card, and a password form row runs the card's width. */
+.sgs-account .woocommerce-Addresses.col2-set > .woocommerce-Address,
+.sgs-account[data-auth-layout="tabs"] .sgs-account__wc > #customer_login.col2-set > div,
+.sgs-account form.woocommerce-ResetPassword .form-row-first,
+.sgs-account form.woocommerce-ResetPassword .form-row-last {
+	float: none;
+	width: auto;
 }
 
 /* -- Addresses -------------------------------------------------------------- */
