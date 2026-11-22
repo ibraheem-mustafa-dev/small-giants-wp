@@ -175,7 +175,7 @@ def test_must_fail_a_class_a_script_sets_is_held_where_the_script_puts_it(tmp_pa
     out, rep = PR.prove(SHORT, run)
     assert rep['counts']['proved'] == 1 and '.sgs-demo__step--done' not in str(rep['blind']), rep
     held = PR.script_holds(run, SHORT, {'.sgs-demo__step--done .sgs-demo__num'}, set())
-    assert held == {'script:class:sgs-demo__step--done:.sgs-demo__step'}
+    assert held == {PR.SCRIPT_HOLD + PR.HOLD_SEP.join(('class', 'sgs-demo__step--done', '.sgs-demo__step'))}
 
 
 # ---------------------------------------------------------------- restated
@@ -408,3 +408,51 @@ def test_placeholders_take_the_kind_their_token_names():
     vals = dict(PR.token_values({'--x--hover-easing', '--x--hover-transition', '--x--bg-colour', '--x--gap'}, ['transition']))
     assert vals['--x--hover-easing'].startswith('cubic-bezier(') and vals['--x--hover-transition'].endswith('ms')
     assert vals['--x--bg-colour'].startswith('rgb(') and vals['--x--gap'].endswith('px')
+
+
+# ---------------------------------------------------------------- code review (2026-11-22) findings
+def test_must_fail_supports_selector_with_another_engines_pseudo():
+    # The tokeniser spaced every colon, so `:-moz-` never matched: a `@supports not selector(:-moz-...)` fallback,
+    # which Chromium applies, was skipped and its entries removed.
+    assert not C.supports_holds('selector(:-moz-focusring)')
+    assert C.supports_holds('not selector(:-moz-focusring)') and C.supports_holds('selector(:focus-visible)')
+
+
+def test_must_fail_a_button_inside_a_link_part_is_not_dead():
+    # Only an `a` in an `a` and a `button` in a `button` are taken apart by the parser; a `button` inside an `a` stays.
+    html = ROOT_HTML.format('<a class="sgs-demo__view" href="#"><button class="sgs-demo__x">b</button></a>')
+    run, key = run_of(html, '', html, '', entry(setting='x', part='sgs-demo__view button', props=('color',)), '#123456', ['.sgs-demo__view button'])
+    pages = PR.Pages(SHORT, run, with_theme=False)
+    assert PR.forbidden_nesting(run['plugin'], SHORT, 'sgs-demo__view button', pages, [('b', 'c')]) is None
+    html2 = ROOT_HTML.format('<a class="sgs-demo__view" href="#">v</a>')
+    run2, _ = run_of(html2, '', html2, '', entry(setting='x', part='sgs-demo__view a', props=('color',)), '#123456', ['.sgs-demo__view a'])
+    assert PR.forbidden_nesting(run2['plugin'], SHORT, 'sgs-demo__view a', PR.Pages(SHORT, run2, with_theme=False), [('b', 'c')])
+
+
+def test_must_fail_a_token_takes_the_kind_of_the_property_that_reads_it():
+    # With a colour among the entry's properties every unhinted token got a colour: a transform token was then invalid on
+    # both pages alike and the switch was never seen.
+    vals = dict(PR.token_values(('--sgs-nav-item-motion', '--sgs-gap'), ['transform', 'color'],
+                                {'--sgs-nav-item-motion': 'transform', '--sgs-gap': 'gap'}))
+    assert vals['--sgs-nav-item-motion'].startswith('translateX(') and vals['--sgs-gap'].endswith('px')
+
+
+def test_must_fail_a_rule_switched_off_on_a_child_of_the_part_is_proved():
+    # `.sgs-demo--pill .sgs-demo__item a` matches the anchors only in the plain render; the part itself computes alike.
+    # Breaks while a subject list empty on one side shows no difference.
+    item = '<li class="sgs-demo__item"><a href="#" class="sgs-demo__link">x</a></li>'
+    plain = ROOT_HTML.format(item).replace('sgs-demo sgs-demo-1a2b3c4d', 'sgs-demo sgs-demo-1a2b3c4d sgs-demo--pill')
+    changed = ROOT_HTML.format(item)
+    css = '.sgs-demo--pill .sgs-demo__item a{color:#123456}'
+    e = entry(setting='style', part='sgs-demo__item', props=('color',))
+    run, key = run_of(plain, css, changed, css, e, 'plain', ['.sgs-demo--pill .sgs-demo__item a'])
+    out, rep = PR.prove(SHORT, run)
+    assert rep['counts']['proved'] == 1 and 'unproved' not in out[key], rep
+
+
+def test_must_fail_a_token_a_script_puts_on_two_elements_is_held_on_both():
+    toks = SS.scan((('src/blocks/demo/view.js',
+                     "const panel = root.querySelector('.sgs-demo__panel'); panel.classList.add('is-open');\n"
+                     "const toggle = root.querySelector('.sgs-demo__toggle'); toggle.classList.add('is-open');"),))
+    got = SS.needed_by(['.sgs-demo__toggle.is-open'], toks)
+    assert {t['landing'] for t in got} == {'.sgs-demo__panel', '.sgs-demo__toggle'}

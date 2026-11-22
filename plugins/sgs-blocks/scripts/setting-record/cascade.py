@@ -112,7 +112,7 @@ def supports_holds(prelude: str) -> bool:
     def leaf(text: str) -> bool:
         text = text.strip()
         if text.startswith('selector('):
-            return not re.search(r':-(?:moz|ms)-|::-(?:moz|ms)-', text)
+            return not re.search(r':\s*:?\s*-(?:moz|ms)-', text)  # the tokeniser spaces every colon
         m = re.match(r'([a-z-]+)\s*:', text.replace(' : ', ':'))
         if not m:
             return True

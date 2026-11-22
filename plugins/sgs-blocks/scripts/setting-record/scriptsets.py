@@ -122,7 +122,7 @@ def scan(files: tuple) -> tuple:
 
 def needed_by(selectors, tokens) -> list:
     """The script-set tokens a rule's selectors wait on: a class named outside a functional pseudo-class
-    (cascade.required_classes) or an attribute named in brackets, that some script sets. Each token once."""
+    (cascade.required_classes) or an attribute named in brackets, that some script sets. Each token once per landing."""
     import cascade as C  # noqa: PLC0415 - the module sits beside this one
     classes, attrs = set(), set()
     for s in selectors:
@@ -131,7 +131,8 @@ def needed_by(selectors, tokens) -> list:
     got, seen = [], set()
     for t in tokens:
         if (t['kind'] == 'class' and t['name'] in classes) or (t['kind'] == 'attr' and t['name'] in attrs):
-            k = (t['kind'], t['name'])
+            # each landing of a token once: a class a script puts on two elements is held on both
+            k = (t['kind'], t['name'], t['landing'])
             if k not in seen:
                 seen.add(k)
                 got.append(t)

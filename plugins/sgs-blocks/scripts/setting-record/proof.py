@@ -362,7 +362,7 @@ def unnamed_states(selectors) -> list:
     return sorted({f':{m.group(1)}' for s in selectors for m in UNNAMED_STATE.finditer(s) if m.group(1) not in HOLDABLE})
 
 
-def outside_vars(page, el, pse, names, width, conds, known, with_known=False) -> set:
+def outside_vars(page, el, pse, names, width, conds, known, with_known=False, kinds=None) -> set:
     """Custom properties the winning declarations for these names read that the element does not inherit and that no
     stylesheet of the block, no render of it and no rule of the theme sheet in force ever declares (`known` is the block's
     own; the theme's reach the element through `custom`): their values come from a client's tokens, a parent block or a
@@ -376,6 +376,7 @@ def outside_vars(page, el, pse, names, width, conds, known, with_known=False) ->
     decls = page.cascade.declared(el, pse, width, frozenset(conds))
     for name in names:
         win = [d for d in decls if name in CP.expand(d[1], d[2]) or d[1] == name]
+        reader = name
         if win:
             todo, seen = re.findall(r'var\(\s*(--[\w-]+)', win[-1][2]), set()
             while todo:
@@ -389,6 +390,9 @@ def outside_vars(page, el, pse, names, width, conds, known, with_known=False) ->
                     todo += re.findall(r'var\(\s*(--[\w-]+)', custom[v] or '')
                 elif with_known or v not in known:
                     out.add(v)
+                if kinds is not None:
+                    # the property whose value the token ends up in: its placeholder takes that property's kind
+                    kinds.setdefault(v, reader)
     return out
 
 
@@ -410,12 +414,14 @@ def conditions_of(tiers) -> set:
 
 
 SCRIPT_HOLD = 'script:'
+HOLD_SEP = '\x1f'
 
 
 def script_hold(tok: dict) -> str:
-    """A script-set token as a `held` entry (`script:class:NAME:LANDING`): the page puts it on its landing elements
-    (computed.Page `script_set`), so the rule that waits on it can match."""
-    return f'{SCRIPT_HOLD}{tok["kind"]}:{tok["name"]}:{tok["landing"]}'
+    """A script-set token as a `held` entry (`script:` then kind, name and landing joined by HOLD_SEP): the page puts it on
+    its landing elements (computed.Page `script_set`), so the rule that waits on it can match. HOLD_SEP is a control
+    character, so an attribute name with a colon (`xlink:href`) or a landing selector with one (`:not(...)`) reads back whole."""
+    return SCRIPT_HOLD + HOLD_SEP.join((tok['kind'], tok['name'], str(tok['landing'])))
 
 
 def script_tokens_of(held) -> tuple:
@@ -423,7 +429,7 @@ def script_tokens_of(held) -> tuple:
     out = []
     for h in sorted(held):
         if h.startswith(SCRIPT_HOLD):
-            kind, name, landing = h[len(SCRIPT_HOLD):].split(':', 2)
+            kind, name, landing = h[len(SCRIPT_HOLD):].split(HOLD_SEP, 2)
             out.append((kind, name, landing if landing != 'None' else None))
     return tuple(out)
 
@@ -469,6 +475,25 @@ def script_holds(run, short: str, selectors, held, pairs=()) -> set:
 
 def _values(page, lst, names, widths) -> dict:
     return {(w, n): [page.value(x, pse, n, w) for x, pse in lst] for w in widths for n in names}
+
+
+def counterparts(page, elements) -> list:
+    """[(element, pseudo)] of `page` that are the same elements as `elements` (of the other render): the same tag carrying
+    every class the element carries apart from instance ids and modifiers (`--x`), in document order. A rule the setting
+    switches off matches its subject on one side only; the other side's copy of that element is what the paint left."""
+    out, seen = [], set()
+    for el, pse in elements:
+        keep = sorted(c for c in (el.get('class') or []) if '--' not in c and not D.UID_RE.fullmatch(c))
+        sel = el.name + ''.join('.' + c for c in keep)
+        try:
+            hits = page.soup.select(sel)
+        except Exception:  # noqa: BLE001 - a class soupsieve cannot read matches nothing
+            hits = []
+        for h in hits:
+            if (id(h), pse) not in seen:
+                seen.add((id(h), pse))
+                out.append((h, pse))
+    return out
 
 
 def compare_lists(pb, pc, lb, lc, names, widths) -> list:
@@ -520,6 +545,12 @@ def scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, sel
         if bool(eb) != bool(ec):
             r.update(verdict='proved', evidence=f'the part is drawn only in the {"changed" if ec else "plain"} render', kind='switched-on')
             return r
+        if bool(sb) != bool(sc):
+            # the rule matches its subject (a child of the part) on one side only: read the same element on the other side
+            if sb:
+                sc = counterparts(pc, sb)
+            else:
+                sb = counterparts(pb, sc)
         diffs = compare_lists(pb, pc, eb, ec, names, widths) + compare_lists(pb, pc, sb, sc, names, widths)
         if diffs:
             r.update(verdict='proved', evidence=[list(map(str, d)) for d in diffs[:3]], kind=kind_of(run, c, b, setting, diffs))
@@ -603,17 +634,17 @@ def prove(short: str, run: dict):
                 elif refile:
                     verdict, evidence = 'refiled', sorted(refile)
                 else:
-                    theme, undefined = set(), set()
+                    theme, undefined, kinds = set(), set(), {}
                     for b, c in pairs:
                         for j in (b, c):
                             pg = pages.get(j, held, conds)
                             for el, pse in pg.elements(part)[:1]:
                                 for w in widths:
                                     theme |= outside_vars(pg, el, pse, names, w, conds, pages.known)
-                                    undefined |= outside_vars(pg, el, pse, names, w, conds, pages.known, with_known=True)
+                                    undefined |= outside_vars(pg, el, pse, names, w, conds, pages.known, with_known=True, kinds=kinds)
                     # every property read and undefined here gets a placeholder, the block's own included: the setting may
                     # switch whether a token another setting defines is read
-                    token = token_test(pages, pairs, part, names, widths, held, conds, theme | undefined) if (theme or undefined) else ''
+                    token = token_test(pages, pairs, part, names, widths, held, conds, theme | undefined, kinds) if (theme or undefined) else ''
                     scripted = script_set_tokens(run['plugin'], theme) if theme and not token else []
                     if theme and not token and not scripted:
                         # the value comes from a token no page here defines, and the setting does not switch which one is
@@ -640,8 +671,6 @@ def prove(short: str, run: dict):
                         evidence = f'at a screen width between the sampled ones ({", ".join(map(str, probes))}px probed): {wide["evidence"]}' if isinstance(wide['evidence'], str) else [['probe width', *d] for d in wide['evidence']]
                     elif unnamed and not second:
                         verdict, cause, evidence = 'blind', 'state-not-holdable', f'the rule holds in a state the record cannot name ({", ".join(unnamed)}), which the proof cannot hold'
-                    elif theme:
-                        verdict, cause, evidence = 'blind', 'theme-value', f'the value reads {sorted(theme)[:4]}, defined by neither the theme (loaded: {pages.theme["loaded"]}) nor the block\'s own sheets'
                     elif other and other['verdict'] == 'proved':
                         # this test value left the property as it was (the plain state already holds it); another value of the setting moves it
                         verdict, kind = 'proved', other['kind']
@@ -696,16 +725,18 @@ def prove(short: str, run: dict):
     return out, report
 
 
-# HTML's content model: an element that is interactive content cannot hold another (the parser closes the outer one first).
+# What the HTML parser takes apart: an `a` start tag inside an open `a`, and a `button` inside an open `button`, close the
+# outer element first, so a parsed document never holds either nesting. Other interactive content inside an `a` or a
+# `button` is invalid but stays in the tree (and a script can build it), so it is never called dead.
 INTERACTIVE = {'a', 'button'}
-INTERACTIVE_INSIDE = {'a', 'button', 'input', 'select', 'textarea'}
+INTERACTIVE_INSIDE = {'a', 'button'}
 
 
 def forbidden_nesting(plugin, short: str, part: str, pages, pairs):
     """Evidence (text) that the entry's rule asks for an element HTML cannot put inside the part, or None. The part names a
     tag inside an element (`sgs-x__view a`): when that element is itself an `a` or a `button` (read from any render here, else
-    from the PHP template that prints its class) and the tag is interactive content, no render can draw the rule's subject: a
-    parsed document never holds an `a` inside an `a`. Such a rule is dead whatever the setting does."""
+    from the PHP template that prints its class) and the tag is the same tag, no render can draw the rule's subject: a parsed
+    document never holds an `a` inside an `a` or a `button` inside a `button`. Such a rule is dead whatever the setting does."""
     head, _, tag = part.split('::')[0].strip().partition(' ')
     tag = tag.strip()
     if not head.startswith('sgs-') or tag not in INTERACTIVE_INSIDE:
@@ -725,7 +756,7 @@ def forbidden_nesting(plugin, short: str, part: str, pages, pairs):
                 if m:
                     outer, where = m.group(1), f'the template in {rel}'
                     break
-    if outer in INTERACTIVE:
+    if outer in INTERACTIVE and outer == tag:
         return (f'dead rule: {part} asks for an `{tag}` inside {head}, which is itself an `{outer}` ({where}); HTML forbids interactive content '
                 f'inside an `{outer}`, so no render can draw the rule\'s subject')
     return None
@@ -1213,19 +1244,49 @@ _TIME_TOKEN = re.compile(r'transition|duration|delay|speed', re.I)
 _COLOUR_TOKEN = re.compile(r'colou?r|-bg\b|background|fill|stroke|border-c', re.I)
 
 
-def token_values(tokens, names) -> tuple:
+_TIME_PROP = re.compile(r'^(transition|animation)(-duration|-delay)?$')
+_EASING_PROP = re.compile(r'timing-function$')
+
+
+def _kind_value(prop: str, i: int):
+    """A placeholder of the kind `prop` takes, or None when the property gives no kind."""
+    if _EASING_PROP.search(prop):
+        return f'cubic-bezier(0.{11 + i}, 0.2, 0.3, 1)'
+    if _TIME_PROP.match(prop):
+        return f'{1001 + i}ms'
+    if prop in ('transform',):
+        return f'translateX({1001 + i}px)'
+    if prop in ('opacity',):
+        return f'0.{11 + i}'
+    if prop in ('z-index', 'order', 'flex-grow', 'flex-shrink', 'column-count', '-webkit-line-clamp'):
+        return f'{101 + i}'
+    if prop == 'font-weight':
+        return f'{101 + i}'
+    if _COLOUR_PROP.search(prop):
+        return f'rgb({17 + i}, {29 + 2 * i}, {41 + 3 * i})'
+    return None
+
+
+def token_values(tokens, names, kinds=None) -> tuple:
     """A placeholder value for each custom property no page here defines, distinct from every other and of the kind the
     property itself holds, read from its name first (an easing token gets a cubic-bezier, a transition, duration or delay
     token a time, a colour token a colour), else from the entry's properties (a colour for a colour property, else a
     length). A placeholder of the wrong kind makes the declaration invalid on both pages alike (a length where a transition
-    wants a time), which would hide the switch the test is for."""
+    wants a time), which would hide the switch the test is for. `kinds` (token -> the property whose declaration reads it,
+    from outside_vars) decides a token its name says nothing about, ahead of the entry's properties."""
     colour = any(_COLOUR_PROP.search(n.lstrip('_')) for n in names)
+    kinds = kinds or {}
     out = []
     for i, t in enumerate(sorted(tokens)):
+        by_reader = _kind_value(kinds[t], i) if t in kinds else None
         if _EASING_TOKEN.search(t):
             v = f'cubic-bezier(0.{11 + i}, 0.2, 0.3, 1)'
         elif _TIME_TOKEN.search(t):
             v = f'{1001 + i}ms'
+        elif by_reader is not None:
+            v = by_reader
+        elif t in kinds:
+            v = f'{1001 + i}px'
         elif _COLOUR_TOKEN.search(t) or colour:
             v = f'rgb({17 + i}, {29 + 2 * i}, {41 + 3 * i})'
         else:
@@ -1234,11 +1295,11 @@ def token_values(tokens, names) -> tuple:
     return tuple(out)
 
 
-def token_test(pages, pairs, part, names, widths, held, conds, tokens) -> str:
+def token_test(pages, pairs, part, names, widths, held, conds, tokens, kinds=None) -> str:
     """The value reads a custom property no page here defines (a client's token, a parent block's default). Both pages are
     rebuilt with each such property given its own placeholder on the page root: a setting that switches which property the
     value reads now changes the computed value, whatever a site's own token holds. Returns the first difference, or ''."""
-    toks = token_values(tokens, names)
+    toks = token_values(tokens, names, kinds)
     for b, c in pairs[:4]:
         tb, tc = pages.get(b, held, conds, tokens=toks), pages.get(c, held, conds, tokens=toks)
         for (xb, pse), (xc, _) in zip(tb.elements(part), tc.elements(part)):

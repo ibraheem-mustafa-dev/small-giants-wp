@@ -115,6 +115,9 @@ def load_plan(short: str, plugin: Path, fixtures: dict, instances: Path | None) 
     return pl
 
 
+REPLACE_MIN_PARTS = 3
+
+
 def replaces_block(base_html: str, changed_html: str, short: str) -> bool:
     """True when the changed render keeps none of the block's own parts that the plain one prints (or prints nothing), or
     drops the block's root element (its `sgs-<block>` or `wp-block-sgs-<block>` class) the plain one prints: the setting
@@ -129,9 +132,12 @@ def replaces_block(base_html: str, changed_html: str, short: str) -> bool:
     if rooted.search(before) and not rooted.search(after):
         return True
     # the parts the plain render prints, none of them left: a notice of the block's own (`sgs-form__fallback-message`) is
-    # other markup in place of the block, not the block repainted
-    printed = set(part.findall(before))
-    return bool(printed) and not (printed & set(part.findall(after)))
+    # other markup in place of the block, not the block repainted. A block of one or two parts can swap them for others
+    # as a paint (an icon's svg for an image), so the rule asks for REPLACE_MIN_PARTS printed parts.
+    printed, left = set(part.findall(before)), set(part.findall(after))
+    if printed and not left:
+        return True
+    return len(printed) >= REPLACE_MIN_PARTS and not (printed & left)
 
 
 def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, instances: Path | None = None) -> dict:

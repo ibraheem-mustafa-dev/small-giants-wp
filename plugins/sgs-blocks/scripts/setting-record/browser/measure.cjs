@@ -75,7 +75,8 @@ async function putNavOnScreen( page, within = '' ) {
 		await page.waitForTimeout( 400 );
 		if ( 'true' !== ( await trigger.getAttribute( 'aria-expanded' ) ) ) { await trigger.click( { timeout: 5000 } ).catch( () => {} ); }
 	}
-	await page.waitForFunction( ( s ) => { const t = document.querySelector( s ); return t && 'true' === t.getAttribute( 'aria-expanded' ); }, sel, { timeout: 5000 } );
+	// a panel that never opens (a changed setting stops it, a slow script) is read closed, not a failed visit
+	await page.waitForFunction( ( s ) => { const t = document.querySelector( s ); return t && 'true' === t.getAttribute( 'aria-expanded' ); }, sel, { timeout: 5000 } ).catch( () => {} );
 	await settle( page, 1500 );
 	await page.waitForTimeout( 300 );
 }

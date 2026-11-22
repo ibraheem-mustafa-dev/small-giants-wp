@@ -155,8 +155,12 @@ def test_must_fail_a_notice_of_the_blocks_own_in_place_of_its_parts_replaces_the
     # `sgs-form__fallback-message`. Breaks while any part class left counts as the block still drawn: the notice's own part
     # kept the setting in the record, and its entry waited on markup no render carries.
     import check
-    plain = '<div class="sgs-demo"><form class="sgs-demo__inner"><button class="sgs-demo__button">Send</button></form></div>'
+    plain = ('<div class="sgs-demo"><form class="sgs-demo__inner"><label class="sgs-demo__label">Name</label>'
+             '<button class="sgs-demo__button">Send</button></form></div>')
     notice = '<div class="sgs-demo sgs-demo--broken-reference"><p class="sgs-demo__fallback-message">Not available</p></div>'
     assert check.replaces_block(plain, notice, 'demo')
+    # a block of fewer parts swapping one for another is a paint (an icon's svg for an image), not a replacement
+    icon = '<div class="sgs-demo"><span class="sgs-demo__svg">s</span></div>'
+    assert not check.replaces_block(icon, '<div class="sgs-demo"><img class="sgs-demo__image"></div>', 'demo')
     # a render that keeps one part the plain one prints is the block repainted, not replaced
     assert not check.replaces_block(plain, plain.replace('<button', '<p class="sgs-demo__note">x</p><button'), 'demo')

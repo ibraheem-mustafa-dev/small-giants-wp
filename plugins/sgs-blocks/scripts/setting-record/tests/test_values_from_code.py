@@ -97,7 +97,7 @@ def test_settings_naming_a_record_get_a_stand_in_of_the_right_kind():
              'linkId': {'type': 'string', 'default': ''}, 'formId': {'type': 'string', 'default': ''}}
     plan = I.plan_block(block(attrs), plugin=PLUGIN)
     got = {a: inst(plan, a)[0]['attrs'][a] for a in attrs}
-    assert got == {'addProductId': '{{product}}', 'drawerRef': '{{post2}}', 'splitAfterItemId': '9110', 'queryId': 7,
+    assert got == {'addProductId': '{{product}}', 'drawerRef': '{{drawer}}', 'splitAfterItemId': '9110', 'queryId': 7,
                    'linkId': '{{post2}}', 'formId': 'sample1234'}
     assert not plan['unvalued']
 

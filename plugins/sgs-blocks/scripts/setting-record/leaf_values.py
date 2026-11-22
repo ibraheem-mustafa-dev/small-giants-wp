@@ -276,9 +276,14 @@ def standin_value(name: str, d: dict, held, literals=()):
     """A stand-in for a setting that names a record, by what its name says, or (None, why)."""
     t = d.get('type')
     types = t if isinstance(t, list) else [t]
-    if re.search(r'Product', name):
+    if re.search(r'product', name, re.I):
         return STANDIN_PRODUCT
     if re.search(r'(^ref$|Ref$)', name):
+        # a reference to a menu, a mega panel or a drawer gets that kind's stand-in; any other (or one equal to the held
+        # value) the second page
+        for word, standin in (('menu', '{{menu}}'), ('mega', '{{mega}}'), ('drawer', '{{drawer}}')):
+            if re.search(word, name, re.I) and standin != held:
+                return standin
         return STANDIN_POST
     if re.search(r'ItemId$', name):
         prefix = re.match(r'^([a-z]+:)', held) if isinstance(held, str) else None

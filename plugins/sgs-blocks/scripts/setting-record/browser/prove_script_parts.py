@@ -391,6 +391,8 @@ def main(argv=None) -> int:
     ap.add_argument('--write-verdicts', metavar='BUILD', help='also write verdicts/<block>.json for each block measured, stamped with '
                     "check.py::script_hash of this checkout's code and BUILD (the commit the scratch site's plugin was built from)")
     a = ap.parse_args(argv)
+    if a.write_verdicts and a.limit:
+        raise SystemExit('--write-verdicts with --limit would replace a block\'s verdicts with a trial run\'s few: run the full pass')
     out = a.out
     sess = a.sessions or out.parent
     out.mkdir(parents=True, exist_ok=True)
