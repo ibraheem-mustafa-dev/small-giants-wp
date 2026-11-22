@@ -149,6 +149,9 @@
 
 .sgs-gift-order__error {
 	margin: 0.75rem 0 0;
+}
+
+:where(.sgs-gift-order__error) {
 	font-weight: 700;
 }
 

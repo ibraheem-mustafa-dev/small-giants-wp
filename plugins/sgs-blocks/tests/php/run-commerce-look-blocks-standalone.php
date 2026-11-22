@@ -121,6 +121,27 @@ foreach ( array( 'padding', 'min-height', 'accent-color', 'font-size', 'text-ali
 	ok( ! str_contains( sgs_gift_order_look_css( array() ), $prop ), 'gift: ' . $prop . ' unset prints nothing' );
 }
 
+// sgs/gift-order: the choice tiles' two lines of type and the number of tiles side by side (F-66).
+$tiles = sgs_gift_order_look_css(
+	array(
+		'giftTileLabelFontFamily' => 'caveat',
+		'giftTileLabelFontSize'   => array( 'desktop' => 24 ),
+		'giftTileLabelFontWeight' => '600',
+		'giftTileLabelLineHeight' => array( 'desktop' => 1.2 ),
+		'giftTileTextFontWeight'  => '700',
+		'giftTileColumns'         => array( 'desktop' => 2, 'mobile' => '1' ),
+	)
+);
+ok( str_contains( $tiles, '.sgs-gift-order .sgs-gift-order__tile-label{' ) && str_contains( $tiles, 'font-size:24px' ) && str_contains( $tiles, 'font-weight:600' ) && str_contains( $tiles, 'line-height:1.2' ), 'gift: tile first line type' );
+ok( str_contains( $tiles, '.sgs-gift-order .sgs-gift-order__tile-text{' ) && str_contains( $tiles, 'font-weight:700' ), 'gift: tile second line type' );
+ok( str_contains( $tiles, '.sgs-gift-order .sgs-gift-order__tiles{grid-template-columns:repeat(2,minmax(0,1fr));}' ), 'gift: tiles side by side on desktop' );
+ok( 1 === preg_match( '/@media[^{]*\{\.sgs-gift-order \.sgs-gift-order__tiles\{grid-template-columns:repeat\(1,minmax\(0,1fr\)\);\}\}/', $tiles ), 'gift: one tile per row on phones' );
+ok( ! str_contains( sgs_gift_order_look_css( array( 'giftTileColumns' => array( 'desktop' => 9 ) ) ), 'grid-template-columns' ), 'gift: a count outside 1 to 4 prints nothing' );
+ok( ! str_contains( sgs_gift_order_look_css( array( 'giftTileColumns' => array( 'desktop' => '2;}x{' ) ) ), 'grid-template-columns' ), 'gift: a count with other text prints nothing' );
+foreach ( array( 'tile-label', 'tile-text', 'grid-template-columns' ) as $needle ) {
+	ok( ! str_contains( sgs_gift_order_look_css( array() ), $needle ), 'gift: ' . $needle . ' unset prints nothing' );
+}
+
 // sgs/gift-order on a product page: the tick box, the hint and the note box, ticked and not.
 $cfg = array(
 	'basketLabel'        => 'Send it as a gift',

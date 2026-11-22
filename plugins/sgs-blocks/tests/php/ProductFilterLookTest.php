@@ -153,6 +153,39 @@ namespace {
 			$this->assertSame( '.sgs-filter-look.sgs-look-5e6f7a8b select.orderby{background-color:#FFFAF0;border-style:solid;border-width:2px;border-color:#3A2A22;border-radius:999px;font-weight:700;}', $css );
 		}
 
+		public function test_sort_select_extras(): void {
+			$css = \SGS\Blocks\sgs_filter_look_sort_css(
+				array(
+					'sgsSortFontFamily'    => 'Georgia, serif',
+					'sgsSortHeight'        => '44px',
+					'sgsSortPaddingInline' => '14px',
+					'sgsSortShadow'        => '3px 3px 0 0',
+					'sgsSortShadowColour'  => '#3A2A22',
+				),
+				'sgs-look-5e6f7a8b'
+			);
+			$select = '.sgs-filter-look.sgs-look-5e6f7a8b select.orderby';
+			$this->assertStringContainsString( $select . '{font-family:Georgia, serif;height:44px;min-height:44px;padding-inline:14px;box-shadow:', $css );
+			$this->assertStringContainsString( '#3A2A22', $css, 'the shadow takes its colour' );
+		}
+
+		public function test_sort_select_hover_and_focus(): void {
+			$css    = \SGS\Blocks\sgs_filter_look_sort_css(
+				array(
+					'sgsSortHoverBackground'   => '#F9CF6E',
+					'sgsSortHoverBorderColour' => '#3A2A22',
+					'sgsSortFocusBorderColour' => '#B0306A',
+				),
+				'sgs-look-5e6f7a8b'
+			);
+			$select = '.sgs-filter-look.sgs-look-5e6f7a8b select.orderby';
+			$this->assertStringContainsString( $select . ':hover{background-color:#F9CF6E;border-color:#3A2A22;}', $css );
+			$this->assertStringContainsString( $select . ':focus-visible{border-color:#B0306A;}', $css );
+			$this->assertGreaterThan( strpos( $css, ':hover{' ), strrpos( $css, ':focus-visible{border-color:#B0306A;}' ), 'the focus colour prints after the hover pair' );
+			// Negative control: no setting, no rule; an unsafe height prints nothing.
+			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_sort_css( array( 'sgsSortHeight' => '44px;}x{y:z' ), 'sgs-look-5e6f7a8b' ) );
+		}
+
 		public function test_unsafe_values_print_nothing(): void {
 			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_chips_css( array( 'sgsChipBorderWidth' => '2px;}body{x:y', 'sgsChipFontWeight' => 'bold;' ), 'sgs-look-1a2b3c4d' ) );
 			$this->assertSame( '', \SGS\Blocks\sgs_filter_look_sort_css( array( 'sgsSortBorderRadius' => '9px;}x{y:z' ), 'sgs-look-5e6f7a8b' ) );

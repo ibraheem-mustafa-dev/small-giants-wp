@@ -8,7 +8,7 @@
  * @package
  */
 import { __ } from '@wordpress/i18n';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, SelectControl } from '@wordpress/components';
 import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 import {
 	BOX_UNITS,
@@ -23,6 +23,23 @@ import {
 	normaliseResponsiveBox,
 	textRow,
 } from '../../components';
+
+const TILE_COLUMN_OPTIONS = [
+	{ value: '', label: __( 'Automatic (stack when narrow)', 'sgs-blocks' ) },
+	{ value: '1', label: __( 'One', 'sgs-blocks' ) },
+	{ value: '2', label: __( 'Two', 'sgs-blocks' ) },
+	{ value: '3', label: __( 'Three', 'sgs-blocks' ) },
+	{ value: '4', label: __( 'Four', 'sgs-blocks' ) },
+];
+
+// The type controls each choice tile line offers.
+const TILE_TYPE = {
+	showResponsive: true,
+	fontSizePresets: true,
+	showFontFamily: true,
+	showWeight: true,
+	showLineHeight: true,
+};
 
 const TILE_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
@@ -294,6 +311,43 @@ export default function LookPanels( { attributes, setAttributes } ) {
 						radius: 'giftTileBorderRadius',
 					} }
 					{ ...common }
+				/>
+				<ResponsiveOverride
+					label={ __( 'Tiles side by side', 'sgs-blocks' ) }
+					value={ attributes.giftTileColumns }
+					onChange={ ( obj ) =>
+						setAttributes( { giftTileColumns: obj } )
+					}
+				>
+					{ ( { ownValue, setOwnValue } ) => (
+						<SelectControl
+							label={ __( 'Tiles side by side', 'sgs-blocks' ) }
+							hideLabelFromVision
+							value={ ownValue ? String( ownValue ) : '' }
+							options={ TILE_COLUMN_OPTIONS }
+							onChange={ ( val ) => setOwnValue( val || '' ) }
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+						/>
+					) }
+				</ResponsiveOverride>
+				<TypographyControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					targets={ [
+						{
+							key: 'tileLabel',
+							label: __( 'Tile first line', 'sgs-blocks' ),
+							prefix: 'giftTileLabel',
+							...TILE_TYPE,
+						},
+						{
+							key: 'tileText',
+							label: __( 'Tile second line', 'sgs-blocks' ),
+							prefix: 'giftTileText',
+							...TILE_TYPE,
+						},
+					] }
 				/>
 				<ShadowControl
 					label={ __( 'Chosen tile shadow', 'sgs-blocks' ) }

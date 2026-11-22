@@ -10,7 +10,9 @@
  * `sgsChipCountColour`, `sgsChipCountRadius`).
  * One at a time (`sgsChipSingle`): choosing a chip clears the filter's other chosen chips.
  * Chosen chip (`sgsChipSelectedShadow`, `sgsChipSelectedShadowColour`, `sgsChipSelectedOffsetX`, `sgsChipSelectedOffsetY`) and the All chip's count (`sgsChipAllCount`).
- * Sort: `sgsSortBackground`, `sgsSortBorderColour`, `sgsSortBorderWidth`, `sgsSortBorderRadius`, `sgsSortFontWeight`.
+ * Sort: `sgsSortBackground`, `sgsSortBorderColour`, `sgsSortBorderWidth`, `sgsSortBorderRadius`, `sgsSortFontWeight`, `sgsSortFontFamily`,
+ * `sgsSortHeight`, `sgsSortPaddingInline`, `sgsSortShadow` (+ `sgsSortShadowColour`), the hover fill and border colour
+ * (`sgsSortHoverBackground`, `sgsSortHoverBorderColour`) and the keyboard-focus border colour (`sgsSortFocusBorderColour`).
  *
  * @package SGS\Blocks
  */
@@ -23,6 +25,7 @@ import { __ } from '@wordpress/i18n';
 import SgsLengthControl from '../../components/SgsLengthControl';
 import ShadowControl from '../../components/ShadowControl';
 import { resolveShadowPreviewComposed } from '../../utils';
+import { flattenPresetSetting } from '../../utils/presetSettings';
 import DesignTokenPicker, { resolveColourToken } from '../../components/DesignTokenPicker';
 import './product-filter-look.scss';
 
@@ -91,6 +94,14 @@ if ( ! window.__sgsFilterLookRegistered ) {
 					sgsSortBorderWidth: { type: 'string', default: '' },
 					sgsSortBorderRadius: { type: 'string', default: '' },
 					sgsSortFontWeight: { type: 'string', default: '' },
+					sgsSortFontFamily: { type: 'string', default: '' },
+					sgsSortHeight: { type: 'string', default: '' },
+					sgsSortPaddingInline: { type: 'string', default: '' },
+					sgsSortShadow: { type: 'string', default: '' },
+					sgsSortShadowColour: { type: 'string', default: '' },
+					sgsSortHoverBackground: { type: 'string', default: '' },
+					sgsSortHoverBorderColour: { type: 'string', default: '' },
+					sgsSortFocusBorderColour: { type: 'string', default: '' },
 				},
 			};
 		}
@@ -128,9 +139,14 @@ if ( ! window.__sgsFilterLookRegistered ) {
 
 	const withFilterLookControls = createHigherOrderComponent( ( BlockEdit ) => ( props ) => {
 		const { name, attributes, setAttributes } = props;
+		const [ fontFamilies ] = useSettings( 'typography.fontFamilies' );
 		if ( CHIPS_BLOCK !== name && SORT_BLOCK !== name ) {
 			return <BlockEdit { ...props } />;
 		}
+		// The theme's fonts, stored by slug so the setting follows the client's theme.
+		const fontOptions = flattenPresetSetting( fontFamilies )
+			.filter( ( family ) => family && family.slug )
+			.map( ( family ) => ( { value: family.slug, label: family.name || family.slug } ) );
 		const empty = __( 'Leave empty to keep the default.', 'sgs-blocks' );
 		return (
 			<>
@@ -277,6 +293,39 @@ if ( ! window.__sgsFilterLookRegistered ) {
 								help={ empty }
 							/>
 							{ weightControl( __( 'Font weight', 'sgs-blocks' ), attributes, setAttributes, 'sgsSortFontWeight' ) }
+							<SelectControl
+								label={ __( 'Font', 'sgs-blocks' ) }
+								value={ attributes.sgsSortFontFamily || '' }
+								options={ [ { value: '', label: __( 'Default', 'sgs-blocks' ) }, ...fontOptions ] }
+								onChange={ ( val ) => setAttributes( { sgsSortFontFamily: val || '' } ) }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+							/>
+							<SgsLengthControl
+								scale="spacing"
+								label={ __( 'Height', 'sgs-blocks' ) }
+								value={ attributes.sgsSortHeight || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) => setAttributes( { sgsSortHeight: val || '' } ) }
+								help={ empty }
+							/>
+							<SgsLengthControl
+								scale="spacing"
+								label={ __( 'Space inside, left and right', 'sgs-blocks' ) }
+								value={ attributes.sgsSortPaddingInline || '' }
+								units={ LENGTH_UNITS }
+								onChange={ ( val ) => setAttributes( { sgsSortPaddingInline: val || '' } ) }
+								help={ empty }
+							/>
+							<ShadowControl
+								label={ __( 'Shadow', 'sgs-blocks' ) }
+								attributes={ attributes }
+								setAttributes={ setAttributes }
+								attrNames={ { base: 'sgsSortShadow', colour: 'sgsSortShadowColour' } }
+							/>
+							{ colourControl( __( 'Fill on hover', 'sgs-blocks' ), attributes, setAttributes, 'sgsSortHoverBackground', empty ) }
+							{ colourControl( __( 'Border colour on hover', 'sgs-blocks' ), attributes, setAttributes, 'sgsSortHoverBorderColour', empty ) }
+							{ colourControl( __( 'Border colour with keyboard focus', 'sgs-blocks' ), attributes, setAttributes, 'sgsSortFocusBorderColour', empty ) }
 						</PanelBody>
 					) }
 				</InspectorControls>
@@ -350,6 +399,10 @@ if ( ! window.__sgsFilterLookRegistered ) {
 				[ 'sort-edge', colour( attributes.sgsSortBorderColour ) ],
 				[ 'sort-radius', attributes.sgsSortBorderRadius ],
 				[ 'sort-weight', attributes.sgsSortFontWeight ],
+				[ 'sort-font', attributes.sgsSortFontFamily && `var(--wp--preset--font-family--${ attributes.sgsSortFontFamily })` ],
+				[ 'sort-height', attributes.sgsSortHeight ],
+				[ 'sort-padding-inline', attributes.sgsSortPaddingInline ],
+				[ 'sort-shadow', resolveShadowPreviewComposed( attributes.sgsSortShadow, attributes.sgsSortShadowColour ) ],
 			];
 		}
 		const style = {};

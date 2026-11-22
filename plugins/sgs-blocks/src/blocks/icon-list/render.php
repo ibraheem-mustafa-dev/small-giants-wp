@@ -140,6 +140,7 @@ $icon_size                  = $attributes['iconSize'] ?? 'medium';
 // no size override). Sanitised as a single CSS length (shared sanitiser).
 $icon_bg_colour     = trim( (string) ( $attributes['iconBackgroundColour'] ?? '' ) );
 $icon_box_size      = sgs_css_length_value( $attributes['iconBoxSize'] ?? '' );
+$icon_box_border    = sgs_css_length_value( $attributes['iconBoxBorderWidth'] ?? '' );
 $item_padding_block = sgs_css_length_value( $attributes['itemPaddingBlock'] ?? '' );
 $text_colour        = $attributes['textColour'] ?? '';
 $gap                = $attributes['gap'] ?? '20';
@@ -406,9 +407,17 @@ if ( $icon_colour ) {
 // per-item override exists for this setting). Empty colour = no circle,
 // today's output unchanged. iconBoxSize empty resolves to 26px, but only
 // once a background colour is actually set — it has no effect on its own. ---
-if ( '' !== $icon_bg_colour ) {
+// A ring (iconBoxBorderWidth, colour iconBoxBorderColour or the icon's own colour) draws round the same circle and,
+// set alone, draws the circle without a fill.
+if ( '' !== $icon_bg_colour || '' !== $icon_box_border ) {
 	$icon_box_size_value = '' !== $icon_box_size ? $icon_box_size : '26px';
-	$scoped_css[]        = "{$icon_sel}{background-color:" . sgs_colour_value( $icon_bg_colour ) . ";border-radius:50%;width:{$icon_box_size_value};height:{$icon_box_size_value};}";
+	$icon_box_fill       = '' !== $icon_bg_colour ? 'background-color:' . sgs_colour_value( $icon_bg_colour ) . ';' : '';
+	$icon_box_ring       = '';
+	if ( '' !== $icon_box_border ) {
+		$icon_box_ring_colour = sgs_colour_value( (string) ( $attributes['iconBoxBorderColour'] ?? '' ) );
+		$icon_box_ring        = "box-sizing:border-box;border:{$icon_box_border} solid " . ( '' !== $icon_box_ring_colour ? $icon_box_ring_colour : 'currentColor' ) . ';';
+	}
+	$scoped_css[] = "{$icon_sel}{{$icon_box_fill}border-radius:50%;width:{$icon_box_size_value};height:{$icon_box_size_value};{$icon_box_ring}}";
 }
 // --- Item vertical padding (top and bottom) — scoped to the item row, e.g.
 // so a divided list gets breathing room. This block's own <style> is emitted after the compiled

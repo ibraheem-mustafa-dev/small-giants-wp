@@ -42,7 +42,9 @@
  * uncacheable while it can redirect. Only page content is searched for the setting.
  *
  * Sort (`sgsSortBackground`, `sgsSortBorderColour`, `sgsSortBorderWidth`, `sgsSortBorderRadius`,
- * `sgsSortFontWeight`): printed on `select.orderby`.
+ * `sgsSortFontWeight`, `sgsSortFontFamily`, `sgsSortHeight`, `sgsSortPaddingInline`, `sgsSortShadow`): printed on
+ * `select.orderby`; `sgsSortHoverBackground` and `sgsSortHoverBorderColour` on its hover (and keyboard focus) through
+ * `sgs_hover_state_rules()`, and `sgsSortFocusBorderColour` on `:focus-visible`.
  *
  * The frontend rule is a scoped `<style>` tag, never a style="" attribute (Spec 32), on the block's own uid
  * class or a minted `sgs-filter-look-<8hex>` scope.
@@ -266,6 +268,7 @@ function sgs_filter_look_item_shape_decls( array $attrs ): array {
  */
 function sgs_filter_look_sort_css( array $attrs, string $scope ): string {
 	require_once __DIR__ . '/render-helpers.php';
+	require_once __DIR__ . '/helpers-shadow-layers.php';
 	$decls  = array();
 	$fill   = sgs_filter_look_colour( $attrs, array( 'sgsSortBackground' ) );
 	$edge   = sgs_filter_look_colour( $attrs, array( 'sgsSortBorderColour' ) );
@@ -288,7 +291,42 @@ function sgs_filter_look_sort_css( array $attrs, string $scope ): string {
 	if ( '' !== $weight ) {
 		$decls[] = 'font-weight:' . $weight;
 	}
-	return sgs_filter_look_rule( '.sgs-filter-look.' . $scope . ' select.orderby', $decls );
+	$family = '' !== (string) ( $attrs['sgsSortFontFamily'] ?? '' ) ? sgs_font_family_sanitise( $attrs['sgsSortFontFamily'] ) : '';
+	if ( '' !== $family ) {
+		$decls[] = 'font-family:' . $family;
+	}
+	$height = sgs_css_single_length_value( (string) ( $attrs['sgsSortHeight'] ?? '' ) );
+	if ( '' !== $height ) {
+		$decls[] = 'height:' . $height;
+		$decls[] = 'min-height:' . $height;
+	}
+	$inline = sgs_css_single_length_value( (string) ( $attrs['sgsSortPaddingInline'] ?? '' ) );
+	if ( '' !== $inline ) {
+		$decls[] = 'padding-inline:' . $inline;
+	}
+	$decls = array_merge( $decls, sgs_shadow_box_decls( (string) ( $attrs['sgsSortShadow'] ?? '' ), (string) ( $attrs['sgsSortShadowColour'] ?? '' ) ) );
+	$select = '.sgs-filter-look.' . $scope . ' select.orderby';
+	$css    = sgs_filter_look_rule( $select, $decls );
+
+	// Hover: a fill and a border colour (the shared hover pair also paints them while the select has keyboard focus).
+	$hover      = array();
+	$hover_fill = sgs_filter_look_colour( $attrs, array( 'sgsSortHoverBackground' ) );
+	if ( '' !== $hover_fill ) {
+		$hover[] = 'background-color:' . $hover_fill;
+	}
+	$hover_edge = sgs_filter_look_colour( $attrs, array( 'sgsSortHoverBorderColour' ) );
+	if ( '' !== $hover_edge ) {
+		$hover[] = 'border-color:' . $hover_edge;
+	}
+	if ( array() !== $hover ) {
+		$css .= sgs_hover_state_rules( $select, implode( ';', $hover ) . ';' );
+	}
+	// Keyboard focus: its own border colour, printed after the hover pair so it wins while focused.
+	$focus_edge = sgs_filter_look_colour( $attrs, array( 'sgsSortFocusBorderColour' ) );
+	if ( '' !== $focus_edge ) {
+		$css .= $select . ':focus-visible{border-color:' . $focus_edge . ';}';
+	}
+	return $css;
 }
 
 /**

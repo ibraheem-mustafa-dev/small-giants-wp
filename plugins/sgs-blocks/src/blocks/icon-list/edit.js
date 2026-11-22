@@ -562,12 +562,20 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 		// Icon background circle — empty colour keeps today's output (no
 		// circle); a set colour also sizes the span into a circle, matching
 		// render.php's scoped rule.
-		...( iconBackgroundColour
+		...( iconBackgroundColour || attributes.iconBoxBorderWidth
 			? {
-					backgroundColor: colourVar( iconBackgroundColour ),
+					backgroundColor: colourVar( iconBackgroundColour ) || undefined,
 					borderRadius: '50%',
 					width: iconBoxSize || '26px',
 					height: iconBoxSize || '26px',
+			  }
+			: {} ),
+		...( attributes.iconBoxBorderWidth
+			? {
+					boxSizing: 'border-box',
+					border: `${ attributes.iconBoxBorderWidth } solid ${
+						colourVar( attributes.iconBoxBorderColour ) || 'currentColor'
+					}`,
 			  }
 			: {} ),
 	};
@@ -890,6 +898,14 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							key: 'icon-background',
 							label: __( 'Icon background circle', 'sgs-blocks' ),
 							attrs: { base: 'iconBackgroundColour' },
+							attributes,
+							setAttributes,
+						} ),
+					showIconColourRow &&
+						fillRow( {
+							key: 'icon-box-border',
+							label: __( 'Icon circle ring', 'sgs-blocks' ),
+							attrs: { base: 'iconBoxBorderColour' },
 							attributes,
 							setAttributes,
 						} ),
@@ -1290,7 +1306,24 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
-					{ showIconColourRow && !! iconBackgroundColour && (
+					{ showIconColourRow && (
+						<SgsLengthControl
+							scale="spacing"
+							label={ __( 'Icon circle ring width', 'sgs-blocks' ) }
+							help={ __(
+								'A solid ring round each icon. Empty draws none.',
+								'sgs-blocks'
+							) }
+							value={ attributes.iconBoxBorderWidth || '' }
+							onChange={ ( val ) =>
+								setAttributes( { iconBoxBorderWidth: val || '' } )
+							}
+							presets={ false }
+						/>
+					) }
+					{ showIconColourRow &&
+						( !! iconBackgroundColour ||
+							!! attributes.iconBoxBorderWidth ) && (
 						<SgsLengthControl
 							label={ __( 'Icon circle size', 'sgs-blocks' ) }
 							help={ __(

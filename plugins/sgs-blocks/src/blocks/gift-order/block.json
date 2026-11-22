@@ -195,6 +195,52 @@
 						"css:color": "giftCountColour",
 						"css:text-align": "giftCountTextAlign"
 					}
+				},
+				"tiles": {
+					"selector": ".sgs-gift-order__tiles",
+					"motion": false,
+					"label": "Choice tile row",
+					"order": 10,
+					"clusters": [
+						"layout"
+					],
+					"attrMap": {
+						"css:grid-template-columns": "giftTileColumns"
+					}
+				},
+				"tileLabel": {
+					"selector": ".sgs-gift-order__tile-label",
+					"motion": false,
+					"label": "Choice tile first line",
+					"order": 11,
+					"clusters": [
+						"text"
+					],
+					"prefix": "giftTileLabel",
+					"attrMap": {
+						"css:font-size": "giftTileLabelFontSize",
+						"css:font-family": "giftTileLabelFontFamily",
+						"css:font-weight": "giftTileLabelFontWeight",
+						"css:font-style": "giftTileLabelFontStyle",
+						"css:line-height": "giftTileLabelLineHeight"
+					}
+				},
+				"tileText": {
+					"selector": ".sgs-gift-order__tile-text",
+					"motion": false,
+					"label": "Choice tile second line",
+					"order": 12,
+					"clusters": [
+						"text"
+					],
+					"prefix": "giftTileText",
+					"attrMap": {
+						"css:font-size": "giftTileTextFontSize",
+						"css:font-family": "giftTileTextFontFamily",
+						"css:font-weight": "giftTileTextFontWeight",
+						"css:font-style": "giftTileTextFontStyle",
+						"css:line-height": "giftTileTextLineHeight"
+					}
 				}
 			}
 		}
@@ -452,6 +498,79 @@
 			"type": "string",
 			"default": "",
 			"description": "Colour of the ticked box (the browser accent colour): a palette slug or any CSS colour."
+		},
+		"giftTileLabelFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Choice tile first line size per device: {desktop,tablet,mobile}, a number in the unit below or a theme size slug."
+		},
+		"giftTileLabelFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"giftTileLabelFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Choice tile first line font family: a theme font slug or a CSS family. Unset keeps the inherited font."
+		},
+		"giftTileLabelFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Choice tile first line weight. Unset keeps the stylesheet weight."
+		},
+		"giftTileLabelFontStyle": {
+			"type": "string",
+			"enum": [ "", "normal", "italic" ],
+			"default": "",
+			"description": "Choice tile first line style. Unset keeps the inherited style."
+		},
+		"giftTileLabelLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Choice tile first line line height per device: {desktop,tablet,mobile}."
+		},
+		"giftTileLabelLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"giftTileTextFontSize": {
+			"type": "object",
+			"default": {},
+			"description": "Choice tile second line size per device: {desktop,tablet,mobile}, a number in the unit below or a theme size slug."
+		},
+		"giftTileTextFontSizeUnit": {
+			"type": "string",
+			"default": "px"
+		},
+		"giftTileTextFontFamily": {
+			"type": "string",
+			"default": "",
+			"description": "Choice tile second line font family: a theme font slug or a CSS family. Unset keeps the inherited font."
+		},
+		"giftTileTextFontWeight": {
+			"type": "string",
+			"default": "",
+			"description": "Choice tile second line weight. Unset keeps the stylesheet weight."
+		},
+		"giftTileTextFontStyle": {
+			"type": "string",
+			"enum": [ "", "normal", "italic" ],
+			"default": "",
+			"description": "Choice tile second line style. Unset keeps the inherited style."
+		},
+		"giftTileTextLineHeight": {
+			"type": "object",
+			"default": {},
+			"description": "Choice tile second line line height per device: {desktop,tablet,mobile}."
+		},
+		"giftTileTextLineHeightUnit": {
+			"type": "string",
+			"default": ""
+		},
+		"giftTileColumns": {
+			"type": "object",
+			"default": {},
+			"description": "Number of choice tiles side by side per device: {desktop,tablet,mobile}, each 1 to 4. Unset keeps the stylesheet's two columns that stack when the column is narrower than two 12rem tiles."
 		},
 		"giftLabelFontSize": {
 			"type": "object",

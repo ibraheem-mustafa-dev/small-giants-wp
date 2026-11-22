@@ -95,11 +95,14 @@
 					"order": 2,
 					"clusters": [
 						"text",
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "icon",
 					"attrMap": {
-						"css:stroke": "iconColourGradient"
+						"css:stroke": "iconColourGradient",
+						"css:border-width": "iconBoxBorderWidth",
+						"css:border-color": "iconBoxBorderColour"
 					},
 					"_note": "Per-item icon span (`.sgs-icon-list__icon`). `css:color` resolves via default convention `icon`+`Colour`=`iconColour` — font-size/weight/line-height/etc are honest gaps, an icon glyph has no typography surface. iconSize/defaultIconSource are bespoke icon-source controls with no cluster member and surface as orphans, not gaps. `css:stroke` (icon/SVG gradient mechanism) is explicit-mapped to `iconColourGradient` — non-empty wins over iconColour's flat currentColor paint at render time (helpers-svg-gradient.php).",
 					"states": {
@@ -472,7 +475,17 @@
 		"iconBoxSize": {
 			"type": "string",
 			"default": "",
-			"description": "Diameter of the icon background circle. Empty resolves to 26px when `iconBackgroundColour` is set; has no effect otherwise."
+			"description": "Diameter of the icon background circle. Empty resolves to 26px when `iconBackgroundColour` is set or `iconBoxBorderWidth` draws a ring; has no effect otherwise."
+		},
+		"iconBoxBorderWidth": {
+			"type": "string",
+			"default": "",
+			"description": "Width of a solid ring round each item's icon circle (a CSS length). Empty = no ring. A ring alone also draws the circle (size `iconBoxSize`, 26px when empty)."
+		},
+		"iconBoxBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Colour of the icon circle's ring: a theme colour slug or a CSS colour. Empty = the icon's own colour (currentColor)."
 		},
 		"itemTextShiftHover": {
 			"type": "number",

@@ -48,7 +48,7 @@ if ( ! function_exists( 'sgs_gift_order_tiered_keys' ) ) {
 	 * @return string[]
 	 */
 	function sgs_gift_order_tiered_keys(): array {
-		return array( 'giftLabelFontSize', 'giftLabelLineHeight', 'giftNoteFontSize', 'giftNoteLineHeight', 'giftHelpFontSize', 'giftCountFontSize', 'giftCountTextAlign' );
+		return array( 'giftLabelFontSize', 'giftLabelLineHeight', 'giftNoteFontSize', 'giftNoteLineHeight', 'giftHelpFontSize', 'giftCountFontSize', 'giftCountTextAlign', 'giftTileLabelFontSize', 'giftTileLabelLineHeight', 'giftTileTextFontSize', 'giftTileTextLineHeight' );
 	}
 }
 
@@ -179,6 +179,23 @@ if ( ! function_exists( 'sgs_gift_order_look_css' ) ) {
 		$css      .= sgs_typography_css_rule( $attributes, 'giftCount', $count_sel, '', false, false, sgs_gift_order_tiered_keys() );
 		$css      .= sgs_text_states_css( $count_sel, $attributes, array( 'base' => 'giftCountColour' ) );
 		$css .= sgs_typography_css_rule( $attributes, 'giftLabel', $root . ' .sgs-gift-order__label', '', false, false, sgs_gift_order_tiered_keys() );
+		$css .= sgs_typography_css_rule( $attributes, 'giftTileLabel', $root . ' .sgs-gift-order__tile-label', '', false, false, sgs_gift_order_tiered_keys() );
+		$css .= sgs_typography_css_rule( $attributes, 'giftTileText', $root . ' .sgs-gift-order__tile-text', '', false, false, sgs_gift_order_tiered_keys() );
+
+		// Tiles side by side per device: a count of 1 to 4 equal columns (unset keeps the stylesheet's auto-fit columns).
+		$css .= sgs_emit_responsive_css(
+			$root . ' .sgs-gift-order__tiles',
+			array(
+				array(
+					'value'     => $attributes['giftTileColumns'] ?? null,
+					'css'       => 'grid-template-columns',
+					'transform' => static function ( $raw ): ?string {
+						$count = is_numeric( $raw ) ? (int) $raw : 0;
+						return ( $count >= 1 && $count <= 4 && (string) $count === trim( (string) $raw ) ) ? 'repeat(' . $count . ',minmax(0,1fr))' : null;
+					},
+				),
+			)
+		);
 		$css .= sgs_typography_css_rule( $attributes, 'giftNote', $note_sel, '', false, false, sgs_gift_order_tiered_keys() );
 
 		$css .= \SGS\Blocks\Forms\field_own_style_css( $attributes, 'sgs-gift-order', $field );

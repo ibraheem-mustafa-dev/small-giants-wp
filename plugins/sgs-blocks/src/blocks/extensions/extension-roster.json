@@ -181,7 +181,15 @@
 				"sgsSortBorderColour": { "type": "string", "default": "", "role": "visual", "css_property": "border-color", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
 				"sgsSortBorderWidth": { "type": "string", "default": "", "role": "visual", "css_property": "border-width", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
 				"sgsSortBorderRadius": { "type": "string", "default": "", "role": "visual", "css_property": "border-radius", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
-				"sgsSortFontWeight": { "type": "string", "default": "", "role": "visual", "css_property": "font-weight", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] }
+				"sgsSortFontWeight": { "type": "string", "default": "", "role": "visual", "css_property": "font-weight", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortFontFamily": { "type": "string", "default": "", "role": "typography", "css_property": "font-family", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortHeight": { "type": "string", "default": "", "role": "layout", "css_property": "height", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortPaddingInline": { "type": "string", "default": "", "role": "layout", "css_property": "padding-inline", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortShadow": { "type": "string", "default": "", "role": "visual", "css_property": "box-shadow", "css_element": "sort-select", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortShadowColour": { "type": "string", "default": "", "role": "visual", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortHoverBackground": { "type": "string", "default": "", "role": "visual", "css_property": "background-color", "css_element": "sort-select", "css_state": "hover", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortHoverBorderColour": { "type": "string", "default": "", "role": "visual", "css_property": "border-color", "css_element": "sort-select", "css_state": "hover", "blocks": [ "woocommerce/catalog-sorting" ] },
+				"sgsSortFocusBorderColour": { "type": "string", "default": "", "role": "visual", "blocks": [ "woocommerce/catalog-sorting" ] }
 			}
 		},
 		{

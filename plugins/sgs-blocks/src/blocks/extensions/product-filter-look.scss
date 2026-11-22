@@ -106,3 +106,19 @@
 .sgs-filter-look-preview--sort-weight select {
 	font-weight: var(--sgs-fl-sort-weight);
 }
+
+.sgs-filter-look-preview--sort-font select {
+	font-family: var(--sgs-fl-sort-font);
+}
+
+.sgs-filter-look-preview--sort-height select {
+	height: var(--sgs-fl-sort-height);
+}
+
+.sgs-filter-look-preview--sort-padding-inline select {
+	padding-inline: var(--sgs-fl-sort-padding-inline);
+}
+
+.sgs-filter-look-preview--sort-shadow select {
+	box-shadow: var(--sgs-fl-sort-shadow);
+}
