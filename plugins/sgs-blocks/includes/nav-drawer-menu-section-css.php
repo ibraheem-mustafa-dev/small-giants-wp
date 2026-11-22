@@ -19,31 +19,63 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/helpers-hover-state.php';
+require_once __DIR__ . '/helpers-responsive.php';
 
 if ( ! function_exists( 'sgs_nav_drawer_menu_row_layout_css' ) ) {
 	/**
-	 * `justifyContent` — how a row's content is spread across the row.
+	 * `justifyContent` — how a row's content is spread across the row, per device.
 	 *
-	 * Whitelisted, not merely escaped: the value concatenates straight into a raw
-	 * `<style>` block and can arrive from a programmatic writer that bypasses the
-	 * editor's `enum`. A centred row also reserves the expander's 56px on the
-	 * inline-start side (the split row already reserves it at the end), so the
-	 * label sits on the row's true centre.
+	 * A `{desktop, tablet, mobile}` object; an unset device inherits the wider one. Whitelisted, not merely escaped: the
+	 * value concatenates straight into a raw `<style>` block and can arrive from a programmatic writer that bypasses the
+	 * editor's `enum`. A centred row also reserves the expander's 56px on the inline-start side (the split row already
+	 * reserves it at the end), so the label sits on the row's true centre; a device that leaves `center` for another
+	 * spread restores the row link's own 12px start padding (`style.css`).
 	 *
 	 * @param array  $attributes Block attributes.
 	 * @param string $uid_sel    This instance's CSS scope selector (`.{uid}`).
 	 * @return string CSS fragment, or '' when unset.
 	 */
 	function sgs_nav_drawer_menu_row_layout_css( array $attributes, string $uid_sel ): string {
-		$justify = (string) ( $attributes['justifyContent'] ?? '' );
-		if ( ! in_array( $justify, array( 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' ), true ) ) {
+		$allowed = array( 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' );
+		$tiers   = sgs_keyword_tiers( $attributes['justifyContent'] ?? null, $allowed, '' );
+		$desktop = $tiers['desktop'];
+		$tablet  = $tiers['tablet'] ?? $desktop;
+		$mobile  = $tiers['mobile'] ?? $tablet;
+		if ( '' === $desktop && $tablet === $desktop && $mobile === $tablet ) {
 			return '';
 		}
-		$css = $uid_sel . ' .sgs-nav-drawer-menu__link{justify-content:' . $justify . ';}';
-		// The whole-row toggle's caret takes the free space by default; a set spread replaces that.
-		$css .= $uid_sel . ' .sgs-nav-drawer-menu__accordion-summary--row > .sgs-nav-drawer-menu__caret{margin-inline-start:0;}';
-		if ( 'center' === $justify ) {
-			$css .= $uid_sel . ' .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__link{padding-inline-start:56px;}';
+		$link  = $uid_sel . ' .sgs-nav-drawer-menu__link';
+		$caret = $uid_sel . ' .sgs-nav-drawer-menu__accordion-summary--row > .sgs-nav-drawer-menu__caret';
+		$pad   = $uid_sel . ' .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__link';
+		$css   = '';
+		// Desktop first, in the order the single value always printed: the spread, the caret, the centred row's start padding.
+		if ( '' !== $desktop ) {
+			$css .= $link . '{justify-content:' . $desktop . ';}';
+			// The whole-row toggle's caret takes the free space by default; a set spread replaces that.
+			$css .= $caret . '{margin-inline-start:0;}';
+			if ( 'center' === $desktop ) {
+				$css .= $pad . '{padding-inline-start:56px;}';
+			}
+		}
+		$steps = array(
+			array( SGS_Breakpoints::TABLET_MAX, $desktop, $tablet ),
+			array( SGS_Breakpoints::MOBILE_MAX, $tablet, $mobile ),
+		);
+		foreach ( $steps as $step ) {
+			list( $max, $from, $to ) = $step;
+			if ( $to === $from ) {
+				continue;
+			}
+			$inner  = $link . '{justify-content:' . $to . ';}';
+			$inner .= $caret . '{margin-inline-start:0;}';
+			if ( 'center' === $to ) {
+				$inner .= $pad . '{padding-inline-start:56px;}';
+			} elseif ( 'center' === $from ) {
+				$inner .= $pad . '{padding-inline-start:12px;}';
+			}
+			foreach ( SGS_Breakpoints::tier_at_rules( $max, false ) as $prefix ) {
+				$css .= $prefix . $inner . '}';
+			}
 		}
 		return $css;
 	}

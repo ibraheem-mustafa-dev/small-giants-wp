@@ -95,9 +95,8 @@ if ( '' === $gap_mobile_css ) {
 $align_tiers   = sgs_responsive_normalise_object( $attributes['alignItems'] ?? null );
 $align_allowed = array( 'stretch', 'start', 'center', 'end' );
 $align_items   = in_array( $align_tiers['desktop'] ?? null, $align_allowed, true ) ? $align_tiers['desktop'] : 'stretch';
-$justify_items = isset( $attributes['justifyItems'] ) && in_array( $attributes['justifyItems'], array( 'stretch', 'start', 'center', 'end' ), true )
-	? $attributes['justifyItems']
-	: 'stretch';
+$justify_items_tiers = sgs_keyword_tiers( $attributes['justifyItems'] ?? null, array( 'stretch', 'start', 'center', 'end' ), 'stretch' );
+$justify_items       = $justify_items_tiers['desktop'];
 
 $uid = wp_unique_id( 'sgs-fg-' );
 
@@ -310,6 +309,9 @@ $css .= sgs_emit_responsive_css(
 		),
 	)
 );
+
+// Distribution of the items per breakpoint (the desktop value prints with the grid rule above).
+$css .= sgs_emit_keyword_tier_overrides( ".$uid.sgs-feature-grid", 'justify-items', $justify_items_tiers );
 
 if ( '' !== $css ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_strip_all_tags() applied below; $css built from pre-sanitised values only (grid engine literals + wp_style_engine_get_styles()).

@@ -956,27 +956,23 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 			// an array fails a strict comparison against a list of strings and falls
 			// back to the safe default, with no warning and no garbage declaration.
 			$grid_auto_rows        = is_array( $grid_auto_rows ) ? '' : $grid_auto_rows;
-			$justify_items         = $attributes['justifyItems'] ?? 'stretch';
-			$align_content         = $attributes['alignContent'] ?? 'stretch';
-			$allowed_justify_items = array( 'stretch', 'start', 'center', 'end' );
-			$allowed_align_content = array( 'stretch', 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly' );
-			if ( ! in_array( $justify_items, $allowed_justify_items, true ) ) {
-				$justify_items = 'stretch';
-			}
-			if ( ! in_array( $align_content, $allowed_align_content, true ) ) {
-				$align_content = 'stretch';
-			}
+			// justifyItems, alignContent and justifyContent are `{desktop, tablet, mobile}` objects like alignItems: desktop prints
+			// with the layout declarations below (byte for byte as the scalar did), tablet and mobile as overrides further down.
+			$allowed_justify_items   = array( 'stretch', 'start', 'center', 'end' );
+			$allowed_align_content   = array( 'stretch', 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly' );
+			$allowed_justify_content = array( 'flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly' );
+			$sgs_justify_items_tiers   = sgs_keyword_tiers( $attributes['justifyItems'] ?? null, $allowed_justify_items, 'stretch' );
+			$sgs_align_content_tiers   = sgs_keyword_tiers( $attributes['alignContent'] ?? null, $allowed_align_content, 'stretch' );
+			$sgs_justify_content_tiers = sgs_keyword_tiers( $attributes['justifyContent'] ?? null, $allowed_justify_content, '' );
+			$justify_items             = $sgs_justify_items_tiers['desktop'];
+			$align_content             = $sgs_align_content_tiers['desktop'];
 
 			// AXIS-4 flex-receiving attrs (section + layout kinds — flex only).
-			$justify_content         = $attributes['justifyContent'] ?? '';
+			$justify_content         = $sgs_justify_content_tiers['desktop'];
 			$flex_direction          = $attributes['flexDirection'] ?? '';
 			$flex_wrap               = $attributes['flexWrap'] ?? '';
-			$allowed_justify_content = array( '', 'flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly' );
 			$allowed_flex_direction  = array( '', 'row', 'row-reverse', 'column', 'column-reverse' );
 			$allowed_flex_wrap       = array( '', 'wrap', 'nowrap', 'wrap-reverse' );
-			if ( ! in_array( $justify_content, $allowed_justify_content, true ) ) {
-				$justify_content = '';
-			}
 			if ( ! in_array( $flex_direction, $allowed_flex_direction, true ) ) {
 				$flex_direction = '';
 			}
@@ -2301,6 +2297,18 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 				);
 			}
 
+			// Distribution at tablet and mobile (the desktop values are in the declarations above). Each property overrides only
+			// where its desktop declaration prints: justify-items and align-content on a grid, justify-content on a flex or stack
+			// row. A tier that equals the one above it prints nothing.
+			if ( $uid && ( $is_section || $is_layout ) ) {
+				if ( 'grid' === $layout ) {
+					$responsive_css .= sgs_emit_keyword_tier_overrides( $grid_sel, 'justify-items', $sgs_justify_items_tiers, (bool) $container_queries );
+					$responsive_css .= sgs_emit_keyword_tier_overrides( $grid_sel, 'align-content', $sgs_align_content_tiers, (bool) $container_queries );
+				} elseif ( ( 'flex' === $layout || 'stack' === $layout ) && ! $suppress_outer_flex_for_main ) {
+					$responsive_css .= sgs_emit_keyword_tier_overrides( $grid_sel, 'justify-content', $sgs_justify_content_tiers, (bool) $container_queries );
+				}
+			}
+
 			// No-inline contract (Spec 32 FR-32-4/FR-32-4a, this pass 2026-08-01) —
 			// $inner_grid_decls carries the L3 gap + --sgs-gi-* custom-property
 			// VALUES that used to be inlined onto the __inner band further below.
@@ -3014,6 +3022,12 @@ if ( ! class_exists( 'SGS_Container_Wrapper' ) ) {
 					// track-list value, not a keyword).
 					'gridTemplateRows' => 'grid-template-rows',
 				) as $sgs_attr => $sgs_css_prop ) {
+					// justifyItems, alignContent and justifyContent of a section or layout block are printed by the base
+					// declarations and sgs_emit_keyword_tier_overrides() above, only where the layout applies them; a content
+					// block (multi-button, nav-bar-menu) keeps this universal path.
+					if ( ( $is_section || $is_layout ) && in_array( $sgs_attr, array( 'justifyItems', 'alignContent', 'justifyContent' ), true ) ) {
+						continue;
+					}
 					if ( isset( $attributes[ $sgs_attr ] ) && is_array( $attributes[ $sgs_attr ] ) ) {
 						$obj_inner_props[] = array(
 							'value'     => $attributes[ $sgs_attr ],

@@ -177,16 +177,14 @@ $vertical_alignment = $attributes['verticalAlignment'] ?? 'center';
 // hero's split grid is bespoke (fixed 2-column, not the wrapper's generic
 // column-count grid), so these extend hero's OWN existing $is_split CSS
 // builder below rather than the wrapper's generic branch.
-$justify_items         = $attributes['justifyItems'] ?? 'stretch';
-$align_content         = $attributes['alignContent'] ?? 'stretch';
+// justifyItems, alignContent and justifyContent are `{desktop, tablet, mobile}` objects: the desktop tier prints as the single
+// value always did, tablet and mobile as overrides where they differ (sgs_emit_keyword_tier_overrides).
 $allowed_justify_items = array( 'stretch', 'start', 'center', 'end' );
 $allowed_align_content = array( 'stretch', 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly' );
-if ( ! in_array( $justify_items, $allowed_justify_items, true ) ) {
-	$justify_items = 'stretch';
-}
-if ( ! in_array( $align_content, $allowed_align_content, true ) ) {
-	$align_content = 'stretch';
-}
+$justify_items_tiers   = sgs_keyword_tiers( $attributes['justifyItems'] ?? null, $allowed_justify_items, 'stretch' );
+$align_content_tiers   = sgs_keyword_tiers( $attributes['alignContent'] ?? null, $allowed_align_content, 'stretch' );
+$justify_items         = $justify_items_tiers['desktop'];
+$align_content         = $align_content_tiers['desktop'];
 // gridAutoRows is a plain scalar (block.json: type string, default '') —
 // is_array guard mirrors the wrapper's own D549 defence (a future tier-object
 // migration of this attr would otherwise PHP-coerce to the literal "Array").
@@ -208,15 +206,13 @@ $grid_row_template_mobile = $grid_row_tiers['mobile'] ?? '';
 // flex-wrap rule for `.sgs-hero`, so the current live default is the browser's
 // own initial `nowrap` — emitting 'wrap' unconditionally would be a real,
 // silent behaviour change for every existing hero on this attribute's default.
-$justify_content         = $attributes['justifyContent'] ?? '';
+$allowed_justify_content = array( 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' );
+$justify_content_tiers   = sgs_keyword_tiers( $attributes['justifyContent'] ?? null, $allowed_justify_content, '' );
+$justify_content         = $justify_content_tiers['desktop'];
 $flex_direction          = $attributes['flexDirection'] ?? '';
 $flex_wrap               = $attributes['flexWrap'] ?? 'wrap';
-$allowed_justify_content = array( '', 'flex-start', 'center', 'flex-end', 'space-between', 'space-around' );
 $allowed_flex_direction  = array( '', 'row', 'column' );
 $allowed_flex_wrap       = array( 'wrap', 'nowrap' );
-if ( ! in_array( $justify_content, $allowed_justify_content, true ) ) {
-	$justify_content = '';
-}
 if ( ! in_array( $flex_direction, $allowed_flex_direction, true ) ) {
 	$flex_direction = '';
 }
@@ -343,6 +339,8 @@ if ( $is_split ) {
 	if ( 'stretch' !== $align_content ) {
 		$responsive_css .= '.' . $uid . '{align-content:' . esc_attr( $align_content ) . '}';
 	}
+	$responsive_css .= sgs_emit_keyword_tier_overrides( '.' . $uid, 'justify-items', $justify_items_tiers );
+	$responsive_css .= sgs_emit_keyword_tier_overrides( '.' . $uid, 'align-content', $align_content_tiers );
 	if ( '' !== trim( (string) $grid_auto_rows ) ) {
 		$responsive_css .= '.' . $uid . '{grid-auto-rows:' . esc_attr( sgs_sanitize_grid_template( $grid_auto_rows ) ) . '}';
 	}
@@ -521,6 +519,7 @@ if ( $is_split ) {
 	if ( '' !== $justify_content ) {
 		$responsive_css .= '.' . $uid . '{justify-content:' . esc_attr( $justify_content ) . '}';
 	}
+	$responsive_css .= sgs_emit_keyword_tier_overrides( '.' . $uid, 'justify-content', $justify_content_tiers );
 	if ( 'wrap' !== $flex_wrap ) {
 		$responsive_css .= '.' . $uid . '{flex-wrap:' . esc_attr( $flex_wrap ) . '}';
 	}

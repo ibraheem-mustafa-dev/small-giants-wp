@@ -96,20 +96,24 @@ if ( ! function_exists( 'sgs_gallery_grid_layout_css' ) ) {
 		if ( '' !== $auto_rows ) {
 			$decls[] = 'grid-auto-rows:' . $auto_rows;
 		}
+		// justifyItems and alignContent are `{desktop, tablet, mobile}` objects: desktop prints with the base rule, tablet and
+		// mobile as overrides where they differ.
+		$overrides = '';
 		foreach ( array(
-			'justifyItems' => 'justify-items',
-			'alignContent' => 'align-content',
-		) as $attr => $prop ) {
-			$value = (string) preg_replace( '/[^a-z-]/', '', strtolower( (string) ( $attributes[ $attr ] ?? '' ) ) );
+			'justifyItems' => array( 'justify-items', array( 'stretch', 'start', 'center', 'end' ) ),
+			'alignContent' => array( 'align-content', array( 'stretch', 'start', 'center', 'end', 'space-between', 'space-around', 'space-evenly' ) ),
+		) as $attr => $def ) {
+			$tiers = sgs_keyword_tiers( $attributes[ $attr ] ?? null, $def[1], 'stretch' );
 			// `stretch` is the grid's own default for justify-items and align-content.
-			if ( '' !== $value && 'stretch' !== $value ) {
-				$decls[] = $prop . ':' . $value;
+			if ( 'stretch' !== $tiers['desktop'] ) {
+				$decls[] = $def[0] . ':' . $tiers['desktop'];
 			}
+			$overrides .= sgs_emit_keyword_tier_overrides( $grid_sel, $def[0], $tiers );
 		}
 		if ( $decls ) {
 			$css = $grid_sel . '{' . implode( ';', $decls ) . '}' . $css;
 		}
-		return $css;
+		return $css . $overrides;
 	}
 }
 

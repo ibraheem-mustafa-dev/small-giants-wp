@@ -608,6 +608,69 @@ if ( ! function_exists( 'sgs_emit_tier_decls' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_keyword_tiers' ) ) {
+	/**
+	 * The per-device keyword choices of one layout setting (justify-content, justify-items, align-content, align-items).
+	 *
+	 * The setting is a `{desktop, tablet, mobile}` object. Desktop falls to `$default` when it is missing or not in
+	 * `$allowed`; a tablet or mobile that is missing, empty or not allowed is null (it inherits the wider screen).
+	 *
+	 * @param mixed    $raw     Stored value (the tier object; a bare string reads as the desktop tier).
+	 * @param string[] $allowed Keywords the property accepts (strict match).
+	 * @param string   $default Desktop value when none is stored.
+	 * @return array{desktop:string,tablet:?string,mobile:?string}
+	 */
+	function sgs_keyword_tiers( $raw, array $allowed, string $default = '' ): array {
+		$tiers = sgs_responsive_normalise_object( $raw );
+		$pick  = static function ( $value ) use ( $allowed ) {
+			return ( is_string( $value ) && '' !== $value && in_array( $value, $allowed, true ) ) ? $value : null;
+		};
+		return array(
+			'desktop' => $pick( $tiers['desktop'] ) ?? $default,
+			'tablet'  => $pick( $tiers['tablet'] ),
+			'mobile'  => $pick( $tiers['mobile'] ),
+		);
+	}
+}
+
+if ( ! function_exists( 'sgs_emit_keyword_tier_overrides' ) ) {
+	/**
+	 * Print the tablet and mobile overrides of one keyword layout setting; the desktop value is the caller's own rule.
+	 *
+	 * A tier that equals the one above it prints nothing (a blank tier inherits), exactly like sgs_emit_responsive_css().
+	 *
+	 * @param string   $selector Fully-formed, already-safe CSS selector.
+	 * @param string   $css_prop CSS property name.
+	 * @param array    $tiers    Result of sgs_keyword_tiers().
+	 * @param bool     $with_container Also emit each tier as an @container query.
+	 * @return string CSS text; '' when no tier differs.
+	 */
+	function sgs_emit_keyword_tier_overrides( string $selector, string $css_prop, array $tiers, bool $with_container = false ): string {
+		$tablet = $tiers['tablet'] ?? null;
+		$mobile = $tiers['mobile'] ?? null;
+		if ( null === $tablet && null === $mobile ) {
+			return '';
+		}
+		$desktop      = (string) $tiers['desktop'];
+		$tablet_value = $tablet ?? $desktop;
+		$mobile_value = $mobile ?? $tablet_value;
+		$css          = '';
+		if ( $tablet_value !== $desktop ) {
+			$inner = $selector . '{' . $css_prop . ':' . $tablet_value . ';}';
+			foreach ( SGS_Breakpoints::tier_at_rules( SGS_Breakpoints::TABLET_MAX, $with_container ) as $prefix ) {
+				$css .= $prefix . $inner . '}';
+			}
+		}
+		if ( $mobile_value !== $tablet_value ) {
+			$inner = $selector . '{' . $css_prop . ':' . $mobile_value . ';}';
+			foreach ( SGS_Breakpoints::tier_at_rules( SGS_Breakpoints::MOBILE_MAX, $with_container ) as $prefix ) {
+				$css .= $prefix . $inner . '}';
+			}
+		}
+		return $css;
+	}
+}
+
 if ( ! function_exists( 'sgs_canonicalise_responsive_attrs' ) ) {
 	/**
 	 * Canonicalisation ORACLE for object-model responsive attributes.

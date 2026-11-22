@@ -462,10 +462,24 @@ if ( is_array( $sgs_connector_hidden ) && array() !== $sgs_connector_hidden && '
 $scoped_css[] = $root_sel . '{--sgs-step-count:' . count( $steps ) . ';}';
 
 // Space between the steps (stepGap); unset keeps style.css's gap. --sgs-step-gap carries the same value to the connector maths.
-if ( '' !== (string) ( $attributes['stepGap'] ?? '' ) ) {
-	$sgs_step_gap = sgs_css_length_value( (string) $attributes['stepGap'] );
-	$scoped_css[] = $root_sel . '{--sgs-step-gap:' . $sgs_step_gap . ';gap:' . $sgs_step_gap . ';}';
-}
+// A `{desktop, tablet, mobile}` object: desktop is the plain rule, tablet and mobile print where they differ.
+$sgs_step_gap_tiers = sgs_responsive_normalise_object( $attributes['stepGap'] ?? null );
+$sgs_gap_transform  = static fn( $raw ): string => ( is_string( $raw ) || is_numeric( $raw ) ) ? sgs_css_length_value( (string) $raw ) : '';
+$scoped_css[]       = sgs_emit_responsive_css(
+	$root_sel,
+	array(
+		array(
+			'value'     => $sgs_step_gap_tiers,
+			'css'       => '--sgs-step-gap',
+			'transform' => $sgs_gap_transform,
+		),
+		array(
+			'value'     => $sgs_step_gap_tiers,
+			'css'       => 'gap',
+			'transform' => $sgs_gap_transform,
+		),
+	)
+);
 
 // Per-device badge size (numberSize): sets the size custom property that the
 // connector-line maths reads, and the badge's real width/height. Row gap
@@ -567,9 +581,18 @@ if ( in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
 
 // List layout only: space between the number and its text (numberGap); unset
 // keeps style.css's column-gap. Scoped with the uid so it out-ranks style.css.
-if ( 'list' === $layout && '' !== (string) ( $attributes['numberGap'] ?? '' ) ) {
-	$scoped_css[] = $root_sel . '.sgs-process-steps--layout-list .sgs-process-steps__step{column-gap:'
-		. sgs_css_length_value( (string) $attributes['numberGap'] ) . ';}';
+// A `{desktop, tablet, mobile}` object: desktop is the plain rule, tablet and mobile print where they differ.
+if ( 'list' === $layout ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel . '.sgs-process-steps--layout-list .sgs-process-steps__step',
+		array(
+			array(
+				'value'     => sgs_responsive_normalise_object( $attributes['numberGap'] ?? null ),
+				'css'       => 'column-gap',
+				'transform' => $sgs_gap_transform,
+			),
+		)
+	);
 }
 
 // 'list' layout paints no badge fill (no circle/square box behind the
