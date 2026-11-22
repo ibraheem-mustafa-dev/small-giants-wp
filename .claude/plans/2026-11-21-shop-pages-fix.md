@@ -120,7 +120,7 @@ Each lane: read its MERGED.md blocks; tests fail first; mutation lists killed; o
 - Touches: plugin; framework database (reseed, announced); render-scope for F-60 and F-62
 - Done when: the four checks recorded per new setting; build gates, inspector scan with no new finding, `audit-inline-styling --check` exit 0; publish succeeds
 - Depends on: 7 to 12 (their settings lists)
-- Status: not started
+- Status: not started. The reseed also picks up the block.json element selectors added for `sgs/cart`, `sgs/account` and `sgs/product-card` (`aae74374b`, `92a404f90`): it changes `motion_targets.css_element` for about 16 rows and no render
 
 ### Task 14: Rebuild both copies and prove every page
 - Why: one rebuild proves all lanes together. Read first: `E:\sgs-tmp\template-rework\investigation\chain.sh`, `chain-pl.sh`
