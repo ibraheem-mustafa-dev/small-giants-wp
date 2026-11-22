@@ -1,21 +1,24 @@
 #!/usr/bin/env node
 // The surface command: one or more surfaces of a client cloned onto a site through every stage, passing only when every stage ran.
 //   node scripts/computed-route/clone-surface.mjs <client> --surface a,b --site <target>
-//        [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--no-retry] [--jobs 1]
+//        [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--picks <file>] [--no-retry] [--no-solve] [--jobs 1]
 // It checks each surface's finaliser picks (lib/clone-surface.mjs::finaliserVerdict; a surface whose draft record matched with no intake
 // skeleton, the manifest's noIntake, stops there instead of passing as a copy), runs site-run.mjs for the surfaces with every stage
 // (inventory, propose, fill, build, apply, walk) and --strict, retries a build that timed out once with --stages build,apply,walk, and prints
 // one line per surface and stage: `ok`, `skip` or `FAIL` with its reason and, for a failure, the stage log. A template copy a page sits in is
 // run with the page (never --no-copies). A run that includes the page map's account row first sets the registration options its draft's register
-// form needs (accountStep: a register form turns registration on and password generation off), so the walk sees the register card. Exit 0 when every stage ran and passed; 1 otherwise (each failure and each stage that did not run
-// is listed); 2 on a usage error or a refused site. --site is the only site read or written: a protected site is refused here, and site-run.mjs
+// form needs (accountStep: a register form turns registration on and password generation off), so the walk sees the register card. Solve (solve.mjs)
+// runs last on each surface whose stages passed, on the tree the run wrote where surfaces.json names it (`solve` line; --no-solve leaves it out and fails the clean
+// pass). --picks <file> gives the finaliser's picks (the shape `intake.mjs --finalise` asks for) on the command line: they are written as the client's
+// finalise-picks.json and applied with intake.mjs --apply-picks before the finaliser check. Exit 0 when every stage ran and passed; 1 otherwise (each failure
+// and each stage that did not run is listed); 2 on a usage error or a refused site. --site is the only site read or written: a protected site is refused here, and site-run.mjs
 // refuses a scratch copy in a main checkout and a site with other post ids than the surfaces'.
 // --allow-missing-paint (lib/paint-gate.mjs) and --allow-unpicked are named allowances, never wildcards. Run it from a worktree.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { cloneSurfaces } from './lib/clone-surface.mjs';
-import { launchSiteRun } from './lib/site-run-launch.mjs';
+import { applyPicksFile, cloneSurfaces } from './lib/clone-surface.mjs';
+import { launchSiteRun, launchSolve } from './lib/site-run-launch.mjs';
 import { allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { assertUnprotected, readTargets, targetOf } from './lib/site-targets.mjs';
 import { buildManifest } from './lib/manifest-build.mjs';
@@ -25,9 +28,10 @@ import { runAccountRegistration } from './lib/site-build-account-registration.mj
 import { wpEvalRunner } from './lib/calibration-refs.mjs';
 import { stateRows } from './lib/state-vocab.mjs';
 import { openDb } from './lib/db.mjs';
+import { spawn } from 'child_process';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..' );
-const USAGE = 'usage: clone-surface.mjs <client> --surface a,b --site <target> [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--no-retry] [--jobs 1]';
+const USAGE = 'usage: clone-surface.mjs <client> --surface a,b --site <target> [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--picks <file>] [--no-retry] [--no-solve] [--jobs 1]';
 
 // The manifest's noIntake rows for `keys` (lib/manifest-build.mjs::buildManifest, as manifest.mjs builds it without --apply): each
 // surface whose draft record intake holds no skeleton for, which lib/clone-surface.mjs::finaliserVerdict stops on.
@@ -63,7 +67,17 @@ export function accountStep( { repo, client, keys, runPhp } ) {
 	return { ok: 0 === code, detail: said.filter( ( l ) => /^account registration:|^FAILED/.test( l ) ).join( '; ' ) || 'nothing to do' };
 }
 
-export async function main( argv, { launch = launchSiteRun, repo = REPO, log = console.log, error = console.error, gaps = noIntakeOf, account = accountStep } = {} ) {
+// intake.mjs with `args` from the repo root, resolving { code, tail } (the last four lines of its output, which is also passed through).
+export const intakeCommand = ( { repo, args } ) => new Promise( ( resolve ) => {
+	const lines = [];
+	const child = spawn( process.execPath, [ path.join( repo, 'scripts', 'computed-route', 'intake.mjs' ), ...args ], { cwd: repo, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
+	const take = ( chunk ) => lines.push( ...String( chunk ).split( /\r?\n/ ).filter( Boolean ) );
+	child.stdout.on( 'data', take );
+	child.stderr.on( 'data', take );
+	child.on( 'close', ( code ) => resolve( { code: code ?? 1, tail: lines.slice( -4 ).join( ' | ' ).slice( 0, 600 ) } ) );
+} );
+
+export async function main( argv, { launch = launchSiteRun, repo = REPO, log = console.log, error = console.error, gaps = noIntakeOf, account = accountStep, solver = launchSolve } = {} ) {
 	const flag = ( n ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : null );
 	const client = argv[ 0 ] && ! argv[ 0 ].startsWith( '--' ) ? argv[ 0 ] : null;
 	const site = flag( '--site' );
@@ -78,9 +92,16 @@ export async function main( argv, { launch = launchSiteRun, repo = REPO, log = c
 		assertUnprotected( site, targets );
 		const build = path.join( repo, 'sites', client, 'build' );
 		const surfaces = JSON.parse( fs.readFileSync( path.join( build, 'surfaces.json' ), 'utf8' ) );
+		if ( flag( '--picks' ) ) {
+			const picked = await applyPicksFile( { repo, client, file: path.resolve( flag( '--picks' ) ), exec: ( args ) => intakeCommand( { repo, args } ) } );
+			log( `${ picked.ok ? 'ok  ' : 'FAIL' } picks - ${ picked.detail }` );
+			if ( ! picked.ok ) {
+				return 1;
+			}
+		}
 		const intake = JSON.parse( fs.readFileSync( path.join( build, 'intake', 'intake.json' ), 'utf8' ) );
 		const verdict = await cloneSurfaces( {
-			client, site, keys, intake, surfaces, noIntake: gaps( { repo, client, site, keys, surfaces, intake, targets } ), prepare: ( { keys: asked } ) => account( { repo, client, keys: asked, runPhp: wpEvalRunner( targets[ site ], site, repo, { readOnly: false } ) } ), allowMissingPaint: allowMissingPaintArg( argv ), allowUnpicked: argv.includes( '--allow-unpicked' ), retry: ! argv.includes( '--no-retry' ), log,
+			client, site, keys, intake, surfaces, noIntake: gaps( { repo, client, site, keys, surfaces, intake, targets } ), prepare: ( { keys: asked } ) => account( { repo, client, keys: asked, runPhp: wpEvalRunner( targets[ site ], site, repo, { readOnly: false } ) } ), solve: ( { key } ) => solver( { repo, client, site, key, allowMissingPaint: allowMissingPaintArg( argv ) } ), skipSolve: argv.includes( '--no-solve' ) ? '--no-solve' : null, allowMissingPaint: allowMissingPaintArg( argv ), allowUnpicked: argv.includes( '--allow-unpicked' ), retry: ! argv.includes( '--no-retry' ), log,
 			jobs: Number( flag( '--jobs' ) ?? 1 ),
 			run: ( args ) => launch( { repo, client, args } ),
 		} );

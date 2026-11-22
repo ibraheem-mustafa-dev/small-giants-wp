@@ -83,3 +83,18 @@ test( 'MUST FAIL: the summary line counts each kind of result and names the firs
 	assert.equal( summaryLine( { client: 'acme', site: 's', results } ), 'foundation acme on s: 2 ok, 1 skipped, 1 failed, 1 stopped; first to fix: media' );
 	assert.equal( summaryLine( { client: 'acme', site: 's', results: [ { status: 'ok' } ] } ), 'foundation acme on s: 1 ok, 0 skipped, 0 failed, 0 stopped' );
 } );
+
+test( 'MUST FAIL: --through stops the run after the named step and says what it left out; an unknown step is a usage error', async () => {
+	const bad = await run( [ 'acme', '--site', 'local-mediatest-acme', '--through', 'nonsense' ] );
+	assert.equal( bad.code, 2 );
+	assert.match( bad.errors[ 0 ], /--through names nonsense, which is not a step \(preflight, handoff-check/ );
+	assert.deepEqual( bad.calls.made, [] );
+	const r = await run( [ 'acme', '--site', 'local-mediatest-acme', '--plan', '--through', 'site-build' ] );
+	assert.equal( r.code, 0, r.lines.join( ' | ' ) );
+	assert.ok( r.lines.some( ( l ) => /^through site-build: manifest, paint, skeletons, surfaces left out$/.test( l ) ) );
+	const ran = r.lines.filter( ( l ) => /^(plan|skip|ok) /.test( l ) ).map( ( l ) => l.split( ' ' ).filter( Boolean )[ 1 ] );
+	assert.ok( ran.includes( 'site-build' ) && ! ran.includes( 'manifest' ) && ! ran.includes( 'surfaces' ), ran.join( ',' ) );
+	// negative control: without --through every step is planned
+	const all = await run( [ 'acme', '--site', 'local-mediatest-acme', '--plan' ] );
+	assert.ok( all.lines.some( ( l ) => /^(plan|skip) surfaces/.test( l ) ) );
+} );

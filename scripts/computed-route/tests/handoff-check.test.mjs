@@ -75,7 +75,7 @@ test( 'a complete folder passes with no warnings, through the function and the c
 	const root = folder();
 	const r = check( root );
 	assert.deepEqual( r.errors, [] );
-	assert.deepEqual( r.warnings, [] );
+	assert.deepEqual( r.warnings.filter( ( w ) => ! w.startsWith( 'FR-48A-16' ) ), [] );
 	const known = path.join( root, '..', `${ path.basename( root ) }-known.json` );
 	roots.push( known );
 	fs.writeFileSync( known, JSON.stringify( KNOWN ) );
@@ -263,7 +263,7 @@ test( 'FR-48A-6: a handoff-schema copy that differs from the master passes with 
 	writeManifest( root, [ 'Home.dc.html' ] );
 	const r = check( root );
 	assert.deepEqual( r.errors, [] );
-	assert.deepEqual( r.warnings.map( ( w ) => w.split( ':' )[ 0 ] ), [ 'FR-48A-6 handoff-schema/METHOD.md' ] );
+	assert.deepEqual( r.warnings.filter( ( w ) => ! w.startsWith( 'FR-48A-16' ) ).map( ( w ) => w.split( ':' )[ 0 ] ), [ 'FR-48A-6 handoff-schema/METHOD.md' ] );
 } );
 
 test( 'reference resolution: dc-import, href, src, script and x-import values', () => {
@@ -314,4 +314,17 @@ test( 'FR-48A-10: editor metadata namespaces and fragment CSS url() targets pass
 	} } );
 	const r = check( root );
 	assert.ok( ! r.errors.some( ( e ) => e.includes( 'assets/s.svg' ) ), r.errors.join( '\n' ) );
+} );
+
+test( 'MUST FAIL: FR-48A-16 warns for a draft folder with no page-not-found draft and for a search control with no search results draft, and for nothing else', () => {
+	const none = folder( { drafts: { 'Home.dc.html': page( '<div>home</div>' ) }, extra: { 'store.js': null } } );
+	assert.deepEqual( check( none ).warnings.map( ( w ) => w.slice( 0, 33 ) ), [ 'FR-48A-16 *.dc.html: no page-not-' ] );
+	const search = folder( { drafts: { 'Home.dc.html': page( '<form role="search"><input type="search" name="s"></form>' ), '404.dc.html': page( '<p>gone</p>' ) }, extra: { 'store.js': null } } );
+	const w = check( search ).warnings;
+	assert.equal( w.length, 1 );
+	assert.match( w[ 0 ], /FR-48A-16.*search control and no draft draws the search results/ );
+	// negative controls: a not-found draft, a search results draft beside the control, and the exit stays a pass (a warning)
+	assert.deepEqual( check( folder( { drafts: { 'Home.dc.html': page( '<div>home</div>' ), 'Not Found.dc.html': page( '<p>gone</p>' ) }, extra: { 'store.js': null } } ) ).warnings, [] );
+	assert.deepEqual( check( folder( { drafts: { 'Home.dc.html': page( '<input type="search">' ), '404.dc.html': page( '<p>x</p>' ), 'Search Results.dc.html': page( '<p>r</p>' ) }, extra: { 'store.js': null } } ) ).warnings, [] );
+	assert.deepEqual( check( none ).errors, [] );
 } );

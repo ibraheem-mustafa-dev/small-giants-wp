@@ -131,3 +131,17 @@ test( 'a target\'s WSL distribution is read from its plugin folder', () => {
 	assert.equal( distroOf( targets[ 'acme-test' ] ), null );
 	assert.equal( distroOf( undefined ), null );
 } );
+
+test( 'MUST FAIL: the handoff check\'s warnings are shown by the preflight as one warn line, without failing it; no warning shows nothing', async () => {
+	const dir = repo( { ledger: [ entry( 'bean-choice' ) ] } );
+	const seen = [];
+	const warned = await check( dir, probes( { handoffWarnings: ( folder ) => ( seen.push( folder ), [ 'FR-48A-16 *.dc.html: no page-not-found draft', 'FR-48A-8 README.md: heading "SGS blocks"' ] ) } ) );
+	const w = byId( warned )[ 'handoff-warnings' ];
+	assert.equal( w.ok, true );
+	assert.equal( w.warn, true );
+	assert.match( w.detail, /^2 warnings from the handoff check: FR-48A-16 .*no page-not-found draft \| FR-48A-8/ );
+	assert.ok( warned.every( ( c ) => c.ok ), 'a warning never fails the preflight' );
+	assert.match( seen[ 0 ], /sites.acme.handoff$/ );
+	assert.equal( byId( await check( dir, probes( { handoffWarnings: () => [] } ) ) )[ 'handoff-warnings' ], undefined, 'negative control: none, no line' );
+	assert.equal( byId( await check( repo( { manifest: false } ), probes( { handoffWarnings: () => [ 'x' ] } ) ) )[ 'handoff-warnings' ], undefined, 'no handoff folder, no warnings read' );
+} );

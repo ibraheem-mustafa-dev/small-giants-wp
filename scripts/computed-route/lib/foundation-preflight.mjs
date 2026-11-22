@@ -3,6 +3,7 @@
 // files, then the machine (free space, WSL), then the one check that contacts the site (its own working application password).
 //   - target: the site is a known target, is not protected, and a scratch copy runs from a worktree (lib/site-targets.mjs).
 //   - handoff: sites/<client>/handoff/MANIFEST.json exists.
+//   - handoff-warnings: the handoff check's warnings (`probes.handoffWarnings( folder )`), one `warn` line; never a failure.
 //   - divergences: sites/<client>/build/qa/divergences.json, when there is one, names only the rules lib/ledger.mjs::RULES holds.
 //   - disk: the drive the checkout sits on, and any named in SGS_FREE_SPACE_PATHS, holds at least MIN_FREE_GB free (a scratch copy, a plugin build
 //     and a calibration each grow the WSL disk and the worktree).
@@ -44,6 +45,12 @@ export async function runPreflight( { client, site, repo, targets, probes, deep 
 	}
 	const manifest = path.join( repo, 'sites', client, 'handoff', 'MANIFEST.json' );
 	add( fs.existsSync( manifest ) ? pass( 'handoff', `sites/${ client }/handoff/MANIFEST.json is there` ) : fail( 'handoff', `sites/${ client }/handoff/MANIFEST.json is missing`, `put the Claude Design export in sites/${ client }/handoff/ unchanged` ) );
+	// The handoff check's warnings (FR-48A-16: a missing page-not-found draft, a search control with no search results draft, and the check's other warnings),
+	// shown here so they are read before the run starts; they never fail it.
+	if ( fs.existsSync( manifest ) && probes.handoffWarnings ) {
+		const warnings = probes.handoffWarnings( path.dirname( manifest ) );
+		warnings.length && add( { id: 'handoff-warnings', ok: true, warn: true, detail: `${ warnings.length } warning${ 1 === warnings.length ? '' : 's' } from the handoff check: ${ warnings.join( ' | ' ) }` } );
+	}
 	const ledger = path.join( repo, 'sites', client, 'build', 'qa', 'divergences.json' );
 	if ( fs.existsSync( ledger ) ) {
 		try {

@@ -214,6 +214,23 @@ export function blockMappingHeadings( markdown ) {
 	return [ ...markdown.matchAll( /^#{1,3}[ \t]+(.+?)[ \t#]*$/gm ) ].map( ( m ) => m[ 1 ] ).filter( ( h ) => /\bsgs\b|block[\s-]*mapping/i.test( h ) );
 }
 
+// The pages FR-48A-16 asks every draft to cover that the folder's root drafts show as missing: `drafts` is [ { file, text } ] (the `*.dc.html` files at the
+// root). A draft folder with no page-not-found draft (a file named for 404 or not-found) and one with a search control (type or role "search", or an
+// input named s or search) but no search results draft (a file named for search) each give one warning. The shop's pages and states are the producer's list
+// and are not judged here.
+export function surfaceCoverageWarnings( drafts ) {
+	const named = ( re ) => drafts.some( ( d ) => re.test( d.file.split( '/' ).pop() ) );
+	const out = [];
+	if ( ! named( /404|not[-_ ]?found/i ) ) {
+		out.push( 'FR-48A-16 *.dc.html: no page-not-found draft; every draft draws its own, so the site would show the generic theme 404' );
+	}
+	const control = /(type|role)=["']search["']|<input[^>]*name=["'](s|search)["']/i;
+	if ( drafts.some( ( d ) => control.test( d.text ) ) && ! named( /search/i ) ) {
+		out.push( 'FR-48A-16 *.dc.html: a draft has a search control and no draft draws the search results page (with and without results)' );
+	}
+	return out;
+}
+
 // The whole check. Returns { errors, warnings, sha } where sha is support.js's SHA-256 (null when it is missing).
 // `known` is the known-runtimes object, `schemas` the master schema folder.
 export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHEMAS, ajv = null } = {} ) {
@@ -372,6 +389,9 @@ export function checkHandoff( root, { known = readKnown(), schemas = MASTER_SCHE
 			warnings.push( `FR-48A-15 tokens/*.css: focus token ${ name } is not declared; the snapshot's focus values are copied by hand` );
 		}
 	}
+
+	// FR-48A-16
+	warnings.push( ...surfaceCoverageWarnings( files.filter( ( f ) => isDraft( f ) && ! f.includes( '/' ) ).map( ( f ) => ( { file: f, text: read( f ).toString( 'utf8' ) } ) ) ) );
 
 	// FR-48A-10
 	for ( const f of files ) {

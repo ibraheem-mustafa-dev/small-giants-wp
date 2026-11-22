@@ -8,18 +8,22 @@
 //     with the page and a recorded shell that names a colour the Fill no longer writes is replaced.
 //   - timedOutBuilds, mergeRetry: a build that timed out is retried once with `--stages build,apply,walk`, which builds the surface's
 //     newest Fill (site-run.mjs::fillOutDir) and does not Fill again; the retry's records replace the failed ones.
+//   - solveStage: Solve run on each surface whose six stages passed (not applicable when its walk is), recorded as the `solve` stage.
 //   - surfaceVerdict: every stage of every surface that ran, one line each (`ok`, `skip`, `FAIL`), and whether the pass is clean: a
 //     failed stage or a stage that did not run (other than one recorded not applicable) fails it.
 //   - prepare: the site settings an account surface's draft needs (clone-surface.mjs::accountStep), set before the run so its walk sees them.
 //   - cloneSurfaces: the sequence, with the site-run launch injected (`run`), so tests run no site.
-// Solve (solve.mjs) is not a stage here: it reads the committed stage-3 tree named by surfaces.json `tree`, which a site run does not
-// write (the run builds Fill's own filled.tree.json), so a Solve after this command would repair a different tree from the one built.
+// Solve (solve.mjs) is the last stage of each surface whose site-run stages passed (solveStage): site-run.mjs writes the tree it built where surfaces.json
+// names the surface's tree (lib/site-run-solve-tree.mjs), which is the file Solve reads and repairs.
+import fs from 'fs';
+import path from 'path';
 import { allowMissingPaintArgs } from './paint-gate.mjs';
 import { needsFinaliser } from './intake-run-finalise.mjs';
-import { stageLine, stageProblems } from '../site-run.mjs';
+import { stageLine, stageProblems, stageRecord } from '../site-run.mjs';
 
 export const SURFACE_STAGES = [ 'inventory', 'propose', 'fill', 'build', 'apply', 'walk' ];
 export const RETRY_STAGES = [ 'build', 'apply', 'walk' ];
+export const SOLVE_STAGE = 'solve';
 const TIMEOUT = /time[ -]?out|timed out|ETIMEDOUT/i;
 
 // Whether a stage's failure detail says the stage timed out.
@@ -54,6 +58,32 @@ export function finaliserVerdict( { intake, intakeSurface, client, allowUnpicked
 		detail: `${ waiting } skeleton row${ 1 === waiting ? ' awaits' : 's await' } an agent pick`,
 		next: `run node scripts/computed-route/intake.mjs --finalise ${ client }, dispatch an agent with scripts/computed-route/prompts/skeleton-finaliser.md to write finalise-picks.json, run node scripts/computed-route/intake.mjs --apply-picks ${ client }; or pass --allow-unpicked to go through on the proposals`,
 	};
+}
+
+// A finaliser pick given on the command line (`--picks <file>`): the agent's picks file is checked to parse, written as the client's
+// build/intake/finalise-picks.json after `intake.mjs --finalise` has written the request it answers, and applied with `intake.mjs --apply-picks`
+// (which validates every pick and writes nothing when one is invalid). `exec( args )` runs intake.mjs with `args` and resolves { code, tail }.
+// Resolves { ok, detail }.
+export async function applyPicksFile( { repo, client, file, exec } ) {
+	let picks;
+	try {
+		picks = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	} catch ( e ) {
+		return { ok: false, detail: `${ file } is not a readable JSON picks file (${ e.message })` };
+	}
+	if ( ! picks || 'object' !== typeof picks || Array.isArray( picks ) ) {
+		return { ok: false, detail: `${ file } must be { "<surface>": [ one pick per row ] }` };
+	}
+	const asked = await exec( [ '--finalise', client ] );
+	if ( 0 !== asked.code ) {
+		return { ok: false, detail: `intake.mjs --finalise exited ${ asked.code }: ${ asked.tail }` };
+	}
+	const dest = path.join( repo, 'sites', client, 'build', 'intake', 'finalise-picks.json' );
+	fs.mkdirSync( path.dirname( dest ), { recursive: true } );
+	fs.writeFileSync( dest, `${ JSON.stringify( picks, null, 2 ) }
+` );
+	const applied = await exec( [ '--apply-picks', client ] );
+	return 0 === applied.code ? { ok: true, detail: `${ Object.values( picks ).reduce( ( n, l ) => n + ( Array.isArray( l ) ? l.length : 0 ), 0 ) } picks from ${ path.basename( file ) } applied` } : { ok: false, detail: `intake.mjs --apply-picks exited ${ applied.code }: ${ applied.tail }` };
 }
 
 // The arguments of the one site-run.mjs command for `keys` (after the script path). Every stage by default; the retry passes
@@ -98,10 +128,41 @@ export function surfaceVerdict( { status, keys, runDir = null } ) {
 	return { ok: ! failed.length && ! skipped.length && ! missing.length, lines, failed, skipped, missing };
 }
 
+// Solve (solve.mjs) as the last stage of each surface whose site-run stages all passed: it repairs the tree the run built (lib/site-run-solve-tree.mjs
+// wrote it where surfaces.json names it), rebuilds and walks. `solve( { key } )` resolves { code, tail }; the stage passes on exit 0 (Solve's open rows are
+// its report's, not a failure). A surface whose walk was recorded not applicable has nothing to compare, so Solve is recorded not applicable too; a surface
+// with a failed or missing stage gets no record (the verdict already fails it). `skip` (a reason) records the stage as not run, which fails a clean pass. Returns the status with the solve records added.
+export async function solveStage( { status, keys, solve, skip = null, now = () => Date.now() } ) {
+	const out = JSON.parse( JSON.stringify( status ?? {} ) );
+	for ( const key of keys ) {
+		const stages = out[ key ];
+		const walk = stages?.walk;
+		if ( ! stages || ! SURFACE_STAGES.every( ( s ) => stages[ s ] && ( stages[ s ].ok ) ) || ! walk ) {
+			continue;
+		}
+		if ( walk.skipped ) {
+			stages[ SOLVE_STAGE ] = stageRecord( { ok: true, skipped: walk.notApplicable ? 'the walk is not applicable, so there is nothing to compare' : 'the walk did not run', na: Boolean( walk.notApplicable ) } );
+			continue;
+		}
+		if ( skip ) {
+			stages[ SOLVE_STAGE ] = stageRecord( { ok: true, skipped: skip } );
+			continue;
+		}
+		const t = now();
+		try {
+			const r = await solve( { key } );
+			stages[ SOLVE_STAGE ] = stageRecord( { ok: 0 === r.code, ms: now() - t, detail: 0 === r.code ? r.tail : `solve exited ${ r.code }: ${ r.tail }` } );
+		} catch ( e ) {
+			stages[ SOLVE_STAGE ] = stageRecord( { ok: false, ms: now() - t, detail: String( e.message ?? e ).slice( 0, 400 ) } );
+		}
+	}
+	return out;
+}
+
 // The whole command. `prepare( { keys } )` (optional) sets the site settings the draft needs before the run and resolves { ok, detail } or null;
-// a failure stops the command before the run. `run( args )` launches one site-run.mjs and resolves { status, runDir, error }, `status` being its status.json (null
+// a failure stops the command before the run. `solve( { key } )` (optional) runs Solve on a surface whose stages passed (solveStage); `skipSolve` (a reason) leaves it out and fails the clean pass. `run( args )` launches one site-run.mjs and resolves { status, runDir, error }, `status` being its status.json (null
 // when the run stopped before any stage, with `error` the reason). `noIntake` is the manifest's noIntake list for `keys`. Returns { ok, lines, failed, skipped, missing } and logs each line.
-export async function cloneSurfaces( { client, site, keys, intake, surfaces, run, noIntake = [], prepare = null, allowMissingPaint = [], allowUnpicked = false, retry = true, jobs = 1, log = console.log } ) {
+export async function cloneSurfaces( { client, site, keys, intake, surfaces, run, noIntake = [], prepare = null, solve = null, skipSolve = null, allowMissingPaint = [], allowUnpicked = false, retry = true, jobs = 1, log = console.log } ) {
 	const say = ( l ) => log( l );
 	const unknown = keys.filter( ( k ) => ! Object.hasOwn( surfaces, k ) );
 	if ( unknown.length ) {
@@ -135,6 +196,7 @@ export async function cloneSurfaces( { client, site, keys, intake, surfaces, run
 			runDir = again.runDir ?? runDir;
 		}
 	}
+	( solve || skipSolve ) && ( status = await solveStage( { status, keys, solve, skip: skipSolve } ) );
 	const verdict = surfaceVerdict( { status, keys, runDir } );
 	verdict.lines.forEach( say );
 	say( verdict.ok

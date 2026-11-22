@@ -67,6 +67,7 @@ import { wpCommand, wpEvalRunner } from './lib/calibration-refs.mjs';
 import { pointAfterBuild } from './lib/site-run-layout.mjs';
 import { removeStaleTemplates } from './lib/site-run-stale-templates.mjs';
 import { writeFlowTree } from './lib/site-run-flow-tree.mjs';
+import { writeSolveTree } from './lib/site-run-solve-tree.mjs';
 import { TOP_N, writeRanking } from './lib/site-run-rank.mjs';
 import { assertScratchRunPlace, assertUnprotected, readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
 import { WHOLE_TREE, commonChain, contentUnder, copyFile, copyTree, readShell, splitShell, writeCopy } from './lib/template-copies.mjs';
@@ -596,6 +597,9 @@ export async function main( argv ) {
 		// The tree the gate chain reads for this surface: the copy a template built, else the Fill this build took (the whole Filled tree,
 		// its shell's nodes included).
 		builtTrees.set( key, slug ? tree : path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) ) );
+		// The tree this build used, kept where surfaces.json names the surface's tree, so Solve repairs what was built.
+		const solved = writeSolveTree( { buildDir: build, entry, builtFile: path.join( REPO, tree ) } );
+		solved && console.log( `${ key } solve tree: ${ path.relative( REPO, solved ) }` );
 		// The applier: set what Fill and the build cannot, from the draft's runtime. It stops the surface like a failed build.
 		if ( ! await applyStage( { ctx, entry, key, slug, step, exec } ) ) {
 			return;

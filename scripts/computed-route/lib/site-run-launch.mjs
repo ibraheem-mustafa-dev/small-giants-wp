@@ -30,3 +30,26 @@ export async function launchSiteRun( { repo = REPO, client, args, start = startS
 	const status = file && fs.existsSync( file ) ? JSON.parse( fs.readFileSync( file, 'utf8' ) ) : null;
 	return { code, status, runDir, error: status ? null : `site-run exited ${ code } without writing a status.json` };
 }
+
+// The solve.mjs arguments for one surface (after the script path): `--allow-missing-paint` carries the run's named allowance.
+export const solveArgs = ( { client, site, key, allowMissingPaint = [] } ) => [ '--client', client, '--site', site, '--surface', key, ...( allowMissingPaint.length ? [ '--allow-missing-paint', allowMissingPaint.join( ',' ) ] : [] ) ];
+
+// Runs `node solve.mjs` for one surface from the repo root, its output kept in <build>/qa/solve/<surface>.stage.log, and resolves { code, tail, logFile } (the last
+// four lines). `start( args, logFile )` is the process launch (injected in tests; the default is a child process writing the log).
+export async function launchSolve( { repo = REPO, client, site, key, allowMissingPaint = [], start = startSolve } ) {
+	const logFile = path.join( repo, 'sites', client, 'build', 'qa', 'solve', `${ key }.stage.log` );
+	fs.mkdirSync( path.dirname( logFile ), { recursive: true } );
+	const code = await start( solveArgs( { client, site, key, allowMissingPaint } ), logFile, repo );
+	const lines = fs.existsSync( logFile ) ? fs.readFileSync( logFile, 'utf8' ).trimEnd().split( /\r?\n/ ) : [];
+	return { code, tail: lines.slice( -4 ).join( ' | ' ).slice( 0, 600 ), logFile };
+}
+
+export const startSolve = ( args, logFile, cwd = REPO ) => new Promise( ( resolve ) => {
+	const out = fs.createWriteStream( logFile );
+	const child = spawn( process.execPath, [ path.join( ROUTE, 'solve.mjs' ), ...args ], { cwd, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
+	child.stdout.pipe( out, { end: false } );
+	child.stderr.pipe( out, { end: false } );
+	child.on( 'close', ( code ) => {
+		out.end( () => resolve( code ?? 1 ) );
+	} );
+} );

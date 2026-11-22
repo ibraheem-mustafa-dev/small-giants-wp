@@ -25,11 +25,12 @@
 //                    --site, until the propose stage passes (at most three rounds).
 //   skeletons        intake.mjs --rerun-skeletons then --apply-review --go-through, only when this run read the draft or calibrated (a first run's
 //                    skeleton records carry no calibration keys).
-//   surfaces         lib/clone-surface.mjs::cloneSurfaces on the header, footer and nav drawer (the basket drawer is the header's cart block).
+//   surfaces         lib/clone-surface.mjs::cloneSurfaces on the header, footer and nav drawer (the basket drawer is the header's cart block), Solve included
+//                    when the ports carry `solve`; `--picks <file>` is applied first.
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { cloneSurfaces } from './clone-surface.mjs';
+import { applyPicksFile, cloneSurfaces } from './clone-surface.mjs';
 import { distroOf, runPreflight } from './foundation-preflight.mjs';
 import { heldByState } from './foundation-run.mjs';
 import { intakeCurrent, layoutSurfaces, pageMapBuilt, paintGapsOf, snapshotDiff, tokenOutput, wslPath } from './foundation-parts.mjs';
@@ -79,7 +80,7 @@ export function otherFailures( status ) {
 // The steps for `ctx` ({ client, site, repo, targets, options, ports, log }).
 export function buildSteps( ctx ) {
 	const { client, site, repo, targets, ports } = ctx;
-	const options = { replaceSnapshot: false, allowMissingPaint: [], allowUnpicked: false, plan: false, ...ctx.options };
+	const options = { replaceSnapshot: false, allowMissingPaint: [], allowUnpicked: false, picks: null, plan: false, ...ctx.options };
 	const log = ctx.log ?? console.log;
 	const target = targets[ site ];
 	const distro = distroOf( target );
@@ -128,12 +129,12 @@ export function buildSteps( ctx ) {
 			id: 'preflight', always: true, title: 'the checks that would waste an hour of the run',
 			run: async () => {
 				const checks = await runPreflight( { client, site, repo, targets, probes: ports, deep: ! options.plan } );
-				checks.forEach( ( c ) => log( `${ c.skipped ? 'skip' : c.ok ? 'ok  ' : 'FAIL' } pre-${ c.id } - ${ c.detail }${ c.ok ? '' : `; next: ${ c.next }` }` ) );
+				checks.forEach( ( c ) => log( `${ c.skipped ? 'skip' : c.warn ? 'warn' : c.ok ? 'ok  ' : 'FAIL' } pre-${ c.id } - ${ c.detail }${ c.ok ? '' : `; next: ${ c.next }` }` ) );
 				const bad = checks.filter( ( c ) => ! c.ok );
 				if ( bad.length ) {
 					throw Object.assign( new Error( `${ bad.length } check${ 1 === bad.length ? '' : 's' } failed: ${ bad.map( ( c ) => c.id ).join( ', ' ) }` ), { next: bad[ 0 ].next } );
 				}
-				return `${ checks.length } checks passed`;
+				return `${ checks.filter( ( c ) => ! c.warn ).length } checks passed${ checks.some( ( c ) => c.warn ) ? ', with handoff warnings' : '' }`;
 			},
 		},
 		{
@@ -303,7 +304,14 @@ export function buildSteps( ctx ) {
 			holds: () => heldBy( 'surfaces', joinFp( site, fileSha( p.intake ), fileSha( p.surfaces ), snapshotSha() ), 'the layout surfaces passed every stage for this intake.json and snapshot' ),
 			run: async () => {
 				const keys = layout().found.map( ( s ) => s.key );
-				const v = await cloneSurfaces( { client, site, keys, intake: readJson( p.intake ), surfaces: readJson( p.surfaces ), run: ports.launch, allowMissingPaint: options.allowMissingPaint, allowUnpicked: options.allowUnpicked, log } );
+				if ( options.picks ) {
+					const picked = await applyPicksFile( { repo, client, file: options.picks, exec: ( args ) => ports.exec( 'picks', 'node', [ `${ ROUTE }/intake.mjs`, ...args ] ) } );
+					log( `${ picked.ok ? 'ok  ' : 'FAIL' } picks - ${ picked.detail }` );
+					if ( ! picked.ok ) {
+						throw Object.assign( new Error( picked.detail ), { next: 'fix the picks file (the shape intake.mjs --finalise names) and rerun with --picks' } );
+					}
+				}
+				const v = await cloneSurfaces( { client, site, keys, intake: readJson( p.intake ), surfaces: readJson( p.surfaces ), run: ports.launch, solve: ports.solve ? ( { key } ) => ports.solve( { key, allowMissingPaint: options.allowMissingPaint } ) : null, allowMissingPaint: options.allowMissingPaint, allowUnpicked: options.allowUnpicked, log } );
 				if ( ! v.ok ) {
 					const picks = v.failed.some( ( l ) => / finalise: /.test( l ) );
 					throw Object.assign( new Error( [ ...v.failed.map( ( l ) => `failed: ${ l }` ), ...v.skipped.map( ( l ) => `not run: ${ l }` ), ...v.missing ].join( '; ' ).slice( 0, 600 ) ), {

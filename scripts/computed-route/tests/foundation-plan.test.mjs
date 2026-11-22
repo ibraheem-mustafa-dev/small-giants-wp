@@ -56,6 +56,7 @@ function world( { hosted = false, committed = false, source = null, gaps = [ [ '
 			const effects = {
 				intake: () => ( files.intake(), files.gitignored() ),
 				'apply-review': () => write( path.join( build, 'intake', 'page-map.confirmed.json' ), '[]' ),
+				picks: () => args.includes( '--apply-picks' ) && ( ( pending = false ), files.intake() ),
 				tokens: () => write( path.join( repo, args[ args.indexOf( '--out' ) + 1 ] ), '{"version":3,"settings":{"custom":{"radius":"6px"}}}' ),
 				'site-build': () => ( write( path.join( build, 'page-map.json' ), JSON.stringify( [ { slug: 'header', postType: 'sgs_header', id: 10 }, { slug: 'footer', postType: 'sgs_footer', id: 12 }, { slug: 'drawer-menu', postType: 'sgs_drawer', id: 13 }, { slug: 'about', postType: 'page', id: 11 } ] ) ), write( path.join( build, 'page-map.site' ), site ) ),
 				manifest: () => write( path.join( build, 'surfaces.json' ), JSON.stringify( { header: { intakeSurface: 'hdr', target: { postId: 10 } }, footer: { intakeSurface: 'ftr', target: { postId: 12 } }, ...( dropDrawer ? {} : { 'drawer-menu': { intakeSurface: 'drw', target: { postId: 13 } } } ) } ) ),
@@ -365,4 +366,35 @@ test( 'MUST FAIL: a surface that fails a stage fails the surfaces step with the 
 	const r = await w.go();
 	assert.equal( statusOf( r ).surfaces, 'fail' );
 	assert.match( r.lines.find( ( l ) => l.startsWith( 'FAIL surfaces' ) ), /failed: footer fill: exit 1: opener failure; next: fix the first failure.*clone-surface\.mjs acme --surface header,footer,drawer-menu --site local-mediatest-acme/ );
+} );
+
+test( 'MUST FAIL: --picks writes the picks file and applies it before the surfaces step reads the skeleton rows, so the row no longer waits; a bad picks file fails the step', async () => {
+	const w = world( { pending: true, gaps: [ null ] } );
+	const picks = path.join( w.repo, 'picks.json' );
+	write( picks, JSON.stringify( { hdr: [ { key: 'a', block: 'sgs/heading' } ] } ) );
+	const r = await w.go( { options: { picks } } );
+	assert.equal( statusOf( r ).surfaces, 'ok', r.lines.join( ' | ' ) );
+	const asked = w.execs.filter( ( e ) => 'picks' === e.id ).map( ( e ) => e.args.at( -2 ) );
+	assert.deepEqual( asked, [ '--finalise', '--apply-picks' ], 'the request is written, then the picks applied' );
+	assert.deepEqual( JSON.parse( fs.readFileSync( path.join( w.build, 'intake', 'finalise-picks.json' ), 'utf8' ) ), { hdr: [ { key: 'a', block: 'sgs/heading' } ] } );
+	assert.ok( r.lines.some( ( l ) => /^ok {3}picks - 1 picks from picks\.json applied/.test( l ) ) );
+	// negative controls: without --picks the same world stops at the pick; an unreadable file fails before any run
+	assert.equal( statusOf( await world( { pending: true, gaps: [ null ] } ).go() ).surfaces, 'fail' );
+	const bad = world( { pending: true, gaps: [ null ] } );
+	write( path.join( bad.repo, 'bad.json' ), 'not json' );
+	const r3 = await bad.go( { options: { picks: path.join( bad.repo, 'bad.json' ) } } );
+	assert.equal( statusOf( r3 ).surfaces, 'fail' );
+	assert.match( r3.lines.find( ( l ) => l.startsWith( 'FAIL surfaces' ) ), /is not a readable JSON picks file/ );
+	assert.deepEqual( bad.execs.filter( ( e ) => 'picks' === e.id ), [] );
+} );
+
+test( 'MUST FAIL: the surfaces step runs Solve on each surface when the ports carry it, with the allowance named on the command, and not otherwise', async () => {
+	const w = world( { gaps: [ null ], allow: [ 'sgs/hero' ] } );
+	const solved = [];
+	w.setPort( 'solve', async ( { key, allowMissingPaint } ) => ( solved.push( [ key, allowMissingPaint ] ), { code: 0, tail: `solve ${ key }: 2 writes` } ) );
+	const r = await w.go( { options: { allowMissingPaint: [ 'sgs/hero' ] } } );
+	assert.equal( statusOf( r ).surfaces, 'ok', r.lines.join( ' | ' ) );
+	assert.deepEqual( solved.map( ( x ) => x[ 0 ] ).sort(), [ 'drawer-menu', 'footer', 'header' ] );
+	assert.deepEqual( solved[ 0 ][ 1 ], [ 'sgs/hero' ] );
+	assert.ok( r.lines.some( ( l ) => /^ok {3}header solve /.test( l ) ) );
 } );

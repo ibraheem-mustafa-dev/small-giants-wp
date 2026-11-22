@@ -2,9 +2,10 @@
 // the functions the plan and the preflight call, so a test supplies fakes and runs none of it.
 //   exec( id, command, args )   runs one command from the repo root, its output written to <logDir>/<id>.log, resolving { code, tail, logFile };
 //                               it first passes lib/site-contact.mjs::assertSiteContact, so SGS_NO_SITE and a protected target stop it before a process starts
-//   launch( args )              lib/site-run-launch.mjs::launchSiteRun for site-run.mjs
+//   launch( args )              lib/site-run-launch.mjs::launchSiteRun for site-run.mjs; solve( { key } ) its launchSolve for solve.mjs (after the same site-contact guard)
 //   freeBytes( dir )            free bytes on the drive holding `dir`
 //   wslAnswers( distro )        whether the WSL distribution runs a trivial command within the probe's time
+//   handoffWarnings( folder )   the handoff check's warnings for a handoff folder (shown by the preflight; never a failure)
 //   credentials( site ), restCheck( creds )   the site's REST login from its secrets file, and a read of /users/me with it (a read: a protected site is refused
 //                               by the guard in the plan, and SGS_NO_SITE stops this one)
 //   sourceCheckout()            the checkout that holds the gitignored intake files: SGS_INTAKE_SOURCE, else the main checkout this worktree belongs to
@@ -14,11 +15,12 @@
 import fs from 'fs';
 import path from 'path';
 import { execFileSync, spawn } from 'child_process';
-import { launchSiteRun } from './site-run-launch.mjs';
+import { launchSiteRun, launchSolve } from './site-run-launch.mjs';
 import { assertSiteContact } from './site-contact.mjs';
 import { siteCredentials } from './media-upload.mjs';
 import { localBlockHash } from './deploy-hash.mjs';
 import { sha } from './foundation-plan.mjs';
+import { checkHandoff } from './handoff.mjs';
 
 const TAIL_LINES = 4;
 const WSL_PROBE_MS = 20000;
@@ -96,6 +98,10 @@ export function realPorts( { repo, client, site, target, logDir, env = process.e
 			} );
 		} ),
 		launch: ( args ) => launchSiteRun( { repo, client, args } ),
+		solve: ( { key, allowMissingPaint = [] } ) => {
+			assertSiteContact( { site, target } );
+			return launchSolve( { repo, client, site, key, allowMissingPaint } );
+		},
 		freeBytes: ( dir ) => {
 			const s = fs.statfsSync( dir );
 			return s.bavail * s.bsize;
@@ -106,6 +112,14 @@ export function realPorts( { repo, client, site, target, logDir, env = process.e
 				return true;
 			} catch {
 				return false;
+			}
+		},
+		// The handoff check's warnings; a folder the check cannot read gives none here (the handoff-check step reports why).
+		handoffWarnings: ( folder ) => {
+			try {
+				return checkHandoff( folder ).warnings;
+			} catch {
+				return [];
 			}
 		},
 		credentials: ( s ) => siteCredentials( repo, s ),

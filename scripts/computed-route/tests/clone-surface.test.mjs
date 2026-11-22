@@ -9,8 +9,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { RETRY_STAGES, SURFACE_STAGES, cloneSurfaces, finaliserVerdict, isTimeout, mergeRetry, siteRunArgs, surfaceVerdict, timedOutBuilds } from '../lib/clone-surface.mjs';
-import { launchSiteRun } from '../lib/site-run-launch.mjs';
+import { RETRY_STAGES, SOLVE_STAGE, SURFACE_STAGES, applyPicksFile, cloneSurfaces, finaliserVerdict, isTimeout, mergeRetry, siteRunArgs, surfaceVerdict, timedOutBuilds } from '../lib/clone-surface.mjs';
+import { launchSiteRun, launchSolve, solveArgs } from '../lib/site-run-launch.mjs';
 import { main } from '../clone-surface.mjs';
 
 const ROUTE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..' );
@@ -227,4 +227,70 @@ test( 'MUST FAIL: the prepare step runs before the site run and a failure of it 
 	order.length = 0;
 	assert.equal( ( await go( async () => null ) ).ok, true, 'negative control: a surface with nothing to prepare runs as before' );
 	assert.deepEqual( order, [ 'run' ] );
+} );
+
+test( 'MUST FAIL: Solve runs last on each surface whose six stages passed, and its exit code decides its stage', async () => {
+	const solved = [];
+	const lines = [];
+	const solve = async ( { key } ) => ( solved.push( key ), { code: 'footer' === key ? 1 : 0, tail: `solve ${ key }: 3 writes over 2 round(s)` } );
+	const out = await cloneSurfaces( { client: 'acme', site: 's', keys: [ 'header', 'footer' ], intake, surfaces: { header: { intakeSurface: 'ok' }, footer: { intakeSurface: 'ok' } }, run: async () => ( { status: clean( [ 'header', 'footer' ] ) } ), solve, log: ( l ) => lines.push( l ) } );
+	assert.deepEqual( solved, [ 'header', 'footer' ] );
+	assert.equal( out.ok, false, 'a failed Solve fails the pass' );
+	assert.match( lines.join( ' ' ), /ok {3}header solve \d+s - solve header: 3 writes over 2 round\(s\)/ );
+	assert.deepEqual( out.failed, [ 'footer solve: solve exited 1: solve footer: 3 writes over 2 round(s)' ] );
+	const calm = await cloneSurfaces( { client: 'acme', site: 's', keys: [ 'header' ], intake, surfaces: { header: { intakeSurface: 'ok' } }, run: async () => ( { status: clean( [ 'header' ] ) } ), solve: async () => ( { code: 0, tail: 'x' } ), log: () => {} } );
+	assert.equal( calm.ok, true );
+	assert.ok( SURFACE_STAGES.includes( 'walk' ) && ! SURFACE_STAGES.includes( SOLVE_STAGE ), 'solve is not one of the site run stages' );
+} );
+
+test( 'MUST FAIL: Solve is not run on a surface whose stage failed, is not applicable when the walk is, and --no-solve leaves it out and fails the clean pass', async () => {
+	const solved = [];
+	const solve = async ( { key } ) => ( solved.push( key ), { code: 0, tail: 'x' } );
+	const status = clean( [ 'header', 'footer', 'template-page' ] );
+	status.header.build = { ok: false, seconds: 1, detail: 'build failed' };
+	status[ 'template-page' ].walk = { ok: true, seconds: 0, skipped: 'walked with its pages', notApplicable: true };
+	const out = await cloneSurfaces( { client: 'acme', site: 's', keys: [ 'header', 'footer', 'template-page' ], intake, surfaces: { header: { intakeSurface: 'ok' }, footer: { intakeSurface: 'ok' }, 'template-page': { copy: { from: 'pages' } } }, run: async () => ( { status } ), retry: false, solve, log: () => {} } );
+	assert.deepEqual( solved, [ 'footer' ], 'only the surface whose stages passed and whose walk ran' );
+	assert.deepEqual( out.failed, [ 'header build: build failed' ] );
+	assert.deepEqual( out.skipped, [], 'the not applicable solve is neither a failure nor a stage that did not run' );
+	const skipped = await cloneSurfaces( { client: 'acme', site: 's', keys: [ 'header' ], intake, surfaces: { header: { intakeSurface: 'ok' } }, run: async () => ( { status: clean( [ 'header' ] ) } ), skipSolve: '--no-solve', log: () => {} } );
+	assert.equal( skipped.ok, false );
+	assert.deepEqual( skipped.skipped, [ 'header solve: --no-solve' ] );
+} );
+
+test( 'MUST FAIL: the launch of Solve names the client, site and surface, carries the allowance, keeps the log and returns its exit code and tail', async () => {
+	assert.deepEqual( solveArgs( { client: 'acme', site: 's', key: 'header', allowMissingPaint: [ 'sgs/a', 'sgs/b' ] } ), [ '--client', 'acme', '--site', 's', '--surface', 'header', '--allow-missing-paint', 'sgs/a,sgs/b' ] );
+	assert.deepEqual( solveArgs( { client: 'acme', site: 's', key: 'header' } ), [ '--client', 'acme', '--site', 's', '--surface', 'header' ], 'negative control: no allowance, no flag' );
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'solve-launch-' ) );
+	const r = await launchSolve( { repo, client: 'acme', site: 's', key: 'header', start: async ( args, logFile ) => ( fs.writeFileSync( logFile, 'a\nb\nsolve header: 1 writes' ), 3 ) } );
+	assert.equal( r.code, 3 );
+	assert.match( r.tail, /a \| b \| solve header: 1 writes/ );
+	assert.equal( r.logFile, path.join( repo, 'sites', 'acme', 'build', 'qa', 'solve', 'header.stage.log' ) );
+	fs.rmSync( repo, { recursive: true, force: true } );
+} );
+
+test( 'MUST FAIL: a finaliser pick given as a file is written after the request is made and applied; an unreadable or invalid file writes nothing', async () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'picks-' ) );
+	const picks = path.join( repo, 'picks.json' );
+	fs.writeFileSync( picks, JSON.stringify( { hdr: [ { key: 'c', block: 'sgs/heading' } ] } ) );
+	const calls = [];
+	const dest = path.join( repo, 'sites', 'acme', 'build', 'intake', 'finalise-picks.json' );
+	const exec = async ( args ) => ( calls.push( [ args.join( ' ' ), fs.existsSync( dest ) ] ), { code: 0, tail: 'ok' } );
+	const r = await applyPicksFile( { repo, client: 'acme', file: picks, exec } );
+	assert.deepEqual( r, { ok: true, detail: '1 picks from picks.json applied' } );
+	assert.deepEqual( calls, [ [ '--finalise acme', false ], [ '--apply-picks acme', true ] ], 'the picks file is there only once the request has been made' );
+	assert.deepEqual( JSON.parse( fs.readFileSync( dest, 'utf8' ) ), { hdr: [ { key: 'c', block: 'sgs/heading' } ] } );
+	// negative controls
+	fs.rmSync( dest );
+	calls.length = 0;
+	fs.writeFileSync( picks, '[1]' );
+	assert.equal( ( await applyPicksFile( { repo, client: 'acme', file: picks, exec } ) ).ok, false );
+	assert.equal( ( await applyPicksFile( { repo, client: 'acme', file: path.join( repo, 'none.json' ), exec } ) ).ok, false );
+	assert.deepEqual( calls, [] );
+	assert.equal( fs.existsSync( dest ), false );
+	fs.writeFileSync( picks, '{}' );
+	const refused = await applyPicksFile( { repo, client: 'acme', file: picks, exec: async ( args ) => ( { code: '--apply-picks' === args[ 0 ] ? 1 : 0, tail: 'hdr c: not a row' } ) } );
+	assert.equal( refused.ok, false );
+	assert.match( refused.detail, /--apply-picks exited 1: hdr c: not a row/ );
+	fs.rmSync( repo, { recursive: true, force: true } );
 } );
