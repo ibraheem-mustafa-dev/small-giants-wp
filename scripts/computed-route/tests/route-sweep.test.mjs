@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
 	HELD_OUT, freezeFiles, heldOutFile, surfaceList, recordClients, buildWork, freezeClient, problemKind, summariseSurface, failedSummary, fingerprintNodes, diffNodes,
-	compareSweeps, formatComparison, clientTotals, writeSweep, readSweep, acquireSlots, releaseSlots, shardItems, summariseFill,
+	compareSweeps, formatComparison, clientTotals, splitProblems, instrumentCarried, writeSweep, readSweep, acquireSlots, releaseSlots, shardItems, summariseFill,
 } from '../lib/route-sweep.mjs';
 import { parseArgs, defaultFills } from '../tools/route-sweep.mjs';
 
@@ -19,7 +19,7 @@ const put = ( file, text = '{}' ) => {
 
 const sum = ( key, problems, extra = {} ) => {
 	const [ client, surface ] = key.split( '/' );
-	return { client, surface, ok: true, nodes: 3, problemCount: problems.length, byKind: {}, problems, ...extra };
+	return { client, surface, ok: true, nodes: 3, problemCount: problems.length, byKind: {}, problems, handoverCount: 0, handovers: [], ...extra };
 };
 const fp = ( id, block = 'sgs/text', settings = {}, rule = null ) => ( { id, block, rule, settings } );
 
@@ -193,7 +193,7 @@ test( 'writeSweep and readSweep round-trip the summaries and the node fingerprin
 	assert.deepEqual( back.surfaces, surfaces );
 	assert.deepEqual( back.nodes[ 'a/home' ], [ fp( 'k' ) ] );
 	assert.equal( back.meta.mainSha, 'abc' );
-	assert.deepEqual( clientTotals( surfaces ), { a: { surfaces: 2, proposed: 2, failed: 0, nodes: 6, problems: 1 }, b: { surfaces: 1, proposed: 0, failed: 1, nodes: 0, problems: 0 } } );
+	assert.deepEqual( clientTotals( surfaces ), { a: { surfaces: 2, proposed: 2, failed: 0, nodes: 6, problems: 1, handovers: 0 }, b: { surfaces: 1, proposed: 0, failed: 1, nodes: 0, problems: 0, handovers: 0 } } );
 	assert.match( fs.readFileSync( path.join( out, 'SUMMARY.txt' ), 'utf8' ), /b\/home \| CANNOT PROPOSE: x/ );
 	assert.throws( () => readSweep( tmp() ), /not a route-sweep output folder/ );
 } );
@@ -252,4 +252,74 @@ test( 'summariseFill counts writes, unmapped rows by reason and the refusals', (
 	assert.equal( s.unmapped, 3 );
 	assert.equal( s.refusals, 2 );
 	assert.equal( Object.values( s.unmappedByReason ).sort().join( ',' ), '1,2' );
+} );
+
+const HAND = 'Root/5#0: no logoSource is carried: assets/a.png is not in the media map for x';
+const FAULT = 'Root/9#0: paint conservation: 2 painted elements no node reads';
+const withHandovers = ( key, problems, handovers ) => sum( key, problems, { handoverCount: handovers.length, handovers } );
+
+// The comparison before hand-overs had a class of their own: every line counted, so a line only a live run fills in failed a landing.
+const oldSummary = ( s ) => ( { ...s, problems: [ ...s.problems, ...s.handovers ], problemCount: s.problemCount + s.handoverCount, handovers: [], handoverCount: 0 } );
+
+test( 'MUST FAIL: a new hand-over line passes and is listed, where a comparer that counts every line fails it', () => {
+	const before = { surfaces: { 'a/header': withHandovers( 'a/header', [ FAULT ], [] ) }, nodes: {} };
+	const after = { surfaces: { 'a/header': withHandovers( 'a/header', [ FAULT ], [ HAND ] ) }, nodes: {} };
+	const old = compareSweeps( { surfaces: { 'a/header': oldSummary( before.surfaces[ 'a/header' ] ) }, nodes: {} }, { surfaces: { 'a/header': oldSummary( after.surfaces[ 'a/header' ] ) }, nodes: {} } );
+	assert.equal( old.ok, false, 'counting every line, the hand-over is a failure' );
+	const cmp = compareSweeps( before, after );
+	assert.equal( cmp.ok, true );
+	assert.deepEqual( cmp.rows[ 0 ].newHandovers, [ HAND ] );
+	assert.equal( cmp.rows[ 0 ].status, 'changed' );
+	assert.equal( cmp.rows[ 0 ].handoversAfter, 1 );
+	const text = formatComparison( cmp );
+	assert.match( text, /hand-over new: Root\/5#0: no logoSource/ );
+	assert.match( text, /hand-overs 0 -> 1/ );
+	assert.match( text, /PASS/ );
+} );
+
+test( 'a new real-fault line fails even when a hand-over line went away at the same time (negative control for the class split)', () => {
+	const before = { surfaces: { 'a/header': withHandovers( 'a/header', [], [ HAND ] ) }, nodes: {} };
+	const after = { surfaces: { 'a/header': withHandovers( 'a/header', [ FAULT ], [] ) }, nodes: {} };
+	const cmp = compareSweeps( before, after );
+	assert.equal( cmp.ok, false );
+	assert.deepEqual( cmp.rows[ 0 ].newProblems, [ FAULT ] );
+	assert.deepEqual( cmp.rows[ 0 ].goneHandovers, [ HAND ] );
+	assert.match( formatComparison( cmp ), /real fault NEW: Root\/9#0/ );
+	assert.equal( compareSweeps( before, { surfaces: { 'a/header': withHandovers( 'a/header', [], [ HAND, 'another hand-over' ] ) }, nodes: {} } ).ok, true );
+} );
+
+test( 'splitProblems decides the class by the carry-less run: a line it also writes is a real fault, the rest are hand-overs, repeats matched one for one', () => {
+	const r = splitProblems( [ FAULT, HAND, HAND, FAULT ], [ FAULT, FAULT, HAND ] );
+	assert.deepEqual( r.real, [ FAULT, HAND, FAULT ] );
+	assert.deepEqual( r.handovers, [ HAND ] );
+	assert.deepEqual( splitProblems( [ FAULT ], null ).handovers, [ FAULT ], 'no carry-less result: nothing is known to be real' );
+} );
+
+test( 'summariseSurface counts the two classes apart and groups kinds from the real faults only', () => {
+	const s = summariseSurface( { client: 'a', surface: 'header', proposal: { counts: {} }, problems: [ HAND, FAULT ], realProblems: [ FAULT ], skeleton: [] } );
+	assert.equal( s.problemCount, 1 );
+	assert.deepEqual( s.problems, [ FAULT ] );
+	assert.equal( s.handoverCount, 1 );
+	assert.deepEqual( s.handovers, [ HAND ] );
+	assert.equal( Object.values( s.byKind ).reduce( ( a, b ) => a + b, 0 ), 1 );
+	assert.deepEqual( clientTotals( { 'a/header': s } ).a, { surfaces: 1, proposed: 1, failed: 0, nodes: 0, problems: 1, handovers: 1 } );
+} );
+
+test( 'instrumentCarried flags a lookup that could write a hand-over line, and leaves the answers as they were', () => {
+	const carried = { logo: ( e ) => ( e ? { id: 1 } : { reason: 'not in the media map' } ), menu: ( k ) => ( 'header' === k ? 7 : null ), items: () => ( { A: 1 } ), product: () => ( { id: 3 } ), attribute: () => ( { reason: 'none' } ), other: 5 };
+	const probe = { touched: false };
+	const c = instrumentCarried( carried, probe );
+	assert.equal( c.other, 5 );
+	assert.deepEqual( c.logo( true ), { id: 1 } );
+	assert.equal( c.menu( 'header' ), 7 );
+	assert.equal( c.product( 'x' ).id, 3 );
+	assert.equal( probe.touched, false, 'every answer so far was found' );
+	c.menu( 'drawer' );
+	assert.equal( probe.touched, true );
+	for ( const [ name, call ] of [ [ 'logo', ( x ) => x.logo( null ) ], [ 'attribute', ( x ) => x.attribute( 'f' ) ], [ 'items', ( x ) => x.items( 'header' ) ] ] ) {
+		const pr = { touched: false };
+		call( instrumentCarried( carried, pr ) );
+		assert.equal( pr.touched, true, name );
+	}
+	assert.equal( instrumentCarried( null, probe ), null );
 } );

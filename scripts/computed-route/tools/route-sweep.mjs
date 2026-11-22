@@ -8,9 +8,10 @@
 // (sweep.json, SUMMARY.txt, `<client>/<surface>.{proposal,skeleton,nodes}.json`, and `fill/` with --fill).
 // --fill: `default` (the first of each client's header, home or footer found, in that order: header), or a comma list of
 // `client/surface`; each is Filled offline once its propose has finished (a browser on the served draft, no site).
-// --baseline: a previous --out. Prints per surface the problem count before and after, the new and gone problem lines and the
-// changed nodes; exits 1 when any surface gains a problem or a problem line the baseline did not have, or a surface proposed
-// there fails now. Changed nodes are listed for a person to judge and never fail.
+// --baseline: a previous --out. Prints per surface the real-fault count and the hand-over count before and after, the new and gone
+// lines of each and the changed nodes; exits 1 when any surface gains a real fault or a real-fault line the baseline did not have,
+// or a surface proposed there fails now. A hand-over is a line the carried-ids machinery wrote (an id only a live run can make:
+// lib/route-sweep.mjs::splitProblems); hand-over lines are listed and never fail. Changed nodes are listed for a person to judge and never fail.
 // --reread: first re-read each client's committed draft with the intake command (`intake.mjs <client> --repo <work>`, the
 // replay recorded when the records hold none) into a copy of the records, and rebuild every surface's inventory from what
 // intake saved, then propose from that copy (the mode for a landing that touches the draft reading: lib/intake*,
@@ -25,7 +26,7 @@ import os from 'node:os';
 import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
-	HELD_OUT, freezeClient, recordClients, surfaceList, buildWork, summariseSurface, failedSummary, fingerprintNodes, writeSweep, readSweep, compareSweeps,
+	HELD_OUT, instrumentCarried, freezeClient, recordClients, surfaceList, buildWork, summariseSurface, failedSummary, fingerprintNodes, writeSweep, readSweep, compareSweeps,
 	formatComparison, formatSweep, acquireSlots, releaseSlots, shardItems, summariseFill, failedFill, filesUnder,
 } from '../lib/route-sweep.mjs';
 
@@ -88,26 +89,35 @@ async function freeze( o ) {
 
 // ---- workers (child processes) ----
 async function proposeWorker( o ) {
-	const { proposeSurface } = await import( pathToFileURL( path.join( o.repo, 'scripts', 'computed-route', 'skeleton.mjs' ) ).href );
+	const route = path.join( o.repo, 'scripts', 'computed-route' );
+	const { proposeSurface } = await import( pathToFileURL( path.join( route, 'skeleton.mjs' ) ).href );
+	const { proposeSkeleton } = await import( pathToFileURL( path.join( route, 'lib', 'skeleton-propose.mjs' ) ).href );
 	const allow = {};
 	for ( const item of o.items ) {
 		const [ client, surface ] = item.split( '/' );
 		const cache = path.join( o.records, client, 'cache' );
 		const a = ( allow[ client ] ||= [] );
-		let r = null;
-		let err = null;
-		for ( let i = 0; i < 12 && ! r; i++ ) {
-			try {
-				r = proposeSurface( { client, surface, repo: o.work, cache, allowMissingPaint: a } );
-			} catch ( e ) {
-				err = e;
-				const named = /--allow-missing-paint (\S+) to resolve/.exec( String( e.message ) )?.[ 1 ];
-				if ( ! named ) {
-					break;
+		// The propose, with the allowed missing paint growing as the paint gate names blocks; `carried` is the carried-ids reader
+		// (a probe says whether any lookup could have written a hand-over line) or null (no carried id at all).
+		const run = ( carried, probe ) => {
+			let r = null;
+			let err = null;
+			for ( let i = 0; i < 12 && ! r; i++ ) {
+				try {
+					r = proposeSurface( { client, surface, repo: o.work, cache, allowMissingPaint: a, propose: ( args ) => proposeSkeleton( { ...args, carried: 'keep' === carried ? instrumentCarried( args.carried, probe ) : null } ) } );
+				} catch ( e ) {
+					err = e;
+					const named = /--allow-missing-paint (\S+) to resolve/.exec( String( e.message ) )?.[ 1 ];
+					if ( ! named ) {
+						break;
+					}
+					a.push( ...named.split( ',' ).filter( ( x ) => ! a.includes( x ) ) );
 				}
-				a.push( ...named.split( ',' ).filter( ( x ) => ! a.includes( x ) ) );
 			}
-		}
+			return { r, err };
+		};
+		const probe = { touched: false };
+		const { r, err } = run( 'keep', probe );
 		const dir = path.join( o.out, client );
 		fs.mkdirSync( dir, { recursive: true } );
 		if ( ! r ) {
@@ -115,12 +125,23 @@ async function proposeWorker( o ) {
 			console.log( `${ item }: CANNOT PROPOSE ${ String( err?.message ).split( '\n' )[ 0 ].slice( 0, 160 ) }` );
 			continue;
 		}
-		const summary = summariseSurface( { client, surface, proposal: r.proposal, problems: r.problems, skeleton: r.skeleton } );
+		// The hand-over lines are the ones the carried ids write: when a lookup could have written one, the surface is proposed
+		// again with no carried ids, and the lines that second run also writes are the real faults (splitProblems). The second run
+		// overwrites the surface's saved skeleton and proposal in the work folder, so the first run's are written back.
+		let realProblems = null;
+		if ( probe.touched ) {
+			const second = run( null, null ).r;
+			realProblems = second ? second.problems : null;
+			const write = ( file, value ) => fs.writeFileSync( file, `${ JSON.stringify( value, null, '\t' ) }\n` );
+			write( r.paths.skeleton, r.skeleton );
+			write( r.paths.proposal, r.proposal );
+		}
+		const summary = summariseSurface( { client, surface, proposal: r.proposal, problems: r.problems, realProblems, skeleton: r.skeleton } );
 		fs.writeFileSync( path.join( dir, `${ surface }.summary.json` ), JSON.stringify( summary ) );
 		fs.writeFileSync( path.join( dir, `${ surface }.nodes.json` ), JSON.stringify( fingerprintNodes( r.skeleton, r.proposal ) ) );
 		fs.writeFileSync( path.join( dir, `${ surface }.proposal.json` ), JSON.stringify( r.proposal, null, 1 ) );
 		fs.writeFileSync( path.join( dir, `${ surface }.skeleton.json` ), JSON.stringify( r.skeleton, null, 1 ) );
-		console.log( `${ item }: nodes ${ summary.nodes } problems ${ summary.problemCount }` );
+		console.log( `${ item }: nodes ${ summary.nodes } real faults ${ summary.problemCount } hand-overs ${ summary.handoverCount }` );
 	}
 }
 

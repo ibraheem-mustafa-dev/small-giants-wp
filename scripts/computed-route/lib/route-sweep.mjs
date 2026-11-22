@@ -150,21 +150,66 @@ export function problemKind( line ) {
 
 const lineOf = ( p ) => ( typeof p === 'string' ? p : JSON.stringify( p ) );
 
-// The summary of one proposed surface: its node count, problem count by kind and every problem line. `proposal` and
-// `problems` are proposeSurface's results, `skeleton` its tree.
-export function summariseSurface( { client, surface, proposal, problems, skeleton } ) {
-	const lines = ( problems || [] ).map( lineOf );
+// Splits a propose's problem lines into real route faults and hand-overs. A hand-over is a line the carried-ids machinery wrote
+// (lib/skeleton-write-content.mjs::carriedAttrs and the filter rail's attribute ids, both through lib/skeleton-carried.mjs::carriedIds):
+// an id only a live run can make (a menu item, a logo attachment, a product) that the saved records do not hold yet. `real` is the
+// same surface proposed with the carried ids switched off, which removes exactly those lines; a line the carry-less run also writes
+// is a real fault, and every other line of `all` is a hand-over. Each line counts once (a repeated line is matched one for one).
+export function splitProblems( all, real ) {
+	const left = new Map();
+	( real || [] ).map( lineOf ).forEach( ( l ) => left.set( l, ( left.get( l ) || 0 ) + 1 ) );
+	const out = { real: [], handovers: [] };
+	for ( const l of ( all || [] ).map( lineOf ) ) {
+		if ( left.get( l ) > 0 ) {
+			left.set( l, left.get( l ) - 1 );
+			out.real.push( l );
+		} else {
+			out.handovers.push( l );
+		}
+	}
+	return out;
+}
+
+// Wraps the carried-ids reader a propose gets so the sweep learns whether any lookup could have produced a hand-over line: a lookup
+// that answered with a reason (logo, product, attribute), a menu the map lacks, or any item lookup (an item a label has no id for
+// is not told apart from outside). `probe.touched` is set; a surface that never touches it has no hand-over line and is not
+// proposed a second time.
+export function instrumentCarried( carried, probe ) {
+	if ( ! carried ) {
+		return carried;
+	}
+	const wrap = ( fn, miss ) => ( ...a ) => {
+		const r = fn.apply( carried, a );
+		miss( r ) && ( probe.touched = true );
+		return r;
+	};
+	return {
+		...carried,
+		...( carried.logo ? { logo: wrap( carried.logo, ( r ) => r?.reason ) } : {} ),
+		...( carried.product ? { product: wrap( carried.product, ( r ) => r?.reason ) } : {} ),
+		...( carried.attribute ? { attribute: wrap( carried.attribute, ( r ) => r?.reason ) } : {} ),
+		...( carried.menu ? { menu: wrap( carried.menu, ( r ) => null == r ) } : {} ),
+		...( carried.items ? { items: wrap( carried.items, () => true ) } : {} ),
+	};
+}
+
+// The summary of one proposed surface: its node count and its problem lines in the two classes. `problems` is every line the
+// propose wrote; `realProblems` the lines of it that are real route faults (splitProblems; omitted, every line is one).
+// `problemCount`, `byKind` and `problems` are the real faults, which a comparison fails on; `handoverCount` and `handovers` are
+// the hand-overs, which it lists.
+export function summariseSurface( { client, surface, proposal, problems, realProblems = null, skeleton } ) {
+	const { real, handovers } = splitProblems( problems, null === realProblems ? problems : realProblems );
 	const byKind = {};
-	for ( const l of lines ) {
+	for ( const l of real ) {
 		const k = problemKind( l );
 		byKind[ k ] = ( byKind[ k ] || 0 ) + 1;
 	}
 	const c = proposal?.counts || {};
-	return { client, surface, ok: true, nodes: fingerprintNodes( skeleton, proposal ).length, rows: c.rows ?? null, low: c.low ?? null, unresolved: c.unresolved ?? null, problemCount: lines.length, byKind, problems: lines };
+	return { client, surface, ok: true, nodes: fingerprintNodes( skeleton, proposal ).length, rows: c.rows ?? null, low: c.low ?? null, unresolved: c.unresolved ?? null, problemCount: real.length, byKind, problems: real, handoverCount: handovers.length, handovers };
 }
 
 // A surface that could not be proposed: it counts as a failure when the baseline proposed it.
-export const failedSummary = ( { client, surface, error } ) => ( { client, surface, ok: false, error: String( error ).split( '\n' )[ 0 ].slice( 0, 240 ), nodes: 0, problemCount: 0, byKind: {}, problems: [] } );
+export const failedSummary = ( { client, surface, error } ) => ( { client, surface, ok: false, error: String( error ).split( '\n' )[ 0 ].slice( 0, 240 ), nodes: 0, problemCount: 0, byKind: {}, problems: [], handoverCount: 0, handovers: [] } );
 
 // The skeleton's nodes, flat, each as { id, block, rule, settings }: the id is the node's draft element (draftRef.tpl; a
 // second node with the same one, or none, gets its tree path), the rule the proposal row of that element names.
@@ -209,8 +254,8 @@ export function diffNodes( before, after ) {
 }
 
 // Compares two sweeps. `before` and `after`: { surfaces: { '<client>/<surface>': summary }, nodes: { key: fingerprint } } as
-// `readSweep` returns them. A surface FAILS when it gains a problem (its count rises, or a problem line appears that the
-// baseline did not have, even when another went away), or proposed in the baseline and does not now (an error, or missing).
+// `readSweep` returns them. A surface FAILS when it gains a real route fault (its count rises, or a problem line appears that the
+// baseline did not have, even when another went away; hand-over lines are listed and never fail), or proposed in the baseline and does not now (an error, or missing).
 // Changed nodes are listed for a person to judge and never fail. Returns { rows, failures, ok }.
 export function compareSweeps( before, after ) {
 	const keys = [ ...new Set( [ ...Object.keys( before.surfaces ), ...Object.keys( after.surfaces ) ] ) ].sort();
@@ -219,7 +264,7 @@ export function compareSweeps( before, after ) {
 	for ( const key of keys ) {
 		const b = before.surfaces[ key ];
 		const a = after.surfaces[ key ];
-		const row = { key, before: b ? b.problemCount : null, after: a ? a.problemCount : null, newProblems: [], goneProblems: [], nodes: { added: [], removed: [], changed: [] }, status: 'same' };
+		const row = { key, before: b ? b.problemCount : null, after: a ? a.problemCount : null, handoversBefore: b ? b.handoverCount ?? 0 : null, handoversAfter: a ? a.handoverCount ?? 0 : null, newHandovers: [], goneHandovers: [], newProblems: [], goneProblems: [], nodes: { added: [], removed: [], changed: [] }, status: 'same' };
 		if ( b?.ok && ! a?.ok ) {
 			row.status = 'LOST';
 			failures.push( `${ key }: proposed in the baseline, ${ a ? `fails now (${ a.error })` : 'missing now' }` );
@@ -230,6 +275,10 @@ export function compareSweeps( before, after ) {
 			const is = new Set( a.problems );
 			row.newProblems = a.problems.filter( ( l ) => ! was.has( l ) );
 			row.goneProblems = ( b?.problems || [] ).filter( ( l ) => ! is.has( l ) );
+			const hadOver = new Set( b?.handovers || [] );
+			const hasOver = new Set( a.handovers || [] );
+			row.newHandovers = ( a.handovers || [] ).filter( ( l ) => ! hadOver.has( l ) );
+			row.goneHandovers = ( b?.handovers || [] ).filter( ( l ) => ! hasOver.has( l ) );
 			row.nodes = b ? diffNodes( before.nodes?.[ key ], after.nodes?.[ key ] ) : { added: [], removed: [], changed: [] };
 			const moved = row.nodes.added.length + row.nodes.removed.length + row.nodes.changed.length;
 			if ( ! b ) {
@@ -238,11 +287,11 @@ export function compareSweeps( before, after ) {
 				row.status = 'WORSE';
 			} else if ( row.goneProblems.length ) {
 				row.status = 'better';
-			} else if ( moved ) {
+			} else if ( moved || row.newHandovers.length || row.goneHandovers.length ) {
 				row.status = 'changed';
 			}
 			if ( 'WORSE' === row.status || ( 'NEW' === row.status && row.newProblems.length ) ) {
-				failures.push( `${ key }: problems ${ row.before ?? 0 } -> ${ row.after }, ${ row.newProblems.length } new line(s)` );
+				failures.push( `${ key }: real faults ${ row.before ?? 0 } -> ${ row.after }, ${ row.newProblems.length } new line(s)` );
 			}
 		}
 		rows.push( row );
@@ -252,15 +301,16 @@ export function compareSweeps( before, after ) {
 
 const clip = ( s, n = 200 ) => ( String( s ).length > n ? `${ String( s ).slice( 0, n - 1 ) }…` : String( s ) );
 
-// Per-client totals of a sweep's summaries: { client: { surfaces, proposed, failed, nodes, problems } }.
+// Per-client totals of a sweep's summaries: { client: { surfaces, proposed, failed, nodes, problems (real faults), handovers } }.
 export function clientTotals( surfaces ) {
 	const t = {};
 	for ( const s of Object.values( surfaces ) ) {
-		const c = ( t[ s.client ] ||= { surfaces: 0, proposed: 0, failed: 0, nodes: 0, problems: 0 } );
+		const c = ( t[ s.client ] ||= { surfaces: 0, proposed: 0, failed: 0, nodes: 0, problems: 0, handovers: 0 } );
 		c.surfaces++;
 		s.ok ? c.proposed++ : c.failed++;
 		c.nodes += s.nodes;
 		c.problems += s.problemCount;
+		c.handovers += s.handoverCount ?? 0;
 	}
 	return t;
 }
@@ -269,13 +319,13 @@ export function clientTotals( surfaces ) {
 export function formatSweep( { surfaces, mainSha = null } ) {
 	const out = [ `Route sweep${ mainSha ? ` on ${ mainSha }` : '' }`, '' ];
 	const totals = clientTotals( surfaces );
-	out.push( 'client | surfaces | proposed | failed | nodes | problems' );
+	out.push( 'client | surfaces | proposed | failed | nodes | real faults | hand-overs' );
 	for ( const [ c, t ] of Object.entries( totals ) ) {
-		out.push( `${ c } | ${ t.surfaces } | ${ t.proposed } | ${ t.failed } | ${ t.nodes } | ${ t.problems }` );
+		out.push( `${ c } | ${ t.surfaces } | ${ t.proposed } | ${ t.failed } | ${ t.nodes } | ${ t.problems } | ${ t.handovers }` );
 	}
-	out.push( '', 'surface | nodes | problems | unresolved' );
+	out.push( '', 'surface | nodes | real faults | hand-overs | unresolved' );
 	for ( const [ k, s ] of Object.entries( surfaces ).sort( ( x, y ) => x[ 0 ].localeCompare( y[ 0 ] ) ) ) {
-		out.push( s.ok ? `${ k } | ${ s.nodes } | ${ s.problemCount } | ${ s.unresolved ?? '-' }` : `${ k } | CANNOT PROPOSE: ${ s.error }` );
+		out.push( s.ok ? `${ k } | ${ s.nodes } | ${ s.problemCount } | ${ s.handoverCount ?? 0 } | ${ s.unresolved ?? '-' }` : `${ k } | CANNOT PROPOSE: ${ s.error }` );
 	}
 	return `${ out.join( '\n' ) }\n`;
 }
@@ -288,9 +338,11 @@ export function formatComparison( cmp ) {
 		if ( 'same' === r.status ) {
 			continue;
 		}
-		out.push( `${ r.status.padEnd( 8 ) } ${ r.key }: problems ${ r.before ?? '-' } -> ${ r.after ?? '-' }` );
-		r.newProblems.forEach( ( l ) => out.push( `    problem NEW: ${ clip( l ) }` ) );
-		r.goneProblems.forEach( ( l ) => out.push( `    problem gone: ${ clip( l ) }` ) );
+		out.push( `${ r.status.padEnd( 8 ) } ${ r.key }: real faults ${ r.before ?? '-' } -> ${ r.after ?? '-' }, hand-overs ${ r.handoversBefore ?? '-' } -> ${ r.handoversAfter ?? '-' }` );
+		r.newProblems.forEach( ( l ) => out.push( `    real fault NEW: ${ clip( l ) }` ) );
+		r.goneProblems.forEach( ( l ) => out.push( `    real fault gone: ${ clip( l ) }` ) );
+		r.newHandovers.forEach( ( l ) => out.push( `    hand-over new: ${ clip( l ) }` ) );
+		r.goneHandovers.forEach( ( l ) => out.push( `    hand-over gone: ${ clip( l ) }` ) );
 		r.nodes.added.forEach( ( n ) => out.push( `    node + ${ n.id } ${ n.block } ${ clip( JSON.stringify( n.settings ), 120 ) }` ) );
 		r.nodes.removed.forEach( ( n ) => out.push( `    node - ${ n.id } ${ n.block }` ) );
 		r.nodes.changed.forEach( ( n ) => out.push( `    node ~ ${ n.id } ${ n.before.block } (${ n.what.join( ', ' ) })` ) );
@@ -298,7 +350,7 @@ export function formatComparison( cmp ) {
 	const moved = cmp.rows.reduce( ( n, r ) => n + r.nodes.added.length + r.nodes.removed.length + r.nodes.changed.length, 0 );
 	out.push( '', `${ cmp.rows.length } surfaces compared, ${ moved } changed node(s) for a person to judge, ${ cmp.failures.length } failure(s)` );
 	cmp.failures.forEach( ( f ) => out.push( `FAIL ${ f }` ) );
-	out.push( cmp.ok ? 'PASS: no surface gained a problem' : 'FAIL: a surface got worse' );
+	out.push( cmp.ok ? 'PASS: no surface gained a real fault' : 'FAIL: a surface gained a real fault' );
 	return `${ out.join( '\n' ) }\n`;
 }
 
