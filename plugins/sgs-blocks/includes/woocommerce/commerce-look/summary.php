@@ -72,6 +72,7 @@ function sgs_commerce_look_layout_css( array $attrs, string $block, string $root
 		$css  .= sgs_emit_responsive_css( $sidebar, array( $width + array( 'css' => 'flex-basis' ), $width + array( 'css' => 'width' ) ) );
 	}
 	$layout = sgs_commerce_look_selector( 'layout', $block, $root );
+	$css   .= sgs_commerce_look_stack_below_css( $attrs, $block, $root );
 	if ( '' !== $layout && ! empty( $attrs['sgsColumnGap'] ) ) {
 		$css .= sgs_emit_responsive_css( $layout, array( array( 'value' => $attrs['sgsColumnGap'], 'css' => 'column-gap', 'unit_default' => 'px' ) ) );
 		// The form column's fill follows the gap's own devices (a value the writer would refuse prints no fill either).
@@ -100,4 +101,29 @@ function sgs_commerce_look_layout_css( array $attrs, string $block, string $root
 		}
 	}
 	return $css;
+}
+
+/**
+ * The stacking width (`sgsStackBelow`, a CSS length). WooCommerce puts the summary beside the form whenever the block is
+ * at least 700px wide; below the set viewport width the block stacks them as WooCommerce's own narrow layout does
+ * (one column, both parts full width with no side padding), under the scope class twice so it out-ranks the summary
+ * column width and the column gap's form-column rules. Unset prints nothing.
+ *
+ * @param array<string, mixed> $attrs Set attributes.
+ * @param string               $block 'cart' or 'checkout'.
+ * @param string               $root  Scope selector.
+ * @return string CSS text; '' when unset or not a length.
+ */
+function sgs_commerce_look_stack_below_css( array $attrs, string $block, string $root ): string {
+	$below = sgs_css_single_length_value( (string) ( $attrs['sgsStackBelow'] ?? '' ) );
+	if ( '' === $below || 1 !== preg_match( '/^\d+(\.\d+)?(px|em|rem)$/', $below ) ) {
+		return '';
+	}
+	$double = $root . $root;
+	$layout = sgs_commerce_look_selector( 'layout', $block, $double );
+	$parts  = implode( ',', array_filter( array( sgs_commerce_look_selector( 'main_wide', $block, $double ), sgs_commerce_look_selector( 'sidebar_wide', $block, $double ) ) ) );
+	if ( '' === $layout || '' === $parts ) {
+		return '';
+	}
+	return '@media (width < ' . $below . '){' . $layout . '{flex-direction:column;}' . $parts . '{width:100%;max-width:none;flex:0 0 auto;padding-left:0;padding-right:0;}}';
 }

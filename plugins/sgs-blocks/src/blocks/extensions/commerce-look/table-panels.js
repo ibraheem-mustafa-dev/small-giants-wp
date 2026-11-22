@@ -11,7 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
 import { AlignItemsTierControl, ResponsiveBoxControl, ResponsiveLengthControl, ShadowControl, TierBorderControl } from '../../../components';
 import TABLE from '../../../../includes/woocommerce/commerce-look/selectors.json';
-import { boxTiers, TextControls, writeTier } from './controls';
+import { boxTiers, ColourRow, TextControls, writeTier } from './controls';
 
 const LENGTH_UNITS = [
 	{ value: 'px', label: 'px' },
@@ -93,6 +93,8 @@ function ColumnControl( { column, prefix, attributes, setAttributes } ) {
 			);
 		case 'text':
 			return <TextControls attributes={ attributes } setAttributes={ setAttributes } prefix={ name.slice( 0, -'FontSize'.length ) } noColour showTextAlign />;
+		case 'colour':
+			return <ColourRow label={ label } attributes={ attributes } setAttributes={ setAttributes } name={ name } />;
 		default:
 			return null;
 	}

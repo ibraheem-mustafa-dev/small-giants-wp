@@ -245,4 +245,44 @@ describe( 'checkout signed-in line', () => {
 		window.requestAnimationFrame = originalFrame;
 		expect( document.querySelectorAll( '.sgs-checkout-summary-edit' ).length ).toBeGreaterThan( 0 );
 	} );
+
+	test( 'couponOpen opens the coupon panel once through its own button, and a panel the shopper closes stays closed', async () => {
+		const originalFrame = window.requestAnimationFrame;
+		window.requestAnimationFrame = ( cb ) => {
+			cb();
+			return 1;
+		};
+		const coupon = '<div class="wp-block-woocommerce-checkout-order-summary-coupon-form-block"><button class="wc-block-components-panel__button" aria-expanded="false">Add coupons</button></div>';
+		document.body.innerHTML = '';
+		let clicks = 0;
+		const onClick = ( event ) => {
+			if ( event.target.matches( '.wc-block-components-panel__button' ) ) {
+				clicks++;
+				event.target.setAttribute( 'aria-expanded', 'true' );
+			}
+		};
+		document.addEventListener( 'click', onClick );
+		const fill = '<div class="wp-block-woocommerce-checkout-order-summary-block checkout-order-summary-block-fill-wrapper">';
+		const base = SUMMARY.replace( fill, coupon + fill );
+		expect( base ).toContain( 'coupon-form-block' );
+		window.sgsCheckoutSummaryExtrasConfig = { editLabel: '', editUrl: '', brand: false, couponOpen: true };
+		document.body.innerHTML = base;
+		// eslint-disable-next-line no-new-func
+		new Function( SCRIPT )();
+		expect( clicks ).toBe( 1 );
+		// The shopper closes it; a redraw of the summary does not open it again.
+		document.querySelector( '.wc-block-components-panel__button' ).setAttribute( 'aria-expanded', 'false' );
+		document.querySelector( '.wp-block-woocommerce-checkout' ).appendChild( document.createElement( 'span' ) );
+		await new Promise( ( resolve ) => setTimeout( resolve, 40 ) );
+		expect( clicks ).toBe( 1 );
+		// Negative control: without the setting the panel is never clicked.
+		clicks = 0;
+		window.sgsCheckoutSummaryExtrasConfig = { editLabel: '', editUrl: '', brand: false };
+		document.body.innerHTML = base;
+		// eslint-disable-next-line no-new-func
+		new Function( SCRIPT )();
+		expect( clicks ).toBe( 0 );
+		document.removeEventListener( 'click', onClick );
+		window.requestAnimationFrame = originalFrame;
+	} );
 } );

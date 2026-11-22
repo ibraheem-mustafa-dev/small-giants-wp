@@ -4,8 +4,9 @@
  *
  * The table in selectors.json names every WooCommerce part (a row) and the property kinds (columns) the part takes. A row's
  * `columns` list adds one setting per column: margin, padding, gap, column gap, width, height, minimum width and
- * height, corner radius, border (all sides, top, bottom), shadow, text, underline, and the keyword columns (align items,
- * align this part, justify content, fill spare space). The attribute name is the row's
+ * height, offsets from the top and right, corner radius, border (all sides, top, bottom), shadow, text, text colour, fill
+ * colour, underline, and the keyword columns (align items, align this part, justify content, fill spare space, show or
+ * hide, picture fit). The attribute name is the row's
  * prefix (`sgs` plus the row id in PascalCase, or the row's own `prefix`) plus the column's suffix, so the settings
  * need no list of their own: this file prints them, scripts/generate-commerce-look-table.js writes the attribute
  * definitions and roster rows, and src/blocks/extensions/commerce-look/table-panels.js draws the controls, all from
@@ -111,7 +112,7 @@ function sgs_commerce_look_table_css( array $attrs, string $block, string $root 
  *
  * @param array<string, mixed> $attrs    Set attributes.
  * @param string               $name     The column's first attribute name (row prefix plus suffix; a text column passes the bare prefix below).
- * @param string               $kind     Column kind: box, length, border, shadow, text, keyword or decoration.
+ * @param string               $kind     Column kind: box, length, border, shadow, text, colour, keyword or decoration.
  * @param string               $property CSS property (the property prefix for a border).
  * @param string               $selector Scoped selector list.
  * @param array                $options  A keyword column's allowed values, each `[ value, label ]`.
@@ -167,8 +168,12 @@ function sgs_commerce_look_table_column_css( array $attrs, string $name, string 
 			)['normal'];
 			return array() === $decls ? '' : $selector . '{' . implode( ';', $decls ) . ';}';
 		case 'text':
-			// A text column's attributes are the typography set under the row prefix.
-			return sgs_commerce_look_text_css( $attrs, substr( $name, 0, -strlen( 'FontSize' ) ), $selector );
+			// A text column's attributes are the typography set under the row prefix; the row's colour is its own column.
+			$text_prefix = substr( $name, 0, -strlen( 'FontSize' ) );
+			return sgs_commerce_look_text_css( array_diff_key( $attrs, array( $text_prefix . 'Colour' => true ) ), $text_prefix, $selector );
+		case 'colour':
+			$colour = sgs_colour_value( (string) ( $attrs[ $name ] ?? '' ) );
+			return '' === $colour ? '' : $selector . '{' . $property . ':' . $colour . ';}';
 		default:
 			// `decoration` is printed with the text style of a row that already has one (typography.php).
 			return '';

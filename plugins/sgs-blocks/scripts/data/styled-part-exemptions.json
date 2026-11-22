@@ -237,6 +237,7 @@
     "plugins/sgs-blocks/src/blocks/*/components/*": "Block-editor panels and canvases inside a block's folder: editor only.",
     "plugins/sgs-blocks/src/blocks/extensions/*": "Block-editor extensions (motion, inline formats, device toggle): editor only.",
     "plugins/sgs-blocks/assets/admin/*": "wp-admin screen script: never runs on the front end.",
+    "plugins/sgs-blocks/includes/woocommerce/commerce-look/summary-extras.js": "Checkout summary extras script: it finds WooCommerce's own coupon panel button to open it (sgsCouponOpen) and draws no button of its own; that button's look is the commerce look's coupon_label row.",
     "plugins/sgs-blocks/assets/js/gift-card-*.js": "Selects or enhances the gift card's existing button by class; prints no button of its own."
   },
   "parts_exemptions": [],

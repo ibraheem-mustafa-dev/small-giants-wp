@@ -368,6 +368,110 @@
 					"Fill spare space"
 				]
 			]
+		},
+		"colour": {
+			"kind": "colour",
+			"css": "color",
+			"role": "colour-text",
+			"attrs": [
+				[
+					"Colour",
+					"string"
+				]
+			],
+			"label": "Text colour"
+		},
+		"fill": {
+			"kind": "colour",
+			"css": "background-color",
+			"role": "colour-background",
+			"attrs": [
+				[
+					"Background",
+					"string"
+				]
+			],
+			"label": "Fill colour"
+		},
+		"display": {
+			"kind": "keyword",
+			"css": "display",
+			"role": "visual",
+			"attrs": [
+				[
+					"Display",
+					"object"
+				]
+			],
+			"label": "Show or hide",
+			"options": [
+				[
+					"block",
+					"Show"
+				],
+				[
+					"none",
+					"Hide"
+				]
+			]
+		},
+		"object_fit": {
+			"kind": "keyword",
+			"css": "object-fit",
+			"role": "visual",
+			"attrs": [
+				[
+					"ObjectFit",
+					"object"
+				]
+			],
+			"label": "Picture fit",
+			"options": [
+				[
+					"cover",
+					"Fill the box, crop the edges"
+				],
+				[
+					"contain",
+					"Whole picture, leave space"
+				],
+				[
+					"fill",
+					"Stretch to the box"
+				],
+				[
+					"scale-down",
+					"Never enlarge"
+				],
+				[
+					"none",
+					"Natural size"
+				]
+			]
+		},
+		"top": {
+			"kind": "length",
+			"css": "top",
+			"role": "layout",
+			"attrs": [
+				[
+					"Top",
+					"object"
+				]
+			],
+			"label": "Offset from the top"
+		},
+		"right": {
+			"kind": "length",
+			"css": "right",
+			"role": "layout",
+			"attrs": [
+				[
+					"Right",
+					"object"
+				]
+			],
+			"label": "Offset from the right"
 		}
 	},
 	"rows": {
@@ -417,6 +521,24 @@
 				"basket": "filled",
 				"action": "none"
 			}
+		},
+		"validation_error": {
+			"cart": ".wc-block-components-validation-error, .wc-block-components-validation-error > p",
+			"checkout": ".wc-block-components-validation-error, .wc-block-components-validation-error > p",
+			"prefix": "sgsError",
+			"element": "validation-error",
+			"label": "Error message under a field",
+			"columns": [
+				"text",
+				"colour"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; shows after Place order with a required field empty",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			},
+			"probe": false
 		},
 		"field_textarea": {
 			"checkout": ".wc-block-components-textarea",
@@ -534,7 +656,8 @@
 				"margin",
 				"padding",
 				"width",
-				"height"
+				"height",
+				"object_fit"
 			],
 			"label": "Item picture",
 			"prefix": "sgsItemImage"
@@ -615,6 +738,21 @@
 				"decoration"
 			],
 			"label": "Summary heading"
+		},
+		"summary_title_show": {
+			"cart": ".wc-block-components-sidebar .wc-block-cart__totals-title",
+			"prefix": "sgsSummaryTitle",
+			"element": "summary-heading",
+			"root_repeat": 2,
+			"label": "Summary title (show on narrow layouts)",
+			"columns": [
+				"display"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (WooCommerce hides the title when the cart block is narrower than 700px with a three-class rule inside a container query)",
+			"needs": {
+				"basket": "filled"
+			}
 		},
 		"step": {
 			"checkout": ".wc-block-components-checkout-step",
@@ -743,6 +881,37 @@
 			],
 			"label": "Total value"
 		},
+		"totals_description": {
+			"cart": ".wc-block-components-totals-item__description",
+			"checkout": ".wc-block-components-totals-item__description",
+			"label": "Totals line description",
+			"columns": [
+				"text",
+				"colour"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width; a totals row with a description (shipping: the method's name)",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
+		"shipping_via": {
+			"cart": ".wc-block-components-totals-shipping .wc-block-components-totals-shipping__via",
+			"checkout": ".wc-block-components-totals-shipping .wc-block-components-totals-shipping__via",
+			"label": "Shipping method line (\"via\")",
+			"columns": [
+				"text",
+				"colour"
+			],
+			"root_repeat": 2,
+			"wc_version": "11.2.1",
+			"state": "basket filled with a product that ships; any user; any width; the line under Shipping naming the chosen method",
+			"needs": {
+				"basket": "filled",
+				"action": "optional"
+			}
+		},
 		"summary_row_label": {
 			"cart": ".wc-block-components-totals-item:not(.wc-block-components-totals-footer-item) .wc-block-components-totals-item__label",
 			"checkout": ".wc-block-components-totals-item:not(.wc-block-components-totals-footer-item) .wc-block-components-totals-item__label",
@@ -854,6 +1023,39 @@
 			"checkout": ".wc-block-components-order-summary .wc-block-components-order-summary-item__image",
 			"wc_version": "11.2.1",
 			"state": "basket filled; any user; any width (the checkout picture sits in a 48px box that must widen with the picture)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_quantity_badge": {
+			"checkout": ".wc-block-components-order-summary .wc-block-components-order-summary-item__quantity",
+			"prefix": "sgsItemQuantity",
+			"label": "Quantity badge on the picture",
+			"columns": [
+				"min_width",
+				"min_height",
+				"top",
+				"right",
+				"fill",
+				"text"
+			],
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (WooCommerce draws it on the picture's top right corner, moved half its size out with a transform)",
+			"needs": {
+				"basket": "filled"
+			}
+		},
+		"item_quantity_badge_text": {
+			"checkout": ".wc-block-components-order-summary .wc-block-components-order-summary-item__quantity span",
+			"prefix": "sgsItemQuantityText",
+			"element": "item-quantity-badge",
+			"label": "Quantity badge number",
+			"columns": [
+				"colour"
+			],
+			"root_repeat": 2,
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; any width (WooCommerce paints the number in the site's base colour)",
 			"needs": {
 				"basket": "filled"
 			}

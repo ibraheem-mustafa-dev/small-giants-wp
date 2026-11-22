@@ -5,9 +5,12 @@
  *
  * It also puts `loginPrefix` in a span beside the Log in link (outside it), so only the link is clickable.
  *
- * `config`: { editLabel: string, editUrl: string, brand: boolean, loginPrefix: string, signedInLine: string }.
+ * `config`: { editLabel: string, editUrl: string, brand: boolean, loginPrefix: string, signedInLine: string, couponOpen?: true }.
  *
  * `signedInLine` is a paragraph at the end of the Contact step (set only for a signed-in customer).
+ *
+ * `couponOpen` opens the summary's coupon panel once, the first time it is drawn closed, through its own button (so
+ * WooCommerce's panel state and `aria-expanded` follow); a shopper who closes it again keeps it closed.
  */
 ( function ( config, root ) {
 	var WRAPPER = '.wp-block-woocommerce-checkout';
@@ -18,6 +21,8 @@
 		'.checkout-order-summary-block-fill-wrapper .wc-block-components-checkout-step__heading',
 	];
 	var CONTACT = '.wp-block-woocommerce-checkout-contact-information-block';
+	var COUPON_TOGGLE = '.wp-block-woocommerce-checkout-order-summary-coupon-form-block .wc-block-components-panel__button[aria-expanded="false"]';
+	var couponOpened = false;
 	var ITEM = '.wc-block-components-order-summary-item';
 	var NAME = '.wc-block-components-product-name';
 
@@ -89,6 +94,13 @@
 				note.className = 'sgs-checkout-signed-in';
 				note.textContent = config.signedInLine;
 				contact.appendChild( note );
+			}
+		}
+		if ( config.couponOpen && ! couponOpened ) {
+			var toggle = doc.querySelector( COUPON_TOGGLE );
+			if ( toggle ) {
+				couponOpened = true;
+				toggle.click();
 			}
 		}
 		if ( config.brand ) {

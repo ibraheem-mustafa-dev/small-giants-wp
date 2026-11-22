@@ -180,15 +180,17 @@ function sgs_commerce_look_mark_uncacheable(): void {
  * space). All are Checkout-only; Cart has its own summary.
  *
  * The signed-in line (`sgsCheckoutStrings.signedInLine`, `%s` standing for the customer's email) is resolved here for
- * the signed-in customer and shown at the end of the Contact step; guests get none.
+ * the signed-in customer and shown at the end of the Contact step; guests get none. `sgsCouponOpen` opens the coupon
+ * panel once when the summary first draws it (`couponOpen`).
  *
  * @param array<string, mixed> $attrs Stored block attributes.
  * @param string               $bag   Address of the bag page.
- * @return array{editLabel:string,editUrl:string,brand:bool,loginPrefix:string,signedInLine:string}|array{} Empty when none is set.
+ * @return array{editLabel:string,editUrl:string,brand:bool,loginPrefix:string,signedInLine:string,couponOpen?:bool}|array{} Empty when none is set.
  */
 function sgs_commerce_look_summary_extras( array $attrs, string $bag ): array {
 	$label  = trim( sanitize_text_field( (string) ( $attrs['sgsSummaryEditLinkLabel'] ?? '' ) ) );
 	$brand  = true === ( $attrs['sgsItemShowBrand'] ?? false );
+	$coupon = true === ( $attrs['sgsCouponOpen'] ?? false );
 	$raw    = is_array( $attrs['sgsCheckoutStrings'] ?? null ) ? (string) ( $attrs['sgsCheckoutStrings']['loginPrefix'] ?? '' ) : '';
 	$prefix = '' === trim( $raw ) ? '' : mb_substr( str_replace( array( "\r", "\n", "\t" ), ' ', wp_specialchars_decode( wp_strip_all_tags( $raw ) ) ), 0, 120 );
 	$signed = '';
@@ -199,16 +201,21 @@ function sgs_commerce_look_summary_extras( array $attrs, string $bag ): array {
 		// marks its own checkout page uncacheable, but a Checkout block can sit on any page, so say it here as well.
 		sgs_commerce_look_mark_uncacheable();
 	}
-	if ( '' === $label && ! $brand && '' === $prefix && '' === $signed ) {
+	if ( '' === $label && ! $brand && '' === $prefix && '' === $signed && ! $coupon ) {
 		return array();
 	}
-	return array(
+	$config = array(
 		'editLabel'    => '' !== $bag ? $label : '',
 		'editUrl'      => esc_url_raw( $bag ),
 		'brand'        => $brand,
 		'loginPrefix'  => $prefix,
 		'signedInLine' => $signed,
 	);
+	// The key is present only when the switch is on, so the config of a block without it is unchanged.
+	if ( $coupon ) {
+		$config['couponOpen'] = true;
+	}
+	return $config;
 }
 
 /**

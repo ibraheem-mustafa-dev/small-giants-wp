@@ -49,7 +49,7 @@ if ( ! window.__sgsCommerceLookRegistered ) {
 					<SummaryPanel { ...shared } isCart={ isCart } />
 					<NoticePanel { ...shared } />
 					<ColumnsPanel { ...shared } />
-					<CouponPanel { ...shared } />
+					<CouponPanel { ...shared } isCart={ isCart } />
 					<ButtonPanel { ...shared } />
 					<TablePanel { ...shared } isCart={ isCart } />
 					{ ! isCart && <CheckoutPanels { ...shared } /> }

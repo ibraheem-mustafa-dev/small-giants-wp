@@ -259,6 +259,13 @@ export function ColumnsPanel( { attributes, setAttributes } ) {
 				units={ LENGTH_UNITS }
 				onChange={ ( next ) => setAttributes( { sgsColumnGap: next } ) }
 			/>
+			<SgsLengthControl
+				label={ __( 'Stack the columns below this screen width', 'sgs-blocks' ) }
+				help={ __( 'One column under this width, as WooCommerce does on narrow screens. Empty keeps the WooCommerce switch.', 'sgs-blocks' ) }
+				value={ attributes.sgsStackBelow || '' }
+				units={ LENGTH_UNITS }
+				onChange={ ( next ) => setAttributes( { sgsStackBelow: next || undefined } ) }
+			/>
 		</PanelBody>
 	);
 }
@@ -357,7 +364,7 @@ export function CheckoutPanels( { attributes, setAttributes } ) {
 				<ColourRow { ...shared } label={ __( 'Text colour', 'sgs-blocks' ) } name="sgsBarColour" />
 			</PanelBody>
 			<PanelBody title={ __( 'Terms', 'sgs-blocks' ) } initialOpen={ false }>
-				<TextControls { ...shared } prefix="sgsTerms" />
+				<TextControls { ...shared } prefix="sgsTerms" showTextAlign />
 			</PanelBody>
 		</>
 	);
@@ -393,12 +400,13 @@ export function ButtonPanel( { attributes, setAttributes } ) {
 }
 
 /**
- * The collapsed coupon panel in the order summary: its padding, the height of its code box and Apply button, and its label text.
+ * The collapsed coupon panel in the order summary: its padding, the height of its code box and Apply button, its label
+ * text, and (checkout) whether it starts open.
  *
  * @param {Object} props Block attributes and setter.
  * @return {JSX.Element} The panel.
  */
-export function CouponPanel( { attributes, setAttributes } ) {
+export function CouponPanel( { attributes, setAttributes, isCart } ) {
 	return (
 		<PanelBody title={ __( 'Coupon panel', 'sgs-blocks' ) } initialOpen={ false }>
 			<ResponsiveBoxControl
@@ -415,6 +423,14 @@ export function CouponPanel( { attributes, setAttributes } ) {
 				onChange={ ( next ) => setAttributes( { sgsCouponControlHeight: next } ) }
 			/>
 			<TextControls attributes={ attributes } setAttributes={ setAttributes } prefix="sgsCouponLabel" />
+			{ ! isCart && (
+				<ToggleControl
+					__nextHasNoMarginBottom
+					label={ __( 'Open the coupon panel when the page loads', 'sgs-blocks' ) }
+					checked={ !! attributes.sgsCouponOpen }
+					onChange={ ( next ) => setAttributes( { sgsCouponOpen: next || undefined } ) }
+				/>
+			) }
 		</PanelBody>
 	);
 }
