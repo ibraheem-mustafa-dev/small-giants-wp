@@ -65,7 +65,8 @@
  *   --render-block-filters        add_filter()/add_action() keep a hook table, the plugin's render_block filters that
  *                                 change a block's own markup are loaded (SGS_QA_RENDER_BLOCK_FILTER_FILES), and the
  *                                 render passes through `render_block_<name>` then `render_block`, as WP_Block::render does
- *                                 (sgs/* children rendered in this process too)
+ *                                 (sgs/* children rendered in this process too); what those files' wp_enqueue_scripts
+ *                                 listeners attach with wp_add_inline_style() joins `css`
  *   --print-footer                do_action( 'wp_footer' ) runs after the render and its listeners' output (a scrim, a
  *                                 detached menu chip) is appended to `html`, its <style> to `css`; `footerHtml` holds it alone
  *   --wp-fidelity                 get_block_wrapper_attributes() adds the generated wp-block-<name> class, className and
@@ -695,6 +696,12 @@ if ( isset( $args['render-block-filters'] ) ) {
 		array( 'blockName' => $harness_slug )
 	);
 	$html = sgs_qa_render_block_filters( $html, $harness_parsed, $block );
+	// What those filters' own wp_enqueue_scripts listeners attach to a stylesheet (device-visibility.php's media
+	// queries) is on the page too: collected here and added to `css`.
+	$GLOBALS['sgs_qa_inline_styles'] = array();
+	$GLOBALS['sgs_qa_hook_fire'][]   = 'wp_enqueue_scripts';
+	do_action( 'wp_enqueue_scripts' );
+	$GLOBALS['sgs_qa_hook_fire'] = array_values( array_diff( $GLOBALS['sgs_qa_hook_fire'], array( 'wp_enqueue_scripts' ) ) );
 }
 
 $footer_html = null;
@@ -710,6 +717,10 @@ if ( isset( $args['print-footer'] ) ) {
 $css = '';
 if ( preg_match_all( '#<style\b[^>]*>(.*?)</style>#s', $html, $matches ) ) {
 	$css = implode( "\n", $matches[1] );
+}
+
+if ( ! empty( $GLOBALS['sgs_qa_inline_styles'] ) ) {
+	$css .= "\n" . implode( "\n", $GLOBALS['sgs_qa_inline_styles'] );
 }
 
 $result = array(

@@ -49,6 +49,15 @@ def test_render_block_filters_run_the_plugins_markup_filters():
     assert 'sgs-hide-mobile' in filtered['html']
 
 
+def test_render_block_filters_carry_what_the_filters_attach_to_the_page():
+    # device-visibility.php attaches its media queries with wp_add_inline_style() on wp_enqueue_scripts: without them the
+    # sgs-hide-mobile class it adds hides nothing.
+    plain = run('sgs/button', {'sgsHideOnMobile': True})
+    filtered = run('sgs/button', {'sgsHideOnMobile': True}, '--render-block-filters')
+    assert '.sgs-hide-mobile{display:none' not in plain['css']
+    assert '.sgs-hide-mobile{display:none !important;}' in filtered['css']
+
+
 def test_print_footer_appends_the_detached_menu_chip():
     fx = json.loads(FIXTURES.read_text(encoding='utf-8'))['sgs/nav-bar-menu']
     attrs = RN.fill({**fx['attributes'], 'triggerDetach': {'desktop': 'on', 'tablet': 'on', 'mobile': 'on'}})

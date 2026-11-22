@@ -820,6 +820,23 @@ if ( ! function_exists( 'wp_enqueue_style' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wp_add_inline_style' ) ) {
+	/**
+	 * Records inline CSS attached to a stylesheet handle when the runner collects it (--render-block-filters: a page
+	 * carries what a render_block filter's own enqueue attaches, such as the device-visibility media queries).
+	 *
+	 * @param string $handle Stylesheet handle.
+	 * @param string $data   CSS.
+	 * @return bool
+	 */
+	function wp_add_inline_style( string $handle, string $data ): bool {
+		if ( isset( $GLOBALS['sgs_qa_inline_styles'] ) ) {
+			$GLOBALS['sgs_qa_inline_styles'][] = $data;
+		}
+		return true;
+	}
+}
+
 if ( ! function_exists( 'wp_style_is' ) ) {
 	function wp_style_is( string $handle, string $status = 'enqueued' ): bool {
 		// Every handle counts as registered, matching wp_enqueue_style()'s no-op.
