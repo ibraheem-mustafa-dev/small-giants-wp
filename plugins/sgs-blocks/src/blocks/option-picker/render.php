@@ -348,6 +348,17 @@ if ( $pill_sel_bg_colour ) {
 }
 if ( $pill_sel_text_colour ) {
 	$var_decls[] = '--sgs-op-sel-text:' . sgs_colour_value( $pill_sel_text_colour );
+} elseif ( in_array( $pill_style_safe, array( 'outlined', 'filled' ), true ) ) {
+	// No chosen-text colour set: the outlined and filled pills fill the chosen pill with
+	// pillSelectedBgColour, else the primary, under white text, which a light fill cannot carry
+	// (white on a pale yellow reads 1.48:1). Black or white, whichever reads better on that fill,
+	// goes in --sgs-op-sel-auto-text, the fallback style.css takes before white; a set
+	// pillSelectedTextColour or a preset's own sel-text token still wins. A fill with no single
+	// hex (a gradient, a var) prints nothing and keeps white.
+	$sel_fill_hex = sgs_colour_hex_for_contrast( '' !== (string) $pill_sel_bg_colour ? (string) $pill_sel_bg_colour : sgs_resolve_palette_hex( 'primary' ) );
+	if ( '' !== $sel_fill_hex ) {
+		$var_decls[] = '--sgs-op-sel-auto-text:' . sgs_wcag_text_colour_for_bg( $sel_fill_hex );
+	}
 }
 if ( $pill_sel_border_col ) {
 	// The selected border is DECOUPLED from the fill — a distinct var with

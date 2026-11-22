@@ -13,6 +13,8 @@
      --sgs-op-pill-radius     resting pill border-radius
      --sgs-op-sel-bg          selected pill background
      --sgs-op-sel-text        selected pill text
+     --sgs-op-sel-auto-text   black or white picked for the chosen fill when
+                              no selected text colour is set (render.php)
      --sgs-op-sel-border      selected pill border (decoupled from fill,
                               falls back to --sgs-op-sel-bg when unset)
      --sgs-op-sel-pill-radius selected pill border-radius (falls back to
@@ -237,14 +239,13 @@
 .sgs-option-picker--outlined .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
 	background-color: var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A));
 	/*
-	 * WCAG A11Y: default text is white — passes 4.5:1 on the framework teal
-	 * primary (#1F7A7A + white = 5.09:1 ✓ PASS).
-	 * Style variations with a LIGHT primary colour MUST override --sgs-op-sel-text
-	 * to a dark value in their style variation CSS (e.g. a pale client primary:
-	 * set `--sgs-op-sel-text` to a dark ink so the selected text keeps >=4.5:1).
-	 * Per-block override: set --sgs-op-sel-text via the block inspector.
+	 * WCAG A11Y: with no chosen-text colour set, render.php prints
+	 * --sgs-op-sel-auto-text: black or white, whichever reads better on the
+	 * chosen fill (pillSelectedBgColour, else the primary), so a light primary
+	 * keeps readable text. White stays the last fallback. Per-block override:
+	 * pillSelectedTextColour (--sgs-op-sel-text) in the block inspector.
 	 */
-	color: var(--sgs-op-sel-text, #ffffff);
+	color: var(--sgs-op-sel-text, var(--sgs-op-sel-auto-text, #ffffff));
 	/*
 	 * The selected border is DECOUPLED from the fill — its own
 	 * var, falling back to --sgs-op-sel-bg so an unset --sgs-op-sel-border
@@ -282,8 +283,8 @@
    Suppressed entirely when .sgs-option-picker--no-tick is set (the "no
    visible tick" look, e.g. a decoupled pale-tint/outline selected pill). */
 .sgs-option-picker--outlined:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
-	border-left-color:   var(--sgs-op-sel-text, #ffffff);
-	border-bottom-color: var(--sgs-op-sel-text, #ffffff);
+	border-left-color:   var(--sgs-op-sel-text, var(--sgs-op-sel-auto-text, #ffffff));
+	border-bottom-color: var(--sgs-op-sel-text, var(--sgs-op-sel-auto-text, #ffffff));
 }
 
 /* ================================================================
@@ -308,8 +309,8 @@
 
 .sgs-option-picker--filled .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill {
 	background-color: var(--sgs-op-sel-bg, var(--wp--preset--color--primary, #1F7A7A));
-	/* WCAG A11Y: white text default passes 4.5:1 on framework teal (5.09:1 ✓). */
-	color:         var(--sgs-op-sel-text, #ffffff);
+	/* WCAG A11Y: the contrast-picked --sgs-op-sel-auto-text (render.php) before white, as the outlined pill. */
+	color:         var(--sgs-op-sel-text, var(--sgs-op-sel-auto-text, #ffffff));
 	/* Decoupled selected border, falls back to transparent. */
 	border-color:  var(--sgs-op-sel-border, transparent);
 	border-radius: var(--sgs-op-sel-pill-radius, var(--sgs-op-pill-radius, var(--wp--custom--border-radius--medium, 6px)));
@@ -321,8 +322,8 @@
 
 /* WCAG: reveal tick on checked — filled (white tick on coloured bg) */
 .sgs-option-picker--filled:not(.sgs-option-picker--no-tick) .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill::before {
-	border-left-color:   var(--sgs-op-sel-text, #ffffff);
-	border-bottom-color: var(--sgs-op-sel-text, #ffffff);
+	border-left-color:   var(--sgs-op-sel-text, var(--sgs-op-sel-auto-text, #ffffff));
+	border-bottom-color: var(--sgs-op-sel-text, var(--sgs-op-sel-auto-text, #ffffff));
 }
 
 /* ================================================================
@@ -434,7 +435,7 @@
    We deliberately fall back to the existing --sgs-op-sel-text var so the
    selected state always uses the globally-correct contrast colour. */
 .sgs-option-picker__option input[type="radio"]:checked ~ .sgs-option-picker__pill--has-colour {
-	color: var(--sgs-op-sel-text, #ffffff);
+	color: var(--sgs-op-sel-text, var(--sgs-op-sel-auto-text, #ffffff));
 }
 
 /* ── Image swatch ────────────────────────────────────────────────── */
@@ -609,7 +610,7 @@
 	--sgs-op-text: var(--wp--custom--option-picker-presets--solid--text, var(--wp--preset--color--text, currentColor));
 	--sgs-op-border: var(--wp--custom--option-picker-presets--solid--border, var(--wp--preset--color--text, currentColor));
 	--sgs-op-sel-bg: var(--wp--custom--option-picker-presets--solid--sel-bg, var(--wp--preset--color--primary, #1F7A7A));
-	--sgs-op-sel-text: var(--wp--custom--option-picker-presets--solid--sel-text, #ffffff);
+	--sgs-op-sel-text: var(--wp--custom--option-picker-presets--solid--sel-text, var(--sgs-op-sel-auto-text, #ffffff));
 	--sgs-op-sel-border: var(--wp--custom--option-picker-presets--solid--sel-border, var(--wp--custom--option-picker-presets--solid--sel-bg, var(--wp--preset--color--primary, #1F7A7A)));
 }
 
