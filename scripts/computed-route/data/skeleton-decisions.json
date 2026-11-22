@@ -530,6 +530,15 @@
 			"collapseAttribute": {
 				"sgs/nav-bar-menu": "collapsePoint"
 			},
+			"briefOnlyEntry": {
+				"id": "coming-soon-entry",
+				"patterns": [
+					"^\\s*(?:(?:coming|arriving|launching|opening)\\s+)?soon\\s*[.!]?\\s*$",
+					"\\b(?:arriving|coming|launching|available|opening)\\s+soon\\b"
+				],
+				"flags": "i",
+				"reason": "a menu entry with no link that says it is coming soon (a lone badge word such as SOON beside its label, or the words themselves) exists only because the designer's brief said the page is not ready: there is no point putting a coming-soon item in a link list (Bean, 2026-10-09), so the entry is dropped from the menu, listed for removal, and never built as a disabled item"
+			},
 			"reason": "the navigation inside a header is the menu bar block and inside a drawer the drawer menu block; both draw their items from a WordPress menu"
 		},
 		"splitMenu": {

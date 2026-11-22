@@ -11,6 +11,7 @@ import { megaSlots } from './intake-pagemap-mega-slots.mjs';
 import { splitLinks, placeSplit } from './intake-pagemap-split.mjs';
 import { logicOf, moneyBinding } from './shop-parts-logic.mjs';
 import { narrowedListsOfDraft, narrowsRenderedList } from './skeleton-narrowing.mjs';
+import { isSoonEntry } from './menu-soon-entry.mjs';
 
 const VOID = new Set( [ 'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr' ] );
 
@@ -157,7 +158,8 @@ const CONTROLS = new Set( [ 'a', 'button', 'input', 'select', 'textarea', 'form'
 const endOf = ( text, el ) => ( null == el.close || el.close === el.end ? el.end : text.indexOf( '>', el.close ) + 1 || el.end );
 
 // A link-less label a nav draws as an item: an element that is no link and no control, holds static words of its own
-// (`label`) and, in elements nested inside it, short static words (`badge`, a "SOON" chip). A heading, a hidden element,
+// (`label`) and, in elements nested inside it, short static words (`badge`, a chip such as "NEW"; a coming-soon chip makes it no item at
+// all, readItems). A heading, a hidden element,
 // a separator with no letter or digit, an element with bound text and anything holding a control are no label.
 // Returns { label, badge } or null.
 export function plainLabel( text, c ) {
@@ -218,6 +220,11 @@ function readItems( d, tree, node, scope, roots, mode, labels = false ) {
 			}
 		} else if ( 'a' !== c.name ) {
 			const plain = labels && 'nav' === mode ? plainLabel( tree.text, c ) : null;
+			if ( plain && isSoonEntry( plain ) ) {
+				// A coming-soon entry among a nav's links is a line the brief wrote, never a menu item (lib/menu-soon-entry.mjs); its chip
+				// is not read as a label of its own either.
+				continue;
+			}
 			if ( plain ) {
 				items.push( anchored( { label: plain.label, targets: [], children: [], disabled: true, ...( plain.badge ? { badge: plain.badge } : {} ) }, c ) );
 			} else {

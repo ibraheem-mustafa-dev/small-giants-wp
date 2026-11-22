@@ -1,5 +1,5 @@
-// Spec 48 FR-48-30, FR-48-55 part 3: a nav item the draft draws without a link (a "Glasses SOON" label) is a menu item
-// too. Intake reads it (lib/intake-pagemap-surfaces.mjs::plainLabel through readItems, in a header or drawer <nav> only),
+// Spec 48 FR-48-30, FR-48-55 part 3: a nav item the draft draws without a link (a "Gift cards NEW" label) is a menu item
+// too, unless it says it is coming soon (a "Glasses SOON" label: lib/menu-soon-entry.mjs, Bean's ruling of 2026-10-09, is no item). Intake reads it (lib/intake-pagemap-surfaces.mjs::plainLabel through readItems, in a header or drawer <nav> only),
 // the site build makes it a custom item whose Description is the chip words (lib/site-build-menu-links.mjs::menuLinksFor
 // `labels`, lib/site-build-menus.mjs::desiredMenus, lib/site-build-plan.mjs::planBuild, lib/site-build-apply.mjs::applyPhase),
 // and the skeleton writes the nav block's `disabledItemIds` as the identifier the site recorded for that item in menu-map.json
@@ -39,14 +39,22 @@ const menu = ( m, name ) => m.menuItems.find( ( x ) => x.menu === name );
 
 test( 'MUST FAIL: a header nav label is a disabled item with its chip words, at its own position', () => {
 	const header = menu( labels, 'header' );
-	const glasses = header.items.find( ( it ) => 'Glasses' === it.label );
-	assert.deepEqual( [ glasses.targets, glasses.disabled, glasses.badge, glasses.position ], [ [], true, 'SOON', 2 ] );
-	assert.deepEqual( header.items.map( ( it ) => it.position ), [ 1, 2, 3, 4, 5, 6 ], 'every item, label or link, holds a position in document order' );
-	const coming = header.items.find( ( it ) => 'Coming soon' === it.label );
-	assert.equal( coming.disabled, true, 'a label with no chip is a disabled item too' );
-	assert.equal( 'badge' in coming, false, 'and carries no badge' );
-	const nested = menu( mega, 'header' ).items.find( ( it ) => 'Contacts' === it.label );
-	assert.deepEqual( [ nested.disabled, nested.badge ], [ true, 'SOON' ], 'the chip is the words of the element nested in the label' );
+	const gift = header.items.find( ( it ) => 'Gift cards' === it.label );
+	assert.deepEqual( [ gift.targets, gift.disabled, gift.badge, gift.position ], [ [], true, 'NEW', 2 ] );
+	assert.deepEqual( header.items.map( ( it ) => it.position ), [ 1, 2, 3, 4, 5 ], 'every item, label or link, holds a position in document order' );
+	const nested = menu( mega, 'header' ).items.find( ( it ) => 'Promotions' === it.label );
+	assert.deepEqual( [ nested.disabled, nested.badge ], [ true, 'NEW' ], 'the chip is the words of the element nested in the label' );
+} );
+
+test( 'MUST FAIL: a coming-soon entry among the links is no menu item, whatever shape its chip takes (Bean, 2026-10-09)', () => {
+	const names = menu( labels, 'header' ).items.map( ( it ) => it.label );
+	assert.ok( ! names.includes( 'Glasses' ), 'a label with a lone SOON chip is dropped' );
+	assert.ok( ! names.includes( 'SOON' ), 'and its chip is not read as a label of its own' );
+	assert.ok( ! names.includes( 'Coming soon' ), 'a label that says coming soon is dropped with no chip at all' );
+	assert.ok( ! menu( mega, 'header' ).items.some( ( it ) => 'Contacts' === it.label ), 'a nested chip makes no difference' );
+	assert.ok( names.includes( 'Gift cards' ), 'negative control: a label with another chip stays a disabled item' );
+	assert.ok( names.includes( 'About' ) && names.includes( 'Contact' ), 'and the links stay' );
+	assert.deepEqual( menu( labels, 'header' ).splitAfter ?? null, null, 'no split is invented' );
 } );
 
 test( 'MUST FAIL: nothing else in a nav is mistaken for a label', () => {
@@ -78,7 +86,7 @@ test( 'MUST FAIL: an opener in another row of the header makes a second header m
 	assert.deepEqual( menu( other, 'header-2' ).items.map( ( it ) => it.label ), [ 'Help' ] );
 	assert.deepEqual( rows( mega, 'mega-menu-help' ), [ { menu: 'header', position: 6, parentItem: null } ] );
 	assert.deepEqual( rows( mega, 'mega-menu-lenses' ), [ { menu: 'header', position: 3, parentItem: null } ], 'the nav\'s own openers keep their slots' );
-	assert.deepEqual( menu( mega, 'header' ).items.map( ( it ) => it.label ), [ 'Frames', 'Brands', 'Lenses', 'Contacts', 'About us', 'Help' ] );
+	assert.deepEqual( menu( mega, 'header' ).items.map( ( it ) => it.label ), [ 'Frames', 'Brands', 'Lenses', 'Promotions', 'About us', 'Help' ] );
 	assert.equal( menu( mega, 'header-2' ), undefined );
 } );
 

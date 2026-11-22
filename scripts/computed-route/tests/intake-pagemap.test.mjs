@@ -202,9 +202,9 @@ test( 'real exports: Indus, Eye Care and Mama\'s page maps', { skip: ! fs.exists
 	assert.equal( c.rows.find( ( r ) => 'shop' === r.route ).slug, 'shop', 'the shop row keeps the WooCommerce slug' );
 	assert.equal( c.rows.find( ( r ) => 'lenses' === r.route ).slug, 'prescription-lenses' );
 	assert.deepEqual( menuNames( c ), [ 'drawer-1', 'drawer-2', 'header' ], 'Eye Care\'s drawer menus are not its mega sections, so they stay, and the links right of its logo are the header menu\'s second half (no second header menu)' );
-	assert.deepEqual( c.menuItems.find( ( x ) => 'header' === x.menu ).splitAfter, { position: 4, label: 'Glasses' }, 'Eye Care\'s header menu splits after the nav\'s last item' );
+	assert.deepEqual( c.menuItems.find( ( x ) => 'header' === x.menu ).splitAfter, { position: 3, label: 'Lenses' }, 'Eye Care\'s header menu splits after the nav\'s last item (its link-less "Glasses SOON" is no item)' );
 	const disabled = ( r ) => r.menuItems.flatMap( ( x ) => x.items.filter( ( it ) => it.disabled ).map( ( it ) => `${ x.menu } ${ it.label } ${ it.badge }` ) );
-	assert.deepEqual( disabled( c ), [ 'header Glasses SOON', 'drawer-1 Glasses SOON' ], 'Eye Care\'s link-less "Glasses SOON" is a label item of its header and drawer navs' );
+	assert.deepEqual( disabled( c ), [], 'Eye Care\'s link-less "Glasses SOON" says it is coming soon, so it is no label item of its header or drawer nav (Bean, 2026-10-09)' );
 	assert.deepEqual( [ ...disabled( a ), ...disabled( proposePageMap( { folder: real( 'mamas-munches-redesign' ) } ) ) ], [], 'Indus and Mama\'s navs draw no link-less item' );
 	assert.deepEqual( pageMapProblems( c.rows, ajv ), [] );
 	assert.deepEqual( linkProblems( c ), [] );

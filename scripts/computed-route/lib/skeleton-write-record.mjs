@@ -5,9 +5,10 @@
 // The factory takes the writer's shared context (`ctx`: m, facts, overrides, rows, rowOf, base, w); the functions it
 // returns reach the other writer modules through `ctx.w` when they are called.
 import { isSiteInfoValue } from './skeleton-rules.mjs';
+import { isSoonEntry } from './menu-soon-entry.mjs';
 
 export function makeRecorder( ctx ) {
-	const { m, facts, overrides, rows, rowOf, base, w, widthAlternatives, variantsOf } = ctx;
+	const { m, facts, overrides, rows, rowOf, base, w, widthAlternatives, variantsOf, R } = ctx;
 	const record = ( e, r, extra = {} ) => {
 		const top = r.candidates?.[ 0 ];
 		const row = {
@@ -27,8 +28,27 @@ export function makeRecorder( ctx ) {
 	// The children of an element whose block draws them itself: each is a row absorbed into it, never a block.
 	// A child carrying its own client decision is still absorbed (its block draws it), but the row says the decision no
 	// longer applies, so the review shows it instead of dropping it.
+	// A coming-soon entry among the links of a menu the block draws (rules.navigation.briefOnlyEntry): an element that is no link and
+	// holds none, whose own words or whose chip (the words of its leaf children) say it is coming soon. The block draws no such
+	// entry, so the entry is removed (a brief-only line), never absorbed, and never built as a disabled item.
+	const soonEntry = ( e, k, rule ) => {
+		const spec = R?.[ rule ]?.briefOnlyEntry;
+		const below = ( x ) => m.kids( x ).filter( ( c ) => ! m.isPart( c ) ).flatMap( ( c ) => [ c, ...below( c ) ] );
+		const linkish = ( x ) => [ 'a', 'button', 'input', 'select', 'textarea' ].includes( x.tag ) || undefined !== x.attrs?.href;
+		if ( ! spec || linkish( k ) || ! m.blockKids( e ).some( ( x ) => 'a' === x.tag ) || below( k ).some( linkish ) ) {
+			return null;
+		}
+		const chip = m.blockKids( k ).filter( ( c ) => ! m.blockKids( c ).length ).map( ( c ) => m.words( c ) ).filter( Boolean ).join( ' ' );
+		return isSoonEntry( { label: m.words( k ), badge: chip }, spec ) ? spec : null;
+	};
 	const absorbSubtree = ( e, top, why, rule, node = null, parentBlock = null ) => {
 		m.blockKids( e ).forEach( ( k ) => {
+			const soon = soonEntry( e, k, rule );
+			if ( soon ) {
+				record( k, { action: 'remove', reason: `brief-only menu entry (${ soon.id }): ${ soon.reason }`, source: `decisions ${ soon.id }`, confidence: 1, candidates: [] } );
+				removeSubtree( k, `inside a removed element (${ k.key })` );
+				return;
+			}
 			const own = overrides( k, m.words( k ) );
 			const stale = 'client decision' === own?.source ? `the client decision for ${ k.key } (${ own.block || 'remove' }) no longer applies: ${ top.block } draws this element` : null;
 			record( k, { action: 'absorbed', reason: `drawn by ${ top.block }: ${ why }`, confidence: 1, candidates: [], rule, into: top.key, stale } );
