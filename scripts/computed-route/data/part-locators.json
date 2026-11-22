@@ -2014,9 +2014,80 @@
 					"match": {
 						"shopPart": "buybox-add-to-basket"
 					}
+				},
+				"price": {
+					"from": "page",
+					"match": {
+						"shopPart": "buybox-price"
+					}
+				},
+				"priceRow": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "price"
+					}
+				},
+				"rrpPrice": {
+					"from": "priceRow",
+					"match": {
+						"text": "currency",
+						"notInAnchor": "price"
+					},
+					"pick": "first"
 				}
 			},
 			"parts": {
+				"price-row": {
+					"sameAs": "priceRow"
+				},
+				"rrp-price": {
+					"sameAs": "rrpPrice"
+				},
+				"rrp-pill": {
+					"from": "priceRow",
+					"match": {
+						"text": "words",
+						"hasAmount": true,
+						"notInAnchor": "price",
+						"lacksAnchor": "rrpPrice"
+					},
+					"pick": "first"
+				},
+				"rrpChip": {
+					"sameAs": "rrp-pill"
+				},
+				"stock": {
+					"from": "page",
+					"match": {
+						"followsAnchor": "priceRow",
+						"text": "words",
+						"childText": [
+							"none",
+							"words"
+						]
+					},
+					"pick": "first"
+				},
+				"stock-in-stock": {
+					"sameAs": "stock"
+				},
+				"savingBadge": {
+					"from": "page",
+					"match": {
+						"position": [
+							"absolute"
+						],
+						"hasAmount": true,
+						"text": "words",
+						"inside": {
+							"square": true
+						},
+						"notInside": {
+							"repeats": true
+						}
+					},
+					"pick": "first"
+				},
 				"gallery-thumb": {
 					"sameAs": "thumbs"
 				},

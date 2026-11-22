@@ -278,3 +278,27 @@ test( 'the Add to Cart icon is the svg inside the add-to-cart button and nothing
 	assert.deepEqual( bare[ 'add-to-cart-icon' ], [], 'an svg beside the button is no icon of the button (negative control)' );
 	assert.equal( bare[ 'add-to-cart' ].length, 1, 'the button itself is still found' );
 } );
+
+// F-53: the buy box's price row is the parent of the price the shop parts record locates; inside it the struck RRP is the first
+// other bare amount and the saving pill the words holding an amount but not the RRP; the stock line is a dot and words after that
+// row; the gallery's saving badge is an absolutely placed amount inside a square, never inside a repeated card. The planted page
+// draws each value in its own span, as the draft runtime renders a hole.
+test( 'MUST FAIL: the price row, RRP, saving pill, stock line and gallery saving badge are found by structure, and none where the draft draws none', async () => {
+	const card = '<div style="display:flex"><div class="card"><div style="position:relative;width:200px;height:200px"><span style="position:absolute;bottom:12px;left:12px">Save <span>£9</span></span></div><p>Frame</p></div><div class="card"><div style="position:relative;width:200px;height:200px"></div><p>Frame</p></div></div>';
+	const gallery = ( badge ) => `<div><div style="position:relative;width:500px;height:500px">${ badge }</div></div>`;
+	const info = '<div><h1><span>Aviator</span></h1><div><span data-dc-tpl="366"><span>£139</span></span><span>RRP <span style="text-decoration:line-through"><span>£171</span></span></span><span>You save <span>£32</span></span></div><div><span style="display:inline-block;width:6px;height:6px"></span><span>In stock — dispatched next working day</span></div><button data-dc-tpl="396" type="button">Add to bag</button></div>';
+	const extra = { shopParts: { 'buybox-price': [ { dc: 'Product', tpl: '366' } ], 'buybox-add-to-basket': [ { dc: 'Product', tpl: '396' } ] }, rootName: 'Product' };
+	const r = await locateIn( BUY( gallery( '<span style="position:absolute;top:18px;right:18px">Save <span>£32</span> off RRP</span>' ) + info + card ), 'buybox', extra );
+	assert.equal( r[ 'price-row' ].length, 1 );
+	assert.deepEqual( r[ 'rrp-price' ].map( ( i ) => i.text ), [ '£171' ] );
+	assert.deepEqual( r[ 'rrp-pill' ].map( ( i ) => i.text ), [ 'You save £32' ] );
+	assert.deepEqual( r.rrpChip.map( ( i ) => i.text ), [ 'You save £32' ] );
+	assert.deepEqual( r.stock.map( ( i ) => i.text ), [ 'In stock — dispatched next working day' ] );
+	assert.deepEqual( r.savingBadge.map( ( i ) => i.text ), [ 'Save £32 off RRP' ] );
+	// Negative controls: no located price is no price row (and nothing in it); a badge in normal flow is no saving badge, and a
+	// repeated card's badge never stands in for it.
+	const bare = await locateIn( BUY( gallery( '<span>Save <span>£32</span> off RRP</span>' ) + info + card ), 'buybox', { ...extra, shopParts: { 'buybox-add-to-basket': extra.shopParts[ 'buybox-add-to-basket' ] } } );
+	for ( const part of [ 'price-row', 'rrp-price', 'rrp-pill', 'stock', 'savingBadge' ] ) {
+		assert.deepEqual( bare[ part ], [], part );
+	}
+} );

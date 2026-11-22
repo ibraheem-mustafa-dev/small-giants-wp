@@ -1,0 +1,44 @@
+[
+	{
+		"file": "data/part-locators.json",
+		"find": "\"parentOfAnchor\": \"price\"",
+		"replace": "\"parentOfAnchor\": \"addToCart\"",
+		"why": "the price row is not the price's parent"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"text\": \"currency\",\n\t\t\t\t\t\t\"notInAnchor\": \"price\"",
+		"replace": "\"text\": \"currency\"",
+		"why": "the price's own amount is taken as the RRP"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"notInAnchor\": \"price\",\n\t\t\t\t\t\t\"lacksAnchor\": \"rrpPrice\"",
+		"replace": "\"notInAnchor\": \"price\"",
+		"why": "the RRP's holder is taken as the saving pill"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"followsAnchor\": \"priceRow\",",
+		"replace": "\"followsAnchor\": \"addToCart\",",
+		"why": "the stock line is looked for after the add button"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"childText\": [\n\t\t\t\t\t\t\t\"none\",\n\t\t\t\t\t\t\t\"words\"\n\t\t\t\t\t\t]",
+		"replace": "\"childText\": [\n\t\t\t\t\t\t\t\"words\"\n\t\t\t\t\t\t]",
+		"why": "the stock line's dot is not read"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"position\": [\n\t\t\t\t\t\t\t\"absolute\"\n\t\t\t\t\t\t],\n\t\t\t\t\t\t\"hasAmount\": true,\n\t\t\t\t\t\t\"text\": \"words\",",
+		"replace": "\"hasAmount\": true,\n\t\t\t\t\t\t\"text\": \"words\",",
+		"why": "an amount in normal flow is the saving badge"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": ",\n\t\t\t\t\t\t\"notInside\": {\n\t\t\t\t\t\t\t\"repeats\": true\n\t\t\t\t\t\t}",
+		"replace": "",
+		"why": "a repeated card's badge stands in for the gallery's"
+	}
+]
