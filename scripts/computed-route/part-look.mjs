@@ -16,6 +16,8 @@
 //              read on a real product instead, linked to a choice flow where the draft draws the flow's opener), reads each paired part on the
 //              live page at the three widths, writes the settings whose live value differs from the draft's (and takes back a write that changed
 //              nothing) and reports what still differs. It needs a `local-mediatest-*` --site; set SGS_SECRETS_ROOT in a worktree.
+//              Every part with settings it did not compare (no locator, no draft element, no live selector or element, no look read
+//              on both sides) is listed as not verified, first, and the surface is a full match only when none is and nothing differs.
 //              A surface whose draft located parts and whose live read compared none of them fails: the report is written, each reason is
 //              printed as VERIFY FAILED and the exit code is 1. A header read whose basket panel stays shut throws (exit 2).
 //   my-account-in  the account's signed-in views (orders, an order's page, addresses, details): the draft is signed in on its own
@@ -346,6 +348,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		const r = await runPartLook( { client, surfaces: surface ? [ surface ] : SURFACES, site: flag( '--site' ), compare: argv.includes( '--compare' ), write: argv.includes( '--write' ), verify: argv.includes( '--verify' ), shots: ! argv.includes( '--no-shots' ), seed: flag( '--seed' ), login: loginOf( flag( '--login' ) ), only: flag( '--only' ) ? flag( '--only' ).split( ',' ) : null, dryRun: argv.includes( '--dry-run' ), out: flag( '--out' ), headed: argv.includes( '--headed' ) } );
 		for ( const [ block, t ] of Object.entries( r.totals ) ) {
 			console.log( `${ block }: ${ t.written } values to write (${ t.knownFaultWrites } known not to paint), table rows paired ${ t.tableRowsPaired}/${ t.tableRowsPresent }, parts paired ${ t.partsPaired }/${ t.partsWithSettings }, ${ t.unpaired } unpaired, ${ t.noLocator } no locator, ${ t.noSetting } no setting${ t.compare ? `; compare: equal ${ t.compare.equal }, differs ${ t.compare.differs }, hand-set only ${ t.compare.handSetOnly }, route only ${ t.compare.routeOnly }` : '' }` );
+		}
+		for ( const s of Object.values( r.report.surfaces ) ) {
+			const v = s.verify;
+			v && console.log( `${ s.surface }: verify ${ v.allMatch ? 'compared every part with settings: all match' : `not a full match: ${ v.counts.notVerified } of ${ v.counts.partsWithSettings } parts with settings not verified, ${ v.counts.differs } pairs still differ` } (${ v.counts.matched } of ${ v.counts.compared } compared pairs match)` );
 		}
 		console.log( `Report: ${ path.join( r.outDir, 'report.md' ) }` );
 		r.refusals.forEach( ( f ) => console.error( `REFUSED ${ f }` ) );

@@ -388,6 +388,16 @@ function tiersFor( row, perWidth ) {
 	return { tiers };
 }
 
+// Why a value the draft's element carries at 1440 is not read: a size names what the draft states (`50%`, `100vw`, `3em`), anything else
+// the computed value the setting cannot take.
+export function unreadWhy( property, styles ) {
+	const s = ( p ) => clean( styles?.[ p ] );
+	if ( SIZES.has( property ) ) {
+		return `the draft states ${ property } as ${ statedSize( property, s )?.text || s( property ) || 'nothing' } at 1440, not a length in px the setting takes`;
+	}
+	return `the draft's ${ property } at 1440${ s( property ) ? ` (${ s( property ) })` : '' } is not a value the route reads for this setting`;
+}
+
 // Whether a part's own locator finds only the current element (a menu's item marked aria-current): its rest read IS the current look.
 // A locator that names another (sameAs) is followed to the one it names.
 export function readsCurrent( locators, part ) {
@@ -485,6 +495,12 @@ export function buildLook( { block, rows, names, locators, reads, snapshot = nul
 					out.atInitial.push( { part, attr: row.attr_name } );
 				}
 				const size = SIZES.has( row.css_property );
+				// An element the draft does draw at 1440 whose value the route cannot read is not an absent element: say what it states.
+				const shown = t.skip.startsWith( 'the draft shows' ) && ( instances[ 1440 ] || [] ).length;
+				if ( shown ) {
+					mark( row, 'not-written', unreadWhy( row.css_property, instances[ 1440 ][ 0 ].styles ), { code: 'unreadable' } );
+					continue;
+				}
 				mark( row, 'not-written', t.skip, { code: 'initial value' === t.skip ? ( size ? 'undeclared' : 'initial' ) : ( t.skip.startsWith( 'the draft shows' ) ? 'absent' : 'noDifference' ) } );
 				continue;
 			}

@@ -9,7 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { loadChromium } from './fill-read.mjs';
-import { COVERS, LOOKS, WIDTHS, buildLook, primitive, readPart, samePrimitive } from './fill-part-look.mjs';
+import { COVERS, LOOKS, WIDTHS, buildLook, lookRowsOf, primitive, readPart, samePrimitive } from './fill-part-look.mjs';
 import { sameSetting } from './part-look-compare.mjs';
 
 // A part's live selector. WooCommerce blocks: the look table's selector for the part's row (the part named for the row's id, or the
@@ -104,6 +104,33 @@ export function rowsHolding( rows, part, property ) {
 	return rows.filter( ( r ) => r.css_element === part && r.css_property && ! r.css_state && 'boolean' !== r.attr_type && ( COVERS[ property ] || [ property ] ).includes( r.css_property ) );
 }
 
+// The parts a surface's look settings paint (the rows the reader pairs, lib/fill-part-look.mjs::lookRowsOf; switches left out: a switch
+// is checked by whether its part shows).
+export const partsWithSettings = ( rows, locators = null ) => [ ...new Set( lookRowsOf( rows, locators ).filter( ( r ) => 'boolean' !== r.attr_type ).map( ( r ) => r.css_element ) ) ];
+
+// The parts with settings a verify did not compare, each with why: { part: reason }. A part the build has no locator for, one the
+// draft has no element for, one with no live selector, one whose selector finds nothing on the live page and one no look of which was
+// read on both sides are all unverified, so a verify that compared only some parts never reads as a full match.
+export function notVerifiedParts( { parts, built, draftLocated, selectorsNone = {}, selectors = {}, liveReads = {}, compared = new Set() } ) {
+	const out = {};
+	const noLocator = new Set( ( built.noLocator || [] ).map( ( u ) => u.part ) );
+	const comparedParts = new Set( [ ...compared ].map( ( k ) => k.split( '|' )[ 0 ] ) );
+	for ( const part of parts ) {
+		if ( noLocator.has( part ) ) {
+			out[ part ] = 'no locator for the part, so the draft was not read for it';
+		} else if ( ! draftLocated.includes( part ) ) {
+			out[ part ] = 'the draft has no element for the part (unpaired), so nothing was compared';
+		} else if ( selectorsNone[ part ] || ! selectors[ part ] ) {
+			out[ part ] = `no live selector: ${ selectorsNone[ part ] || 'none is named' }`;
+		} else if ( ! liveReads?.[ part ] ) {
+			out[ part ] = `${ selectors[ part ] } shows no element on the live page`;
+		} else if ( ! comparedParts.has( part ) ) {
+			out[ part ] = 'no look of the part was read on both the draft and the live page';
+		}
+	}
+	return out;
+}
+
 // The planning and checking of one surface. `buildInputs` are buildLook's arguments (without `force`); `built` its result for the
 // state written; `readLive()` returns { reads, shown } for the page now; `patch( { set, unset } )` writes to the scratch copy;
 // `readSaved()` returns the block's saved attributes.
@@ -137,12 +164,14 @@ export async function verifySurface( { buildInputs, built, readLive, patch, read
 		}
 	}
 	let cmp1 = cmp0;
+	let lastReads = first.reads;
 	const kept = [];
 	const takenBack = [];
 	if ( Object.keys( set ).length ) {
 		log( `verify: writing ${ Object.keys( set ).length } settings the live page showed a difference for` );
 		await patch( { set, unset: [] } );
 		const second = await readLive();
+		lastReads = second.reads;
 		cmp1 = compareParts( { draftReads: buildInputs.reads, liveReads: second.reads, policy: buildInputs.policy } );
 		const stillDiffers = new Set( cmp1.differs.map( ( d ) => `${ d.part }|${ d.property }` ) );
 		const revertSet = {};
@@ -214,6 +243,8 @@ export async function verifySurface( { buildInputs, built, readLive, patch, read
 	// A surface whose draft located parts and whose live read compared none of them proved nothing: it fails, with the parts and why.
 	const failures = [];
 	const draftLocated = Object.keys( buildInputs.reads || {} ).filter( ( part ) => Object.values( buildInputs.reads[ part ] || {} ).some( ( l ) => l.length ) );
+	const notVerified = notVerifiedParts( { parts: partsWithSettings( rows, buildInputs.locators ), built, draftLocated, selectorsNone, selectors, liveReads: lastReads, compared: cmp1.compared } );
+	const nNot = Object.keys( notVerified ).length;
 	if ( draftLocated.length && 0 === cmp1.compared.size ) {
 		const reasons = [
 			...Object.entries( selectorsNone ).map( ( [ part, why ] ) => `${ part }: ${ why }` ),
@@ -221,7 +252,7 @@ export async function verifySurface( { buildInputs, built, readLive, patch, read
 		];
 		failures.push( `the draft located ${ draftLocated.length } part${ 1 === draftLocated.length ? '' : 's' } (${ draftLocated.join( ', ' ) }) and the live read compared no part and property pair${ reasons.length ? `: ${ reasons.join( '; ' ) }` : '' }` );
 	}
-	return { stillDiffers, kept, takenBack, noEffect, noSetting, droppedNoSetting: dropped, failures, counts: { compared: cmp1.compared.size, matched: cmp1.matched.size, differs: cmp1.differs.length, written: kept.length, takenBack: takenBack.length, stillShown: stillShown.length, noSettingBefore: built.noSetting.length, noSettingAfter: noSetting.filter( ( n ) => false !== n.liveRead ).length }, notVerified: selectorsNone };
+	return { stillDiffers, kept, takenBack, noEffect, noSetting, droppedNoSetting: dropped, failures, counts: { compared: cmp1.compared.size, matched: cmp1.matched.size, differs: cmp1.differs.length, written: kept.length, takenBack: takenBack.length, stillShown: stillShown.length, noSettingBefore: built.noSetting.length, noSettingAfter: noSetting.filter( ( n ) => false !== n.liveRead ).length, partsWithSettings: partsWithSettings( rows, buildInputs.locators ).length, notVerified: nNot }, notVerified, allMatch: 0 === nNot && 0 === cmp1.differs.length && 0 === stillShown.length };
 }
 
 // ---- the browser effect -------------------------------------------------------------------------------------------------

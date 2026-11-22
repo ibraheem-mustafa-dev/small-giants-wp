@@ -1,0 +1,80 @@
+[
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "allMatch: 0 === nNot && 0 === cmp1.differs.length && 0 === stillShown.length };",
+		"replace": "allMatch: 0 === cmp1.differs.length && 0 === stillShown.length };",
+		"why": "a verify with unpaired parts reads as a full match"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "allMatch: 0 === nNot && 0 === cmp1.differs.length && 0 === stillShown.length };",
+		"replace": "allMatch: 0 === nNot && 0 === stillShown.length };",
+		"why": "a pair that differs reads as a full match"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "\t\tif ( noLocator.has( part ) ) {\n\t\t\tout[ part ] = 'no locator for the part, so the draft was not read for it';\n\t\t} else if",
+		"replace": "\t\tif",
+		"why": "a part with no locator is called unpaired"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "\t\t} else if ( ! draftLocated.includes( part ) ) {",
+		"replace": "\t\t} else if ( false ) {",
+		"why": "a part the draft has no element for is not counted as unverified"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "\t\t} else if ( selectorsNone[ part ] || ! selectors[ part ] ) {",
+		"replace": "\t\t} else if ( false ) {",
+		"why": "a part with no live selector is not counted as unverified"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "\t\t} else if ( ! liveReads?.[ part ] ) {",
+		"replace": "\t\t} else if ( false ) {",
+		"why": "a part whose selector finds nothing live is not counted as unverified"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "\t\t} else if ( ! comparedParts.has( part ) ) {",
+		"replace": "\t\t} else if ( false ) {",
+		"why": "a part no look of which was compared counts as verified"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "partsWithSettings: partsWithSettings( rows, buildInputs.locators ).length, notVerified: nNot }",
+		"replace": "partsWithSettings: 0, notVerified: nNot }",
+		"why": "the count of parts with settings is lost"
+	},
+	{
+		"file": "lib/part-look-report.mjs",
+		"find": "nv.length && lines.push( '### Not verified', '',",
+		"replace": "false && lines.push( '### Not verified', '',",
+		"why": "the parts not verified are not listed"
+	},
+	{
+		"file": "lib/part-look-report.mjs",
+		"find": "lines.push( '### Verified on the live page', '', `${ v.allMatch ?",
+		"replace": "lines.push( '### Verified on the live page', '', `${ true ?",
+		"why": "the report calls every verify a full match"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "\t\t\t\tif ( shown ) {\n\t\t\t\t\tmark( row, 'not-written', unreadWhy( row.css_property, instances[ 1440 ][ 0 ].styles ), { code: 'unreadable' } );",
+		"replace": "\t\t\t\tif ( false ) {\n\t\t\t\t\tmark( row, 'not-written', unreadWhy( row.css_property, instances[ 1440 ][ 0 ].styles ), { code: 'unreadable' } );",
+		"why": "a non-px size is reported as an absent element"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "const shown = t.skip.startsWith( 'the draft shows' ) && ( instances[ 1440 ] || [] ).length;",
+		"replace": "const shown = t.skip.startsWith( 'the draft shows' );",
+		"why": "a part drawn only on narrower devices with nothing to write there is called unreadable"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "the draft states ${ property } as ${ statedSize( property, s )?.text || s( property ) || 'nothing' } at 1440",
+		"replace": "the draft states ${ property } as ${ s( property ) || 'nothing' } at 1440",
+		"why": "the reason names the computed value, not what the draft states"
+	}
+]
