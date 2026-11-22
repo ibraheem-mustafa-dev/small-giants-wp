@@ -1,6 +1,6 @@
 [
 	{"file":"lib/template-piece-shop-sort.mjs","find":"\tif ( disagree.length || 1 !== located.length ) {","replace":"\tif ( ! located.length ) {","why":"a sort part located on two elements is guessed between"},
-	{"file":"lib/template-piece-shop-sort.mjs","find":"\tconst wc = 'none' === how ? orders.default : byPrice ? orders[ 'asc' === how.dir ? 'priceAsc' : 'priceDesc' ] : null;","replace":"\tconst wc = 'none' === how ? orders.default : orders[ 'asc' === how?.dir ? 'priceAsc' : 'priceDesc' ];","why":"an order WooCommerce lacks is taken as a price order"},
+	{"file":"lib/template-piece-shop-sort.mjs","find":"} else if ( by( 'price' ) && ! how.text ) {","replace":"} else if ( how && 'none' !== how ) {","why":"an order WooCommerce lacks is taken as a price order"},
 	{"file":"lib/template-piece-shop-sort.mjs","find":"\t\t\treturn { field: l.field, dir: l.of === a ? 'asc' : 'desc' };","replace":"\t\t\treturn { field: l.field, dir: 'asc' };","why":"a downward order reads as upward"},
 	{"file":"lib/template-piece-shop-sort.mjs","find":"\tif ( ! sorts.length ) {\n\t\treturn 'none';","replace":"\tif ( false ) {\n\t\treturn 'none';","why":"an option with no sort is not the listing's own order"},
 	{"file":"lib/template-piece-shop-sort.mjs","find":"\tconst inListing = ( e ) => ( e.membership || [] ).some( ( m ) => 'sc-for' === m.kind && bare( m.list ) === bare( listing.list ) );","replace":"\tconst inListing = () => false;","why":"a hole inside the listing's items counts as its count"},

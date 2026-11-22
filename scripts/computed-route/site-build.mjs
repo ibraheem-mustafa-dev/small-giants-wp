@@ -7,6 +7,7 @@
 //   node site-build.mjs <client> --site <site> --store-visible [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --account-registration [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]
+//   node site-build.mjs <client> --site <site> --shop-options [--apply] [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
 // each, and writes each new post id into its page-map row as it is made. The site the ids were written for is recorded
@@ -27,6 +28,10 @@
 // --menus runs only the menus and their mega-menu bindings (lib/site-build-menus-step.mjs): the menu, item and theme-location steps, each
 // mega panel's section page, and the removal of an item a mega item took over, on a site that is already built; it
 // reads the page map and never writes it (it makes no post), and records the site's menu ids in menu-map.json.
+// --shop-options runs only the theme's shop options (lib/site-build-shop-options.mjs, data/shop-options.json): each sgs_shop_*
+// theme mod the shop draft decides (the count's words, the sort menu, the filter panel and drawer, the rail's drawer width from
+// the filled tree's ownAlternativeBelow mark), planned against the site's values, written with --apply and read back; every option
+// it cannot decide is printed with the reason. A whole build runs the same step last.
 // A `product` row's menu entry becomes a custom link item (the draft's link text, the product's recorded permalink and the
 // draft href's own query) once --catalogue has built the products on the site (lib/site-build-menu-links.mjs); until then it
 // is a note naming that step, so the order is --catalogue --apply, then the whole build or --menus.
@@ -51,6 +56,7 @@ import { runStoreVisible } from './lib/site-build-store-visible.mjs';
 import { runAccountRegistration } from './lib/site-build-account-registration.mjs';
 import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
 import { menuLinksOf } from './lib/site-build-menu-links.mjs';
+import { runShopOptions } from './lib/site-build-shop-options.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
@@ -65,6 +71,7 @@ if ( ! client || ( ! site && ! promote ) ) {
 	console.error( '       node site-build.mjs <client> --site <site> --store-visible [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --account-registration [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --site <site> --shop-options [--apply] [--repo <root>]' );
 	process.exit( 2 );
 }
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -114,6 +121,14 @@ if ( args.includes( '--store-visible' ) ) {
 if ( args.includes( '--account-registration' ) ) {
 	try {
 		process.exit( runAccountRegistration( { rows: readPageMap( mapFile ), repo, client, runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
+if ( args.includes( '--shop-options' ) ) {
+	try {
+		process.exit( runShopOptions( { repo, client, runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -204,7 +219,7 @@ try {
 	const counts = tally( first.actions );
 	if ( ! apply ) {
 		console.log( `${ counts.creates } to create, ${ counts.changes } to change (${ first.actions.filter( ( a ) => 'template-remove' === a.type ).length } of them saved templates removed), ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
-		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply: false, pending: true } ) || runAccountRegistration( { rows, repo, client, runPhp, apply: false } ) );
+		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply: false, pending: true } ) || runAccountRegistration( { rows, repo, client, runPhp, apply: false } ) || runShopOptions( { repo, client, runPhp, apply: false } ) );
 	}
 	const build = wpBuildPage( repo, site );
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
@@ -238,6 +253,10 @@ try {
 	// The account page's registration switch, once the page map's account row is built (lib/site-build-account-registration.mjs).
 	if ( ! templatesOnly && ! onlyRows && 0 !== runAccountRegistration( { rows, repo, client, runPhp, apply: true } ) ) {
 		throw new Error( 'the account registration switch did not complete' );
+	}
+	// The theme's shop options, from the shop surface's artefacts (lib/site-build-shop-options.mjs).
+	if ( ! templatesOnly && ! onlyRows && 0 !== runShopOptions( { repo, client, runPhp, apply: true } ) ) {
+		throw new Error( 'the shop options did not complete' );
 	}
 } catch ( e ) {
 	console.error( `FAILED: ${ e.message }` );

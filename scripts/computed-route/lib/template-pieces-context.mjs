@@ -56,11 +56,12 @@ export const FACT_KINDS = [ 'order', 'woo-layout', 'frame' ];
 // The kinds whose builder resolves draft links to site addresses (lib/template-piece-account.mjs::place reads ctx.draftLinks).
 export const LINK_KINDS = [ 'account' ];
 
-// The fields of the draft's product records, by role: { name, price, description, image } (each a list of field names,
-// over every record list the catalogue reader finds: lib/catalogue-records.mjs::recordLists, ::imageFields,
-// ::descriptionField). Empty lists when the handoff has no records.
+// The fields of the draft's product records, by role: { name, price, rrp, brand, description, image } (each a list of field
+// names, over every record list the catalogue reader finds: lib/catalogue-records.mjs::recordLists, ::imageFields,
+// ::descriptionField; `rrp` the list's recommended price field, `brand` its brand field when every record holds a brand as
+// words, as lib/catalogue-read.mjs::readCatalogue reads it). Empty lists when the handoff has no records.
 export function productFieldsOf( folder ) {
-	const out = { name: [], price: [], description: [], image: [] };
+	const out = { name: [], price: [], rrp: [], brand: [], description: [], image: [] };
 	let lists = [];
 	let ctx = null;
 	try {
@@ -75,6 +76,8 @@ export function productFieldsOf( folder ) {
 		const img = imageFields( ctx, l.records, folder, taken );
 		add( 'name', 'name' );
 		add( 'price', l.prices.price );
+		add( 'rrp', l.prices.rrp );
+		l.records.length && l.records.every( ( r ) => 'string' === typeof r.brand ) && add( 'brand', 'brand' );
 		add( 'image', img.image );
 		add( 'image', img.gallery );
 		add( 'description', descriptionField( ctx, l.records, [ ...taken, img.image, img.gallery ].filter( Boolean ) ) );

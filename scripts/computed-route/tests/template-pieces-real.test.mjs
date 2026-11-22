@@ -26,8 +26,8 @@ const EYE = 'eye-care-ward-end';
 const refs = ( tree ) => treeNodes( tree ).map( ( r ) => refKey( r.node ) ).filter( Boolean );
 
 test( 'the catalogue reader names the product record fields each draft fills its product page from', () => {
-	assert.deepEqual( productFieldsOf( path.join( REPO, 'sites', MAMAS, 'handoff' ) ), { name: [ 'name' ], price: [ 'from' ], description: [ 'short' ], image: [ 'img', 'gallery' ] } );
-	assert.deepEqual( productFieldsOf( path.join( REPO, 'sites', EYE, 'handoff' ) ), { name: [ 'name' ], price: [ 'price' ], description: [], image: [ 'img' ] } );
+	assert.deepEqual( productFieldsOf( path.join( REPO, 'sites', MAMAS, 'handoff' ) ), { name: [ 'name' ], price: [ 'from' ], rrp: [], brand: [], description: [ 'short' ], image: [ 'img', 'gallery' ] } );
+	assert.deepEqual( productFieldsOf( path.join( REPO, 'sites', EYE, 'handoff' ) ), { name: [ 'name' ], price: [ 'price' ], rrp: [ 'rrp' ], brand: [ 'brand' ], description: [], image: [ 'img' ] } );
 } );
 
 test( 'MUST FAIL: Mama\'s product skeleton gets one buy box, a bound title and description, and keeps every block outside the buy box', () => {

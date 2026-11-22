@@ -15,7 +15,9 @@
 // sorting, in the draft's order. Each of the draft's sort options is read in the logic: the option's value tested against
 // the select's state key guards a `.sort( ( a, b ) => … )` whose comparator orders by a record field. An option with no
 // guarded sort is the listing's own order (`find.orders.default`), one ordering by the product's price field upwards or
-// downwards is `find.orders.priceAsc` or `priceDesc`, and any other option is a missing-features note.
+// downwards is `find.orders.priceAsc` or `priceDesc`, one ordering by the saving downwards or by the brand as text upwards is
+// the theme's own order (sgs_biggest_saving, sgs_brand_az: sortOptionsOf), which the site build's shop step turns on and puts
+// in the theme's sort menu with the draft's words (lib/site-build-shop-options.mjs), and any other option is a missing-features note.
 //
 // The count (`find.count`): the one element outside the listing, not a control, whose own hole the logic builds from the
 // length of the list the listing's loop walks (`list.length + ' treats'` beside `<sc-for list="{{ list }}">`). A count of
@@ -89,6 +91,39 @@ function orderOf( L, stateKey, value ) {
 	return comparatorOf( sorts[ 0 ].arguments[ 0 ] );
 }
 
+// Whether the logic gives record field `field` as the saving: a property `field` whose value (or the variable it names) is
+// the record's recommended price minus its price (`save = p.rrp - p.price; … saveRaw: save`). `fields`: productFieldsOf's roles.
+function isSavingField( L, field, fields ) {
+	const member = ( n, names ) => 'MemberExpression' === n?.type && ! n.computed && ( names || [] ).includes( n.property?.name );
+	const saving = ( n ) => 'BinaryExpression' === n?.type && '-' === n.operator && member( n.left, fields.rrp ) && member( n.right, fields.price );
+	return valuesOf( L, field ).some( ( v ) => saving( v ) || ( 'Identifier' === v.type && saving( resolveName( L, v )?.init ) ) );
+}
+
+// The draft's sort options, in order, each with the order the shop can offer for it: [ { words, value, how, order } ], `order`
+// one of menu_order (no guarded sort: the listing's own order), price / price-desc (the price field upwards / downwards),
+// sgs_biggest_saving (the saving downwards, isSavingField), sgs_brand_az (the brand field as text upwards), or null (any other
+// order). `select`: the inventory's select element; `fields`: productFieldsOf's roles (lib/template-pieces-context.mjs).
+export function sortOptionsOf( { index, select, L, fields = {} } ) {
+	const stateKey = bare( /\svalue="([^"]*)"/.exec( openTag( select?.snippet ) )?.[ 1 ] ).split( '.' ).pop();
+	const options = select ? index.children( select.key ).map( ( k ) => index.byKey.get( k ) ).filter( ( e ) => 'option' === e.tag ) : [];
+	return options.map( ( o ) => {
+		const value = /\svalue="([^"]*)"/.exec( o.snippet || '' )?.[ 1 ] ?? o.words;
+		const how = L && stateKey ? orderOf( L, stateKey, value ) : null;
+		const by = ( role ) => how && 'none' !== how && ( fields[ role ] || [] ).includes( how.field );
+		let order = null;
+		if ( 'none' === how ) {
+			order = 'menu_order';
+		} else if ( by( 'price' ) && ! how.text ) {
+			order = 'asc' === how.dir ? 'price' : 'price-desc';
+		} else if ( by( 'brand' ) && how.text && 'asc' === how.dir ) {
+			order = 'sgs_brand_az';
+		} else if ( how && 'none' !== how && ! how.text && 'desc' === how.dir && isSavingField( L, how.field, fields ) ) {
+			order = 'sgs_biggest_saving';
+		}
+		return { words: String( o.words ?? '' ).trim(), value, how, order };
+	} );
+}
+
 function placeSorting( ctx, piece, index ) {
 	const { key, tree } = ctx;
 	const refuse = ( why ) => ( { problems: [ `${ key }: piece "${ piece.id }" (${ piece.block }) is not placed: ${ why }` ] } );
@@ -112,22 +147,20 @@ function placeSorting( ctx, piece, index ) {
 	const select = index.elements.find( ( e ) => 'select' === e.tag && index.within( e.key, located[ 0 ] ) ) || index.elements.find( ( e ) => 'select' === e.tag && index.chain( located[ 0 ] ).includes( e.key ) );
 	const notes = [];
 	const L = draftLogic( ctx.draftSource );
-	const stateKey = bare( /\svalue="([^"]*)"/.exec( openTag( select?.snippet ) )?.[ 1 ] ).split( '.' ).pop();
-	const options = select ? index.children( select.key ).map( ( k ) => index.byKey.get( k ) ).filter( ( e ) => 'option' === e.tag ) : [];
+	const options = select ? sortOptionsOf( { index, select, L, fields: ctx.productFields || {} } ) : [];
 	const orders = piece.find.orders || {};
+	const wcOf = { menu_order: orders.default, price: orders.priceAsc, 'price-desc': orders.priceDesc };
 	const offered = [];
 	for ( const o of options ) {
-		const value = /\svalue="([^"]*)"/.exec( o.snippet || '' )?.[ 1 ] ?? o.words;
-		const how = L && stateKey ? orderOf( L, stateKey, value ) : null;
-		const byPrice = how && 'none' !== how && ! how.text && ( ctx.productFields?.price || [] ).includes( how.field );
-		const wc = 'none' === how ? orders.default : byPrice ? orders[ 'asc' === how.dir ? 'priceAsc' : 'priceDesc' ] : null;
-		if ( wc ) {
-			offered.push( `"${ o.words }" = ${ wc }` );
+		if ( wcOf[ o.order ] ) {
+			offered.push( `"${ o.words }" = ${ wcOf[ o.order ] }` );
+		} else if ( o.order ) {
+			offered.push( `"${ o.words }" = ${ o.order } (the theme's order, offered once the site build's shop step turns it on: lib/site-build-shop-options.mjs)` );
 		} else {
-			notes.push( `${ key }: missing feature: the draft's sort option "${ o.words }" (${ value }) ${ how && 'none' !== how ? `orders by ${ how.field }${ how.text ? ' as text' : '' } ${ 'asc' === how.dir ? 'upwards' : 'downwards' }` : 'orders in a way the logic does not show' }, which WooCommerce's sorting does not offer` );
+			notes.push( `${ key }: missing feature: the draft's sort option "${ o.words }" (${ o.value }) ${ o.how && 'none' !== o.how ? `orders by ${ o.how.field }${ o.how.text ? ' as text' : '' } ${ 'asc' === o.how.dir ? 'upwards' : 'downwards' }` : 'orders in a way the logic does not show' }, which neither WooCommerce's sorting nor the theme offers` );
 		}
 	}
-	options.length && notes.push( `${ key }: the draft's sort options WooCommerce offers: ${ offered.join( ', ' ) || 'none' }; WooCommerce's sorting also lists its own other options, which no block setting limits` );
+	options.length && notes.push( `${ key }: the draft's sort options WooCommerce offers: ${ offered.join( ', ' ) || 'none' }; WooCommerce's sorting lists its own other options until the site build's shop step writes the theme's sort menu` );
 	const sorting = { name: piece.block, attributes: {}, innerBlocks: [] };
 	const label = select && index.chain( select.key ).map( ( k ) => index.byKey.get( k ) ).find( ( e ) => 'label' === e.tag );
 	const words = label ? index.elements.filter( ( e ) => index.within( e.key, label.key ) && ! index.within( e.key, select.key ) && String( e.words || '' ).trim() && ! index.children( e.key ).length ) : [];
