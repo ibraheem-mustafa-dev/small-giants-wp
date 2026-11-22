@@ -143,6 +143,12 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 			$css[] = $rule;
 		}
 	}
+	// The stepper's number paints its own bold weight (style.css), so the stepper's weight is written onto the number too;
+	// on the stepper alone it reaches only the minus and plus buttons.
+	$qty_weight = sgs_font_weight_value( $attributes['itemQtyFontWeight'] ?? '' );
+	if ( '' !== $qty_weight ) {
+		$css[] = $p . ' .sgs-cart__item-stepper .sgs-cart__item-qty-input{font-weight:' . $qty_weight . ';}';
+	}
 
 	// Single-property colour rules: attribute => [ selector, property ].
 	$paints = array(

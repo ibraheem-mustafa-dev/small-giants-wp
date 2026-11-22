@@ -155,10 +155,12 @@ export function panelElementStyles( attributes, tier, palette ) {
 			borderBottomWidth: attributes.itemRemoveTextDecoration ? 0 : undefined,
 			...tierBoxLonghands( attributes.itemRemovePadding, tier, 'padding' ),
 		},
-		// The number between the stepper buttons.
+		// The number between the stepper buttons. It is bold by default, so the stepper's weight is set on it too, as
+		// includes/helpers-cart-panel-css.php does.
 		qtyNumber: {
 			width: tierLengthPreview( attributes.itemQtyNumberWidth, tier ),
 			minWidth: tierLengthPreview( attributes.itemQtyNumberWidth, tier ),
+			fontWeight: attributes.itemQtyFontWeight || undefined,
 		},
 		emptyBody: {
 			...typographyPreviewStyle( attributes, 'emptyBody', tier ),

@@ -100,6 +100,19 @@ final class CartDrawerLookTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/' . preg_quote( self::P . ' .sgs-cart__panel-close', '/' ) . '\{[^}]*min-width:48px[^}]*min-height:48px/', $css );
 	}
 
+	/**
+	 * MUST FAIL: the stepper's weight reaches its number. style.css paints the number bold itself (font-weight: 700 after
+	 * font: inherit), so the weight printed on the stepper alone reached only the minus and plus buttons.
+	 */
+	public function test_the_stepper_weight_reaches_its_number(): void {
+		$css = $this->css( array( 'itemQtyFontWeight' => '400' ) );
+		$this->assertMatchesRegularExpression( '/' . preg_quote( self::P . ' .sgs-cart__item-stepper .sgs-cart__item-qty-input', '/' ) . '\{[^}]*font-weight:400/', $css, 'the number takes the stepper weight' );
+		$this->assertMatchesRegularExpression( '/' . preg_quote( self::P . ' .sgs-cart__item-stepper', '/' ) . '\{[^}]*font-weight:400/', $css, 'negative control: the stepper (its buttons) keeps the weight' );
+		$this->assertStringNotContainsString( 'sgs-cart__item-qty-input{font-weight', $this->css( array() ), 'negative control: no weight set prints no rule, so the number stays bold' );
+		$this->assertStringNotContainsString( 'font-weight:4;', $this->css( array( 'itemQtyFontWeight' => '400;color:red' ) ), 'an unsafe value prints nothing' );
+		$this->assertStringNotContainsString( 'color:red', $this->css( array( 'itemQtyFontWeight' => '400;color:red' ) ), 'an unsafe value prints nothing' );
+	}
+
 	public function test_the_empty_basket_text_link_and_centring(): void {
 		$css = $this->css(
 			array(
