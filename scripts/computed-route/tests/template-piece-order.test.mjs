@@ -791,6 +791,11 @@ test( 'MUST FAIL: place stands a choice\'s block once per phrase with its rule; 
 	// The eyebrow is the hasAcct branch's own block: its order-owner gave way to the account rules, which hold only where it does.
 	assert.ok( got.notes.some( ( n ) => /sat in a branch shown for order-owner; each of its phrases shows for its own rule \(order-account-created, order-account-existing\)/.test( n ) ) );
 	assert.ok( ! got.problems.some( ( x ) => /\{\{ (eyebrow|how|how2) \}\}/.test( x ) ), got.problems.join( '\n' ) );
+	// The block's own spelling of the words around the phrase (a double space, say) is kept.
+	const spaced = tree();
+	spaced[ 0 ].innerBlocks[ 0 ].attributes.text = 'Note:  All in one place';
+	const kept = place( { ...ctx, tree: spaced }, { id: 'order-number', find: 'order-values' } );
+	assert.deepEqual( kept.tree[ 0 ].innerBlocks.slice( 0, 2 ).map( ( n ) => n.attributes.text ), [ 'Note:  Your account is ready', 'Note:  All in one place' ] );
 	// Negative controls: a block already shown for another order rule, and a block whose words hold neither phrase, are left as they are.
 	const ruled = place( { ...ctx, tree: tree( { sgsConditionLoggedIn: 'order-has-gift' } ) }, { id: 'order-number', find: 'order-values' } );
 	assert.ok( ruled.problems.some( ( x ) => /\{\{ how2 \}\}.*already shows only for order-has-gift: it is not split/.test( x ) ), ruled.problems.join( '\n' ) );
@@ -819,6 +824,18 @@ test( 'MUST FAIL: the order access piece puts the status block in a not-viewable
 	const refused = place( { ...ctx, tree: two }, access );
 	assert.match( refused.problems[ 0 ], /2 top drafted blocks in the tree, so woocommerce\/order-confirmation-status has no one place/ );
 	assert.equal( refused.tree, two );
+	// A top-level block that cannot take the viewable rule is named, never passed over: a core block (no Show-to setting) and a
+	// block already shown only to signed-in visitors (its one Show-to setting is taken). Neither is changed.
+	const mixed = plantedTree( record );
+	mixed[ 0 ].innerBlocks.splice( 1, 0, { name: 'core/group', attributes: {}, draftRef: { tpl: 'Root/900#0' }, innerBlocks: [] } );
+	mixed[ 0 ].innerBlocks[ 2 ].attributes = { sgsConditionLoggedIn: 'logged-in' };
+	const named = place( { ...ctx, tree: mixed }, access );
+	assert.deepEqual( named.problems.map( ( p ) => p.replace( /\(Page\/\d+\)/, '(Page/n)' ) ), [
+		'order-confirmation: core/group (Page/n) stands at the top of the confirmation and holds no Show-to setting with order-viewable: it shows to a visitor who may not view the order',
+		'order-confirmation: sgs/container (Page/n) stands at the top of the confirmation and already shows only for logged-in, so it cannot also take order-viewable: it shows to a visitor who may not view the order',
+	] );
+	assert.deepEqual( named.tree[ 0 ].innerBlocks.slice( 2, 4 ).map( ( n ) => n.attributes.sgsConditionLoggedIn ), [ undefined, 'logged-in' ] );
+	assert.deepEqual( got.problems, [], 'the planted tree, every block taking the rule, has no problem row' );
 	// A database with no not-viewable rule on the container places nothing.
 	const noRule = place( { ...ctx, tree: plantedTree( record ), db: fakeDb( ROWS.map( ( r ) => ( 'sgsConditionLoggedIn' === r.attr_name ? { ...r, enum_values: JSON.stringify( [ 'none', 'order-viewable' ] ) } : r ) ) ) }, access );
 	assert.match( noRule.problems[ 0 ], /holds no Show-to setting with order-not-viewable/ );

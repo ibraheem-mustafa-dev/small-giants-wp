@@ -346,7 +346,10 @@ function splitChoices( { order, facts, plugin, db, byKey, keyOf, holderOf, ruleO
 				problems.push( `${ node.name } (${ holder }) shows {{ ${ h.expr } }}, which chooses its words by the order's ${ h.choice.test }, and ${ why }: it is not split into one block per phrase` );
 				continue;
 			}
-			const copies = h.choice.phrases.map( ( p, i ) => ( { ...structuredClone( node ), attributes: { ...structuredClone( node.attributes || {} ), [ attr ]: words.replace( norm( resting[ 0 ].text ), () => p.text ), [ attrs[ i ] ]: p.rule } } ) );
+			// The block's own words keep their spelling (entities, spacing) where the resting phrase stands in them as written.
+			const raw = String( node.attributes?.[ attr ] ?? '' );
+			const wordsFor = ( p ) => ( raw.includes( resting[ 0 ].text ) ? raw.replace( resting[ 0 ].text, () => p.text ) : words.replace( norm( resting[ 0 ].text ), () => p.text ) );
+			const copies = h.choice.phrases.map( ( p, i ) => ( { ...structuredClone( node ), attributes: { ...structuredClone( node.attributes || {} ), [ attr ]: wordsFor( p ), [ attrs[ i ] ]: p.rule } } ) );
 			list.splice( list.indexOf( node ), 1, ...copies );
 			had && notes.push( `${ node.name } (${ holder }) sat in a branch shown for ${ had }; each of its phrases shows for its own rule (${ h.choice.phrases.map( ( p ) => p.rule ).join( ', ' ) }), which holds only where ${ had } does` );
 			h.choice.phrases.forEach( ( p ) => placed.push( { id: piece.id, block: node.name, at: keyOf( node ), rule: p.rule, words: p.text } ) );
@@ -380,15 +383,24 @@ function placeAccess( ctx, piece, r ) {
 	const heading = { name: 'sgs/heading', attributes: { [ words ]: piece.heading || '', ...( level ? { level: 1 } : {} ) }, innerBlocks: [] };
 	const card = { name: 'sgs/container', attributes: { [ wrapAttr ]: hidden }, innerBlocks: [ ...( piece.heading ? [ heading ] : [] ), { name: piece.block, attributes: {}, innerBlocks: [] } ] };
 	const placed = [ { id: piece.id, block: piece.block, at: factKeyOf( root, ctx.rootComponent ), rule: hidden } ];
+	const problems = [];
 	for ( const node of root.innerBlocks || [] ) {
+		if ( orderRuleOn( db, node ) ) {
+			continue;
+		}
 		const attr = facts.viewable ? ruleAttr( db, node.name, facts.viewable ) : null;
-		if ( attr && ! orderRuleOn( db, node ) && ( ! node.attributes?.[ attr ] || 'none' === node.attributes[ attr ] ) ) {
+		const held = attr ? node.attributes?.[ attr ] : null;
+		if ( attr && ( ! held || 'none' === held ) ) {
 			node.attributes = { ...( node.attributes || {} ), [ attr ]: facts.viewable };
 			placed.push( { id: piece.id, block: node.name, at: factKeyOf( node, ctx.rootComponent ), rule: facts.viewable } );
+			continue;
 		}
+		// A block that cannot take the viewable rule (no Show-to setting, or its one setting already holds another rule) would show
+		// to a visitor who may not view the order: it is named, never passed over.
+		problems.push( at( `${ node.name } (${ factKeyOf( node, ctx.rootComponent ) ?? 'no draft element' }) stands at the top of the confirmation and ${ attr ? `already shows only for ${ held }, so it cannot also take ${ facts.viewable }` : `holds no Show-to setting with ${ facts.viewable }` }: it shows to a visitor who may not view the order` ) );
 	}
 	root.innerBlocks = [ card, ...( root.innerBlocks || [] ) ];
-	return { tree, placed, notes: [ at( `${ piece.block } stands at the top of the confirmation for a visitor who may not view the order${ piece.heading ? `, under the heading "${ piece.heading }" (no draft draws this state)` : '' }` ) ] };
+	return { tree, placed, problems, notes: [ at( `${ piece.block } stands at the top of the confirmation for a visitor who may not view the order${ piece.heading ? `, under the heading "${ piece.heading }" (no draft draws this state)` : '' }` ) ] };
 }
 
 // Places one order piece (see the header). `ctx`: { key, tree, factRecord, rootComponent, handoffDir, db?, draft?,
