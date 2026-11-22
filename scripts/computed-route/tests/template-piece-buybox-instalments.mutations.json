@@ -1,0 +1,11 @@
+[
+	{"file": "lib/template-piece-buybox-instalments.mjs", "find": "n.right.value >= 2 &&", "replace": "n.right.value >= 1 &&", "why": "a price over one payment is an instalments line"},
+	{"file": "lib/template-piece-buybox-instalments.mjs", "find": "'/' === n.operator &&", "replace": "true &&", "why": "any arithmetic on the price is a share"},
+	{"file": "lib/template-piece-buybox-instalments.mjs", "find": "priceFields.includes( m.property?.name )", "replace": "true", "why": "a share of any field counts"},
+	{"file": "lib/template-piece-buybox-instalments.mjs", "find": "\tif ( hits.length > 1 ) {", "replace": "\tif ( false ) {", "why": "one of two lines is taken"},
+	{"file": "lib/template-piece-buybox-instalments.mjs", "find": "filter( ( a ) => ! attrExists( a ) )", "replace": "filter( () => false )", "why": "a setting the block does not hold is written"},
+	{"file": "lib/template-piece-buybox-instalments.mjs", "find": "\tif ( ! amount ) {", "replace": "\tif ( false ) {", "why": "a line whose amount the words do not show is written"},
+	{"file": "lib/template-piece-buybox-instalments.mjs", "find": "/flex|grid/.test( String( el.display || '' ) ) && ", "replace": "false && ", "why": "a row's words run together"},
+	{"file": "lib/template-piece-buybox-instalments.mjs", "find": "\t\tline = up;", "replace": "", "why": "the payment names beside the line are left out"},
+	{"file": "lib/template-piece-buybox.mjs", "find": "\tObject.assign( box.attributes, inst.attrs );", "replace": "", "why": "the note is never written on the buy box"}
+]

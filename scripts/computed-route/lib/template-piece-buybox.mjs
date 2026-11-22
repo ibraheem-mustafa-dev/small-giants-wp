@@ -32,8 +32,10 @@
 // pass list the run's other paint as the block's missing features (lib/template-pieces-context.mjs::piecesPaint).
 import { countBlocks } from './template-pieces.mjs';
 import { keepsAddToCart } from './template-piece-buybox-flow.mjs';
-import { dcOf, inventoryIndex, locatedKeys, locateParts, nodesWithin, recordSurface, refKey, treeNodes, underFixed } from './template-piece-draft.mjs';
+import { dcOf, draftLogic, inventoryIndex, locatedKeys, locateParts, nodesWithin, recordSurface, refKey, treeNodes, underFixed } from './template-piece-draft.mjs';
 import { SERVED_ROOT } from './key-space.mjs';
+import { instalmentsNote } from './template-piece-buybox-instalments.mjs';
+import { blockSchema } from './resolve.mjs';
 
 // Homes that put a part outside the buy box block (the template part's title, the accordion on its own surface).
 const ELSEWHERE = [ 'part', 'elsewhere' ];
@@ -169,6 +171,10 @@ export function place( ctx, piece ) {
 		took.drawn.length && ( row.run = [ ...run, ...took.drawn ] );
 		notes.push( ...took.notes.map( ( x ) => `${ key }: ${ x }` ) );
 	}
+	// The instalments line the draft draws in the buy box (Bean's D-8), written where the block holds the settings.
+	const inst = instalmentsNote( { L: draftLogic( ctx.draftSource ), found, priceFields: ctx.productFields?.price || [], attrExists: ctx.attrExists || ( ( a ) => Object.hasOwn( blockSchema( piece.block ) || {}, a ) ) } );
+	Object.assign( box.attributes, inst.attrs );
+	notes.push( ...inst.notes.map( ( x ) => `${ key }: ${ x }` ) );
 	// `run` and `missingParts` (each missing-features part of the record to the elements of the run it is located on) let the
 	// paint check after the pass (lib/template-pieces-context.mjs::piecesPaint) list the run's unread paint as missing features;
 	// `own` (the information column, dropped without its contents) has only its own paint listed.
