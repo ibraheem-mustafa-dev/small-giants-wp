@@ -17,6 +17,16 @@
 		"cta": "primary",
 		"badge": "accent"
 	},
+	"_nameParts": "Read by plugins/sgs-blocks/scripts/theme-extractor/shade_palette.py::role_of_name only: how a literal colour token's own name, split at hyphens, composes a role slug that is not itself a name in aliasNames. abbreviations: a name word -> the role word it shortens. variants: a role's last word -> the words a draft puts after the base word for it (--acc-ink is accent-text, --acc-soft is accent-light, --text-2 is text-muted). A composed slug counts only when it is a theme.json slug.",
+	"nameParts": {
+		"abbreviations": { "acc": "accent" },
+		"variants": {
+			"text": ["ink", "text", "fg", "on", "contrast"],
+			"light": ["light", "soft", "tint", "wash", "pale"],
+			"dark": ["dark", "deep"],
+			"muted": ["muted", "secondary", "2"]
+		}
+	},
 	"commentPhrases": {
 		"page background": "surface",
 		"cards": "surface-alt",

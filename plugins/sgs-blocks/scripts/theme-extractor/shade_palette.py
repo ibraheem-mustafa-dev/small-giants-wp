@@ -13,7 +13,8 @@ Two layers with two jobs, written from the export's ``tokens/colors.css``:
     ``--wp--preset--color--<role>: var(--wp--preset--color--<shade>)``. Sources, weakest first: the extractor's usage
     proposals (``_source`` palette entries), the draft's own alias tokens (``--text-body: var(--ink)``, named by the role
     vocabulary ``scripts/computed-route/data/palette-role-words.json``) and Bean's confirmed intake marks, which win; a role
-    none of them names follows its related role (``palette_vocab.ROLE_DEFAULT_TABLE``), and a status role takes a token of
+    none of them names takes the draft's own literal token named for it (``--acc-ink`` for ``accent-text``,
+    ``role_of_name``), and one still unnamed follows its related role (``palette_vocab.ROLE_DEFAULT_TABLE``), and a status role takes a token of
     its own name. A role nothing names is read from what the draft paints in its job
     (``role_readings.py``: the control-border colour for ``border``, the primary button's hover fill for ``primary-dark``,
     and so on) and points at that colour's shade, or holds the draft's raw hex when the colour has no token; a role the
@@ -137,13 +138,37 @@ def _shade_for_hex(shades: list[dict], value: str) -> str | None:
     return None
 
 
-def alias_roles(raw: dict[str, str], shades: list[dict], ns: str | None, roles: list[str]) -> dict[str, tuple[str, str, int]]:
-    """``{role: (shade token, alias token, strength)}`` from the draft's alias tokens.
+def role_of_name(key: str, roles: list[str], words: dict) -> tuple[str | None, int]:
+    """``(role, strength)`` a token name states, or ``(None, 0)``: the exact slug (``EXACT``), a vocabulary alias name, or a
+    slug its words compose (``VOCAB``): the abbreviations expanded (``acc`` is ``accent``), then the last word read as a
+    variant of the base (``acc-ink`` is ``accent-text``, ``acc-soft`` is ``accent-light``, ``text-2`` is ``text-muted``) or the
+    whole expanded name as a slug (``acc`` is ``accent``). ``words`` is the role vocabulary file's content."""
+    if key in roles:
+        return key, EXACT
+    alias = (words.get("aliasNames") or {}).get(key)
+    if alias in roles:
+        return alias, VOCAB
+    parts = words.get("nameParts") or {}
+    expanded = [(parts.get("abbreviations") or {}).get(w, w) for w in key.split("-")]
+    if "-".join(expanded) in roles:
+        return "-".join(expanded), VOCAB
+    if len(expanded) > 1:
+        for variant, synonyms in (parts.get("variants") or {}).items():
+            candidate = "-".join(expanded[:-1] + [variant])
+            if expanded[-1] in synonyms and candidate in roles:
+                return candidate, VOCAB
+    return None, 0
 
-    An alias names a role by its exact slug (``--text-body`` is not a slug; ``--surface`` would be) or by the
-    vocabulary's alias names, with the shared namespace word removed. The alias resolves through any chain of aliases to a
-    shade. For one role the stronger name wins; two of one strength naming different shades cancel."""
-    vocab = json.loads(_ROLE_WORDS.read_text(encoding="utf-8")).get("aliasNames", {})
+
+def alias_roles(raw: dict[str, str], shades: list[dict], ns: str | None, roles: list[str]) -> dict[str, tuple[str, str, int]]:
+    """``{role: (shade token, alias token, strength)}`` from the draft's alias tokens (or, given ``{shade: shade}``, from its
+    literal colour tokens, so a token named for its role answers that role).
+
+    An alias names a role by its exact slug (``--text-body`` is not a slug; ``--surface`` would be), by the
+    vocabulary's alias names or by the slug its words compose (``role_of_name``), with the shared namespace word removed. The
+    alias resolves through any chain of aliases to a shade. For one role the stronger name wins; two of one strength naming
+    different shades cancel."""
+    vocab = json.loads(_ROLE_WORDS.read_text(encoding="utf-8"))
     shade_slugs = {s["token"] for s in shades}
     found: dict[str, list[tuple[int, str, str]]] = {}
     for alias, target in raw.items():
@@ -151,11 +176,11 @@ def alias_roles(raw: dict[str, str], shades: list[dict], ns: str | None, roles: 
         if ns and len(words) > 1 and words[0] == ns:
             words = words[1:]
         key = "-".join(words)
-        role, strength = (key, EXACT) if key in roles else ((vocab[key], VOCAB) if vocab.get(key) in roles else (None, 0))
+        role, strength = role_of_name(key, roles, vocab)
         if role is None:
             continue
         hops = 0
-        while target in raw and hops < 8:
+        while target in raw and raw[target] != target and hops < 8:
             target, hops = raw[target], hops + 1
         if target in shade_slugs:
             found.setdefault(role, []).append((strength, target, alias))
@@ -187,11 +212,16 @@ def build_role_map(*, shades: list[dict], raw_aliases: dict[str, str], ns: str |
     for role in roles:
         if role in own and STATUS_ROLE_RE.match(role):
             resolved[role] = (role, "the draft's own token of this status name")
+    fallbacks: list[tuple[str, str, str]] = []
     for entry in palette_before:
         slug = entry.get("slug") if isinstance(entry, dict) else None
         if slug in roles and entry.get("_source") and isinstance(entry.get("color"), str):
             shade = _shade_for_hex(shades, entry["color"])
-            if shade:
+            if shade and "derived" == entry["_source"]:
+                # A derived entry is a role default (no draft colour, so it follows another role): it settles a role only
+                # when nothing the draft says does, its own token named for the role included.
+                fallbacks.append((slug, shade, f"usage proposal {entry['color']} ({entry['_source']})"))
+            elif shade:
                 resolved[slug] = (shade, f"usage proposal {entry['color']} ({entry['_source']})")
     for role, (shade, alias, strength) in alias_roles(raw_aliases, shades, ns, roles).items():
         resolved[role] = (shade, f"draft alias --{alias}")
@@ -202,6 +232,13 @@ def build_role_map(*, shades: list[dict], raw_aliases: dict[str, str], ns: str |
         shade = by_token or _shade_for_hex(shades, info.get("hex"))
         if shade:
             resolved[role] = (shade, f"Bean's confirmed mark ({', '.join(info.get('tokens', []))})")
+    # A role nothing above settled takes the draft's own literal token named for it (``--acc`` for accent, ``--acc-ink`` for
+    # accent-text), before any derived role default, reading or follow rule: a usage proposal, an alias or a mark still outranks a name.
+    for role, (shade, token, _strength) in alias_roles({s["token"]: s["token"] for s in shades}, shades, ns, roles).items():
+        if role not in resolved:
+            resolved[role] = (shade, f"the draft's own token --{token} is named for this role")
+    for role, shade, why in fallbacks:
+        resolved.setdefault(role, (shade, why))
 
     def hex_of(role: str) -> str | None:
         return _colour_of(resolved[role][0], shades) if role in resolved else None

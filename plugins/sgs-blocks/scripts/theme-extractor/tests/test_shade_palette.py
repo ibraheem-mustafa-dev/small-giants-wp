@@ -193,3 +193,47 @@ def test_a_draft_with_no_colour_token_is_untouched(tmp_path):
     snap = {"settings": {"color": {"palette": [{"slug": "primary", "color": "#111111"}]}}}
     assert sp.apply(snap, token_files.read_token_files(d), d, BASELINE, None, []) == []
     assert "custom" not in snap["settings"] and snap["settings"]["color"]["palette"][0]["slug"] == "primary"
+
+
+ACCENT_CSS = """
+:root{
+  --ink:#141414; --paper:#FAF8F5; --white:#FFFFFF; --hairline:#E6E1DA;
+  --acc:#9C8B78; --acc-ink:#6F6152; --acc-soft:#EFEAE2; --text-2:#5E584F;
+}
+"""
+
+
+def test_literal_tokens_named_for_a_role_settle_it_before_any_derived_default(tmp_path):
+    """MUST FAIL on the old code: accent, accent-light and text-muted followed the client's ink (the role default and the
+    follow rules), though the draft names its own accent, accent ink, accent tint and secondary text tokens."""
+    derived = [{"slug": "accent-text", "color": "#141414", "_source": "derived", "advisory": True}]
+    snap, _r, trace = run(tmp_path, palette_before=derived, css=ACCENT_CSS)
+    roles = snap["settings"]["custom"]["colourRoles"]
+    assert roles["accent"] == "acc" and roles["accent-text"] == "acc-ink" and roles["accent-light"] == "acc-soft"
+    assert roles["text-muted"] == "text-2"
+    why = {t["what"]: t["reason"] for t in trace if t.get("kind") == "role"}
+    assert "--acc-ink" in why["colourRoles.accent-text"] and "own token" in why["colourRoles.accent-text"]
+
+
+def test_negative_controls_a_mark_an_alias_and_a_usage_proposal_outrank_a_token_name(tmp_path):
+    snap, _r, _t = run(tmp_path, confirmed={"accent": {"hex": "#6F6152", "tokens": ["--acc-ink"]}}, css=ACCENT_CSS)
+    assert snap["settings"]["custom"]["colourRoles"]["accent"] == "acc-ink", "Bean's mark wins over the name"
+    (tmp_path / "b").mkdir()
+    proposal = [{"slug": "accent", "color": "#FFFFFF", "_source": "declared"}]
+    snap, _r, _t = run(tmp_path / "b", palette_before=proposal, css=ACCENT_CSS)
+    assert snap["settings"]["custom"]["colourRoles"]["accent"] == "white", "a usage proposal outranks a name"
+    (tmp_path / "c").mkdir()
+    snap, _r, _t = run(tmp_path / "c", css=ACCENT_CSS + ":root{--accent-text:var(--paper)}")
+    assert snap["settings"]["custom"]["colourRoles"]["accent-text"] == "paper", "an alias outranks a composed name"
+
+
+def test_a_role_names_the_token_that_carries_its_exact_slug_and_the_name_words_compose_only_real_slugs(tmp_path):
+    import json as _json
+    words = _json.loads((REPO / "scripts" / "computed-route" / "data" / "palette-role-words.json").read_text(encoding="utf-8"))
+    roles = [e["slug"] for e in BASELINE["settings"]["color"]["palette"]]
+    assert sp.role_of_name("text-muted", roles, words) == ("text-muted", sp.EXACT)
+    assert sp.role_of_name("acc-ink", roles, words) == ("accent-text", sp.VOCAB)
+    assert sp.role_of_name("primary-soft", roles, words) == ("primary-light", sp.VOCAB) if "primary-light" in roles else True
+    assert sp.role_of_name("info-soft", roles, words) == ("info-light", sp.VOCAB)
+    assert sp.role_of_name("ink-soft", roles, words) == (None, 0), "no ink-light role: nothing is composed"
+    assert sp.role_of_name("brand-blue", roles, words) == (None, 0)
