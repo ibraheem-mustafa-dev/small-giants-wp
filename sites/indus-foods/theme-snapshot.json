@@ -95,15 +95,21 @@
           "_source": "declared"
         },
         {
-          "slug": "custom-5e6873",
-          "color": "#5E6873",
-          "name": "Custom 5E6873",
+          "slug": "focus-color",
+          "color": "#101010",
+          "name": "Focus Color",
           "_source": "declared"
         },
         {
           "slug": "custom-0a6e93",
           "color": "#0A6E93",
           "name": "Custom 0A6E93",
+          "_source": "declared"
+        },
+        {
+          "slug": "custom-5e6873",
+          "color": "#5E6873",
+          "name": "Custom 5E6873",
           "_source": "declared"
         },
         {
@@ -276,8 +282,8 @@
       "fontSizes": [
         {
           "slug": "small",
-          "name": "Fs Mono",
-          "size": "12px"
+          "name": "Fs Eyebrow",
+          "size": "13px"
         },
         {
           "slug": "regular",
@@ -526,7 +532,13 @@
           "hover-background": "#2c3e50",
           "hover-text": "#d8ca50",
           "hover-border": "var(--wp--preset--color--accent)",
-          "hover-transform": "matrix(1.05, 0, 0, 1.05, 0, -2.1)"
+          "hover-transform": "matrix(1.05, 0, 0, 1.05, 0, -2.1)",
+          "shadow": "0 10px 18px -10px rgba(0, 0, 0, 0.5)",
+          "hover-shadow": "0 6px 20px rgba(0, 0, 0, 0.25)",
+          "hover-transition": "0.2s",
+          "hover-easing": "ease",
+          "hover-easing-colour": "ease",
+          "hover-easing-shadow": "ease"
         },
         "secondary": {
           "background": "var(--wp--preset--color--surface)",
@@ -541,7 +553,13 @@
           "hover-background": "var(--wp--preset--color--accent)",
           "hover-text": "#2c3e50",
           "hover-border": "#2c3e50",
-          "hover-transform": "matrix(1.05, 0, 0, 1.05, 0, -2.1)"
+          "hover-transform": "matrix(1.05, 0, 0, 1.05, 0, -2.1)",
+          "shadow": "0 2px 6px rgba(0, 0, 0, 0.15)",
+          "hover-shadow": "0 6px 20px rgba(0, 0, 0, 0.2)",
+          "hover-transition": "0.2s",
+          "hover-easing": "ease",
+          "hover-easing-colour": "ease",
+          "hover-easing-shadow": "ease"
         },
         "outline": {
           "background": "transparent",
@@ -680,7 +698,7 @@
       },
       "presetTokens": {
         "fontSizes": {
-          "small": "fs-mono",
+          "small": "fs-eyebrow",
           "regular": "fs-body",
           "large": null,
           "x-large": "fs-card-title",
@@ -736,6 +754,10 @@
     "lightbox": {
       "enabled": false,
       "allowEditing": false
+    },
+    "viewport": {
+      "mobile": "767px",
+      "tablet": "1023px"
     }
   },
   "styles": {
@@ -975,13 +997,13 @@
   "_sgsExtractor": {
     "draft_css_sha256": "f6470b252fac730fcc850cffe206db8cf89da679a83b97de02b5a671db3d0b28",
     "extractor_version": "1.0",
-    "draft_source_sha256": "bc7b563ea991c1cdc00407934af48a25db4342c7241961627f1b62dc50155062",
+    "draft_source_sha256": "4b2b3a12d13c22e5acbec06cce399d6fcb08e3fb923f402aa2bb686f3177d991",
     "manifest_sha256": {
       "EnquiryForm.dc.html": "cdb4408622be747be444e21c75e3a7096569af77bf7657e7cb45d41e93acbf66",
       "Indus Foods Website v2.dc.html": "4db1f8479d1a91fa26c34ec1c69894ba1fd901649fcdcef7b0c0e78b01e322bf",
       "TradeApplication.dc.html": "660a8c0c4f9311cbdf28dd07eec4359c1a4d442624848470b483094aeb24ce77",
       "tokens/colors.css": "53a0a40ac3df470bc3f808c3b200c0372e0b4306871691cc4b44a0e1a5ac2035",
-      "tokens/spacing.css": "80d52d6046d3e690b5a5610150903218af5cbbf84028f35032c9a10d6a0515eb",
+      "tokens/spacing.css": "c0cfd3066854f7649bd32b1867e99aa498dd6de9eb895a5b514d0a6f3ff2b702",
       "tokens/typography.css": "9dcdef1dd3f8e3830a78e14b472900536cebcf3f17a08b945981d2a65816f64b"
     },
     "source_draft": "Indus Foods Website v2.dc.html"
