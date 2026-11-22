@@ -101,6 +101,7 @@ Each lane: read its MERGED.md blocks; tests fail first; mutation lists killed; o
 - Changes and checks: per MERGED.md (F-27 is the general session's extractor). Depends on: 5, 2. Status: not started
 
 ### Task 9: Shop lane (F-30 site-build shop-options step, F-6, F-31 own half, F-32 to F-35)
+- Also, from the night's code review (`reports/2026-11-21-shop-investigation/code-review.md`): `lib/skeleton-filter-rail.mjs::handlerOf` strips the letter s, not whitespace (`/^{{s*|s*}}$/g`); `brand-strip/product-brands-source.php::sgs_brand_strip_brand_ids_with_visible_products` loads every product id per render with no cache (large catalogues); a catalogue term with `&` (stored `&amp;`) is planned as missing on every run (`lib/site-build-catalogue-axes.mjs::axisChanges`).
 - Changes and checks: per MERGED.md; F-30 writes the 56 theme shop options from the draft (names only from eye-care-test, values from the draft). Depends on: 3, 5. Status: not started
 
 ### Task 10: Account lane (F-36, F-38 to F-41)
@@ -110,6 +111,7 @@ Each lane: read its MERGED.md blocks; tests fail first; mutation lists killed; o
 - Changes and checks: per MERGED.md, with D-2 and D-3; Mama's must build from its own draft, not WooCommerce's stock page. Depends on: 2, 4. Status: not started
 
 ### Task 12: Product lane (F-50 to F-55, the kit's content align from product-15)
+- Also, from the night's code review: a simple product that sells out after its page loads keeps Add to Cart (the 409 branch of `product-card/view.js` calls `includes/class-cart-proxy.php::handle_availability`, which accepts only variable products: fall back to `Product_Manifest::build_simple()`); the express-pay screen-reader note in `buybox/extras.php::sgs_buybox_after_cart_form_action` asks a simple product's shopper to choose options.
 - Changes and checks: per MERGED.md, with D-4, D-5 and D-8. Depends on: 4, 5. Status: not started
 
 ## Wave 3: Settings and proof
