@@ -311,7 +311,13 @@ def sheet_files(plugin: Path, short: str, children) -> list:
             files += [shipped_css(plugin, f, d / 'block.json') for f in own]
     files += [f for f in (plugin / 'src' / 'shared').rglob('*.css') if 'editor' not in f.name]
     files += [f for f in (plugin / 'assets' / 'css').glob('*.css') if not EXCLUDED_SHEET.search(f.name)]
-    return sorted(set(files))
+    return sheet_order(files)
+
+
+def sheet_order(files) -> list:
+    """Stylesheets in the order the check cascades them: by the path of the file each is written in (a compiled or
+    shipped copy sorts where its source does), so a tie between equal selectors never depends on a cache file's name."""
+    return sorted(set(files), key=lambda f: (SOURCE_OF.get(f, f).as_posix(), str(f)))
 
 
 def static_rules(plugin: Path, short: str, children) -> list:

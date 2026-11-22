@@ -183,13 +183,17 @@ class Renderer:
         self.post = fixture.get('post') or []
         self.env = harness_env(fixture)
         self.options = (fixture.get('harness') or {}).get('options')
+        self.included = set()  # every plugin PHP file any render here loaded (the block's, its children's, its parents')
 
     def render(self, slug: str, attrs: dict, content: str = '', inner=None) -> dict:
         key_parts = [slug, attrs, content, inner, list(self.extra), self.post] + ([self.options] if self.options else [])
         key = hashlib.md5(json.dumps(key_parts, sort_keys=True).encode()).hexdigest()
         cf = self.cache / f'{key}.json'
         if cf.is_file():
-            return json.loads(cf.read_text(encoding='utf-8'))
+            res = json.loads(cf.read_text(encoding='utf-8'))
+            if 'included' in res:  # cached before renders reported their files: rendered again, so the stamp is whole
+                self.included.update(res['included'])
+                return res
         af = self.cache / f'{key}.attrs.json'
         af.write_text(json.dumps(attrs), encoding='utf-8')
         inc = self.cache / f'{key}.included.json'
@@ -214,8 +218,10 @@ class Renderer:
             res = {'ok': False, 'error': 'no JSON result: ' + (p.stderr[-500:] or p.stdout[-500:])}
         res['secs'] = round(time.time() - t0, 3)
         res['notices'] = [ln for ln in (p.stderr or '').splitlines() if 'Warning' in ln or 'Fatal' in ln or 'Deprecated' in ln][:8]
-        if res.get('ok') and inc.is_file():
-            res['included'] = included_paths(json.loads(inc.read_text(encoding='utf-8')), self.plugin)
+        if res.get('ok'):
+            # included-files.php writes the list at every render's end (an empty list only if PHP never reached it)
+            res['included'] = included_paths(json.loads(inc.read_text(encoding='utf-8')), self.plugin) if inc.is_file() else []
+            self.included.update(res['included'])
         if res.get('ok'):
             res['html'] = apply_directives(res.get('html', ''), res.get('interactivityState') or {})
         if res.get('ok') and self.post:

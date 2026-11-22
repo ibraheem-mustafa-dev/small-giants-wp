@@ -280,3 +280,97 @@ def test_a_block_stylesheet_is_read_as_the_build_ships_it(tmp_path, monkeypatch)
     shipped = D.shipped_css(PLUGIN, src, tmp_path / 'no-block.json').read_text(encoding='utf-8')
     assert 'forced-colors' in shipped  # scripts/shadow-fallback adds the high-contrast fallback the source lacks
     assert D.SOURCE_OF[D.shipped_css(PLUGIN, src, tmp_path / 'no-block.json')] == src
+
+
+# ---------------------------------------------------------------- code-review fixes (2026-11-22)
+import stamp as ST  # noqa: E402
+
+
+def test_stylesheets_cascade_in_source_order_not_by_cache_name(tmp_path, monkeypatch):
+    # two shipped copies whose cache names sort the other way round from their sources
+    a_src, b_src = PLUGIN / 'src' / 'blocks' / 'aaa' / 'style.css', PLUGIN / 'src' / 'blocks' / 'zzz' / 'style.css'
+    a_out, b_out = tmp_path / 'ffff.css', tmp_path / '0000.css'
+    monkeypatch.setitem(D.SOURCE_OF, a_out, a_src)
+    monkeypatch.setitem(D.SOURCE_OF, b_out, b_src)
+    shared = PLUGIN / 'src' / 'shared' / 'x.css'
+    assets = PLUGIN / 'assets' / 'css' / 'y.css'
+    assert D.sheet_order([shared, b_out, assets, a_out]) == [assets, a_out, b_out, shared]
+
+
+def test_the_core_is_php_outside_block_folders_and_needs_a_library():
+    inputs = {'includes/boot.php': 'a', 'fixture-entry': 'f', 'src/shared/x.css': 's', 'src/blocks/demo/render.php': 'r'}
+    few = {f'sgs/b{i}': {'stamp': {'inputs': dict(inputs)}} for i in range(3)}
+    many = {f'sgs/b{i}': {'stamp': {'inputs': dict(inputs)}} for i in range(ST.CORE_MIN)}
+    for records in (few, many):
+        for doc in records.values():
+            doc['stamp']['inputs'] = {k: 'changed' for k in inputs}
+    # nothing on disk matches 'changed', so every input reads as changed; the fixture and the sheet stay own
+    out = ST.select(Path('E:/nowhere'), many, {}, Path('.'), '')
+    reasons = out['sgs/b0']
+    assert 'includes/boot.php changed' in reasons['core']
+    assert 'fixture-entry changed' in reasons['own'] and 'src/shared/x.css changed' in reasons['own']
+    out = ST.select(Path('E:/nowhere'), few, {}, Path('.'), '')
+    assert out['sgs/b0']['core'] == []  # too few stamps: nothing is core
+
+
+def test_an_unchanged_fixture_entry_is_not_a_change(tmp_path):
+    fixtures = {'sgs/demo': {'attributes': {'a': 1}}, '_shared': {'preconditions': {'x': {}}}}
+    inputs = ST.block_inputs(tmp_path, 'demo', fixtures['sgs/demo'], fixtures['_shared'], tmp_path, [], [])
+    records = {'sgs/demo': {'stamp': {'inputs': inputs, 'theme': ST.theme_reach({}, [], [])}}}
+    assert ST.select(tmp_path, records, fixtures, tmp_path, '') == {}
+    fixtures['_shared']['preconditions']['y'] = {}
+    assert ST.select(tmp_path, records, fixtures, tmp_path, '')['sgs/demo']['own'] == ['fixture-shared changed']
+
+
+def test_a_cached_render_without_its_files_is_rendered_again(tmp_path, monkeypatch):
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path)
+    rn = RN.Renderer(PLUGIN, {}, PLUGIN, 'text')
+    calls = []
+    import subprocess
+
+    def fake_run(cmd, **k):
+        calls.append(cmd)
+        inc = Path(k['env']['SGS_SETTING_RECORD_INCLUDED'])
+        inc.write_text(json.dumps([str(PLUGIN / 'includes' / 'helper.php')]), encoding='utf-8')
+        return SimpleNamespace(stdout=json.dumps({'ok': True, 'html': '<p></p>'}), stderr='')
+    monkeypatch.setattr(subprocess, 'run', fake_run)
+    import hashlib
+    key = hashlib.md5(json.dumps(['sgs/text', {}, '', None, list(rn.extra), rn.post], sort_keys=True).encode()).hexdigest()
+    (rn.cache / f'{key}.json').write_text(json.dumps({'ok': True, 'html': '<p></p>'}), encoding='utf-8')  # an old cache entry
+    res = rn.render('sgs/text', {})
+    assert calls and res['included'] == ['includes/helper.php']
+    assert rn.included == {'includes/helper.php'}
+
+
+def test_a_record_keeping_unchecked_entries_is_not_written_where_the_seeder_reads(monkeypatch, tmp_path):
+    monkeypatch.setattr(CK, 'RECORDS', tmp_path)
+    rec = tmp_path / 'demo.json'
+    rec.write_text(json.dumps({'entries': [{'setting': 'x', 'part': 'root', 'props': ['color'], 'state': None, 'tiers': [], 'runner': 'footer'}]}), encoding='utf-8')
+    run = {'entries': {}, 'unnamed': [], 'defaultHtml': '<div class="sgs-demo"></div>', 'results': {}, 'sheetFiles': [],
+           'renderer': SimpleNamespace(included=set()), 'plan': {'fixture': {}},
+           'stats': {'block': 'sgs/demo', 'coverage': {'rootPrinted': True, 'defaultEmpty': False, 'defaultRendered': True},
+                     'renderFailedOnly': [], 'testedNoPaint': [], 'replacesBlock': [], 'unvalued': []}}
+    monkeypatch.setattr(CK, 'run_block', lambda *a, **k: run)
+    monkeypatch.setattr(CK, 'parts_check', lambda *a: {'order': [], 'declaredNotPrinted': [], 'declaredScriptBuilt': [], 'printedNotDeclared': []})
+    monkeypatch.setattr(CK, 'entry_values', lambda run: {})
+    import proof as PR
+    monkeypatch.setattr(PR, 'prove', lambda short, run: ({}, {'blind': [], 'removed': []}))
+    monkeypatch.setattr(CK, 'apply_browser_verdicts', lambda *a: None)
+    out = tmp_path / 'reports'
+    args = SimpleNamespace(fixtures=tmp_path / 'none.json', instances=None, instances_dir=None, plugin=PLUGIN, no_proof=False,
+                           record=None, record_dir=None, write=rec, write_dir=None, out=out, strict_parts=False)
+    with pytest.raises(SystemExit, match='runner'):
+        CK.check_block(args, 'demo')
+    assert 'runner' in rec.read_text(encoding='utf-8')  # untouched
+
+
+def test_a_worker_that_exits_is_that_blocks_failure(monkeypatch):
+    def boom(args, block):
+        raise SystemExit('refusing')
+    monkeypatch.setattr(CK, 'check_block', boom)
+    assert CK._check_in_worker(SimpleNamespace(), 'demo') == 2
+
+
+def test_the_root_check_reads_single_quoted_classes(monkeypatch):
+    run = fake_run(monkeypatch, "<div class='sgs-demo wp-block-sgs-demo'>hi</div>")
+    assert run['stats']['coverage']['rootPrinted'] is True

@@ -223,7 +223,7 @@ def run_block(short: str, plugin: Path, fixtures: dict, fixtures_dir: Path, inst
     # The coverage floor: a default render that prints nothing, or not the block's own root, tests nothing, so every
     # setting would read as painting nothing; such a block fails until its fixture renders it.
     root_printed = any(f'sgs-{short}' in m.split() or f'wp-block-sgs-{short}' in m.split()
-                       for m in re.findall(r'class="([^"]*)"', d0.get('html', '')))
+                       for m in (g for _q, g in re.findall(r'class=(["\'])(.*?)\1', d0.get('html', ''), re.S)))
     stats = {'block': slug, 'instances': len(insts), 'renders': len(jobs), 'failed': sum(1 for r in results.values() if not r.get('ok')),
              'errors': errors[:10], 'secondsRendering': round(t2 - t1, 1), 'secondsRun': round(time.time() - t0, 1),
              'testedNoPaint': sorted(tested - recorded - replaced), 'replacesBlock': sorted(replaced - recorded),
@@ -356,10 +356,16 @@ def check_block(args, block: str) -> int:
                'proofKeys': [list(k[:2]) + [list(k[2]), k[3], list(k[4])] for k in plain_keys],
                'accounted': {'testedNoPaint': run['stats']['testedNoPaint'], 'replacesBlock': run['stats']['replacesBlock'],
                              'unvalued': run['stats']['unvalued'], 'partNotNamed': run['unnamed']},
-               'stamp': ST.make_stamp(args.plugin, short, run['plan']['fixture'] or {}, args.fixtures.parent, run['results'],
-                                      run['sheetFiles'], TH.theme_css(Path(args.plugin).resolve().parents[1]))}
-        if args.no_proof and write.resolve().parent == RECORDS.resolve():
-            raise SystemExit(f'refusing to write {write} without the proof: a record in {RECORDS} carries proved kinds')
+               'stamp': ST.make_stamp(args.plugin, short, fixtures.get(f'sgs/{short}') or {}, fixtures.get('_shared') or {},
+                                      args.fixtures.parent, run['results'], run['renderer'].included,
+                                      run.get('proofSheetFiles') or run['sheetFiles'], TH.theme_css(Path(args.plugin).resolve().parents[1]))}
+        if write.resolve().parent == RECORDS.resolve():
+            if args.no_proof:
+                raise SystemExit(f'refusing to write {write} without the proof: a record in {RECORDS} carries proved kinds')
+            if kept:
+                # seed_reference_data.py::_parse_setting_records refuses an unchecked entry, so none is written here
+                raise SystemExit(f'refusing to write {write}: it keeps entries marked runner (unchecked), which the '
+                                 f'database seeder refuses: ' + ', '.join(sorted({e["setting"] for e in kept})))
         errs = schema_errors(doc, need_kind=not args.no_proof)
         write.parent.mkdir(parents=True, exist_ok=True)
         write.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
@@ -447,7 +453,7 @@ def _check_in_worker(args, block: str) -> int:
     """One block in a pool worker; an exception is that block's failure, never the run's."""
     try:
         return check_block(args, block)
-    except Exception as exc:  # noqa: BLE001 - reported per block, the pool carries on
+    except (Exception, SystemExit) as exc:  # noqa: BLE001 - reported per block, the pool carries on
         print(json.dumps({'block': f"sgs/{block.split('/', 1)[-1]}", 'crashed': f'{type(exc).__name__}: {exc}'[:500]}), flush=True)
         return 2
 

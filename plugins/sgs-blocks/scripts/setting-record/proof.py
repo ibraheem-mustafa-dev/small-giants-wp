@@ -171,7 +171,8 @@ class Pages:
         # the block drawn inside its fixture's parents (a menu in a header row), so a rule scoped by the parent matches
         self.shell = parent_shell(run)
         parents = self.shell.get('blocks') or [p['name'].split('/', 1)[1] for p in self.shell['parents']]
-        files = sorted(set(D.sheet_files(run['plugin'], short, run['children'])) | {f for b in parents for f in D.sheet_files(run['plugin'], b, [])})
+        files = D.sheet_order(list(D.sheet_files(run['plugin'], short, run['children'])) + [f for b in parents for f in D.sheet_files(run['plugin'], b, [])])
+        run['proofSheetFiles'] = files  # the stamp names them (stamp.py::block_inputs), the parents' sheets included
         texts = [f.read_text(encoding='utf-8', errors='ignore') for f in files]
         self.base = CP.Page.static_rules(([css] if css else []) + texts)
         # static_rules numbers the user-agent sheet from 0 and each sheet after it from 10,000 in steps of 100,000: the

@@ -10,10 +10,13 @@ with the reason, so only those blocks are checked again (never the whole library
   - the theme changed: only when a changed theme rule's selector can match one of the block's rendered elements (the
     classes and tags its renders print, stored in the stamp), never the whole library for a theme edit.
 
-Two kinds of input: `own` (the block's folder, its fixture, its stylesheets, the helpers only some blocks load) and
-`core` (the PHP files every block's renders load: the plugin's bootstrap). A core file changes often and rarely changes
-what a block renders, so the fast tier skips it, and the full tier re-renders the block and checks it only when the
-outputs differ from the stamp's (check.py --changed).
+Two kinds of input: `own` (the block's folder, its fixture, the shared fixture entry, its stylesheets as shipped, the
+helpers only some blocks load) and `core` (the PHP files outside any block folder that every stamped block's renders
+load: the plugin's bootstrap; with fewer than CORE_MIN stamps there is no core). A core file changes often and rarely
+changes what a block renders, so the fast tier skips it, and the full tier re-renders the block and checks it only when
+the outputs differ from the stamp's (check.py --changed). A stylesheet is stamped as it ships (`shipped:<source>`: the
+build's rewrites applied, diff.py::shipped_css), so a change to the rewriting code or the theme's shadow settings moves
+it only where it changes the shipped text.
 """
 from __future__ import annotations
 
@@ -22,7 +25,8 @@ import json
 import re
 from pathlib import Path
 
-STAMP_VERSION = 1
+STAMP_VERSION = 2
+CORE_MIN = 20  # stamps needed before the files they all load count as core
 
 
 def file_hash(f: Path) -> str:
@@ -52,32 +56,60 @@ def rendered_tokens(results: dict) -> dict:
     classes, tags = set(), set()
     for r in results.values():
         html = r.get('html') or ''
-        for m in re.finditer(r'class="([^"]*)"', html):
-            classes.update(c for c in m.group(1).split() if c)
+        for m in re.finditer(r'class=(["\'])(.*?)\1', html, re.S):
+            classes.update(c for c in m.group(2).split() if c)
         tags.update(t.lower() for t in re.findall(r'<([a-zA-Z][a-zA-Z0-9-]*)', html))
     return {'classes': sorted(classes), 'tags': sorted(tags)}
 
 
-def block_inputs(plugin: Path, short: str, fixture: dict, fixtures_dir: Path, results: dict, sheets: list) -> dict:
-    """{plugin-relative path: hash} of every file the block's record depends on."""
+def block_inputs(plugin: Path, short: str, fixture: dict, shared: dict, fixtures_dir: Path, included, sheets: list) -> dict:
+    """{key: hash} of every input the block's record depends on: plugin-relative paths (the PHP files any of its renders
+    loaded, its folder, the stylesheets read as written), `shipped:<source>` (a block stylesheet as the build ships
+    it), `fixture-entry` (its fixtures.json entry as written), `fixture-shared` (the `_shared` entry) and
+    `fixture:<name>` (a stand-in file the entry names)."""
+    import diff as D
     import render as RN
     plugin = Path(plugin)
-    files = set()
-    for r in results.values():
-        files.update(r.get('included') or [])
+    files = set(included)
     bdir = plugin / 'src' / 'blocks' / short
     files.update(p.relative_to(plugin).as_posix() for p in bdir.rglob('*') if p.is_file())
+    shipped = {}
     for f in sheets:
         f = Path(f)
-        try:
-            files.add(f.resolve().relative_to(plugin.resolve()).as_posix())
-        except ValueError:
-            pass
+        src = Path(D.SOURCE_OF.get(f, f))
+        rel = _rel(plugin, src)
+        if rel is None:
+            continue
+        if src != f:
+            shipped[f'shipped:{rel}'] = file_hash(f)
+        else:
+            files.add(rel)
     out = {p: file_hash(plugin / p) for p in sorted(files)}
+    out.update(shipped)
     for f in RN.fixture_files(fixture, fixtures_dir):
         out[f'fixture:{Path(f).name}'] = file_hash(Path(f))
     out['fixture-entry'] = text_hash(json.dumps(fixture, sort_keys=True))
+    out['fixture-shared'] = text_hash(json.dumps(shared or {}, sort_keys=True))
     return out
+
+
+def _rel(plugin: Path, f: Path):
+    try:
+        return f.resolve().relative_to(plugin.resolve()).as_posix()
+    except ValueError:
+        return None
+
+
+def shipped_now(plugin: Path, rel: str) -> str:
+    """The hash of a block stylesheet's shipped text as the files are now ('' when its source is gone)."""
+    import diff as D
+    src = plugin / rel
+    if not src.is_file():
+        return ''
+    parts = Path(rel).parts  # src/blocks/<block>/...
+    bj = plugin / 'src' / 'blocks' / parts[2] / 'block.json' if len(parts) > 3 and parts[:2] == ('src', 'blocks') else Path('')
+    css = D.compiled_scss(plugin, src) if src.suffix == '.scss' else src
+    return file_hash(D.shipped_css(plugin, css, bj))
 
 
 def theme_rules(css: str) -> dict:
@@ -98,9 +130,12 @@ def theme_reach(rules: dict, classes, tags) -> str:
     return text_hash(json.dumps(sorted((s, h) for s, h in rules.items() if _selector_reaches(s, classes, tags))))
 
 
-def make_stamp(plugin: Path, short: str, fixture: dict, fixtures_dir: Path, results: dict, sheets: list, theme: str) -> dict:
+def make_stamp(plugin: Path, short: str, fixture: dict, shared: dict, fixtures_dir: Path, results: dict, included,
+               sheets: list, theme: str) -> dict:
+    """`fixture` and `shared` are the block's fixtures.json entry and `_shared` as written (what select() reads back);
+    `included` every PHP file the renders loaded (render.py::Renderer.included); `sheets` every stylesheet read."""
     tokens = rendered_tokens(results)
-    return {'version': STAMP_VERSION, 'inputs': block_inputs(plugin, short, fixture, fixtures_dir, results, sheets),
+    return {'version': STAMP_VERSION, 'inputs': block_inputs(plugin, short, fixture, shared, fixtures_dir, included, sheets),
             'outputs': outputs_hash(results), 'theme': theme_reach(theme_rules(theme), tokens['classes'], tokens['tags']), **tokens}
 
 
@@ -123,9 +158,11 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
     record with no stamp, are named with the reason; the caller decides what each tier runs)."""
     plugin = Path(plugin)
     stamps = {b: (doc.get('stamp') or {}) for b, doc in records.items()}
-    # the core: files every stamped block's renders loaded
-    sets = [set(s.get('inputs') or {}) for s in stamps.values() if s.get('inputs')]
-    core = set.intersection(*sets) if sets else set()
+    # the core: the PHP files outside any block folder that every stamped block's renders loaded (never a fixture or a
+    # stylesheet: those are always the block's own), and only over a real library of stamps
+    sets = [{k for k in s['inputs'] if k.endswith('.php') and not k.startswith('src/blocks/')}
+            for s in stamps.values() if s.get('inputs')]
+    core = set.intersection(*sets) if len(sets) >= CORE_MIN else set()
     now_theme = theme_rules(theme)
     out = {}
     for block, st in stamps.items():
@@ -139,6 +176,10 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
             for path, h in st['inputs'].items():
                 if path == 'fixture-entry':
                     now = text_hash(json.dumps(fixture, sort_keys=True))
+                elif path == 'fixture-shared':
+                    now = text_hash(json.dumps(fixtures.get('_shared') or {}, sort_keys=True))
+                elif path.startswith('shipped:'):
+                    now = shipped_now(plugin, path.split(':', 1)[1])
                 elif path.startswith('fixture:'):
                     hit = [f for f in RN.fixture_files(fixture, fixtures_dir) if Path(f).name == path.split(':', 1)[1]]
                     now = file_hash(Path(hit[0])) if hit else ''
