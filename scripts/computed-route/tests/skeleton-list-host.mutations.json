@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/skeleton-propose.mjs",
-		"find": "\t\t\treturn [ buildList( units[ 0 ].els, e, units[ 0 ].rows ) ];",
-		"replace": "\t\t\treturn [ buildList( units[ 0 ].els ) ];",
+		"find": "\t\t\treturn [ buildList( units[ 0 ].els, e, units[ 0 ].rows, units[ 0 ].heading ) ];",
+		"replace": "\t\t\treturn [ buildList( units[ 0 ].els, null, null, units[ 0 ].heading ) ];",
 		"why": "the wrapper the list is never reaches the list"
 	},
 	{

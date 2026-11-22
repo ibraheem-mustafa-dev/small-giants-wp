@@ -109,14 +109,14 @@
 	},
 	{
 		"file": "lib/skeleton-propose.mjs",
-		"find": "return [ buildList( units[ 0 ].els, e, units[ 0 ].rows ) ];",
-		"replace": "return [ buildList( units[ 0 ].els, e ) ];",
+		"find": "return [ buildList( units[ 0 ].els, e, units[ 0 ].rows, units[ 0 ].heading ) ];",
+		"replace": "return [ buildList( units[ 0 ].els, e, null, units[ 0 ].heading ) ];",
 		"why": "the unwrapped holder list loses its rows"
 	},
 	{
 		"file": "lib/skeleton-propose.mjs",
-		"find": "'list' === u.type ? buildList( u.els, null, u.rows ) :",
-		"replace": "'list' === u.type ? buildList( u.els ) :",
+		"find": "'list' === u.type ? buildList( u.els, null, u.rows, u.heading ) :",
+		"replace": "'list' === u.type ? buildList( u.els, null, null, u.heading ) :",
 		"why": "a list among siblings loses its rows"
 	},
 	{
