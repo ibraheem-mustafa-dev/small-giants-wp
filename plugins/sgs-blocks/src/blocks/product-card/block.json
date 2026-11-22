@@ -451,6 +451,8 @@
 					"prefix": "tag",
 					"attrMap": {
 						"css:background-color": "tagBackgroundColour",
+						"css:border-width": "tagBorderWidth",
+						"css:border-color": "tagBorderColour",
 						"css:width": "tagFullWidth",
 						"css:background-image": "tagBackgroundColourGradient",
 						"css:color-gradient": "tagTextColourGradient",
@@ -2681,6 +2683,16 @@
 			"default": "",
 			"description": "Border radius for the in-body trial tag as a CSS length (e.g. '16px', '1.5rem'). Empty = the style.css default. A bare number is treated as px for pre-2026-08-13 instances. Cloning converter lifts the draft trial-tag border-radius here."
 		},
+		"tagBorderWidth": {
+			"type": "object",
+			"default": {},
+			"description": "Border width for the in-body trial tag { top, right, bottom, left }, set with its colour in the border control. Empty = no border."
+		},
+		"tagBorderColour": {
+			"type": "string",
+			"default": "",
+			"description": "Border colour for the in-body trial tag. Theme token slug or raw CSS colour. Empty = currentColor once a width is set."
+		},
 		"tagFullWidth": {
 			"type": "boolean",
 			"default": true,
@@ -2946,7 +2958,7 @@
 		"showRating": {
 			"type": "boolean",
 			"default": false,
-			"description": "Frame Card component: show the star rating + review-count row (or a 'No reviews yet' line when reviewCount is 0). Operator-authored — not derived from a live WooCommerce rating meta. Applies to every render branch (typed + all 3 bound branches) per FP-9."
+			"description": "Frame Card component: show the star rating + review-count row (or noReviewsText, when set, at 0 reviews). A typed card shows ratingValue and reviewCount as typed; a live product card shows the product's own average rating and review count (includes/product-card-live-fill.php). Applies to every render branch (typed + all 3 bound branches) per FP-9."
 		},
 		"ratingValue": {
 			"type": "number",
@@ -2958,7 +2970,7 @@
 			"type": "number",
 			"default": 0,
 			"role": "content",
-			"description": "Review count shown next to the rating. 0 renders the 'No reviews yet' line instead of a star row, matching the Frame Card design's zero-review state."
+			"description": "Review count shown next to the rating (a live product card uses the product's own). 0 shows noReviewsText in place of the star row, or no row when that is empty."
 		},
 		"ratingColour": {
 			"type": "string",

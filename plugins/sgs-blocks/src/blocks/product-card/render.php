@@ -787,6 +787,28 @@ if ( 'typed' === $source_mode ) {
 		),
 		'.' . $sgs_card_uid . '.sgs-product-card__tag--trial'
 	);
+	// Border width and colour (tagBorderWidth, tagBorderColour) through the shared border assembler, as the attribute
+	// tag's; the radius stays tagBorderRadius on the box rule above. Both unset print nothing.
+	$sgs_tag_border_sel = '.' . $sgs_card_uid . '.sgs-product-card__tag--trial';
+	$sgs_tag_border     = sgs_border_element_decls(
+		$attributes,
+		'tag',
+		$sgs_tag_border_sel,
+		array(
+			'colour' => array( 'base' => 'tagBorderColour' ),
+			'radius' => false,
+		)
+	);
+	if ( $sgs_tag_border['base'] ) {
+		$sgs_tag_box_css .= $sgs_tag_border_sel . '{' . implode( ';', $sgs_tag_border['base'] ) . ';}';
+	}
+	if ( $sgs_tag_border['tablet'] ) {
+		$sgs_tag_box_css .= sgs_emit_tier_decls( $sgs_tag_border_sel, array( 'tablet' => $sgs_tag_border['tablet'] ) );
+	}
+	if ( $sgs_tag_border['mobile'] ) {
+		$sgs_tag_box_css .= sgs_emit_tier_decls( $sgs_tag_border_sel, array( 'mobile' => $sgs_tag_border['mobile'] ) );
+	}
+	$sgs_tag_box_css .= implode( '', $sgs_tag_border['rules'] );
 	// Text colour — the box helper handles background but not colour (mirrors the
 	// label split: colour is a $root_decls concern), so emit it on the same rule.
 	// D636 — sibling gradient attribute wins when set+valid (text-colour gradient

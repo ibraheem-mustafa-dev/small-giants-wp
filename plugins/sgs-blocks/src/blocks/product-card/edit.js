@@ -767,8 +767,8 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 		descLinkUnderlineOffset,
 		priceNoteColour,
 		priceNoteColourGradient,
-		// Frame Card component (Task 4, 2026-09-14) — operator-authored,
-		// applies to every render branch (FP-9).
+		// Frame Card component: typed on a typed card, the product's own on a live
+		// card (includes/product-card-live-fill.php); every render branch (FP-9).
 		showRating,
 		ratingValue,
 		reviewCount,
@@ -2720,6 +2720,20 @@ export default function Edit( { attributes, setAttributes, clientId, context, na
 								     bare number is treated as px by render.php.
 								     Mirrors sgs/label — both feed the SAME shared
 								     sgs_label_box_css_rule() emitter. */ }
+								<SgsBorderControl
+									label={ __( 'Tag border width', 'sgs-blocks' ) }
+									widthValues={ attributes.tagBorderWidth ?? {} }
+									onWidthChange={ ( next ) =>
+										setAttributes( { tagBorderWidth: next } )
+									}
+									colourLabel={ __( 'Tag border colour', 'sgs-blocks' ) }
+									colourValue={ attributes.tagBorderColour }
+									onColourChange={ ( val ) =>
+										setAttributes( { tagBorderColour: val ?? '' } )
+									}
+									colourLinked
+									contrastAgainst={ attributes.tagBackgroundColour || '' }
+								/>
 								<SgsLengthControl
 									label={ __( 'Tag border radius', 'sgs-blocks' ) }
 									value={ attributes.tagBorderRadius ?? '' }
