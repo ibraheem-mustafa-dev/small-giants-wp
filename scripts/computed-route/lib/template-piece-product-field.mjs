@@ -78,6 +78,9 @@ function placeTitle( ctx, piece, index ) {
 	if ( ! attr ) {
 		return { problems: [ `${ key }: piece "${ piece.id }" is not placed: ${ piece.block } at ${ h1.key } holds no single setting with the h1's words` ] };
 	}
+	// The title is the page's h1: the heading renders at that level (a template copy never passes the apply stage's heading rule,
+	// lib/apply-chrome-heading.mjs, which would otherwise set it).
+	at.node.attributes.level = 'h1';
 	return { tree, placed: [ { id: piece.id, block: piece.block, at: h1.key, bind: `${ attr } <- ${ piece.binds.source } ${ piece.binds.key }` } ] };
 }
 

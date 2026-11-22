@@ -66,6 +66,20 @@ test( 'MUST FAIL: the located title, the page\'s h1, is bound to the product\'s 
 	assert.equal( at( got.tree, 7 ).attributes.content, 'Zookies' );
 } );
 
+test( 'MUST FAIL: the bound title renders as the page h1 whatever level the skeleton gave its heading', () => {
+	for ( const level of [ undefined, 'h2' ] ) {
+		const tree = TREE();
+		const h = at( tree, 7 );
+		undefined === level ? delete h.attributes.level : ( h.attributes.level = level );
+		assert.equal( at( place( ctx( { tree } ), TITLE ).tree, 7 ).attributes.level, 'h1' );
+	}
+	const tree = TREE();
+	delete at( tree, 7 ).attributes.level;
+	const off = place( ctx( { tree, shopParts: RECORD( 'Product/6', '{{ p.name }}' ) } ), TITLE );
+	assert.equal( off.tree, undefined );
+	assert.equal( at( tree, 7 ).attributes.level, undefined, 'negative control: a title not placed sets no level' );
+} );
+
 test( 'MUST FAIL: a title located off the h1, or an h1 built as another block, is a problem and binds nothing', () => {
 	const off = place( ctx( { shopParts: RECORD( 'Product/6', '{{ p.name }}' ) } ), TITLE );
 	assert.equal( off.tree, undefined );

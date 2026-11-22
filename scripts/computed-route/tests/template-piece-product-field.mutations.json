@@ -18,5 +18,7 @@
 	{"file": "lib/template-piece-draft.mjs", "find": "\tif ( 2 === parts.length && fields.includes( parts[ 1 ] ) && [ ...declsOf( L, parts[ 0 ] ) ].some( ( d ) => roots.has( d ) ) ) {", "replace": "\tif ( 2 === parts.length && fields.includes( parts[ 1 ] ) ) {", "why": "another product's description is bound"},
 	{"file": "lib/template-piece-draft.mjs", "find": "const PICTURE_ATTRS = [ 'style', 'src', 'srcset' ];", "replace": "const PICTURE_ATTRS = [ 'src', 'srcset' ];", "why": "a background picture is not read"},
 	{"file": "lib/template-piece-draft.mjs", "find": "export const openTag = ( snippet ) => /^<[^>]*/.exec( String( snippet || '' ) )?.[ 0 ] || '';", "replace": "export const openTag = ( snippet ) => /^<[^>]*>/.exec( String( snippet || '' ) )?.[ 0 ] || '';", "why": "an opening tag the inventory cut short is not read"},
-	{"file": "lib/template-piece-product-field.mjs", "find": "(nodes ${ removed.join( ', ' ) })`, run: region } ],", "replace": "(nodes ${ removed.join( ', ' ) })` } ],", "why": "the gallery names no replaced elements, so its unread paint stays a problem"}
+	{"file": "lib/template-piece-product-field.mjs", "find": "(nodes ${ removed.join( ', ' ) })`, run: region } ],", "replace": "(nodes ${ removed.join( ', ' ) })` } ],", "why": "the gallery names no replaced elements, so its unread paint stays a problem"},
+	{"file": "lib/template-piece-product-field.mjs", "find": "at.node.attributes.level = 'h1';", "replace": "", "why": "the bound title keeps the skeleton's level"},
+	{"file": "lib/template-piece-product-field.mjs", "find": "at.node.attributes.level = 'h1';", "replace": "at.node.attributes.level ??= 'h1';", "why": "a title the skeleton built at h2 stays h2"}
 ]
