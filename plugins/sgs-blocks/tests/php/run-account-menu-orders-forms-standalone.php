@@ -83,6 +83,20 @@ ok( has_decl( $rows, $table . ' tbody', 'background:none' ) && has_decl( $rows, 
 ok( has_decl( $rows, $table . ' .woocommerce-orders-table__row', 'border:1px solid #e0d6c8' ), 'with a gap each row takes a frame in the rows\' border colour' );
 $list = sgs_account_orders_look_css( array( 'ordersRowList' => true, 'ordersRowGap' => array( 'desktop' => '10px' ) ), $root );
 ok( has_decl( $list, $root . ' .sgs-account__orders-list', 'gap:10px' ) && has_decl( $list, $root . ' .sgs-account__orders-list .sgs-account__order', 'border:1px solid var(--wp--preset--color--border, #e2e2e2)' ), 'the row list takes the gap, and its rows the theme border colour when no row colour is set' );
+$framed = sgs_account_orders_look_css(
+	array(
+		'ordersLook'            => true,
+		'ordersRowGap'          => array( 'desktop' => '12px' ),
+		'ordersRowBorderWidth'  => array( 'top' => '2px', 'right' => '2px', 'bottom' => '2px', 'left' => '2px' ),
+		'ordersRowBorderStyle'  => 'dashed',
+		'ordersRowBorderColour' => '#3a2418',
+	),
+	$root
+);
+ok( has_decl( $framed, $table . ' .woocommerce-orders-table__row', 'border-width:2px 2px 2px 2px' ) && has_decl( $framed, $table . ' .woocommerce-orders-table__row', 'border-style:dashed' ) && has_decl( $framed, $table . ' .woocommerce-orders-table__row', 'border-color:#3a2418' ), 'the card frame follows the row border width, style and colour' );
+ok( false === strpos( $framed, 'border:1px solid' ), 'a row with its own frame takes no 1px fallback' );
+$joined = sgs_account_orders_look_css( array( 'ordersLook' => true, 'ordersRowBorderWidth' => array( 'top' => '1px' ) ), $root );
+ok( has_decl( $joined, $table . ' .woocommerce-orders-table__row', 'border-width:1px 0 0 0' ) && has_decl( $joined, $table . ' .woocommerce-orders-table__row', 'border-color:var(--wp--preset--color--border, #e2e2e2)' ), 'without a gap the frame still prints, in the theme border colour when no row colour is set' );
 $plain = sgs_account_orders_look_css( array( 'ordersLook' => true ), $root );
 ok( false === strpos( $plain, 'box-shadow' ) && false === strpos( $plain, 'background:none' ) && false === strpos( $plain, 'gap:' ), 'unset: no shadow, no gap, the joined rows keep their look' );
 
@@ -124,7 +138,7 @@ foreach ( $json['supports']['sgs']['elements'] as $el ) {
 		$parts[ $attr ] = true;
 	}
 }
-foreach ( array( 'menuItemBorderWidth', 'menuItemBorderStyle', 'menuItemBorderColour', 'menuItemShadow', 'menuItemShadowColour', 'ordersRowRadius', 'ordersRowGap', 'ordersRowShadow', 'ordersRowShadowColour', 'hideRequiredMarks' ) as $name ) {
+foreach ( array( 'menuItemBorderWidth', 'menuItemBorderStyle', 'menuItemBorderColour', 'menuItemShadow', 'menuItemShadowColour', 'ordersRowRadius', 'ordersRowGap', 'ordersRowShadow', 'ordersRowShadowColour', 'ordersRowBorderWidth', 'ordersRowBorderStyle', 'hideRequiredMarks' ) as $name ) {
 	ok( isset( $attrs[ $name ] ) && ! array_key_exists( 'default', $attrs[ $name ] ) && isset( $parts[ $name ] ), "$name exists, has no default and is on a part" );
 }
 

@@ -193,8 +193,34 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 				'sgs/account'
 			);
 			$css[]      = $row_shadow['normal'] ? $row . '{' . implode( ';', $row_shadow['normal'] ) . ';}' : '';
-			// A gap makes the rows separate cards: the list drops its hairline fill and frame, and each row takes the
-			// frame in the rows' border colour.
+			// Each row's own frame: ordersRowBorderWidth (a box, or one per device) and ordersRowBorderStyle, in the rows'
+			// border colour (else the theme's border colour).
+			$frame      = '' !== $line ? $line : 'var(--wp--preset--color--border, #e2e2e2)';
+			$row_border = sgs_border_element_decls(
+				$attributes,
+				'ordersRow',
+				$row,
+				array(
+					'colour'         => array( 'base' => 'ordersRowBorderColour' ),
+					'colour_default' => $frame,
+					'radius'         => false,
+				)
+			);
+			// A frame is a width (or the style none) the setting holds; the colour alone paints the hairlines, not a frame.
+			$has_frame  = array() !== preg_grep( '/^border-(?:width|style)\b/', array_merge( $row_border['base'], $row_border['tablet'], $row_border['mobile'] ) ) || array() !== $row_border['rules'];
+			if ( $has_frame ) {
+				$css[] = $row_border['base'] ? $row . '{' . implode( ';', $row_border['base'] ) . ';}' : '';
+				$css[] = implode( '', $row_border['rules'] );
+				$css[] = sgs_emit_tier_decls(
+					$row,
+					array(
+						'tablet' => $row_border['tablet'],
+						'mobile' => $row_border['mobile'],
+					)
+				);
+			}
+			// A gap makes the rows separate cards: the list drops its hairline fill and frame, and a row with no frame of
+			// its own takes a 1px one in the rows' border colour so the cards stay outlined.
 			$list = $row_list ? $table : $table . ' tbody';
 			$gap  = sgs_emit_responsive_css(
 				$list,
@@ -207,8 +233,7 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 				)
 			);
 			if ( '' !== $gap ) {
-				$frame = '' !== $line ? $line : 'var(--wp--preset--color--border, #e2e2e2)';
-				$css[] = $list . '{background:none;border:0;}' . $row . '{border:1px solid ' . $frame . ';}' . $gap;
+				$css[] = $list . '{background:none;border:0;}' . ( $has_frame ? '' : $row . '{border:1px solid ' . $frame . ';}' ) . $gap;
 			}
 			$cells = array(
 				'ordersNumber' => array( $row_list ? '.sgs-account__order-number' : '.woocommerce-orders-table__cell-order-number', 'ordersNumberColour' ),

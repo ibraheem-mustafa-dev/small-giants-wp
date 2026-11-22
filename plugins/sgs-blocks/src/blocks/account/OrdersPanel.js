@@ -3,7 +3,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { fillRow, textRow, ShadowControl } from '../../components';
+import { fillRow, textRow, SgsBorderControl, ShadowControl } from '../../components';
 import { TextField, TierBox, Toggle, TYPE_TARGET } from './extraControls';
 import { TierLength } from './CellPanels';
 
@@ -39,6 +39,14 @@ export default function OrdersPanel( { attributes, setAttributes } ) {
 			{ ( attributes.ordersLook || attributes.ordersRowList ) && (
 				<>
 					<TierLength { ...p } name="ordersRowGap" label={ __( 'Space between rows (set: separate cards)', 'sgs-blocks' ) } />
+					<SgsBorderControl
+						label={ __( 'Row frame', 'sgs-blocks' ) }
+						widthValues={ attributes.ordersRowBorderWidth ?? {} }
+						onWidthChange={ ( next ) => setAttributes( { ordersRowBorderWidth: next } ) }
+						styleValue={ attributes.ordersRowBorderStyle }
+						onStyleChange={ ( val ) => setAttributes( { ordersRowBorderStyle: val || undefined } ) }
+						showColour={ false }
+					/>
 					<ShadowControl
 						label={ __( 'Row shadow', 'sgs-blocks' ) }
 						attributes={ attributes }

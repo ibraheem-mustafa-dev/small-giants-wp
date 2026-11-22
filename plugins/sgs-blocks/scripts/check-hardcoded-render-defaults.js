@@ -374,6 +374,8 @@ const ATTR_ELEMENT_OVERRIDES = {
 	// ordersRowGap paints the list holding the order rows through helpers-account-look-css.php's scoped rule, only while set;
 	// the stylesheet's own gaps belong to other rows and cards.
 	'account::ordersRowGap': [ 'orders-row-gap' ],
+	// ordersRowBorderWidth frames each order row through the same scoped rule, only while set (the stylesheet's max-width is the empty card's text).
+	'account::ordersRowBorderWidth': [ 'orders-row-border-width' ],
 	'account::ordersEmptyPadding': [ 'orders-empty' ],
 	'account::ordersPillPadding': [ 'orders-pill' ],
 	'account::addressCardPadding': [ 'address-card' ],

@@ -542,7 +542,9 @@
 							"css:padding": "ordersRowPadding",
 							"css:border-radius": "ordersRowRadius",
 							"css:box-shadow": "ordersRowShadow",
-							"css:box-shadow-color": "ordersRowShadowColour"
+							"css:box-shadow-color": "ordersRowShadowColour",
+							"css:border-width": "ordersRowBorderWidth",
+							"css:border-style": "ordersRowBorderStyle"
 						},
 						"states": {
 							"hover": {
@@ -2842,6 +2844,21 @@
 			"ordersRowShadowColour": {
 				"type": "string",
 				"description": "Order row shadow colour. Unset = the preset's own colour."
+			},
+			"ordersRowBorderWidth": {
+				"type": "object",
+				"description": "Each order row's own frame: a four-side box, or one box per device, in the rows' border colour. Unset = no frame (separate cards from ordersRowGap take 1px)."
+			},
+			"ordersRowBorderStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"solid",
+					"dashed",
+					"dotted",
+					"double"
+				]
 			},
 			"ordersNumberFontSize": {
 				"type": "object"
