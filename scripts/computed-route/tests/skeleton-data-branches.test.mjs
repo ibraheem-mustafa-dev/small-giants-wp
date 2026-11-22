@@ -10,6 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadDraft } from '../lib/intake-ast.mjs';
 import { addDataBranches, dataBranches, forceRenderVals, inventoryBranches, mergeDataReads, readDataBranches, readsComponent } from '../lib/skeleton-data-branches.mjs';
+import { orderStateOf } from '../lib/template-piece-order-read.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -243,28 +244,33 @@ const ORDER_TEMPLATE = `<main><h1>Thanks, order XY-1234.</h1>
 <sc-if value="{{ hasAcct }}"><p>Saved to your account</p></sc-if>
 <sc-if value="{{ inBag }}"><p>Still in the bag</p></sc-if>
 <sc-if value="{{ mixed }}"><p>Order and a click</p></sc-if>
+<sc-if value="{{ placing }}"><p>Placing your order</p></sc-if>
 </main>`;
 const orderLogic = ( extra = '' ) => `class Component extends DCLogic {
-  state = { last: null, bag: [], open: false, placed: [] };
+  state = { last: null, bag: [], open: false, placed: [], busy: false };
   renderVals() {
     const S = this.state;
     return {
-      hasAcct: !!(S.last && S.last.signedIn), inBag: S.bag.length > 0, mixed: !!(S.last && S.open),
-      place: () => { const s0 = this.state; const order = { id: 'XY-1234', total: 5 }; this.setState( { placed: [ order ].concat( s0.placed ), last: { signedIn: !!s0.user }, bag: [] } ); },
+      hasAcct: !!(S.last && S.last.signedIn), inBag: S.bag.length > 0, mixed: !!(S.last && S.open), placing: !!S.busy,
+      place: () => { const s0 = this.state; const order = { id: 'XY-1234', total: 5 }; this.setState( { placed: [ order ].concat( s0.placed ), last: { signedIn: !!s0.user }, bag: [], busy: true } ); },
+      done: () => this.setState( { busy: false } ),
       add: () => this.setState( { bag: [ 1 ] } ),
       signOut: () => this.setState( { last: null, user: null } ),${ extra }
     };
   }
 }`;
-const ORDER_SAMPLES = { hasAcct: [ false ], inBag: [ false ], mixed: [ false ] };
+const ORDER_SAMPLES = { hasAcct: [ false ], inBag: [ false ], mixed: [ false ], placing: [ false ] };
 
 test( 'MUST FAIL: a branch testing state only the order action sets is the order data and is forced; state any click sets, or a test reading other state, is not', () => {
 	const read = ( template, logic ) => {
 		const { draft, record } = plant( { template, logic, samples: ORDER_SAMPLES } );
 		return dataBranches( { record, draft, component: 'Page', within: mainOf( record ) } ).branches.map( ( b ) => [ b.test, b.keys ] );
 	};
-	// `last` is written by the order action and only reset to null elsewhere (signing out), so hasAcct reads the order.
+	// `last` is written by the order action and only reset to null elsewhere (signing out), so hasAcct reads the order. The
+	// action's busy flag (true there, false elsewhere) is no record, so the placing branch is not the order's.
 	assert.deepEqual( read( ORDER_TEMPLATE, orderLogic() ), [ [ 'hasAcct', { hasAcct: true } ] ] );
+	const planted = plant( { template: ORDER_TEMPLATE, logic: orderLogic(), samples: ORDER_SAMPLES } );
+	assert.deepEqual( [ ...orderStateOf( planted.draft.idx, [ 'XY-1234' ] ).keys ].sort(), [ 'last', 'placed' ] );
 	// Negative controls: another action giving `last` a value makes it ordinary state; with no fixed reference the page names no
 	// order action; a reference no record holds names none either.
 	assert.deepEqual( read( ORDER_TEMPLATE, orderLogic( " peek: () => this.setState( { last: { signedIn: true } } )," ) ), [] );

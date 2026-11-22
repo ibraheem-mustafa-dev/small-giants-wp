@@ -267,9 +267,10 @@ export const referencesIn = ( els ) => els.map( ( e ) => REFERENCE_IN.exec( Stri
 // The order a one-file draft keeps in its component state (D-3, F-13): the draft's order action is the function that writes to
 // the state the record holding a reference the page writes as fixed words (createdRecords; every such reference must point to
 // the one function). Returns null when there is none, else { fn, keys, values, copies }:
-//   - `keys`: the state keys that action writes and nothing else gives a value: every other object property of that name in
-//     the logic holds an empty value (the starting state, a sign-out reset), so the key holds this order and nothing else
-//     (`lastOrder`, `placed`); a key any other code fills (`bag`) is not the order's;
+//   - `keys`: the state keys that action writes a record to (an object, or a value holding the record it creates; never
+//     a bare flag such as `busy: true`) and nothing else gives a value: every other object property of that name in the logic
+//     holds an empty value (the starting state, a sign-out reset), so the key holds this order and nothing else (`lastOrder`,
+//     `placed`); a key any other code fills (`bag`) is not the order's;
 //   - `values`: each such key's value node in the action's write (`lastOrder: { created, signedIn: !! s0.user }`);
 //   - `copies`: a state value the action copies, as it is, into a field of the record it creates (`method: s0.co.method`):
 //     the state path's text and the record's field, so reading that state value is reading the order's field.
@@ -285,7 +286,12 @@ export function orderStateOf( L, refs ) {
 	for ( const p of patches.flatMap( ( o ) => o.properties ) ) {
 		'ObjectProperty' === p.type && keyName( p ) && values.set( keyName( p ), p.value );
 	}
-	const keys = new Set( [ ...values.keys() ].filter( ( k ) => L.all.every( ( n ) => 'ObjectProperty' !== n.type || keyName( n ) !== k || within( n, fn ) || emptyValue( n.value ) ) ) );
+	// A record, not a flag: the action writes the key an object, or a value holding the record it creates (`placed:
+	// [ order ].concat( ... )`); a busy or placing flag (`busy: true`, reset to false elsewhere) is no order.
+	const recordNodes = new Set( hits.map( ( h ) => h.record ) );
+	const recordDecls = new Set( hits.map( ( h ) => L.parent.get( h.record ) ).filter( ( d ) => isVarDecl( d ) ) );
+	const holdsRecord = ( v ) => 'ObjectExpression' === v?.type || ( !! v && subtree( L, v ).some( ( n ) => recordNodes.has( n ) || ( 'Identifier' === n.type && recordDecls.has( resolveName( L, n )?.decl ) ) ) );
+	const keys = new Set( [ ...values.keys() ].filter( ( k ) => holdsRecord( values.get( k ) ) && L.all.every( ( n ) => 'ObjectProperty' !== n.type || keyName( n ) !== k || within( n, fn ) || emptyValue( n.value ) ) ) );
 	for ( const k of [ ...values.keys() ] ) {
 		keys.has( k ) || values.delete( k );
 	}
