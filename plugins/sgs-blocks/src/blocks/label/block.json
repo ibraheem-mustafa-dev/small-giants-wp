@@ -32,7 +32,8 @@
 			"iconPicker": true,
 			"enabledExtensions": [
 				"timeText",
-				"childSizing"
+				"childSizing",
+				"floatPosition"
 			],
 			"timeTextWords": "text",
 			"boxFamilies": {
