@@ -172,7 +172,9 @@ test( 'the writer: a lone link, a whole-card link and a card\'s call to action e
 	assert.equal( off.proposal.rows.find( ( x ) => 'a' === x.tag && ! x.words ).attributes.sgsBlockLink, undefined );
 	assert.ok( handovers( off ).some( ( h ) => 'content-page' === h.owner && /#\/contact/.test( h.detail ) ), 'the unresolved route is handed over' );
 	const action = propose( section( [ E( 'a', { attrs: { href: 'Help.dc.html#delivery' } }, [ E( 'h3', { words: 'Delivery' } ), E( 'p', { words: 'When your order arrives' } ), E( 'div', { words: 'Read more' } ) ] ) ] ), FILES );
-	assert.equal( rowOf( action, 'Read more' ).attributes.url, '/help/#delivery' );
+	const actionCard = action.proposal.rows.find( ( x ) => 'a' === x.tag && ! x.words );
+	assert.equal( actionCard.attributes.sgsBlockLink, '/help/#delivery', 'a card the draft draws as one link holds the link itself' );
+	assert.equal( rowOf( action, 'Read more' ).attributes.url, undefined, 'its call to action is no link inside the card link' );
 } );
 
 test( 'the writer: a product link is not written and is handed over to product data; an external link and an in-page anchor stay as they are (negative control)', () => {
