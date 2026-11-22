@@ -28,6 +28,7 @@ if ( ! class_exists( 'WC_Order_Item', false ) ) {
 		public function get_product_id() { return $this->d['product_id'] ?? 0; }
 		public function get_variation_id() { return $this->d['variation_id'] ?? 0; }
 		public function get_method_title() { return $this->d['name']; }
+		public function get_method_id() { return $this->d['method_id'] ?? ''; }
 		public function get_meta_data() { return $this->d['meta'] ?? array(); }
 		public function get_formatted_meta_data() { return array_map( fn( $m ) => (object) $m, $this->d['fmeta'] ?? array() ); }
 	}
@@ -46,6 +47,8 @@ if ( ! class_exists( 'WC_Order', false ) ) {
 		public function get_date_created() { return isset( $this->d['created'] ) ? new WC_DateTime( '@' . $this->d['created'] ) : null; }
 		public function get_view_order_url() { return 'https://shop.test/my-account/view-order/' . $this->d['id'] . '/'; }
 		public function get_meta( $k, $single = true ) { return $this->d['meta'][ $k ] ?? ''; }
+		public function update_meta_data( $k, $v ) { $this->d['meta'][ $k ] = $v; }
+		public function save() { $this->d['saved'] = ( $this->d['saved'] ?? 0 ) + 1; return $this->d['id']; }
 		public function get_item_count() { return $this->d['count'] ?? 0; }
 		public function get_items( $type = 'line_item' ) { return array_map( fn( $i ) => new WC_Order_Item( $i ), $this->d['items'] ?? array() ); }
 		public function get_shipping_methods() { return array_map( fn( $i ) => new WC_Order_Item( $i ), $this->d['shipping'] ?? array() ); }

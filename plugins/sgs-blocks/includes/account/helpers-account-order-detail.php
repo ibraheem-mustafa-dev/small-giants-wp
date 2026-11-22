@@ -14,23 +14,7 @@ require_once __DIR__ . '/helpers-account-orders-list.php';
 require_once __DIR__ . '/helpers-account-gift-note.php';
 require_once dirname( __DIR__ ) . '/helpers-link-source.php';
 require_once dirname( __DIR__ ) . '/helpers-brand-glyphs.php';
-
-if ( ! function_exists( 'sgs_account_order_is_pickup' ) ) {
-	/**
-	 * Whether the order's shipping line is a local pickup method.
-	 *
-	 * @param \WC_Order $order The order.
-	 * @return bool
-	 */
-	function sgs_account_order_is_pickup( $order ): bool {
-		foreach ( $order->get_shipping_methods() as $method ) {
-			if ( false !== strpos( (string) $method->get_method_id(), 'pickup' ) ) {
-				return true;
-			}
-		}
-		return false;
-	}
-}
+require_once dirname( __DIR__ ) . '/helpers-order-pickup.php';
 
 if ( ! function_exists( 'sgs_account_order_steps' ) ) {
 	/**
@@ -47,7 +31,7 @@ if ( ! function_exists( 'sgs_account_order_steps' ) ) {
 		if ( '' === $current ) {
 			return array();
 		}
-		$pickup  = sgs_account_order_is_pickup( $order );
+		$pickup  = sgs_order_is_pickup( $order );
 		$text    = static function ( string $key ) use ( $attributes ): string {
 			return trim( (string) ( $attributes[ $key ] ?? '' ) );
 		};
@@ -265,7 +249,7 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 			$html .= sgs_account_order_wc_table_html( $order );
 		}
 		if ( $on( 'orderDetailBoxes' ) ) {
-			$pickup   = sgs_account_order_is_pickup( $order );
+			$pickup   = sgs_order_is_pickup( $order );
 			$address  = $pickup ? (string) $order->get_shipping_method() : (string) $order->get_formatted_shipping_address( '' );
 			$ship_cost = (float) $order->get_shipping_total() + (float) $order->get_shipping_tax();
 			$ship_free = $text( 'orderDetailShippingFreeText' );

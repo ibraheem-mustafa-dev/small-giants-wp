@@ -20,8 +20,11 @@
  *   placed without a customer account) | 'order-viewable' (the order on the page can be viewed by this visitor: the plain
  *   case, which hides a block while WooCommerce shows its confirm-your-email form instead of the order) |
  *   'order-not-viewable' (the inverse: an order is on the page but this visitor cannot view it, so a neutral message can
- *   stand in for "your order is in"; a page with no order at all hides it, like every other order rule). The five
- *   order rules read the order through
+ *   stand in for "your order is in"; a page with no order at all hides it, like every other order rule) |
+ *   'order-account-created' (the customer account was made with this order: Order_Account_Created marks it at checkout)
+ *   | 'order-account-existing' (the order is on an account that already existed; a guest order is neither) |
+ *   'order-collect' (a local pickup order) | 'order-delivery' (a shipped order; an order with no shipping line is
+ *   neither, sgs_order_is_pickup()). The order rules read the order through
  *   Order_Binding::viewable_order(), the same permission check as the sgs/order binding, and hide the block when the
  *   order cannot be viewed. 'order-owner' is the inverse of 'order-guest' in practice: WooCommerce shows an account
  *   order only to its customer, so a viewer who owns the order is never looking at a guest order.
@@ -46,6 +49,11 @@
 namespace SGS\Blocks;
 
 defined( 'ABSPATH' ) || exit;
+
+require_once __DIR__ . '/helpers-order-pickup.php';
+
+/** The order Show-to rules order_rule_passes() decides (every order rule but `order-owner`). */
+const ORDER_RULES = array( 'order-has-gift', 'order-no-gift', 'order-guest', 'order-viewable', 'order-not-viewable', 'order-account-created', 'order-account-existing', 'order-collect', 'order-delivery' );
 
 add_filter( 'render_block', __NAMESPACE__ . '\\check_conditional_visibility', 9, 3 );
 add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\\enqueue_product_reviews_editor_flag' );
@@ -141,7 +149,7 @@ function order_exists_on_page(): bool {
 }
 
 /**
- * Whether the order Show-to rule (`order-has-gift`, `order-no-gift`, `order-guest`, `order-viewable`, `order-not-viewable`) passes for
+ * Whether an order Show-to rule (ORDER_RULES) passes for
  * the order on the current order-confirmation page. An order this visitor may not view, or a page with no order, fails every rule
  * except `order-not-viewable`, which passes for an order that exists but cannot be viewed (wrong or missing key, a guest who has
  * not confirmed the order's email, a signed-out visitor on a member's order) and still fails on a page with no order.
@@ -162,6 +170,19 @@ function order_rule_passes( string $rule ): bool {
 	}
 	if ( 'order-guest' === $rule ) {
 		return 0 === (int) $order->get_customer_id();
+	}
+	if ( 'order-account-created' === $rule || 'order-account-existing' === $rule ) {
+		if ( 0 === (int) $order->get_customer_id() ) {
+			return false;
+		}
+		$created = class_exists( __NAMESPACE__ . '\Order_Account_Created' ) && Order_Account_Created::is_created( $order );
+		return 'order-account-created' === $rule ? $created : ! $created;
+	}
+	if ( 'order-collect' === $rule ) {
+		return \sgs_order_is_pickup( $order );
+	}
+	if ( 'order-delivery' === $rule ) {
+		return array() !== $order->get_shipping_methods() && ! \sgs_order_is_pickup( $order );
 	}
 	$gift = class_exists( __NAMESPACE__ . '\Gift_Order\Gift_Order_Order' ) ? Gift_Order\Gift_Order_Order::for_order( $order ) : null;
 	return 'order-has-gift' === $rule ? null !== $gift : null === $gift;
@@ -207,7 +228,7 @@ function check_conditional_visibility( string $block_content, array $block, $ins
 		return '';
 	}
 
-	if ( in_array( $login_rule, array( 'order-has-gift', 'order-no-gift', 'order-guest', 'order-viewable', 'order-not-viewable' ), true ) && ! order_rule_passes( $login_rule ) ) {
+	if ( in_array( $login_rule, ORDER_RULES, true ) && ! order_rule_passes( $login_rule ) ) {
 		return '';
 	}
 

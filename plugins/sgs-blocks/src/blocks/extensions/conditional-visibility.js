@@ -106,7 +106,7 @@ function addConditionalAttributes( settings, name ) { // eslint-disable-line no-
 		...settings,
 		attributes: {
 			...settings.attributes,
-			/** 'none' | 'logged-in' | 'logged-out' | 'order-owner' | 'order-has-gift' | 'order-no-gift' | 'order-guest' | 'order-viewable' | 'order-not-viewable' */
+			/** 'none' | 'logged-in' | 'logged-out' | 'order-owner' | 'order-has-gift' | 'order-no-gift' | 'order-guest' | 'order-viewable' | 'order-not-viewable' | 'order-account-created' | 'order-account-existing' | 'order-collect' | 'order-delivery' */
 			sgsConditionLoggedIn: { type: 'string', default: 'none' },
 			/** Array of WordPress role slugs, e.g. ['administrator','editor'] */
 			sgsConditionUserRole: {
@@ -215,6 +215,14 @@ function buildConditionSummary( attributes ) {
 		parts.push( __( 'when the order on this page can be viewed', 'sgs-blocks' ) );
 	} else if ( 'order-not-viewable' === attributes.sgsConditionLoggedIn ) {
 		parts.push( __( 'when the order on this page cannot be viewed', 'sgs-blocks' ) );
+	} else if ( 'order-account-created' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'orders whose account was made with the order only', 'sgs-blocks' ) );
+	} else if ( 'order-account-existing' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'orders on an account that already existed only', 'sgs-blocks' ) );
+	} else if ( 'order-collect' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'orders to collect only', 'sgs-blocks' ) );
+	} else if ( 'order-delivery' === attributes.sgsConditionLoggedIn ) {
+		parts.push( __( 'orders to deliver only', 'sgs-blocks' ) );
 	}
 
 	if ( attributes.sgsConditionDateStart ) {
@@ -473,6 +481,22 @@ const withConditionalVisibilityControls = createHigherOrderComponent(
 									{
 										label: __( 'The order on this page cannot be viewed (wrong link, or email not confirmed)', 'sgs-blocks' ),
 										value: 'order-not-viewable',
+									},
+									{
+										label: __( 'A new account was made with this order (order confirmation page)', 'sgs-blocks' ),
+										value: 'order-account-created',
+									},
+									{
+										label: __( 'The order is on an account that already existed (order confirmation page)', 'sgs-blocks' ),
+										value: 'order-account-existing',
+									},
+									{
+										label: __( 'The order will be collected, local pickup (order confirmation page)', 'sgs-blocks' ),
+										value: 'order-collect',
+									},
+									{
+										label: __( 'The order will be delivered (order confirmation page)', 'sgs-blocks' ),
+										value: 'order-delivery',
 									},
 								] }
 								onChange={ ( val ) =>
