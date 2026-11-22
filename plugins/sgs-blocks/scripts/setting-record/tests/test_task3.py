@@ -599,3 +599,26 @@ def test_a_render_that_loads_a_stylesheet_reader_is_refused(tmp_path, monkeypatc
     monkeypatch.setattr(subprocess, 'run', fake)
     with pytest.raises(RuntimeError, match='reads stylesheet files'):
         rn.render('sgs/text', {'y': 1})
+
+
+
+def test_a_core_file_aimed_at_one_block_checks_that_block(tmp_path, monkeypatch):
+    plugin = tmp_path / 'plugin'
+    (plugin / 'includes' / 'forms').mkdir(parents=True)
+    scope = plugin / 'includes' / 'forms' / 'field-name-scope.php'
+    boot = plugin / 'includes' / 'boot.php'
+    scope.write_text("<?php add_filter( 'render_block_sgs/form', 'f' ); // v1", encoding='utf-8')
+    boot.write_text('<?php // v1', encoding='utf-8')
+    monkeypatch.setattr(ST, 'CORE_MIN', 2)
+    inputs = {'includes/forms/field-name-scope.php': ST.file_hash(scope), 'includes/boot.php': ST.file_hash(boot)}
+    records = {b: {'stamp': {'inputs': dict(inputs), 'theme': ST.theme_reach({}, [], []), 'check': ST.check_hash(plugin)}}
+               for b in ('sgs/form', 'sgs/heading', 'sgs/form-field-text')}
+    scope.write_text("<?php add_filter( 'render_block_sgs/form', 'f' ); str_starts_with( $n, 'sgs/form-field-' ); // v2", encoding='utf-8')
+    out = ST.select(plugin, records, {}, tmp_path, '')
+    assert out['sgs/form']['own'] == ['includes/forms/field-name-scope.php changed and names this block']
+    assert out['sgs/form-field-text']['own'] == ['includes/forms/field-name-scope.php changed and names this block']
+    assert out['sgs/heading']['own'] == [] and out['sgs/heading']['core'] == ['includes/forms/field-name-scope.php changed']
+    boot.write_text('<?php // v2', encoding='utf-8')  # a file that names no block stays with the canaries
+    scope.write_text("<?php add_filter( 'render_block_sgs/form', 'f' ); // v1", encoding='utf-8')
+    out = ST.select(plugin, records, {}, tmp_path, '')
+    assert out['sgs/form']['own'] == [] and 'includes/boot.php changed' in out['sgs/form']['core']

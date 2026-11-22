@@ -196,6 +196,18 @@ def refresh_core(plugin: Path, records_dir: Path) -> list:
     return out
 
 
+BLOCK_NAMED = re.compile(r"""(?:['"]|render_block_)sgs/([a-z0-9-]+)""")
+
+
+def blocks_named(f: Path) -> set:
+    """The blocks a PHP file names (`'sgs/form'`, a `render_block_sgs/form` filter): a file every render loads but whose
+    code is aimed at one block (includes/forms/field-name-scope.php changes only the form) is that block's own input."""
+    try:
+        return {f'sgs/{m}' for m in BLOCK_NAMED.findall(f.read_text(encoding='utf-8', errors='ignore'))}
+    except OSError:
+        return set()
+
+
 def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, theme: str) -> dict:
     """{block: {'own': [reasons], 'core': [reasons]}} for every record a change touches (blocks with no record, or a
     record with no stamp, are named with the reason; the caller decides what each tier runs)."""
@@ -205,6 +217,7 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
     now_theme = theme_rules(theme)
     now_check = check_hash(plugin)
     out = {}
+    changed_core = set()
     for block, st in stamps.items():
         short = block.split('/', 1)[-1]
         own, core_r = [], []
@@ -227,6 +240,8 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
                     now = file_hash(plugin / path)
                 if now != h:
                     (core_r if path in core else own).append(f'{path} changed')
+                    if path in core:
+                        changed_core.add(path)
             bdir = plugin / 'src' / 'blocks' / short
             for p in bdir.rglob('*'):
                 rel = p.relative_to(plugin).as_posix()
@@ -238,4 +253,11 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
                 core_r.append("the check's code or the offline runner changed")
         if own or core_r:
             out[block] = {'own': own, 'core': core_r}
+    # a core file aimed at named blocks: those blocks are checked in full, never left to the canaries
+    for path in sorted(changed_core):
+        named = blocks_named(plugin / path)
+        # a name ending in a dash is a prefix the code matches (`str_starts_with( $name, 'sgs/form-field-' )`)
+        hits = {b for b in stamps if b in named or any(n.endswith('-') and b.startswith(n) for n in named)}
+        for block in sorted(hits):
+            out.setdefault(block, {'own': [], 'core': []})['own'].append(f'{path} changed and names this block')
     return out
