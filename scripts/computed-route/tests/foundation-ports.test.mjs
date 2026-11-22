@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { newestMtime, realPorts } from '../lib/foundation-ports.mjs';
+import { newestMtime, realPorts, resolveCommand, restProbe } from '../lib/foundation-ports.mjs';
 
 const made = [];
 after( () => made.forEach( ( d ) => fs.rmSync( d, { recursive: true, force: true } ) ) );
@@ -87,4 +87,36 @@ test( 'the gitignored intake files come from SGS_INTAKE_SOURCE when it is set; t
 	put( path.join( dir, 'd.txt' ), 'z', new Date( 2019, 0, 1 ) );
 	assert.equal( newestMtime( dir ), new Date( 2022, 0, 1 ).getTime() );
 	assert.ok( ports.freeBytes( dir ) > 0 );
+} );
+
+test( 'MUST FAIL: a step\'s powershell runs as pwsh, or Windows PowerShell\'s own file, when PATH has no powershell (spawn powershell ENOENT)', () => {
+	const PS7 = path.join( os.tmpdir(), 'ps7' );
+	const files = ( ...list ) => ( f ) => list.includes( f );
+	const only7 = { env: { PATH: PS7 }, platform: 'win32', exists: files( path.join( PS7, 'pwsh.exe' ) ) };
+	assert.equal( resolveCommand( 'powershell', only7 ), 'pwsh', 'PowerShell 7 alone on PATH' );
+	const full = resolveCommand( 'powershell', { env: { PATH: '' }, platform: 'win32', exists: () => true } );
+	assert.equal( resolveCommand( 'powershell', { env: { PATH: os.tmpdir() }, platform: 'win32', exists: files( full ) } ), full, 'neither on PATH: the Windows PowerShell file' );
+	// negative controls
+	assert.equal( resolveCommand( 'powershell', { env: { PATH: PS7 }, platform: 'win32', exists: files( path.join( PS7, 'powershell.exe' ), path.join( PS7, 'pwsh.exe' ) ) } ), 'powershell', 'powershell on PATH keeps its name' );
+	assert.equal( resolveCommand( 'node', only7 ), 'node', 'another command is unchanged' );
+	assert.equal( resolveCommand( 'powershell', { ...only7, platform: 'linux' } ), 'powershell', 'only Windows swaps it' );
+} );
+
+test( 'MUST FAIL: a REST read with no answer is made once more with a longer wait; a refusal is not retried', async () => {
+	const seen = [];
+	const slow = async () => {
+		seen.push( 'try' );
+		if ( 1 === seen.length ) {
+			throw new Error( 'timed out' );
+		}
+		return { status: 200 };
+	};
+	const r = await restProbe( { creds: { url: 'http://x', auth: 'a' }, fetchImpl: slow } );
+	assert.deepEqual( [ r.ok, seen.length ], [ true, 2 ], 'the second attempt answers' );
+	const refused = [];
+	const r2 = await restProbe( { creds: { url: 'http://x', auth: 'a' }, fetchImpl: async () => ( refused.push( 1 ), { status: 401 } ) } );
+	assert.deepEqual( [ r2.ok, refused.length, r2.detail ], [ false, 1, 'users/me answered 401' ], 'a 401 stands at once' );
+	const none = await restProbe( { creds: { url: 'http://x', auth: 'a' }, fetchImpl: async () => { throw new Error( 'down' ); } } );
+	assert.equal( none.ok, false );
+	assert.match( none.detail, /no answer within 60s: down/ );
 } );

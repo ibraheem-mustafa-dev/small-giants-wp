@@ -22,7 +22,33 @@ import { sha } from './foundation-plan.mjs';
 
 const TAIL_LINES = 4;
 const WSL_PROBE_MS = 20000;
-const REST_PROBE_MS = 20000;
+const REST_PROBE_MS = [ 20000, 60000 ];
+const WINDOWS_POWERSHELL = 'C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
+
+// The program that runs a step's `powershell` command. A machine with only PowerShell 7 on PATH has no `powershell`, so a bare spawn fails at once
+// (spawn powershell ENOENT): the name stays when PATH holds it, else `pwsh`, else Windows PowerShell's own folder. Any other command is unchanged.
+export function resolveCommand( command, { env = process.env, exists = fs.existsSync, platform = process.platform } = {} ) {
+	if ( 'powershell' !== command || 'win32' !== platform ) {
+		return command;
+	}
+	const onPath = ( name ) => String( env.PATH ?? env.Path ?? '' ).split( path.delimiter ).filter( Boolean ).some( ( d ) => exists( path.join( d, `${ name }.exe` ) ) );
+	return onPath( 'powershell' ) ? 'powershell' : onPath( 'pwsh' ) ? 'pwsh' : exists( WINDOWS_POWERSHELL ) ? WINDOWS_POWERSHELL : 'powershell';
+}
+
+// The REST login read: users/me with the site's application password. A copy's first request after it has sat idle can be slow, so a read that
+// gets no answer within the first timeout is made once more with the second (a warm-up); a status answer, a refusal included, is never retried.
+export async function restProbe( { creds, fetchImpl = fetch, timeouts = REST_PROBE_MS } ) {
+	let last = 'no attempt';
+	for ( const ms of timeouts ) {
+		try {
+			const res = await fetchImpl( `${ creds.url }/wp-json/wp/v2/users/me?context=edit`, { headers: { Authorization: creds.auth }, signal: AbortSignal.timeout( ms ) } );
+			return { ok: 200 === res.status, detail: `users/me answered ${ res.status }` };
+		} catch ( e ) {
+			last = `no answer within ${ ms / 1000 }s: ${ e.message }`;
+		}
+	}
+	return { ok: false, detail: last };
+}
 
 // The newest modification time under `dir` (0 when there is none).
 export function newestMtime( dir, { list = ( d ) => fs.readdirSync( d, { withFileTypes: true } ), stat = ( f ) => fs.statSync( f ).mtimeMs } = {} ) {
@@ -56,7 +82,7 @@ export function realPorts( { repo, client, site, target, logDir, env = process.e
 			}
 			const logFile = path.join( logDir, `${ id }.log` );
 			const out = fs.createWriteStream( logFile );
-			const child = spawn( command, args, { cwd: repo, env: { ...env }, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
+			const child = spawn( resolveCommand( command, { env } ), args, { cwd: repo, env: { ...env }, stdio: [ 'ignore', 'pipe', 'pipe' ] } );
 			child.stdout.pipe( out, { end: false } );
 			child.stderr.pipe( out, { end: false } );
 			child.on( 'error', ( e ) => {
@@ -85,12 +111,7 @@ export function realPorts( { repo, client, site, target, logDir, env = process.e
 		credentials: ( s ) => siteCredentials( repo, s ),
 		restCheck: async ( creds ) => {
 			assertSiteContact( { site, target, readOnly: true } );
-			try {
-				const res = await fetch( `${ creds.url }/wp-json/wp/v2/users/me?context=edit`, { headers: { Authorization: creds.auth }, signal: AbortSignal.timeout( REST_PROBE_MS ) } );
-				return { ok: 200 === res.status, detail: `users/me answered ${ res.status }` };
-			} catch ( e ) {
-				return { ok: false, detail: `no answer: ${ e.message }` };
-			}
+			return restProbe( { creds } );
 		},
 		sourceCheckout: () => {
 			if ( env.SGS_INTAKE_SOURCE ) {
