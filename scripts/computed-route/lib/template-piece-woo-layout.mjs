@@ -108,6 +108,28 @@ export function classifyParts( v, parts, env ) {
 	} );
 }
 
+// The lists a condition's test counts (`items.length > 0` counts items).
+const countedLists = ( expr ) => new Set( [ ...String( expr ?? '' ).matchAll( /([A-Za-z_$][\w$.]*)\.length\b/g ) ].map( ( m ) => m[ 1 ] ) );
+
+// The region's other data branches: the conditions beside the one the region shows under that the block draws in its place.
+// The region's nearest condition (`sc-if` on its parent chain) is its data branch when its test counts a list; a sibling
+// condition is the other branch when it is the `sc-else` of that branch or its test counts one of the same lists (the
+// basket's `empty`, `items.length === 0`, beside `hasItems`, `items.length > 0`): WooCommerce's block draws that state
+// too (the Cart block's empty basket). Returns the template keys of the other branches' child elements.
+export function otherBranches( v, regionKey ) {
+	let gate = null;
+	for ( let k = v.byKey[ regionKey ]?.parent; k && ! gate; k = v.byKey[ k ]?.parent ) {
+		'sc-if' === v.byKey[ k ]?.tag && ( gate = v.byKey[ k ] );
+	}
+	const lists = gate ? countedLists( v.via( gate.key ) ) : new Set();
+	if ( ! lists.size ) {
+		return [];
+	}
+	const siblings = v.children( gate.parent );
+	const at = siblings.indexOf( gate );
+	return siblings.filter( ( t, i ) => t !== gate && ( ( 'sc-else' === t.tag && i === at + 1 ) || ( 'sc-if' === t.tag && [ ...countedLists( v.via( t.key ) ) ].some( ( l ) => lists.has( l ) ) ) ) ).flatMap( ( t ) => v.children( t.key ).map( ( c ) => c.key ) );
+}
+
 // The head of the form column: [{ t, kind }] in the draft's order, up to the first part holding a field.
 function headOf( v, form ) {
 	const run = [];
@@ -211,6 +233,8 @@ export function place( ctx, piece ) {
 		kept.push( h );
 	}
 	const notes = [];
+	const others = otherBranches( v, regionKey );
+	others.length && notes.push( `${ ctx.key }: ${ others.map( ( k ) => `Root/${ nOf( k ) }#0` ).join( ', ' ) } ${ 1 === others.length ? 'is' : 'are' } the region's other data branch, which WooCommerce's block draws in its place` );
 	const nodes = kept.map( ( h ) => {
 		const e = served( h.t.key );
 		if ( ! e ) {
@@ -226,7 +250,8 @@ export function place( ctx, piece ) {
 		tree: nodes.length ? insert( pruned ) : pruned,
 		// `run`: the region's element, which the block stands for (its form and order summary are the block's own drawing), whose paint no
 		// node reads any more (lib/template-pieces-context.mjs::piecesPaint); the head kept above the block is read at its own nodes.
-		placed: [ { id: piece.id, block: 'core/post-content', at: region, run: [ region ] } ],
+		// The region's other data branches (otherBranches: the empty basket) are the block's drawing too.
+		placed: [ { id: piece.id, block: 'core/post-content', at: region, run: [ region, ...others.map( ( k ) => `Root/${ nOf( k ) }#0` ) ] } ],
 		notes: [
 			...final.map( ( c ) => `${ ctx.key }: ${ c.key } is the ${ c.kind } WooCommerce's block draws (${ c.why })` ),
 			...head.filter( ( h ) => ! kept.includes( h ) ).map( ( h ) => `${ ctx.key }: ${ h.t.key } at the head of the form column is ${ 'express payment' === h.kind ? 'an express-payment group, drawn by the block\'s express payment' : 'divider' === h.kind ? 'the divider between express payment and the fields, drawn by the block' : `${ h.kind }, drawn by the block (it follows the column's own head)` }` ),

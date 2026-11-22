@@ -22,6 +22,10 @@
 	{"file":"lib/template-pieces-context.mjs","find":"order, 'woo-layout': wooLayout, frame, account };","replace":"order, frame, account };","why":"the layout piece has no builder"},
 	{"file":"lib/template-pieces-context.mjs","find":"export const FACT_KINDS = [ 'order', 'woo-layout', 'frame' ];","replace":"export const FACT_KINDS = [ 'order' ];","why":"the layout builder is handed no fact record"},
 	{"file":"lib/template-pieces-context.mjs","find":"commerce: commerceOf( entry, pageRows ),","replace":"commerce: null,","why":"the layout builder is handed no commerce role, so it finds no region"},
-	{"file": "lib/template-piece-woo-layout.mjs", "find": "at: region, run: [ region ] } ],", "replace": "at: region } ],", "why": "the layout piece reports no replaced region, so its unread paint stays a problem"},
-	{"file": "lib/template-piece-woo-layout.mjs", "find": "at: region, run: [ region ] } ],", "replace": "at: region, run: [ region, ...kept.map( ( h ) => h.t.key ) ] } ],", "why": "the kept heading and eyebrow are claimed as replaced"}
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "at: region, run: [ region, ...others.map( ( k ) => `Root/${ nOf( k ) }#0` ) ] } ],", "replace": "at: region } ],", "why": "the layout piece reports no replaced region, so its unread paint stays a problem"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "at: region, run: [ region, ...others.map( ( k ) => `Root/${ nOf( k ) }#0` ) ] } ],", "replace": "at: region, run: [ region, ...others.map( ( k ) => `Root/${ nOf( k ) }#0` ), ...kept.map( ( h ) => h.t.key ) ] } ],", "why": "the kept heading and eyebrow are claimed as replaced"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "run: [ region, ...others.map( ( k ) => `Root/${ nOf( k ) }#0` ) ]", "replace": "run: [ region ]", "why": "the empty basket is not in the layout's run"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "( 'sc-else' === t.tag && i === at + 1 )", "replace": "false", "why": "the else of the region's branch is not its other branch"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": ".some( ( l ) => lists.has( l ) )", "replace": ".length > 0", "why": "a sibling counting another list is taken as the other branch"},
+	{"file": "lib/template-piece-woo-layout.mjs", "find": "if ( ! lists.size ) {", "replace": "if ( false ) {", "why": "a branch counting no list still has other branches"}
 ]

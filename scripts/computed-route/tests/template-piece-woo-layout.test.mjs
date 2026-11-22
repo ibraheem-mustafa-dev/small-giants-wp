@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { place } from '../lib/template-piece-woo-layout.mjs';
+import { otherBranches, place } from '../lib/template-piece-woo-layout.mjs';
 import { BUILDERS, piecesPass, placedLint } from '../lib/template-pieces-context.mjs';
 import { openDb } from '../lib/db.mjs';
 import { checkPieces, countBlocks, loadPieces, placePieces } from '../lib/template-pieces.mjs';
@@ -262,6 +262,22 @@ test( 'Mama\'s basket: the Cart block stands in for the grid of lines and summar
 	const strip = ( tree ) => JSON.parse( JSON.stringify( tree, ( k, val ) => ( 'draftStandsFor' === k ? undefined : val ) ) );
 	assert.deepEqual( strip( got.tree ), input.tree );
 	assert.ok( got.notes.some( ( n ) => /keeps the shared header and footer parts/.test( n ) ) );
+	// MUST FAIL: the empty basket (sc-if empty, items.length === 0, beside the grid's hasItems, items.length > 0) is the block's
+	// drawing too, so its draft elements are in the run.
+	assert.deepEqual( got.placed.find( ( p ) => 'core/post-content' === p.block ).run, [ 'Root/22#0', 'Root/14#0' ] );
+	assert.ok( got.notes.some( ( n ) => /Root\/14#0 is the region's other data branch/.test( n ) ) );
+} );
+
+test( 'MUST FAIL: a region\'s other data branch is the sc-else after its branch or a sibling branch counting the same list; another sibling is not', () => {
+	const t = ( key, tag, parent ) => ( { key, tag, parent } );
+	const els = [ t( 'P/1', 'div', null ), t( 'P/2', 'sc-if', 'P/1' ), t( 'P/3', 'div', 'P/2' ), t( 'P/4', 'sc-if', 'P/1' ), t( 'P/5', 'div', 'P/4' ), t( 'P/6', 'sc-else', 'P/1' ), t( 'P/7', 'p', 'P/6' ), t( 'P/8', 'sc-if', 'P/1' ), t( 'P/9', 'div', 'P/8' ) ];
+	const via = { 'P/2': 'M ? lines.length === 0 : false', 'P/4': 'lines.length > 0', 'P/8': 'promo.length > 0' };
+	const v = { byKey: Object.fromEntries( els.map( ( e ) => [ e.key, e ] ) ), children: ( k ) => els.filter( ( e ) => e.parent === k ), via: ( k ) => via[ k ] ?? '' };
+	// The region P/5 shows under P/4: P/2 counts the same list, P/6 is P/4's else; P/8 counts another list.
+	assert.deepEqual( otherBranches( v, 'P/5' ), [ 'P/3', 'P/7' ] );
+	// Negative controls: a region under a branch counting no list, and a region under no branch, have none.
+	assert.deepEqual( otherBranches( { ...v, via: ( k ) => ( 'P/4' === k ? 'open' : via[ k ] ?? '' ) }, 'P/5' ), [] );
+	assert.deepEqual( otherBranches( v, 'P/1' ), [] );
 } );
 
 test( 'Eye Care\'s checkout: the block stands in for the grid; its h1 above the grid and the shared frame stay', () => {
