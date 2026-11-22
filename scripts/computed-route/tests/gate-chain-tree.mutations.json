@@ -1,0 +1,8 @@
+[
+	{ "file": "gate-chain.mjs", "find": "if ( s.copy && s.target?.template ) {", "replace": "if ( false ) {", "why": "a template copy reads the surfaces.json tree no run writes" },
+	{ "file": "gate-chain.mjs", "find": "return copyFile( buildDir, s.target.template );", "replace": "return path.join( buildDir, s.tree );", "why": "the copy branch reads the recorded tree" },
+	{ "file": "gate-chain.mjs", "find": "if ( fs.existsSync( recorded ) ) {", "replace": "if ( true ) {", "why": "a page with no recorded tree never falls back to its Fill" },
+	{ "file": "gate-chain.mjs", "find": "if ( fs.existsSync( recorded ) ) {", "replace": "if ( false ) {", "why": "a recorded tree is passed over for the Fill" },
+	{ "file": "gate-chain.mjs", "find": "fillRoot: path.join( buildDir, 'qa', 'fill', surface ), fills: false", "replace": "fillRoot: path.join( buildDir, 'qa', 'fill' ), fills: false", "why": "the Fill is looked for outside the surface's own folder" },
+	{ "file": "gate-chain.mjs", "find": "const tree = s && buildDir ? readTree( surfaceTreeFile( buildDir, surface, s ) ) : null;", "replace": "const tree = s && buildDir ? readTree( path.join( buildDir, s.tree ) ) : null;", "why": "buildContext reads the recorded tree as before" }
+]

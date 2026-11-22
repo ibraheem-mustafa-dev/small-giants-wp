@@ -37,6 +37,8 @@ import { READ_KEY } from './lib/calibrate-props.mjs';
 import { serveDraft } from './lib/draft.mjs';
 import { adminSession, readEnv, renderBlock } from './lib/trial-page.mjs';
 import { readTargets, secretsPath, siteUrl, surfacesOnSite, targetOf } from './lib/site-targets.mjs';
+import { copyFile } from './lib/template-copies.mjs';
+import { fillOutDir } from './site-run.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 // SGS_REPO_ROOT points the reads (sites, the calibration cache, the build) at another checkout of the repository.
@@ -103,12 +105,27 @@ export async function defaultProbes( { s, client, db, surface = null, tmp = fs.m
 	} );
 }
 
+// The tree a surface's run built, which the rows' refs name: a template surface's copy (lib/template-copies.mjs::copyFile,
+// where site-run.mjs writes it), else the surface's recorded tree, else its newest Fill's filled.tree.json (a page run builds
+// that tree, or the part below its template's shell, and records no tree of its own).
+export function surfaceTreeFile( buildDir, surface, s ) {
+	if ( s.copy && s.target?.template ) {
+		return copyFile( buildDir, s.target.template );
+	}
+	const recorded = path.join( buildDir, s.tree );
+	if ( fs.existsSync( recorded ) ) {
+		return recorded;
+	}
+	const fill = fillOutDir( { fillRoot: path.join( buildDir, 'qa', 'fill', surface ), fills: false } );
+	return fill ? path.join( fill, 'filled.tree.json' ) : recorded;
+}
+
 // Every input the gates read, built from the report's files; a value that cannot be read is left undefined or throws, and
 // runChain fails that gate closed.
 export function buildContext( { report, walk, surfaces, surface, client, probes, installed, db, intakeFile } ) {
 	const s = surfaces?.[ surface ] ?? null;
 	const buildDir = client ? path.join( REPO, 'sites', client, 'build' ) : null;
-	const tree = s && buildDir ? readTree( path.join( buildDir, s.tree ) ) : null;
+	const tree = s && buildDir ? readTree( surfaceTreeFile( buildDir, surface, s ) ) : null;
 	const blockOf = ( row ) => ( tree && row.ref ? nodeByRef( tree, row.ref )?.name ?? null : null );
 	const calFor = s?.site ? calibrationForSite( s.site, path.join( REPO, 'scripts', 'computed-route', 'cache' ) ) : () => null;
 	const intake = intakeFile && fs.existsSync( intakeFile ) ? JSON.parse( fs.readFileSync( intakeFile, 'utf8' ) ) : null;
