@@ -229,10 +229,11 @@ export function recordView( record, { openers = {}, rootComponent = null } = {} 
 
 // The surface the proposal is for, read from the record's `surfaces` and the elements' memberships: { id, kind, parent: { id,
 // kind } | null, openedBy, headerDisclosure } plus `surfaceParts` (the records whose parent is this surface). Matched by kind
-// and name; null when the record names no such surface.
+// and name; null when the record names no such surface. A surface that is one state of a record (intake names it
+// `<record name>: <state name>`, lib/intake-skeletons.mjs) is the record's own surface.
 export function surfaceContext( view, { kind, name } ) {
 	const all = Object.values( view.surfaces );
-	const hits = all.filter( ( s ) => s.kind === kind && ( null == name || s.name === name ) );
+	const hits = all.filter( ( s ) => s.kind === kind && ( null == name || s.name === name || String( name ).startsWith( `${ s.name }: ` ) ) );
 	if ( ! hits.length ) {
 		return null;
 	}

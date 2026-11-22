@@ -1281,8 +1281,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// a growing child holding a run of links is a mega group, a fixed or ratio-sized painted box without links an aside,
 		// and any other growing child a plain container (lib/skeleton-panel-rules.mjs).
 		( { e } ) => {
-			const hit = panel.panelChild( e );
-			return hit ? v( hit.rule, { block: hit.block } ) : null;
+			const { rule, ...hit } = panel.panelChild( e ) ?? {};
+			return rule ? v( rule, hit ) : null;
 		},
 		// An accordion (its host, items and their controls), a slider (its track and its controls) and tabs (the host, the tab
 		// list and the shown panel), read by what the draft's code does (lib/skeleton-widgets.mjs).

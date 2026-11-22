@@ -455,3 +455,54 @@ test( 'MUST FAIL: a code-built marquee whose items hold no icon marks its word-o
 	const iconed = node( [ { text: 'Baked fresh', svg: STAR }, { text: 'Handmade', svg: null } ] );
 	assert.equal( iconed.decided, undefined, 'negative control: no style was chosen, so none is protected' );
 } );
+
+// A panel whose columns sit inside plain wrappers (a width cap, then the row that lays the columns out): the root paints, the
+// wrappers do not, and the row's own tracks size the columns.
+const behind = ( o = {} ) => N( 'div', { style: 'background-color:rgb(1, 2, 3)' }, [
+	N( 'div', { style: o.cap ?? 'max-width:1440px;margin-left:auto;margin-right:auto;padding-top:36px;padding-right:52px;padding-bottom:40px;padding-left:52px' }, [
+		...( o.inner ?? [ N( 'div', { style: 'display:grid;grid-template-columns:minmax(0, 1fr) 300px' }, [
+			N( 'div', {}, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ),
+			N( 'div', { style: 'aspect-ratio:4 / 3;box-shadow:0 1px 2px #000' }, [ N( 'p', { words: 'Feature' } ) ] ),
+		] ) ] ),
+	] ),
+] );
+const behindRun = ( tree, o = {} ) => run( tree, { kind: 'menu', name: 'Panel', surfaces: header, openers: OPEN, ...o } );
+const ruleOf = ( r, key ) => rows( r ).find( ( x ) => x.key === key );
+
+test( 'megaPanelRow: columns one or two plain wrappers below the panel root are the panel\'s mega group and aside, read against the row\'s own tracks, and the wrappers go; MUST FAIL without the entry', () => {
+	const r = behindRun( behind() );
+	assert.deepEqual( [ 'Root/2#0', 'Root/3#0' ].map( ( k ) => [ ruleOf( r, k ).action, ruleOf( r, k ).rule ] ), [ [ 'unwrap', 'megaPanelRow' ], [ 'unwrap', 'megaPanelRow' ] ] );
+	assert.deepEqual( r.skeleton[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'sgs/mega-group', 'sgs/mega-aside' ], 'the columns are the panel\'s own children' );
+	// one wrapper only: the row sits directly under the root
+	const one = behindRun( N( 'div', { style: 'background-color:rgb(1, 2, 3)' }, [ N( 'div', { style: 'display:flex' }, [ N( 'div', { style: 'flex-grow:1' }, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ), N( 'div', { style: 'width:300px;flex-shrink:0;box-shadow:0 1px 2px #000' }, [ N( 'p', { words: 'Feature' } ) ] ) ] ) ] ) );
+	assert.deepEqual( one.skeleton[ 0 ].innerBlocks.map( ( x ) => x.name ), [ 'sgs/mega-group', 'sgs/mega-aside' ] );
+	const off = behindRun( behind(), { facts: facts( 'megaPanelRow' ) } );
+	assert.ok( ! rows( off ).some( ( x ) => 'megaPanelRow' === x.rule || 'megaGroup' === x.rule ), 'no columns are found without the rule' );
+} );
+
+test( 'megaPanelRow: the cap\'s width and padding are recorded as the panel\'s own maxWidth and panelPadding, and a cap that paints stays a node', () => {
+	const r = behindRun( behind() );
+	const cap = ruleOf( r, 'Root/2#0' );
+	assert.deepEqual( cap.conserve.map( ( x ) => [ x.kind, x.node, x.setting ] ), [ [ 'setting', 'Root/1#0', 'maxWidth' ], [ 'setting', 'Root/1#0', 'panelPadding' ] ] );
+	const painted = behindRun( behind( { cap: 'max-width:1440px;margin-left:auto;margin-right:auto;padding-top:36px;padding-right:52px;padding-bottom:40px;padding-left:52px;background-color:rgb(9, 9, 9)' } ) );
+	assert.ok( rows( painted ).every( ( x ) => 'megaPanelRow' !== x.rule ), 'a wrapper with a background of its own is not a plain cap' );
+	assert.ok( rows( painted ).every( ( x ) => 'megaGroup' !== x.rule ) );
+} );
+
+test( 'NEGATIVE megaPanelRow: a root that lays its columns out itself keeps the direct rule; a wrapper over a loop\'s cards, over a row with no column, or more than three levels up is left alone', () => {
+	assert.ok( rows( behindRun( panel() ) ).every( ( x ) => 'megaPanelRow' !== x.rule ), 'the panel root is the row: nothing to unwrap' );
+	const cards = behind( { inner: [ N( 'div', { style: 'display:grid;grid-template-columns:repeat(4, 1fr)' }, [ N( 'a', { loop: true, style: 'background-color:rgb(1, 2, 3)', words: 'Card', attrs: { href: '/c' } } ) ] ) ] } );
+	assert.ok( rows( behindRun( cards ) ).every( ( x ) => ! [ 'megaPanelRow', 'megaGroup', 'megaAside', 'megaContainer' ].includes( x.rule ) ) );
+	const lone = behind( { inner: [ N( 'div', { style: 'display:grid;grid-template-columns:1fr 1fr' }, [ N( 'img', { attrs: { src: 'a.png', alt: '' } } ), N( 'img', { attrs: { src: 'b.png', alt: '' } } ) ] ) ] } );
+	assert.ok( rows( behindRun( lone ) ).every( ( x ) => 'megaPanelRow' !== x.rule ), 'a row none of whose children is a column (two pictures) is not the panel row' );
+	const twoCols = [ N( 'div', { style: 'flex-grow:1' }, [ card( 'One', '/one' ), card( 'Two', '/two' ) ] ), N( 'div', { style: 'flex-grow:1' }, [ card( 'Three', '/three' ), card( 'Four', '/four' ) ] ) ];
+	const deep = N( 'div', { style: 'background-color:rgb(1, 2, 3)' }, [ N( 'div', {}, [ N( 'div', {}, [ N( 'div', {}, [ N( 'div', { style: 'display:flex' }, twoCols ) ] ) ] ) ] ) ] );
+	assert.ok( rows( behindRun( deep ) ).every( ( x ) => 'megaPanelRow' !== x.rule ), 'a row more than three wrappers down is out of reach' );
+} );
+
+test( 'surfaceContext: a surface that is one state of a record ("<record name>: <state>") is the record\'s own surface, so the panel rules run on it; MUST FAIL on the exact-name match', () => {
+	const stated = run( panel(), { kind: 'menu', name: 'Panel: Sunglasses', surfaces: header, openers: OPEN } );
+	assert.deepEqual( [ 0, 1, 2 ].map( ( i ) => outcome( kidAt( stated, i ) ) ), [ 'sgs/mega-group', 'sgs/mega-aside', 'sgs/container' ] );
+	const other = run( panel(), { kind: 'menu', name: 'Panelled: Sunglasses', surfaces: header, openers: OPEN } );
+	assert.ok( rows( other ).every( ( x ) => ! [ 'megaGroup', 'megaAside', 'megaContainer' ].includes( x.rule ) ), 'a name that only begins with the record name is another surface' );
+} );

@@ -21,35 +21,31 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 	};
 	// Whether the element declares padding on any side.
 	const hasPadding = ( e ) => [ 'top', 'right', 'bottom', 'left' ].some( ( side ) => ! UNSET.has( view.declared( e )[ `padding-${ side }` ] ?? '' ) && ! /^0(?:px|%|r?em)?$/.test( view.declared( e )[ `padding-${ side }` ] ) );
-	// How a child is sized inside its panel: it shares the free space (a flex-grow, or a fractional grid track), or it is a
+	// How a child is sized inside its panel row: it shares the free space (a flex-grow, or a fractional grid track), or it is a
 	// fixed box (a declared width that does not shrink, a fixed grid track, or an aspect ratio).
-	const sizing = ( e, layout ) => {
+	const sizing = ( e, layout, row ) => {
 		const st = view.declared( e );
 		const ratio = ! UNSET.has( st[ 'aspect-ratio' ] ?? '' );
 		if ( 'flex' === layout ) {
 			return { grows: grows( st[ 'flex-grow' ] ), fixed: ratio || ( ! UNSET.has( st.width ?? '' ) && '0' === String( st[ 'flex-shrink' ] ?? '' ).trim() ) };
 		}
-		const tracks = gridTracks( view.declared( root )[ 'grid-template-columns' ] );
+		const tracks = gridTracks( view.declared( row )[ 'grid-template-columns' ] );
 		// Each rendered child (each copy of a loop's item) takes the next track.
-		const track = tracks[ m.blockKids( root ).indexOf( e ) ];
+		const track = tracks[ m.blockKids( row ).indexOf( e ) ];
 		return { grows: !! track && fractionalTrack( track ), fixed: ratio || ( !! track && fixedTrack( track ) ) };
 	};
 
-	// The verdict ({ rule, block }) for a direct child of a header disclosure panel, or null. A loop's repeated item (a card
-	// with its own paint) is the card grid's, as before.
-	const panelChild = ( e ) => {
-		// The panel's root that lays its own grid out and carries its own padding or paint is a container, not the shell.
-		if ( scope?.headerDisclosure && R.megaGridContainer && root === e && view.has( e ) && 'grid' === layoutOf( e ) && ( view.ownPaint( e ) || hasPadding( e ) ) ) {
-			return { rule: 'megaGridContainer', block: R.megaGridContainer.block };
-		}
-		if ( ! scope?.headerDisclosure || m.byKey[ e.parentKey ] !== root || ! view.has( e ) || view.repeated( e ) ) {
+	// The verdict ({ rule, block }) for a child of the panel's row, or null: a growing child holding a run of links is a mega
+	// group, a fixed or ratio-sized painted box without links an aside, any other growing child a plain container.
+	const rowChild = ( e, row ) => {
+		if ( ! view.has( e ) || view.repeated( e ) ) {
 			return null;
 		}
-		const layout = layoutOf( root );
+		const layout = layoutOf( row );
 		if ( ! layout ) {
 			return null;
 		}
-		const size = sizing( e, layout );
+		const size = sizing( e, layout, row );
 		const run = view.linkRun( e );
 		if ( R.megaGroup && size.grows && run ) {
 			return { rule: 'megaGroup', block: R.megaGroup.block };
@@ -58,6 +54,84 @@ export function makePanelRules( { m, view, scope, R, facts, surface = {}, declar
 			return { rule: 'megaAside', block: R.megaAside.block };
 		}
 		return R.megaContainer && size.grows && ! size.fixed && ! run ? { rule: 'megaContainer', block: R.megaContainer.block } : null;
+	};
+
+	// Whether a child of a candidate row is plainly a panel column: a mega group or aside, or a plain container that holds links
+	// somewhere below it (a heading over a grid of links); a row of pictures or text holds none.
+	const holdsLinks = ( k, depth = 0 ) => depth < 4 && m.blockKids( k ).some( ( x ) => 'a' === x.tag || view.linkRun( x ) || holdsLinks( x, depth + 1 ) );
+	const isColumn = ( k, row ) => {
+		const hit = rowChild( k, row );
+		return !! hit && ( 'megaContainer' !== hit.rule || holdsLinks( k ) );
+	};
+
+	// The panel's row when the root does not lay its children out itself: the first descendant, reached only through plain
+	// wrappers (each the only block child of the one above, no words of its own, not a loop's item), that lays two or more
+	// children out as a grid or flex row and whose children include a column. { row, chain } where
+	// chain holds every wrapper down to and including the row (the panel block lays its columns out, so they go); null when
+	// the root is itself the row or no such row sits within MAX_WRAPPERS levels. Computed once per panel.
+	let found;
+	const panelRow = () => {
+		if ( undefined !== found ) {
+			return found;
+		}
+		found = null;
+		if ( ! R.megaPanelRow || ! scope?.headerDisclosure || ! view.has( root ) || layoutOf( root ) ) {
+			return found;
+		}
+		const chain = [];
+		for ( let x = root; chain.length < ( R.megaPanelRow.maxWrappers ?? 3 ); ) {
+			const kids = m.blockKids( x );
+			const c = 1 === kids.length ? kids[ 0 ] : null;
+			if ( ! c || ! view.has( c ) || view.repeated( c ) || m.words( c ) ) {
+				return found;
+			}
+			if ( view.ownPaint( c ) ) {
+				return found;
+			}
+			chain.push( c );
+			if ( layoutOf( c ) && m.blockKids( c ).length >= 2 ) {
+				found = m.blockKids( c ).some( ( k ) => isColumn( k, c ) ) ? { row: c, chain } : null;
+				return found;
+			}
+			x = c;
+		}
+		return found;
+	};
+
+	// The panel settings a wrapper's width cap and padding stand for (R.megaPanelRow.band: maxWidth for a declared max-width,
+	// padding for a declared padding on any side, read from the draft's declared style), or []. Only a panel whose own element
+	// paints takes them (the cap is then a plain band inside the painted shell). The verdict records them as `conserve` entries
+	// on the panel's settings; the panel's calibration reads those at the panel's own element, so the check stays unverified (a
+	// listed fault) until Fill reads the wrapper there.
+	const bandOf = ( c ) => {
+		const band = R.megaPanelRow?.band;
+		if ( ! band || ! view.ownPaint( root ) ) {
+			return [];
+		}
+		return [ ...( UNSET.has( view.declared( c )[ 'max-width' ] ?? '' ) ? [] : [ band.maxWidth ] ), ...( hasPadding( c ) ? [ band.padding ] : [] ) ];
+	};
+
+	// The verdict for an element of a header disclosure panel, or null. A direct child of the panel's root that lays its own
+	// grid out and carries its own padding or paint is a container, not the shell. A wrapper above the panel's row is unwrapped
+	// (`megaPanelRow`). A child of the row is read by rowChild; a loop's repeated item (a card with its own paint) is the card
+	// grid's, as before.
+	const panelChild = ( e ) => {
+		if ( scope?.headerDisclosure && R.megaGridContainer && root === e && view.has( e ) && 'grid' === layoutOf( e ) && ( view.ownPaint( e ) || hasPadding( e ) ) ) {
+			return { rule: 'megaGridContainer', block: R.megaGridContainer.block };
+		}
+		if ( ! scope?.headerDisclosure ) {
+			return null;
+		}
+		const wrapped = panelRow();
+		if ( wrapped?.chain.includes( e ) ) {
+			// The first wrapper that declares a width cap or padding hands it to the panel's own settings (a later one that does
+			// too keeps its look unread, so paint conservation leaves it a node).
+			const first = wrapped.chain.slice( 0, -1 ).find( ( c ) => bandOf( c ).length );
+			const conserve = first === e ? bandOf( e ).map( ( setting ) => ( { kind: 'setting', node: root.key, setting, looks: setting === R.megaPanelRow.band.padding ? [ 'padding' ] : [ 'max-width', 'margin-auto' ] } ) ) : [];
+			return { rule: 'megaPanelRow', action: 'unwrap', hostLays: root.key, ...( conserve.length ? { conserve } : {} ) };
+		}
+		const row = wrapped ? wrapped.row : root;
+		return m.byKey[ e.parentKey ] === row ? rowChild( e, row ) : null;
 	};
 
 	// The drawer's top row: its first child that sits in the flow (not absolutely or fixed positioned).
