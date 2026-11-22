@@ -46,8 +46,10 @@ test( 'MUST FAIL: an accordion with no wrapper element reads the box the items s
 	assert.equal( acc.draftRef.tpl, 'Root/2#0', 'the parent is the accordion\'s draft element' );
 	assert.deepEqual( acc.draftSlots[ ONE ], { tpl: 'Root/4#0' }, 'the closed unit\'s row is read at the calibrated path' );
 	assert.deepEqual( acc.draftSlots[ `${ TWO } > .h` ], { tpl: 'Root/5#1' }, 'the header of the closed unit is read too' );
-	const parent = find( r.skeleton, ( x ) => x.draftRef?.tpl === 'Root/2#0' && x.name !== 'sgs/accordion' )[ 0 ];
+	const parent = find( r.skeleton, ( x ) => ( x.innerBlocks || [] ).some( ( k ) => 'sgs/accordion' === k.name ) )[ 0 ];
 	assert.deepEqual( parent.innerBlocks.map( ( x ) => x.name ), [ 'sgs/text', 'sgs/accordion' ], 'the parent keeps its block and the count line' );
+	assert.equal( parent.draftRef, undefined, 'the container made from the parent reads nothing of the box: the accordion owns it' );
+	assert.equal( r.problems.filter( ( p ) => /read by two blocks/.test( p ) ).length, 0, 'one draft element is read by one block' );
 	assert.match( row( r, 'Root/4#0' ).unitNote, /read at their parent Root\/2#0/ );
 } );
 
@@ -56,6 +58,7 @@ test( 'negative control: a parent that paints itself is the container\'s own loo
 	const acc = accordion( r );
 	assert.equal( acc.draftRef, undefined, 'no draft element: the parent\'s paint is read once, by the container' );
 	assert.equal( acc.draftSlots, undefined );
+	assert.equal( find( r.skeleton, ( x ) => ( x.innerBlocks || [] ).some( ( k ) => 'sgs/accordion' === k.name ) )[ 0 ].draftRef?.tpl, 'Root/2#0', 'the container keeps reading the box it paints' );
 	assert.equal( acc.attributes.categoryEyebrowAlways, true, 'the settings stay' );
 	assert.match( row( r, 'Root/4#0' ).unitNote, /paints or pads itself/ );
 } );

@@ -127,8 +127,9 @@ test( 'accordion: units beside other content in their parent are one accordion w
 	assert.equal( acc.length, 1 );
 	assert.equal( acc[ 0 ].draftRef.tpl, 'Root/2#0', 'a bare parent is the box the items sit in: the accordion reads it (tests/skeleton-accordion-run.test.mjs)' );
 	assert.deepEqual( [ acc[ 0 ].attributes.defaultOpen, acc[ 0 ].innerBlocks.length ], [ 0, 3 ] );
-	const parent = find( r.skeleton, ( x ) => x.draftRef?.tpl === 'Root/2#0' )[ 0 ];
+	const parent = find( r.skeleton, ( x ) => ( x.innerBlocks || [] ).some( ( k ) => 'sgs/accordion' === k.name ) )[ 0 ];
 	assert.deepEqual( parent.innerBlocks.map( ( x ) => x.name ), [ 'sgs/text', 'sgs/accordion' ], 'the count line stays beside the accordion' );
+	assert.equal( parent.draftRef, undefined, 'the accordion owns the box: the container made from the same parent reads none of it' );
 } );
 
 test( 'accordion: the handoff record is a cross-check: agreement is named, a record with no mechanism is a proposal problem', () => {

@@ -347,7 +347,8 @@ export function makeUnits( ctx ) {
 	// lines, the toggle icon: skeleton-rules.mjs::accordionRun). Its look is read from the box the items sit in, which is
 	// its draft element, and from the items' parts at the calibrated children's paths (lib/skeleton-child-slots.mjs::unitSlots),
 	// as an accordion with a wrapper of its own reads them. A parent that paints or pads itself is the container's own look
-	// and is never read twice, so such an accordion keeps the settings and no draft element.
+	// and is never read twice, so such an accordion keeps the settings and no draft element; a parent that is a bare box is the
+	// accordion's, and the container made from it reads nothing of it.
 	const bareBox = ( e ) => ! view?.ownPaint?.( e ) && [ 'top', 'right', 'bottom', 'left' ].every( ( side ) => /^(?:|0|0px|0%|0r?em|auto|initial|inherit|unset|normal|none)$/.test( String( view?.declared?.( e )?.[ `padding-${ side }` ] ?? '' ).trim() ) );
 	function buildAccordion( els ) {
 		const D = R.accordion;
@@ -355,6 +356,11 @@ export function makeUnits( ctx ) {
 		const run = cls.accordionRun( md );
 		const boxed = bareBox( md.parent );
 		const node = boxed ? base( md.parent, D.block, run.attributes ) : { name: D.block, attributes: run.attributes };
+		// The accordion owns the box its items sit in (its settings hold that box's width, margins, padding and gap, which the
+		// container made from the same parent would write a second time): the container stands for the parent's other content and
+		// reads nothing of the box (one draft element is read by one block, lib/skeleton-double-claims.mjs).
+		const host = boxed ? ctx.nodeOfKey[ md.parent.key ] : null;
+		host && host !== node && [ 'draftRef', 'draftFingerprint', 'draftSlots', 'draftBandWrappers' ].forEach( ( k ) => delete host[ k ] );
 		const us = boxed && D.childSlots ? unitSlots( { cfg: D.childSlots, units: run.units.units, open: run.units.open, m, finder, settings: ctx.calSettings( D.block ), revealed: ctx.inventory?.revealed || [] } ) : null;
 		if ( us && Object.keys( us.slots ).length ) {
 			node.draftSlots = us.slots;
