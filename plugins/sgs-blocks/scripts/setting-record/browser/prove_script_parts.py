@@ -388,6 +388,8 @@ def main(argv=None) -> int:
     ap.add_argument('--setup-nav', action='store_true', help="once per scratch site: the menu's stand-in posts at the ids its placeholders name")
     ap.add_argument('--sessions', type=Path, help='folder holding cart-progress.json and cart-complete.json (default: the folder above --out)')
     ap.add_argument('--limit', type=int, default=0, help='only the first N settings of each block (a trial run)')
+    ap.add_argument('--write-verdicts', metavar='BUILD', help='also write verdicts/<block>.json for each block measured, stamped with '
+                    "check.py::script_hash of this checkout's code and BUILD (the commit the scratch site's plugin was built from)")
     a = ap.parse_args(argv)
     out = a.out
     sess = a.sessions or out.parent
@@ -553,6 +555,16 @@ def main(argv=None) -> int:
         final.append({**base, 'verdict': 'removed', 'values': {str(w): ev['first'][w] for w in widths}, 'shown_at_every_width': shown_all,
                       'tested': ev['tested'] + (judged[k].get('second', {}).get('tested') or [])})
     (out / 'verdicts.json').write_text(json.dumps(final, indent=1), encoding='utf-8')
+    if a.write_verdicts:
+        import check as K  # noqa: PLC0415 - only this step needs it
+        plugin = SETREC.parents[1]
+        for b in blocks:
+            mine = [{k: v for k, v in x.items() if k != 'block'} for x in final if x['block'] == f'sgs/{b}']
+            doc = {'block': f'sgs/{b}', 'scriptHash': K.script_hash(plugin, b),
+                   'measured': f'{time.strftime("%Y-%m-%d")}, on the local scratch site {a.site} running the plugin build of {a.write_verdicts}, '
+                               'Chromium via Playwright, 1440/768/375 (browser/README.md)', 'entries': mine}
+            (HERE / 'verdicts' / f'{b}.json').write_text(json.dumps(doc, indent=1) + chr(10), encoding='utf-8', newline=chr(10))
+            print(f'wrote verdicts/{b}.json: {len(mine)} entries, scriptHash {doc["scriptHash"]}')
     counts = collections.Counter((v['block'], v['verdict']) for v in final)
     summary = {'counts': {f'{b}/{v}': n for (b, v), n in sorted(counts.items())}, 'tuning': tuning, 'main': main_stats, 'seconds_total': round(time.time() - t_start, 1)}
     (out / 'summary.json').write_text(json.dumps(summary, indent=1), encoding='utf-8')

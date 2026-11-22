@@ -21,6 +21,7 @@ python prove_script_parts.py --site local-mediatest-<name> --url http://localhos
 python prove_script_parts.py --site local-mediatest-<name> --url http://localhost:<port> --out DIR --setup-nav # the menu's posts
 node measure.cjs sessions http://localhost:<port> DIR <simple-id> <variable-id> <variation-id>                  # two baskets
 python prove_script_parts.py --site local-mediatest-<name> --url http://localhost:<port> --out DIR/run --tune   # or --tabs N
+python prove_script_parts.py ... --records-dir <records> --tabs N --write-verdicts <build commit>              # writes verdicts/<block>.json
 ```
 
 Playwright comes from an existing install: set `NODE_PATH` to a `node_modules` that holds it (nothing is linked or installed). The driver refuses any site whose name does not start `local-mediatest`.
