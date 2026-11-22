@@ -283,7 +283,9 @@ test( 'MUST FAIL (no holds signal): a disc holding a picture is the part that ho
 	};
 	assert.deepEqual( run( [ node( 'Root/3#0', 'img' ) ] ).slots, { '.badge': { tpl: 'Root/2#0' } }, 'the disc that holds the picture is the badge' );
 	assert.deepEqual( run( [ node( 'Root/3#0', 'span', [], { words: 'Need advice?' } ) ] ).slots, { '.text': { tpl: 'Root/2#0' } }, 'the box that holds words is the text box' );
-	assert.equal( run( [ node( 'Root/3#0', 'img' ), node( 'Root/4#0', 'span', [], { words: 'Need advice?' } ) ] ).ambiguous.length, 1, 'a box holding both fits neither by what it holds' );
+	assert.equal( run( [ node( 'Root/3#0', 'svg' ), node( 'Root/4#0', 'span', [], { words: 'Need advice?' } ) ] ).ambiguous.length, 1, 'a box holding an icon and words fits neither by what it holds, and its contents belong to different parts' );
+	// A picture no part can be leaves the box's contents belonging to one part only: the structure tier places the box there.
+	assert.deepEqual( run( [ node( 'Root/3#0', 'img' ), node( 'Root/4#0', 'span', [], { words: 'Need advice?' } ) ] ).slots, { '.text': { tpl: 'Root/2#0' } }, 'the words can only be the text box part, so the box holding them is that box' );
 	// A card body that holds words (with a picture beside them) and a price row that holds words alone are both boxes of words: a draft box
 	// holding words is dropped from the icon-only parts only, never narrowed to the words-only part.
 	const CARD2 = { ...CARD, elements: { '': flat( 'div' ), '.body': flat( 'div', { width: '300px', 'background-color': 'rgb(37, 211, 102)' } ), '.body > .pic': flat( 'img', { width: '40px' } ), '.body > .name': flat( 'span', { width: '90px' } ), '.price': flat( 'span', { width: '300px', 'background-color': 'rgb(37, 211, 102)' } ), '.price > .amount': flat( 'span', { width: '60px' } ) }, parts: {} };
@@ -446,4 +448,109 @@ test( 'MUST FAIL (a loop of rows where only some hold a caret): every copy is a 
 test( 'drawsSummaryPart: a calibration with a control part that is a summary element', () => {
 	assert.ok( drawsSummaryPart( MENU ) );
 	assert.ok( ! drawsSummaryPart( BUTTONS ) && ! drawsSummaryPart( {} ) );
+} );
+
+// The structure tier: what an element contains and what contains it decide its part before paint does. A control's own words are
+// drawn by the plain words part of its part, so a words element beside them is the other words part (an ornament).
+const ROWS = ( k ) => `.bar > .item:nth-of-type(${ k }) > .link`;
+const ORNAMENTS = {
+	elements: {
+		'': flat( 'nav' ), '.bar': flat( 'ul' ),
+		...Object.fromEntries( [ 1, 2 ].flatMap( ( k ) => [
+			[ `.bar > .item:nth-of-type(${ k })`, flat( 'li' ) ],
+			[ ROWS( k ), flat( 'a' ) ],
+			[ `${ ROWS( k ) } > .orn`, flat( 'span' ) ],
+			[ `${ ROWS( k ) } > .orn::before`, { 1440: { width: '6px' } } ],
+			[ `${ ROWS( k ) } > .label`, flat( 'span' ) ],
+		] ) ),
+	},
+	settings: {
+		ornSize: { slot: `${ ROWS( 1 ) } > .orn`, slots: [ `${ ROWS( 1 ) } > .orn`, `${ ROWS( 2 ) } > .orn` ], property: 'font-size' },
+		labelSize: { slot: `${ ROWS( 1 ) } > .label`, property: 'font-size' },
+	},
+	text: {},
+};
+const ornamentRows = ( ownWords, second ) => {
+	const link = ( i, kid ) => node( `Root/4#${ i }`, 'a', [ kid ], { words: ownWords ? `Row ${ i }` : '' } );
+	const pill = node( 'Root/5#0', 'span', [], { words: '3 for £5' } );
+	const rows = [ node( 'Root/3#0', 'li', [ link( 0, pill ) ] ), node( 'Root/3#1', 'li', [ link( 1, second ) ] ) ];
+	return { host: node( 'Root/2#0', 'ul', rows ), pill };
+};
+
+test( 'MUST FAIL (a control holds its own words): a words element beside them is the other words part, and a loop\'s other items read only the same kind of element', () => {
+	const arrow = node( 'Root/5#1', 'span', [], { words: '→' } );
+	const m = ornamentRows( true, arrow );
+	const made = pairAbsorbed( { host: m.host, absorbed: [ { element: m.pill, looks: null } ], kids, calibration: ORNAMENTS, finder } );
+	assert.deepEqual( made.ambiguous, [], 'the badge is not ambiguous between the two words parts' );
+	assert.deepEqual( made.slots, { [ `${ ROWS( 1 ) } > .orn` ]: { tpl: 'Root/5#0' } }, 'read at the part that is not the control\'s own words, and not at the arrow of the second row' );
+	// Negative controls: a control with no words of its own leaves both parts fitting; so does one whose words parts both hold something.
+	const bare = ornamentRows( false, arrow );
+	assert.equal( pairAbsorbed( { host: bare.host, absorbed: [ { element: bare.pill, looks: null } ], kids, calibration: ORNAMENTS, finder } ).ambiguous.length, 1, 'no own words: both parts fit' );
+	const both = { ...ORNAMENTS, elements: { ...ORNAMENTS.elements, ...Object.fromEntries( [ 1, 2 ].map( ( k ) => [ `${ ROWS( k ) } > .label::before`, { 1440: { width: '6px' } } ] ) ) } };
+	const worded = ornamentRows( true, arrow );
+	assert.equal( pairAbsorbed( { host: worded.host, absorbed: [ { element: worded.pill, looks: null } ], kids, calibration: both, finder } ).ambiguous.length, 1, 'both words parts hold a decoration: no plain one to give the control' );
+} );
+
+const HEADS = {
+	elements: {
+		'': flat( 'div' ),
+		'.head': flat( 'div', { width: '300px', 'background-color': 'rgb(1, 2, 3)' } ), '.head > .close': flat( 'button', { width: '40px' } ), '.head > .close > .icon': flat( 'svg', { width: '20px' } ),
+		'.foot': flat( 'div', { width: '300px', 'background-color': 'rgb(1, 2, 3)' } ), '.foot > .next': flat( 'button', { width: '80px' } ), '.foot > .label': flat( 'span', { width: '50px' } ),
+	},
+	settings: { headFill: { slot: '.head', property: 'background-color' }, footFill: { slot: '.foot', property: 'background-color' }, closeFill: { slot: '.head > .close', property: 'background-color' } },
+	text: { label: { path: '.foot > .label' } },
+};
+const headRun = ( inner ) => {
+	const glyph = node( 'Root/5#0', 'span', [], { words: '×' } );
+	const close = node( 'Root/4#0', 'button', [ glyph ], { words: 'Close' } );
+	const wrapper = node( 'Root/3#0', 'div', [ ...( inner ? [ node( 'Root/6#0', 'div', [ close, ...inner ] ) ] : [ close ] ) ] );
+	const outer = node( 'Root/2#0', 'div', [ wrapper ] );
+	const host = node( 'Root/1#0', 'div', [ outer ] );
+	const absorbed = [ outer, wrapper, close ].map( ( element ) => ( { element, looks: [ 'background' ] } ) );
+	return { made: pairAbsorbed( { host, absorbed, kids, calibration: HEADS, finder } ), outer, wrapper, close };
+};
+
+test( 'MUST FAIL (structure: a wrapper holds its contents\' part): the wrapper round a part\'s button is that part, and the wrapper inside it that no part fits is drawn flat', () => {
+	const { made, outer, wrapper, close } = headRun( null );
+	assert.deepEqual( made.ambiguous, [], JSON.stringify( made.ambiguous ) );
+	assert.deepEqual( made.slots, { '.head': { tpl: outer.key }, '.head > .close': { tpl: close.key } }, 'the outermost wrapper is the head, the button its close' );
+	assert.deepEqual( made.flat.map( ( f ) => f.key ), [ wrapper.key ], 'the inner wrapper has no part inside the head' );
+	assert.ok( made.flat[ 0 ].candidates.length && made.flat[ 0 ].why );
+	const rec = unpairedRecords( made, 'sgs/demo' ).get( wrapper.key );
+	assert.deepEqual( [ rec.kind, rec.block ], [ 'unpaired', 'sgs/demo' ], 'the flat wrapper carries a record the check lists apart' );
+	assert.ok( pairingNotes( made, 'sgs/demo' ).paired.has( wrapper.key ) && ! pairingNotes( made, 'sgs/demo' ).problems.length );
+	// Negative control: a wrapper whose contents belong to two parts stays ambiguous.
+	const split = node( 'Root/7#0', 'span', [], { words: 'Pay' } );
+	const glyph = node( 'Root/5#0', 'span', [], { words: '×' } );
+	const outer2 = node( 'Root/2#0', 'div', [ glyph, split ] );
+	const two = pairAbsorbed( { host: node( 'Root/1#0', 'div', [ outer2 ] ), absorbed: [ { element: outer2, looks: [ 'background' ] } ], kids, calibration: HEADS, finder } );
+	assert.equal( two.ambiguous.length, 1, 'one content in the head, one in the foot: neither part holds more' );
+	assert.deepEqual( two.flat, [] );
+} );
+
+test( 'MUST FAIL (structure: nested elements, wrappers of marks): of two nested elements one part fits, the outer holds it; a wrapper of marks alone is the part of marks, not the card', () => {
+	const ONE = {
+		elements: { '': flat( 'div' ), '.head': flat( 'div', { width: '300px', 'background-color': 'rgb(1, 2, 3)' } ), '.head > .t': flat( 'span', { width: '50px' } ) },
+		settings: { headFill: { slot: '.head', property: 'background-color' } },
+		text: {},
+	};
+	const inner = node( 'Root/3#0', 'div', [ node( 'Root/4#0', 'span', [], { words: 'Total' } ) ] );
+	const outer = node( 'Root/2#0', 'div', [ inner ] );
+	const nested = pairAbsorbed( { host: node( 'Root/1#0', 'div', [ outer ] ), absorbed: [ outer, inner ].map( ( element ) => ( { element, looks: [ 'background' ] } ) ), kids, calibration: ONE, finder } );
+	assert.deepEqual( [ nested.slots, nested.ambiguous, nested.flat.map( ( f ) => f.key ) ], [ { '.head': { tpl: outer.key } }, [], [ inner.key ] ], 'the outer element holds the part and the inner is flat' );
+	const TRACK = {
+		elements: {
+			'': flat( 'div' ),
+			'.track': flat( 'div', { width: '300px', 'background-color': 'rgb(1, 2, 3)' } ), '.track > .fill': flat( 'span', { width: '40px', 'background-color': 'rgb(4, 5, 6)' } ),
+			'.card': flat( 'div', { width: '300px', 'background-color': 'rgb(1, 2, 3)' } ), '.card > .dot': flat( 'span', { width: '10px', 'background-color': 'rgb(4, 5, 6)' } ), '.card > .title': flat( 'span', { width: '50px' } ),
+		},
+		settings: { trackFill: { slot: '.track', property: 'background-color' }, cardFill: { slot: '.card', property: 'background-color' } },
+		text: {},
+	};
+	const wrap = node( 'Root/2#0', 'div', [ node( 'Root/3#0', 'span' ) ] );
+	const run = ( w ) => pairAbsorbed( { host: node( 'Root/1#0', 'div', [ w ] ), absorbed: [ { element: w, looks: [ 'background' ] } ], kids, calibration: TRACK, finder } );
+	assert.deepEqual( [ run( wrap ).slots, run( wrap ).ambiguous ], [ { '.track': { tpl: wrap.key } }, [] ], 'a wrapper of one mark is the track' );
+	// Negative control: a wrapper of a mark and words is not narrowed by that tier.
+	const mixed = node( 'Root/2#0', 'div', [ node( 'Root/3#0', 'span' ), node( 'Root/4#0', 'span', [], { words: 'Total' } ) ] );
+	assert.deepEqual( run( mixed ).slots, { '.card': { tpl: mixed.key } }, 'it holds a mark and words: only the card has both' );
 } );

@@ -13,14 +13,14 @@
 	},
 	{
 		"file": "lib/skeleton-part-pairing.mjs",
-		"find": "const oof = flows.every( Boolean );",
-		"replace": "const oof = flows.some( Boolean );",
+		"find": "( ! flowsOf( e ).every( Boolean ) || g.oof )",
+		"replace": "( ! flowsOf( e ).some( Boolean ) || g.oof )",
 		"why": "a count pinned at one width only is held to pinned parts at every width"
 	},
 	{
 		"file": "lib/skeleton-part-pairing.mjs",
-		"find": "const oof = flows.every( Boolean );",
-		"replace": "const oof = false;",
+		"find": "( ! flowsOf( e ).every( Boolean ) || g.oof )",
+		"replace": "( true )",
 		"why": "a count pinned at every width may pair with an in-flow part"
 	},
 	{
