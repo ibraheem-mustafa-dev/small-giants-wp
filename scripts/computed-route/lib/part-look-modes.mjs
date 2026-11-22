@@ -4,6 +4,8 @@
 //   whenFound / whenAbsent  a part (named in the block's locators) the draft draws, or does not draw, at any width (whenAbsent may
 //                           list several parts, all of which must be absent)
 //   neighbours              parts that must be found, so an absence is never read from a failed read
+//   whenStyle               { part, style, equals }: every copy of the part the draft draws reads `equals` for that page reading
+//                           (`label:above`: the label's words sit above its field)
 //   from.text               the part's own words (all instances must agree), from.look the part's computed value of a property
 //   from.differs            parts whose words differ from one copy to the next (a per-product badge, note or button), or that
 //                           some cards draw and others do not (`from.cards`: the part every card has once): `value` is written
@@ -69,12 +71,19 @@ export function evaluateModes( { block, rules, rows, reads } ) {
 			out.settings[ rule.setting ] = { code: 'notDrawn' };
 			continue;
 		}
+		if ( rule.whenStyle ) {
+			const vals = WIDTHS.flatMap( ( w ) => ( reads[ rule.whenStyle.part ]?.[ w ] || [] ).map( ( i ) => String( i.styles?.[ rule.whenStyle.style ] ?? '' ) ) );
+			if ( ! vals.length || vals.some( ( v ) => v !== rule.whenStyle.equals ) ) {
+				out.settings[ rule.setting ] = { code: vals.length ? 'styleDiffers' : 'notDrawn' };
+				continue;
+			}
+		}
 		if ( rule.whenAbsent && [].concat( rule.whenAbsent ).some( ( part ) => has( reads, part ) ) ) {
 			out.settings[ rule.setting ] = { code: 'drawn' };
 			continue;
 		}
 		let value = rule.value;
-		let evidence = rule.whenAbsent ? `the draft draws no ${ [].concat( rule.whenAbsent ).join( ' or ' ) } at any width` : ( rule.whenFound ? `the draft draws ${ rule.whenFound }` : '' );
+		let evidence = rule.whenStyle ? `every ${ rule.whenStyle.part } of the draft reads ${ rule.whenStyle.style } ${ rule.whenStyle.equals }` : rule.whenAbsent ? `the draft draws no ${ [].concat( rule.whenAbsent ).join( ' or ' ) } at any width` : ( rule.whenFound ? `the draft draws ${ rule.whenFound }` : '' );
 		if ( rule.from?.text ) {
 			const cut = ( t ) => {
 				const tail = rule.from.minus ? instances( reads, rule.from.minus ).map( ( i ) => String( i.text || '' ) ).find( ( x ) => x && String( t ).endsWith( x ) ) : null;

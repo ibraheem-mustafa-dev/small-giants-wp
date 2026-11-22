@@ -215,12 +215,37 @@
 					}
 				},
 				"legends": {
-					"from": "page",
-					"match": {
-						"tag": [
-							"legend"
-						]
-					}
+					"any": [
+						{
+							"from": "page",
+							"match": {
+								"tag": [
+									"legend"
+								]
+							}
+						},
+						{
+							"from": "page",
+							"match": {
+								"tag": [
+									"section",
+									"fieldset",
+									"article"
+								],
+								"firstChild": {
+									"role": [
+										"heading"
+									]
+								},
+								"has": {
+									"control": true
+								}
+							},
+							"rel": {
+								"childIndex": 0
+							}
+						}
+					]
 				},
 				"radioCards": {
 					"from": "page",
@@ -400,17 +425,39 @@
 					]
 				},
 				"step": {
-					"from": "page",
-					"match": {
-						"tag": [
-							"fieldset"
-						],
-						"has": {
-							"tag": [
-								"legend"
-							]
+					"any": [
+						{
+							"from": "page",
+							"match": {
+								"tag": [
+									"fieldset"
+								],
+								"has": {
+									"tag": [
+										"legend"
+									]
+								}
+							}
+						},
+						{
+							"from": "page",
+							"match": {
+								"tag": [
+									"section",
+									"fieldset",
+									"article"
+								],
+								"firstChild": {
+									"role": [
+										"heading"
+									]
+								},
+								"has": {
+									"control": true
+								}
+							}
 						}
-					}
+					]
 				},
 				"step-title": {
 					"sameAs": "legends"
@@ -732,7 +779,12 @@
 					"match": {
 						"ownText": true,
 						"text": "words",
-						"control": false
+						"control": false,
+						"upper": false,
+						"notInside": {
+							"square": true,
+							"inAnchor": "lines"
+						}
 					},
 					"perRoot": true,
 					"pick": {
@@ -747,7 +799,12 @@
 					"match": {
 						"ownText": true,
 						"text": "words",
-						"control": false
+						"control": false,
+						"upper": false,
+						"notInside": {
+							"square": true,
+							"inAnchor": "lines"
+						}
 					},
 					"perRoot": true,
 					"pick": {
@@ -1057,6 +1114,33 @@
 				},
 				"item-text": {
 					"sameAs": "line-item-description"
+				},
+				"step-number": {
+					"from": "legends",
+					"match": {
+						"ownText": true,
+						"text": "count",
+						"control": false
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"line-item-brand": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false,
+						"upper": true
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"item-brand": {
+					"sameAs": "line-item-brand"
+				},
+				"summary-fill": {
+					"sameAs": "summary"
 				}
 			}
 		},
@@ -1585,7 +1669,8 @@
 						"upper": false,
 						"square": false,
 						"notInside": {
-							"square": true
+							"square": true,
+							"inAnchor": "lines"
 						}
 					},
 					"perRoot": true,
@@ -1602,7 +1687,8 @@
 						"upper": false,
 						"square": false,
 						"notInside": {
-							"square": true
+							"square": true,
+							"inAnchor": "lines"
 						}
 					},
 					"perRoot": true,

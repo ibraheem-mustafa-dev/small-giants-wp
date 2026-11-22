@@ -37,7 +37,8 @@
 // modal (a dialog: role dialog or alertdialog, aria-modal="true" or a <dialog>), upper (true or false: its computed text-transform is
 // uppercase), square (true or false), noAnchor (an anchor located nothing: the basket drawer's empty state is read where it holds no
 // lines), notPrecedesAnchor (the negation of precedesAnchor), beforeAnchor / afterAnchor (the match comes before / after an anchor's
-// element in the document: words in a box of their own beside a bar), notShopPart (none of the shop parts record's elements for these ids).
+// element in the document: words in a box of their own beside a bar), firstChild (a matcher its first element child satisfies: a step
+// drawn as a section whose first child is its heading), notShopPart (none of the shop parts record's elements for these ids).
 // `spec.pins` maps an anchor to { tpl, host }: the anchor is the shown element the draft stamps with that template number in that
 // component (a second read of the same page in another state takes the drawer the first read found). Each located element is
 // returned with its own { tpl, host } stamp.
@@ -301,6 +302,9 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		if ( undefined !== m.pill && isPill( el ) !== m.pill ) {
 			return false;
 		}
+		if ( m.firstChild && ! ( el.firstElementChild && test( el.firstElementChild, m.firstChild ) ) ) {
+			return false;
+		}
 		if ( m.allChildren && ! [ ...el.children ].every( ( k ) => test( k, m.allChildren ) ) ) {
 			return false;
 		}
@@ -530,6 +534,39 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		const column = ( /flex/.test( ps.display ) && /^column/.test( ps.flexDirection ) ) || ( /grid/.test( ps.display ) && 1 === ps.gridTemplateColumns.split( /\s+/ ).filter( Boolean ).length );
 		return column && parseFloat( ps.rowGap ) > 0 ? ps.rowGap : '';
 	};
+	// Where a choice tile's words start, from its padding box's left edge, when its first child is a mark drawn in flow (a radio, or a
+	// box of at most 32px with no words) followed by words: '' otherwise. A tick box is no such mark: WooCommerce draws its own in flow.
+	const markTextLeft = ( el ) => {
+		const mark = el.firstElementChild;
+		if ( ! mark || textOf( mark ) || [ 'absolute', 'fixed' ].includes( styleOf( mark ).position ) ) {
+			return '';
+		}
+		const mr = box( mark );
+		const input = 'input' === mark.tagName.toLowerCase();
+		const isMark = input ? 'radio' === ( mark.getAttribute( 'type' ) || '' ).toLowerCase() : mr.width > 0 && mr.width <= 32 && mr.height <= 32;
+		const words = [ ...el.children ].slice( 1 ).find( ( c ) => /[A-Za-z]/.test( textOf( c ) ) );
+		if ( ! isMark || ! words ) {
+			return '';
+		}
+		const left = box( words ).left - box( el ).left - ( parseFloat( styleOf( el ).borderLeftWidth ) || 0 );
+		return left > 0 ? `${ Math.round( left * 10 ) / 10 }px` : '';
+	};
+	// Whether a label's words sit above the field it labels ('true' or 'false'): the field it holds or names (`for`), its first words'
+	// box ending above the field's top. '' for an element that labels no field.
+	const labelAbove = ( el ) => {
+		if ( 'label' !== el.tagName.toLowerCase() ) {
+			return '';
+		}
+		const id = el.getAttribute( 'for' );
+		const field = el.querySelector( 'input:not([type=hidden]):not([type=checkbox]):not([type=radio]), select, textarea' ) || ( id ? document.getElementById( id ) : null );
+		const text = [ ...el.childNodes ].find( ( n ) => 3 === n.nodeType && norm( n.textContent ) ) || [ ...el.querySelectorAll( '*' ) ].find( ( c ) => c !== field && ! c.contains( field ) && ownText( c ) );
+		if ( ! field || ! text ) {
+			return '';
+		}
+		const range = document.createRange();
+		range.selectNodeContents( text );
+		return String( range.getBoundingClientRect().bottom <= box( field ).top + 1 );
+	};
 	const pathOf = ( el ) => {
 		const parts = [];
 		for ( let e = el; e && e !== document.body; e = e.parentElement ) {
@@ -547,7 +584,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		out[ name ] = els.map( ( el ) => {
 			const s = styleOf( el );
 			const r = box( el );
-			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10 }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'stack:gap': stackGap( el ) } };
+			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10 }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'stack:gap': stackGap( el ), 'mark:text-left': markTextLeft( el ), 'label:above': labelAbove( el ) } };
 		} );
 	}
 	return out;

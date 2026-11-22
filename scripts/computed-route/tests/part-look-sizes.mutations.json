@@ -127,8 +127,8 @@
 	},
 	{
 		"file": "lib/fill-part-look-page.mjs",
-		"find": "'stack:gap': stackGap( el ) } };",
-		"replace": "} };",
+		"find": "'stack:gap': stackGap( el ), 'mark:text-left'",
+		"replace": "'mark:text-left'",
 		"why": "the read carries no stack gap"
 	}
 ]

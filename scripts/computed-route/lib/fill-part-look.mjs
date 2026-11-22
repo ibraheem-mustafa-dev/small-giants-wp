@@ -175,6 +175,11 @@ export function primitive( property, styles, row = {}, keep = false ) {
 			if ( SIDES.some( ( n ) => null === box[ n ] ) ) {
 				return undefined;
 			}
+			// A choice tile that draws its mark in flow (a dot, then the words): WooCommerce draws its own mark inside the left padding,
+			// so the tile's left padding is where the draft's words start.
+			if ( 'padding' === property && px( s( 'mark:text-left' ) ) ) {
+				box.left = px( s( 'mark:text-left' ) );
+			}
 			// A padding the draft never states that equals a button's own browser padding is the browser's, not the draft's look.
 			const undeclared = 'padding' === property && SIDES.every( ( n ) => ! s( `decl:padding-${ n }` ) );
 			return undeclared && SIDES.every( ( n ) => box[ n ] === UA_BUTTON_PADDING[ n ] ) ? null : box;

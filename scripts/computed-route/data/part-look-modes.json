@@ -423,6 +423,34 @@
 					"whenFound": "emptyBody"
 				}
 			]
+		},
+		"woocommerce/checkout": {
+			"_comment": "WooCommerce's fields (F-25): the label sits above its field where every label the draft draws sits above its field; a draft whose fields carry placeholders and no label keeps WooCommerce's floating label.",
+			"rules": [
+				{
+					"setting": "sgsFieldLabelPosition",
+					"value": "above",
+					"whenStyle": {
+						"part": "field-label",
+						"style": "label:above",
+						"equals": "true"
+					}
+				}
+			]
+		},
+		"woocommerce/cart": {
+			"_comment": "WooCommerce's fields (F-25): the label sits above its field where every label the draft draws sits above its field; a draft whose fields carry placeholders and no label keeps WooCommerce's floating label.",
+			"rules": [
+				{
+					"setting": "sgsFieldLabelPosition",
+					"value": "above",
+					"whenStyle": {
+						"part": "field-label",
+						"style": "label:above",
+						"equals": "true"
+					}
+				}
+			]
 		}
 	}
 }
