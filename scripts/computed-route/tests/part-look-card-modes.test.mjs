@@ -56,6 +56,16 @@ test( 'negative controls: cards alike keep the typed words, a price with no word
 	assert.equal( bare.cardContentSource, 'product', 'the badge and note still differ' );
 } );
 
+test( 'MUST FAIL: one badged card among plain ones differs per product, so each product\'s own badge renders', () => {
+	const same = { 'price-note': at( [ { text: 'each' }, { text: 'each' } ] ), cta: at( [ { text: 'Add' }, { text: 'Add' } ] ) };
+	const r = run( card( { ...same, tag: at( [ { text: 'New' } ] ) } ) );
+	assert.equal( written( r ).cardContentSource, 'product' );
+	assert.match( r.writes.find( ( w ) => 'cardContentSource' === w.attr ).evidence, /tag \["New"\] on some of 2 cards/ );
+	// Negative control: every card badged alike, and no card badged at all, stay typed.
+	assert.equal( written( run( card( { ...same, tag: at( [ { text: 'New' }, { text: 'New' } ] ) } ) ) ).cardContentSource, undefined );
+	assert.equal( written( run( card( { ...same, tag: {} } ) ) ).cardContentSource, undefined );
+} );
+
 test( 'aspectOf names a near-simple ratio as itself and any other shape by its size', () => {
 	assert.equal( aspectOf( [ { box: { w: 400, h: 301 } } ] ), '4 / 3' );
 	assert.equal( aspectOf( [ { box: { w: 350, h: 250 } } ] ), '350 / 250' );

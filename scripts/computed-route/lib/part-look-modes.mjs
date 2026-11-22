@@ -4,8 +4,9 @@
 //   whenFound / whenAbsent  a part (named in the block's locators) the draft draws, or does not draw, at any width
 //   neighbours              parts that must be found, so an absence is never read from a failed read
 //   from.text               the part's own words (all instances must agree), from.look the part's computed value of a property
-//   from.differs            parts whose words differ from one copy to the next (a per-product badge, note or button): `value`
-//                           is written when any of them does, nothing when every copy says the same
+//   from.differs            parts whose words differ from one copy to the next (a per-product badge, note or button), or that
+//                           some cards draw and others do not (`from.cards`: the part every card has once): `value` is written
+//                           when any of them does, nothing when every copy says the same
 //   from.aspect             a part's width to height at the widest width, every copy agreeing (a picture's shape: `W / H`,
 //                           a near-simple ratio as itself), written as the desktop tier of a tier object
 //   from.pricePrefix        a price part whose words put a word before the amount on some copy ("from £9.50"): true, else false
@@ -88,12 +89,17 @@ export function evaluateModes( { block, rules, rows, reads } ) {
 			evidence = `the draft's ${ rule.from.look.part } ${ value ? 'has' : 'has no' } ${ rule.from.look.property }`;
 		}
 		if ( rule.from?.differs ) {
-			const varied = rule.from.differs.map( ( part ) => ( { part, texts: [ ...new Set( instances( reads, part ).map( ( i ) => labelOf( i.text ) ).filter( Boolean ) ) ] } ) ).filter( ( x ) => x.texts.length > 1 );
+			// A part some cards draw and others do not (one badged card) differs too: `from.cards` names the part each card has once.
+			const cards = rule.from.cards ? instances( reads, rule.from.cards ).length : 0;
+			const varied = rule.from.differs.map( ( part ) => {
+				const said = instances( reads, part ).map( ( i ) => labelOf( i.text ) ).filter( Boolean );
+				return { part, texts: [ ...new Set( said ) ], some: said.length > 0 && said.length < cards };
+			} ).filter( ( x ) => x.texts.length > 1 || x.some );
 			if ( ! varied.length ) {
 				out.settings[ rule.setting ] = { code: 'same' };
 				continue;
 			}
-			evidence = `the draft's cards differ per copy: ${ varied.map( ( x ) => `${ x.part } ${ JSON.stringify( x.texts.slice( 0, 4 ) ) }` ).join( '; ' ) }`;
+			evidence = `the draft's cards differ per copy: ${ varied.map( ( x ) => `${ x.part } ${ JSON.stringify( x.texts.slice( 0, 4 ) ) }${ x.some ? ` on ${ x.texts.length ? 'some' : 'no' } of ${ cards } cards` : '' }` ).join( '; ' ) }`;
 		} else if ( rule.from?.aspect ) {
 			const ratio = aspectOf( instances( reads, rule.from.aspect ) );
 			if ( ! ratio ) {

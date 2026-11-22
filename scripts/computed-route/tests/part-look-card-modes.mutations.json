@@ -1,6 +1,6 @@
 [
-	{"file": "lib/part-look-modes.mjs", "find": "filter( ( x ) => x.texts.length > 1 );", "replace": "filter( ( x ) => x.texts.length > 0 );", "why": "cards that say the same are read as differing per product"},
-	{"file": "lib/part-look-modes.mjs", "find": "( { part, texts: [ ...new Set( instances( reads, part ).map( ( i ) => labelOf( i.text ) ).filter( Boolean ) ) ] } )", "replace": "( { part, texts: [ ...new Set( instances( reads, part ).map( ( i ) => i.text ).filter( Boolean ) ) ] } )", "why": "a button whose only difference is its amount is read as per-product words"},
+	{"file": "lib/part-look-modes.mjs", "find": "} ).filter( ( x ) => x.texts.length > 1 || x.some );", "replace": "} ).filter( ( x ) => x.texts.length > 0 || x.some );", "why": "cards that say the same are read as differing per product"},
+	{"file": "lib/part-look-modes.mjs", "find": "const said = instances( reads, part ).map( ( i ) => labelOf( i.text ) ).filter( Boolean );", "replace": "const said = instances( reads, part ).map( ( i ) => i.text ).filter( Boolean );", "why": "a button whose only difference is its amount is read as per-product words"},
 	{"file": "lib/part-look-modes.mjs", "find": "value = { desktop: ratio };", "replace": "value = ratio;", "why": "the picture shape is written as a plain string, not a tier object"},
 	{"file": "lib/part-look-modes.mjs", "find": "Math.max( ...rs ) / Math.min( ...rs ) > 1.02", "replace": "Math.max( ...rs ) / Math.min( ...rs ) > 2", "why": "copies of different shapes share one ratio"},
 	{"file": "lib/part-look-modes.mjs", "find": "Math.abs( r / ( w / h ) - 1 ) <= 0.02", "replace": "Math.abs( r / ( w / h ) - 1 ) <= 0.2", "why": "a shape far from a simple ratio is rounded to it"},
@@ -8,5 +8,7 @@
 	{"file": "lib/fill-part-look-page.mjs", "find": "]{3,}/.test( textOf( el ) )", "replace": "]{3,}/.test( textOf( el ) + 'x' ) || /[A-Za-z]/.test( textOf( el ) )", "why": "any worded element is a rating"},
 	{"file": "lib/fill-part-look-page.mjs", "find": "|| /\\bout of 5\\b|\\bstars?\\b|\\brat(?:ed|ing)\\b/i.test( el.getAttribute( 'aria-label' ) || '' )", "replace": "", "why": "a rating named only by its label is not found"},
 	{"file": "data/part-look-modes.json", "find": "\t\t\t\t\t\"whenAbsent\": \"rating\",", "replace": "\t\t\t\t\t\"whenAbsent\": \"ratingx\",", "why": "the rating switch is not turned off where the draft draws none"},
-	{"file": "data/part-look-modes.json", "find": "\t\t\t\t\t\"whenAbsent\": \"cta\",", "replace": "\t\t\t\t\t\"whenAbsent\": \"ctax\",", "why": "a card with no button keeps it"}
+	{"file": "data/part-look-modes.json", "find": "\t\t\t\t\t\"whenAbsent\": \"cta\",", "replace": "\t\t\t\t\t\"whenAbsent\": \"ctax\",", "why": "a card with no button keeps it"},
+	{"file": "lib/part-look-modes.mjs", "find": "} ).filter( ( x ) => x.texts.length > 1 || x.some );", "replace": "} ).filter( ( x ) => x.texts.length > 1 );", "why": "a part only some cards draw is read as alike"},
+	{"file": "lib/part-look-modes.mjs", "find": "some: said.length > 0 && said.length < cards };", "replace": "some: said.length < cards };", "why": "a part no card draws is read as differing"}
 ]

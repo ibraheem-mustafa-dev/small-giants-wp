@@ -83,7 +83,8 @@
 							"tag",
 							"price-note",
 							"cta"
-						]
+						],
+						"cards": "wrapper"
 					},
 					"neighbours": [
 						"wrapper"
