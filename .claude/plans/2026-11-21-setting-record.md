@@ -22,7 +22,7 @@ Solve and walker changes; client sites; new block features.
 
 ## Order
 
-Everything lands before the 2026-11-28 cloning date (Bean, 2026-11-21 evening): the general cloning stream's test clones of all three sites run on the setting record. Order: Task 1 and Task 2 done; Task 3's reseed only after plugin round 6's reseed and publish (the general cloning session announced it on 2026-11-22 and will message when the new database is published), never at the same time, announced first; Task 4 (the route switch) after Task 3, its route commits sequenced with the general cloning session's route work. Handshake agreed with that session (2026-11-21, renewed 2026-11-22): before Task 3, wait for its message that plugin round 6's reseed and publish are done, with the new database sha256 (round 5's was `507ef1f8cae7`); Task 3's reseed starts from that database, announced first. Before Task 4, send that session the exact list of `scripts/computed-route` files Task 4 will change. That session is the local one named `small-giants-wp-3f` on 2026-11-22 (`ListAgents`). Task 5 joins the next plugin round.
+Everything lands before the 2026-11-28 cloning date (Bean, 2026-11-21 evening): the general cloning stream's test clones of all three sites run on the setting record. Order: Task 1 done; Task 2 reopened for its completion (zero unproven entries, Bean 2026-11-22), finished before Task 3; Task 3's reseed only after plugin round 6's reseed and publish (the general cloning session announced it on 2026-11-22 and will message when the new database is published), never at the same time, announced first; Task 4 (the route switch) after Task 3, its route commits sequenced with the general cloning session's route work. Handshake agreed with that session (2026-11-21, renewed 2026-11-22): before Task 3, wait for its message that plugin round 6's reseed and publish are done, with the new database sha256 (round 5's was `507ef1f8cae7`); Task 3's reseed starts from that database, announced first. Before Task 4, send that session the exact list of `scripts/computed-route` files Task 4 will change. That session is the local one named `small-giants-wp-3f` on 2026-11-22 (`ListAgents`). Task 5 joins the next plugin round.
 
 ## Risks
 
@@ -36,7 +36,7 @@ Read this plan and `git log --oneline -20`; take the first task whose Status is 
 
 ## First action
 
-Task 3: check for the general cloning session's message that plugin round 6 is published (its new database sha256); until it arrives, build Task 3's script and gate changes, which need no reseed (five minutes to check).
+Task 2's completion (below): read `E:\sgs-tmp\setting-record-task2\lane1-report.md` and `git -C E:\sgs-tmp\wt-setrec-t2b status` (five minutes), then continue from "Completion, where it stands".
 
 ## Tasks
 
@@ -63,8 +63,44 @@ Task 3: check for the general cloning session's message that plugin round 6 is p
   - Every `script-built-part` entry is settled: 121 proved in Chromium.
   - Every Lane D mechanism is general, with a must-fail test.
   - `check.py --self-test` kills 4 of 4.
-- **Status:** done. Records are in `E:\sgs-tmp\setting-record-task2\records\` (reports in `reports-join\`).
-  - **Unproven, Task 1 to Task 2:** 620 to 237.
+- **Status:** reopened for the completion below (first pass done 2026-11-21; completion in progress, unpushed).
+- **Completion (Bean, 2026-11-22): zero unproven entries on the four blocks, and every setting accounted for, before Task 3.** "Every cause has a mechanism" was short of the aim. Every entry must be proved, or removed with code evidence. Every setting must be in the record, tested with no paint, reported as one that removes or replaces the block, or untested with a reason citing the code. Each mechanism is general, with a must-fail test.
+  - **G1, per-device overrides** (cart `triggerStyleMobile`, `triggerStyleTablet`): `proof.py::override_sweep` tries every override value over every desktop value. An entry no combination moves is removed with the combinations named.
+  - **G2, states the render never shows:** values read from the code, stand-in records, script-set states held, and the proof's matching faults fixed (below).
+  - **G3, a value from the parent block:** `proof.py::parent_shell` draws the block inside its fixture's `parents`.
+  - **G4, a token no page defines:** `proof.py::token_test` gives each undefined custom property its own placeholder value on the page root.
+  - **G5, untested settings:** every extension setting is tried. Object, choice and content-ID settings are valued from the code. `check.py` reports `testedNoPaint`, `replacesBlock` and `unvalued`.
+- **Completion, where it stands (2026-11-22, 03:30):** nothing is pushed. All work is in worktree `E:\sgs-tmp\wt-setrec-t2b` (detached, on `origin/main` from about 01:30).
+  - **Commit `ed28d79e4`, local:** G1, G3, G4 and the G5 extension settings.
+  - **Commit `56325321f`, local:**
+    - Values read from code: `block-source-scan` binds helper arguments and reads data-attribute and condition literals; `instances.py` and `leaf_values.py` value every setting of the four blocks.
+    - Runner stand-ins, opt-in: `get_post` by id as `WP_Post`, a product, a mega-menu panel, the motion filter, `nocache_headers`.
+    - `check.py::replaces_block`.
+  - **Uncommitted (Lane 1):** `proof.py`, `cascade.py`, `computed.py`, a new `scriptsets.py`, `tests/test_proof_faults.py`, and the `tests/test_completion.py` and README edits. Its report goes to `E:\sgs-tmp\setting-record-task2\lane1-report.md`, its measuring run to `records-l1\` and `reports-l1\`. Its fixes:
+    - match a rule whose selector names the instance class differently from the page (`diff.py::uid_map` aliasing);
+    - compare every element of the part and count a rule matching only the plain page;
+    - evaluate `@supports`;
+    - demand every token a rule needs in completion;
+    - match the rule's own subject;
+    - treat a setting switching a paint off as proved;
+    - remove a rule that can never match (cart `panelViewColourHover` on an anchor the label's kses strips);
+    - hold script-set states (form completed steps, nav `.is-detached`);
+    - remove an override entry after a full sweep moves nothing.
+  - **Known bug, to fix first:** `proof.py::token_test` gives placeholders only to custom properties the winning declaration names directly. A token reached through another variable gets none, so three `sgs/button` `inheritStyle` entries were wrongly removed in `reports-c1`: transform at hover and at focus, and the transitions. In each, `var(--sgs-btn-lift-hover, …)` is set by the preset class to `var(--wp--custom--button-presets--<preset>--hover-lift)`. Fix: give a placeholder to every custom property the page reads that no rule, theme or render defines, at any depth. The must-fail test is this button case.
+  - **Measured so far (`reports-c1`, before Lanes 1 to 3):** theme-value 0, part printed elsewhere 0, 310 unproven of 3,443. The rise came from newly tested extension settings: conditional visibility's per-part entries, which `replaces_block` now stops, and render crashes, now stubbed.
+  - **Left, in order:**
+    1. Integrate Lane 1. Fix the token bug.
+    2. Run `python -m pytest plugins/sgs-blocks/scripts/setting-record/tests` and the scanner's `plugins/sgs-blocks/scripts/tests/test_block_source_scan_*.py`.
+    3. Run the four blocks with `--write-dir`, and trace every remaining unproven entry to zero.
+    4. Prove the browser verdicts still apply (`proof.browser` in each report).
+    5. Check every removal's evidence by hand for wrong removals, as the button case showed.
+    6. Run the no-flag before/after: `E:\sgs-tmp\setting-record-task2\baseline.sh` on a clean `origin/main` checkout and on the worktree, then `compare.py`, plus `button-preset-parity.py --before --after`. The runner changed again, and some stubs are now defined without a flag.
+    7. Run `/code-review` on the completion's commits.
+    8. Run the repo's fast gates. `check-length-unit-partners` failed on main from Task 1 until `6ed5bdbaf`; a new runtime-built unit name in `leaf_values.py` or `instances.py` needs an `ALLOW_RUNTIME` entry.
+    9. Check the four blocks against their rewritten records with the proof on, and run `--self-test`.
+    10. Commit, rebase and push. Tell the cloning session (`small-giants-wp-3f`) about the runner change.
+- **First pass, results (2026-11-21):** records in `E:\sgs-tmp\setting-record-task2\records\` (reports in `reports-join\`).
+  - **Unproven, Task 1 to Task 2's first pass:** 620 to 237.
 
     | Cause | Task 1 | Task 2 |
     |---|---|---|
