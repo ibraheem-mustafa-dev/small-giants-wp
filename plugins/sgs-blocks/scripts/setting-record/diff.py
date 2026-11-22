@@ -339,7 +339,7 @@ def element_pairs(eb: dict, em: dict):
     """(path, plain element, changed element) for every element in both renders. An element's path names its part
     classes, so a class the setting adds (a utility class such as sgs-hide-mobile) changes its path: an element only in
     one render is paired with the one only in the other whose path is the same once classes are left out, when exactly
-    one of each has it."""
+    one of each has it, they share a class, and the classes that differ are not part names."""
     for path in set(eb) & set(em):
         yield path, eb[path], em[path]
     only_b, only_m = {}, {}
@@ -349,7 +349,13 @@ def element_pairs(eb: dict, em: dict):
         only_m.setdefault(_STEP_CLASSES.sub(r'\1\2[', path), []).append(path)
     for bare, paths in only_b.items():
         if len(paths) == 1 and len(only_m.get(bare, ())) == 1:
-            yield only_m[bare][0], eb[paths[0]], em[only_m[bare][0]]
+            a, b = eb[paths[0]], em[only_m[bare][0]]
+            same = (a['classes'] & b['classes']) - {'UID'}
+            moved = (a['classes'] ^ b['classes']) - {'UID'}
+            # the same element with a utility class added or taken away, never two different elements that happen to
+            # sit at the same place (a flyout's panel and a drawer's dialog): they share a class and differ by no part name
+            if same and not any('__' in c for c in moved):
+                yield only_m[bare][0], a, b
 
 
 def element_part(classes, short: str, token: str) -> str:

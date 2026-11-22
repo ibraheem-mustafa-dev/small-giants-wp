@@ -64,3 +64,13 @@ def test_must_fail_a_rule_on_the_attribute_alone_is_placed_on_its_element():
     em = {'button.sgs-nav-bar-menu__burger[0]': {'classes': {'sgs-nav-bar-menu__burger'}, 'attrs': {'data-sgs-fx': 'magnet'}}}
     pls, _ = D.diff_placements((rules, eb), (rules, em), 'nav-bar-menu', [])
     assert [(p['part'], p['props']) for p in pls] == [('sgs-nav-bar-menu__burger', ['translate'])]
+
+
+def test_must_fail_two_different_elements_at_one_place_are_not_paired():
+    # Breaks if pairing ignored identity: a flyout's panel and a drawer's dialog at the same place would be compared
+    # class by class, and every rule naming any of their classes placed.
+    eb = {'div.sgs-cart__panel[0]': {'classes': {'sgs-cart__panel', 'sgs-x'}, 'attrs': {}}}
+    em = {'div.sgs-cart__drawer[0]': {'classes': {'sgs-cart__drawer', 'sgs-y'}, 'attrs': {}}}
+    rules = {('', '.sgs-y', 'color'): 'red'}
+    pls, info = D.diff_placements((rules, eb), (rules, em), 'cart', [])
+    assert info['classTokens'] == [] and pls == []
