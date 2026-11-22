@@ -137,7 +137,8 @@ function placeHole( ctx, piece, index, L ) {
 function bindEvery( { key, tree, piece, built, fields } ) {
 	const placed = [];
 	const notes = [];
-	for ( const { e, at } of built ) {
+	// An element another piece already bound (a related section's "More from {brand}") is that piece's.
+	for ( const { e, at } of built.filter( ( x ) => ! Object.keys( x.at.node.attributes?.metadata?.bindings || {} ).length ) ) {
 		const holes = holesOf( e.srcOwnText );
 		const whole = 1 === holes.length && ! String( e.srcOwnText ).replace( /\{\{[^}]*\}\}/g, '' ).trim() && fields.includes( holes[ 0 ].split( '.' ).at( -1 ) );
 		const attr = whole ? bindNode( at.node, e, piece.binds ) : null;

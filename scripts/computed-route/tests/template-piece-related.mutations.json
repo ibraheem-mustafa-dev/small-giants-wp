@@ -64,5 +64,41 @@
 		"find": "displayLayout: { type: 'flex', columns: Math.min( columns, rel.count ), shrinkColumns: true },",
 		"replace": "displayLayout: { type: 'flex', columns: 3, shrinkColumns: true },",
 		"why": "the draft's columns are not read"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\t\twords.section && ( node.attributes.queryId = queryId );",
+		"replace": "",
+		"why": "the section's condition names no collection"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\t\tsectionNode.node.attributes.sgsConditionCollectionQueryId = queryId;",
+		"replace": "",
+		"why": "the section stays above an empty collection"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "flat.some( ( n, i ) => i !== at && 'StringLiteral' !== n?.type )",
+		"replace": "false",
+		"why": "a value joining the brand to something else is bound as the brand"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\t\t'brand' === key && 'a' === e.tag && Object.hasOwn( blockSchema( at.node.name ) || {}, 'url' ) && ( bindings.url = { source: 'sgs-product/field', args: { key: 'brand_url' } } );",
+		"replace": "",
+		"why": "the brand link keeps the draft brand's address"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\tconst values = valuesOf( L, holes[ 0 ] ).map( ( v ) => settle( L, v ) );",
+		"replace": "\tconst values = valuesOf( L, holes[ 0 ] );",
+		"why": "a value held in a named variable is not read"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\t\treturn { before: pre, after: post };",
+		"replace": "\t\treturn { before: '', after: post };",
+		"why": "the words before the brand are lost"
 	}
 ]

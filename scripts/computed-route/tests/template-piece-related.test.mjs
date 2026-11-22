@@ -71,3 +71,43 @@ test( 'MUST FAIL: a loop over anything else, a holder with more than its cards, 
 	split[ 0 ].innerBlocks.push( copy );
 	assert.match( place( ctx( { tree: split } ), PIECE ).notes[ 0 ], /nodes in more than one place/ );
 } );
+
+// Review fix (F-54's own verify, "More from Carrera"): the section's words naming the shared brand follow the shown product, and
+// the section hides when the collection finds no products.
+const SECTION_SOURCE = SOURCE().replace( 'return { p, related, featured };', 'const title = \'More from \' + p.brand; const two = \'From \' + p.brand + window.X.name;\n    return { p, related, featured, title, two };' );
+const SECTION_ELEMENTS = () => [
+	// Each element's shown words are the words its source draws for the draft's product.
+	el( 40, null, 'h1', { own: '{{ p.name }}' } ),
+	...ELEMENTS().map( ( e ) => ( 2 === e.tpl ? { ...e, srcOwnText: '{{ title }}', words: 'More from Ray-Ban' } : e ) ),
+	{ ...el( 8, 1, 'a', { own: 'See all {{ p.brand }}' } ), words: 'See all Ray-Ban' },
+];
+const SECTION_TREE = () => {
+	const t = TREE();
+	t[ 0 ].innerBlocks.push( { name: 'sgs/button', attributes: { label: 'See all Ray-Ban' }, innerBlocks: [], draftRef: { tpl: 'Root/8#0' } } );
+	t[ 0 ].innerBlocks[ 0 ].attributes.content = 'More from Ray-Ban';
+	return t;
+};
+const sectionCtx = ( over = {} ) => ctx( { tree: SECTION_TREE(), inventory: { elements: SECTION_ELEMENTS() }, draftSource: SECTION_SOURCE, productFields: { name: [ 'name' ] }, ...over } );
+
+test( 'MUST FAIL: the section\'s words around the shared brand are bound to the product\'s brand, and the section hides with an empty collection', () => {
+	const got = place( sectionCtx(), PIECE );
+	const section = got.tree[ 0 ];
+	assert.deepEqual( section.innerBlocks[ 0 ].attributes.metadata.bindings.content, { source: 'sgs-product/field', args: { key: 'brand', before: 'More from ' } } );
+	assert.deepEqual( section.innerBlocks[ 2 ].attributes.metadata.bindings, { label: { source: 'sgs-product/field', args: { key: 'brand', before: 'See all ' } }, url: { source: 'sgs-product/field', args: { key: 'brand_url' } } } );
+	assert.equal( section.attributes.sgsConditionCollectionQueryId, 3 );
+	assert.equal( section.innerBlocks[ 1 ].attributes.queryId, 3 );
+	assert.deepEqual( got.placed[ 0 ].hidesWith, 'Root/1#0' );
+} );
+
+test( 'negative controls: fixed words, a value joining two things, a list sharing no field, and no shown record bind nothing and hide nothing', () => {
+	const fixed = place( sectionCtx( { inventory: { elements: SECTION_ELEMENTS().filter( ( e ) => 8 !== e.tpl ).map( ( e ) => ( 2 === e.tpl ? { ...e, srcOwnText: 'Similar frames' } : e ) ) } } ), PIECE );
+	assert.equal( fixed.tree[ 0 ].attributes.sgsConditionCollectionQueryId, undefined );
+	assert.equal( fixed.tree[ 0 ].innerBlocks[ 1 ].attributes.queryId, 0 );
+	const two = place( sectionCtx( { inventory: { elements: SECTION_ELEMENTS().filter( ( e ) => 8 !== e.tpl ).map( ( e ) => ( 2 === e.tpl ? { ...e, srcOwnText: '{{ two }}' } : e ) ) } } ), PIECE );
+	assert.equal( two.tree[ 0 ].innerBlocks[ 0 ].attributes.metadata, undefined );
+	const others = place( sectionCtx( { draftSource: SECTION_SOURCE.replace( 'x.id !== p.id && x.brand === p.brand', 'x.id !== p.id' ) } ), PIECE );
+	assert.equal( others.tree[ 0 ].innerBlocks[ 0 ].attributes.metadata, undefined );
+	assert.equal( others.tree[ 0 ].attributes.sgsConditionCollectionQueryId, undefined );
+	const noRecord = place( sectionCtx( { productFields: {} } ), PIECE );
+	assert.equal( noRecord.tree[ 0 ].innerBlocks[ 0 ].attributes.metadata, undefined );
+} );

@@ -212,3 +212,12 @@ test( 'MUST FAIL: every element showing the product\'s brand as its whole words 
 	assert.equal( binding( at( got.tree, 31 ) ).url, undefined );
 	assert.match( place( ctx( { productFields: { ...FIELDS, brand: [] } } ), BRAND ).notes[ 0 ], /records have no brand field/ );
 } );
+
+test( 'an element another piece already bound is left to it, with no note', () => {
+	const elements = [ ...INVENTORY.elements, el( 34, 6, 'h2', '{{ seeAll }}', { words: 'See all Mama' } ) ];
+	const tree = TREE();
+	tree[ 0 ].innerBlocks[ 0 ].innerBlocks.push( { ...n( 'sgs/heading', 34, { content: 'See all Mama' } ), attributes: { content: 'See all Mama', metadata: { bindings: { content: { source: 'sgs-product/field', args: { key: 'brand', before: 'See all ' } } } } } } );
+	const got = place( ctx( { tree, inventory: { elements }, draftSource: BRAND_SOURCE, productFields: { ...FIELDS, brand: [ 'brand' ] } } ), BRAND );
+	assert.ok( ! ( got.notes || [] ).some( ( x ) => /Root\/34#0/.test( x ) ) );
+	assert.deepEqual( binding( at( got.tree ?? tree, 34 ) ).content.args, { key: 'brand', before: 'See all ' } );
+} );

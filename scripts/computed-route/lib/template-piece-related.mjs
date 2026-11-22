@@ -15,7 +15,9 @@
 // whose holder holds anything else, whose nodes do not sit in one list, or whose list reads anything else stays as drawn, with
 // the reason.
 import { countBlocks } from './template-pieces.mjs';
-import { draftLogic, inventoryIndex, nodesWithin, refKey } from './template-piece-draft.mjs';
+import { declsOf, draftLogic, holesOf, inventoryIndex, nodesWithin, refKey, treeNodes, wordsSetting } from './template-piece-draft.mjs';
+import { recordRoots } from './template-piece-product-field.mjs';
+import { blockSchema } from './resolve.mjs';
 import { valuesOf } from './shop-parts-logic.mjs';
 import { resolveName } from './intake-ast.mjs';
 
@@ -110,6 +112,76 @@ export function taxonomyOf( catalogue, field ) {
 	return [ 'category', 'categories', 'cat' ].includes( field ) ? 'product_cat' : null;
 }
 
+// The words a section draws around the shared term ("More from Ray-Ban" from `'More from ' + cur.brand`, "See all {{ cur.brand }}"):
+// { before, after } when the element's whole words are one value made of the shown record's `field` with fixed words around it, or null.
+export function termWords( L, e, roots, field ) {
+	const holes = holesOf( e?.srcOwnText );
+	if ( 1 !== holes.length ) {
+		return null;
+	}
+	const own = String( e.srcOwnText );
+	const [ pre, post ] = own.split( /\{\{[^}]*\}\}/ );
+	const onRecord = ( obj ) => 'Identifier' === obj?.type && [ ...declsOf( L, obj.name ) ].some( ( d ) => roots.has( d ) );
+	const parts = holes[ 0 ].split( '.' );
+	if ( 2 === parts.length && parts[ 1 ] === field && [ ...declsOf( L, parts[ 0 ] ) ].some( ( d ) => roots.has( d ) ) ) {
+		return { before: pre, after: post };
+	}
+	if ( pre.trim() || post.trim() ) {
+		return null;
+	}
+	// A value of fixed words joined to the field: `'More from ' + cur.brand` (string literals and one member of the shown record).
+	const values = valuesOf( L, holes[ 0 ] ).map( ( v ) => settle( L, v ) );
+	if ( 1 !== values.length ) {
+		return null;
+	}
+	const flat = [];
+	const walk = ( n ) => ( 'BinaryExpression' === n?.type && '+' === n.operator ? ( walk( n.left ), walk( n.right ) ) : flat.push( n ) );
+	walk( values[ 0 ] );
+	const at = flat.findIndex( ( n ) => 'MemberExpression' === n?.type && ! n.computed && n.property?.name === field && onRecord( n.object ) );
+	if ( at < 0 || flat.some( ( n, i ) => i !== at && 'StringLiteral' !== n?.type ) ) {
+		return null;
+	}
+	const text = ( list ) => list.map( ( n ) => n.value ).join( '' );
+	return { before: text( flat.slice( 0, at ) ), after: text( flat.slice( at + 1 ) ) };
+}
+
+// The section around a related list that shares a term: its words naming the term are bound to the shown product's term (the brand
+// binding with the draft's words around it, a link's address to the brand's page), and the section is hidden when the collection
+// finds no products (sgsConditionCollectionQueryId, includes/conditional-visibility.php: the section renders after its collection, so
+// the result is known), as the draft draws it only when the term has other products. The section is the lowest element holding the
+// list and such words and no other loop. Returns { bound, section, notes }.
+export function sectionWords( { L, index, roots, tree, holder, field, tax, queryId } ) {
+	const key = 'brand' === field && 'product_brand' === tax ? 'brand' : ( /^pa_/.test( tax || '' ) ? `attribute.${ tax }` : null );
+	if ( ! key ) {
+		return { bound: [], section: null, notes: [] };
+	}
+	const words = index.elements.filter( ( e ) => 'Root' === e.template && Object.values( e.visible || {} ).some( Boolean ) && ! index.within( e.key, holder ) ).map( ( e ) => ( { e, w: termWords( L, e, roots, field ) } ) ).filter( ( x ) => x.w );
+	const section = index.chain( holder ).slice( 1 ).find( ( k ) => words.some( ( x ) => index.within( x.e.key, k ) ) );
+	const mine = section ? words.filter( ( x ) => index.within( x.e.key, section ) ) : [];
+	const notes = [];
+	const bound = [];
+	for ( const { e, w } of mine ) {
+		const at = treeNodes( tree ).find( ( r ) => refKey( r.node ) === e.key );
+		const attr = at ? wordsSetting( at.node, e ) : null;
+		if ( ! attr ) {
+			notes.push( `${ e.key } shows the shared ${ field } among the section's words, and ${ at ? `${ at.node.name } holds no single setting with them` : 'no node of its own' }` );
+			continue;
+		}
+		const meta = at.node.attributes.metadata || {};
+		const bindings = { ...( meta.bindings || {} ), [ attr ]: { source: 'sgs-product/field', args: { key, ...( w.before ? { before: w.before } : {} ), ...( w.after ? { after: w.after } : {} ) } } };
+		'brand' === key && 'a' === e.tag && Object.hasOwn( blockSchema( at.node.name ) || {}, 'url' ) && ( bindings.url = { source: 'sgs-product/field', args: { key: 'brand_url' } } );
+		at.node.attributes.metadata = { ...meta, bindings };
+		bound.push( `${ e.key } ${ attr } <- ${ key }${ w.before ? ` after "${ w.before }"` : '' }${ w.after ? ` before "${ w.after }"` : '' }${ bindings.url ? ' (url <- brand_url)' : '' }` );
+	}
+	const sectionNode = section ? treeNodes( tree ).find( ( r ) => refKey( r.node ) === section ) : null;
+	if ( sectionNode && bound.length ) {
+		sectionNode.node.attributes.sgsConditionCollectionQueryId = queryId;
+	} else if ( bound.length ) {
+		notes.push( `the section around ${ holder } has no node of its own, so it is not hidden when the collection finds nothing` );
+	}
+	return { bound, section: sectionNode && bound.length ? section : null, notes };
+}
+
 export function place( ctx, piece ) {
 	const { key, tree } = ctx;
 	const note = ( why ) => ( { notes: [ `${ key }: piece "${ piece.id }": ${ why }` ] } );
@@ -170,7 +242,13 @@ export function place( ctx, piece ) {
 		const at = Math.min( ...nodes.map( ( r ) => list.indexOf( r.node ) ) );
 		nodes.forEach( ( r ) => list.splice( list.indexOf( r.node ), 1 ) );
 		list.splice( at, 0, node );
-		placed.push( { id: piece.id, block: piece.block, at: `${ loop.holder }, in place of ${ nodes.map( ( r ) => refKey( r.node ) ).join( ', ' ) }`, run: [ loop.holder ], list: bare( loop.list ), ...( tax ? { sameTermAs: tax } : { collection: RELATED_COLLECTION } ), perPage: rel.count, columns: node.attributes.displayLayout.columns } );
+		// The section's words naming the shared term follow the shown product, and the section hides with an empty collection.
+		const roots = tax && ctx.productFields ? recordRoots( L, index, ctx.productFields ) : null;
+		const queryId = Number( /\/(\d+)#/.exec( loop.holder )?.[ 1 ] ) || 0;
+		const words = roots ? sectionWords( { L, index, roots, tree, holder: loop.holder, field: rel.field, tax, queryId } ) : { bound: [], section: null, notes: [] };
+		words.section && ( node.attributes.queryId = queryId );
+		notes.push( ...words.notes.map( ( x ) => `${ key }: piece "${ piece.id }": ${ x }` ) );
+		placed.push( { id: piece.id, block: piece.block, at: `${ loop.holder }, in place of ${ nodes.map( ( r ) => refKey( r.node ) ).join( ', ' ) }`, run: [ loop.holder ], list: bare( loop.list ), ...( tax ? { sameTermAs: tax } : { collection: RELATED_COLLECTION } ), perPage: rel.count, columns: node.attributes.displayLayout.columns, ...( words.bound.length ? { words: words.bound, hidesWith: words.section } : {} ) } );
 		notes.push( `${ key }: piece "${ piece.id }": ${ where } lists ${ tax ? `the products sharing the shown product's ${ rel.field } (sgsSameTermAs ${ tax })` : 'the other products (WooCommerce\'s Related Products collection)' }, ${ rel.count } at most, as product cards` );
 	}
 	if ( ! placed.length && ! notes.length ) {

@@ -196,5 +196,11 @@
 		"find": " && fields.includes( holes[ 0 ].split( '.' ).at( -1 ) );",
 		"replace": ";",
 		"why": "a value built from the brand is bound as the bare brand"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tfor ( const { e, at } of built.filter( ( x ) => ! Object.keys( x.at.node.attributes?.metadata?.bindings || {} ).length ) ) {",
+		"replace": "\tfor ( const { e, at } of built ) {",
+		"why": "an element another piece bound is noted again"
 	}
 ]
