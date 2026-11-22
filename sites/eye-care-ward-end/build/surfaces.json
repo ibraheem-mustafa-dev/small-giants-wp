@@ -433,7 +433,7 @@
   },
   "mega-menu-sunglasses": {
     "tree": "trees/sgs_mega_menu/mega-menu-sunglasses.json",
-    "intakeSurface": "mega-menu",
+    "intakeSurface": "mega-menu-sunglasses",
     "envFile": ".claude/secrets/local-eye-care.env",
     "envKey": "LOCALEYECARE",
     "site": "local-eye-care",
@@ -451,7 +451,7 @@
   },
   "mega-menu-brands": {
     "tree": "trees/sgs_mega_menu/mega-menu-brands.json",
-    "intakeSurface": "mega-menu",
+    "intakeSurface": "mega-menu-brands",
     "envFile": ".claude/secrets/local-eye-care.env",
     "envKey": "LOCALEYECARE",
     "site": "local-eye-care",
@@ -469,7 +469,7 @@
   },
   "mega-menu-lenses": {
     "tree": "trees/sgs_mega_menu/mega-menu-lenses.json",
-    "intakeSurface": "mega-menu",
+    "intakeSurface": "mega-menu-lenses",
     "envFile": ".claude/secrets/local-eye-care.env",
     "envKey": "LOCALEYECARE",
     "site": "local-eye-care",
@@ -487,7 +487,7 @@
   },
   "mega-menu-help": {
     "tree": "trees/sgs_mega_menu/mega-menu-help.json",
-    "intakeSurface": "mega-menu",
+    "intakeSurface": "mega-menu-help",
     "envFile": ".claude/secrets/local-eye-care.env",
     "envKey": "LOCALEYECARE",
     "site": "local-eye-care",
