@@ -2782,6 +2782,31 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "ordersRowBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowGap",
+      "fields": {
+        "css_property": "gap",
+        "css_layer": "GRID",
+        "css_element": "ordersRowsList"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "ordersSummaryFontFamily",
       "fields": {
         "css_property": "font-family",
@@ -5846,6 +5871,138 @@
     },
     {
       "slug": "sgs/buybox",
+      "attr": "instalmentsLineColour",
+      "fields": {
+        "css_property": "color",
+        "role": "color",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineLetterSpacing",
+      "fields": {
+        "css_property": "letter-spacing",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineTextAlign",
+      "fields": {
+        "css_property": "text-align",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineTextColumns",
+      "fields": {
+        "css_property": "column-count",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineTextDecoration",
+      "fields": {
+        "css_property": "text-decoration",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineTextStrokeColour",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineTextStrokeColourHover",
+      "fields": {
+        "css_property": "-webkit-text-stroke-color",
+        "role": "color",
+        "css_element": "instalmentsLine",
+        "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineTextStrokeWidth",
+      "fields": {
+        "css_property": "-webkit-text-stroke-width",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineTextTransform",
+      "fields": {
+        "css_property": "text-transform",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineTextWrap",
+      "fields": {
+        "css_property": "text-wrap",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "instalmentsLineWritingMode",
+      "fields": {
+        "css_property": "writing-mode",
+        "css_element": "instalmentsLine"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
       "attr": "margin",
       "fields": {
         "css_property": "margin",
@@ -6465,6 +6622,14 @@
       "fields": {
         "css_property": "writing-mode",
         "css_element": "notifySubmit"
+      }
+    },
+    {
+      "slug": "sgs/buybox",
+      "attr": "pickBadgeFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "pick-badge"
       }
     },
     {
@@ -15907,6 +16072,95 @@
       }
     },
     {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileColumns",
+      "fields": {
+        "css_property": "grid-template-columns",
+        "css_layer": "GRID",
+        "css_element": "tiles"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileLabelFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "tileLabel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileLabelFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "tileLabel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileLabelFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "tileLabel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileLabelFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "tileLabel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileLabelLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "tileLabel"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileTextFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "tileText"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileTextFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "tileText"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileTextFontStyle",
+      "fields": {
+        "css_property": "font-style",
+        "css_element": "tileText"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileTextFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "tileText"
+      }
+    },
+    {
+      "slug": "sgs/gift-order",
+      "attr": "giftTileTextLineHeight",
+      "fields": {
+        "css_property": "line-height",
+        "css_element": "tileText"
+      }
+    },
+    {
       "slug": "sgs/google-rating-badge",
       "attr": "accentStripeColourGradient",
       "fields": {
@@ -19815,6 +20069,15 @@
       "attr": "iconBackgroundColour",
       "fields": {
         "css_property": "background-color",
+        "css_element": "item-icon"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
+      "attr": "iconBoxBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
         "css_element": "item-icon"
       }
     },
@@ -24493,10 +24756,11 @@
     },
     {
       "slug": "sgs/order-items",
-      "attr": "padding",
+      "attr": "rowAlign",
       "fields": {
-        "css_property": "padding",
-        "css_element": "wrapper"
+        "css_property": "align-items",
+        "css_layer": "GRID",
+        "css_element": "row"
       }
     },
     {
@@ -24531,6 +24795,46 @@
         "css_property": "color",
         "role": "color",
         "css_element": "total"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalFontFamily",
+      "fields": {
+        "css_property": "font-family",
+        "css_element": "total"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalFontSize",
+      "fields": {
+        "css_property": "font-size",
+        "css_element": "total"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalFontWeight",
+      "fields": {
+        "css_property": "font-weight",
+        "css_element": "total"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalsBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "totals"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalsBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "totals"
       }
     },
     {
@@ -29286,6 +29590,14 @@
       "fields": {
         "css_property": "width",
         "css_element": "swatch"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "tag"
       }
     },
     {
@@ -37624,6 +37936,13 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "hideRequiredMarks",
+      "fields": {
+        "css_element": "requiredMark"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "labelColour",
       "fields": {
         "css_property": "color",
@@ -37871,6 +38190,31 @@
     },
     {
       "slug": "sgs/account",
+      "attr": "menuItemBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "menuItem"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuItemBorderStyle",
+      "fields": {
+        "css_property": "border-style",
+        "css_element": "menuItem"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuItemBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "menuItem"
+      }
+    },
+    {
+      "slug": "sgs/account",
       "attr": "menuItemGap",
       "fields": {
         "css_property": "gap",
@@ -37899,6 +38243,22 @@
       "attr": "menuItemRadius",
       "fields": {
         "css_property": "border-radius",
+        "css_element": "menuItem"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuItemShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "menuItem"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "menuItemShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_element": "menuItem"
       }
     },
@@ -38220,6 +38580,30 @@
       "attr": "ordersRowPadding",
       "fields": {
         "css_property": "padding",
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowRadius",
+      "fields": {
+        "css_property": "border-radius",
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowShadow",
+      "fields": {
+        "css_property": "box-shadow",
+        "css_element": "ordersRows"
+      }
+    },
+    {
+      "slug": "sgs/account",
+      "attr": "ordersRowShadowColour",
+      "fields": {
+        "css_property": "box-shadow-color",
         "css_element": "ordersRows"
       }
     },
@@ -44963,6 +45347,14 @@
     },
     {
       "slug": "sgs/icon-list",
+      "attr": "iconBoxBorderWidth",
+      "fields": {
+        "css_property": "border-width",
+        "css_element": "item-icon"
+      }
+    },
+    {
+      "slug": "sgs/icon-list",
       "attr": "iconColourGradient",
       "fields": {
         "css_property": "stroke",
@@ -49182,11 +49574,44 @@
     },
     {
       "slug": "sgs/order-items",
+      "attr": "padding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "wrapper"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
       "attr": "rowBorderColour",
       "fields": {
         "css_property": "border-color",
         "role": "color",
         "css_element": "row"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "rowPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "row"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalsBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "totals"
+      }
+    },
+    {
+      "slug": "sgs/order-items",
+      "attr": "totalsPadding",
+      "fields": {
+        "css_property": "padding",
+        "css_element": "totals"
       }
     },
     {
@@ -50145,6 +50570,15 @@
         "css_property": "background-image",
         "css_element": "tag",
         "css_state": "hover"
+      }
+    },
+    {
+      "slug": "sgs/product-card",
+      "attr": "tagBorderColour",
+      "fields": {
+        "css_property": "border-color",
+        "role": "color",
+        "css_element": "tag"
       }
     },
     {
