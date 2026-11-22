@@ -177,9 +177,9 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// a rule makes the wrapper one block that takes its children in, such as a drawer's navigation).
 		const r = cls.classify( e, parentBlock );
 		const units = m.words( e ) || 'client decision' === overrides( e, '' )?.source || ( r.rule && r.absorb ) ? [] : unitsOf( e );
-		if ( R.listWrapper && 1 === units.length && 'list' === units[ 0 ].type && units[ 0 ].els.length === m.blockKids( e ).length ) {
+		if ( R.listWrapper && 1 === units.length && 'list' === units[ 0 ].type && units[ 0 ].els.length + ( units[ 0 ].heading ? 1 : 0 ) === m.blockKids( e ).length ) {
 			record( e, { action: 'unwrap', rule: 'listWrapper', source: 'rule listWrapper', reason: R.listWrapper.reason, confidence: 1, candidates: [] } );
-			return [ buildList( units[ 0 ].els, e, units[ 0 ].rows ) ];
+			return [ buildList( units[ 0 ].els, e, units[ 0 ].rows, units[ 0 ].heading ) ];
 		}
 		if ( 'remove' === r.action ) {
 			record( e, r );
@@ -419,7 +419,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 	// sibling it follows in the document, so Fill's width gate can hide each branch on the other's widths.
 	function buildChildren( e, parentBlock, list = undefined, withWide = ! list ) {
 		const units = unitsOf( e, list );
-		const build = ( u ) => ( 'accordion' === u.type ? w.buildAccordion( u.els ) : 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els, null, u.rows ) : buildNode( u.els[ 0 ], parentBlock ) );
+		const build = ( u ) => ( 'accordion' === u.type ? w.buildAccordion( u.els ) : 'brand' === u.type ? buildBrand( u.els ) : 'icons' === u.type ? buildIcons( u.els, u.parent ) : 'list' === u.type ? buildList( u.els, null, u.rows, u.heading ) : buildNode( u.els[ 0 ], parentBlock ) );
 		const wide = withWide ? m.widthKids( e ) : [];
 		if ( ! wide.length ) {
 			return units.flatMap( build ).filter( Boolean );

@@ -120,6 +120,20 @@ export function makeUnits( ctx ) {
 		}
 		return list.slice( i, j );
 	};
+	// A short plain text leaf (no control, glyph or number) that heads a run of links where the surface is one of
+	// rules.listHeading.surfaces: { el, text, level }, or null. `level` is the heading tag's level the list block holds, the
+	// block's fallback level for any other tag.
+	const headsList = ( h ) => {
+		const L = R.listHeading;
+		const text = squash( m.words( h ) );
+		if ( ! L || ! ( L.surfaces || [] ).includes( ctx.surfaceKind ) || ! text || m.blockKids( h ).length || isControlEl( h ) || ! shownEl( h ) || removedBy( h ) || /^\d+$/.test( text ) || text.split( ' ' ).length > L.maxWords || m.kids( h ).some( ( k ) => 'svg' === k.tag ) ) {
+			return null;
+		}
+		const tag = /^h([1-6])$/.exec( h.tag );
+		const levels = enumOf( facts.listSlug, L.settings.level ) || [];
+		const level = tag && levels.includes( `h${ Math.max( 2, Number( tag[ 1 ] ) ) }` ) ? `h${ Math.max( 2, Number( tag[ 1 ] ) ) }` : L.fallbackLevel;
+		return { el: h, text, level };
+	};
 	const unitsOf = ( e, list = m.blockKids( e ) ) => {
 		const out = [];
 		for ( let i = 0; i < list.length; ) {
@@ -133,7 +147,13 @@ export function makeUnits( ctx ) {
 			const icons = brand ? [] : cls.iconRun( list, i, e );
 			const run = brand || icons.length ? [] : linkRun( list, i, e );
 			const rows = brand || icons.length ? [] : itemRun( list, i, e );
-			if ( brand ) {
+			// The first piece of text of a footer column, directly above a run of links, is the list's own heading (rules.listHeading).
+			const head = ! brand && ! icons.length && ! run.length && ! rows.length && 0 === i ? headsList( list[ i ] ) : null;
+			const under = head ? linkRun( list, i + 1, e ) : [];
+			if ( under.length ) {
+				out.push( { type: 'list', els: under, heading: head } );
+				i += 1 + under.length;
+			} else if ( brand ) {
 				out.push( { type: 'brand', els: brand } );
 				i += brand.length;
 			} else if ( icons.length ) {
@@ -253,7 +273,7 @@ export function makeUnits( ctx ) {
 	}
 	// host: the bare wrapper the list block is (rule listWrapper), whose own box (its grid columns, its gaps) the list's own
 	// settings read; the first link stays the draft element of the link part's settings. Without a host the first link is both.
-	function buildList( els, host = null, rows = null ) {
+	function buildList( els, host = null, rows = null, heading = null ) {
 		const slug = facts.listSlug;
 		const li = facts.listItem;
 		const handover = [];
@@ -291,6 +311,14 @@ export function makeUnits( ctx ) {
 		const first = els.find( ( l ) => ! removedBy( l ) );
 		const node = base( host ?? first, slug, { ...( rows ? markerAttrs( slug, rows ) : ( enumOf( slug, 'markerType' ) || [] ).includes( 'none' ) ? { markerType: 'none' } : {} ), items } );
 		handover.length && ( node.handover = handover );
+		// The heading above the links is the list's own heading: its words and level are settings of the list, and the heading
+		// element is absorbed into the list, whose heading part Fill reads its look at (lib/skeleton-part-pairing.mjs).
+		if ( heading ) {
+			const L = R.listHeading;
+			Object.assign( node.attributes, { [ L.settings.text ]: heading.text, [ L.settings.level ]: heading.level } );
+			record( heading.el, { action: 'absorbed', rule: 'listHeading', source: 'rule listHeading', reason: `${ L.reason }; the list ${ node.draftRef?.tpl ?? first?.key } holds it as its heading`, confidence: 1, candidates: [], into: ( host ?? first ).key } );
+			absorbSubtree( heading.el, { block: slug, key: ( host ?? first ).key }, 'the heading of the list', 'listHeading' );
+		}
 		// The node's draft element is its first link, which is also the block's link part: the settings calibrated on that part
 		// are read at the same link (decisions structural.linkList.itemSlots, lib/skeleton-part-slots.mjs::itemSlots).
 		const linkSlots = 'a' === first?.tag && node.draftRef && ctx.calSettings ? itemSlots( { finder: finder( first ), settings: facts.decisions.structural?.linkList?.itemSlots, calibrated: ctx.calSettings( slug ) } ).slots : {};

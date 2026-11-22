@@ -416,6 +416,13 @@
 			},
 			"reason": "a centring width wrapper (max-width with auto margins) inside a header, footer, row or section block goes: that block sets its own width; its children take its place, and the wrapper is the draft element of the calibrated slot of the block's hostSetting, so its width, layout and gaps are read there"
 		},
+		"listHeading": {
+			"surfaces": [ "footer" ],
+			"maxWords": 4,
+			"settings": { "text": "heading", "level": "headingLevel" },
+			"fallbackLevel": "p",
+			"reason": "the first piece of text of a footer column, directly above a run of text links, is that list's own heading (sgs/icon-list holds heading and headingLevel; the hand-built reference shop's footer menus are each one icon list with its heading, level p where the draft's heading is no h tag): one block instead of a heading block and a list block, and the heading's look is read at the list's heading part"
+		},
 		"listWrapper": {
 			"reason": "a bare wrapper whose only content is one list goes: the list block is that wrapper"
 		},
