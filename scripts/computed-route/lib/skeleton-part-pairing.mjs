@@ -16,12 +16,14 @@
 //   one placed so at some widths only may be either;
 // - structure (decided before paint, which only breaks what structure leaves): an element inside a paired element pairs only
 //   inside that pair's part, preferring that part's direct children; an element inside a draft element the node already holds at
-//   a part's slot (`taken`) pairs inside that part the same way; a wrapper (a box) keeps the parts that hold the most of its
-//   contents that belong to one part (every part a content can be lies inside it); a wrapper of wordless marks only is the part
-//   whose shown children are as many marks; the words a control holds itself are drawn by the one plain words part inside its
-//   part, so a words element beside them is another words part (an ornament); an element no part fits inside its enclosing
-//   element's part (so one nested in an element that holds the only part that fits) is drawn flat by the block (`flat`: recorded as
-//   unpaired, not a problem);
+//   a part's slot (`taken`) pairs inside that part the same way, and an element that holds a slot itself is one of the parts it
+//   holds; a wrapper (a box) is the part that holds the most of its contents already placed in one part (the tightest of equals;
+//   a choice made in one round only grows outward to a part round it, so the rounds converge); a wrapper of wordless marks only
+//   is the part whose shown children are as many marks; the words a control holds itself are drawn by the one plain words part
+//   inside its part, so a words element beside them is another words part (an ornament); the host's sole box child of about its
+//   width, and that box's own sole box child, are the box the block draws as its root, not a part; a wordless box no part fits
+//   inside its enclosing element's part is drawn flat by the block (`flat`: recorded as unpaired, not a problem), while an
+//   element with words of its own is never flat, so its gap stays listed;
 // - holds: a box that holds only an icon (a glyph or picture inside it, no words) keeps the parts that hold only an icon, and one
 //   that holds words and no icon drops them, so a badge round an icon is never confused with a card of text drawn in the same paint;
 // - words: where several parts fit, a worded element keeps the parts printing the same words, else the parts printing the
@@ -32,8 +34,9 @@
 // - place: where several parts still fit, the part whose box centre inside the block lies nearest the element's centre inside
 //   its host, both as shares of the block's size, when it is near (PLACE_NEAR) and every other part at least twice as far.
 // A part and its sole visible child of the same width are one visible box (a label drawn round a pill). A pairing is used only
-// when exactly one part fits; two draft elements in one item claiming the same part are both left unpaired. A loop's other items are read at the element in the same place only when it is the same kind of element. Nothing
-// here names a block, a part or a class.
+// when exactly one part fits; two draft elements in one item claiming the same part are both left unpaired. A loop's other
+// items are read at the element in the same place only when it is the same sort of element (words, glyph, control, picture or
+// blank). Nothing here names a block, a part or a class.
 import { copylessKey } from './fact-key.mjs';
 import { lookOfProperty } from './skeleton-paint-conservation.mjs';
 
@@ -320,7 +323,7 @@ export function draftKind( e, kids ) {
 // that has one) with the block's disclosure summary part, to be called after the ordinary pairing, whose link part a toggle
 // also fills (the settings of the two parts are calibrated apart); calibration: { elements, settings, text }; finder( element ); taken: the slots the node
 // already holds. Returns { slots: { slot: finder }, paired: [ { key, part, slots } ], ambiguous: [ { key, candidates } ],
-// unpainted: [ { key, part, looks } ], pseudo: [ { key, part } ] }.
+// unpainted: [ { key, part, looks } ], pseudo: [ { key, part } ], flat: [ { key, candidates, why } ] }.
 export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false, calibration = {}, finder, taken = {}, summaryRows = false } ) {
 	const out = { slots: {}, paired: [], ambiguous: [], unpainted: [], pseudo: [], flat: [] };
 	const elements = calibration?.elements || {};
@@ -380,6 +383,12 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		const id = JSON.stringify( f );
 		g && ! g.root && ! slot.includes( '::' ) && ! takenAt.has( id ) && takenAt.set( id, g );
 	}
+	// The parts the slot walk gave a draft element itself: it is one of them.
+	const takenAll = new Map();
+	for ( const [ slot, f ] of Object.entries( taken || {} ) ) {
+		const g = model.groups.get( model.headOf.get( templateOf( slot ) ) );
+		g && ! g.root && ! slot.includes( '::' ) && ( takenAll.get( JSON.stringify( f ) ) ?? takenAll.set( JSON.stringify( f ), new Set() ).get( JSON.stringify( f ) ) ).add( g );
+	}
 	const heldPart = ( e ) => {
 		for ( let x = parent.get( e ); x; x = x === host ? null : parent.get( x ) ) {
 			const g = takenAt.get( JSON.stringify( finder( x ) ) );
@@ -395,13 +404,25 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 	// contents' parts, so it keeps the parts that hold the most of the contents that belong to one part (every part such a content
 	// can be lies inside it). An element with parts that fit by kind and none inside its enclosing element's part is one the block
 	// draws flat (a wrapper round parts the block lays out itself). Paint (words, place) only breaks what is left.
+	// The host's own box: its sole visible child of about its width that holds children, and that child's, and so on, as the block's root and its sole
+	// visible child of the same width are one visible box (a wrapper round a card the block draws as its root is not a part of it).
+	const rootChain = new Set();
+	for ( let x = host; x; ) {
+		const shown = kids( x ).filter( visible );
+		const c = 1 === shown.length && ! isNode( shown[ 0 ] ) && 'box' === draftKind( shown[ 0 ], kids ) ? shown[ 0 ] : null;
+		const w = boxOf( x ).w;
+		const cw = c && boxOf( c ).w;
+		x = c && w > 0 && cw > 0 && Math.abs( w - cw ) <= Math.max( 2, 0.1 * w ) ? c : null;
+		x && rootChain.add( x );
+	}
 	const baseSets = new Map( order.map( ( e ) => {
-		return [ e, groups.filter( ( g ) => g.level === chain.get( e ).length && FITS[ kindOf.get( e ) ].includes( g.kind ) && ( ! flowsOf( e ).every( Boolean ) || g.oof ) ) ];
+		return [ e, rootChain.has( e ) ? [] : groups.filter( ( g ) => g.level === chain.get( e ).length && FITS[ kindOf.get( e ) ].includes( g.kind ) && ( ! flowsOf( e ).every( Boolean ) || g.oof ) ) ];
 	} ) );
 	const below = new Map( order.map( ( e ) => [ e, order.filter( ( d ) => isAbove( e, d ) ) ] ) );
 	let flatNow = new Map();
 	let prev = baseSets;
 	const banned = new Map();
+	const wrapKept = new Map();
 	let result;
 	for ( let round = 0; round < 6; round++ ) {
 		result = new Map();
@@ -416,9 +437,13 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 					break;
 				}
 			}
+			const fromHeld = ! up && !! heldPart( e );
 			up = up ?? heldPart( e );
 			let cands = baseSets.get( e ).filter( ( g ) => ! up || up.inside.has( g.head ) );
-			baseSets.get( e ).length && ! cands.length && flatNow.set( e, 'no part of the block lies inside the part its enclosing element was paired with: the block draws it flat' );
+			const own = takenAll.get( JSON.stringify( finder( e ) ) );
+			const ownKept = own ? cands.filter( ( g ) => own.has( g ) ) : [];
+			ownKept.length && ( cands = ownKept );
+			baseSets.get( e ).length && ! cands.length && 'box' === kind && ! ALNUM.test( String( e.words ?? '' ) ) && flatNow.set( e, 'no part of the block lies inside the part its enclosing element was paired with: the block draws it flat' );
 			// A wrapper of wordless marks and nothing else (a track and its fill) is a part whose shown children are marks, as many.
 			if ( 'box' === kind && cands.length > 1 ) {
 				const held = kids( e ).filter( ( k ) => visible( k ) && ! isNode( k ) ).map( ( k ) => kindOf.get( k ) );
@@ -426,10 +451,23 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 				kept.length && ( cands = kept );
 			}
 			// A wrapper holds the parts its contents belong to.
-			if ( 'box' === kind && cands.length > 1 ) {
-				const holds = ( g ) => below.get( e ).filter( ( d ) => prev.get( d ).length && prev.get( d ).every( ( h ) => g.inside.has( h.head ) ) ).length;
-				const most = Math.max( ...cands.map( holds ) );
-				most > 0 && ( cands = cands.filter( ( g ) => holds( g ) === most ) );
+			if ( 'box' === kind && cands.length > 1 && ! fromHeld ) {
+				// The contents already placed in a part (one part only) decide: the wrapper is the part holding most of them, and of the parts
+				// holding as many, the tightest. A content with several possible parts places nothing yet.
+				const placed = ( g ) => below.get( e ).filter( ( d ) => 1 === prev.get( d ).length && g.inside.has( prev.get( d )[ 0 ].head ) ).length;
+				const before = cands.length;
+				const most = Math.max( ...cands.map( placed ) );
+				if ( most > 0 ) {
+					cands = cands.filter( ( g ) => placed( g ) === most );
+					cands.length > 1 && ( ( tight ) => ( cands = cands.filter( ( g ) => g.inside.size === tight ) ) )( Math.min( ...cands.map( ( g ) => g.inside.size ) ) );
+				}
+				// What a round settled stays settled, except that it may grow outward to a part round it (its contents' parts move as they are
+				// paired, and a wrapper must not flip back and forth).
+				const prior = wrapKept.get( e );
+				const grows = prior && cands.length && cands.every( ( g ) => prior.some( ( p ) => g.inside.has( p.head ) ) );
+				const settled = ( prior ?? cands ).filter( ( g ) => cands.includes( g ) );
+				settled.length && ! grows && ( cands = settled );
+				cands.length < before && wrapKept.set( e, cands );
 			}
 			const row = toggles.has( e ) ? cands.filter( ( g ) => summaries.includes( g ) ) : [];
 			if ( row.length ) {
@@ -491,9 +529,20 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		}
 	}
 	const wanted = new Set( absorbed.map( ( x ) => x.element ) );
+	for ( const e of rootChain ) {
+		wanted.has( e ) && out.flat.push( { key: e.key, candidates: [ '(the block\'s own root box)' ], why: 'it is the box the block draws as its own root (the host\'s sole visible child of its width)' } );
+	}
 	for ( const [ e, why ] of flatNow ) {
 		wanted.has( e ) && out.flat.push( { key: e.key, candidates: baseSets.get( e ).map( ( g ) => g.head ), why } );
 	}
+	// What a loop copy is for the read of its slots: words (an element's own words, whatever it also holds), a glyph (a typed
+	// symbol or a drawing), a control, a picture, or blank (a box or a mark with no words of its own).
+	const sortOf = ( x ) => {
+		const k = kindOf.get( x ) ?? draftKind( x, kids );
+		const own = String( x.words ?? '' ).trim();
+		return 'control' === k || 'picture' === k ? k : ALNUM.test( own ) && ! glyphy( own ) ? 'words' : own || 'glyph' === k ? 'glyph' : 'blank';
+	};
+	const sameSort = ( a, b ) => sortOf( a ) === sortOf( b );
 	const settings = Object.entries( calibration.settings || {} );
 	const held = new Set( Object.keys( taken || {} ) );
 	const placedAt = new Map();
@@ -536,9 +585,9 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		const mine = ( x ) => x === e || copylessKey( x.key ) === copylessKey( e.key );
 		for ( const slot of [ ...slotLooks.keys() ].sort() ) {
 			const at = instanceOf( e, [ ...slot.matchAll( NTH ) ].map( ( x ) => Number( x[ 1 ] ) ), { chain: chain.get( e ), parent, kids, host, repGroup } );
-			// A loop's other items are read at the element in the same place only when it is the same kind of element (a badge's copy
-			// is another badge, not the arrow beside another row's label).
-			if ( at && ( at === e || ( kindOf.get( at ) ?? draftKind( at, kids ) ) === kindOf.get( e ) ) && ! held.has( slot ) ) {
+			// A loop's other items are read at the element in the same place only when it is the same sort of element (a badge's copy
+			// is another badge, not the arrow beside another row's label; a row's words are its words whether or not a caret follows).
+			if ( at && ( at === e || sameSort( at, e ) ) && ! held.has( slot ) ) {
 				out.slots[ slot ] = finder( at );
 				held.add( slot );
 				placedAt.set( slot, at );
