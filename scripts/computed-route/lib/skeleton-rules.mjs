@@ -1000,8 +1000,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			return true;
 		}
 		const widest = ( x ) => Math.max( 0, ...Object.values( x.box || {} ).map( ( b ) => b?.w || 0 ) );
+		const area = ( x ) => Math.max( 0, ...Object.values( x.box || {} ).map( ( b ) => ( b?.w || 0 ) * ( b?.h || 0 ) ) );
 		for ( let up = m.byKey[ p.parentKey ]; up && up !== hero; up = m.byKey[ up.parentKey ] ) {
-			if ( [ 'a', 'button' ].includes( view.realTag( up ) ) ) {
+			// A control holding more than the picture (words, other marks) owns it as its mark; a link that is mostly the picture is
+			// the picture's own address and leaves it the hero's media.
+			if ( [ 'a', 'button' ].includes( view.realTag( up ) ) && ! ( area( up ) > 0 && area( p ) >= area( up ) * ( SM.minControlShare ?? 1 ) ) ) {
 				return false;
 			}
 		}

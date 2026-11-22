@@ -665,7 +665,8 @@
 			"splitMedia": {
 				"minWidthShare": 0.1,
 				"minWidthPx": 64,
-				"reason": "a hero's split picture fills a column of the hero: a picture narrower than 64px or a tenth of the hero's width at the widest width it renders (an icon in an advice card, a thumbnail) is no split media, and neither is a picture inside a link or button (a control's own mark); a hero with no such picture is the plain hero"
+				"minControlShare": 0.5,
+				"reason": "a hero's split picture fills a column of the hero: a picture narrower than 64px or a tenth of the hero's width at the widest width it renders (an icon in an advice card, a thumbnail) is no split media, and neither is a picture inside a link or button that holds more than the picture (a control's own mark: the picture fills less than half of the control's box at the widest width it renders); a picture that is most of its link (a wide hero image wrapped in an address) is still the split media; a hero with no such picture is the plain hero"
 			},
 			"splitOrder": {
 				"setting": "splitContentOrder",

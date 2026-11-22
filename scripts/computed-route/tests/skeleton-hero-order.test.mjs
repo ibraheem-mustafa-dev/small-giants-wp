@@ -131,10 +131,10 @@ test( 'a value the setting does not store is not written and is named; a tier wh
 // rules.hero.splitMedia: a picture too small to fill a column (an icon in an advice card, a thumbnail) and one inside a link
 // or button (a control's own mark) are no split media: the hero stays plain and does not absorb them.
 const SMALL = { ...CONTACT, 8: { 375: { x: 19, y: 117, w: 20, h: 20 }, 768: { x: 524, y: 164, w: 20, h: 20 }, 1440: { x: 1085, y: 166, w: 20, h: 20 } } };
-const linked = ( boxes ) => {
+const linked = ( boxes, wrapBox = null ) => {
 	const inv = inventory( boxes );
 	const img = inv.elements.find( ( e ) => 'Root/8#0' === e.key );
-	const wrap = { ...inv.elements.find( ( e ) => 'Root/7#0' ), key: 'Root/9#0', tpl: 9, tag: 'a', srcTag: 'a', words: '', allText: '', attrs: { href: '/x' }, parentKey: 'Root/3#0', depth: 3, snippet: '<a data-dc-tpl="9"></a>' };
+	const wrap = { ...inv.elements.find( ( e ) => 'Root/7#0' ), key: 'Root/9#0', tpl: 9, tag: 'a', srcTag: 'a', words: '', allText: '', attrs: { href: '/x' }, parentKey: 'Root/3#0', depth: 3, snippet: '<a data-dc-tpl="9"></a>', ...( wrapBox ? { box: Object.fromEntries( W.map( ( w ) => [ w, wrapBox[ w ] ] ) ) } : {} ) };
 	img.parentKey = 'Root/9#0';
 	img.depth = 4;
 	inv.elements.splice( inv.elements.indexOf( img ), 0, wrap );
@@ -151,9 +151,19 @@ test( 'MUST FAIL: a 20px icon in a hero is no split picture: the hero is plain a
 	assert.equal( heroOf( run( CONTACT ) ).attributes.variant, 'split' );
 } );
 
-test( 'MUST FAIL: a picture inside a link is no split picture even when it is wide', () => {
-	const r = linked( CONTACT );
+// A link holding the picture and words (a whole card) owns the picture as its mark; a link that is mostly the picture is its address.
+const CARD = { 375: { x: 0, y: 117, w: 336, h: 600 }, 768: { x: 0, y: 117, w: 760, h: 400 }, 1440: { x: 0, y: 117, w: 1300, h: 420 } };
+const BARE = { 375: { x: 103, y: 372, w: 168, h: 162 }, 768: { x: 524, y: 164, w: 225, h: 216 }, 1440: { x: 1085, y: 166, w: 269, h: 260 } };
+
+test( 'MUST FAIL: a picture inside a link that holds more than the picture is no split picture even when it is wide', () => {
+	const r = linked( CONTACT, CARD );
 	assert.equal( heroOf( r ).attributes.variant, undefined );
 	// Negative control: the same picture outside a link is the split hero.
 	assert.equal( heroOf( run( CONTACT ) ).attributes.variant, 'split' );
+} );
+
+test( 'MUST FAIL: a wide hero picture wrapped in a link that is mostly the picture is still the split media', () => {
+	assert.equal( heroOf( linked( CONTACT, BARE ) ).attributes.variant, 'split' );
+	// Negative control: a small picture in a link of its own size is still no split picture (the width floor).
+	assert.equal( heroOf( linked( SMALL, { 375: SMALL[ 8 ][ 375 ], 768: SMALL[ 8 ][ 768 ], 1440: SMALL[ 8 ][ 1440 ] } ) ).attributes.variant, undefined );
 } );
