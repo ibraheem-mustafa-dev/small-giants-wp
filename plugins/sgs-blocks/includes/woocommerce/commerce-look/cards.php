@@ -58,6 +58,12 @@ function sgs_commerce_look_cards_css( array $attrs, string $block, string $root 
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsItemStepper', $stepper, $b_stepper ) . sgs_commerce_look_border_tiers( $stepper, $b_stepper );
 	$b_summary = sgs_border_element_decls( $attrs, 'sgsSummary', $summary, array( 'colour' => array( 'base' => 'sgsSummaryBorderColour' ) ) );
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsSummary', $summary, $b_summary ) . sgs_commerce_look_border_tiers( $summary, $b_summary );
+	// With the card on the side column, the summary block inside it drops the card the theme paints on it (fill,
+	// corners, padding: theme woocommerce.css), so one card shows, not a card inside a card.
+	if ( true === ( $attrs['sgsSummaryWrapsButton'] ?? false ) && 'cart' === $block ) {
+		$inner = sgs_commerce_look_selector( 'summary', $block, $root );
+		$css  .= '' === $inner ? '' : $inner . '{background:transparent;border-radius:0;padding:0;}';
+	}
 	$b_step = sgs_border_element_decls( $attrs, 'sgsStep', $step, array( 'colour' => array( 'base' => 'sgsStepBorderColour' ) ) );
 	$css .= sgs_commerce_look_card_css( $attrs, 'sgsStep', $step, $b_step ) . sgs_commerce_look_border_tiers( $step, $b_step );
 	// The payment option boxes (WooCommerce draws each method as one accordion box around its inner label) take the

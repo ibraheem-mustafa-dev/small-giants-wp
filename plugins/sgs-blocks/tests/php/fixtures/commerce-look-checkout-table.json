@@ -1345,12 +1345,18 @@
   {
    "line": 91,
    "replaces": ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item))",
-   "decl": "padding-top:0"
+   "decl": "padding-top:0",
+   "via": [
+    ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item)):not(:empty):not(:has(> :only-child:empty))"
+   ]
   },
   {
    "line": 91,
    "replaces": ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item))",
-   "decl": "padding-bottom:0"
+   "decl": "padding-bottom:0",
+   "via": [
+    ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item)):not(:empty):not(:has(> :only-child:empty))"
+   ]
   },
   {
    "line": 92,

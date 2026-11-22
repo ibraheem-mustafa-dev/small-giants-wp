@@ -136,7 +136,36 @@ function sgs_commerce_look_label_position_css( array $attrs, string $block, stri
 	if ( ! isset( $attrs['sgsFieldPadding'] ) && '' !== $input ) {
 		$css .= $input . '{padding-block-start:8px;}';
 	}
-	return $css;
+	return $css . sgs_commerce_look_select_above_css( $block, $root );
+}
+
+/**
+ * A select with its label above. WooCommerce centres the select's arrow on the box that holds the label and the
+ * select (`top:50%`), so once the label sits above the select the arrow lands on the label's edge. The box becomes a
+ * one-column grid, the label its first row and the select and arrow its second: an absolutely placed child with a
+ * grid row takes that row as its containing block, so the arrow centres on the select again. The select keeps room
+ * for the arrow at its end (WooCommerce draws the 24px arrow 12px in from the edge).
+ *
+ * @param string $block 'cart' or 'checkout'.
+ * @param string $root  Scope selector.
+ * @return string CSS text; '' on a block with no select.
+ */
+function sgs_commerce_look_select_above_css( string $block, string $root ): string {
+	$box    = sgs_commerce_look_selector( 'field_select_container', $block, $root );
+	$label  = sgs_commerce_look_selector( 'field_select_label', $block, $root );
+	$select = sgs_commerce_look_selector( 'field_select', $block, $root );
+	$arrow  = sgs_commerce_look_selector( 'field_select_expand', $block, $root );
+	if ( '' === $box || '' === $label || '' === $select || '' === $arrow ) {
+		return '';
+	}
+	// WooCommerce re-pads a focused select (`:focus`, one class more), so the end room is printed at rest and on focus
+	// under the scope class twice.
+	$room = sgs_commerce_look_selector( 'field_select', $block, $root . $root ) . ',' . sgs_commerce_look_selector( 'field_select', $block, $root . $root, ':focus' );
+	return $box . '{display:grid;grid-template-columns:minmax(0,1fr);}'
+		. $label . '{grid-row:1;grid-column:1;}'
+		. $select . '{grid-row:2;grid-column:1;}'
+		. $room . '{padding-inline-end:40px;}'
+		. $arrow . '{grid-row:2;grid-column:1;}';
 }
 
 /**

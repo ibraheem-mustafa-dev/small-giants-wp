@@ -11,7 +11,7 @@
  *
  * Row shape: `cart` / `checkout` (the selector list for that block, relative to the block root; a missing key means
  * the row does not apply to that block), `wc_version`, `state`, `needs`, and optionally `root_repeat` (how many times the scope
- * class leads the row's table settings; 3 for a part whose WooCommerce rule carries three classes, so the setting wins on specificity).
+ * class leads the row's selectors in every writer; 3 for a part whose WooCommerce rule carries three classes, so the setting wins on specificity).
  *
  * @package SGS\Blocks
  */
@@ -51,9 +51,12 @@ function sgs_commerce_look_selector( string $row, string $block, string $root, s
 	if ( '' === $list ) {
 		return '';
 	}
-	$out = array();
+	// A row whose WooCommerce rule carries several classes repeats the scope class (`root_repeat`), so every writer's
+	// rule on the row out-ranks WooCommerce's at every width and state.
+	$lead = str_repeat( $root, max( 1, (int) ( $table[ $row ]['root_repeat'] ?? 1 ) ) );
+	$out  = array();
 	foreach ( explode( ',', $list ) as $one ) {
-		$out[] = $root . ' ' . trim( $one ) . $tail;
+		$out[] = $lead . ' ' . trim( $one ) . $tail;
 	}
 	return implode( ',', $out );
 }

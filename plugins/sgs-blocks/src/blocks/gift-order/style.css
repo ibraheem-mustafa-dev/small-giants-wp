@@ -17,9 +17,18 @@
 	padding: 0;
 }
 
+/* The title is the fieldset's legend. A rendered legend sits in the fieldset's top border (on the step card's edge
+   in the checkout) and its bottom margin adds no space; floated, it becomes an ordinary box at the top of the
+   content, so the card's padding and the margin below it apply. The next element clears it. */
 .sgs-gift-order__title {
+	float: left;
+	width: 100%;
 	padding: 0;
 	margin: 0 0 0.75em;
+}
+
+.sgs-gift-order__title + * {
+	clear: both;
 }
 
 .sgs-gift-order__tiles {

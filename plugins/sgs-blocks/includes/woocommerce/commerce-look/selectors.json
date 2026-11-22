@@ -391,6 +391,33 @@
 				"action": "none"
 			}
 		},
+		"field_select_container": {
+			"checkout": ".wc-blocks-components-select .wc-blocks-components-select__container",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; the country field shows once the address form is open (the box that holds the label, the select and its arrow)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"field_select_label": {
+			"checkout": ".wc-blocks-components-select .wc-blocks-components-select__label",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; the country field shows once the address form is open",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
+		"field_select_expand": {
+			"checkout": ".wc-blocks-components-select .wc-blocks-components-select__expand",
+			"wc_version": "11.2.1",
+			"state": "basket filled; guest; any width; the country field shows once the address form is open (the arrow WooCommerce centres on the box with top:50%)",
+			"needs": {
+				"basket": "filled",
+				"action": "none"
+			}
+		},
 		"field_textarea": {
 			"checkout": ".wc-block-components-textarea",
 			"wc_version": "11.2.1",
@@ -429,10 +456,10 @@
 			"label": "Form field wrapper"
 		},
 		"item": {
-			"cart": ".wc-block-cart-items__row",
+			"cart": "table.wc-block-cart-items .wc-block-cart-items__row",
 			"checkout": ".wc-block-components-order-summary-item",
 			"wc_version": "11.2.1",
-			"state": "basket filled; any user; any width",
+			"state": "basket filled; any user; any width (table-qualified, and the scope class four times: WooCommerce's narrow-block rules for the row's padding and bottom rule carry five classes and the table)",
 			"needs": {
 				"basket": "filled"
 			},
@@ -442,7 +469,8 @@
 				"min_height",
 				"inner_gap"
 			],
-			"label": "Item"
+			"label": "Item",
+			"root_repeat": 4
 		},
 		"item_wide": {
 			"cart": ".is-large .wc-block-cart-items__row",
@@ -451,6 +479,16 @@
 			"needs": {
 				"basket": "filled",
 				"viewport": "wide"
+			}
+		},
+		"item_narrow": {
+			"cart": ".wc-block-components-sidebar-layout:not(.is-large) table.wc-block-cart-items .wc-block-cart-items__row",
+			"root_repeat": 4,
+			"wc_version": "11.2.1",
+			"state": "basket filled; any user; narrow cart block (the layout lacks is-large; WooCommerce lays each row out as a grid of 80px and 132px with the product spanning into an implicit column and the line total after it)",
+			"needs": {
+				"basket": "filled",
+				"viewport": "narrow"
 			}
 		},
 		"item_list": {
@@ -1683,7 +1721,7 @@
 			}
 		},
 		"totals_wrapper": {
-			"checkout": ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item))",
+			"checkout": ".wc-block-components-totals-wrapper:not(.wp-block-woocommerce-checkout-order-summary-coupon-form-block):not(:has(.wc-block-components-totals-footer-item)):not(:empty):not(:has(> :only-child:empty))",
 			"label": "Totals blocks",
 			"columns": [
 				"padding"

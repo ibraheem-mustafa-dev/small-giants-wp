@@ -106,6 +106,13 @@ function sgs_commerce_look_line_items_css( array $attrs, string $block, string $
  * gap. WooCommerce already lays the row out as a grid on narrow cart blocks; this gives the wide cart the same
  * shape (picture, product, total) when any card setting is set. Nothing prints without one.
  *
+ * On a narrow block WooCommerce's grid is `80px 132px`: the product cell spans into an implicit auto column and the
+ * line total takes a second implicit column after it, so a long product name widens the spanned column and pushes
+ * the total past the card's edge once the card's padding and border narrow the row. The narrow rule keeps the
+ * placement and sizes the tracks instead: the picture column (WooCommerce's 80px, or `auto` when a thumbnail size is
+ * set, so it follows the picture), the product text `minmax(0,1fr)`, an empty track the product spans into, and the
+ * total `auto`, so the text column gives way and the total keeps its own width.
+ *
  * @param array<string, mixed> $attrs Set attributes.
  * @param string               $block 'cart' or 'checkout'.
  * @param string               $root  Scope selector.
@@ -119,8 +126,14 @@ function sgs_commerce_look_item_card_layout_css( array $attrs, string $block, st
 	if ( '' === $wide ) {
 		return '';
 	}
-	$cols = 'auto minmax(0,1fr) auto';
-	return $wide . '{display:grid;grid-template-columns:' . $cols . ';align-items:center;column-gap:16px;}';
+	$cols   = 'auto minmax(0,1fr) auto';
+	$css    = $wide . '{display:grid;grid-template-columns:' . $cols . ';align-items:center;column-gap:16px;}';
+	$narrow = sgs_commerce_look_selector( 'item_narrow', $block, $root );
+	if ( '' !== $narrow ) {
+		$picture = empty( $attrs['sgsItemThumbSize'] ) ? '80px' : 'auto';
+		$css    .= $narrow . '{grid-template-columns:' . $picture . ' minmax(0,1fr) 0 auto;}';
+	}
+	return $css;
 }
 
 /**

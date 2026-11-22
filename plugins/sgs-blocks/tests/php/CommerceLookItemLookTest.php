@@ -96,7 +96,7 @@ final class CommerceLookItemLookTest extends TestCase {
 		$this->assertStringContainsString( '.sgs-x .wp-block-woocommerce-proceed-to-checkout-block .wp-element-button{border-style:solid;border-width:2px 2px 2px 2px;border-color:#3a2a22;}', $cart, 'cart button edge' );
 		$this->assertStringContainsString( '.sgs-x table.wc-block-cart-items .wc-block-cart-items__row > td{border-top-width:0;}', $cart, 'separators hidden' );
 		$this->assertStringContainsString( '.sgs-x .wc-block-cart__sidebar{background-color:#ffffff;}', $cart, 'the card paints on the side column when it wraps the button' );
-		$this->assertStringNotContainsString( 'cart-order-summary-block{', $cart, 'the summary block itself is not painted then' );
+		$this->assertStringNotContainsString( 'cart-order-summary-block{background-color', $cart, 'the summary block itself is not painted then' );
 
 		$checkout = $this->css( $this->attrs(), 'checkout' );
 		$this->assertStringContainsString( '.sgs-x .wc-block-components-order-summary .wc-block-components-order-summary-item__image > img{background-color:#f9d5d3;', $checkout, 'checkout picture look' );

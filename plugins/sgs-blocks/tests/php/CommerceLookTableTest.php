@@ -121,8 +121,8 @@ require ABSPATH . 'includes/render-helpers.php';
 				),
 			)
 		);
-		$this->assertStringContainsString( '.sgs-x .wc-block-components-order-summary-item{margin-top:3px;}', $css );
-		$this->assertMatchesRegularExpression( '/@media[^{]*\{\.sgs-x \.wc-block-components-order-summary-item\{margin-top:5px;\}/', $css, 'the phone value' );
+		$this->assertStringContainsString( '.sgs-x.sgs-x.sgs-x.sgs-x .wc-block-components-order-summary-item{margin-top:3px;}', $css );
+		$this->assertMatchesRegularExpression( '/@media[^{]*\{(?:\.sgs-x){4} \.wc-block-components-order-summary-item\{margin-top:5px;\}/', $css, 'the phone value' );
 		$this->assertStringNotContainsString( 'margin-bottom', $css );
 	}
 
