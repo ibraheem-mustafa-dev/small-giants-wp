@@ -94,4 +94,43 @@ final class LayoutDistributionTiersTest extends TestCase {
 		$unset = $this->render_block( 'sgs/process-steps', array( 'layout' => 'list' ) )['css'];
 		$this->assertDoesNotMatchRegularExpression( '/--sgs-step-gap:|column-gap:/', $unset, 'negative control: unset prints nothing' );
 	}
+
+	public function test_hero_prints_each_tier_where_its_variant_applies_it(): void {
+		$split = $this->render_block( 'sgs/hero', array( 'variant' => 'split', 'justifyItems' => array( 'desktop' => 'center', 'mobile' => 'start' ), 'alignContent' => array( 'tablet' => 'end' ) ) )['css'];
+		$this->assertMatchesRegularExpression( '/justify-items:center/', $split );
+		$this->assertMatchesRegularExpression( sprintf( self::MOBILE, 'justify-items:start' ), $split, 'split hero: mobile justify-items' );
+		$this->assertMatchesRegularExpression( '/align-content:end/', $split, 'split hero: tablet align-content' );
+		$standard = $this->render_block( 'sgs/hero', array( 'variant' => 'standard', 'justifyContent' => array( 'desktop' => 'center', 'mobile' => 'flex-start' ) ) )['css'];
+		$this->assertMatchesRegularExpression( '/justify-content:center/', $standard );
+		$this->assertMatchesRegularExpression( sprintf( self::MOBILE, 'justify-content:flex-start' ), $standard, 'standard hero: mobile justify-content' );
+		$flexOnly = $this->render_block( 'sgs/hero', array( 'variant' => 'standard', 'justifyItems' => array( 'mobile' => 'center' ) ) )['css'];
+		$this->assertDoesNotMatchRegularExpression( '/justify-items/', $flexOnly, 'negative control: a grid-only property on the flex variant' );
+	}
+
+	public function test_feature_grid_prints_justify_items_per_device(): void {
+		$css = $this->render_block( 'sgs/feature-grid', array( 'justifyItems' => array( 'desktop' => 'center', 'mobile' => 'start' ) ) )['css'];
+		$this->assertMatchesRegularExpression( '/justify-items:\s*center/', $css );
+		$this->assertMatchesRegularExpression( sprintf( self::MOBILE, 'justify-items:start' ), $css, 'mobile override' );
+	}
+
+	public function test_gallery_grid_prints_justify_items_and_align_content_per_device(): void {
+		$css = $this->render_block( 'sgs/gallery', array( 'justifyItems' => array( 'desktop' => 'center', 'mobile' => 'start' ), 'alignContent' => array( 'desktop' => 'end' ) ) )['css'];
+		$this->assertMatchesRegularExpression( '/justify-items:center/', $css );
+		$this->assertMatchesRegularExpression( '/align-content:end/', $css );
+		$this->assertMatchesRegularExpression( sprintf( self::MOBILE, 'justify-items:start' ), $css, 'mobile override' );
+	}
+
+	public function test_drawer_menu_rows_print_each_spread_and_restore_the_start_padding(): void {
+		if ( ! defined( 'ABSPATH' ) ) {
+			define( 'ABSPATH', __DIR__ );
+		}
+		require_once dirname( __DIR__, 2 ) . '/includes/nav-drawer-menu-section-css.php';
+		$css = sgs_nav_drawer_menu_row_layout_css( array( 'justifyContent' => array( 'desktop' => 'center', 'tablet' => 'flex-start' ) ), '.u' );
+		$this->assertStringContainsString( '.u .sgs-nav-drawer-menu__link{justify-content:center;}', $css, 'desktop spread' );
+		$this->assertStringContainsString( '.u .sgs-nav-drawer-menu__accordion-row > .sgs-nav-drawer-menu__link{padding-inline-start:56px;}', $css, 'a centred row reserves the expander side' );
+		$this->assertMatchesRegularExpression( '/@media[^{]*\{[^{}]*__link\{justify-content:flex-start;\}[^@]*padding-inline-start:12px/', $css, 'leaving centre restores the start padding' );
+		$desktop_only = sgs_nav_drawer_menu_row_layout_css( array( 'justifyContent' => array( 'desktop' => 'space-between' ) ), '.u' );
+		$this->assertStringNotContainsString( '@media', $desktop_only, 'a desktop-only value prints no override' );
+		$this->assertSame( '', sgs_nav_drawer_menu_row_layout_css( array(), '.u' ), 'negative control: unset prints nothing' );
+	}
 }
