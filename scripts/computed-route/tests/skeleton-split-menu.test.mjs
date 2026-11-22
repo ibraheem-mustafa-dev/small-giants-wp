@@ -129,6 +129,22 @@ test( 'MUST FAIL: splitLinkOf takes a link or button outside every nav, by its a
 	assert.equal( ask( byKey[ 'Root/9#0' ], 'footer' ), null );
 } );
 
+test( 'MUST FAIL: the far side first link, the block read for the items, is a link that shows words, never an icon-only button ahead of them', () => {
+	// An icon button whose aria-label names a split item ('Help') sits first in the group: its box (a round icon button) is no menu item.
+	const els = header();
+	const iconButton = { ...els.find( ( x ) => 'Root/9#0' === x.key ), key: 'Root/6b#0', tag: 'button', words: '', allText: '', attrs: { 'aria-label': 'Help' } };
+	els.splice( els.findIndex( ( x ) => 'Root/7#0' === x.key ), 0, iconButton );
+	const byKey = Object.fromEntries( els.map( ( x ) => [ x.key, x ] ) );
+	const sp = splitMenuOf( split() );
+	const got = splitLinkOf( { e: byKey[ 'Root/8#0' ], els, byKey, split: sp, surfaceKind: 'header' } );
+	assert.equal( got.first, 'Root/8#0', 'the first text link is the block' );
+	assert.equal( splitLinkOf( { e: iconButton, els, byKey, split: sp, surfaceKind: 'header' } ).first, 'Root/8#0', 'the icon button is absorbed into it' );
+	// Negative control: with no link that shows words, the first matching control is still the block.
+	const onlyIcon = [ ...els.filter( ( x ) => ! [ 'Root/8#0', 'Root/9#0' ].includes( x.key ) ), ];
+	const byKey2 = Object.fromEntries( onlyIcon.map( ( x ) => [ x.key, x ] ) );
+	assert.equal( splitLinkOf( { e: iconButton, els: onlyIcon, byKey: byKey2, split: sp, surfaceKind: 'header' } ).first, 'Root/6b#0' );
+} );
+
 test( 'splitSlots reads each named setting at its calibrated slot, and notes a setting with none', () => {
 	const finder = ( e ) => ( { tpl: e.key } );
 	const got = splitSlots( { at: { key: 'G' }, link: { key: 'L' }, finder, settings: { bar: [ 'gap' ], item: [ 'itemColour', 'nothing', 'empty', 'pseudo' ] }, calibrated: { gap: { slot: '.b' }, itemColour: { slot: '.i' }, empty: { slot: '' }, pseudo: { slot: '.i::after' } } } );

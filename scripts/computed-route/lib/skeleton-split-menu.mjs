@@ -39,7 +39,9 @@ export function splitLinkOf( { e, els, byKey, split, surfaceKind } ) {
 	if ( ! isLink( e ) ) {
 		return null;
 	}
-	const first = els.find( isLink );
+	// The block's items are read at the first link that shows words: an icon-only control (a sign-in button named by its
+	// aria-label) is a round button, not a menu item, so it never stands for the items' padding, type and colour.
+	const first = els.find( ( x ) => isLink( x ) && x.words ) ?? els.find( isLink );
 	return { key: e.key, first: first.key, group: first.parentKey };
 }
 
