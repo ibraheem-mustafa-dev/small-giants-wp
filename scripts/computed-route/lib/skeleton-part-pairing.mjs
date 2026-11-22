@@ -17,6 +17,8 @@
 // - containment: an element inside a paired element pairs only inside that pair's part, preferring that part's direct
 //   children, and an ambiguous wrapper keeps only the parts that hold its paired children; an element inside a draft element
 //   the node already holds at a part's slot (`taken`) pairs inside that part the same way;
+// - holds: a box that holds the icon (a glyph or picture inside it) keeps the parts that hold a glyph or picture, and one that holds
+//   words the parts that hold words, so a badge round an icon is never confused with a card of text drawn in the same paint;
 // - words: where several parts fit, a worded element keeps the parts printing the same words, else the parts printing the
 //   same kind of words (a number, a price, other words);
 // - summary row: a draft control that holds words and a caret (a label and a glyph that points down or turns, as a disclosure
@@ -359,6 +361,13 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 		}
 		return false;
 	};
+	// What a box holds, by structure: the icon (a glyph or picture inside it) and words, as a draft element's subtree and a measured
+	// part's inside tell. A box that holds the icon is the part that holds the block's icon (the badge a glyph sits in), and one that
+	// holds words is the part that holds its text (a title over a line), however alike their paint.
+	const holdsOf = ( kinds ) => ( { icon: kinds.some( ( k ) => [ 'glyph', 'picture' ].includes( k ) ), words: kinds.includes( 'words' ) } );
+	const draftHolds = ( e ) => holdsOf( order.filter( ( d ) => isAbove( e, d ) ).map( ( d ) => kindOf.get( d ) ) );
+	const partHolds = ( g ) => holdsOf( [ ...g.inside ].map( ( h ) => model.groups.get( h )?.kind ) );
+	const sameHolds = ( a, b ) => a.icon === b.icon && a.words === b.words;
 	// The part a draft element already holds a slot of (the trigger the slot walk gave the host itself): what lies inside
 	// that element pairs inside that part, as inside a part this pairing chose.
 	const takenAt = new Map();
@@ -401,6 +410,11 @@ export function pairAbsorbed( { host, absorbed = [], kids, isNode = () => false,
 				for ( const tier of [ ( g ) => g.kind === kind, ( g ) => ! up || g.parentHead === up.head, ( g ) => flows.includes( g.oof ) ] ) {
 					const kept = cands.filter( tier );
 					kept.length && ( cands = kept );
+				}
+				if ( 'box' === kind && cands.length > 1 ) {
+					const holds = draftHolds( e );
+					const same = holds.icon || holds.words ? cands.filter( ( g ) => sameHolds( holds, partHolds( g ) ) ) : [];
+					same.length && ( cands = same );
 				}
 				cands.length > 1 && ( cands = byWords( cands, e ) );
 				cands.length > 1 && ( cands = byPlace( cands, e, host, model.rootBox ) );

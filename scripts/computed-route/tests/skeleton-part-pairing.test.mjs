@@ -266,6 +266,26 @@ test( 'MUST FAIL (no place signal): a wordless panel pairs with the part whose b
 	assert.equal( run( 840, 360, { ...PANELS2, parts: {} } ).ambiguous.length, 1, 'no recorded boxes: ambiguous as before' );
 } );
 
+// A messaging card: a round badge holding the app's icon beside a text box holding a title over a line. Both are boxes with the
+// same paint, so paint alone fits a draft's round disc to either (cache/cart.json's neighbours: whatsapp-cta, trimmed).
+const CARD = {
+	elements: {
+		'': flat( 'a' ), '.badge': flat( 'span', { width: '38px', 'background-color': 'rgb(37, 211, 102)' } ), '.badge > .icon': flat( 'svg', { width: '20px' } ),
+		'.text': flat( 'span', { width: '300px', 'background-color': 'rgb(37, 211, 102)' } ), '.text > .title': flat( 'span', { width: '90px' } ), '.text > .line': flat( 'span', { width: '200px' } ),
+	},
+	settings: { badgeFill: { slot: '.badge', property: 'background-color' }, textFill: { slot: '.text', property: 'background-color' } },
+	parts: { '.text > .title': { words: 'Chat to us', box: { 1440: [ 60, 10, 90, 18 ] } }, '.text > .line': { words: 'We reply within the hour', box: { 1440: [ 60, 30, 200, 18 ] } } },
+};
+test( 'MUST FAIL (no holds signal): a disc holding a picture is the part that holds the icon, a box holding words the part that holds the words; a box holding both stays ambiguous (negative control)', () => {
+	const run = ( kidsOf ) => {
+		const box = node( 'Root/2#0', 'span', kidsOf, { box: { x: 0, y: 0, w: 38, h: 38 } } );
+		return pairAbsorbed( { host: node( 'Root/1#0', 'a', [ box ] ), absorbed: [ { element: box, looks: [ 'background' ] } ], kids, calibration: CARD, finder } );
+	};
+	assert.deepEqual( run( [ node( 'Root/3#0', 'img' ) ] ).slots, { '.badge': { tpl: 'Root/2#0' } }, 'the disc that holds the picture is the badge' );
+	assert.deepEqual( run( [ node( 'Root/3#0', 'span', [], { words: 'Need advice?' } ) ] ).slots, { '.text': { tpl: 'Root/2#0' } }, 'the box that holds words is the text box' );
+	assert.equal( run( [ node( 'Root/3#0', 'img' ), node( 'Root/4#0', 'span', [], { words: 'Need advice?' } ) ] ).ambiguous.length, 1, 'a box holding both fits neither by what it holds' );
+} );
+
 // A bag button's count: the block draws its trigger twice (alone, and inside a wrapper) with a badge pinned to the corner;
 // the draft's count sits in flow on the desktop and is pinned to the corner only on the phone, and the slot walk already
 // gave the trigger part the draft's button (cache/cart.json, cache/eye-care-clone-test/cart.paint.json, trimmed).
