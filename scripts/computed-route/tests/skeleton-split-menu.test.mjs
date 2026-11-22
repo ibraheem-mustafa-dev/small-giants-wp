@@ -61,7 +61,10 @@ test( 'MUST FAIL: the menu is drawn twice: the nav before the split, the far sid
 	assert.equal( first.attributes.showBurger, undefined, 'the nav keeps its burger' );
 	assert.deepEqual( second.innerBlocks, [], 'the second half draws its items from the menu: no words inside it' );
 	assert.deepEqual( buttons( r ), [ 'Call', 'Sign in' ], 'About and Help are no buttons; the links that are no split item stay as they are' );
-	assert.deepEqual( r.problems.filter( ( p ) => /menu|ref|split/i.test( p ) ), [] );
+	// The far half reads the group holding its links, which the group's own container also reads: lib/skeleton-double-claims.mjs reports that one
+	// element read by two blocks (rules.splitMenu readAt beside the container's own row), and no other problem names the menu.
+	assert.deepEqual( r.problems.filter( ( p ) => /menu|ref|split/i.test( p ) && ! /read by two blocks/.test( p ) ), [] );
+	assert.equal( r.problems.filter( ( p ) => /^Root\/6#0: one draft element is read by two blocks/.test( p ) ).length, 1 );
 } );
 
 test( 'MUST FAIL: the far side\'s first link is the block and every later one is absorbed into it', () => {

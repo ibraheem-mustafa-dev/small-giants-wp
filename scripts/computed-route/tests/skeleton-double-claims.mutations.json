@@ -1,0 +1,56 @@
+[
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "const other = nodes.find( ( n ) => n.block !== first.block && ! share( first, n ) );",
+  "replace": "const other = nodes.find( ( n ) => n !== first && ! share( first, n ) );",
+  "why": "copies of one block and a width variant are flagged as double claims"
+ },
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "const other = nodes.find( ( n ) => n.block !== first.block && ! share( first, n ) );",
+  "replace": "const other = null;",
+  "why": "no double claim is ever reported"
+ },
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "\t\twalk( n?.innerBlocks, at, n );\n",
+  "replace": "",
+  "why": "nodes below the top level are not read"
+ },
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "const key = n?.draftRef?.tpl;",
+  "replace": "const key = n?.draftRef;",
+  "why": "a node's own element is not read from its draftRef.tpl"
+ },
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "const at = [ ...path, i ];",
+  "replace": "const at = [ ...path ];",
+  "why": "the node paths do not name the nodes' places"
+ },
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "problems.push( `${ key }: one draft element",
+  "replace": "problems.push( `one draft element",
+  "why": "the problem does not name the element"
+ },
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "const share = ( a, b ) => b.parent === a.node && sanctioned( a.node, b.node );",
+  "replace": "const share = () => false;",
+  "why": "a body a rule gives its host on purpose is reported"
+ },
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "const share = ( a, b ) => b.parent === a.node && sanctioned( a.node, b.node );",
+  "replace": "const share = ( a, b ) => sanctioned( a.node, b.node );",
+  "why": "a sanctioned pair need not be host and direct child"
+ },
+ {
+  "file": "lib/skeleton-double-claims.mjs",
+  "find": "const share = ( a, b ) => b.parent === a.node && sanctioned( a.node, b.node );",
+  "replace": "const share = ( a, b ) => b.parent === a.node;",
+  "why": "every host and direct child is sanctioned, whatever the rule says"
+ }
+]

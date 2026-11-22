@@ -36,6 +36,7 @@ import { makeContent, skeletonSettings } from './skeleton-write-content.mjs';
 import { makeSlotRows } from './skeleton-write-slots.mjs';
 import { siteLinkResolver } from './draft-link.mjs';
 import { noRegionProblem } from './skeleton-commerce-refusal.mjs';
+import { doubleClaims } from './skeleton-double-claims.mjs';
 import { DISSOLVED_LOOKS } from './skeleton-rules.mjs';
 import { conservationRows, nodesByRef, paintProblems, unreadList, STRICT_DEFAULT } from './skeleton-paint-conservation.mjs';
 import { absorbedSlots } from './skeleton-conserve-slots.mjs';
@@ -614,7 +615,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		const said = pairingNotes( { ambiguous: pairing.ambiguous.filter( ( a ) => a.candidates.length > 1 ) }, node.name ).notes;
 		said.size && rowOf[ hostKey ] && ( rowOf[ hostKey ].slotNotes = [ ...( rowOf[ hostKey ].slotNotes || [] ), ...said.values() ] );
 	}
-	const problems = [ ...skeletonProblems( skeleton ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...pairProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ), ...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ];
+	const problems = [ ...skeletonProblems( skeleton ), ...doubleClaims( skeleton, { sanctioned: ( host, child ) => !! R.wrappedWords?.block && child.name === R.wrappedWords.block && !! composition[ host.name ]?.wraps_block } ), ...carryProblems, ...slotProblems, ...wordProblems, ...( widgets?.problems ?? [] ), ...pairProblems, ...( db ? lintSkeleton( skeleton, db ) : [] ), ...[ noRegionProblem( { surface, commerce, region: cls.commerceRegion } ) ].filter( Boolean ), ...paintProblems( { inventory, proposal: { rows }, skeleton, view, calibration, strict: strictPaint } ) ];
 	// The painted elements a record lists and no block reads (RECORDED-UNREAD): looks the clone does not show, named for the run's report.
 	const paintUnread = unreadList( { inventory, proposal: { rows }, skeleton, view, calibration } );
 	const proposal = {
