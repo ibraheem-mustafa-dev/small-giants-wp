@@ -1,5 +1,5 @@
 // Spec 48 FR-48-31, lib/tokens.mjs: every custom property in an export's tokens/*.css is listed with its resolved
-// value, its var() chain and its type, read with no render. Indus's three token files give 34, 27 and 13 tokens; a
+// value, its var() chain and its type, read with no render. Indus's three token files give 34, 30 and 13 tokens (the 30 include the three focus tokens the handoff declares, FR-48A-15); a
 // var() cycle and a missing reference are problems with a null value, never an empty one (R-48-3).
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -14,8 +14,8 @@ const byName = ( list ) => Object.fromEntries( list.map( ( t ) => [ t.name, t ] 
 
 test( 'FR-48-31: every custom property in Indus tokens/*.css is listed, resolved, with no problems', () => {
 	const r = readTokens( INDUS );
-	assert.deepEqual( r.files, { 'tokens/colors.css': 34, 'tokens/spacing.css': 27, 'tokens/typography.css': 13 } );
-	assert.equal( r.tokens.length, 74 );
+	assert.deepEqual( r.files, { 'tokens/colors.css': 34, 'tokens/spacing.css': 30, 'tokens/typography.css': 13 } );
+	assert.equal( r.tokens.length, 77 );
 	assert.deepEqual( r.problems, [] );
 	for ( const t of r.tokens ) {
 		assert.ok( t.resolved && ! /var\(/.test( t.resolved ), `${ t.name } resolved to ${ t.resolved }` );
