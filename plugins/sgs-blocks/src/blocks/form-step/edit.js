@@ -6,6 +6,7 @@ import {
 	useSettings,
 } from '@wordpress/block-editor';
 import { PanelBody } from '@wordpress/components';
+import AddFieldControl, { FORM_FIELDS } from '../form/AddFieldControl';
 // WS-4: shared sgs/container wrapper editor controls (content kind = width/spacing).
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import { SgsColourPanel, fillRow, textRow,
@@ -22,7 +23,7 @@ import {
 
 import AuthoredText from '../../components/AuthoredText';
 import SgsFreeTextField from '../../components/SgsFreeTextField';
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const { label, backgroundColour, backgroundColourGradient, textColour, textColourGradient } = attributes;
 
 	// Contrast check for border — warn if border fails WCAG contrast against
@@ -55,11 +56,13 @@ export default function Edit( { attributes, setAttributes } ) {
 		{ className: 'sgs-form-step__inner' },
 		{
 			orientation: 'vertical',
+			prioritizedInserterBlocks: FORM_FIELDS,
 		}
 	);
 
 	return (
 		<>
+			<AddFieldControl rootClientId={ clientId } />
 			<SgsColourPanel
 				rows={ [
 					fillRow( {

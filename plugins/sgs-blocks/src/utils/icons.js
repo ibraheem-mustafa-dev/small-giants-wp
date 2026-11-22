@@ -9,7 +9,7 @@
 
 import { SVG, Path, Circle, Rect } from '@wordpress/primitives';
 
-const SGS_TEAL = '#0F7E80';
+export const SGS_TEAL = '#0F7E80';
 
 /* ─── HELPER ─── */
 

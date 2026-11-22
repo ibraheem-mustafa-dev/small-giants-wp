@@ -38,6 +38,8 @@ import SubmitMotionControls from './SubmitMotionControls';
 import FormButtonShapeControls from './FormButtonShapeControls';
 import SavedProgressPanel from './SavedProgressPanel';
 import StepSettingsPanel from './StepSettingsPanel';
+import AddFieldControl, { FORM_FIELDS } from './AddFieldControl';
+import metadata from './block.json';
 import ButtonLabelControls from './ButtonLabelControls';
 import FieldMarksPanel from './FieldMarksPanel';
 import UploadZonePanel from './UploadZonePanel';
@@ -694,40 +696,31 @@ function FormDefinitionEdit( { attributes, setAttributes, clientId } ) {
 		className: `sgs-form ${ formPreviewScope }${ fieldColumnsFrom && '560' !== fieldColumnsFrom ? ` sgs-form--field-cols-${ fieldColumnsFrom }` : '' }${ false === stretchButtonsNarrow ? ' sgs-form--no-narrow-stretch' : '' }${ 'inline' === attributes.stepLayout ? ' sgs-form--stepper-inline' : '' }${ attributes.gap && Object.values( attributes.gap ).some( ( v ) => '' !== String( v ?? '' ).trim() ) ? ' sgs-form--has-gap' : '' }`,
 	} );
 
-	// Base roster of blocks a form's own children may ever sensibly be — unlike
-	// sgs/container, this list is NEVER relaxed to "no restriction": a form's
-	// children are always form-structural (steps/fields/review), so `free`
-	// keeps this exact roster rather than allowing arbitrary blocks in (that
-	// would be a real regression — a stray sgs/hero dropped into a form breaks
-	// its step/field layout and submission handling).
-	const FORM_BASE_ALLOWED = [
-		'sgs/form-step',
-		'sgs/form-field-text',
-		'sgs/form-field-email',
-		'sgs/form-field-phone',
-		'sgs/form-field-textarea',
-		'sgs/form-field-select',
-		'sgs/form-field-radio',
-		'sgs/form-field-checkbox',
-		'sgs/form-field-tiles',
-		'sgs/form-field-file',
-		'sgs/form-field-consent',
-		'sgs/form-review',
-	];
-
-	const allowedBlocks = FORM_BASE_ALLOWED;
-
+	// The blocks a form's own children may be: block.json's `allowedBlocks`, the one list (the editor read a copy that
+	// had lost the date, number, hidden and address fields). Unlike sgs/container it is never relaxed to "no
+	// restriction": a form's children are always form-structural (steps, fields, review), and a stray sgs/hero dropped
+	// into a form would break its step and field layout and its submission handling.
 	const innerBlocksProps = useInnerBlocksProps(
 		{ className: 'sgs-form__inner' },
 		{
-			allowedBlocks,
+			allowedBlocks: metadata.allowedBlocks,
 			template: [ [ 'sgs/form-step', { label: 'Step 1' } ] ],
 			orientation: 'vertical',
+			prioritizedInserterBlocks: FORM_FIELDS,
 		}
+	);
+	// "Add field" adds to the last step (a field never sits beside the steps), or to the form when it has none.
+	const fieldRoot = useSelect(
+		( select ) => {
+			const steps = select( 'core/block-editor' ).getBlocks( clientId ).filter( ( b ) => 'sgs/form-step' === b.name );
+			return steps.length ? steps[ steps.length - 1 ].clientId : clientId;
+		},
+		[ clientId ]
 	);
 
 	return (
 		<>
+			<AddFieldControl rootClientId={ fieldRoot } />
 			{ /* D619 — ONE grouped, SGS-OWNED colour panel, rendered FIRST so it
 			   sits at the top of the inspector. Replaces the inline
 			   `DesignTokenPicker` rows that used to sit in the "Submit

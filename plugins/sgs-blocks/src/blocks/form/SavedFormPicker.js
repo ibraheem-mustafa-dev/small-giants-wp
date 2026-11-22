@@ -7,7 +7,9 @@
 import { __ } from '@wordpress/i18n';
 import { SavedPostPicker } from '../../components';
 
-export const FORM_CPT = 'sgs_form';
+import { FORM_CPT } from './form-cpt';
+
+export { FORM_CPT };
 
 export default function SavedFormPicker( { formId, formIsLinked, onLink, onUnlink } ) {
 	return (
