@@ -22,6 +22,9 @@
 //              sign-in page and read view by view (lib/part-look-signed-in.mjs); --verify reads the copy signed in as --login <user:pass>
 //              (the seeded customer) on every view its menu links to and the seed's order page.
 // A client may name a surface's opening steps in sites/<client>/build/part-look.json: { surfaces: { <surface>: { file, route, init } } }.
+// A one-file draft (its pages are its logic's own state) opens each page surface only by the route named there (my-account-in by
+// my-account's, its sign-in route): a surface with none is refused (REFUSED, exit 1), never read from the draft's first page. A
+// locator's linksTo also takes an element whose click handler goes to that role's page (the draft's routing links).
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -30,6 +33,7 @@ import { buildLook, tableSelector } from './lib/fill-part-look.mjs';
 import { compareSettings, faultsOf } from './lib/part-look-compare.mjs';
 import { REPO, assertMayWrite, blockRows, customCssOf, liveProductPath, patchBlock, readParts, readSavedBlock, templateIdOf } from './lib/part-look-run.mjs';
 import { draftProductSlugs } from './lib/template-live-address.mjs';
+import { draftLinksFor } from './lib/draft-link.mjs';
 import { reportMarkdown, totalsOf } from './lib/part-look-report.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { applyBuiltinButtons, declaredButtons } from './lib/fill-builtin-button.mjs';
@@ -55,6 +59,57 @@ export function pagesOf( { rows, surfaces } ) {
 	return Object.fromEntries( Object.entries( { cart: route( 'cart' ), checkout: route( 'checkout' ), account, signin } ).filter( ( [ , v ] ) => v ) );
 }
 
+// The draft route a surface opens by when the draft is one file whose pages are its logic's own state (`shop`, `checkout`), or
+// null: a page file (`Shop.dc.html`), a route every page shares (`*`) or none.
+export const logicRouteOf = ( route ) => ( route && '*' !== route && ! /\.html\b/i.test( String( route ) ) ? String( route ) : null );
+
+// Why a surface cannot be read, or null. A one-file draft opens on its first page, so a surface whose draft route is a logic route is
+// read only through a route the client's part-look.json names for it (`cfg.route`); without one, every part would be read from the
+// wrong page.
+export function refusalOf( { surface, draftRoute, cfg } ) {
+	const route = logicRouteOf( draftRoute );
+	if ( ! route || cfg?.route ) {
+		return null;
+	}
+	return `${ surface }: the draft is one file whose pages are its logic's own state and part-look.json names no route for this surface, so the draft would open on its first page and not on "${ route }" (add "route": "${ route }" to its entry)`;
+}
+
+// The draft routes of each page role a locator's linksTo names (cart, checkout, account, signin), every route that reaches the same
+// page-map row included (a signed-out and a signed-in account share one). `routeRow` maps a draft route to its row
+// (lib/draft-link.mjs::linkContext); `files` are pagesOf's files; `accountRoute` the account surface's own route in a one-file draft.
+export function roleRoutesOf( { rows, routeRow = new Map(), files = {}, accountRoute = null } ) {
+	const route = ( template ) => rows.find( ( r ) => 'page' === r.postType && template === r.template )?.route ?? null;
+	const base = { cart: route( 'cart' ), checkout: route( 'checkout' ), account: accountRoute ?? files.account ?? null, signin: accountRoute ?? files.signin ?? null };
+	const out = {};
+	for ( const [ role, at ] of Object.entries( base ) ) {
+		if ( ! at ) {
+			continue;
+		}
+		const row = routeRow.get( at );
+		out[ role ] = row ? [ ...routeRow ].filter( ( [ , r ] ) => r === row ).map( ( [ k ] ) => k ) : [ at ];
+	}
+	return out;
+}
+
+// The click handlers that take a visitor to each role's page: { role: [ { dc, handler } ] }, from the draft's routing links
+// (lib/draft-link.mjs::linkContext's goRoutes, `<file>\0<handler>` to the routes the handler reaches). A handler counts for a role when
+// every route it reaches is one of the role's; `dc` is the component the handler's file holds.
+export function routeHandlersOf( { roleRoutes, goRoutes = new Map() } ) {
+	const out = {};
+	for ( const [ role, routes ] of Object.entries( roleRoutes ) ) {
+		const list = [];
+		for ( const [ key, reached ] of goRoutes ) {
+			const [ file, handler ] = key.split( '\u0000' );
+			const named = [ ...reached ].filter( ( r ) => null !== r );
+			if ( named.length && named.every( ( r ) => routes.includes( r ) ) ) {
+				list.push( { dc: file.replace( /\.dc\.html$/i, '' ), handler } );
+			}
+		}
+		list.length && ( out[ role ] = list );
+	}
+	return out;
+}
+
 export async function runPartLook( { client, surfaces: wanted = SURFACES, site = null, compare = false, write = false, verify = false, seed = null, login = null, shots = true, only = null, dryRun = false, out = null, headed = false, log = ( m ) => console.log( m ) } ) {
 	if ( ( compare || write || verify ) && ! site ) {
 		throw new Error( `${ verify ? '--verify' : ( write ? '--write' : '--compare' ) } needs --site <scratch copy>` );
@@ -78,7 +133,11 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	// The draft route of a surface (`Product.dc.html?id=zookies` names the product the draft shows), from the intake.
 	const intakeFile = path.join( buildDir, 'intake', 'intake.json' );
 	let intake = null;
-	const draftRouteOf = ( entry ) => ( intake ??= fs.existsSync( intakeFile ) ? readJson( intakeFile ) : {} ).skeletons?.[ entry.intakeSurface ]?.route ?? null;
+	const draftRouteOf = ( entry ) => ( intake ??= fs.existsSync( intakeFile ) ? readJson( intakeFile ) : {} ).skeletons?.[ entry?.intakeSurface ]?.route ?? null;
+	// A control whose click handler routes to a role's page counts as a link to it (a one-file draft's Checkout is a button calling go).
+	const links = rows.length ? draftLinksFor( { repo: REPO, client } ) : null;
+	const roleRoutes = roleRoutesOf( { rows, routeRow: links?.routeRow, files: pagesOf( { rows, surfaces: manifest } ), accountRoute: logicRouteOf( draftRouteOf( manifest[ 'my-account' ] ) ) } );
+	const routeHandlers = routeHandlersOf( { roleRoutes, goRoutes: links?.goRoutes } );
 	let snapshot = null;
 	let snapshotNote = null;
 	let buttonPresets = {};
@@ -94,6 +153,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	fs.mkdirSync( outDir, { recursive: true } );
 	const results = {};
 	const failures = [];
+	const refusals = [];
 	const notes = snapshotNote ? [ snapshotNote ] : [];
 	for ( const surface of wanted ) {
 		const loc = locators.surfaces[ surface ];
@@ -103,7 +163,13 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			notes.push( `${ surface }: the client's surfaces.json has no such surface; skipped` );
 			continue;
 		}
-		const cfg = config.surfaces?.[ surface ] || {};
+		// A surface that reads another's entry (the signed-in views) opens the way that surface does.
+		const cfg = config.surfaces?.[ surface ] || ( loc.entryOf ? config.surfaces?.[ loc.entryOf ] : null ) || {};
+		const refused = entry.noDraft ? null : refusalOf( { surface, draftRoute: draftRouteOf( entry ), cfg } );
+		if ( refused ) {
+			refusals.push( refused );
+			continue;
+		}
 		const group = locators.groups[ loc.group ];
 		const mainFile = cfg.file || pages[ loc.pageRole ] || entry.draftIndex;
 		// The client's shop parts record locates each shop part by template key ("Product/108"): a locator may name a part id.
@@ -122,7 +188,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			controls.why && notes.push( `${ surface }: the flow opener is not located: ${ controls.why }` );
 		}
 		const builtin = declaredButtons( loc.block );
-		const spec = { anchors: group.anchors, parts: group.parts, shopParts, rootName: String( mainFile ).replace( /\.dc\.html$/, '' ) };
+		const spec = { anchors: group.anchors, parts: group.parts, shopParts, routeHandlers, rootName: String( mainFile ).replace( /\.dc\.html$/, '' ) };
 		const also = ( loc.alsoRead || [] ).map( ( role ) => pages[ role ] ).filter( Boolean );
 		const { rows: blockRowsOf, names } = blockRows( loc.block, db );
 		const blockKey = [ 'woocommerce/cart', 'woocommerce/checkout' ].includes( loc.block ) ? loc.block.split( '/' )[ 1 ] : null;
@@ -132,10 +198,12 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		let reads = {};
 		if ( noDraft ) {
 			reads = {};
-		} else if ( loc.signedIn && ! pages.signin ) {
+		} else if ( loc.signedIn && ! pages.signin && ! logicRouteOf( cfg.route ) ) {
 			notes.push( `${ surface }: the client's page map names no sign-in page, so the draft cannot be signed in and nothing is read` );
 		} else if ( loc.signedIn ) {
-			const signed = await readSignedInParts( { draftDir: path.resolve( REPO, entry.draftDir ), mainFile, signinFile: pages.signin, spec, parts: group.parts, pages, headed, log } );
+			// A one-file draft signs in on its own sign-in route (the entry's route) and lands where its sign-in takes the visitor.
+			const signinRoute = pages.signin ? null : logicRouteOf( cfg.route );
+			const signed = await readSignedInParts( { draftDir: path.resolve( REPO, entry.draftDir ), mainFile, signinFile: pages.signin ?? null, signinRoute, spec, parts: group.parts, pages, headed, log } );
 			reads = signed.reads;
 			notes.push( ...signed.notes.map( ( n ) => `${ surface }: ${ n }` ) );
 		} else {
@@ -244,10 +312,10 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		results[ surface ] = result;
 	}
 	const totals = totalsOf( results );
-	const report = { client, site, compare, generated: new Date().toISOString(), outDir, widths: [ 1440, 768, 375 ], notes, failures, totals, surfaces: results };
+	const report = { client, site, compare, generated: new Date().toISOString(), outDir, widths: [ 1440, 768, 375 ], notes, refusals, failures, totals, surfaces: results };
 	fs.writeFileSync( path.join( outDir, 'report.json' ), `${ JSON.stringify( report, null, '\t' ) }\n` );
-	fs.writeFileSync( path.join( outDir, 'report.md' ), reportMarkdown( { client, site, compare, generated: report.generated, surfaces: results, totals, notes, failures } ) );
-	return { outDir, totals, report, failures };
+	fs.writeFileSync( path.join( outDir, 'report.md' ), reportMarkdown( { client, site, compare, generated: report.generated, surfaces: results, totals, notes, refusals, failures } ) );
+	return { outDir, totals, report, failures, refusals };
 }
 
 // `--login user:pass`: the seeded customer the signed-in views are read as ({ user, pass }); the password may hold a colon.
@@ -279,8 +347,11 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			console.log( `${ block }: ${ t.written } values to write (${ t.knownFaultWrites } known not to paint), table rows paired ${ t.tableRowsPaired}/${ t.tableRowsPresent }, parts paired ${ t.partsPaired }/${ t.partsWithSettings }, ${ t.unpaired } unpaired, ${ t.noLocator } no locator, ${ t.noSetting } no setting${ t.compare ? `; compare: equal ${ t.compare.equal }, differs ${ t.compare.differs }, hand-set only ${ t.compare.handSetOnly }, route only ${ t.compare.routeOnly }` : '' }` );
 		}
 		console.log( `Report: ${ path.join( r.outDir, 'report.md' ) }` );
+		r.refusals.forEach( ( f ) => console.error( `REFUSED ${ f }` ) );
 		if ( r.failures.length ) {
 			r.failures.forEach( ( f ) => console.error( `VERIFY FAILED ${ f }` ) );
+		}
+		if ( r.failures.length || r.refusals.length ) {
 			process.exitCode = 1;
 		}
 	} catch ( e ) {

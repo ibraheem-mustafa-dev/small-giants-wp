@@ -4,6 +4,7 @@
 		"checkout": { "route": "checkout", "init": "const P = L.constructor.PRODUCTS; L.addToBag( P[ 0 ], null ); L.addToBag( P[ 1 ], null );" },
 		"my-account": { "route": "signin" },
 		"product": { "route": "product" },
+		"shop": { "route": "shop" },
 		"header": { "init": "const P = L.constructor.PRODUCTS; L.addToBag( P[ 0 ], null ); L.addToBag( P[ 1 ], null ); L.setState( { bagOpen: true } );" }
 	}
 }

@@ -31,7 +31,8 @@
 // precedesAnchor (the match comes before an anchor's element in the same row or the same parent: the column labels above a
 // loop of lines), allChildren (a matcher every direct child satisfies), rule (a line the draft draws: an hr, an empty strip
 // under 4px tall, or an element with a top or bottom border but not a border on every side, so a boxed card is not a rule),
-// linksTo (a link whose file is the page named for that role, or any of several roles, in `pages`), control (a button, link, input, select or
+// linksTo (a link whose file is the page named for that role, or any of several roles, in `pages`; or an element whose own click handler
+// in the draft's template takes the visitor to that role's page, `spec.routeHandlers` mapping a role to { dc, handler }), control (a button, link, input, select or
 // textarea), scope ('page' outside the header, footer and any fixed panel, 'overlay' inside a fixed panel or dialog, 'any').
 export function findPartsInPage( { spec, names, props, pages } ) {
 	const AMOUNT = /[£$€]\s?\d|\d\s?[£$€]/;
@@ -115,6 +116,31 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		} catch ( e ) {
 			return '';
 		}
+	};
+	// The click handler the draft's own template gives an element ({ dc, handler }, from `sc-camel-on-click="{{ name }}"` on the template
+	// element its data-dc-tpl stamps), or null. The page bridge window.__dcAnnotatedTemplate serves each component's stamped template.
+	const tplDocs = new Map();
+	const handlers = new Map();
+	const handlerOfEl = ( el ) => {
+		if ( handlers.has( el ) ) {
+			return handlers.get( el );
+		}
+		let found = null;
+		const n = el.getAttribute( 'data-dc-tpl' );
+		if ( n && 'function' === typeof window.__dcAnnotatedTemplate ) {
+			const host = el.closest( '[data-sc-name]' )?.getAttribute( 'data-sc-name' );
+			const comp = ! host || 'Root' === host ? ( 'function' === typeof window.__dcRootName ? window.__dcRootName() : spec.rootName ) : host;
+			if ( comp && ! tplDocs.has( comp ) ) {
+				const t = document.createElement( 'template' );
+				t.innerHTML = window.__dcAnnotatedTemplate( comp ) || '';
+				tplDocs.set( comp, t.content );
+			}
+			const src = comp ? tplDocs.get( comp ).querySelector( `[data-dc-tpl="${ CSS.escape( n ) }"]` ) : null;
+			const name = /^\s*\{\{\s*([^}\s]+)\s*\}\}\s*$/.exec( src?.getAttribute( 'sc-camel-on-click' ) || '' )?.[ 1 ];
+			found = name ? { dc: comp, handler: name } : null;
+		}
+		handlers.set( el, found );
+		return found;
 	};
 	const ancestors = ( el ) => {
 		const out = [];
@@ -263,9 +289,16 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return false;
 		}
 		if ( m.linksTo ) {
-			const want = [].concat( m.linksTo ).map( ( role ) => pages[ role ] ).filter( Boolean );
-			const links = [ el, ...held( el ) ].filter( ( a ) => 'a' === a.tagName.toLowerCase() && a.hasAttribute( 'href' ) );
-			if ( ! want.length || ! links.some( ( a ) => want.includes( fileOf( a.getAttribute( 'href' ) ) ) ) ) {
+			const roles = [].concat( m.linksTo );
+			const want = roles.map( ( role ) => pages[ role ] ).filter( Boolean );
+			const routed = roles.flatMap( ( role ) => spec.routeHandlers?.[ role ] || [] );
+			const near = [ el, ...held( el ) ];
+			const byFile = want.length && near.some( ( a ) => 'a' === a.tagName.toLowerCase() && a.hasAttribute( 'href' ) && want.includes( fileOf( a.getAttribute( 'href' ) ) ) );
+			const byHandler = ! byFile && routed.length && near.some( ( a ) => {
+				const h = handlerOfEl( a );
+				return h && routed.some( ( r ) => r.dc === h.dc && r.handler === h.handler );
+			} );
+			if ( ! byFile && ! byHandler ) {
 				return false;
 			}
 		}

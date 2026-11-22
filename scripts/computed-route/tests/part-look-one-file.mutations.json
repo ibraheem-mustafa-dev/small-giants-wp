@@ -1,0 +1,86 @@
+[
+	{
+		"file": "part-look.mjs",
+		"find": "if ( ! route || cfg?.route ) {",
+		"replace": "if ( true ) {",
+		"why": "a one-file surface with no route is read from the draft's first page instead of refused"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "if ( ! route || cfg?.route ) {",
+		"replace": "if ( ! route || cfg ) {",
+		"why": "an entry with an init and no route is taken as opening the page"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "route && '*' !== route && ! /\\.html\\b/i.test( String( route ) )",
+		"replace": "route && ! /\\.html\\b/i.test( String( route ) )",
+		"why": "the header's every-page route is refused"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "route && '*' !== route && ! /\\.html\\b/i.test( String( route ) )",
+		"replace": "route && '*' !== route",
+		"why": "a page file is taken for a logic route and refused"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "out[ role ] = row ? [ ...routeRow ].filter( ( [ , r ] ) => r === row ).map( ( [ k ] ) => k ) : [ at ];",
+		"replace": "out[ role ] = [ at ];",
+		"why": "the signed-in account route is not one of the account role's routes"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "if ( named.length && named.every( ( r ) => routes.includes( r ) ) ) {",
+		"replace": "if ( named.some( ( r ) => routes.includes( r ) ) ) {",
+		"why": "a handler that may go elsewhere counts as a link to the role"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "if ( ! at ) {\n\t\t\tcontinue;\n\t\t}\n\t\tconst row = routeRow.get( at );",
+		"replace": "const row = routeRow.get( at );",
+		"why": "a role with no route gets a list holding null"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "const byHandler = ! byFile && routed.length && near.some(",
+		"replace": "const byHandler = false && near.some(",
+		"why": "a control whose handler goes to the role's page is no link to it"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "return h && routed.some( ( r ) => r.dc === h.dc && r.handler === h.handler );",
+		"replace": "return !! h;",
+		"why": "any handler counts as a link to the role"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "const comp = ! host || 'Root' === host ? ( 'function' === typeof window.__dcRootName ? window.__dcRootName() : spec.rootName ) : host;",
+		"replace": "const comp = host;",
+		"why": "an element of the root component finds no template"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "\tif ( ! signinFile ) {\n\t\tconst failure = await openRoute( signinRoute );",
+		"replace": "\tif ( false ) {\n\t\tconst failure = await openRoute( signinRoute );",
+		"why": "a one-file draft is signed in on its first page, not its sign-in route"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "\t\tif ( failure ) {\n\t\t\tthrow new Error( `${ where }: ${ failure }` );\n\t\t}\n\t\tawait page.waitForTimeout( 900 );",
+		"replace": "\t\tawait page.waitForTimeout( 900 );",
+		"why": "a route that could not run is read anyway"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "\tsigninFile && await goto( mainFile );",
+		"replace": "\tawait goto( mainFile );",
+		"why": "a one-file draft is reloaded after signing in and loses the signed-in state"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "\tif ( ! signinFile && ! signinRoute ) {\n\t\tthrow",
+		"replace": "\tif ( false ) {\n\t\tthrow",
+		"why": "a read with neither a sign-in file nor a route starts a browser and fails late"
+	}
+]

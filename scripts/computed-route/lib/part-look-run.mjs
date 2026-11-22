@@ -35,8 +35,26 @@ const DC_LOGIC = ( name ) => {
 	return f && f.stateNode.logic;
 };
 
-// The surface's opening steps (the client's part-look.json): `route` is the draft's own page change, `init` a script run with the live
-// logic `L` and `dcLogic`, for a draft whose basket or drawer is filled by its own logic.
+// Runs a surface's opening steps on an open draft page (the client's part-look.json): `route` is the draft's own page change, `init` a
+// script run with the live logic `L` and `dcLogic`, for a draft whose basket or drawer is filled by its own logic. Returns null, or why
+// the steps could not run.
+export async function runOpeningSteps( page, { route = null, init = null } ) {
+	return page.evaluate( ( { route: to, init: script, helper } ) => {
+		const dcLogic = new Function( `return (${ helper })` )();
+		const L = dcLogic();
+		if ( ! L ) {
+			return 'the draft runtime holds no logic instance to open the surface through';
+		}
+		if ( to ) {
+			'function' === typeof L.go ? L.go( to ) : L.setState( { page: to } );
+		}
+		if ( script ) {
+			new Function( 'L', 'dcLogic', script )( L, dcLogic );
+		}
+		return null;
+	}, { route, init, helper: DC_LOGIC.toString() } );
+}
+
 async function openPage( browser, { url, width, config } ) {
 	const ctx = await browser.newContext( { viewport: { width, height: 900 } } );
 	const page = await ctx.newPage();
@@ -45,20 +63,7 @@ async function openPage( browser, { url, width, config } ) {
 	await page.evaluate( () => document.fonts?.ready );
 	await page.waitForTimeout( 900 );
 	if ( config?.route || config?.init ) {
-		const failure = await page.evaluate( ( { route, init, helper } ) => {
-			const dcLogic = new Function( `return (${ helper })` )();
-			const L = dcLogic();
-			if ( ! L ) {
-				return 'the draft runtime holds no logic instance to open the surface through';
-			}
-			if ( route ) {
-				'function' === typeof L.go ? L.go( route ) : L.setState( { page: route } );
-			}
-			if ( init ) {
-				new Function( 'L', 'dcLogic', init )( L, dcLogic );
-			}
-			return null;
-		}, { route: config.route || null, init: config.init || null, helper: DC_LOGIC.toString() } );
+		const failure = await runOpeningSteps( page, { route: config.route || null, init: config.init || null } );
 		if ( failure ) {
 			await ctx.close();
 			throw new Error( failure );

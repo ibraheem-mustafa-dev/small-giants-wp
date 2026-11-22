@@ -21,6 +21,7 @@ import { serveDraft } from './draft.mjs';
 import { loadChromium } from './fill-read.mjs';
 import { READ_PROPS, WIDTHS, findPartsInPage } from './fill-part-look.mjs';
 import { readLiveInPage } from './part-look-verify.mjs';
+import { runOpeningSteps } from './part-look-run.mjs';
 
 // The parts of a locator group a view reads: 'detail' the parts marked `view: "detail"`, 'tab' every other part.
 export function partsOfView( parts, view ) {
@@ -156,10 +157,37 @@ const settle = async ( page ) => {
 	await page.waitForTimeout( 900 );
 };
 
+// Signs the draft in on one width's page and leaves it on the signed-in account: through the sign-in page file, then the account
+// page file; or, in a one-file draft (`signinRoute`), on the main file sent to its own sign-in route by the draft's logic, where the
+// draft's sign-in takes the visitor on to its account itself. `goto( file )` opens a served file; `openRoute( route )` runs the route
+// (lib/part-look-run.mjs::runOpeningSteps' answer: null, or why not). Throws when a step fails.
+export async function signInDraft( { page, mainFile, signinFile = null, signinRoute = null, goto, openRoute, settleMs = 1200 } ) {
+	const where = signinFile ?? `${ mainFile } at its route "${ signinRoute }"`;
+	await goto( signinFile ?? mainFile );
+	if ( ! signinFile ) {
+		const failure = await openRoute( signinRoute );
+		if ( failure ) {
+			throw new Error( `${ where }: ${ failure }` );
+		}
+		await page.waitForTimeout( 900 );
+	}
+	const failure = await page.evaluate( signInInPage, { identity: 'reader@example.com', password: 'Reader-pass-2026' } );
+	if ( failure ) {
+		throw new Error( `${ where }: ${ failure }` );
+	}
+	await page.waitForTimeout( settleMs );
+	signinFile && await goto( mainFile );
+	return where;
+}
+
 // Reads the signed-in views of a served draft at each width: { reads, filled, views, notes }. `mainFile` is the account page,
-// `signinFile` the draft's sign-in page; `spec` the locator group's spec as readParts takes it; `parts` the group's parts (for
-// their `view`). Each width opens a fresh browser context, signs in, opens the account page and reads every view.
-export async function readSignedInParts( { draftDir, mainFile, signinFile, spec, parts, pages, headed = false, log = () => {} } ) {
+// `signinFile` the draft's sign-in page, or `signinRoute` the sign-in route of a one-file draft (no sign-in file); `spec` the locator
+// group's spec as readParts takes it; `parts` the group's parts (for their `view`). Each width opens a fresh browser context, signs in,
+// opens the account page and reads every view.
+export async function readSignedInParts( { draftDir, mainFile, signinFile = null, signinRoute = null, spec, parts, pages, headed = false, log = () => {} } ) {
+	if ( ! signinFile && ! signinRoute ) {
+		throw new Error( 'the signed-in views need the draft\'s sign-in page file or, in a one-file draft, its sign-in route' );
+	}
 	const { chromium } = await loadChromium();
 	const served = await serveDraft( draftDir, { index: mainFile } );
 	const browser = await chromium.launch( { headless: ! headed, args: [ '--hide-scrollbars' ] } );
@@ -177,18 +205,17 @@ export async function readSignedInParts( { draftDir, mainFile, signinFile, spec,
 			const ctx = await browser.newContext( { viewport: { width, height: 900 } } );
 			try {
 				const page = await ctx.newPage();
-				await page.goto( `${ served.url }${ encodeURIComponent( signinFile ) }`, { waitUntil: 'load', timeout: 60000 } );
-				await settle( page );
-				const failure = await page.evaluate( signInInPage, { identity: 'reader@example.com', password: 'Reader-pass-2026' } );
-				if ( failure ) {
-					throw new Error( `${ signinFile }: ${ failure }` );
-				}
-				await page.waitForTimeout( 1200 );
-				await page.goto( `${ served.url }${ encodeURIComponent( mainFile ) }`, { waitUntil: 'load', timeout: 60000 } );
-				await settle( page );
+				const where = await signInDraft( {
+					page, mainFile, signinFile, signinRoute,
+					goto: async ( file ) => {
+						await page.goto( `${ served.url }${ encodeURIComponent( file ) }`, { waitUntil: 'load', timeout: 60000 } );
+						await settle( page );
+					},
+					openRoute: ( route ) => runOpeningSteps( page, { route } ),
+				} );
 				const tabs = await page.evaluate( menuInPage, { action: 'count' } );
 				if ( ! tabs ) {
-					throw new Error( `${ mainFile } shows no account menu after signing in on ${ signinFile }: the draft did not sign in` );
+					throw new Error( `${ mainFile } shows no account menu after signing in on ${ where }: the draft did not sign in` );
 				}
 				await readTabViews( {
 					tabs,

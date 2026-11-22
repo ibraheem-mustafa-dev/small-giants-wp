@@ -35,7 +35,7 @@ export function totalsOf( surfaces ) {
 
 const table = ( head, rows ) => [ `| ${ head.join( ' | ' ) } |`, `| ${ head.map( () => '---' ).join( ' | ' ) } |`, ...rows.map( ( r ) => `| ${ r.map( ( c ) => String( c ).replace( /\|/g, '\\|' ) ).join( ' | ' ) } |` ) ].join( '\n' );
 
-export function reportMarkdown( { client, site, compare, generated, surfaces, totals, notes = [], failures = [] } ) {
+export function reportMarkdown( { client, site, compare, generated, surfaces, totals, notes = [], refusals = [], failures = [] } ) {
 	const lines = [ `# Part look: ${ client }`, '', `Generated ${ generated }${ site ? `, saved settings read from \`${ site }\`` : ', no site named (the draft side only)' }.`, '' ];
 	lines.push( 'A value is never averaged across instances, a responsive setting is written per device only where the draft\'s narrower value differs, and no block default is read: a written value that equals the block\'s own default is written all the same (`defaultNotRead`). "Known not to paint" marks a value that lands on a setting with a recorded fault, so a pass there does not prove the page looks right. A unit or shadow-colour setting that rides with its setting is written and compared with it and is not counted on its own.', '' );
 	lines.push( '## Totals per block', '' );
@@ -49,6 +49,7 @@ export function reportMarkdown( { client, site, compare, generated, surfaces, to
 		lines.push( `- ${ n }` );
 	}
 	notes.length && lines.push( '' );
+	refusals.length && lines.push( '## Refused (not read)', '', ...refusals.map( ( f ) => `- ${ f }` ), '' );
 	failures.length && lines.push( '## Verify failed', '', ...failures.map( ( f ) => `- ${ f }` ), '' );
 	for ( const s of Object.values( surfaces ) ) {
 		const b = s.build;
