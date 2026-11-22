@@ -4,6 +4,8 @@
 // each file's source sha256, attachment ID and URL, and the sha256 of the file WordPress kept (`storedSha256`); an SVG
 // the upload sanitiser changed (plugins/sgs-blocks/includes/svg-upload.php) is marked `sanitised` for Bean's review.
 // A rerun skips a file whose sha256 is in the map with a live attachment that still serves `storedSha256`.
+// With no map entry (the map file is absent, or holds another copy of the site) a file is still not uploaded twice: the
+// library is searched for an attachment WordPress named after the file (`findOnSite`), and the map is rebuilt from it.
 // A stock preview (an image on a stock host that the draft paints, lib/media-stock.mjs) is downloaded once and uploaded
 // the same way as a `stock: true` entry whose `asset` is its source URL without the query; a rerun skips one whose
 // attachment is live without downloading it again.
@@ -88,15 +90,55 @@ async function served( fetchImpl, creds, url ) {
 	return 200 === res.status ? Buffer.from( await res.arrayBuffer() ) : null;
 }
 
-// Whether a map entry's attachment is live and still serves the file WordPress kept.
-async function stillLive( fetchImpl, creds, entry ) {
+// How a map entry's attachment stands on the site: 'live' (it serves the file WordPress kept), 'gone' (the site answers 404 for
+// it: another copy of the site, or a deleted attachment) or 'changed' (anything else: other bytes, another origin, a failed read).
+async function standing( fetchImpl, creds, entry ) {
 	const res = await fetchImpl( `${ creds.url }/wp-json/wp/v2/media/${ entry.id }?context=edit`, { headers: { Authorization: creds.auth } } );
 	if ( 200 !== res.status ) {
-		return false;
+		return 404 === res.status ? 'gone' : 'changed';
 	}
 	const media = await res.json();
 	const bytes = await served( fetchImpl, creds, media.source_url );
-	return !! bytes && sha256( bytes ) === entry.storedSha256;
+	return bytes && sha256( bytes ) === entry.storedSha256 ? 'live' : 'changed';
+}
+
+// Whether a map entry's attachment is live and still serves the file WordPress kept; read twice before it is called otherwise, so one
+// failed read never makes a duplicate. `last` is how it stood on the last read.
+async function stillLive( fetchImpl, creds, entry ) {
+	let last = 'changed';
+	for ( let i = 0; i < 2 && 'live' !== last; i++ ) {
+		last = await standing( fetchImpl, creds, entry );
+	}
+	return last;
+}
+
+// The attachment a site's library already holds for a file name, as { id, url, storedSha256 } with its live bytes read, else null.
+// WordPress names the stored file after the upload's file name (`hero.jpg`), adding `-1`, `-2` when the name was taken and `-scaled`
+// for a large picture's served copy, so the candidates are the library's images whose file name is the upload's name with those
+// suffixes, tried oldest first. `ext` null matches any image extension (a stock preview, whose extension the download decides).
+// A name never found in one search page, a request that fails or a candidate that does not serve its bytes is no match.
+async function findOnSite( fetchImpl, creds, { stem, ext = null, type = null } ) {
+	const plain = ( x ) => String( x ).toLowerCase().replace( /[^a-z0-9]+/g, '-' ).replace( /^-+|-+$/g, '' );
+	const want = plain( stem );
+	const res = await fetchImpl( `${ creds.url }/wp-json/wp/v2/media?search=${ encodeURIComponent( stem ) }&per_page=100&orderby=id&order=asc&media_type=image`, { headers: { Authorization: creds.auth } } );
+	if ( 200 !== res.status ) {
+		return null;
+	}
+	const list = await res.json().catch( () => [] );
+	for ( const media of Array.isArray( list ) ? [ ...list ].sort( ( a, b ) => a.id - b.id ) : [] ) {
+		const file = decodeURIComponent( String( media.source_url || '' ).split( /[?#]/ )[ 0 ].split( '/' ).pop() );
+		const dot = file.lastIndexOf( '.' );
+		const fileExt = dot < 0 ? '' : file.slice( dot ).toLowerCase();
+		const fileStem = plain( file.slice( 0, dot < 0 ? file.length : dot ).replace( /-scaled$/i, '' ).replace( /-\d+$/, '' ) );
+		if ( fileStem !== want || ! IMAGE_TYPES[ fileExt ] || ( ext && fileExt !== ext.toLowerCase() ) || ( type && media.mime_type && media.mime_type !== type ) ) {
+			continue;
+		}
+		const bytes = await served( fetchImpl, creds, media.source_url );
+		if ( bytes ) {
+			return { id: media.id, url: media.source_url, storedSha256: sha256( bytes ) };
+		}
+	}
+	return null;
 }
 
 // One upload through the REST media endpoint: { media, kept } with the bytes WordPress serves for it.
@@ -129,12 +171,20 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 	const handoffPrefix = `sites/${ client }/handoff/`;
 	const manifest = manifestSums( repo, client );
 	const files = [];
+	const nameCount = mediaAssets( repo, client ).reduce( ( m, f ) => m.set( path.basename( f ).toLowerCase(), ( m.get( path.basename( f ).toLowerCase() ) || 0 ) + 1 ), new Map() );
 	const report = { uploaded: [], skipped: [], sanitised: [], wouldUpload: [], failed: [], stockFound: stock.map( ( s ) => s.key ), stockUnpainted: survey.unpainted || [] };
 	// One stock preview: kept when its attachment is live, else downloaded (its failure is reported, not thrown) and uploaded.
 	const carryStock = async ( row ) => {
 		const had = known.find( ( e ) => e.stock && e.asset === row.key );
-		if ( had && ( await stillLive( fetchImpl, creds, had ) || await stillLive( fetchImpl, creds, had ) ) ) {
+		const state = had ? await stillLive( fetchImpl, creds, had ) : 'gone';
+		if ( 'live' === state ) {
 			files.push( { ...had, paintedAt: row.paintedAt } );
+			report.skipped.push( row.key );
+			return;
+		}
+		const there = 'gone' !== state ? null : await findOnSite( fetchImpl, creds, { stem: path.basename( stockFileName( row.key, '' ) ) } );
+		if ( there ) {
+			files.push( { asset: row.key, source: stockDownloadUrl( row.key, row.width ), sha256: there.storedSha256, ...there, stock: true, paintedAt: row.paintedAt } );
 			report.skipped.push( row.key );
 			return;
 		}
@@ -181,8 +231,21 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 			}
 			const had = known.find( ( e ) => e.sha256 === sum && e.asset === asset ) || known.find( ( e ) => e.sha256 === sum );
 			// Read twice before re-uploading, so one failed liveness read never makes a duplicate.
-			if ( had && ( await stillLive( fetchImpl, creds, had ) || await stillLive( fetchImpl, creds, had ) ) ) {
+			const state = had ? await stillLive( fetchImpl, creds, had ) : 'gone';
+			if ( 'live' === state ) {
 				files.push( { ...had, asset } );
+				report.skipped.push( asset );
+				continue;
+			}
+			const name = path.basename( asset );
+			const type = IMAGE_TYPES[ path.extname( name ).toLowerCase() ];
+			// No entry in the map, or an entry whose attachment the site does not have: the library may already hold the file under its own
+			// id (a rerun with the map file absent, a second checkout, a copy of the site). An attachment that is there but serves other
+			// bytes is replaced by an upload, as before.
+			// A name two assets share cannot tell their attachments apart, so those are never adopted by name.
+			const there = 'gone' !== state || nameCount.get( name.toLowerCase() ) > 1 ? null : await findOnSite( fetchImpl, creds, { stem: path.basename( name, path.extname( name ) ), ext: path.extname( name ), type } );
+			if ( there ) {
+				files.push( { asset, sha256: sum, ...there, stock: false } );
 				report.skipped.push( asset );
 				continue;
 			}
@@ -190,8 +253,6 @@ export async function uploadMedia( { repo, client, site, map, creds, fetchImpl =
 				report.wouldUpload.push( asset );
 				continue;
 			}
-			const name = path.basename( asset );
-			const type = IMAGE_TYPES[ path.extname( name ).toLowerCase() ];
 			const { media, kept } = await postMedia( fetchImpl, creds, asset, name, type, bytes );
 			const entry = { asset, sha256: sum, id: media.id, url: media.source_url, storedSha256: sha256( kept ), stock: false };
 			if ( 'image/svg+xml' === type && entry.storedSha256 !== sum ) {

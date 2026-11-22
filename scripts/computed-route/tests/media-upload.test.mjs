@@ -56,7 +56,7 @@ function fixtureRepo() {
 function fakeWordPress() {
 	const media = new Map();
 	let next = 100;
-	const calls = { uploads: 0 };
+	const calls = { uploads: 0, searches: 0 };
 	const json = ( status, body ) => ( { status, json: async () => body, text: async () => JSON.stringify( body ), arrayBuffer: async () => new ArrayBuffer( 0 ) } );
 	const fetchImpl = async ( url, init = {} ) => {
 		if ( url.endsWith( '/wp-json/wp/v2/media' ) && 'POST' === init.method ) {
@@ -65,8 +65,15 @@ function fakeWordPress() {
 			const name = /filename="([^"]+)"/.exec( init.headers[ 'Content-Disposition' ] )[ 1 ];
 			const body = 'image/svg+xml' === init.headers[ 'Content-Type' ] ? Buffer.from( String( init.body ).replace( /<script>.*?<\/script>/, '' ) ) : Buffer.from( init.body );
 			const id = next++;
-			media.set( id, { id, source_url: `https://acme.test/wp-content/uploads/2026/10/${ name }`, body } );
+			media.set( id, { id, source_url: `https://acme.test/wp-content/uploads/2026/10/${ name }`, mime_type: init.headers[ 'Content-Type' ], body } );
 			return json( 201, { id, source_url: media.get( id ).source_url } );
+		}
+		// The library search: every attachment whose file name holds the term, newest id last, as a real site answers it.
+		const search = /\/wp-json\/wp\/v2\/media\?search=([^&]*)/.exec( url );
+		if ( search ) {
+			calls.searches++;
+			const term = decodeURIComponent( search[ 1 ] ).toLowerCase();
+			return json( 200, [ ...media.values() ].filter( ( m ) => m.source_url.toLowerCase().includes( term ) ).map( ( m ) => ( { id: m.id, source_url: m.source_url, mime_type: m.mime_type } ) ) );
 		}
 		const one = /\/wp-json\/wp\/v2\/media\/(\d+)/.exec( url );
 		if ( one ) {
@@ -102,6 +109,56 @@ test( 'MUST FAIL: the first run uploads each image once, a second uploads nothin
 	assert.deepEqual( third.uploaded, [ 'sites/acme/handoff/assets/hero.png' ] );
 	wp.media.get( 100 ).body = Buffer.from( 'replaced on the server' );
 	assert.deepEqual( ( await run( third.map ) ).uploaded, [ 'sites/acme/assets/food/bread.jpg' ] );
+} );
+
+test( 'MUST FAIL: with no map the site\'s own attachments are found by file name, so nothing is uploaded twice and the map is rebuilt', async () => {
+	const repo = fixtureRepo();
+	const wp = fakeWordPress();
+	const creds = siteCredentials( repo, 'acme-test' );
+	const run = ( map ) => uploadMedia( { repo, client: 'acme', site: 'acme-test', map, creds, fetchImpl: wp.fetchImpl, apply: true } );
+	const first = await run( { sites: {} } );
+	assert.equal( wp.calls.uploads, 3 );
+	// WordPress stored the first upload of hero.png under a numbered name and served another copy of the bread: a name it already held.
+	wp.media.get( 101 ).source_url = 'https://acme.test/wp-content/uploads/2026/10/hero-1.png';
+	const again = await run( { sites: {} } );
+	assert.deepEqual( [ again.uploaded.length, again.skipped.length, wp.calls.uploads ], [ 0, 3, 3 ], 'no map file: 0 uploaded, 3 already live, no second upload' );
+	assert.deepEqual( again.map.sites[ 'acme-test' ].files.map( ( f ) => [ f.asset, f.id, f.url ] ), [
+		[ 'sites/acme/assets/food/bread.jpg', 100, 'https://acme.test/wp-content/uploads/2026/10/bread.jpg' ],
+		[ 'sites/acme/handoff/assets/hero.png', 101, 'https://acme.test/wp-content/uploads/2026/10/hero-1.png' ],
+		[ 'sites/acme/handoff/assets/logo.svg', 102, 'https://acme.test/wp-content/uploads/2026/10/logo.svg' ],
+	], 'the rebuilt map holds each attachment' );
+	assert.equal( again.map.sites[ 'acme-test' ].files[ 1 ].sha256, sha256( Buffer.from( 'PNG-hero' ) ), 'the entry carries the source sha256' );
+	assert.equal( again.map.sites[ 'acme-test' ].files[ 1 ].storedSha256, first.map.sites[ 'acme-test' ].files[ 1 ].storedSha256 );
+	// The rebuilt map is the one a later run reads: it needs no search.
+	const searches = wp.calls.searches;
+	const third = await run( again.map );
+	assert.deepEqual( [ third.uploaded.length, wp.calls.searches ], [ 0, searches ] );
+	// A dry run on a site that holds the files plans no upload either.
+	const dry = await uploadMedia( { repo, client: 'acme', site: 'acme-test', map: { sites: {} }, creds, fetchImpl: wp.fetchImpl, apply: false } );
+	assert.deepEqual( [ dry.wouldUpload.length, dry.skipped.length ], [ 0, 3 ] );
+} );
+
+// Negative controls: a site lacking the file still uploads it; a file another attachment's name merely contains, one that does not
+// serve its bytes, and a name two assets share are never adopted.
+test( 'a file the library lacks is still uploaded, and a look-alike name, a dead attachment or a shared name is not taken for it', async () => {
+	const repo = fixtureRepo();
+	const wp = fakeWordPress();
+	const creds = siteCredentials( repo, 'acme-test' );
+	const run = ( map ) => uploadMedia( { repo, client: 'acme', site: 'acme-test', map, creds, fetchImpl: wp.fetchImpl, apply: true } );
+	await run( { sites: {} } );
+	wp.media.delete( 101 );
+	wp.media.set( 200, { id: 200, source_url: 'https://acme.test/wp-content/uploads/2026/10/hero-banner.png', mime_type: 'image/png', body: Buffer.from( 'PNG-banner' ) } );
+	wp.media.set( 201, { id: 201, source_url: 'https://acme.test/wp-content/uploads/2026/10/notes.png', mime_type: 'image/png', body: Buffer.from( 'x' ) } );
+	const lacking = await run( { sites: {} } );
+	assert.deepEqual( lacking.uploaded, [ 'sites/acme/handoff/assets/hero.png' ], 'hero-banner.png is not hero.png' );
+	assert.equal( wp.calls.uploads, 4 );
+	wp.media.get( 100 ).source_url = 'https://other.test/wp-content/uploads/2026/10/bread.jpg';
+	assert.deepEqual( ( await run( { sites: {} } ) ).uploaded, [ 'sites/acme/assets/food/bread.jpg' ], 'an attachment that does not serve on the site\'s origin is no match' );
+	ship( repo, 'bread.jpg', 'PNG-other-bread' );
+	const before = wp.calls.uploads;
+	const shared = await run( { sites: {} } );
+	assert.ok( shared.uploaded.includes( 'sites/acme/assets/food/bread.jpg' ) && shared.uploaded.includes( 'sites/acme/handoff/assets/bread.jpg' ), 'two assets named bread.jpg are each uploaded' );
+	assert.equal( wp.calls.uploads - before, 2 );
 } );
 
 // MUST FAIL: an upload through a scratch copy (or a mirror) read and wrote the record under the copy's own name, found nothing
@@ -293,6 +350,19 @@ test( 'MUST FAIL: each stock photo uploads once as stock:true with its source an
 	assert.deepEqual( [ again.uploaded.length, again.skipped.length, host.calls.downloads.length, wp.calls.uploads ], [ 0, 6, downloads, uploads ] );
 	wp.media.delete( rows[ 1 ].id );
 	assert.deepEqual( ( await runStock( repo, again.map, host.fetchImpl ) ).uploaded, [ rows[ 1 ].asset ] );
+} );
+
+test( 'MUST FAIL: with no map the stock previews the site already holds are found by their file name, not downloaded or uploaded again', async () => {
+	const repo = fixtureRepo();
+	draftWithStock( repo );
+	const wp = fakeWordPress();
+	const host = withStockHost( wp );
+	const first = await runStock( repo, { sites: {} }, host.fetchImpl );
+	const [ downloads, uploads ] = [ host.calls.downloads.length, wp.calls.uploads ];
+	const again = await runStock( repo, { sites: {} }, host.fetchImpl );
+	assert.deepEqual( [ again.uploaded.length, again.skipped.length, host.calls.downloads.length, wp.calls.uploads ], [ 0, 6, downloads, uploads ] );
+	assert.deepEqual( stockRows( again ).map( ( f ) => [ f.asset, f.id, f.stock ] ), stockRows( first ).map( ( f ) => [ f.asset, f.id, f.stock ] ) );
+	assert.ok( stockRows( again ).every( ( f ) => f.source.includes( '?w=' ) && f.paintedAt.length ), 'the source and where it is painted are kept' );
 } );
 
 test( 'MUST FAIL: a stock dry run downloads and uploads nothing and lists every stock preview', async () => {
