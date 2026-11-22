@@ -28,5 +28,17 @@
 		"find": "\treturn [ ...new Set( [ ...folded, ...pages ] ) ];",
 		"replace": "\treturn [ ...folded, ...pages ];",
 		"why": "a file both folded into the account row and its own page is named twice"
+	},
+	{
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": "( isAccountRow( page ) || signInPage ) ? 'account' : undefined",
+		"replace": "isAccountRow( page ) ? 'account' : undefined",
+		"why": "the sign-in page of its own gets no account block, so the card links to a page with no forms"
+	},
+	{
+		"file": "lib/skeleton-commerce-region.mjs",
+		"find": "rows.some( ( r ) => r !== page && isAccountRow( r ) && signInFilesOf( r, rows ).includes( draftFile( page.route ) ) )",
+		"replace": "( page.parts || [] ).some( ( p ) => 'woocommerce' === p.owner )",
+		"why": "a page with its own WooCommerce form and no account page beside it is taken for the sign-in page"
 	}
 ]

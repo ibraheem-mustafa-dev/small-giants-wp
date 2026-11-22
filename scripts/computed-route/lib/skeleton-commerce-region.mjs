@@ -51,7 +51,10 @@ export function signInFilesOf( page, rows = [] ) {
 
 export function commerceOf( entry, rows = [], catalogue = null ) {
 	const page = null != entry?.target?.postId ? rows.find( ( r ) => r.id === entry.target.postId ) : null;
-	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && isAccountRow( page ) ? 'account' : undefined );
+	// The sign-in draft made a page of its own (Bean's D-1) is an account surface too: the card's buttons lead there, so its forms are
+	// the account block in its form view (rules.commerceRegion takes the password fields); it has no sign-in page of its own.
+	const signInPage = page && ! isAccountRow( page ) && rows.some( ( r ) => r !== page && isAccountRow( r ) && signInFilesOf( r, rows ).includes( draftFile( page.route ) ) );
+	const role = COMMERCE_ROLES[ entry?.target?.template ] ?? ( page && ( isAccountRow( page ) || signInPage ) ? 'account' : undefined );
 	if ( ! role ) {
 		return null;
 	}

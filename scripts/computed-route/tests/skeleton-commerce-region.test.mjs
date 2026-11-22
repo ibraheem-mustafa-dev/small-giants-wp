@@ -164,6 +164,30 @@ test( 'MUST FAIL: a sign-in draft made a page of its own (D-1) is still the acco
 	assert.deepEqual( signInFilesOf( ACCOUNT_ROW, [ ACCOUNT_ROW, signInRow ] ), [ 'SignIn.dc.html' ], 'a file both folded and its own page is named once' );
 } );
 
+test( 'MUST FAIL: the sign-in page of its own (D-1) is an account surface: its forms make the account block in its form view, so the page the card links to holds the forms', () => {
+	const account = { ...ACCOUNT_ROW, parts: ACCOUNT_ROW.parts.slice( 0, 1 ) };
+	const signInRow = { postType: 'page', slug: 'sign-in', template: 'page', route: 'SignIn.dc.html', id: 14, parts: [ { kind: 'form', label: 'doSignin', owner: 'woocommerce', draftId: 'SignIn.dc.html:49:9 <form>' } ] };
+	const commerce = commerceOf( { target: { postId: 14 } }, [ account, signInRow ] );
+	assert.deepEqual( commerce, { role: 'account', checkout: null } );
+	const els = [
+		el( 'Root/1#0', null, 'div', '', { depth: 0 } ),
+		el( 'Root/2#0', 'Root/1#0', 'h1', 'Sign in' ),
+		el( 'Root/3#0', 'Root/1#0', 'div', '', { depth: 1 } ),
+		el( 'Root/4#0', 'Root/3#0', 'form', '', { depth: 2 } ),
+		el( 'Root/5#0', 'Root/4#0', 'input', '', { depth: 3, attrs: { type: 'password' }, keep: true } ),
+		el( 'Root/6#0', 'Root/3#0', 'form', '', { depth: 2 } ),
+		el( 'Root/7#0', 'Root/6#0', 'input', '', { depth: 3, attrs: { type: 'password' } } ),
+	];
+	const { skeleton, proposal } = run( els, commerce );
+	assert.equal( proposal.commerceRegion.key, 'Root/3#0' );
+	assert.ok( find( skeleton, 'sgs/account' ) );
+	// Negative controls: a page with its own WooCommerce form and no account page beside it, a page whose form is a block's, and
+	// the account row itself keep their roles.
+	assert.equal( commerceOf( { target: { postId: 14 } }, [ signInRow ] ), null, 'no account page to sign in to' );
+	assert.equal( commerceOf( { target: { postId: 16 } }, [ account, { postType: 'page', slug: 'contact', template: 'page', route: 'Contact.dc.html', id: 16, parts: [ { owner: 'block', draftId: 'Contact.dc.html:9:9 <form>' } ] } ] ), null );
+	assert.deepEqual( commerceOf( { target: { postId: 13 } }, [ account, signInRow ] ), { role: 'account', checkout: null, signIn: [ 'SignIn.dc.html' ] } );
+} );
+
 test( 'no account region without a sign-in page to link to, without a condition, or with two signed-out views', () => {
 	const m = ( els ) => inventoryModel( inv( els ) );
 	const of = ( els, commerce ) => commerceRegion( { m: m( els ), commerce, rule: RULE() } );
