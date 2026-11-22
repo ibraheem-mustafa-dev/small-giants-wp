@@ -162,3 +162,34 @@ test( 'MUST FAIL: the surface command sets the registration options when the acc
 	assert.equal( stuck.ok, false );
 	assert.match( stuck.detail, /still reads/ );
 } );
+
+// An intake surface's saved inventory of one view of a draft file (root: the surface's selector; its first element is that root).
+const intakeView = ( source, { register = true } = {} ) => ( {
+	source,
+	root: '[data-sgs-skeleton-root="view"]',
+	elements: [
+		el( 'f', null, 'form' ),
+		el( 'f1', 'f', 'input', { type: 'email', autocomplete: 'email' } ),
+		el( 'f2', 'f', 'input', { type: 'password', autocomplete: register ? 'new-password' : 'current-password' } ),
+	],
+} );
+function folding( views, folds = [ 'SignIn.dc.html' ] ) {
+	const repo = client( inventory( { register: false, signIn: false } ) );
+	const dir = path.join( repo, 'sites', 'demo', 'build', 'intake', 'inventories' );
+	fs.mkdirSync( dir, { recursive: true } );
+	Object.entries( views ).forEach( ( [ name, inv ] ) => fs.writeFileSync( path.join( dir, `${ name }.json` ), JSON.stringify( inv ) ) );
+	const rows = SHOP().map( ( r ) => ( 'my-account' === r.slug ? { ...r, route: 'Account.dc.html', folds } : r ) );
+	return accountDrafts( { rows, repo, client: 'demo' } ).account[ 0 ];
+}
+
+test( 'MUST FAIL: an account row whose own page draws no forms reads the create-account view of the sign-in draft it folds in', () => {
+	const a = folding( { 'sign-in': intakeView( 'http://127.0.0.1:1/SignIn.dc.html', { register: false } ), 'create-account': intakeView( 'http://127.0.0.1:1/SignIn.dc.html?mode=register' ) } );
+	assert.equal( a.draws, true );
+	assert.match( a.file, /create-account\.json$/ );
+} );
+
+test( 'NEGATIVE: a register view of a file the row does not fold, a row that folds nothing, and a folded sign-in view alone draw no register form', () => {
+	assert.equal( folding( { checkout: intakeView( 'http://127.0.0.1:1/Checkout.dc.html' ) } ).draws, false );
+	assert.equal( folding( { 'create-account': intakeView( 'http://127.0.0.1:1/SignIn.dc.html?mode=register' ) }, [] ).draws, false );
+	assert.equal( folding( { 'sign-in': intakeView( 'http://127.0.0.1:1/SignIn.dc.html', { register: false } ) } ).draws, false );
+} );

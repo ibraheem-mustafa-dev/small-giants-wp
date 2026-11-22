@@ -1,0 +1,3 @@
+[
+	{"file": "lib/skeleton-inventory.mjs", "find": "'class', 'style', 'autocomplete' ];", "replace": "'class', 'style' ];", "why": "the inventory drops the autocomplete token"}
+]

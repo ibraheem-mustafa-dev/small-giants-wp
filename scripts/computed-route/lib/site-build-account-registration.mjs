@@ -28,15 +28,18 @@ const PARTS_FILE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) 
 export const accountTokens = () => JSON.parse( fs.readFileSync( PARTS_FILE, 'utf8' ) ).tokens;
 
 // Whether the inventory's shown elements hold exactly one create-account form: the page's own element (the one whose tag is the
-// inventory's `root`) is the scope, so a form on another page of the draft never counts.
+// inventory's `root`; for an intake surface's inventory, whose root is a selector, its first element, the surface's root) is the
+// scope, so a form on another page of the draft never counts.
 export function drawsRegisterForm( inventory, tokens = accountTokens() ) {
-	const root = ( inventory?.elements || [] ).find( ( e ) => e.tag === inventory.root );
+	const elements = inventory?.elements || [];
+	const root = elements.find( ( e ) => e.tag === inventory.root ) ?? ( /^[a-z][a-z0-9-]*$/.test( String( inventory?.root ?? '' ) ) ? null : elements[ 0 ] );
 	const scope = root ? inventoryTree( inventory, root.key ) : null;
 	return !! scope && null !== authForms( scope, tokens ).register;
 }
 
-// The account rows of a shop client's page map and whether each one's draft draws a register form:
-// { account: [ { row, file, draws } ], notes }. A row whose inventory file is absent draws nothing and is noted.
+// The account rows of a shop client's page map and whether each one's draft draws a register form, on the row's own surface or on a
+// draft file it folds in (foldedInventories): { account: [ { row, file, draws } ], notes }; `file` is the inventory the form was found
+// in. A row whose own inventory file is absent draws nothing and is noted.
 export function accountDrafts( { rows, repo, client } ) {
 	const out = [];
 	const notes = [];
@@ -50,9 +53,30 @@ export function accountDrafts( { rows, repo, client } ) {
 			notes.push( `${ row.slug }: no inventory at ${ path.relative( repo, file ).split( path.sep ).join( '/' ) }, so the draft's register form is unknown and ${ REGISTRATION_OPTION } is left as it is` );
 			continue;
 		}
-		out.push( { row, file, draws: drawsRegisterForm( JSON.parse( fs.readFileSync( file, 'utf8' ) ) ) } );
+		const folded = foldedInventories( { repo, client, row } );
+		const drawn = folded.find( ( f ) => drawsRegisterForm( JSON.parse( fs.readFileSync( f, 'utf8' ) ) ) );
+		out.push( { row, file: drawn || file, draws: drawsRegisterForm( JSON.parse( fs.readFileSync( file, 'utf8' ) ) ) || !! drawn } );
 	}
 	return { account: out, notes };
+}
+
+// The saved intake inventories of the draft files a row folds in (`folds`: a multi-file draft's sign-in page the page map holds on the
+// account row), each surface's own view of that file (the sign-in form, the create-account view a tab opens): the files whose recorded
+// `source` address names one of those files. A row that folds no draft file, or a client with no saved inventories, has none.
+export function foldedInventories( { repo, client, row } ) {
+	const files = ( row.folds || [] ).filter( ( f ) => /\.dc\.html$/i.test( String( f ) ) );
+	const dir = path.join( repo, 'sites', client, 'build', 'intake', 'inventories' );
+	if ( ! files.length || ! fs.existsSync( dir ) ) {
+		return [];
+	}
+	const fileOf = ( source ) => {
+		try {
+			return decodeURIComponent( new URL( source ).pathname.split( '/' ).pop() );
+		} catch {
+			return null;
+		}
+	};
+	return fs.readdirSync( dir ).filter( ( f ) => f.endsWith( '.json' ) ).sort().map( ( f ) => path.join( dir, f ) ).filter( ( f ) => files.includes( fileOf( JSON.parse( fs.readFileSync( f, 'utf8' ) ).source ) ) );
 }
 
 // The plan from the drafts and the site's two options ({ registration, generate }, as readRegistration reads them): { actions, options,

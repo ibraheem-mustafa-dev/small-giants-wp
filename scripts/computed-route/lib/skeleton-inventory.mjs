@@ -32,7 +32,8 @@ export const PAINT_CURRENT_COLOUR = [ 'border-top-color', 'border-right-color', 
 // The draft's own `data-*` marks kept per element as `data` (a reveal mark, a tilt mark), without the `data-` prefix; the
 // runtime's stamps, the route's own and this reader's working marks are not the draft's.
 export const NOT_DRAFT_DATA = /^data-(?:dc|sc|sgs|inv)-/;
-const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style' ];
+// `autocomplete` is the token the account readers tell a sign-in form from a create-account form by (lib/template-piece-account-read.mjs::authForms).
+const ATTRS = [ 'href', 'aria-label', 'alt', 'role', 'type', 'title', 'target', 'aria-hidden', 'viewBox', 'class', 'style', 'autocomplete' ];
 
 // In-page (self-contained: its source is sent to the page). Whether a sibling is, or holds at any depth, the root of another
 // surface. `strips.exclude` is [ [ component, tpl ] ]: a tpl number is unique only within its component, so an element is a

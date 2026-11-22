@@ -1,0 +1,7 @@
+[
+	{"file": "lib/site-build-account-registration.mjs", "find": "const drawn = folded.find( ( f ) => drawsRegisterForm( JSON.parse( fs.readFileSync( f, 'utf8' ) ) ) );", "replace": "const drawn = null;", "why": "a folded sign-in draft's create-account view is not read"},
+	{"file": "lib/site-build-account-registration.mjs", "find": "( row.folds || [] )", "replace": "[ ...( row.folds || [] ), 'Checkout.dc.html' ]", "why": "a file the row does not fold is read"},
+	{"file": "lib/site-build-account-registration.mjs", "find": ".map( ( f ) => path.join( dir, f ) ).filter( ( f ) => files.includes( fileOf( JSON.parse( fs.readFileSync( f, 'utf8' ) ).source ) ) );", "replace": ".map( ( f ) => path.join( dir, f ) );", "why": "every saved view of any draft file counts"},
+	{"file": "lib/site-build-account-registration.mjs", "find": "?? ( /^[a-z][a-z0-9-]*$/.test( String( inventory?.root ?? '' ) ) ? null : elements[ 0 ] );", "replace": ";", "why": "an intake view whose root is a selector has no scope"},
+	{"file": "lib/site-build-account-registration.mjs", "find": "out.push( { row, file: drawn || file,", "replace": "out.push( { row, file,", "why": "the result names the page, not the view the form was found in"}
+]
