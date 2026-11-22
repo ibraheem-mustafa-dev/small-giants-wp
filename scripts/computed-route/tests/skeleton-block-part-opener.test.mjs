@@ -271,3 +271,35 @@ test( 'MUST FAIL: the basket control that is the cart block is read at the cartâ
 	assert.equal( nodeOf( run(), 'Root/6#0' ).draftSlots?.[ '.sgs-cart__trigger' ], undefined, 'negative control: no calibration, no slot' );
 	assert.equal( nodeOf( run( { calSettings: ( b ) => ( 'sgs/cart' === b ? CAL : {} ), edit: ( R ) => delete R.blockPartOpener.selfPart } ), 'Root/6#0' ).draftSlots?.[ '.sgs-cart__trigger' ], undefined, 'the selfPart entry removed' );
 } );
+
+// The count is the trigger's badge by role: the rule's verdict names which children are the label and the count
+// (rules.blockPartOpener.selfPartRoles maps the count to the block's `badge` part), so the count is read at the badge's calibrated
+// slot whichever sibling position it stands in, where the structural walk cannot pick one of several siblings.
+const BADGE = '.sgs-cart__trigger > .sgs-cart__badge';
+const BADGE_CAL = { pillPadding: { slot: '.sgs-cart__trigger' }, badgeTextColour: { slot: BADGE }, badgeFontSize: { slot: BADGE }, badgeColour: { slot: `${ BADGE }::after` }, iconSize: { slot: '.sgs-cart__trigger > .sgs-cart__icon' } };
+const withBadge = ( o = {} ) => run( { calSettings: ( b ) => ( 'sgs/cart' === b ? BADGE_CAL : {} ), ...o } );
+
+test( 'MUST FAIL: the painted count of the basket pill is read at the cart block\'s badge part, before or after the label, and its pseudo layer is not a slot', () => {
+	const after = nodeOf( withBadge(), 'Root/6#0' );
+	assert.deepEqual( after.draftSlots?.[ BADGE ], { tpl: 'Root/8#0' }, 'the count is the badge' );
+	assert.deepEqual( Object.keys( after.draftSlots ).filter( ( k ) => k.includes( '::' ) ), [], 'a pseudo layer is read from its element, never a slot of its own' );
+	const list = HEADER();
+	const [ label, count ] = [ list.findIndex( ( x ) => 7 === x[ 0 ] ), list.findIndex( ( x ) => 8 === x[ 0 ] ) ];
+	[ list[ label ], list[ count ] ] = [ list[ count ], list[ label ] ];
+	assert.deepEqual( nodeOf( withBadge( { header: list } ), 'Root/6#0' ).draftSlots?.[ BADGE ], { tpl: 'Root/8#0' }, 'the count first: still the badge, by role not position' );
+	const spans = HEADER();
+	spans.splice( spans.length - 2, 0, [ 9, 6, 'span', 'Basket', { depth: 2 } ] );
+	assert.deepEqual( nodeOf( withBadge( { header: spans } ), 'Root/6#0' ).draftSlots?.[ BADGE ], { tpl: 'Root/8#0' }, 'two label spans and a count: the count is still the badge' );
+} );
+
+test( 'negative controls: a trigger with no count has no badge slot; a count that paints nothing is still the badge (its type and colour are read there); the selfPartRoles entry removed, or no calibrated badge, reads nothing', () => {
+	const none = withBadge( { pill: { count: false } } );
+	assert.equal( nodeOf( none, 'Root/6#0' ).draftSlots?.[ BADGE ], undefined, 'no count, no badge: the lone label span is never taken for it' );
+	assert.ok( ( rowOf( none, 'Root/6#0' ).slotNotes || [] ).some( ( n ) => n.startsWith( `${ BADGE }: the draft draws no element` ) ), 'the missing count is said' );
+	assert.deepEqual( nodeOf( withBadge( { pill: { countStyle: [] } } ), 'Root/6#0' ).draftSlots?.[ BADGE ], { tpl: 'Root/8#0' }, 'an unpainted count is the badge too' );
+	assert.equal( nodeOf( withBadge( { edit: ( R ) => delete R.blockPartOpener.selfPartRoles } ), 'Root/6#0' ).draftSlots?.[ BADGE ], undefined, 'the roles entry removed' );
+	assert.equal( nodeOf( run( { calSettings: ( b ) => ( 'sgs/cart' === b ? { pillPadding: { slot: '.sgs-cart__trigger' } } : {} ) } ), 'Root/6#0' ).draftSlots?.[ BADGE ], undefined, 'no calibrated badge setting, no slot' );
+	assert.equal( nodeOf( withBadge( { pill: { count: false, label: false } } ), 'Root/6#0' ).draftSlots?.[ BADGE ], undefined, 'an icon-only control has no badge' );
+	const self = HEADER( { count: false, label: false } ).map( ( x ) => ( 6 === x[ 0 ] ? [ x[ 0 ], x[ 1 ], x[ 2 ], '2', x[ 4 ] ] : x ) );
+	assert.equal( nodeOf( withBadge( { header: self } ), 'Root/6#0' ).draftSlots?.[ BADGE ], undefined, 'a control whose own words are the number is not its own badge' );
+} );

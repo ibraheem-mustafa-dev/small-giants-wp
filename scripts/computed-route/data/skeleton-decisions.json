@@ -976,6 +976,7 @@
 		"blockPartOpener": {
 			"id": "blockPartOpener",
 			"selfPart": "pill",
+			"selfPartRoles": { "count": "badge" },
 			"selfPartReason": "the control is the block's own trigger: the trigger's settings (a pill's padding, border, radius and type) are read at the control itself, and its icon, label and count at the trigger's sub-parts where the draft's children line up with them",
 			"scope": "in a surface of kind header, a button or link whose click handler (a renderVals key of its component) writes a state key that a drawer's surfaces.json state holds at true, where the page map holds that drawer as a part with owner `block` of a row whose template names its owning block in rules.blockOwnedPart.byTemplate (lib/skeleton-handler-opens.mjs, lib/skeleton-surface-role.mjs::blockPartSurfaces)",
 			"reason": "the control that opens a drawer the page map hands to a block is that block, which draws both the drawer and its own trigger: the control's label, count and icon become the block's trigger settings (byTemplate.<template>.trigger) and are absorbed, never a container in the header (the bag pill is sgs/cart in drawer mode with a pill trigger; Bean S5, 2026-10-23)"

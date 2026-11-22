@@ -16,7 +16,7 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "view.ownPaint( count ) ? T.bubble : T.plain", "replace": "T.bubble", "why": "an unpainted count is plain" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: { desktop: true } } : {} ),", "replace": "...( count ? { [ T.showZero ]: { desktop: true } } : {} ),", "why": "only a count showing zero at rest keeps showing it" },
 	{ "file": "lib/skeleton-rules.mjs", "find": "aria && ! /\\{\\{/.test( aria )", "replace": "aria", "why": "a bound aria-label is no typed name" },
-	{ "file": "lib/skeleton-rules.mjs", "find": "attributes: { ...( d.own.attributes || {} ), ...triggerOf( e, d.own.trigger ) }", "replace": "attributes: { ...triggerOf( e, d.own.trigger ) }", "why": "the block keeps its owning entry's drawer mode" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "attributes: { ...( d.own.attributes || {} ), ...trigger.attributes }", "replace": "attributes: { ...trigger.attributes }", "why": "the block keeps its owning entry's drawer mode" },
 	{ "file": "lib/skeleton-propose.mjs", "find": "commerce, products, role, pageMap, megaOpeners", "replace": "commerce, products, role, megaOpeners", "why": "the rules see the page map" },
 	{ "file": "lib/skeleton-handler-opens.mjs", "find": "&& keyName( p ) && ! falsy( p.value ) )", "replace": "&& keyName( p ) )", "why": "a key written with a closing value opens nothing" },
 	{ "file": "lib/skeleton-handler-opens.mjs", "find": "isFn( arg ) && 'ObjectExpression' === arg.body?.type ? arg.body : null;\n\t\t( obj?.properties || [] ).filter( ( p ) => 'ObjectProperty' === p.type && ! p.computed && keyName( p ) && ! falsy", "replace": "null;\n\t\t( obj?.properties || [] ).filter( ( p ) => 'ObjectProperty' === p.type && ! p.computed && keyName( p ) && ! falsy", "why": "a setState given a function returning the patch" },
@@ -34,5 +34,15 @@
 	{ "file": "lib/skeleton-rules.mjs", "find": "labelLeaves.some( ( k ) => k.visible?.[ w ] )", "replace": "labelLeaves.length > 0", "why": "a hidden label would count as drawn at every width" },
 	{ "file": "data/skeleton-decisions.json", "find": "\"styleMobile\": \"triggerStyleMobile\", ", "replace": "", "why": "the entry would name no phone setting" },
 	{ "file": "lib/skeleton-facts.mjs", "find": "...[ 'styleTablet', 'styleMobile' ].filter( ( f ) => x.trigger?.[ f ] )", "replace": "", "why": "a phone style naming a missing setting would pass" },
-	{ "file": "lib/skeleton-rules.mjs", "find": "const tablet = drawsLabel( 768 ) ? T.pill : T.icon;", "replace": "const tablet = T.pill;", "why": "the tablet would always keep the pill" }
+	{ "file": "lib/skeleton-rules.mjs", "find": "const tablet = drawsLabel( 768 ) ? T.pill : T.icon;", "replace": "const tablet = T.pill;", "why": "the tablet would always keep the pill" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "triggerParts: trigger.parts, ", "replace": "", "why": "the verdict names which children are the trigger's label and count" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "count: count && count !== e ? count.key : null", "replace": "count: null", "why": "the count child is named by role" },
+	{ "file": "lib/skeleton-rules.mjs", "find": "count: count && count !== e ? count.key : null", "replace": "count: count ? count.key : null", "why": "a control that is itself the count has no count child" },
+	{ "file": "lib/skeleton-classify.mjs", "find": "...( r.triggerParts ? { triggerParts: r.triggerParts } : {} ), ", "replace": "", "why": "the classified row carries the verdict's trigger parts" },
+	{ "file": "lib/skeleton-propose.mjs", "find": "named: r.triggerParts ? Object.entries(", "replace": "named: false ? Object.entries(", "why": "the self part is given its roles" },
+	{ "file": "data/skeleton-decisions.json", "find": "\"selfPartRoles\": { \"count\": \"badge\" },", "replace": "", "why": "the rule's entry maps the count to the block's badge part" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "roles.filter( ( n ) => n.element ).forEach(", "replace": "roles.filter( () => false ).forEach(", "why": "a role's element is read at the part's calibrated slot" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "if ( role ) {", "replace": "if ( false ) {", "why": "a path of a named role is never walked structurally (a lone child would be taken for a part it is not)" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "p === role.slot && out.notes.push(", "replace": "false && out.notes.push(", "why": "a role the draft does not draw is said" },
+	{ "file": "lib/skeleton-part-slots.mjs", "find": "const roles = named.filter( ( n ) => n?.part ).map(", "replace": "const roles = named.filter( ( n ) => n?.part && n.element ).map(", "why": "a role with no draft element still withholds its part from the walk" }
 ]

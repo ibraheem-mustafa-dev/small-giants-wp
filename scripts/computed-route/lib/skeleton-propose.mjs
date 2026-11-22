@@ -312,7 +312,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		fieldRead.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...fieldRead.notes ] );
 		// A rule whose block is the draft control itself and draws that control as one of its own parts (`rules.<rule>.selfPart`:
 		// the cart a header's basket button is, whose trigger the button is) reads the control at that part's slot.
-		const self = R[ r.rule ]?.selfPart && db && ! r.action ? partSlots( { db, block, cal: { settings: calSettings( block ) }, part: R[ r.rule ].selfPart, opener: e, m, finder } ) : null;
+		const self = R[ r.rule ]?.selfPart && db && ! r.action ? partSlots( { db, block, cal: { settings: calSettings( block ) }, part: R[ r.rule ].selfPart, opener: e, m, finder, named: r.triggerParts ? Object.entries( R[ r.rule ].selfPartRoles || {} ).map( ( [ role, part ] ) => ( { part, element: m.byKey[ [].concat( r.triggerParts[ role ] ?? [] )[ 0 ] ] ?? null } ) ) : [] } ) : null;
 		self && Object.assign( slots, self.slots );
 		// The wrapper framing a hero's picture is read at the split-media part's slot once the part's own element has been placed (below).
 		r.mediaFrame && R.heroInner?.part && framePending.push( { node, row, block, frame: m.byKey[ r.mediaFrame ], part: R.heroInner.part } );

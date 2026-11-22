@@ -1076,10 +1076,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// beside a count make a pill with that label, no words an icon; the tablet and phone styles follow the label's own widths
 	// (a label shown from tablet up and hidden on a phone is a pill whose phone style, the entry's `styleMobile`, is the icon; a
 	// tier that agrees with the one above it writes nothing); a count that paints its own box is a bubble, else plain; a count
-	// showing zero at rest keeps showing it; a typed aria-label is the trigger's accessible name.
+	// showing zero at rest keeps showing it; a typed aria-label is the trigger's accessible name. `parts` names which draft
+	// children are the trigger's sub-parts by role, { count: key | null, label: [ key ] }, so the proposal reads each at the
+	// block's part for that role (lib/skeleton-part-slots.mjs::partSlots `named`) instead of guessing among siblings.
 	const triggerOf = ( e, T ) => {
 		if ( ! T ) {
-			return {};
+			return { attributes: {}, parts: { count: null, label: [] } };
 		}
 		// The words and the count are read through the control's width-only children too (a label drawn only on a phone is
 		// an alternative of its parent, never one of its block children, lib/skeleton-model.mjs::widthOnly).
@@ -1095,7 +1097,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		const desktop = drawsLabel( 1440 ) ? T.pill : T.icon;
 		const tablet = drawsLabel( 768 ) ? T.pill : T.icon;
 		const mobile = drawsLabel( 375 ) ? T.pill : T.icon;
-		return {
+		const attributes = {
 			[ T.style ]: label ? desktop : T.icon,
 			...( label && T.styleTablet && desktop !== tablet ? { [ T.styleTablet ]: tablet } : {} ),
 			...( label && T.styleMobile && mobile !== tablet ? { [ T.styleMobile ]: mobile } : {} ),
@@ -1104,6 +1106,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			...( count && 0 === Number( m.words( count ).trim() ) ? { [ T.showZero ]: { desktop: true } } : {} ),
 			...( aria && ! /\{\{/.test( aria ) ? { [ T.ariaLabel ]: aria } : {} ),
 		};
+		return { attributes, parts: { count: count && count !== e ? count.key : null, label: label ? labelLeaves.filter( ( k ) => k !== e ).map( ( k ) => k.key ) : [] } };
 	};
 	// The commerce region of a WooCommerce page surface (lib/skeleton-commerce-region.mjs), found once for the surface.
 	const region = commerceRegion( { m, commerce: surface.commerce, rule: R.commerceRegion } );
@@ -1239,7 +1242,8 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// drawer opener, which would otherwise take any control opening a drawer as the navigation's burger.
 		( { e } ) => {
 			const d = opensOwnedDrawer( e );
-			return d ? v( 'blockPartOpener', { block: d.own.block, absorb: true, attributes: { ...( d.own.attributes || {} ), ...triggerOf( e, d.own.trigger ) }, reason: `${ R.blockPartOpener.reason }; it opens ${ d.surface.id } (${ d.surface.name }), which the page map holds as the ${ d.part.kind } part "${ d.part.label }" of the ${ d.row.slug } row` } ) : null;
+			const trigger = d ? triggerOf( e, d.own.trigger ) : null;
+			return d ? v( 'blockPartOpener', { block: d.own.block, absorb: true, triggerParts: trigger.parts, attributes: { ...( d.own.attributes || {} ), ...trigger.attributes }, reason: `${ R.blockPartOpener.reason }; it opens ${ d.surface.id } (${ d.surface.name }), which the page map holds as the ${ d.part.kind } part "${ d.part.label }" of the ${ d.row.slug } row` } ) : null;
 		},
 		// A control that opens a modal, flow or form row is a button linking the target's anchor (rules.surfaceOpener); the surface
 		// holding it gets the target's frame (lib/skeleton-openers.mjs::surfaceFrames, called by lib/skeleton-propose.mjs).

@@ -10,6 +10,7 @@ import { LOOSE } from './resolve.mjs';
 import { partHome } from './fill-part-pairing.mjs';
 
 const NTH = /:nth-of-type\((\d+)\)\s*$/;
+const PSEUDO = /::[a-z-]+$/;
 
 // The calibrated slot strings the block's settings hold on the part's descendants: { settings entries' slot and slots }
 // under `homeSlot`, the settings of any other part (a sub-part, never the wrapper and never a state).
@@ -75,8 +76,12 @@ function walk( steps, from, kids, holds = () => false ) {
 }
 
 // opener: the absorbed draft element; part: the DB css_element it is; m: the inventory model; finder: the element's
-// finder. Returns { slots: { <calibrated path>: finder }, notes: [text] }.
-export function partSlots( { db, block, cal, part, opener, m, finder } ) {
+// finder; named: [ { part, element } ], the sub-parts the absorbing rule already knows by role (its trigger's count is the
+// block's `badge` part), each read at that draft element where the structural walk below cannot pick one of several
+// siblings (the part's own calibrated slot and what lies under it; the part's own pseudo-element layers are read from its element). A role
+// the draft does not draw (`element` null) leaves its part unread: the walk never hands it another child.
+// Returns { slots: { <calibrated path>: finder }, notes: [text] }.
+export function partSlots( { db, block, cal, part, opener, m, finder, named = [] } ) {
 	const out = { slots: {}, notes: [] };
 	const home = partHome( db, block, cal, part, null );
 	if ( null === home ) {
@@ -89,7 +94,27 @@ export function partSlots( { db, block, cal, part, opener, m, finder } ) {
 	const paths = subPartPaths( db, block, cal, part, homeSlot );
 	// The steps below the part that hold a repeated part: a prefix some calibrated path follows with a `:nth-of-type` step.
 	const holders = new Set( paths.flatMap( ( p ) => p.split( ' > ' ).flatMap( ( s, i, all ) => ( i > 0 && NTH.test( s ) ? [ all.slice( 0, i ).join( ' > ' ) ] : [] ) ) ) );
+	// The roles' calibrated slots: the part's home slot as the calibration writes it (nth steps kept), and where it lies.
+	const settingSlots = Object.values( cal.settings ).map( ( s ) => s.slot ).filter( ( p ) => 'string' === typeof p );
+	const roles = named.filter( ( n ) => n?.part ).map( ( n ) => {
+		const at = partHome( db, block, cal, n.part, null );
+		return { ...n, at, slot: null === at ? null : settingSlots.find( ( p ) => LOOSE( p ) === at ) };
+	} ).filter( ( n ) => n.slot );
+	roles.filter( ( n ) => n.element ).forEach( ( n ) => ( out.slots[ n.slot ] = finder( n.element ) ) );
 	for ( const p of paths ) {
+		const plain = p.replace( PSEUDO, '' );
+		const role = roles.find( ( n ) => LOOSE( plain ) === n.at || LOOSE( plain ).startsWith( `${ n.at } > ` ) );
+		if ( role ) {
+			// The role's own slot (and its pseudo-element layers) is read at the role's element; a path under it is walked from there.
+			if ( ! role.element ) {
+				p === role.slot && out.notes.push( `${ p }: the draft draws no element for this part of ${ block }` );
+			} else if ( LOOSE( plain ) !== role.at ) {
+				const below = p.split( ' > ' ).slice( role.slot.split( ' > ' ).length );
+				const under = walk( below, role.element, kids );
+				under.el ? ( out.slots[ p ] = finder( under.el ) ) : out.notes.push( `${ p }: ${ under.note ?? 'the draft has no element for this step' }` );
+			}
+			continue;
+		}
 		const steps = p.slice( homeSlot.length + 3 ).split( ' > ' );
 		const hit = walk( steps, opener, kids, ( i ) => holders.has( [ homeSlot, ...steps.slice( 0, i + 1 ) ].join( ' > ' ) ) );
 		hit.el ? ( out.slots[ p ] = finder( hit.el ) ) : hit.absent ? ( out.slots[ p ] = ABSENT_PART, out.notes.push( `${ p }: ${ hit.note }` ) ) : out.notes.push( `${ p }: ${ hit.note }` );
