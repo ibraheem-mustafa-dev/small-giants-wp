@@ -8,6 +8,8 @@
 //   node site-build.mjs <client> --site <site> --account-registration [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]
 //   node site-build.mjs <client> --site <site> --shop-options [--apply] [--repo <root>]
+//   node site-build.mjs <client> --site <site> --checkout-content [--apply] [--repo <root>]
+//   node site-build.mjs <client> --checkout-content --content <saved checkout page markup> [--repo <root>]
 // Without --apply it prints the plan and the before-and-after table of every option it would change, and writes
 // nothing. With --apply it runs the four phases in order (posts, menus, layout, site), reading the site again before
 // each, and writes each new post id into its page-map row as it is made. The site the ids were written for is recorded
@@ -31,7 +33,12 @@
 // --shop-options runs only the theme's shop options (lib/site-build-shop-options.mjs, data/shop-options.json): each sgs_shop_*
 // theme mod the shop draft decides (the count's words, the sort menu, the filter panel and drawer, the rail's drawer width from
 // the filled tree's ownAlternativeBelow mark), planned against the site's values, written with --apply and read back; every option
-// it cannot decide is printed with the reason. A whole build runs the same step last.
+// it cannot decide is printed with the reason. A whole build runs the same step after its phases.
+// --checkout-content runs only the checkout page's own words, steps and extra blocks (lib/site-build-checkout-content.mjs): what the
+// checkout draft draws (step titles and numbers, the place-order button's words, the summary's words, notes, the gift step, the
+// pay-later line, no order note) written onto the checkout page's WooCommerce block tree, and WooCommerce's account-at-checkout and
+// sign-in reminder options turned on where the draft draws them; written and read back with --apply. --content plans against a
+// saved page's markup instead of the site and prints the planned tree (no site is read or written). A whole build runs it last.
 // A `product` row's menu entry becomes a custom link item (the draft's link text, the product's recorded permalink and the
 // draft href's own query) once --catalogue has built the products on the site (lib/site-build-menu-links.mjs); until then it
 // is a note naming that step, so the order is --catalogue --apply, then the whole build or --menus.
@@ -57,13 +64,15 @@ import { runAccountRegistration } from './lib/site-build-account-registration.mj
 import { runMenus, supersededItems } from './lib/site-build-menus-step.mjs';
 import { menuLinksOf } from './lib/site-build-menu-links.mjs';
 import { runShopOptions } from './lib/site-build-shop-options.mjs';
+import { runCheckoutContent } from './lib/site-build-checkout-content.mjs';
 
 const args = process.argv.slice( 2 );
 const opt = ( name ) => ( args.includes( name ) ? args[ args.indexOf( name ) + 1 ] : null );
 const client = args.find( ( a, i ) => ! a.startsWith( '--' ) && ! args[ i - 1 ]?.startsWith( '--' ) );
 const site = opt( '--site' );
 const promote = opt( '--promote-options' );
-if ( ! client || ( ! site && ! promote ) ) {
+const contentFile = opt( '--content' );
+if ( ! client || ( ! site && ! promote && ! contentFile ) ) {
 	console.error( 'usage: node site-build.mjs <client> --site <site> [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --flow-links [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --promote-options <Fill run folder or file> [--repo <root>]' );
@@ -72,6 +81,8 @@ if ( ! client || ( ! site && ! promote ) ) {
 	console.error( '       node site-build.mjs <client> --site <site> --account-registration [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --menus [--apply] [--repo <root>]' );
 	console.error( '       node site-build.mjs <client> --site <site> --shop-options [--apply] [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --site <site> --checkout-content [--apply] [--repo <root>]' );
+	console.error( '       node site-build.mjs <client> --checkout-content --content <saved checkout page markup> [--repo <root>]' );
 	process.exit( 2 );
 }
 const repo = opt( '--repo' ) || path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../..' );
@@ -80,6 +91,14 @@ if ( promote ) {
 		const r = promoteSiteOptions( { repo, client, from: promote } );
 		console.log( `${ r.changed ? 'wrote' : 'unchanged' } ${ path.relative( repo, r.file ) }: ${ Object.entries( r.options ).map( ( [ n, o ] ) => `${ n } ${ JSON.stringify( o.value ) }` ).join( '; ' ) }` );
 		process.exit( 0 );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
+if ( contentFile ) {
+	try {
+		process.exit( runCheckoutContent( { repo, client, content: fs.readFileSync( path.resolve( contentFile ), 'utf8' ) } ) );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -129,6 +148,14 @@ if ( args.includes( '--account-registration' ) ) {
 if ( args.includes( '--shop-options' ) ) {
 	try {
 		process.exit( runShopOptions( { repo, client, runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
+	} catch ( e ) {
+		console.error( `FAILED: ${ e.message }` );
+		process.exit( 1 );
+	}
+}
+if ( args.includes( '--checkout-content' ) ) {
+	try {
+		process.exit( runCheckoutContent( { repo, client, runPhp: wpEvalRunner( target, site, repo, { readOnly: ! apply } ), apply } ) );
 	} catch ( e ) {
 		console.error( `FAILED: ${ e.message }` );
 		process.exit( 1 );
@@ -219,7 +246,7 @@ try {
 	const counts = tally( first.actions );
 	if ( ! apply ) {
 		console.log( `${ counts.creates } to create, ${ counts.changes } to change (${ first.actions.filter( ( a ) => 'template-remove' === a.type ).length } of them saved templates removed), ${ counts.adopts } to adopt (dry run: re-run with --apply)` );
-		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply: false, pending: true } ) || runAccountRegistration( { rows, repo, client, runPhp, apply: false } ) || runShopOptions( { repo, client, runPhp, apply: false } ) );
+		process.exit( templatesOnly || onlyRows ? 0 : runFlowLinks( { rows, runPhp, apply: false, pending: true } ) || runOpenerLabels( { rows, controlsOf: openerControlsOf( { repo, client } ), runPhp, apply: false, pending: true } ) || runAccountRegistration( { rows, repo, client, runPhp, apply: false } ) || runShopOptions( { repo, client, runPhp, apply: false } ) || runCheckoutContent( { repo, client, runPhp, apply: false } ) );
 	}
 	const build = wpBuildPage( repo, site );
 	// One logged-in browser for every page the run builds, as its own process because the builds below run synchronously
@@ -257,6 +284,10 @@ try {
 	// The theme's shop options, from the shop surface's artefacts (lib/site-build-shop-options.mjs).
 	if ( ! templatesOnly && ! onlyRows && 0 !== runShopOptions( { repo, client, runPhp, apply: true } ) ) {
 		throw new Error( 'the shop options did not complete' );
+	}
+	// The checkout page's own words, steps and extra blocks, once the posts phase has the checkout page (lib/site-build-checkout-content.mjs).
+	if ( ! templatesOnly && ! onlyRows && 0 !== runCheckoutContent( { repo, client, runPhp, apply: true } ) ) {
+		throw new Error( 'the checkout content did not complete' );
 	}
 } catch ( e ) {
 	console.error( `FAILED: ${ e.message }` );

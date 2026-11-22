@@ -66,7 +66,7 @@ function sentWhen( L, addExpr, key ) {
 }
 
 // The length a change handler cuts its value to (`.slice( 0, N )`), or null.
-function cutTo( L, expr ) {
+export function cutTo( L, expr ) {
 	for ( const fn of valuesOf( L, expr ) ) {
 		const cut = L.all.find( ( n ) => n.start >= fn.start && n.end <= fn.end && 'CallExpression' === n.type && 'slice' === n.callee?.property?.name && 0 === n.arguments[ 0 ]?.value && 'NumericLiteral' === n.arguments[ 1 ]?.type );
 		if ( cut ) {
