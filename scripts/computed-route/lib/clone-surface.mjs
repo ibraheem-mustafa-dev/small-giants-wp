@@ -10,6 +10,7 @@
 //     newest Fill (site-run.mjs::fillOutDir) and does not Fill again; the retry's records replace the failed ones.
 //   - surfaceVerdict: every stage of every surface that ran, one line each (`ok`, `skip`, `FAIL`), and whether the pass is clean: a
 //     failed stage or a stage that did not run (other than one recorded not applicable) fails it.
+//   - prepare: the site settings an account surface's draft needs (clone-surface.mjs::accountStep), set before the run so its walk sees them.
 //   - cloneSurfaces: the sequence, with the site-run launch injected (`run`), so tests run no site.
 // Solve (solve.mjs) is not a stage here: it reads the committed stage-3 tree named by surfaces.json `tree`, which a site run does not
 // write (the run builds Fill's own filled.tree.json), so a Solve after this command would repair a different tree from the one built.
@@ -97,9 +98,10 @@ export function surfaceVerdict( { status, keys, runDir = null } ) {
 	return { ok: ! failed.length && ! skipped.length && ! missing.length, lines, failed, skipped, missing };
 }
 
-// The whole command. `run( args )` launches one site-run.mjs and resolves { status, runDir, error }, `status` being its status.json (null
+// The whole command. `prepare( { keys } )` (optional) sets the site settings the draft needs before the run and resolves { ok, detail } or null;
+// a failure stops the command before the run. `run( args )` launches one site-run.mjs and resolves { status, runDir, error }, `status` being its status.json (null
 // when the run stopped before any stage, with `error` the reason). `noIntake` is the manifest's noIntake list for `keys`. Returns { ok, lines, failed, skipped, missing } and logs each line.
-export async function cloneSurfaces( { client, site, keys, intake, surfaces, run, noIntake = [], allowMissingPaint = [], allowUnpicked = false, retry = true, jobs = 1, log = console.log } ) {
+export async function cloneSurfaces( { client, site, keys, intake, surfaces, run, noIntake = [], prepare = null, allowMissingPaint = [], allowUnpicked = false, retry = true, jobs = 1, log = console.log } ) {
 	const say = ( l ) => log( l );
 	const unknown = keys.filter( ( k ) => ! Object.hasOwn( surfaces, k ) );
 	if ( unknown.length ) {
@@ -110,6 +112,12 @@ export async function cloneSurfaces( { client, site, keys, intake, surfaces, run
 	picks.forEach( ( p ) => say( p.ok ? `ok   ${ p.key } finalise - ${ p.detail }` : `FAIL ${ p.key } finalise - ${ p.detail }; next: ${ p.next }` ) );
 	if ( picks.some( ( p ) => ! p.ok ) ) {
 		return { ok: false, lines: [], failed: picks.filter( ( p ) => ! p.ok ).map( ( p ) => `${ p.key } finalise: ${ p.detail }` ), skipped: [], missing: [] };
+	}
+	// The site settings a surface's draft needs before its run (the account page's registration options): { ok, detail } or null when none applies.
+	const prepared = prepare ? await prepare( { keys } ) : null;
+	prepared && say( `${ prepared.ok ? 'ok  ' : 'FAIL' } ${ keys.join( ', ' ) } prepare - ${ prepared.detail }` );
+	if ( prepared && ! prepared.ok ) {
+		return { ok: false, lines: [], failed: [ `prepare: ${ prepared.detail }` ], skipped: [], missing: [] };
 	}
 	const first = await run( siteRunArgs( { client, site, keys, jobs, allowMissingPaint } ) );
 	if ( ! first.status ) {

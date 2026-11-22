@@ -210,3 +210,21 @@ test( 'MUST FAIL: the command refuses a protected site and a usage error before 
 	assert.equal( launched, 0 );
 	assert.match( fs.readFileSync( path.join( ROUTE, 'clone-surface.mjs' ), 'utf8' ), /return verdict\.ok \? 0 : 1;/ );
 } );
+
+test( 'MUST FAIL: the prepare step runs before the site run and a failure of it stops the command with no run', async () => {
+	const order = [];
+	const lines = [];
+	const go = ( prepare ) => cloneSurfaces( { client: 'acme', site: 's', keys: [ 'drawer' ], intake, surfaces, prepare, run: async () => ( order.push( 'run' ), { status: clean( [ 'drawer' ] ) } ), log: ( l ) => lines.push( l ) } );
+	const fine = await go( async ( { keys } ) => ( order.push( `prepare ${ keys }` ), { ok: true, detail: 'options set' } ) );
+	assert.deepEqual( order, [ 'prepare drawer', 'run' ] );
+	assert.equal( fine.ok, true );
+	assert.match( lines.join( ' ' ), /ok   drawer prepare - options set/ );
+	order.length = 0;
+	const bad = await go( async () => ( { ok: false, detail: 'still reads no' } ) );
+	assert.equal( bad.ok, false );
+	assert.deepEqual( order, [], 'no run started' );
+	assert.deepEqual( bad.failed, [ 'prepare: still reads no' ] );
+	order.length = 0;
+	assert.equal( ( await go( async () => null ) ).ok, true, 'negative control: a surface with nothing to prepare runs as before' );
+	assert.deepEqual( order, [ 'run' ] );
+} );

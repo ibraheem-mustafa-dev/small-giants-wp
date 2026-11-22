@@ -2,12 +2,13 @@
 	{ "file": "lib/site-build-account-registration.mjs", "find": "\treturn !! scope && null !== authForms( scope, tokens ).register;", "replace": "\treturn false;", "why": "a register form is never seen" },
 	{ "file": "lib/site-build-account-registration.mjs", "find": "\treturn !! scope && null !== authForms( scope, tokens ).register;", "replace": "\treturn true;", "why": "every draft is read as drawing a register form" },
 	{ "file": "lib/site-build-account-registration.mjs", "find": "\tconst scope = root ? inventoryTree( inventory, root.key ) : null;", "replace": "\tconst scope = inventoryTree( inventory, ( inventory?.elements || [] )[ 0 ]?.key );", "why": "the scope is the whole inventory, not the page element" },
-	{ "file": "lib/site-build-account-registration.mjs", "find": "\tif ( 'yes' === String( current ?? '' ) ) {", "replace": "\tif ( false ) {", "why": "a site already reading yes is planned a change" },
+	{ "file": "lib/site-build-account-registration.mjs", "find": "\tconst todo = wants.filter( ( w ) => w.before !== w.value );", "replace": "\tconst todo = wants;", "why": "a site already reading each value is planned a change" },
 	{ "file": "lib/site-build-account-registration.mjs", "find": "\tif ( ! drawn.length ) {", "replace": "\tif ( false ) {", "why": "a draft with no register form is planned the change" },
 	{ "file": "lib/site-build-account-registration.mjs", "find": "\tif ( ! rows.some( ( r ) => SHOP_TYPES.includes( r.postType ) ) ) {", "replace": "\tif ( false ) {", "why": "a client with no shop row is planned the change" },
 	{ "file": "lib/site-build-account-registration.mjs", "find": "\t\tif ( ! fs.existsSync( file ) ) {", "replace": "\t\tif ( false ) {", "why": "a missing inventory is read as a draft with no form instead of a note" },
-	{ "file": "lib/site-build-account-registration.mjs", "find": "value: 'yes', say:", "replace": "value: 'no', say:", "why": "the planned value is not yes" },
+	{ "file": "lib/site-build-account-registration.mjs", "find": "value: w.value, say:", "replace": "value: 'no', say:", "why": "the planned registration value is not the wanted one" },
 	{ "file": "lib/site-build-account-registration.mjs", "find": "\tif ( ! apply ) {", "replace": "\tif ( false ) {", "why": "a dry run writes" },
-	{ "file": "lib/site-build-account-registration.mjs", "find": "\tif ( 'yes' !== after ) {", "replace": "\tif ( false ) {", "why": "a write that did not stick reads as done" },
-	{ "file": "lib/site-build-account-registration.mjs", "find": "\tconst current = drafts.account.some( ( a ) => a.draws ) ? readRegistration( runPhp ) : null;", "replace": "\tconst current = 'yes';", "why": "the option is never read, so a site holding no is never changed" }
+	{ "file": "lib/site-build-account-registration.mjs", "find": "\tif ( stuck.length ) {", "replace": "\tif ( false ) {", "why": "a write that did not stick reads as done" },
+	{ "file": "lib/site-build-account-registration.mjs", "find": "\tconst current = drafts.account.some( ( a ) => a.draws ) ? readRegistration( runPhp ) : null;", "replace": "\tconst current = 'yes';", "why": "the option is never read, so a site holding no is never changed" },
+	{ "file": "lib/site-build-account-registration.mjs", "find": "value: 'no', before: held.generate", "replace": "value: 'yes', before: held.generate", "why": "password generation is planned on, not off" }
 ]

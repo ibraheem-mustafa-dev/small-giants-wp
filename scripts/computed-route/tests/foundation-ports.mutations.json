@@ -7,8 +7,8 @@
 	},
 	{
 		"file": "lib/foundation-ports.mjs",
-		"find": "\t\t\tassertSiteContact( { site, target, readOnly: true } );\n\t\t\ttry {",
-		"replace": "\t\t\ttry {",
+		"find": "\t\t\tassertSiteContact( { site, target, readOnly: true } );\n\t\t\treturn restProbe( { creds } );",
+		"replace": "\t\t\treturn restProbe( { creds } );",
 		"why": "the REST check ignores the kill switch"
 	},
 	{

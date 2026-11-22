@@ -7,9 +7,12 @@
 // The draft's evidence is the account row's skeleton inventory (sites/<client>/build/skeleton/<surface>.inventory.json): the
 // shown elements hold a create-account form, told by its fields' autocomplete tokens (a new-password field and an email or
 // username field, no current-password field: lib/template-piece-account-read.mjs::authForms, tokens in data/account-parts.json).
-// The step only ever turns the option ON: a draft with no register form (or no inventory to read) leaves the option as the site
-// holds it, a site that already reads `yes` plans nothing, and a client with no shop row never touches it (WooCommerce's option).
-// `site-build.mjs --account-registration [--apply]` runs it alone; a whole build runs it after its phases, as the flow links do.
+// The same draft sets `woocommerce_registration_generate_password` to `no`: its register form holds a new-password field, which WooCommerce shows
+// only when it does not generate the customer's password. The step only ever turns registration ON: a draft with no register form (or no
+// inventory to read) leaves both options as the site holds them, a site that already reads each value plans nothing, and a client with no
+// shop row never touches them (WooCommerce's options).
+// `site-build.mjs --account-registration [--apply]` runs it alone; a whole build runs it after its phases, as the flow links do; the surface
+// command (clone-surface.mjs) runs it before an account surface's site run, so the walk sees the register card.
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -18,6 +21,7 @@ import { surfaceKey } from './manifest-build.mjs';
 import { authForms, inventoryTree } from './template-piece-account-read.mjs';
 
 export const REGISTRATION_OPTION = 'woocommerce_enable_myaccount_registration';
+export const GENERATE_OPTION = 'woocommerce_registration_generate_password';
 const PARTS_FILE = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'data', 'account-parts.json' );
 
 // The autocomplete tokens that tell the forms apart (data/account-parts.json `tokens`).
@@ -51,36 +55,44 @@ export function accountDrafts( { rows, repo, client } ) {
 	return { account: out, notes };
 }
 
-// The plan from the drafts and the option as the site reads it: { actions, options, notes }. One action (`yes`) when a draft
-// draws a register form and the site does not read `yes`; never a write of `no`.
+// The plan from the drafts and the site's two options ({ registration, generate }, as readRegistration reads them): { actions, options,
+// notes }. A draft that draws a register form turns registration `yes` when the site does not read it, and sets
+// `woocommerce_registration_generate_password` to `no` when the site does not read that: the drawn form holds a new-password field, and WooCommerce
+// shows that field only when it does not generate the customer's password. Never a write of `no` to registration, and a draft with no register
+// form plans neither.
 export function planRegistration( { account, notes: before = [] }, current ) {
 	const notes = [ ...before ];
 	const drawn = account.filter( ( a ) => a.draws );
 	if ( ! drawn.length ) {
-		account.length && notes.push( `${ account.map( ( a ) => a.row.slug ).join( ', ' ) }: the draft draws no register form; ${ REGISTRATION_OPTION } is left as it is` );
+		account.length && notes.push( `${ account.map( ( a ) => a.row.slug ).join( ', ' ) }: the draft draws no register form; ${ REGISTRATION_OPTION } and ${ GENERATE_OPTION } are left as they are` );
 		return { actions: [], options: [], notes };
 	}
-	if ( 'yes' === String( current ?? '' ) ) {
-		notes.push( `${ REGISTRATION_OPTION } already reads "yes": the account card shows its register form` );
-		return { actions: [], options: [], notes };
-	}
+	const slugs = drawn.map( ( a ) => a.row.slug ).join( ', ' );
+	const held = { registration: String( current?.registration ?? '' ), generate: String( current?.generate ?? '' ) };
+	const wants = [
+		{ name: REGISTRATION_OPTION, value: 'yes', before: held.registration, why: `the ${ slugs } draft draws a register form, which the account block shows only when WooCommerce allows registration` },
+		{ name: GENERATE_OPTION, value: 'no', before: held.generate, why: `the ${ slugs } draft's register form holds a new-password field, which WooCommerce shows only when it does not generate the password` },
+	];
+	const todo = wants.filter( ( w ) => w.before !== w.value );
+	wants.filter( ( w ) => w.before === w.value ).forEach( ( w ) => notes.push( `${ w.name } already reads "${ w.value }"` ) );
 	return {
-		actions: [ { phase: 'site', type: 'option', name: REGISTRATION_OPTION, value: 'yes', say: `option ${ REGISTRATION_OPTION }: ${ JSON.stringify( String( current ?? '' ) ) } -> yes (the ${ drawn.map( ( a ) => a.row.slug ).join( ', ' ) } draft draws a register form, which the account block shows only when WooCommerce allows registration)` } ],
-		options: [ { name: REGISTRATION_OPTION, before: String( current ?? '' ), after: 'yes' } ],
+		actions: todo.map( ( w ) => ( { phase: 'site', type: 'option', name: w.name, value: w.value, say: `option ${ w.name }: ${ JSON.stringify( w.before ) } -> ${ w.value } (${ w.why })` } ) ),
+		options: todo.map( ( w ) => ( { name: w.name, before: w.before, after: w.value } ) ),
 		notes,
 	};
 }
 
-const readPhp = () => `echo wp_json_encode( array( 'value' => (string) get_option( '${ REGISTRATION_OPTION }' ) ) );`;
-const writePhp = () => `update_option( '${ REGISTRATION_OPTION }', 'yes' ); echo 'ok';`;
+const readPhp = () => `echo wp_json_encode( array( 'registration' => (string) get_option( '${ REGISTRATION_OPTION }' ), 'generate' => (string) get_option( '${ GENERATE_OPTION }' ) ) );`;
+const writePhp = ( options ) => `${ options.map( ( o ) => `update_option( '${ o.name }', '${ o.after }' );` ).join( ' ' ) } echo 'ok';`;
 
+// The two options as the site reads them: { registration, generate }.
 export function readRegistration( runPhp ) {
 	const text = String( runPhp( readPhp() ) );
 	const start = text.indexOf( '{' );
 	if ( start < 0 ) {
 		throw new Error( `the account registration read printed no JSON: ${ text.slice( 0, 300 ) }` );
 	}
-	return JSON.parse( text.slice( start ) ).value;
+	return JSON.parse( text.slice( start ) );
 }
 
 // Runs the step: prints the plan, and with `apply` writes the option and reads it back. Returns the exit code (0 done or nothing
@@ -97,15 +109,16 @@ export function runAccountRegistration( { rows, repo, client, runPhp, apply, log
 	}
 	plan.actions.forEach( ( a ) => log( `account registration: ${ a.say }` ) );
 	if ( ! apply ) {
-		log( 'account registration: 1 option to change (dry run: re-run with --apply)' );
+		log( `account registration: ${ plan.options.length } option${ 1 === plan.options.length ? '' : 's' } to change (dry run: re-run with --apply)` );
 		return 0;
 	}
-	runPhp( writePhp() );
+	runPhp( writePhp( plan.options ) );
 	const after = readRegistration( runPhp );
-	if ( 'yes' !== after ) {
-		error( `FAILED: ${ REGISTRATION_OPTION } still reads ${ JSON.stringify( after ) } after the write` );
+	const stuck = plan.options.filter( ( o ) => after[ REGISTRATION_OPTION === o.name ? 'registration' : 'generate' ] !== o.after );
+	if ( stuck.length ) {
+		error( `FAILED: ${ stuck.map( ( o ) => `${ o.name } still reads ${ JSON.stringify( after[ REGISTRATION_OPTION === o.name ? 'registration' : 'generate' ] ) }` ).join( ', ' ) } after the write` );
 		return 1;
 	}
-	log( `account registration: ${ REGISTRATION_OPTION } now reads "yes"; the account block shows its register form` );
+	log( `account registration: ${ plan.options.map( ( o ) => `${ o.name } now reads "${ o.after }"` ).join( ', ' ) }; the account block shows its register form` );
 	return 0;
 }
