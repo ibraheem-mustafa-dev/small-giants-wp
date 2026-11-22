@@ -724,6 +724,15 @@
 		"cardAction": {
 			"block": "sgs/button",
 			"maxWords": 4,
+			"typedArrows": {
+				"→": { "icon": "arrow-right" },
+				"➜": { "icon": "arrow-right" },
+				"›": { "icon": "chevron-right" },
+				"»": { "icon": "chevrons-right" },
+				"↗": { "icon": "arrow-up-right" },
+				"←": { "icon": "arrow-left", "iconPosition": "before" }
+			},
+			"typedArrowReason": "an arrow typed as a character in a box of its own after the words of a call to action (the hand-built reference shop's \"Shop gifts\" with its arrow in a filled circle is an sgs/button with icon arrow-right and an icon background) is that button's icon, not a text leaf: the call to action is the element holding the words, the arrow leaf is absorbed into it as its icon part, and the card's link goes on the button (a card whose last text leaf was the arrow had no action, so its link was dropped)",
 			"reason": "a card link that ends in a short call to action (a glyph beside it, or below two other pieces of text) is a plain card, and the call to action is the button that holds the link (Bean, 2026-10-13: the card is not a link; the button is the link)"
 		},
 		"formControl": {

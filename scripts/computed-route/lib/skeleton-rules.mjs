@@ -280,6 +280,12 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		}
 		return null;
 	};
+	// The setting a typed arrow leaf ("→" in a filled circle after the words of a call to action) names, from
+	// rules.cardAction.typedArrows, or null: a leaf whose only words are one such arrow.
+	const typedArrowOf = ( k ) => ( ! m.blockKids( k ).length ? R.cardAction?.typedArrows?.[ m.words( k ).trim() ] ?? null : null );
+	// An element that holds words of its own and, besides them, only typed arrows and bare decorations: the call to action
+	// the arrow ends. It is no card link itself.
+	const ownsWordsBesideArrow = ( h, card ) => !! h && h !== card && 'a' !== h.tag && !! m.words( h ).trim() && m.blockKids( h ).every( ( k ) => !! typedArrowOf( k ) || bare( k ) );
 	// The first piece of text in a whole-card link titles it.
 	const titlesCard = ( e ) => {
 		const card = cardOf( e );
@@ -288,13 +294,15 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	// The call to action that ends a card link: its last piece of text, short, after the title, either with a glyph beside
 	// it or below at least two other pieces of text. Returns that element, or null.
 	const cardAction = ( card ) => {
-		const texts = textLeaves( card );
+		// A typed arrow (rules.cardAction.typedArrows) is the glyph of the element holding the words beside it: that element is
+		// the call to action, not the arrow.
+		const texts = textLeaves( card ).map( ( k ) => typedArrowOf( k ) && ownsWordsBesideArrow( m.byKey[ k.parentKey ], card ) ? m.byKey[ k.parentKey ] : k );
 		const last = texts.at( -1 );
 		if ( ! last || texts.length < 2 || m.words( last ).split( ' ' ).length > ( R.cardAction?.maxWords ?? 4 ) || numberOnly( last ) ) {
 			return null;
 		}
 		const holder = m.byKey[ last.parentKey ];
-		const glyph = [ ...m.kids( last ), ...( holder && holder !== card ? m.kids( holder ) : [] ) ].some( ( k ) => 'svg' === k.tag || iconOnly( k ) || bindingGlyph( k ) );
+		const glyph = [ ...m.kids( last ), ...( holder && holder !== card ? m.kids( holder ) : [] ) ].some( ( k ) => 'svg' === k.tag || iconOnly( k ) || bindingGlyph( k ) || !! typedArrowOf( k ) );
 		return glyph || texts.length >= 3 ? last : null;
 	};
 	// The card link an element is the call to action of in this copy, or null.
@@ -825,7 +833,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			}
 			const lk = linkKindOf( card );
 			const link = lk ? { attributes: { linkSource: lk.source } } : realHref( card ) ? siteLinkOf( 'url', card ) : { attributes: {} };
-			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: m.words( e ), ...link.attributes } } );
+			// A typed arrow after the words is the button's icon (rules.cardAction.typedArrows), the arrow leaf's own look read at the
+			// icon part once the leaf is absorbed (lib/skeleton-part-pairing.mjs).
+			const arrow = m.blockKids( e ).map( typedArrowOf ).find( Boolean );
+			return v( 'cardAction', { block: R.cardAction?.block, ...link, attributes: { label: m.words( e ).trim(), ...( arrow ? { ...arrow } : {} ), ...link.attributes } } );
 		},
 		// A short run of words: the first in a header or footer row's column heads it; set in capitals, wide tracking or a
 		// pill it is a kicker. A control the visitor operates and a bare number are neither.
