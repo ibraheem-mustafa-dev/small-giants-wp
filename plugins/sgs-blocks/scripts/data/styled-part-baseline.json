@@ -66,7 +66,7 @@
     },
     "parts": {
       "_comment": "Every BEM part with a literal look and no setting, keyed file::symbol::part.",
-      "ceiling": 269,
+      "ceiling": 265,
       "entries": {
         "plugins/sgs-blocks/src/blocks/accordion/style.css::(file)::chevron": 1,
         "plugins/sgs-blocks/src/blocks/accordion/style.css::(file)::icon-close": 1,
@@ -136,11 +136,7 @@
         "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::item-add-options": 1,
         "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::item-save-for-later": 1,
         "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-error": 1,
-        "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-gift": 1,
         "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-gift-error": 1,
-        "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-gift-field-label": 1,
-        "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-gift-help": 1,
-        "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-gift-label": 1,
         "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-header": 1,
         "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-items": 1,
         "plugins/sgs-blocks/src/blocks/cart/style.css::(file)::panel-loading": 1,

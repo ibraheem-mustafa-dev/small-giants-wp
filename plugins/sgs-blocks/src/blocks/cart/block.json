@@ -1023,6 +1023,14 @@
 						"css:border-radius": "upsellButtonRadius",
 						"css:padding": "upsellButtonPadding"
 					},
+					"states": {
+						"hover": {
+							"attrMap": {
+								"css:color": "upsellButtonColourHover",
+								"css:background-color": "upsellButtonBgHover"
+							}
+						}
+					},
 					"absentIn": [
 						"icon-link",
 						"pill-link"
@@ -2084,7 +2092,7 @@
 		"upsellProductId": {"type": "integer", "default": 0, "description": "A product offered in a row under the basket lines, with an Add button (0 prints no row). The row hides while that product is in the basket. A simple product, or a variable product whose default options are all set, is added in one tap; any other product makes the button a link to its page."},
 		"upsellTitle": {"type": "string", "default": "", "description": "The upsell row's heading. Empty uses the product's name."},
 		"upsellText": {"type": "string", "default": "", "description": "A line of text under the upsell heading; {price} is replaced with the product's current price. Empty prints none."},
-		"upsellButtonLabel": {"type": "string", "default": "Add", "description": "The upsell button's label; {price} is replaced with the product's current price."},
+		"upsellButtonLabel": {"type": "string", "default": "Add", "description": "The label on the upsell row's button; {price} is replaced with the product's current price."},
 		"upsellShowImage": {"type": "boolean", "default": true, "description": "Show the product's picture at the start of the upsell row."},
 		"upsellBg": {"type": "string", "default": "", "description": "Upsell row background colour."},
 		"upsellRadius": {"type": "string", "default": "", "description": "Upsell row corner radius (CSS length)."},

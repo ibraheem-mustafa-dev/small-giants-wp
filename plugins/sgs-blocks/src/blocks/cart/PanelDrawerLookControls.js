@@ -71,24 +71,6 @@ export default function PanelDrawerLookControls( {
 			onChange={ ( val ) => setAttributes( { [ attr ]: val || '' } ) }
 		/>
 	);
-	const border = ( prefix ) => (
-		<SgsBorderControl
-			widthValues={ attributes[ `${ prefix }BorderWidth` ] ?? {} }
-			onWidthChange={ ( next ) =>
-				setAttributes( { [ `${ prefix }BorderWidth` ]: next } )
-			}
-			styleValue={ attributes[ `${ prefix }BorderStyle` ] }
-			onStyleChange={ ( val ) =>
-				setAttributes( { [ `${ prefix }BorderStyle` ]: val } )
-			}
-			colourValue={ attributes[ `${ prefix }BorderColour` ] }
-			onColourChange={ ( val ) =>
-				setAttributes( { [ `${ prefix }BorderColour` ]: val ?? '' } )
-			}
-			colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
-			colourLinked
-		/>
-	);
 	const removeText = 'text' === attributes.itemRemoveStyle;
 	const stepper =
 		'stepper' === attributes.itemQtyStyle &&
@@ -232,7 +214,22 @@ export default function PanelDrawerLookControls( {
 					title={ __( 'Mini-cart gift box look', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					{ border( 'giftBox' ) }
+					<SgsBorderControl
+						widthValues={ attributes.giftBoxBorderWidth ?? {} }
+						onWidthChange={ ( next ) =>
+							setAttributes( { giftBoxBorderWidth: next } )
+						}
+						styleValue={ attributes.giftBoxBorderStyle }
+						onStyleChange={ ( val ) =>
+							setAttributes( { giftBoxBorderStyle: val } )
+						}
+						colourValue={ attributes.giftBoxBorderColour }
+						onColourChange={ ( val ) =>
+							setAttributes( { giftBoxBorderColour: val ?? '' } )
+						}
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourLinked
+					/>
 					{ radius(
 						'giftBoxRadius',
 						__( 'Gift box corners', 'sgs-blocks' )
@@ -264,7 +261,24 @@ export default function PanelDrawerLookControls( {
 							),
 						] }
 					/>
-					{ border( 'giftField' ) }
+					<SgsBorderControl
+						widthValues={ attributes.giftFieldBorderWidth ?? {} }
+						onWidthChange={ ( next ) =>
+							setAttributes( { giftFieldBorderWidth: next } )
+						}
+						styleValue={ attributes.giftFieldBorderStyle }
+						onStyleChange={ ( val ) =>
+							setAttributes( { giftFieldBorderStyle: val } )
+						}
+						colourValue={ attributes.giftFieldBorderColour }
+						onColourChange={ ( val ) =>
+							setAttributes( {
+								giftFieldBorderColour: val ?? '',
+							} )
+						}
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourLinked
+					/>
 					{ radius(
 						'giftFieldRadius',
 						__( 'Field corners', 'sgs-blocks' )
@@ -344,7 +358,24 @@ export default function PanelDrawerLookControls( {
 							),
 						] }
 					/>
-					{ border( 'upsellButton' ) }
+					<SgsBorderControl
+						widthValues={ attributes.upsellButtonBorderWidth ?? {} }
+						onWidthChange={ ( next ) =>
+							setAttributes( { upsellButtonBorderWidth: next } )
+						}
+						styleValue={ attributes.upsellButtonBorderStyle }
+						onStyleChange={ ( val ) =>
+							setAttributes( { upsellButtonBorderStyle: val } )
+						}
+						colourValue={ attributes.upsellButtonBorderColour }
+						onColourChange={ ( val ) =>
+							setAttributes( {
+								upsellButtonBorderColour: val ?? '',
+							} )
+						}
+						colourLabel={ __( 'Border colour', 'sgs-blocks' ) }
+						colourLinked
+					/>
 					{ radius(
 						'upsellButtonRadius',
 						__( 'Button corners', 'sgs-blocks' )

@@ -68,7 +68,7 @@ function SampleItem( { attrs, s } ) {
 						{ 'stepper' === attrs.itemQtyStyle ? (
 							<div className="sgs-cart__item-stepper" style={ s.qty }>
 								<span className="sgs-cart__item-qty-step sgs-cart__item-qty-step--minus" aria-hidden="true">&minus;</span>
-								<input type="number" className="sgs-cart__item-qty-input" value={ 2 } readOnly tabIndex={ -1 } aria-label={ __( 'Quantity', 'sgs-blocks' ) } />
+								<input type="number" className="sgs-cart__item-qty-input" value={ 2 } readOnly tabIndex={ -1 } aria-label={ __( 'Quantity', 'sgs-blocks' ) } style={ s.qtyNumber } />
 								<span className="sgs-cart__item-qty-step sgs-cart__item-qty-step--plus" aria-hidden="true">+</span>
 							</div>
 						) : (
@@ -138,6 +138,39 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 	const emptyRich = '' !== emptyImageUrl || '' !== emptyBody || emptyHasButton || '' !== ( attributes.emptyCtaUrl || '' ).trim();
 	const emptyButtonLabel = ( attributes.emptyButtonLabel || '' ).trim() || __( 'Add to basket', 'sgs-blocks' );
 	const giftHelp = ( attributes.panelGiftHelp || '' ).trim();
+	// The gift box sits inside the item list under the lines when placed after the items, else above the footer.
+	const giftAfterItems = 'after-items' === attributes.panelGiftPlacement;
+	const giftBox = attributes.panelGiftShow && (
+		<div className={ `sgs-cart__panel-gift${ giftAfterItems ? ' sgs-cart__panel-gift--after-items' : '' }` } style={ s.giftBox }>
+			<label className="sgs-cart__panel-gift-switch">
+				<input type="checkbox" className="sgs-cart__panel-gift-checkbox" disabled />
+				<span className="sgs-cart__panel-gift-text">
+					<span className="sgs-cart__panel-gift-label" style={ s.giftLabel }>{ attributes.panelGiftLabel }</span>
+					{ '' !== giftHelp && <span className="sgs-cart__panel-gift-help" style={ s.giftHelp }>{ giftHelp }</span> }
+				</span>
+			</label>
+			<div className="sgs-cart__panel-gift-fields">
+				<span className="sgs-cart__panel-gift-field-label">{ attributes.panelGiftToLabel }</span>
+				<input type="text" className="sgs-cart__panel-gift-to" readOnly tabIndex={ -1 } aria-hidden="true" style={ s.giftField } />
+				<span className="sgs-cart__panel-gift-field-label">{ attributes.panelGiftMessageLabel }</span>
+				<textarea className="sgs-cart__panel-gift-message" rows={ 2 } readOnly tabIndex={ -1 } aria-hidden="true" style={ { ...s.giftField, ...s.giftMessage } } />
+			</div>
+		</div>
+	);
+	// The upsell row under the basket lines, shown in the canvas whenever a product is chosen.
+	const upsellLabel = ( attributes.upsellButtonLabel || '' ).trim() || __( 'Add', 'sgs-blocks' );
+	const upsell = Number( attributes.upsellProductId ) > 0 && (
+		<div className="sgs-cart__panel-upsell" style={ s.upsell }>
+			{ false !== attributes.upsellShowImage && <span className="sgs-cart__panel-upsell-image sgs-cart__item-thumb--placeholder" aria-hidden="true" style={ s.upsellImage } /> }
+			<div className="sgs-cart__panel-upsell-text">
+				<p className="sgs-cart__panel-upsell-title" style={ s.upsellTitle }>{ ( attributes.upsellTitle || '' ).trim() || __( 'Chosen product', 'sgs-blocks' ) }</p>
+				{ '' !== ( attributes.upsellText || '' ).trim() && (
+					<p className="sgs-cart__panel-upsell-body" style={ s.upsellText }>{ attributes.upsellText.replace( '{price}', '£5.00' ) }</p>
+				) }
+			</div>
+			<span className="sgs-cart__panel-upsell-add" style={ s.upsellButton }>{ upsellLabel.replace( '{price}', '£5.00' ) }</span>
+		</div>
+	);
 	// The footer's actions: View cart as a button or a link, and Checkout first when the two are stacked (as the markup orders them).
 	const stacked = 'stacked' === attributes.panelActionsLayout;
 	const viewCart = false !== attributes.panelShowViewCart && (
@@ -203,12 +236,12 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 								) : (
 									<p className="sgs-cart__panel-empty-message" style={ s.emptyMessage }><AuthoredText value={ attributes.emptyCartMessage } /></p>
 								) }
-								{ emptyRich && '' !== emptyBody && <AuthoredText as="p" className="sgs-cart__panel-empty-body" value={ emptyBody } /> }
+								{ emptyRich && '' !== emptyBody && <AuthoredText as="p" className="sgs-cart__panel-empty-body" style={ s.emptyBody } value={ emptyBody } /> }
 								{ emptyRich && emptyHasButton && (
 									<span className="sgs-cart__panel-empty-cta sgs-cart__panel-empty-add" style={ s.emptyCta }>{ emptyButtonLabel.replace( '{price}', '£5.00' ) }</span>
 								) }
 								{ ( ! emptyRich || '' !== ( attributes.emptyCartCtaLabel || '' ).trim() ) && (
-									<span className={ emptyRich ? 'sgs-cart__panel-empty-link' : 'sgs-cart__panel-empty-cta' } style={ emptyRich ? undefined : s.emptyCta }><AuthoredText value={ attributes.emptyCartCtaLabel } /></span>
+									<span className={ emptyRich ? 'sgs-cart__panel-empty-link' : 'sgs-cart__panel-empty-cta' } style={ emptyRich ? s.emptyLink : s.emptyCta }><AuthoredText value={ attributes.emptyCartCtaLabel } /></span>
 								) }
 							</div>
 						</div>
@@ -225,21 +258,10 @@ export default function PanelPreview( { attributes, displayMode, tier, palette, 
 							<div className="sgs-cart__panel-items" style={ s.items }>
 								<SampleItem attrs={ attributes } s={ s } />
 								<SampleItem attrs={ attributes } s={ s } />
+								{ giftAfterItems && giftBox }
+								{ upsell }
 							</div>
-							{ attributes.panelGiftShow && (
-								<div className="sgs-cart__panel-gift">
-									<label className="sgs-cart__panel-gift-switch">
-										<input type="checkbox" className="sgs-cart__panel-gift-checkbox" disabled />
-										<span className="sgs-cart__panel-gift-text">
-											<span className="sgs-cart__panel-gift-label">{ attributes.panelGiftLabel }</span>
-											{ '' !== giftHelp && <span className="sgs-cart__panel-gift-help">{ giftHelp }</span> }
-										</span>
-									</label>
-									<span className="components-base-control__help">
-										{ __( 'When ticked it asks:', 'sgs-blocks' ) } { attributes.panelGiftToLabel }, { attributes.panelGiftMessageLabel }
-									</span>
-								</div>
-							) }
+							{ ! giftAfterItems && giftBox }
 							<div className="sgs-cart__panel-footer" style={ s.footer }>
 								<div className="sgs-cart__panel-subtotal" style={ s.subtotal }>
 									<span className="sgs-cart__panel-subtotal-label">{ __( 'Subtotal', 'sgs-blocks' ) }</span>

@@ -46,6 +46,9 @@ export function panelElementStyles( attributes, tier, palette ) {
 			...typographyPreviewStyle( attributes, 'panelEmpty', tier ),
 			color: colour( attributes.panelEmptyColour ),
 			...tierBoxLonghands( attributes.panelEmptyPadding, tier, 'padding' ),
+			// Centred: the empty block takes the free height of the item list above and below it.
+			marginTop: 'center' === attributes.panelEmptyPlacement ? 'auto' : undefined,
+			marginBottom: 'center' === attributes.panelEmptyPlacement ? 'auto' : undefined,
 		},
 		emptyMessage: {
 			...typographyPreviewStyle( attributes, 'emptyMessage', tier ),
@@ -127,6 +130,9 @@ export function panelElementStyles( attributes, tier, palette ) {
 			'--sgs-cart-editor-close-size': tierLengthPreview( attributes.panelCloseSize, tier ),
 			// A close size set for the tier overrules the button's 44px tap floor, as render.php does.
 			'--sgs-cart-close-tap-min': tierLengthPreview( attributes.panelCloseSize, tier ) ? '0px' : undefined,
+			// The close button's own tap area, when set, wins over both.
+			minWidth: tierLengthPreview( attributes.panelCloseTapSize, tier ),
+			minHeight: tierLengthPreview( attributes.panelCloseTapSize, tier ),
 		},
 		footer: {
 			backgroundColor: colour( attributes.panelFooterBg ),
@@ -142,8 +148,90 @@ export function panelElementStyles( attributes, tier, palette ) {
 			borderRadius: radius( attributes.itemThumbRadius ),
 		},
 		removeText: {
+			...typographyPreviewStyle( attributes, 'itemRemove', tier ),
 			color: colour( attributes.itemRemoveColour ),
 			borderBottomColor: colour( attributes.itemRemoveBorderColour ),
+			// A text decoration replaces the drawn line under the link, as includes/helpers-cart-panel-items-css.php does.
+			borderBottomWidth: attributes.itemRemoveTextDecoration ? 0 : undefined,
+			...tierBoxLonghands( attributes.itemRemovePadding, tier, 'padding' ),
+		},
+		// The number between the stepper buttons.
+		qtyNumber: {
+			width: tierLengthPreview( attributes.itemQtyNumberWidth, tier ),
+			minWidth: tierLengthPreview( attributes.itemQtyNumberWidth, tier ),
+		},
+		emptyBody: {
+			...typographyPreviewStyle( attributes, 'emptyBody', tier ),
+			color: colour( attributes.emptyBodyColour ),
+			maxWidth: tierLengthPreview( attributes.emptyBodyMaxWidth, tier ),
+		},
+		emptyLink: {
+			...typographyPreviewStyle( attributes, 'emptyLink', tier ),
+			color: colour( attributes.emptyLinkColour ),
+			...tierBoxLonghands( attributes.emptyLinkPadding, tier, 'padding' ),
+		},
+		// The gift box, its label, helper line and fields (render: includes/helpers-cart-panel-items-css.php).
+		giftBox: {
+			backgroundColor: colour( attributes.giftBoxBg ),
+			...sgsBorderPreview(
+				{ widthValues: attributes.giftBoxBorderWidth, styleValue: attributes.giftBoxBorderStyle, colourValue: attributes.giftBoxBorderColour },
+				tier,
+				palette
+			),
+			borderRadius: radius( attributes.giftBoxRadius ),
+			...tierBoxLonghands( attributes.giftBoxPadding, tier, 'padding' ),
+			...tierBoxLonghands( attributes.giftBoxMargin, tier, 'margin' ),
+		},
+		giftLabel: {
+			...typographyPreviewStyle( attributes, 'giftLabel', tier ),
+		},
+		giftHelp: {
+			...typographyPreviewStyle( attributes, 'giftHelp', tier ),
+			color: colour( attributes.giftHelpColour ),
+			opacity: attributes.giftHelpColour ? 1 : undefined,
+		},
+		giftField: {
+			backgroundColor: colour( attributes.giftFieldBg ),
+			...sgsBorderPreview(
+				{ widthValues: attributes.giftFieldBorderWidth, styleValue: attributes.giftFieldBorderStyle, colourValue: attributes.giftFieldBorderColour },
+				tier,
+				palette
+			),
+			borderRadius: radius( attributes.giftFieldRadius ),
+			...tierBoxLonghands( attributes.giftFieldPadding, tier, 'padding' ),
+		},
+		giftMessage: {
+			...typographyPreviewStyle( attributes, 'giftMessage', tier ),
+		},
+		// The upsell row under the basket lines (render: includes/helpers-cart-panel-extras.php::sgs_cart_upsell_html).
+		upsell: {
+			backgroundColor: colour( attributes.upsellBg ),
+			borderRadius: radius( attributes.upsellRadius ),
+			...tierBoxLonghands( attributes.upsellPadding, tier, 'padding' ),
+		},
+		upsellImage: {
+			width: tierLengthPreview( attributes.upsellImageSize, tier ),
+			height: tierLengthPreview( attributes.upsellImageSize, tier ),
+			borderRadius: radius( attributes.upsellImageRadius ),
+		},
+		upsellTitle: {
+			...typographyPreviewStyle( attributes, 'upsellTitle', tier ),
+		},
+		upsellText: {
+			...typographyPreviewStyle( attributes, 'upsellText', tier ),
+			color: colour( attributes.upsellTextColour ),
+		},
+		upsellButton: {
+			...typographyPreviewStyle( attributes, 'upsellButton', tier ),
+			backgroundColor: colour( attributes.upsellButtonBg ),
+			color: colour( attributes.upsellButtonColour ),
+			...sgsBorderPreview(
+				{ widthValues: attributes.upsellButtonBorderWidth, styleValue: attributes.upsellButtonBorderStyle, colourValue: attributes.upsellButtonBorderColour },
+				tier,
+				palette
+			),
+			borderRadius: radius( attributes.upsellButtonRadius ),
+			...tierBoxLonghands( attributes.upsellButtonPadding, tier, 'padding' ),
 		},
 		save: {
 			color: colour( attributes.itemActionColour ),

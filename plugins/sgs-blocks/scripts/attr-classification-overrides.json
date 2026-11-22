@@ -6548,6 +6548,14 @@
 		},
 		{
 			"slug": "sgs/cart",
+			"attr": "upsellButtonLabel",
+			"fields": {
+				"role": "text-content"
+			},
+			"_why": "2026-11-22 (shop pages, F-62). The words on the drawer's upsell button: a content attribute with no style behind it; the classifier leaves role NULL, so check-element-manifest-conformance counts it UNCLASSIFIED. Role mirrors its siblings upsellTitle and upsellText (text-content)."
+		},
+		{
+			"slug": "sgs/cart",
 			"attr": "freeDeliveryMessage",
 			"fields": {
 				"role": "text-content"
