@@ -29,8 +29,8 @@ test( 'fill: an inset layer in a hero gets zIndex 0, anchorTo section and 100% s
 	const { writes, handled } = run( { styles: glow } );
 	assert.deepEqual( writes.find( ( w ) => 'zIndex' === w.attr ), { prop: 'z-index', attr: 'zIndex', value: 0 } );
 	assert.equal( writes.find( ( w ) => 'anchorTo' === w.attr ).value, 'section' );
-	assert.equal( writes.find( ( w ) => 'width' === w.attr ).value.desktop, '100%' );
-	assert.equal( writes.find( ( w ) => 'height' === w.attr ).value.desktop, '100%' );
+	assert.equal( writes.find( ( w ) => 'layerWidth' === w.attr ).value.desktop, '100%' );
+	assert.equal( writes.find( ( w ) => 'layerHeight' === w.attr ).value.desktop, '100%' );
 	assert.deepEqual( [ ...handled ].sort(), [ 'height', 'width', 'z-index' ] );
 	assert.equal( run( { name: 'sgs/container', styles: glow } ).writes.length, 0 );
 	assert.equal( run( { slot: '.x', styles: glow } ).writes.length, 0 );

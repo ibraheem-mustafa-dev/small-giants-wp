@@ -87,8 +87,8 @@ test( 'layers: a missing glow is an insert op with the box and fill from the dra
 	assert.equal( item.insert.block, 'sgs/decorative-image' );
 	assert.equal( item.insert.attrs.className, 'cr-ref-demo-L3' );
 	assert.equal( item.insert.attrs.anchorTo, 'section' );
-	assert.equal( item.insert.attrs.width.desktop, '100%' );
-	assert.equal( item.insert.attrs.height.desktop, '100%' );
+	assert.equal( item.insert.attrs.layerWidth.desktop, '100%' );
+	assert.equal( item.insert.attrs.layerHeight.desktop, '100%' );
 	assert.equal( item.insert.attrs.positionTop.desktop, '0px' );
 	assert.match( item.insert.attrs.backgroundColourGradient, /^radial-gradient\(70% 90% at 0% 100%/ );
 	assert.deepEqual( item.anchor, { match: 'cr-ref-demo-2', position: 'after' } );
@@ -100,14 +100,14 @@ test( 'layers: a bar placed by two sides and a size gets its px size; a blob get
 	const bar = { ...glowTarget(), layer: { ...glowTarget().layer, sides: { top: true, right: false, bottom: false, left: true } } };
 	const blob = facts( { top: '-2px', left: '0px', width: '44px', height: '3px', 'border-radius': '50%', 'background-image': 'none', 'background-color': 'rgb(216, 202, 80)' }, { w: 44, h: 3 } );
 	const [ item ] = layers.decide( ctx( { target: bar, draft: at( blob ) } ) );
-	assert.equal( item.insert.attrs.width.desktop, '44px' );
-	assert.equal( item.insert.attrs.height.desktop, '3px' );
+	assert.equal( item.insert.attrs.layerWidth.desktop, '44px' );
+	assert.equal( item.insert.attrs.layerHeight.desktop, '3px' );
 	assert.equal( item.insert.attrs.positionTop.desktop, '-2px' );
-	assert.ok( item.insert.attrs.backgroundColour, 'the fill is written' );
+	assert.ok( item.insert.attrs.layerBackground, 'the fill is written' );
 	assert.equal( item.insert.attrs.backgroundColourGradient, undefined );
-	assert.ok( item.insert.attrs.borderRadius, 'the radius is written' );
+	assert.ok( item.insert.attrs.layerRadius, 'the radius is written' );
 	const square = layers.decide( ctx( { target: bar, draft: at( { ...blob, styles: { ...blob.styles, 'border-radius': '0px' } } ) } ) )[ 0 ];
-	assert.equal( square.insert.attrs.borderRadius, undefined );
+	assert.equal( square.insert.attrs.layerRadius, undefined );
 } );
 
 test( 'layers: a layer already on the post is equal and proposes no insert (the second run); MUST FAIL without the block on the post', () => {
