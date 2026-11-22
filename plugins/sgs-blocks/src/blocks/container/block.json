@@ -25,7 +25,7 @@
 		"color": false,
 		"sgs": {
 			"builtinButtons": [
-				{ "prefix": "arrow", "part": "arrow", "label": "Scroll row arrows", "groups": [ "colour", "border", "size", "shadow" ] }
+				{ "prefix": "arrow", "part": "arrow", "label": "Scroll row arrows", "groups": [ "colour", "border", "size", "float", "shadow" ] }
 			],
 			"carouselDots": { "prefix": "dot", "part": "dot", "label": "Scroll row dots" },
 			"mediaElements": [
@@ -966,6 +966,11 @@
 		"arrowBorderWidth": {"type":"object","_generated":"button-kit"},
 		"arrowBorderRadius": {"type":"object","_generated":"button-kit"},
 		"arrowSize": {"type":"object","_generated":"button-kit"},
+		"arrowPosition": {"type":"object","_generated":"button-kit"},
+		"arrowInsetTop": {"type":"object","_generated":"button-kit"},
+		"arrowInsetRight": {"type":"object","_generated":"button-kit"},
+		"arrowInsetBottom": {"type":"object","_generated":"button-kit"},
+		"arrowInsetLeft": {"type":"object","_generated":"button-kit"},
 		"arrowShadow": {"type":"string","_generated":"button-kit"},
 		"arrowShadowColour": {"type":"string","_generated":"button-kit"},
 		"arrowShadowHover": {"type":"string","_generated":"button-kit"},

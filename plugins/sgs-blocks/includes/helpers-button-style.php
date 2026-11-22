@@ -456,6 +456,9 @@ if ( ! function_exists( 'sgs_button_element_style_css' ) ) {
 /** The `justify-content` values a built-in button's `{prefix}ContentAlign` accepts (sgs/button's `contentAlign` list). */
 const SGS_BUTTON_KIT_CONTENT_ALIGN = array( 'flex-start', 'center', 'flex-end', 'space-between' );
 
+/** The `position` values a built-in button's `{prefix}Position` accepts (the `float` group). */
+const SGS_BUTTON_KIT_POSITIONS = array( 'static', 'relative', 'absolute' );
+
 if ( ! function_exists( 'sgs_builtin_button_attr' ) ) {
 
 	/**
@@ -603,6 +606,9 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 	 *   3. Typography: `sgs_typography_css_rule()`, the font size, line height and letter spacing as `{desktop, tablet, mobile}` objects.
 	 *   4. Size and min height: `sgs_emit_responsive_css()` on `{p}Size` (a square control's width and height, the `size` group) and on `{p}MinHeight`.
 	 *   4c. Content alignment: `sgs_emit_responsive_css()` on `{p}ContentAlign` (`justify-content`, one of flex-start, center, flex-end, space-between, per device).
+	 *   4d. Float: `sgs_emit_responsive_css()` on `{p}Position` (static, relative or absolute, per device) and on the four edge offsets
+	 *      `{p}InsetTop`, `InsetRight`, `InsetBottom` and `InsetLeft` (per-device lengths, negative values allowed): the part leaves the flow and
+	 *      sits at its edges in the nearest positioned ancestor.
 	 *   5. Shadow: `sgs_shadow_decls()` resting, handed to the focus ring as `--sgs-focus-under` (the focus ring replaces
 	 *      `box-shadow`), and the hover shadow behind the touch guard with its keyboard-focus twin (`sgs_hover_state_rules()`).
 	 *   5b. Hover lift distance: `sgs_hover_lift_distance_rule()` on `{p}HoverLiftDistance` (px): the hovered button moves up by exactly that
@@ -788,6 +794,40 @@ if ( ! function_exists( 'sgs_button_kit_css' ) ) {
 				),
 				$responsive
 			);
+		}
+
+		// 4d. Float: position per device (the values are the `float` group's list; another value prints nothing) and each edge offset
+		// as a per-device length. An offset prints whatever the position, as it does nothing on a static part; `auto` and a negative length are allowed.
+		$float_specs = array();
+		$position    = $attrs[ $prefix . 'Position' ] ?? array();
+		if ( is_array( $position ) && array() !== $position ) {
+			$float_specs[] = array(
+				'value'     => $position,
+				'css'       => 'position',
+				'transform' => static fn( $raw ) => in_array( $raw, SGS_BUTTON_KIT_POSITIONS, true ) ? $raw : '',
+			);
+		}
+		foreach ( array( 'Top' => 'top', 'Right' => 'right', 'Bottom' => 'bottom', 'Left' => 'left' ) as $float_side => $float_prop ) {
+			$float_edge = $attrs[ $prefix . 'Inset' . $float_side ] ?? array();
+			if ( is_array( $float_edge ) && array() !== $float_edge ) {
+				$float_specs[] = array(
+					'value'     => $float_edge,
+					'css'       => $float_prop,
+					'transform' => static function ( $raw ) {
+						if ( 'auto' === $raw ) {
+							return 'auto';
+						}
+						// A negative offset is allowed (an arrow set outside its box); `auto` hands the edge back to the layout.
+						if ( is_string( $raw ) && 1 === preg_match( '/^\s*-/', $raw ) ) {
+							return sgs_css_single_length_value( is_numeric( $raw ) ? $raw . 'px' : $raw, true );
+						}
+						return sgs_length_transform( $raw );
+					},
+				);
+			}
+		}
+		if ( array() !== $float_specs ) {
+			$css .= sgs_emit_responsive_css( $selector, $float_specs, $responsive );
 		}
 
 		// 5. Shadow: resting (also handed to the focus ring) and hover (behind the touch guard).

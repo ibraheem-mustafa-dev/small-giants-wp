@@ -27,6 +27,9 @@ import { typographyPreviewStyle } from '../../utils/typography-preview';
 /** The `justify-content` values `{prefix}ContentAlign` takes (sgs/button's `contentAlign` list; PHP: SGS_BUTTON_KIT_CONTENT_ALIGN). */
 const CONTENT_ALIGN = [ 'flex-start', 'center', 'flex-end', 'space-between' ];
 
+/** The `position` values `{prefix}Position` takes (the `float` group; PHP: SGS_BUTTON_KIT_POSITIONS). */
+const POSITIONS = [ 'static', 'relative', 'absolute' ];
+
 const BASES = new Set(
 	Object.values( registry.groups )
 		.flat()
@@ -82,6 +85,23 @@ export default function buttonKitStyle( attributes, prefix, { tier = 'desktop', 
 	const align = tierValueOf( attr( 'ContentAlign' ), tier );
 	if ( CONTENT_ALIGN.includes( align ) ) {
 		style.justifyContent = align;
+	}
+
+	// The `float` group: position and the four edge offsets at the previewed device.
+	const position = tierValueOf( attr( 'Position' ), tier );
+	if ( POSITIONS.includes( position ) ) {
+		style.position = position;
+	}
+	for ( const [ base, property ] of [
+		[ 'InsetTop', 'top' ],
+		[ 'InsetRight', 'right' ],
+		[ 'InsetBottom', 'bottom' ],
+		[ 'InsetLeft', 'left' ],
+	] ) {
+		const edge = tierLengthPreview( attr( base ), tier );
+		if ( edge ) {
+			style[ property ] = edge;
+		}
 	}
 
 	const shadow = composeShadow( attr( 'Shadow' ), attr( 'ShadowColour' ) );

@@ -75,6 +75,30 @@ const contentAlignOptions = ( tier ) => [
 	},
 ];
 
+const POSITION_OPTIONS = ( tier ) => [
+	{
+		label:
+			'desktop' === tier
+				? __( 'In the layout (the part decides)', 'sgs-blocks' )
+				: __( '— inherit —', 'sgs-blocks' ),
+		value: '',
+	},
+	{ label: __( 'In the flow, no offsets', 'sgs-blocks' ), value: 'static' },
+	{ label: __( 'In the flow, shifted', 'sgs-blocks' ), value: 'relative' },
+	{
+		label: __( 'Out of the flow, placed by its edges', 'sgs-blocks' ),
+		value: 'absolute',
+	},
+];
+
+/** The edge offsets of the `float` group: [ registry base, label ]. */
+const FLOAT_EDGES = [
+	[ 'InsetTop', __( 'Top offset', 'sgs-blocks' ) ],
+	[ 'InsetRight', __( 'Right offset', 'sgs-blocks' ) ],
+	[ 'InsetBottom', __( 'Bottom offset', 'sgs-blocks' ) ],
+	[ 'InsetLeft', __( 'Left offset', 'sgs-blocks' ) ],
+];
+
 const TYPOGRAPHY_TARGET = {
 	fontSizePresets: true,
 	showFontFamily: true,
@@ -362,6 +386,58 @@ export default function BuiltinButtonPanelBody( {
 							) }
 						</ResponsiveOverride>
 					) }
+					{ has( 'float' ) && (
+						<ResponsiveOverride
+							label={ __( 'Position', 'sgs-blocks' ) }
+							value={ attributes[ attr( 'Position' ) ] }
+							onChange={ ( obj ) =>
+								setAttributes( { [ attr( 'Position' ) ]: obj } )
+							}
+						>
+							{ ( { tier, ownValue, setOwnValue } ) => (
+								<SelectControl
+									value={ ownValue || '' }
+									options={ POSITION_OPTIONS( tier ) }
+									onChange={ ( val ) =>
+										setOwnValue( val || undefined )
+									}
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+								/>
+							) }
+						</ResponsiveOverride>
+					) }
+					{ has( 'float' ) &&
+						FLOAT_EDGES.map( ( [ base, label ] ) => (
+							<ResponsiveOverride
+								key={ base }
+								label={ label }
+								value={ attributes[ attr( base ) ] }
+								onChange={ ( obj ) =>
+									setAttributes( { [ attr( base ) ]: obj } )
+								}
+							>
+								{ ( {
+									ownValue,
+									effectiveValue,
+									inherited,
+									setOwnValue,
+								} ) => (
+									<SgsLengthControl
+										presets={ false }
+										label={ label }
+										hideLabelFromVision
+										value={ ownValue ?? '' }
+										placeholder={
+											inherited ? effectiveValue : ''
+										}
+										onChange={ ( val ) =>
+											setOwnValue( val || undefined )
+										}
+									/>
+								) }
+							</ResponsiveOverride>
+						) ) }
 					{ has( 'padding' ) && (
 						<ResponsiveOverride
 							value={ attributes[ attr( 'Padding' ) ] }
