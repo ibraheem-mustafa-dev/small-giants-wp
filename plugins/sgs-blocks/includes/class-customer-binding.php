@@ -4,9 +4,10 @@
  *
  * Lets a heading or text block show the signed-in customer's name: bind `content` (sgs/heading) or `text` (sgs/text) to
  * `{ "source": "sgs/customer", "args": { "key": "first_name", "format": "Hello, %s" } }`. Keys: `first_name` (the
- * customer's first name, else their display name) and `display_name`. The optional `format` places the name inside a
- * sentence: its first `%s` becomes the name. Signed out, or with no name on the account, the source resolves to null, so
- * the block keeps the text its author typed as the fallback.
+ * customer's first name, else their display name), `display_name` and `email` (the account's email address, for a
+ * "Signed in as" line). The optional `format` places the value inside a sentence: its first `%s` becomes the value.
+ * Signed out, or with no value on the account, the source resolves to null, so the block keeps the text its author typed
+ * as the fallback.
  *
  * @package SGS\Blocks
  */
@@ -21,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 final class Customer_Binding {
 
 	/** Keys the source resolves. */
-	const KEYS = array( 'first_name', 'display_name' );
+	const KEYS = array( 'first_name', 'display_name', 'email' );
 
 	/**
 	 * Wire hooks.
@@ -52,7 +53,8 @@ final class Customer_Binding {
 	}
 
 	/**
-	 * The bound value, or null when nobody is signed in or the account has no name (the block then keeps its saved text).
+	 * The bound value, or null when nobody is signed in or the account has no such value (the block then keeps its saved
+	 * text).
 	 *
 	 * @param mixed $source_args Binding args (`key`, optional `format`).
 	 * @return string|null
@@ -63,11 +65,15 @@ final class Customer_Binding {
 			return null;
 		}
 		$user = \wp_get_current_user();
-		$name = 'first_name' === $key ? \trim( (string) $user->first_name ) : '';
-		if ( '' === $name ) {
-			$name = \trim( (string) $user->display_name );
+		if ( 'email' === $key ) {
+			$name = \sanitize_email( (string) $user->user_email );
+		} else {
+			$name = 'first_name' === $key ? \trim( (string) $user->first_name ) : '';
+			if ( '' === $name ) {
+				$name = \trim( (string) $user->display_name );
+			}
+			$name = \sanitize_text_field( $name );
 		}
-		$name = \sanitize_text_field( $name );
 		if ( '' === $name ) {
 			return null;
 		}
