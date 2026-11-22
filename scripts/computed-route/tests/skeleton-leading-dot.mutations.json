@@ -55,14 +55,14 @@
 	},
 	{
 		"file": "lib/skeleton-propose.mjs",
-		"find": "const own = r.rule && ! r.wordsOwn && ( drawn || top.attributes?.displayType );",
-		"replace": "const own = r.rule && ( drawn || top.attributes?.displayType );",
+		"find": "const own = r.rule && ! r.wordsOwn && ( drawn || r.drawsWords || top.attributes?.displayType );",
+		"replace": "const own = r.rule && ( drawn || r.drawsWords || top.attributes?.displayType );",
 		"why": "the propose step drops the label's words beside its dot"
 	},
 	{
 		"file": "lib/skeleton-classify.mjs",
-		"find": ", ...( r.wordsOwn ? { wordsOwn: true } : {} ), ...( r.ownAlternativeBelow",
-		"replace": ", ...( r.ownAlternativeBelow",
+		"find": ", ...( r.wordsOwn ? { wordsOwn: true } : {} ), ...( r.drawsWords ? { drawsWords: true } : {} ), ...( r.ownAlternativeBelow",
+		"replace": ", ...( r.drawsWords ? { drawsWords: true } : {} ), ...( r.ownAlternativeBelow",
 		"why": "the verdict's wordsOwn never reaches the row"
 	},
 	{

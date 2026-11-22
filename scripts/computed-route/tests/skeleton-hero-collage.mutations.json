@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": " && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );",
-		"replace": " && ! inHeading( p ) );",
+		"find": " && ! collage.layerOf.has( p.key ) && ! inHeading( p ) && fillsColumn( p, e ) );",
+		"replace": " && ! inHeading( p ) && fillsColumn( p, e ) );",
 		"why": "a picture in a layer would still be the hero's split media"
 	},
 	{
@@ -61,8 +61,8 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": " && ! collage.layerOf.has( p.key ) && ! inHeading( p ) );",
-		"replace": " && ! collage.layerOf.has( p.key ) );",
+		"find": " && ! collage.layerOf.has( p.key ) && ! inHeading( p ) && fillsColumn( p, e ) );",
+		"replace": " && ! collage.layerOf.has( p.key ) && fillsColumn( p, e ) );",
 		"why": "a photo set inline in the heading would be the hero's split media"
 	},
 	{

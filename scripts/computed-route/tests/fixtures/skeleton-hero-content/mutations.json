@@ -13,13 +13,13 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) &&",
-		"replace": "const column = ! desc( e ).some( isMedia ) &&",
+		"find": "const column = kidsB.length > 1 && ! desc( e ).some( isHeroMedia ) &&",
+		"replace": "const column = ! desc( e ).some( isHeroMedia ) &&",
 		"why": "a wrapper holding the column alone (the grid of a hero with no picture) would be read as the column"
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "const column = kidsB.length > 1 && ! desc( e ).some( isMedia ) &&",
+		"find": "const column = kidsB.length > 1 && ! desc( e ).some( isHeroMedia ) &&",
 		"replace": "const column = kidsB.length > 1 &&",
 		"why": "the grid holding the picture beside the column would be read as the column"
 	},

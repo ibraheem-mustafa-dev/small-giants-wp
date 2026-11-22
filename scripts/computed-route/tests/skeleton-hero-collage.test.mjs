@@ -118,8 +118,8 @@ test( 'a wrapper that stacks the words above the stage is not a row: it is unwra
 	assert.equal( rowOf( r, 6 ).rule, 'heroCollage', 'the stage is still a collage' );
 } );
 
-// The heading's inline photo (a chip of a picture set among the words) is part of the heading, never the hero's media.
-const INLINE = [ 15, 4, 'img', '', 'height:1em', { w: 60, h: 50 } ];
+// The heading's inline photo (a chip of a picture set among the words) is part of the heading, never the hero's media. It is drawn wider than the smallest split picture here so that the heading, not the picture size (rules.hero.splitMedia), is what excludes it.
+const INLINE = [ 15, 4, 'img', '', 'height:1em', { w: 200, h: 160 } ];
 
 test( 'MUST FAIL: a picture set inline in the hero heading does not make a collage hero split', () => {
 	const r = run( hero( STAGE, [ ...PILE, INLINE ] ) );

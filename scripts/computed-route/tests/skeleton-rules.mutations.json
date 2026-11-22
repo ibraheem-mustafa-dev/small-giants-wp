@@ -145,13 +145,13 @@
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isMedia );",
-		"replace": "return items.length > 1 && ! desc( x ).some( isMedia );",
+		"find": "return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isHeroMedia );",
+		"replace": "return items.length > 1 && ! desc( x ).some( isHeroMedia );",
 		"why": "a stacked list of items counts as a row, so a plain column's wrapper stays"
 	},
 	{
 		"file": "lib/skeleton-rules.mjs",
-		"find": "return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isMedia );",
+		"find": "return items.length > 1 && ! m.stacked( items ) && ! desc( x ).some( isHeroMedia );",
 		"replace": "return items.length > 1 && ! m.stacked( items );",
 		"why": "the hero's own split row (with the picture) counts as a row, so its column stays"
 	}
