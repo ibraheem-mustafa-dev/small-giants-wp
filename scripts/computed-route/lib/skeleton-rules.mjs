@@ -239,17 +239,25 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
 	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
 	// A typed glyph (a tick, a star, an arrow, a currency sign) alone in a painted round box of equal width and height, outside
-	// any link or button (rules.solitaryIcon.glyphDisc): a disc the draft draws, so it is an icon, never text. A sign that means a
-	// control (`notIcons`: plus, minus, cross) or opens a quotation is no disc, and an emoji has its own test (emojiOnly).
+	// any link or button but a whole-card link (rules.solitaryIcon.glyphDisc): a disc the draft draws, so it is an icon, never
+	// text. A sign that means a control (`notIcons`: plus, minus, cross) or opens a quotation is no disc, and an emoji has its own
+	// test (emojiOnly). The box is judged at the widest width it renders: a draft that lets a flex row squeeze it at a narrow
+	// width draws the same disc there. A link is a whole card, so a disc inside it is part of the card, when it holds at least
+	// `cardLink.minOtherTexts` other pieces of text or a heading; a glyph that is a link's only content (an arrow link) is no disc.
+	const inCardLink = ( e, a ) => {
+		const G = R.solitaryIcon?.glyphDisc?.cardLink;
+		return !! G && 'a' === view.realTag( a ) && ! interactive( a ) && ( textLeaves( a ).filter( ( k ) => k !== e ).length >= ( G.minOtherTexts ?? 2 ) || desc( a ).some( ( k ) => HEADING.test( k.tag ) ) );
+	};
 	const glyphDisc = ( e, st ) => {
 		const G = R.solitaryIcon?.glyphDisc;
 		const w = m.words( e ).trim();
-		if ( ! G || m.blockKids( e ).length || [ ...w ].length !== 1 || ! /^[^\p{L}\p{N}\s]$/u.test( w ) || EMOJI.test( w ) || ( G.notIcons || [] ).includes( w ) || interactive( e ) || ancestors( e ).some( ( a ) => [ 'a', 'button' ].includes( view.realTag( a ) ) || interactive( a ) ) || ! ( view.ownPaint( e ) || [ st.background, st[ 'background-color' ], st.border, st[ 'border-width' ] ].some( ( x ) => x && ! /^(?:none|transparent|initial|unset|0)/.test( String( x ).trim() ) ) ) ) {
+		if ( ! G || m.blockKids( e ).length || [ ...w ].length !== 1 || ! /^[^\p{L}\p{N}\s]$/u.test( w ) || EMOJI.test( w ) || ( G.notIcons || [] ).includes( w ) || interactive( e ) || ancestors( e ).some( ( a ) => 'button' === view.realTag( a ) || ( 'a' === view.realTag( a ) ? ! inCardLink( e, a ) : interactive( a ) ) ) || ! ( view.ownPaint( e ) || [ st.background, st[ 'background-color' ], st.border, st[ 'border-width' ] ].some( ( x ) => x && ! /^(?:none|transparent|initial|unset|0)/.test( String( x ).trim() ) ) ) ) {
 			return false;
 		}
-		const boxes = Object.values( e.box || {} ).filter( ( b ) => b && b.w > 0 && b.h > 0 );
+		const shown = Object.entries( e.box || {} ).filter( ( [ , b ] ) => b && b.w > 0 && b.h > 0 ).sort( ( x, y ) => Number( y[ 0 ] ) - Number( x[ 0 ] ) );
+		const b = shown[ 0 ]?.[ 1 ];
 		const radius = String( st[ 'border-radius' ] ?? '' ).trim();
-		return boxes.length > 0 && boxes.every( ( b ) => Math.abs( b.w - b.h ) <= 1.5 && b.w >= ( G.minPx ?? 0 ) ) && ( '50%' === radius || boxes.every( ( b ) => ( px( radius ) ?? 0 ) >= Math.min( b.w, b.h ) / 2 - 1 ) );
+		return !! b && Math.abs( b.w - b.h ) <= 1.5 && b.w >= ( G.minPx ?? 0 ) && ( '50%' === radius || ( px( radius ) ?? 0 ) >= Math.min( b.w, b.h ) / 2 - 1 );
 	};
 	// The icon block's emoji settings for one typed glyph or emoji: its source and the character, both from the database.
 	const emojiAttrs = ( block, glyph ) => {

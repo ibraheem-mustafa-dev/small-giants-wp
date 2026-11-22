@@ -552,7 +552,8 @@
 			"glyphDisc": {
 				"minPx": 16,
 				"notIcons": [ "+", "−", "×", "✕", "“", "”" ],
-				"reason": "a typed glyph (a tick, a star, an arrow, a currency sign) alone in a painted round box of equal width and height, outside any link or button, is a disc the draft draws: sgs/icon with the glyph as its emoji character; a plus, minus, cross or opening quote is a control or a quotation, never a disc"
+				"cardLink": { "minOtherTexts": 2 },
+				"reason": "a typed glyph (a tick, a star, an arrow, a currency sign) alone in a painted round box of equal width and height, outside any link or button but a whole-card link, is a disc the draft draws: sgs/icon with the glyph as its emoji character; the box is judged at the widest width it renders (a flex row can squeeze it narrower at a phone width), and a disc inside a link that holds two or more other pieces of text or a heading is part of that card, while a glyph that is a link's only content (an arrow link) is no disc; a plus, minus, cross or opening quote is a control or a quotation, never a disc"
 			},
 			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon, an emoji or typed glyph as the icon's emoji character (never its brand name); an emoji inside running text stays typed in the text",
 			"block": "sgs/icon"

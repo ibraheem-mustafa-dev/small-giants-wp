@@ -1053,6 +1053,25 @@ test( 'MUST FAIL: a tick or a star in a painted round box is an icon with the gl
 	assert.equal( 'brandName' in heart.attributes, false );
 } );
 
+test( 'MUST FAIL: a disc the draft squeezes at a narrow width is judged at the widest width it renders; one that is not round at the widest stays text', () => {
+	const squeezed = { 375: { x: 0, y: 0, w: 27.4, h: 36 }, 768: { x: 0, y: 0, w: 36, h: 36 }, 1440: { x: 0, y: 0, w: 36, h: 36 } };
+	const at = ( boxes, g = '✦' ) => run( section( [ E( 'span', { words: g, style: DISC, boxes } ), E( 'p', { words: 'Baking on, with you from Wednesday' } ) ] ) );
+	assert.equal( iconAt( at( squeezed ), '✦' ).block, 'sgs/icon', 'round where it is not squeezed' );
+	const wide = { ...squeezed, 1440: { x: 0, y: 0, w: 60, h: 36 } };
+	assert.notEqual( iconAt( at( wide ), '✦' ).block, 'sgs/icon', 'not round at the widest width' );
+} );
+
+// A disc inside a link that is a whole card (two or more other pieces of text, or a heading) is part of the card; a glyph that is a
+// link's only content, or beside one label, is an arrow link, not a disc.
+const discIn = ( kids ) => run( section( [ E( 'a', { attrs: { href: '/home' } }, [ E( 'span', { words: '←', style: DISC, box: { x: 0, y: 0, w: 56, h: 56 } } ), ...kids ] ) ] ) );
+test( 'MUST FAIL: a glyph disc inside a whole-card link is an icon; a glyph that is the only content of a link, or sits beside one label, stays text', () => {
+	const card = discIn( [ E( 'span', {}, [ E( 'b', { words: 'Back to the kitchen' } ), E( 'span', { words: 'Keep browsing' } ) ] ) ] );
+	assert.deepEqual( settled( iconAt( card, '←' ) ), { block: 'sgs/icon', action: null, rule: 'solitaryIcon' } );
+	assert.equal( nodes( card ).find( ( x ) => 'sgs/container' === x.name && x.attributes.sgsBlockLink )?.attributes.sgsBlockLink, '/home', 'the card is still the link' );
+	assert.notEqual( iconAt( discIn( [] ), '←' )?.block, 'sgs/icon', 'a bare arrow link' );
+	assert.notEqual( iconAt( discIn( [ E( 'span', { words: 'Back' } ) ] ), '←' )?.block, 'sgs/icon', 'an arrow beside one label' );
+} );
+
 test( 'negative control: a plus, an opening quote, a glyph in an unpainted box, a box that is not round or square, a glyph in a link or button and the rule removed stay text', () => {
 	const text = ( r, g ) => 'sgs/icon' !== iconAt( r, g )?.block;
 	assert.ok( text( disc( '+' ), '+' ), 'a plus is a control' );
