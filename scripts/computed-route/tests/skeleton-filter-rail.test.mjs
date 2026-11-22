@@ -14,6 +14,7 @@ import { loadFacts, decisionsProblems } from '../lib/skeleton-facts.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { commerceOf } from '../lib/skeleton-commerce-region.mjs';
 import { carriedIds } from '../lib/skeleton-carried.mjs';
+import { cleanTree } from '../lib/fill-skeleton.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
 const db = openDb();
@@ -145,6 +146,32 @@ test( 'MUST FAIL: a facet\'s attribute id comes from the site\'s record; a site 
 	assert.deepEqual( none.proposal.filterRail.attributeIds, {} );
 } );
 
+// The marker the width gate (lib/fill-width-gate.mjs) keys on and the site build writes to the theme: the rail's own drawer
+// takes over below the theme's breakpoint option, so no hide flag is written on it (F-29).
+const MARKER = { setting: 'sgs_shop_filter_drawer_breakpoint', scope: 'theme-mod' };
+const marked = ( tree ) => {
+	const out = [];
+	const walk = ( list ) => ( list || [] ).forEach( ( n ) => ( undefined !== n.ownAlternativeBelow && out.push( n ), walk( n.innerBlocks ) ) );
+	walk( tree );
+	return out;
+};
+const attrHas = ( tree ) => JSON.stringify( tree ).match( /"attributes":\{[^}]*ownAlternativeBelow/ );
+
+test( 'MUST FAIL: the placed rail node carries ownAlternativeBelow (the theme drawer breakpoint option), kept in the saved tree, never as a block attribute; no other node and no rail-less surface carries it', () => {
+	const { skeleton } = run( SHOP, SHOP_ROLE() );
+	const aside = find( skeleton, ( n ) => 'sgs-shop-filters' === n.attributes?.anchor );
+	assert.deepEqual( aside.ownAlternativeBelow, MARKER, 'the rail node carries the marker' );
+	assert.deepEqual( marked( skeleton ), [ aside ], 'no other node carries it' );
+	assert.equal( aside.attributes.ownAlternativeBelow, undefined, 'the marker is no block attribute' );
+	assert.equal( attrHas( skeleton ), null, 'no block attribute anywhere holds it' );
+	const saved = JSON.parse( JSON.stringify( skeleton ) );
+	assert.deepEqual( find( saved, ( n ) => 'sgs-shop-filters' === n.attributes?.anchor ).ownAlternativeBelow, MARKER, 'the saved skeleton keeps it' );
+	assert.deepEqual( marked( cleanTree( saved ) ).map( ( n ) => n.ownAlternativeBelow ), [ MARKER ], 'the tree Fill writes keeps it' );
+	// A shop with no rail, and another page role, carry none.
+	assert.deepEqual( marked( run( SHOP, { role: 'shop', checkout: null } ).skeleton ), [] );
+	assert.deepEqual( marked( run( SHOP, { ...SHOP_ROLE(), role: 'cart', checkout: 'Checkout.dc.html' } ).skeleton ), [] );
+} );
+
 test( 'categories the catalogue holds are a category filter; a group the catalogue holds nothing for is listed, not placed', () => {
 	const els = SHOP.map( ( e ) => ( 'Root/6#3' === e.key ? { ...e, allText: 'Brand Gifts 4 Bundles 2' } : e ) );
 	const cat = run( els, { ...SHOP_ROLE(), filters: { facets: FACETS, brands: [], categories: [ 'Gifts', 'Bundles' ] } } );
@@ -243,6 +270,11 @@ test( 'the rule data is checked: a filter rail block or setting the framework la
 	const problems = decisionsProblems( bad );
 	assert.ok( problems.includes( 'rules.filterRail writes nope on sgs/heading, a setting it does not have' ) );
 	assert.ok( problems.includes( 'rules.filterRail.groups.price must name its block' ) );
+	const MSG = 'rules.filterRail.ownAlternativeBelow must name an sgs_ theme option (setting) with scope theme-mod';
+	const withMarker = ( mark ) => decisionsProblems( { ...f, decisions: { ...f.decisions, rules: { ...f.decisions.rules, filterRail: { ...f.decisions.rules.filterRail, ownAlternativeBelow: mark } } } } );
+	assert.ok( withMarker( { setting: 'drawer_breakpoint', scope: 'theme-mod' } ).includes( MSG ), 'a setting that is no sgs_ option is refused' );
+	assert.ok( withMarker( { setting: 'sgs_shop_filter_drawer_breakpoint', scope: 'attribute' } ).includes( MSG ), 'a scope other than theme-mod is refused' );
+	assert.ok( ! problems.includes( MSG ), 'the shipped marker is sound' );
 } );
 
 test( 'MUST FAIL: the committed Eye Care shop inventory places its rail: eight facet groups and the price and brand groups, in the draft\'s order', () => {
@@ -259,4 +291,6 @@ test( 'MUST FAIL: the committed Eye Care shop inventory places its rail: eight f
 	const attrs = pf.innerBlocks.filter( named( 'woocommerce/product-filter-attribute' ) ).map( ( n ) => n.attributes.attributeId );
 	assert.deepEqual( attrs, [ 'gender', 'size-filter', 'colour', 'style', 'material', 'frame-type', 'hinge', 'nose-pads' ].map( ( s ) => ids[ s ] ) );
 	assert.equal( find( skeleton, ( n ) => 'sgs-shop-filters' === n.attributes?.anchor ).name, 'sgs/container' );
+	assert.deepEqual( marked( skeleton ), [ find( skeleton, ( n ) => 'sgs-shop-filters' === n.attributes?.anchor ) ], 'the rail alone carries the drawer breakpoint marker' );
+	assert.deepEqual( marked( skeleton )[ 0 ].ownAlternativeBelow, MARKER );
 } );

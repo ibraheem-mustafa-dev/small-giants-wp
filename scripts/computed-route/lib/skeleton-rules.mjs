@@ -1147,7 +1147,7 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		// itself (rules.commerceRegion): the region's children are absorbed into it.
 		( { e } ) => ( region?.key === e.key ? v( 'commerceRegion', { block: region.block, absorb: true, attributes: region.attributes, inner: region.inner, item: region.item?.key ?? null, reason: region.reason } ) : null ),
 		// The shop's filter rail is the framework's working filter (rules.filterRail): the rail's children are absorbed into it.
-		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason } ) : null ),
+		( { e } ) => ( rail?.key === e.key ? v( 'filterRail', { block: R.filterRail.block, absorb: true, attributes: rail.attributes, inner: rail.inner, reason: rail.reason, ...( rail.ownAlternativeBelow ? { ownAlternativeBelow: rail.ownAlternativeBelow } : {} ) } ) : null ),
 		// A tile of a priced loop naming a catalogue product, on a page that is not the shop, is the site's product card bound
 		// to that product (rules.productTile): the card draws the tile, so its elements are absorbed.
 		// A review section naming one review platform is that platform's review block (rules.reviewPlatform), which draws the

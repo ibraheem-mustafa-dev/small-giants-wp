@@ -93,8 +93,10 @@ export function railRun( { proposal, skeleton, extra = [] } ) {
 }
 
 // o: { m (lib/skeleton-model.mjs), region (the shop's commerce region: { key }), filters ({ facets, brands, categories }),
-// rule (rules.filterRail), money (rules.commerceRegion.money) }. Returns { key, attributes, inner, groups, notes, reason }, or
-// { note } when the labels sit apart, or null when the surface has no rail to place.
+// rule (rules.filterRail), money (rules.commerceRegion.money) }. Returns { key, attributes, ownAlternativeBelow, inner, groups, notes,
+// reason }, or { note } when the labels sit apart, or null when the surface has no rail to place. `ownAlternativeBelow` is
+// rules.filterRail's marker ({ setting, scope }: the theme option below whose width the theme's drawer replaces the rail),
+// carried onto the rail's skeleton node as a node field (lib/skeleton-propose.mjs), never a block attribute.
 export function filterRail( { m, region, filters, rule, money } ) {
 	const listing = region?.key ? m.byKey[ region.key ] : null;
 	const facets = placeableFacets( filters?.facets );
@@ -173,5 +175,5 @@ export function filterRail( { m, region, filters, rule, money } ) {
 	};
 	const inner = [ { ...copy( rule.filters ), innerBlocks: [ ...copy( rule.filters ).innerBlocks, ...groups.flatMap( ( x ) => [ heading( x, x.facet?.terms?.some( ( t ) => t.swatch ) ), filterOf( x ) ] ) ] } ];
 	const said = groups.map( ( x ) => ( x.facet ? `${ x.facet.label } (attribute ${ x.facet.slug })` : `${ squash( m.words( x.label ) ) } (${ x.kind })` ) );
-	return { key: rail.key, attributes: { ...rule.attributes }, inner, groups: groups.map( ( x ) => ( { kind: x.kind, key: x.group.key, label: x.label.key, ...( x.facet ? { facet: x.facet.slug } : {} ) } ) ), notes, reason: `${ rule.reason } (${ groups.length } group(s): ${ said.join( ', ' ) })` };
+	return { key: rail.key, attributes: { ...rule.attributes }, ...( rule.ownAlternativeBelow ? { ownAlternativeBelow: { ...rule.ownAlternativeBelow } } : {} ), inner, groups: groups.map( ( x ) => ( { kind: x.kind, key: x.group.key, label: x.label.key, ...( x.facet ? { facet: x.facet.slug } : {} ) } ) ), notes, reason: `${ rule.reason } (${ groups.length } group(s): ${ said.join( ', ' ) })` };
 }

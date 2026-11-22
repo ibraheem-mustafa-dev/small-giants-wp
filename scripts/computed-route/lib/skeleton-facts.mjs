@@ -197,6 +197,7 @@ export function decisionsProblems( facts ) {
 		[ [ f.block, Object.keys( f.attributes || {} ) ], [ f.heading?.block, [ 'content', ...Object.keys( f.heading?.attributes || {} ) ] ] ].forEach( ( [ block, attrs ] ) => attrs.filter( ( a ) => block && ! supports.has( a ) && ! facts.attr( block, a ) ).forEach( ( a ) => problems.push( `rules.filterRail writes ${ a } on ${ block }, a setting it does not have` ) ) );
 		[ 'facet', 'price', 'brand', 'category' ].filter( ( k ) => ! f.groups?.[ k ]?.name ).forEach( ( k ) => problems.push( `rules.filterRail.groups.${ k } must name its block` ) );
 		[ 'choice', 'checkbox' ].filter( ( k ) => ! f.displayStyles?.[ k ] ).forEach( ( k ) => problems.push( `rules.filterRail.displayStyles.${ k } must name a block` ) );
+		f.ownAlternativeBelow && ( ! /^sgs_\w+$/.test( f.ownAlternativeBelow.setting || '' ) || 'theme-mod' !== f.ownAlternativeBelow.scope ) && problems.push( 'rules.filterRail.ownAlternativeBelow must name an sgs_ theme option (setting) with scope theme-mod' );
 	}
 	if ( r.commerceRegion ) {
 		try {

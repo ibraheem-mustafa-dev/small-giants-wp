@@ -142,6 +142,7 @@
 			"reason": "the draft's filter rail on the shop template is the framework's working filter: WooCommerce's product filters inside the theme's #sgs-shop-filters aside, one heading and filter per group, as archive-product.html composes it and the theme's filter drawer builds its groups from (Spec 48 FR-48-61); found by structure from the catalogue's facets (lib/skeleton-filter-rail.mjs), never by words",
 			"block": "sgs/container",
 			"attributes": { "tagName": "aside", "anchor": "sgs-shop-filters", "className": "sgs-shop-filters" },
+			"ownAlternativeBelow": { "setting": "sgs_shop_filter_drawer_breakpoint", "scope": "theme-mod" },
 			"filters": {
 				"name": "woocommerce/product-filters",
 				"innerBlocks": [

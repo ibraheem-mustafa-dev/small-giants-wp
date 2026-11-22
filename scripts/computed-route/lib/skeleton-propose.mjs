@@ -320,6 +320,10 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		}
 		// A setting the rule chose from the draft's structure (a word-only item style): no styling answer of Fill changes it.
 		r.decided && ( node.decided = r.decided );
+		// A block whose own alternative takes over below a site option's width (the shop's filter rail becomes the theme's drawer
+		// below sgs_shop_filter_drawer_breakpoint): a node field, never a block attribute. The width gate (lib/fill-width-gate.mjs)
+		// writes no hide flag on it, and the site build writes the draft's breakpoint (`value`) to the option.
+		r.ownAlternativeBelow && ( node.ownAlternativeBelow = { ...r.ownAlternativeBelow } );
 		// The open unit's paths are read in the state the fixture's current child renders at rest (lib/fill-skeleton.mjs::skeletonNodes).
 		const slotStates = Object.fromEntries( Object.entries( us?.states || {} ).filter( ( [ p ] ) => node.draftSlots?.[ p ] ) );
 		Object.keys( slotStates ).length && ( node.draftSlotStates = slotStates );

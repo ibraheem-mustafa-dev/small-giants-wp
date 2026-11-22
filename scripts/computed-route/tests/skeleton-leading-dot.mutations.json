@@ -61,8 +61,8 @@
 	},
 	{
 		"file": "lib/skeleton-classify.mjs",
-		"find": ", ...( r.wordsOwn ? { wordsOwn: true } : {} ) };",
-		"replace": " };",
+		"find": ", ...( r.wordsOwn ? { wordsOwn: true } : {} ), ...( r.ownAlternativeBelow",
+		"replace": ", ...( r.ownAlternativeBelow",
 		"why": "the verdict's wordsOwn never reaches the row"
 	},
 	{
