@@ -241,3 +241,14 @@ test( 'Eye Care\'s saved shop artefacts decide its sort menu, panel, rail width 
 	assert.equal( d.sgs_shop_filter_boolean_position, 'bottom' );
 	assert.equal( d.sgs_shop_hide_zero_decimals, true );
 } );
+
+test( 'MUST FAIL: with no filter button named by the proposal, the button outside the rail running a handler the rail\'s own buttons run is it', () => {
+	const inv = INVENTORY();
+	Object.assign( inv.elements.find( ( e ) => 3 === e.tpl ), { snippet: '<button sc-camel-on-click="{{ toggleFilters }}" data-dc-tpl="3">' } );
+	const proposal = { ...PROPOSAL(), filterRail: { ...PROPOSAL().filterRail, toggle: undefined } };
+	const d = values( decideShopOptions( ARTEFACTS( { inventory: inv, proposal } ) ) );
+	assert.deepEqual( [ d.sgs_shop_toggle_count, d.sgs_shop_toggle_place, d.sgs_shop_sticky_trigger ], [ true, 'toolbar', false ] );
+	// Negative control: a button running a handler no rail button runs is no filter button.
+	Object.assign( inv.elements.find( ( e ) => 3 === e.tpl ), { snippet: '<button sc-camel-on-click="{{ openCart }}" data-dc-tpl="3">' } );
+	assert.equal( values( decideShopOptions( ARTEFACTS( { inventory: inv, proposal } ) ) ).sgs_shop_toggle_count, undefined );
+} );

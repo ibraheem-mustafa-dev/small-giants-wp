@@ -98,7 +98,23 @@ export function shopEvidence( a ) {
 	const placed = proposal.templatePieces?.placed || [];
 	const countKey = placed.find( ( p ) => 'woocommerce/product-results-count' === p.block )?.run?.[ 0 ] || null;
 	const count = countKey ? index.byKey.get( countKey ) : null;
-	return { ...a, index, proposal, L, template, listing, inListing, rail, count, toggle: proposal.filterRail?.toggle ? index.byKey.get( proposal.filterRail.toggle ) : null };
+	const ev = { ...a, index, proposal, L, template, listing, inListing, rail, count };
+	return { ...ev, toggle: proposal.filterRail?.toggle ? index.byKey.get( proposal.filterRail.toggle ) : toggleOf( ev ) };
+}
+
+// The draft's own filter button when the proposal names none (the rail rule finds it only from the drawer's revealed
+// controls, which a saved inventory may lack): the one shown button outside the rail whose click handler a button inside the
+// rail's template runs (the drawer's close and apply buttons run the handler that opens it). Null when none or several.
+const CLICKS = [ 'sc-camel-on-click', 'onClick', 'onclick' ];
+const clickOf = ( snippet ) => CLICKS.map( ( n ) => new RegExp( `^<[^>]*\\s${ n }="\\{\\{\\s*([^}]+?)\\s*\\}\\}"` ).exec( snippet || '' )?.[ 1 ] ).find( Boolean ) || '';
+function toggleOf( ev ) {
+	const railNode = templateNode( ev, ev.rail );
+	if ( ! railNode ) {
+		return null;
+	}
+	const handlers = new Set( allEls( railNode ).filter( ( b ) => 'button' === b.tag ).map( ( b ) => String( b.attrs.onClick || b.attrs.onclick || '' ).replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim() ).filter( Boolean ) );
+	const hits = ev.index.elements.filter( ( e ) => 'button' === e.tag && shown( e ) && ! ev.index.chain( e.key ).includes( ev.rail.key ) && handlers.has( clickOf( e.snippet ) ) );
+	return 1 === hits.length ? hits[ 0 ] : null;
 }
 
 // The count's wording with %d for the number: { words, number } or null when its words hold no single number.
