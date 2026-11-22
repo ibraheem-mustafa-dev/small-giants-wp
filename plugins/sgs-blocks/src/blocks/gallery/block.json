@@ -122,6 +122,7 @@
 					],
 					"isWrapper": true,
 					"attrMap": {
+						"css:scrollbar-width": "scrollbarStyle",
 						"css:background-color": "native:color.background",
 						"css:color": "native:color.text",
 						"css:margin": "margin",

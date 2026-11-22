@@ -136,6 +136,7 @@
 						"motion"
 					],
 					"attrMap": {
+						"css:scrollbar-width": "scrollbarStyle",
 						"css:color": "tabTextColour",
 						"css:color-gradient": "tabTextColourGradient",
 						"css:background-color": "tabBgColour",

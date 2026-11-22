@@ -47,6 +47,7 @@
 					"isWrapper": true,
 					"prefix": "",
 					"attrMap": {
+						"css:scrollbar-width": "scrollbarStyle",
 						"css:color": "textColour",
 						"css:background-color": "backgroundColour",
 						"css:border-width": "borderWidth",

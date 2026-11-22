@@ -3,10 +3,10 @@
 		"purpose": "Spec 35 Phase 2 — optimal-control registry (golden master). One row per genuine setting.",
 		"spec": ".claude/specs/35-BLOCK-INSPECTOR-UX-STANDARD.md (Part B) + .claude/specs/35A-BLOCK-INSPECTOR-UX-ENFORCEMENT-AND-BUILD-REFERENCE.md (Parts H/I)",
 		"design_spine": ".claude/plans/spec-35-setting-registry-design.md",
-		"total_rows": 105,
+		"total_rows": 107,
 		"by_category": {
 			"behaviour-family": 14,
-			"css-property": 80,
+			"css-property": 82,
 			"input-type": 11
 		},
 		"by_severity": {
@@ -2353,6 +2353,61 @@
 			"divergence": null,
 			"divergence_severity": "none",
 			"notes": "1 instance, already consistent on SelectControl — lowest-impact row in the registry; component swap only if ever revisited."
+		},
+		{
+			"setting_key": "css:scrollbar-width",
+			"category": "css-property",
+			"label": "Scrollbar (default, thin or hidden)",
+			"optimal_control": {
+				"component": "ScrollbarStyleControl (default / thin / hidden)",
+				"props": {
+					"options": [
+						"default",
+						"thin",
+						"hidden"
+					]
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "3-option closed enum",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset clears to the block default"
+			},
+			"shared_component": "ScrollbarStyleControl",
+			"spec_ref": "Spec 02 FR-2-35 (the shared scrollbar choice) + Spec 35 THE PLACEMENT RULE (layout family)",
+			"current_state": "The shared scrollbar choice on the areas of sgs/account, sgs/gallery, sgs/google-reviews, sgs/nav-drawer, sgs/post-grid, sgs/tabs and sgs/trustpilot-reviews (the attribute is scrollbarStyle).",
+			"divergence": null,
+			"divergence_severity": "none",
+			"notes": "The scrollbar only matters where an element scrolls, which is its overflow, a layout property: a member of the layout family beside css:overflow. An unset value renders the area's own starting value (includes/helpers-scrollbar.php)."
+		},
+		{
+			"setting_key": "css:scrollbar-color",
+			"category": "css-property",
+			"label": "Scrollbar colour",
+			"optimal_control": {
+				"component": "DesignTokenPicker",
+				"props": {
+					"enableAlpha": true,
+					"clearable": true,
+					"disableCustomColors": false
+				},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": false,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": true,
+				"reset_disclosure": "native ColorPalette Clear button",
+				"colour_channel": "solid only"
+			},
+			"shared_component": "DesignTokenPicker",
+			"spec_ref": "Spec 02 FR-2-35 + Spec 35 THE PLACEMENT RULE (colour family)",
+			"current_state": "sgs/google-reviews scrollbarColour: the scrollbar thumb colour of the review rail.",
+			"divergence": null,
+			"divergence_severity": "none",
+			"notes": "The thumb colour is a painted colour: a member of the colour (fill) family, read by the element that holds the scrollbar choice. Prints as the --sgs-scrollbar-thumb custom property (includes/helpers-scrollbar.php)."
 		},
 		{
 			"setting_key": "css:padding",

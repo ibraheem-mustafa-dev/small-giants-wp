@@ -122,6 +122,7 @@
 					"isWrapper": true,
 					"prefix": "",
 					"attrMap": {
+						"css:scrollbar-width": "scrollbarStyle",
 						"css:background-color": "drawerBg",
 						"css:background-image": "drawerBgGradient",
 						"css:border-width": "borderWidth",

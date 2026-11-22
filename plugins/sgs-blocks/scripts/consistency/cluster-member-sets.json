@@ -321,6 +321,14 @@
 					]
 				},
 				{
+					"key": "css:scrollbar-color",
+					"label": "Scrollbar colour",
+					"suffixes": [
+						"ScrollbarColour"
+					],
+					"note": "2026-11-21: a scrollbar's thumb colour is a painted colour, a member of the colour (fill) family, read by the same element that holds the scrollbar choice."
+				},
+				{
 					"key": "css:background-size",
 					"label": "Background size",
 					"suffixes": [
@@ -776,6 +784,18 @@
 						"OUTER",
 						"GRID"
 					]
+				},
+				{
+					"key": "css:scrollbar-width",
+					"label": "Scrollbar (default, thin or hidden)",
+					"suffixes": [
+						"ScrollbarStyle"
+					],
+					"appliesToLayers": [
+						"OUTER",
+						"GRID"
+					],
+					"note": "2026-11-21: the scrollbar choice only matters where an element scrolls, which is its overflow, so it is a layout member beside css:overflow. The shared choice (default, thin, hidden) is includes/helpers-scrollbar.php; an element that is not an OUTER or GRID layer claims it with an explicit attrMap entry."
 				},
 				{
 					"key": "css:transform",

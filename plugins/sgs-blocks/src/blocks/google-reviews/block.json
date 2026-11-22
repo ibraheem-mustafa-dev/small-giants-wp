@@ -557,6 +557,8 @@
 					],
 					"prefix": "rail",
 					"attrMap": {
+						"css:scrollbar-width": "scrollbarStyle",
+						"css:scrollbar-color": "scrollbarColour",
 						"css:padding": "railPadding"
 					},
 					"_note": "scrollbarStyle / scrollbarColour are the rail's scrollbar settings; they do not start with this element's prefix and the vocabulary has no scrollbar member, so they are named in the DB override (css_property scrollbar-width / scrollbar-color, css_element list; they apply only when pagination is scrollbar) rather than here."
