@@ -29,13 +29,14 @@ from colour import parse_colour
 import declared_tokens as dt
 from shade_palette import display_name, namespace_of
 from palette_vocab import trace_row
+from motion_tokens import NAMED_SCRIPT_EASINGS
 
 _SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _GRADIENT = re.compile(r"^(?:repeating-)?(?:linear|radial|conic)-gradient\(", re.I)
 _LENGTH = re.compile(r"^-?\d*\.?\d+(?:px|rem|em)$|^0$")
 _TIME = re.compile(r"^(\d*\.?\d+)(ms|s)$")
 _EASING = re.compile(r"^(?:cubic-bezier|linear|steps)\(", re.I)
-_EASING_WORDS = frozenset({"ease", "ease-in", "ease-out", "ease-in-out", "linear", "step-start", "step-end"})
+_EASING_WORDS = frozenset({"ease", "ease-in", "ease-out", "ease-in-out", "linear", "step-start", "step-end"}) | frozenset(NAMED_SCRIPT_EASINGS)
 _FAMILY_WORDS = re.compile(r"\b(?:serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-[a-z-]+)\b", re.I)
 _NUMBER = re.compile(r"^\d*\.?\d+$")
 _PX_IN = re.compile(r"(-?\d*\.?\d+)px")
@@ -47,7 +48,8 @@ _COMMENT = re.compile(r"/\*.*?\*/", re.S)
 # Where each preset-list family lives in a snapshot, and the entry's value key.
 LISTS = {"fontSizes": (("typography", "fontSizes"), "size"), "spacing": (("spacing", "spacingSizes"), "size")}
 _CANON_EASING = {"ease": (0.25, 0.1, 0.25, 1.0), "ease-in": (0.42, 0.0, 1.0, 1.0), "ease-out": (0.0, 0.0, 0.58, 1.0),
-                 "ease-in-out": (0.42, 0.0, 0.58, 1.0), "linear": (0.0, 0.0, 1.0, 1.0)}
+                 "ease-in-out": (0.42, 0.0, 0.58, 1.0), "linear": (0.0, 0.0, 1.0, 1.0),
+                 **{name: tuple(float(n) for n in curve) for name, curve in NAMED_SCRIPT_EASINGS.items()}}
 
 
 def _words(name: str) -> list[str]:

@@ -219,3 +219,12 @@ def test_negative_control_a_draft_whose_smallest_size_is_also_its_most_used_keep
 def test_negative_control_with_no_size_in_use_the_smallest_token_under_the_cap_is_small(tmp_path):
     typo = ":root{--size-12:12px;--size-13:13px;--text-base:16px;--size-22:22px}" + chr(10) + "body{font-size:var(--text-base)}"
     assert _small(tmp_path, typo)[0] == "12px"
+
+
+def test_a_named_script_easing_is_the_curve_it_draws(tmp_path):
+    """MUST FAIL on the old code: a token valued ``easeOutCubic`` was no easing and its curve was unknown."""
+    assert tf._curve("easeOutCubic") == (0.33, 1.0, 0.68, 1.0)
+    assert tf._curve("EASEINOUTEXPO") == (0.87, 0.0, 0.13, 1.0)
+    assert tf._curve("easeOutBack") == tf._curve("cubic-bezier(.34,1.56,.64,1)")
+    assert tf.classify("ease-fast", "easeOutQuart") == "easing"
+    assert tf._curve("easeOutNothing") is None and tf.classify("ease-fast", "easeOutNothing") != "easing"

@@ -29,6 +29,18 @@ _TIME_RE = re.compile(r"^(-?\d*\.?\d+)(ms|s)$", re.IGNORECASE)
 _WORD_SPLIT_RE = re.compile(r"\s+(?![^()]*\))")
 _MOVEMENT_PROPS = frozenset({"transform", "translate", "scale", "rotate"})
 _KEYWORD_EASINGS = ("ease", "ease-in", "ease-out", "ease-in-out", "linear")
+# The named easings a script (or an animation library) writes as a word, each as the cubic-bezier that draws the same
+# curve (the standard CSS equivalents of Penner's functions); keys are lower case, matched case ignored.
+NAMED_SCRIPT_EASINGS = {
+    "easeinsine": (0.12, 0, 0.39, 0), "easeoutsine": (0.61, 1, 0.88, 1), "easeinoutsine": (0.37, 0, 0.63, 1),
+    "easeinquad": (0.11, 0, 0.5, 0), "easeoutquad": (0.5, 1, 0.89, 1), "easeinoutquad": (0.45, 0, 0.55, 1),
+    "easeincubic": (0.32, 0, 0.67, 0), "easeoutcubic": (0.33, 1, 0.68, 1), "easeinoutcubic": (0.65, 0, 0.35, 1),
+    "easeinquart": (0.5, 0, 0.75, 0), "easeoutquart": (0.25, 1, 0.5, 1), "easeinoutquart": (0.76, 0, 0.24, 1),
+    "easeinquint": (0.64, 0, 0.78, 0), "easeoutquint": (0.22, 1, 0.36, 1), "easeinoutquint": (0.83, 0, 0.17, 1),
+    "easeinexpo": (0.7, 0, 0.84, 0), "easeoutexpo": (0.16, 1, 0.3, 1), "easeinoutexpo": (0.87, 0, 0.13, 1),
+    "easeincirc": (0.55, 0, 1, 0.45), "easeoutcirc": (0, 0.55, 0.45, 1), "easeinoutcirc": (0.85, 0, 0.15, 1),
+    "easeinback": (0.36, 0, 0.66, -0.56), "easeoutback": (0.34, 1.56, 0.64, 1), "easeinoutback": (0.68, -0.6, 0.32, 1.6),
+}
 _STEM_RE = re.compile(r"^(?:[a-z0-9]+-)?ease-")
 
 
@@ -39,7 +51,10 @@ def _fmt(num: float) -> str:
 
 def normalise_easing(value: str) -> str | None:
     """The curve in the snapshot's spelling (``cubic-bezier(0.3, 1.6, 0.5, 1)``), or None when the value is
-    not a ``cubic-bezier()`` of four numbers or a ``linear()`` with stops."""
+    not a ``cubic-bezier()`` of four numbers, a ``linear()`` with stops or a named script easing (``easeOutCubic``)."""
+    named = NAMED_SCRIPT_EASINGS.get(value.strip().lower())
+    if named:
+        return f"cubic-bezier({', '.join(_fmt(n) for n in named)})"
     match = _EASING_FN_RE.match(value.strip())
     if not match:
         return None

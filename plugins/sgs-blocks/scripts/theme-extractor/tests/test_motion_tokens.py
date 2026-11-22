@@ -167,3 +167,12 @@ def test_negative_control_a_draft_with_no_movement_transition_leaves_the_hover_t
     proposal = motion_tokens.propose_movement_timing("transition:color .2s;transition:all .3s", None, trace)
     motion_tokens.apply_movement_timing(snap, proposal, THEME, trace)
     assert _hover(snap) == {"duration": "400ms", "easing": "linear"} and trace == []
+
+
+def test_a_token_valued_with_a_named_script_easing_carries_its_curve(tmp_path):
+    """MUST FAIL on the old code: ``easeOutCubic`` was no curve, so the token never reached ``settings.custom.easing``."""
+    css = ":root{--ease-reveal: easeOutCubic; --ease-note: easeOutNothing;}"
+    easing = motion_tokens.apply_easings(_snap(), _tokens(tmp_path, css), "", [])["settings"]["custom"]["easing"]
+    assert easing["reveal"] == "cubic-bezier(0.33, 1, 0.68, 1)"
+    assert "note" not in easing
+    assert motion_tokens.normalise_easing("easeInOutBack") == "cubic-bezier(0.68, -0.6, 0.32, 1.6)"
