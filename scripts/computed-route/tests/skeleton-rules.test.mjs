@@ -984,6 +984,25 @@ test( 'formControl: a <label> that lays its label text and control out as a colu
 	assert.ok( ! tick.problems.some( ( p ) => /paint conservation/.test( p ) ), tick.problems.join( '\n' ) );
 } );
 
+// A pill (one label and a glyph) holds the draft's destination, and its words keep the draft's order: the rating link of a
+// product page is `<a href="#reviews"><span>stars</span> 4.3 reviews</a>`, a button reading "stars 4.3 reviews" that goes to
+// the reviews on the page. Its glyph is a text span the button absorbs, so the writer never read the link from the element.
+const rating = ( href ) => {
+	const root = section( [ E( 'a', { words: '4.3 · 8 reviews', attrs: href ? { href } : {} }, [ E( 'span', { words: '★★★★★' } ) ] ) ] );
+	const inv = inventory( root );
+	inv.elements[ 1 ].allText = '★★★★★ 4.3 · 8 reviews';
+	inv.elements[ 0 ].allText = inv.elements[ 1 ].allText;
+	return proposeSkeleton( { inventory: inv, facts: facts(), surface: 'fixture', surfaceKind: 'page', surfaceName: 'Fixture', db } );
+};
+const buttonOf = ( r ) => r.skeleton[ 0 ].innerBlocks.find( ( n ) => 'sgs/button' === n.name );
+
+test( 'MUST FAIL: a pill whose glyph is a text span keeps its in-page address and a site address, and the stars come first', () => {
+	assert.deepEqual( buttonOf( rating( '#reviews' ) ).attributes, { label: '★★★★★ 4.3 · 8 reviews', url: '#reviews' } );
+	assert.equal( buttonOf( rating( '/shop/' ) ).attributes.url, '/shop/' );
+	// Negative controls: no href writes no url.
+	assert.equal( 'url' in buttonOf( rating( null ) ).attributes, false );
+} );
+
 // rules.solitaryIcon.glyphDisc: a typed glyph alone in a painted round box of equal width and height is sgs/icon with the glyph
 // as its emoji character, never text and never the brand name (an emoji written there drew a star).
 const DISC = 'width:32px;height:32px;border-radius:999px;background:#f9cf6e;border:2px solid #3a2a22;display:flex;align-items:center;justify-content:center';

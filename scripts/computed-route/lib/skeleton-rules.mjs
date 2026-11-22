@@ -183,9 +183,16 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 
 	// All the words of an element: its own, then each block child's, joined by spaces (the inventory's allText runs the
 	// children together, "SundayClosed").
+	// The element's own words come after its first block child's text when the draft's own text runs that way (a row of stars
+	// before the words that follow them): the inventory's allText holds the document order.
 	const all = ( e ) => {
 		const kids = m.blockKids( e );
-		const text = kids.length ? [ m.words( e ), ...kids.map( all ) ].filter( Boolean ).join( ' ' ) : String( e.allText ?? m.words( e ) );
+		const own = m.words( e );
+		const first = kids.length && own ? all( kids[ 0 ] ) : '';
+		const strip = ( x ) => String( x ).replace( /\s+/g, '' );
+		const kidFirst = !! first && !! e.allText && strip( e.allText ).startsWith( strip( first ) ) && ! strip( e.allText ).startsWith( strip( own ) );
+		const parts = kidFirst ? [ ...kids.map( all ), own ] : [ own, ...kids.map( all ) ];
+		const text = kids.length ? parts.filter( Boolean ).join( ' ' ) : String( e.allText ?? own );
 		return text.replace( /\s+/g, ' ' ).trim();
 	};
 	const hasSvg = ( e ) => m.kids( e ).some( ( k ) => 'svg' === k.tag );
@@ -808,7 +815,10 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			if ( paintsPicture( e ) || inner.some( paintsPicture ) ) {
 				return null;
 			}
-			return v( 'pillButton', { block: R.pillButton?.block, absorb: true, attributes: { label: text, ...( lk ? { linkSource: lk.source } : {} ), ...( lk && wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...wordBound( lk ) } );
+			// The button holds the draft's destination (a draft route as its site address, an in-page `#fragment` as it stands): the
+			// pill's glyph is absorbed, so the writer never reads the link from the element itself.
+			const link = lk ? { attributes: { linkSource: lk.source } } : realHref( e ) ? siteLinkOf( facts.firstAttrByRole( R.pillButton?.block, 'link-href' ) || 'url', e ) : { attributes: {} };
+			return v( 'pillButton', { block: R.pillButton?.block, absorb: true, attributes: { label: text, ...link.attributes, ...( lk && wordsAreValue( e, lk.kind ) ? { labelFromSiteInfo: true } : {} ) }, ...( link.handover ? { handover: link.handover } : {} ), ...wordBound( lk ) } );
 		},
 		// A lone text link to a Site Info address (a phone number, an email address, a maps host) is a button whose link
 		// reads Site Info; credit and copyright lines stay business details.
