@@ -34,7 +34,9 @@ registerBlockBindingsSource( {
 		Object.entries( bindings || {} ).forEach( ( [ attrName, binding ] ) => {
 			const format = String( binding?.args?.format ?? '' );
 			const sample = SAMPLES[ binding?.args?.key ] ?? SAMPLES.first_name;
-			values[ attrName ] = format.includes( '%s' ) ? format.replace( '%s', sample ) : sample;
+			values[ attrName ] = format.includes( '%s' )
+				? format.replace( '%s', sample )
+				: sample;
 		} );
 		return values;
 	},
