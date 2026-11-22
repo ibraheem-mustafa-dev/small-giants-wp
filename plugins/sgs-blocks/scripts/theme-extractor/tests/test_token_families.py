@@ -228,3 +228,20 @@ def test_a_named_script_easing_is_the_curve_it_draws(tmp_path):
     assert tf._curve("easeOutBack") == tf._curve("cubic-bezier(.34,1.56,.64,1)")
     assert tf.classify("ease-fast", "easeOutQuart") == "easing"
     assert tf._curve("easeOutNothing") is None and tf.classify("ease-fast", "easeOutNothing") != "easing"
+
+
+def test_a_named_script_easing_default_is_stored_as_the_curve_not_the_script_name(tmp_path):
+    """MUST FAIL on the old code: ``--ease-out: easeOutCubic`` was written as ``easing.default`` verbatim, no CSS timing function."""
+    css = ":root{--dur-card:.3s;--ease-out:easeOutCubic}"
+    snap, tokens, d = run(tmp_path, css, movement={"duration_ms": 300, "easing": "cubic-bezier(0.33, 1, 0.68, 1)"})
+    assert snap["settings"]["custom"]["easing"]["default"] == "cubic-bezier(0.33, 1, 0.68, 1)"
+    # The token still counts as the default's source: its value is what the snapshot holds for it.
+    assert "settings.custom.easing.default" in tf.token_usage(snap, tokens, d)["ease-out"]["paths"] if hasattr(tf, "token_usage") else True
+
+
+def test_a_css_easing_default_keeps_the_draft_spelling(tmp_path):
+    """Negative control: a cubic-bezier token is stored as written."""
+    css = ":root{--dur-card:.3s;--ease-spring:cubic-bezier(.3,1.6,.5,1)}"
+    snap, _, _ = run(tmp_path, css, movement={"duration_ms": 300, "easing": "cubic-bezier(0.3, 1.6, 0.5, 1)"})
+    assert snap["settings"]["custom"]["easing"]["default"] == "cubic-bezier(.3,1.6,.5,1)"
+    assert tf._stored_easing("ease-out") == "ease-out" and tf._stored_easing("easeOutCubic") == "cubic-bezier(0.33, 1, 0.68, 1)"

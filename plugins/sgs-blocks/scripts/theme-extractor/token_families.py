@@ -29,7 +29,7 @@ from colour import parse_colour
 import declared_tokens as dt
 from shade_palette import display_name, namespace_of
 from palette_vocab import trace_row
-from motion_tokens import NAMED_SCRIPT_EASINGS
+from motion_tokens import NAMED_SCRIPT_EASINGS, normalise_easing
 
 _SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _GRADIENT = re.compile(r"^(?:repeating-)?(?:linear|radial|conic)-gradient\(", re.I)
@@ -50,6 +50,13 @@ LISTS = {"fontSizes": (("typography", "fontSizes"), "size"), "spacing": (("spaci
 _CANON_EASING = {"ease": (0.25, 0.1, 0.25, 1.0), "ease-in": (0.42, 0.0, 1.0, 1.0), "ease-out": (0.0, 0.0, 0.58, 1.0),
                  "ease-in-out": (0.42, 0.0, 0.58, 1.0), "linear": (0.0, 0.0, 1.0, 1.0),
                  **{name: tuple(float(n) for n in curve) for name, curve in NAMED_SCRIPT_EASINGS.items()}}
+
+
+def _stored_easing(value: str) -> str:
+    """The easing as a snapshot holds it: a script name (``easeOutCubic``) is no CSS timing function, so it is stored as the
+    cubic-bezier it draws; every CSS spelling is kept as the draft wrote it."""
+    v = value.strip()
+    return (normalise_easing(v) or v) if v.lower() in NAMED_SCRIPT_EASINGS else value
 
 
 def _words(name: str) -> list[str]:
@@ -470,7 +477,7 @@ def apply_defaults(snap: dict, families: dict, movement: dict | None, trace: lis
         node = custom
         for k in path[:-1]:
             node = node.setdefault(k, {})
-        node[path[-1]] = row["value"]
+        node[path[-1]] = _stored_easing(row["value"]) if "easing" == path[0] else row["value"]
         used.setdefault(row["token"], []).append("settings.custom." + ".".join(path))
         trace_row(trace, "token", "settings.custom." + ".".join(path), why, row["token"])
 
@@ -552,7 +559,7 @@ def accounting(snap: dict, tokens: dict | None, draft_dir) -> dict[str, dict]:
     for family, slot in (("duration", "fast"), ("easing", "default")):
         value = (custom.get(family) or {}).get(slot) if isinstance(custom.get(family), dict) else None
         for r in parsed["families"].get(family) or []:
-            if value is not None and r["value"] == value:
+            if value is not None and (_stored_easing(r["value"]) if "easing" == family else r["value"]) == value:
                 defaults.setdefault(r["token"], []).append(f"settings.custom.{family}.{slot}")
     carried = {t: f"{fam}.{slot}" for fam, m in (custom.get("presetTokens") or {}).items() for slot, t in m.items() if t}
     out: dict[str, dict] = {}
