@@ -12,10 +12,13 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody, SelectControl, Notice } from '@wordpress/components';
-import { ToggleGroupControl, ToggleGroupControlOption } from '../../components/primitives';
+import {
+	ToggleGroupControl,
+	ToggleGroupControlOption,
+} from '../../components/primitives';
+import { TierSelectControl } from '../../components';
 
 const JUSTIFY_CONTENT_OPTIONS = [
-	{ label: __( '— default (start) —', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
@@ -25,7 +28,7 @@ const JUSTIFY_CONTENT_OPTIONS = [
 
 /**
  * @param {Object}   root0
- * @param {string}   root0.justifyContent   Block attribute.
+ * @param {Object}   root0.justifyContent   Block attribute: `{desktop,tablet,mobile}`.
  * @param {string}   root0.itemHoverScope   Block attribute — 'all' | 'with-submenu'.
  * @param {string}   root0.splitAfterItemId Block attribute — an item identifier
  *                                          from `resolvedItems`, or ''.
@@ -62,17 +65,16 @@ export default function SplitPanel( {
 
 	return (
 		<PanelBody title={ __( 'Layout', 'sgs-blocks' ) } initialOpen={ false }>
-			<SelectControl
+			<TierSelectControl
 				label={ __( 'Justify row content', 'sgs-blocks' ) }
-				value={ justifyContent || '' }
+				value={ justifyContent }
 				options={ JUSTIFY_CONTENT_OPTIONS }
-				onChange={ ( val ) => setAttributes( { justifyContent: val } ) }
+				defaultLabel={ __( 'Start (default)', 'sgs-blocks' ) }
+				onChange={ ( obj ) => setAttributes( { justifyContent: obj } ) }
 				help={ __(
 					'How the ornament, label, image and icon of each row are spread across the row. Centre also keeps the label on the row’s true centre.',
 					'sgs-blocks'
 				) }
-				__nextHasNoMarginBottom
-				__next40pxDefaultSize
 			/>
 
 			<SelectControl

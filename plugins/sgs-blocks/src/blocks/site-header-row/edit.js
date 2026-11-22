@@ -30,11 +30,12 @@ import {
 	SgsBoxControl,
 	SgsGapControl,
 	SgsLengthControl,
-	AlignItemsTierControl,
+	TierSelectControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
 	resolveResponsiveTier,
+	tierIsSet,
 	tierBoxLonghands,
 	resolveContentWidthPreview,
 	contentBandPreview,
@@ -142,7 +143,6 @@ const LAYOUT_OPTIONS = [
 
 // Distribution maps to the shared wrapper's justifyContent attr (cluster only).
 const DISTRIBUTION_OPTIONS = [
-	{ label: __( '— default (left) —', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Left', 'sgs-blocks' ), value: 'flex-start' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Right', 'sgs-blocks' ), value: 'flex-end' },
@@ -366,9 +366,15 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				// Blank alignItems/justifyItems/alignContent fall to the
 				// CSS-initial `stretch` — mirrors SGS_Container_Wrapper::render()'s
 				// own defaults, not a hardcoded editor-only fallback.
-				alignItems: resolveResponsiveTier( alignItems, 'desktop' )?.value || 'stretch',
-				justifyItems: justifyItems || 'stretch',
-				alignContent: alignContent || 'stretch',
+				alignItems:
+					resolveResponsiveTier( alignItems, 'desktop' )?.value ||
+					'stretch',
+				justifyItems:
+					resolveResponsiveTier( justifyItems, 'desktop' )?.value ||
+					'stretch',
+				alignContent:
+					resolveResponsiveTier( alignContent, 'desktop' )?.value ||
+					'stretch',
 				gap: gapPreview,
 		  }
 		: {
@@ -383,7 +389,9 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 				...( flexDirection ? { flexDirection } : {} ),
 				// Matches block.json's gap default.
 				gap: gapPreview,
-				justifyContent: justifyContent || 'flex-start',
+				justifyContent:
+					resolveResponsiveTier( justifyContent, 'desktop' )?.value ||
+					'flex-start',
 		  };
 
 	// Margin (CHECK A) — a TIER OBJECT (Spec 37 FR-37-16), each tier itself a
@@ -631,8 +639,8 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							setAttributes( {
 								alignItems: {},
 								flexDirection: '',
-								justifyItems: 'stretch',
-								alignContent: 'stretch',
+								justifyItems: { desktop: 'stretch' },
+								alignContent: { desktop: 'stretch' },
 								gridTemplateColumns: {},
 								gridTemplateRows: {},
 								gridAutoRows: '',
@@ -649,7 +657,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							}
 							isShownByDefault
 						>
-							<AlignItemsTierControl
+							<TierSelectControl
 								value={ alignItems }
 								options={ VERTICAL_ALIGN_OPTIONS }
 								onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
@@ -694,32 +702,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										'sgs-blocks'
 									) }
 									hasValue={ () =>
-										justifyItems !== 'stretch'
+										tierIsSet( justifyItems, 'stretch' )
 									}
 									onDeselect={ () =>
 										setAttributes( {
-											justifyItems: 'stretch',
+											justifyItems: {
+												desktop: 'stretch',
+											},
 										} )
 									}
 								>
-									<SelectControl
+									<TierSelectControl
 										label={ __(
 											'Justify items',
 											'sgs-blocks'
 										) }
-										value={ justifyItems || 'stretch' }
+										value={ justifyItems }
 										options={ JUSTIFY_ITEMS_OPTIONS }
-										onChange={ ( val ) =>
-											setAttributes( {
-												justifyItems: val,
-											} )
-										}
 										help={ __(
 											'How each element sits inside its own column when narrower than the column.',
 											'sgs-blocks'
 										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
+										onChange={ ( obj ) =>
+											setAttributes( {
+												justifyItems: obj,
+											} )
+										}
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
@@ -728,32 +736,32 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 										'sgs-blocks'
 									) }
 									hasValue={ () =>
-										alignContent !== 'stretch'
+										tierIsSet( alignContent, 'stretch' )
 									}
 									onDeselect={ () =>
 										setAttributes( {
-											alignContent: 'stretch',
+											alignContent: {
+												desktop: 'stretch',
+											},
 										} )
 									}
 								>
-									<SelectControl
+									<TierSelectControl
 										label={ __(
 											'Align content',
 											'sgs-blocks'
 										) }
-										value={ alignContent || 'stretch' }
+										value={ alignContent }
 										options={ ALIGN_CONTENT_OPTIONS }
-										onChange={ ( val ) =>
-											setAttributes( {
-												alignContent: val,
-											} )
-										}
 										help={ __(
 											'Spacing between grid rows when this row has more than one row of elements.',
 											'sgs-blocks'
 										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
+										onChange={ ( obj ) =>
+											setAttributes( {
+												alignContent: obj,
+											} )
+										}
 									/>
 								</ToolsPanelItem>
 								{ /* FR-37-42 — optional SECOND step after the count,
@@ -1129,19 +1137,21 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 						</ResponsiveOverride>
 					) }
 					{ ! isGrid && (
-						<SelectControl
+						<TierSelectControl
 							label={ __( 'Distribution', 'sgs-blocks' ) }
-							value={ justifyContent || '' }
+							value={ justifyContent }
 							options={ DISTRIBUTION_OPTIONS }
-							onChange={ ( val ) =>
-								setAttributes( { justifyContent: val } )
-							}
+							defaultLabel={ __(
+								'Left (default)',
+								'sgs-blocks'
+							) }
 							help={ __(
 								'How elements spread across the row. They stay on one line at every screen size and shrink to fit, so nothing ever wraps or runs off the edge.',
 								'sgs-blocks'
 							) }
-							__nextHasNoMarginBottom
-							__next40pxDefaultSize
+							onChange={ ( obj ) =>
+								setAttributes( { justifyContent: obj } )
+							}
 						/>
 					) }
 					<ResponsiveOverride

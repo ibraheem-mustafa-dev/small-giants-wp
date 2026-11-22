@@ -12,7 +12,24 @@ import {
 	Button,
 	TextControl,
 } from '@wordpress/components';
-import { ResponsiveControl, ResponsiveOverride, ResponsiveBoxControl, ShadowControl, shadowAttrKeys, GradientOverlayControl, gradientOverlayAttrKeys, BOX_UNITS, normaliseResponsiveBox, SgsColourPanel, SgsBorderControl, resolveColourToken, TypographyControls, SgsBoxControl, SgsLengthControl } from '../../components';
+import {
+	TierSelectControl,
+	ResponsiveControl,
+	ResponsiveOverride,
+	ResponsiveBoxControl,
+	ShadowControl,
+	shadowAttrKeys,
+	GradientOverlayControl,
+	gradientOverlayAttrKeys,
+	BOX_UNITS,
+	normaliseResponsiveBox,
+	SgsColourPanel,
+	SgsBorderControl,
+	resolveColourToken,
+	TypographyControls,
+	SgsBoxControl,
+	SgsLengthControl,
+} from '../../components';
 
 const CONTENT_GAP_UNITS = [
 	{ value: 'px', label: 'px', default: 0 },
@@ -29,6 +46,7 @@ import {
 	resolveBackgroundPaintPreviewStyle,
 	textPaintPreview,
 	resolveResponsiveTier,
+	tierIsSet,
 	flattenPresetSetting,
 	usePreviewTier,
 	textIndentPreviewCss,
@@ -122,8 +140,14 @@ const FLEX_WRAP_OPTIONS = [
 	{ label: __( 'No wrap', 'sgs-blocks' ), value: 'nowrap' },
 ];
 
+const JUSTIFY_ITEMS_OPTIONS = [
+	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
+	{ label: __( 'Start', 'sgs-blocks' ), value: 'start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'End', 'sgs-blocks' ), value: 'end' },
+];
+
 const JUSTIFY_CONTENT_OPTIONS = [
-	{ label: __( '— default —', 'sgs-blocks' ), value: '' },
 	{ label: __( 'Flex start', 'sgs-blocks' ), value: 'flex-start' },
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Flex end', 'sgs-blocks' ), value: 'flex-end' },
@@ -358,11 +382,19 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 	// dead; that was true until render.php was fixed, so this closes the
 	// resulting editor-canvas gap rather than leaving it re-opened.
 	if ( isSplit ) {
-		if ( justifyItems && justifyItems !== 'stretch' ) {
-			wrapperStyle.justifyItems = justifyItems;
+		const justifyItemsAtTier = resolveResponsiveTier(
+			justifyItems,
+			previewTier
+		)?.value;
+		if ( justifyItemsAtTier && justifyItemsAtTier !== 'stretch' ) {
+			wrapperStyle.justifyItems = justifyItemsAtTier;
 		}
-		if ( alignContent && alignContent !== 'stretch' ) {
-			wrapperStyle.alignContent = alignContent;
+		const alignContentAtTier = resolveResponsiveTier(
+			alignContent,
+			previewTier
+		)?.value;
+		if ( alignContentAtTier && alignContentAtTier !== 'stretch' ) {
+			wrapperStyle.alignContent = alignContentAtTier;
 		}
 		if ( gridAutoRows ) {
 			wrapperStyle.gridAutoRows = gridAutoRows;
@@ -375,8 +407,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 		if ( flexDirection ) {
 			wrapperStyle.flexDirection = flexDirection;
 		}
-		if ( justifyContent ) {
-			wrapperStyle.justifyContent = justifyContent;
+		const justifyContentAtTier = resolveResponsiveTier(
+			justifyContent,
+			previewTier
+		)?.value;
+		if ( justifyContentAtTier ) {
+			wrapperStyle.justifyContent = justifyContentAtTier;
 		}
 		if ( flexWrap && flexWrap !== 'wrap' ) {
 			wrapperStyle.flexWrap = flexWrap;
@@ -983,13 +1019,13 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						label={ __( 'Grid & flex settings', 'sgs-blocks' ) }
 						resetAll={ () =>
 							setAttributes( {
-								alignContent: 'stretch',
-								justifyContent: '',
+								alignContent: { desktop: 'stretch' },
+								justifyContent: {},
 								flexDirection: '',
 								flexWrap: 'wrap',
 								gridAutoRows: '',
 								gridTemplateRows: {},
-								justifyItems: 'stretch',
+								justifyItems: { desktop: 'stretch' },
 							} )
 						}
 					>
@@ -1049,71 +1085,97 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 						{ ! isGrid && (
 							<ToolsPanelItem
 								label={ __( 'Justify content', 'sgs-blocks' ) }
-								hasValue={ () => justifyContent !== '' }
-								onDeselect={ () => setAttributes( { justifyContent: '' } ) }
+								hasValue={ () => tierIsSet( justifyContent ) }
+								onDeselect={ () =>
+									setAttributes( { justifyContent: {} } )
+								}
 							>
-								<SelectControl
-									label={ __( 'Justify content', 'sgs-blocks' ) }
-									value={ justifyContent || '' }
+								<TierSelectControl
+									label={ __(
+										'Justify content',
+										'sgs-blocks'
+									) }
+									value={ justifyContent }
 									options={ JUSTIFY_CONTENT_OPTIONS }
-									onChange={ ( val ) =>
-										setAttributes( { justifyContent: val } )
+									onChange={ ( obj ) =>
+										setAttributes( { justifyContent: obj } )
 									}
 									help={ __(
 										'How the content and media columns are spaced along the row when they do not fill it.',
 										'sgs-blocks'
 									) }
-									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 								/>
 							</ToolsPanelItem>
 						) }
 						{ isGrid && (
 							<>
 								<ToolsPanelItem
-									label={ __( 'Justify items', 'sgs-blocks' ) }
-									hasValue={ () => ( justifyItems || 'stretch' ) !== 'stretch' }
-									onDeselect={ () => setAttributes( { justifyItems: 'stretch' } ) }
+									label={ __(
+										'Justify items',
+										'sgs-blocks'
+									) }
+									hasValue={ () =>
+										tierIsSet( justifyItems, 'stretch' )
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											justifyItems: {
+												desktop: 'stretch',
+											},
+										} )
+									}
 									isShownByDefault
 								>
-									<ToggleGroupControl
-										label={ __( 'Justify items', 'sgs-blocks' ) }
+									<TierSelectControl
+										label={ __(
+											'Justify items',
+											'sgs-blocks'
+										) }
 										help={ __(
 											'How each grid item sits inside its own column when narrower than the column.',
 											'sgs-blocks'
 										) }
-										value={ justifyItems || 'stretch' }
-										onChange={ ( val ) =>
-											setAttributes( { justifyItems: val || 'stretch' } )
+										value={ justifyItems }
+										options={ JUSTIFY_ITEMS_OPTIONS }
+										onChange={ ( obj ) =>
+											setAttributes( {
+												justifyItems: obj,
+											} )
 										}
-										isBlock
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									>
-										<ToggleGroupControlOption value="stretch" label={ __( 'Stretch', 'sgs-blocks' ) } />
-										<ToggleGroupControlOption value="start" label={ __( 'Start', 'sgs-blocks' ) } />
-										<ToggleGroupControlOption value="center" label={ __( 'Centre', 'sgs-blocks' ) } />
-										<ToggleGroupControlOption value="end" label={ __( 'End', 'sgs-blocks' ) } />
-									</ToggleGroupControl>
+									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem
-									label={ __( 'Align content', 'sgs-blocks' ) }
-									hasValue={ () => ( alignContent || 'stretch' ) !== 'stretch' }
-									onDeselect={ () => setAttributes( { alignContent: 'stretch' } ) }
+									label={ __(
+										'Align content',
+										'sgs-blocks'
+									) }
+									hasValue={ () =>
+										tierIsSet( alignContent, 'stretch' )
+									}
+									onDeselect={ () =>
+										setAttributes( {
+											alignContent: {
+												desktop: 'stretch',
+											},
+										} )
+									}
 								>
-									<SelectControl
-										label={ __( 'Align content', 'sgs-blocks' ) }
-										value={ alignContent || 'stretch' }
+									<TierSelectControl
+										label={ __(
+											'Align content',
+											'sgs-blocks'
+										) }
+										value={ alignContent }
 										options={ ALIGN_CONTENT_OPTIONS }
-										onChange={ ( val ) =>
-											setAttributes( { alignContent: val } )
+										onChange={ ( obj ) =>
+											setAttributes( {
+												alignContent: obj,
+											} )
 										}
 										help={ __(
 											'Spacing between grid rows when this section has more than one row.',
 											'sgs-blocks'
 										) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
 									/>
 								</ToolsPanelItem>
 								<ToolsPanelItem

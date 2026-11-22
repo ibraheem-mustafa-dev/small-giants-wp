@@ -416,8 +416,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 			...wrapperTextStyle,
 			'--sgs-transition-duration': transitionDuration ? `${ transitionDuration }ms` : undefined,
 			'--sgs-transition-easing': transitionEasing || undefined,
-			gap: stepGap || undefined,
-			'--sgs-step-gap': stepGap || undefined,
+			gap: tierValue( stepGap, previewTier ) || undefined,
+			'--sgs-step-gap': tierValue( stepGap, previewTier ) || undefined,
 			'--sgs-step-count': steps.length,
 			rowGap: tierValue( stepRowGap, previewTier ),
 			'--sgs-step-number-size': tierValue( numberSize, previewTier ),
@@ -858,11 +858,11 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						resetAll={ () =>
 							setAttributes( {
 								layout: 'row',
-								stepGap: '',
+								stepGap: {},
 								stepRowGap: {},
 								stepAlignItems: undefined,
 								flexWrap: '',
-								numberGap: '',
+								numberGap: {},
 								connectorStyle: 'line',
 								connectorLineStyle: 'solid',
 								connectorLine: false,
@@ -907,16 +907,44 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						<ToolsPanelItem
 							label={ __( 'Space between steps', 'sgs-blocks' ) }
 							isShownByDefault
-							hasValue={ () => !! stepGap }
-							onDeselect={ () => setAttributes( { stepGap: '' } ) }
+							hasValue={ () =>
+								!! stepGap && Object.keys( stepGap ).length > 0
+							}
+							onDeselect={ () =>
+								setAttributes( { stepGap: {} } )
+							}
 						>
-							<SgsLengthControl
-								label={ __( 'Space between steps', 'sgs-blocks' ) }
-								help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
-								value={ stepGap || '' }
-								onChange={ ( val ) => setAttributes( { stepGap: val || '' } ) }
-								presets={ false }
-							/>
+							<ResponsiveControl
+								label={ __(
+									'Space between steps',
+									'sgs-blocks'
+								) }
+							>
+								{ ( breakpoint ) => (
+									<SgsLengthControl
+										label={ __(
+											'Space between steps',
+											'sgs-blocks'
+										) }
+										hideLabelFromVision
+										help={ __(
+											'Empty keeps the theme spacing.',
+											'sgs-blocks'
+										) }
+										value={ stepGap?.[ breakpoint ] ?? '' }
+										onChange={ ( val ) =>
+											patchTier(
+												attributes,
+												setAttributes,
+												'stepGap',
+												breakpoint,
+												val || ''
+											)
+										}
+										presets={ false }
+									/>
+								) }
+							</ResponsiveControl>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Row gap between steps', 'sgs-blocks' ) }
@@ -972,17 +1000,51 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						</ToolsPanelItem>
 						{ 'list' === layout && (
 							<ToolsPanelItem
-								label={ __( 'Space between number and text', 'sgs-blocks' ) }
-								hasValue={ () => !! numberGap }
-								onDeselect={ () => setAttributes( { numberGap: '' } ) }
+								label={ __(
+									'Space between number and text',
+									'sgs-blocks'
+								) }
+								hasValue={ () =>
+									!! numberGap &&
+									Object.keys( numberGap ).length > 0
+								}
+								onDeselect={ () =>
+									setAttributes( { numberGap: {} } )
+								}
 							>
-								<SgsLengthControl
-									label={ __( 'Space between number and text', 'sgs-blocks' ) }
-									help={ __( 'Empty keeps the theme spacing.', 'sgs-blocks' ) }
-									value={ numberGap || '' }
-									onChange={ ( val ) => setAttributes( { numberGap: val || '' } ) }
-									presets={ false }
-								/>
+								<ResponsiveControl
+									label={ __(
+										'Space between number and text',
+										'sgs-blocks'
+									) }
+								>
+									{ ( breakpoint ) => (
+										<SgsLengthControl
+											label={ __(
+												'Space between number and text',
+												'sgs-blocks'
+											) }
+											hideLabelFromVision
+											help={ __(
+												'Empty keeps the theme spacing.',
+												'sgs-blocks'
+											) }
+											value={
+												numberGap?.[ breakpoint ] ?? ''
+											}
+											onChange={ ( val ) =>
+												patchTier(
+													attributes,
+													setAttributes,
+													'numberGap',
+													breakpoint,
+													val || ''
+												)
+											}
+											presets={ false }
+										/>
+									) }
+								</ResponsiveControl>
 							</ToolsPanelItem>
 						) }
 						{ 'list' !== layout && (
@@ -1273,8 +1335,17 @@ export default function Edit( { attributes, setAttributes, name } ) {
 						key={ index }
 						className="sgs-process-steps__step"
 						style={ {
-							...( 'list' === layout && numberGap ? { columnGap: numberGap } : {} ),
-							alignItems: tierValue( stepAlignItems, previewTier ) || undefined,
+							...( 'list' === layout && numberGap
+								? {
+										columnGap: tierValue(
+											numberGap,
+											previewTier
+										),
+								  }
+								: {} ),
+							alignItems:
+								tierValue( stepAlignItems, previewTier ) ||
+								undefined,
 						} }
 					>
 						{ step.icon && (

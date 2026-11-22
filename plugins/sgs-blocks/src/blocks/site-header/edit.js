@@ -196,7 +196,8 @@ function applyLayoutPreset(
 	// No-op if the header has no middle row.
 	if ( middleRowClientId && updateBlockAttributes ) {
 		updateBlockAttributes( middleRowClientId, {
-			justifyContent: PRESET_JUSTIFY[ value ],
+			// A preset sets the desktop arrangement; the row's tablet and mobile choices are not part of a preset.
+			justifyContent: { desktop: PRESET_JUSTIFY[ value ] },
 		} );
 	}
 }
@@ -248,7 +249,7 @@ const TEMPLATE = [
 	[ 'sgs/site-header-row', { rowSlot: 'top' } ],
 	[
 		'sgs/site-header-row',
-		{ rowSlot: 'middle', justifyContent: 'space-between' },
+		{ rowSlot: 'middle', justifyContent: { desktop: 'space-between' } },
 		[
 			// Logo (left). SGS per-breakpoint logo block (falls back to the site
 			// custom_logo when no per-breakpoint images set). Draft: logo | nav | icons.
@@ -396,7 +397,8 @@ export default function Edit( { attributes, setAttributes, clientId, name } ) {
 		[ clientId ]
 	);
 	const middleRowClientId = middleRow?.clientId;
-	const middleRowJustify = middleRow?.attributes?.justifyContent ?? '';
+	const middleRowJustify =
+		middleRow?.attributes?.justifyContent?.desktop ?? '';
 
 	// Contrast check for border — warn if border fails WCAG 3:1 contrast
 	// against the block's own background. When the block has no background

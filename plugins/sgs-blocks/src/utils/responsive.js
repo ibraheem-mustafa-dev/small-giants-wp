@@ -148,6 +148,19 @@ export function resolveOnTiers( raw, onMarker, defaultValue ) {
 }
 
 /**
+ * Whether a per-device setting holds a value other than its resting one, so an inspector row can show its reset.
+ *
+ * @param {Object} value   The stored `{desktop, tablet, mobile}` object.
+ * @param {string} resting The desktop value that counts as unset (for example `stretch`).
+ * @return {boolean} True when any device is customised.
+ */
+export function tierIsSet( value, resting = '' ) {
+	return Object.entries( value || {} ).some(
+		( [ tier, v ] ) => v && ! ( 'desktop' === tier && v === resting )
+	);
+}
+
+/**
  * Legacy wrapper over resolveTier (scalar/null-marker family).
  *
  * Maintains the original semantics: empty string marks absence and inherits

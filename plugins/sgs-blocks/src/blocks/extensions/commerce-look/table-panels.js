@@ -9,7 +9,13 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { AlignItemsTierControl, ResponsiveBoxControl, ResponsiveLengthControl, ShadowControl, TierBorderControl } from '../../../components';
+import {
+	TierSelectControl,
+	ResponsiveBoxControl,
+	ResponsiveLengthControl,
+	ShadowControl,
+	TierBorderControl,
+} from '../../../components';
 import TABLE from '../../../../includes/woocommerce/commerce-look/selectors.json';
 import { boxTiers, ColourRow, TextControls, writeTier } from './controls';
 
@@ -84,7 +90,7 @@ function ColumnControl( { column, prefix, attributes, setAttributes } ) {
 			return <ShadowControl label={ label } attributes={ attributes } setAttributes={ setAttributes } attrNames={ { base: name, colour: name + 'Colour' } } />;
 		case 'keyword':
 			return (
-				<AlignItemsTierControl
+				<TierSelectControl
 					label={ label }
 					value={ attributes[ name ] }
 					options={ def.options.map( ( [ value, text ] ) => ( { value, label: __( text, 'sgs-blocks' ) } ) ) }

@@ -17,7 +17,7 @@ import {
 	TextControl,
 } from '@wordpress/components';
 import {
-	AlignItemsTierControl,
+	TierSelectControl,
 	ColumnShapePicker,
 	ResponsiveOverride,
 	SgsGapControl,
@@ -73,6 +73,15 @@ const ALIGN_OPTIONS = [
 	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
 	{ label: __( 'Bottom', 'sgs-blocks' ), value: 'end' },
 	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
+];
+
+const JUSTIFY_CONTENT_OPTIONS = [
+	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+	{ label: __( 'Space between', 'sgs-blocks' ), value: 'space-between' },
+	{ label: __( 'Space around', 'sgs-blocks' ), value: 'space-around' },
+	{ label: __( 'Space evenly', 'sgs-blocks' ), value: 'space-evenly' },
 ];
 
 const JUSTIFY_ITEMS_OPTIONS = [
@@ -140,8 +149,9 @@ export function LayoutPanel( {
 		// block does not actually have, on every caller that leaves it unset.
 		layout = '',
 		alignItems,
-		justifyItems = 'stretch',
-		alignContent = 'stretch',
+		justifyItems,
+		alignContent,
+		justifyContent,
 		// columns, gridTemplateColumns, gridTemplateRows and minColumnWidth are
 		// TIER OBJECTS (columns: pass 4; grid template props: pass 3a/3b;
 		// minColumnWidth: P2-5) and are read via attributes.columns /
@@ -255,7 +265,7 @@ export function LayoutPanel( {
 			{ ( layout === 'flex' ||
 				layout === 'stack' ||
 				layout === 'grid' ) && (
-				<AlignItemsTierControl
+				<TierSelectControl
 					value={ alignItems }
 					options={ ALIGN_OPTIONS }
 					onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
@@ -346,38 +356,13 @@ export function LayoutPanel( {
 			) }
 
 			{ ( layout === 'flex' || layout === 'stack' ) && (
-				<SelectControl
+				<TierSelectControl
 					label={ __( 'Justify content', 'sgs-blocks' ) }
-					value={ attributes.justifyContent || '' }
-					options={ [
-						{ label: __( '— default —', 'sgs-blocks' ), value: '' },
-						{
-							label: __( 'Start', 'sgs-blocks' ),
-							value: 'flex-start',
-						},
-						{
-							label: __( 'Centre', 'sgs-blocks' ),
-							value: 'center',
-						},
-						{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
-						{
-							label: __( 'Space between', 'sgs-blocks' ),
-							value: 'space-between',
-						},
-						{
-							label: __( 'Space around', 'sgs-blocks' ),
-							value: 'space-around',
-						},
-						{
-							label: __( 'Space evenly', 'sgs-blocks' ),
-							value: 'space-evenly',
-						},
-					] }
-					onChange={ ( val ) =>
-						setAttributes( { justifyContent: val } )
+					value={ justifyContent }
+					options={ JUSTIFY_CONTENT_OPTIONS }
+					onChange={ ( obj ) =>
+						setAttributes( { justifyContent: obj } )
 					}
-					__nextHasNoMarginBottom
-					__next40pxDefaultSize
 				/>
 			) }
 
@@ -597,26 +582,22 @@ export function LayoutPanel( {
 						__next40pxDefaultSize
 					/>
 
-					<SelectControl
+					<TierSelectControl
 						label={ __( 'Justify items', 'sgs-blocks' ) }
 						value={ justifyItems }
 						options={ JUSTIFY_ITEMS_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { justifyItems: val } )
+						onChange={ ( obj ) =>
+							setAttributes( { justifyItems: obj } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 
-					<SelectControl
+					<TierSelectControl
 						label={ __( 'Align content', 'sgs-blocks' ) }
 						value={ alignContent }
 						options={ ALIGN_CONTENT_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { alignContent: val } )
+						onChange={ ( obj ) =>
+							setAttributes( { alignContent: obj } )
 						}
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</>
 			) }

@@ -26,38 +26,42 @@ import { resolveResponsiveTier } from './responsive';
  * parent's own cross size, per CSS Flexbox L1 9.4, so it is coerced to `nowrap`
  * regardless of how the value arrived).
  *
- * @param {Object} style Mutable style object to write layout declarations onto.
- * @param {Object} params
- * @param {string} params.layout               'grid'|'flex'|'stack'|other.
- * @param {string} [params.tier]               Previewed device ('desktop' | 'tablet' | 'mobile').
- * @param {Object} [params.alignItems]         Cross-axis alignment (grid/flex/stack): the `{desktop, tablet, mobile}` object.
- * @param {string} [params.justifyItems='stretch']  Grid-only; applied only when not the default.
- * @param {string} [params.alignContent='stretch']  Grid-only; applied only when not the default.
- * @param {string} [params.gridAutoRows='']    Grid-only; applied unconditionally when set.
- * @param {*}      [params.gridTemplateColumns=''] Grid-only; a TIER OBJECT (or legacy string) —
- *                                              resolved via `resolveResponsiveTier()`, desktop tier.
- * @param {*}      [params.columns]            Grid-only fallback column count; a TIER OBJECT
- *                                              (or legacy number) — resolved via
- *                                              `resolveResponsiveTier()`, desktop tier.
- * @param {string|Object} [params.flexDirection='']   Flex-only; a string or a tier object.
- * @param {string|Object} [params.flexWrap='wrap']    Flex-only; a string or a tier object.
- * @param {string|Object} [params.justifyContent='']  Flex/stack; a string or a tier object.
+ * @param {Object}        style                           Mutable style object to write layout declarations onto.
+ * @param {Object}        params
+ * @param {string}        params.layout                   'grid'|'flex'|'stack'|other.
+ * @param {string}        [params.tier]                   Previewed device ('desktop' | 'tablet' | 'mobile').
+ * @param {Object}        [params.alignItems]             Cross-axis alignment (grid/flex/stack): the `{desktop, tablet, mobile}` object.
+ * @param {string|Object} [params.justifyItems='stretch'] Grid-only; a tier object (or a string); applied only when not the default.
+ * @param {string|Object} [params.alignContent='stretch'] Grid-only; a tier object (or a string); applied only when not the default.
+ * @param {string}        [params.gridAutoRows='']        Grid-only; applied unconditionally when set.
+ * @param {*}             [params.gridTemplateColumns=''] Grid-only; a TIER OBJECT (or legacy string) —
+ *                                                        resolved via `resolveResponsiveTier()`, desktop tier.
+ * @param {*}             [params.columns]                Grid-only fallback column count; a TIER OBJECT
+ *                                                        (or legacy number) — resolved via
+ *                                                        `resolveResponsiveTier()`, desktop tier.
+ * @param {string|Object} [params.flexDirection='']       Flex-only; a string or a tier object.
+ * @param {string|Object} [params.flexWrap='wrap']        Flex-only; a string or a tier object.
+ * @param {string|Object} [params.justifyContent='']      Flex/stack; a string or a tier object.
  * @return {Object} The same `style` object, mutated, for convenient chaining.
  */
-export function applyGridLayoutPreview( style, {
-	tier = 'desktop',
-	layout,
-	alignItems: alignItemsObject,
-	justifyItems = 'stretch',
-	alignContent = 'stretch',
-	gridAutoRows = '',
-	gridTemplateColumns = '',
-	columns,
-	flexDirection: flexDirectionValue = '',
-	flexWrap: flexWrapValue = 'wrap',
-	justifyContent: justifyContentValue = '',
-} ) {
-	const alignItems = resolveResponsiveTier( alignItemsObject, tier )?.value || undefined;
+export function applyGridLayoutPreview(
+	style,
+	{
+		tier = 'desktop',
+		layout,
+		alignItems: alignItemsObject,
+		justifyItems: justifyItemsValue = 'stretch',
+		alignContent: alignContentValue = 'stretch',
+		gridAutoRows = '',
+		gridTemplateColumns = '',
+		columns,
+		flexDirection: flexDirectionValue = '',
+		flexWrap: flexWrapValue = 'wrap',
+		justifyContent: justifyContentValue = '',
+	}
+) {
+	const alignItems =
+		resolveResponsiveTier( alignItemsObject, tier )?.value || undefined;
 	// flexDirection, flexWrap and justifyContent arrive as a plain string or as a tier object
 	// ({desktop,tablet,mobile}, e.g. multi-button's {desktop:'row',mobile:'column'}); the
 	// previewed tier's string is what the flex branch reads.
@@ -71,6 +75,8 @@ export function applyGridLayoutPreview( style, {
 	const flexDirection = tierString( flexDirectionValue, '' );
 	const flexWrap = tierString( flexWrapValue, 'wrap' );
 	const justifyContent = tierString( justifyContentValue, '' );
+	const justifyItems = tierString( justifyItemsValue, 'stretch' );
+	const alignContent = tierString( alignContentValue, 'stretch' );
 	if ( layout === 'grid' ) {
 		style.display = 'grid';
 		// gridTemplateColumns is a TIER OBJECT — calling .trim() on it bare throws

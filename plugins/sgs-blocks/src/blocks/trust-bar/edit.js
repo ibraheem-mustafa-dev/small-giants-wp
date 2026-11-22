@@ -579,8 +579,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 				// so behaviour still matches class-sgs-container-wrapper.php exactly.
 				...( gridAutoRows ? { gridAutoRows } : {} ),
 				alignItems: resolveResponsiveTier( alignItems, previewTier )?.value || undefined,
-				...( justifyItems && justifyItems !== 'stretch' ? { justifyItems } : {} ),
-				...( alignContent && alignContent !== 'stretch' ? { alignContent } : {} ),
+				...( ( resolveResponsiveTier( justifyItems, previewTier )?.value || 'stretch' ) !== 'stretch' ? { justifyItems: resolveResponsiveTier( justifyItems, previewTier ).value } : {} ),
+				...( ( resolveResponsiveTier( alignContent, previewTier )?.value || 'stretch' ) !== 'stretch' ? { alignContent: resolveResponsiveTier( alignContent, previewTier ).value } : {} ),
 			} : {} ),
 		},
 	} );

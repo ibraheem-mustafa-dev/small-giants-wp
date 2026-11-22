@@ -7,11 +7,12 @@ import {
 } from '@wordpress/block-editor';
 import ContainerWrapperControls from '../container/components/ContainerWrapperControls';
 import {
-	PanelBody,
-	SelectControl,
-	RangeControl,
-} from '@wordpress/components';
-import { AlignItemsTierControl, ResponsiveOverride, SgsColourPanel, fillRow, textRow, SgsLengthControl,
+	TierSelectControl,
+	ResponsiveOverride,
+	SgsColourPanel,
+	fillRow,
+	textRow,
+	SgsLengthControl,
 	SgsBorderControl,
 	resolveColourToken,
 } from '../../components';
@@ -103,8 +104,10 @@ function buildGridStyle( attributes, tier = 'desktop' ) {
 			display: 'grid',
 			gridTemplateColumns: `repeat(auto-fill, minmax(${ minItem }, 1fr))`,
 			gap: gapCss,
-			alignItems: resolveResponsiveTier( alignItems, tier )?.value || 'stretch',
-			justifyItems,
+			alignItems:
+				resolveResponsiveTier( alignItems, tier )?.value || 'stretch',
+			justifyItems:
+				resolveResponsiveTier( justifyItems, tier )?.value || 'stretch',
 		};
 	}
 
@@ -126,8 +129,10 @@ function buildGridStyle( attributes, tier = 'desktop' ) {
 		display: 'grid',
 		gridTemplateColumns: templateCols,
 		gap: gapCss,
-		alignItems: resolveResponsiveTier( alignItems, tier )?.value || 'stretch',
-		justifyItems,
+		alignItems:
+			resolveResponsiveTier( alignItems, tier )?.value || 'stretch',
+		justifyItems:
+			resolveResponsiveTier( justifyItems, tier )?.value || 'stretch',
 	};
 }
 
@@ -355,29 +360,27 @@ export default function Edit( { attributes, setAttributes } ) {
 					title={ __( 'Alignment', 'sgs-blocks' ) }
 					initialOpen={ false }
 				>
-					<AlignItemsTierControl
+					<TierSelectControl
 						label={ __( 'Align items (cross-axis)', 'sgs-blocks' ) }
 						value={ alignItems }
 						options={ ALIGN_OPTIONS }
 						onChange={ ( obj ) => setAttributes( { alignItems: obj } ) }
 						help={ __( 'Controls vertical alignment of items within each row.', 'sgs-blocks' ) }
 					/>
-					<SelectControl
+					<TierSelectControl
 						label={ __(
 							'Justify items (inline-axis)',
 							'sgs-blocks'
 						) }
 						value={ justifyItems }
 						options={ ALIGN_OPTIONS }
-						onChange={ ( val ) =>
-							setAttributes( { justifyItems: val } )
+						onChange={ ( obj ) =>
+							setAttributes( { justifyItems: obj } )
 						}
 						help={ __(
 							'Controls horizontal alignment of items within their grid cell.',
 							'sgs-blocks'
 						) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
 					/>
 				</PanelBody>
 				<PanelBody title={ __( 'Border', 'sgs-blocks' ) } initialOpen={ false }>

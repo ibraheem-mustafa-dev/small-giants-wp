@@ -24,7 +24,7 @@ import { IconPicker, IconPreview, SgsColourPanel, fillRow, textRow,
 	SgsBoxControl,
 	SgsLengthControl,
 	SgsGapControl,
-	AlignItemsTierControl,
+	TierSelectControl,
 } from '../../components';
 import { ToolsPanel, ToolsPanelItem } from '../../components/primitives';
 import {
@@ -811,7 +811,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 							/>
 						) }
 					</ResponsiveOverride>
-					<AlignItemsTierControl
+					<TierSelectControl
 						label={ __( 'Tile content alignment', 'sgs-blocks' ) }
 						value={ attributes.tileAlign }
 						options={ TILE_ALIGN_OPTIONS }
