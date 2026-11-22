@@ -170,3 +170,24 @@ test( 'placementHost names why: unread position, mixed widths and no host', () =
 	assert.match( unread.why, /not read for its position at every width/ );
 	assert.match( placementHost( args( { rec: w.nodes[ 0 ] } ) ).why, /no block above it is positioned/ );
 } );
+
+// A position rule on one of the host's parts is not the host root being positioned (lib/fill-placement-host.mjs::cssPositions).
+test( 'MUST FAIL: a position rule on a part of the host does not position the host root', () => {
+	const w = placedWorld( { boxPosition: 'static' } );
+	const args = () => ( { rec: w.nodes[ w.at ], nodes: w.nodes, flat: w.flat, reads: w.reads, calFor: () => paintOf( 'static' ), widths: W } );
+	w.flat[ 0 ].attributes.sgsCustomCss = '.sgs-box__media { position: relative; }';
+	assert.match( placementHost( args() ).why, /does not position it/, 'a part rule leaves the root static in the clone' );
+	w.flat[ 0 ].attributes.sgsCustomCss = '& .sgs-box__media { position: relative; } &:hover { position: relative; }';
+	assert.match( placementHost( args() ).why, /does not position it/ );
+} );
+
+test( 'negative controls: a root rule, a bare declaration and a grouped selector holding the root still position it; one inside @media does not', () => {
+	const w = placedWorld( { boxPosition: 'static' } );
+	const args = () => ( { rec: w.nodes[ w.at ], nodes: w.nodes, flat: w.flat, reads: w.reads, calFor: () => paintOf( 'static' ), widths: W } );
+	for ( const css of [ '& { position: relative; }', '& { color: red; position: relative; } .x { top: 0; }', '.x { top: 0; } &, .y { position: relative; }', 'position: relative;' ] ) {
+		w.flat[ 0 ].attributes.sgsCustomCss = css;
+		assert.equal( placementHost( args() ).host?.index, 0, css );
+	}
+	w.flat[ 0 ].attributes.sgsCustomCss = '@media (min-width: 900px) { & { position: relative; } }';
+	assert.ok( placementHost( args() ).why );
+} );

@@ -15,8 +15,18 @@ const POSITIONED = /^(relative|absolute|sticky|fixed)$/;
 const MEDIA = /@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g;
 const RULE_POSITION = /(?:^|[;{\s])position\s*:\s*(relative|absolute|sticky|fixed)\b/;
 
-// Whether the instance's own Custom CSS positions its root at every width.
-const cssPositions = ( node ) => RULE_POSITION.test( String( node?.attributes?.sgsCustomCss ?? '' ).replace( MEDIA, '' ) );
+// Whether the instance's own Custom CSS positions its root at every width: a position declaration in a rule whose selector is
+// the instance root (`&`) outside any @media rule, or declarations written with no rule around them. A part's rule
+// (`.x__media { position: relative }`) positions that part and leaves the root as it was.
+const cssPositions = ( node ) => {
+	const css = String( node?.attributes?.sgsCustomCss ?? '' ).replace( MEDIA, '' );
+	if ( ! css.includes( '{' ) ) {
+		return RULE_POSITION.test( css );
+	}
+	const rules = [ ...css.matchAll( /([^{}]*)\{([^{}]*)\}/g ) ];
+	const bare = css.slice( 0, css.indexOf( '{' ) ).replace( /[^;]*$/, '' );
+	return RULE_POSITION.test( bare ) || rules.some( ( [ , selector, body ] ) => selector.split( ',' ).some( ( x ) => '&' === x.trim() ) && RULE_POSITION.test( `{${ body }` ) );
+};
 
 // Returns { host: <node record> } or { why }. rec: the element's node record (nodes[ i ]); widths: the widths its position
 // is stated at; nodes/flat: the skeleton's records and the tree's nodes by index; reads: Fill's reads ({ widths });
