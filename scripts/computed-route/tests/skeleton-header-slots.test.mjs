@@ -534,3 +534,17 @@ test( 'negative control: the glyph after the words, no glyph, a link or button a
 	assert.equal( is( onPage( pageHeader( lone(), 'main' ) ) ), false, 'a page body that is no header' );
 	assert.equal( is( onPage( pageHeader( lone( { words: '2' } ) ) ) ), false, 'a number' );
 } );
+
+test( 'MUST FAIL: a byline label in an article header is no trust bar, while the top-level page header still makes one', () => {
+	// An article `<header>` (a post's title and byline) is no site header: "5 min read" beside its clock stays text.
+	const inArticle = ( [ top, ...kids ] ) => [ { ...top, tag: 'article', srcTag: 'article', snippet: '<article data-dc-tpl="1">' }, el( 'Root/27#0', 'Root/1#0', 'header', '', { depth: 1 } ), ...kids.map( ( k ) => ( 'Root/28#0' === k.key ? { ...k, parentKey: 'Root/27#0', depth: 2 } : k ) ) ];
+	const r = onPage( inArticle( pageHeader( lone( { words: '5 min read' } ) ) ) );
+	assert.equal( nodeFor( r, 'Root/30#0' )?.name, 'sgs/text', 'a label in an article header stays text' );
+	assert.ok( ! r.proposal.rows.some( ( x ) => 'headerStripBar' === x.rule ) );
+	// The same label in the template's top-level header is a trust bar, and a header inside a main or section is not.
+	assert.equal( nodeFor( onPage( pageHeader( lone( { words: '5 min read' } ) ) ), 'Root/30#0' )?.name, 'sgs/trust-bar' );
+	for ( const tag of [ 'section', 'main', 'aside' ] ) {
+		const wrapped = inArticle( pageHeader( lone( { words: '5 min read' } ) ) ).map( ( x ) => ( 'Root/1#0' === x.key ? { ...x, tag, srcTag: tag } : x ) );
+		assert.equal( nodeFor( onPage( wrapped ), 'Root/30#0' )?.name, 'sgs/text', `a header inside a ${ tag }` );
+	}
+} );

@@ -1185,9 +1185,11 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 		return 'header' === surface.kind && !! top && ! [ top, ...desc( top ) ].some( ( d ) => 'nav' === d.tag || logoish( d ) );
 	};
 
-	// Whether an element of a header surface or inside a header element sits in the header (a page template draws its own
-	// header as a `<header>`), and holds no link or button above it on the way up.
-	const inHeader = ( e ) => 'header' === surface.kind || ancestors( e ).some( ( a ) => 'header' === view.realTag( a ) );
+	// Whether an element of a header surface or inside a page template's own top-level `<header>` sits in the header. A
+	// `<header>` inside an article, section, main, aside, list item, quotation or figure heads that block (a post's title and
+	// byline), never the site, so it is no header here.
+	const SECTIONING = [ 'article', 'section', 'main', 'aside', 'li', 'blockquote', 'figure' ];
+	const inHeader = ( e ) => 'header' === surface.kind || ancestors( e ).some( ( a ) => 'header' === view.realTag( a ) && ! ancestors( a ).some( ( x ) => SECTIONING.includes( view.realTag( x ) ) ) );
 	const ancestors = ( e ) => {
 		const out = [];
 		for ( let p = m.byKey[ e.parentKey ]; p; p = m.byKey[ p.parentKey ] ) {
