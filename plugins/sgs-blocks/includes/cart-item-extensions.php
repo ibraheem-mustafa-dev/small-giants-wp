@@ -8,6 +8,7 @@
  *   - `items[].extensions.sgs.brandLogo`   that brand's logo {url,width,height}
  *   - `items[].extensions.sgs.lineSummary` the line's summary lines (0, 1 or 2)
  *   - `items[].extensions.sgs.hasLenses`   whether the line carries priced add-ons
+ *   - `items[].extensions.sgs.hasChoiceFlow` whether the line's product links a published choice flow
  *
  * ⚠️ A brand LOGO can only be drawn where this framework owns the renderer —
  * the bag drawer (src/blocks/cart/item-row-template.js). WooCommerce's own
@@ -66,10 +67,27 @@ function sgs_cart_item_brand( $cart_item ) {
 }
 
 /**
+ * Whether a cart line's product links a published choice flow (the product's `_sgs_choice_flow` meta naming a published
+ * `sgs_choice_flow` post, resolved as the buy box resolves it). The bag drawer offers its "finish configuring" link only on
+ * such a line, since the link leads to the product page where that flow opens.
+ *
+ * @param array $cart_item A WooCommerce cart item.
+ * @return bool
+ */
+function sgs_cart_item_has_choice_flow( $cart_item ) {
+	$product_id = absint( $cart_item['product_id'] ?? 0 );
+	if ( $product_id <= 0 || ! class_exists( '\SGS\Blocks\Sgs_Block_CPTs' ) ) {
+		return false;
+	}
+	$slug = (string) get_post_meta( $product_id, '_sgs_choice_flow', true );
+	return '' !== $slug && null !== \SGS\Blocks\Sgs_Block_CPTs::resolve_choice_flow( $slug );
+}
+
+/**
  * All of this framework's extension data for one cart line.
  *
  * @param array $cart_item A WooCommerce cart item.
- * @return array{brand:string,brandLogo:array,lineSummary:array<int,string>,hasLenses:bool}
+ * @return array{brand:string,brandLogo:array,lineSummary:array<int,string>,hasLenses:bool,hasChoiceFlow:bool}
  */
 function sgs_cart_item_extension_data( $cart_item ) {
 	$cart_item = is_array( $cart_item ) ? $cart_item : array();
@@ -82,14 +100,15 @@ function sgs_cart_item_extension_data( $cart_item ) {
 	$has_builder = function_exists( '\SGS\Blocks\sgs_cart_line_summary_for_cart_item' );
 
 	return array(
-		'brand'       => $brand['name'],
-		'brandLogo'   => array(
+		'brand'         => $brand['name'],
+		'brandLogo'     => array(
 			'url'    => $brand['url'],
 			'width'  => $brand['width'],
 			'height' => $brand['height'],
 		),
-		'lineSummary' => $has_builder ? \SGS\Blocks\sgs_cart_line_summary_for_cart_item( $cart_item ) : array(),
-		'hasLenses'   => $has_builder && \SGS\Blocks\sgs_cart_line_summary_has_addons( $cart_item ),
+		'lineSummary'   => $has_builder ? \SGS\Blocks\sgs_cart_line_summary_for_cart_item( $cart_item ) : array(),
+		'hasLenses'     => $has_builder && \SGS\Blocks\sgs_cart_line_summary_has_addons( $cart_item ),
+		'hasChoiceFlow' => sgs_cart_item_has_choice_flow( $cart_item ),
 	);
 }
 
@@ -107,12 +126,12 @@ function sgs_register_cart_item_extensions() {
 			'data_callback'   => 'sgs_cart_item_extension_data',
 			'schema_callback' => static function () {
 				return array(
-					'brand'       => array(
+					'brand'         => array(
 						'description' => __( 'The product brand name.', 'sgs-blocks' ),
 						'type'        => 'string',
 						'readonly'    => true,
 					),
-					'brandLogo'   => array(
+					'brandLogo'     => array(
 						'description' => __( 'The brand logo, when the brand has one. `url` is empty otherwise, and the bag line shows the brand name instead. The logo is always labelled with the brand name, never with the attachment alt text.', 'sgs-blocks' ),
 						'type'        => 'object',
 						'readonly'    => true,
@@ -122,14 +141,19 @@ function sgs_register_cart_item_extensions() {
 							'height' => array( 'type' => 'integer' ),
 						),
 					),
-					'lineSummary' => array(
+					'lineSummary'   => array(
 						'description' => __( 'The line summary, one entry per display line.', 'sgs-blocks' ),
 						'type'        => 'array',
 						'items'       => array( 'type' => 'string' ),
 						'readonly'    => true,
 					),
-					'hasLenses'   => array(
+					'hasLenses'     => array(
 						'description' => __( 'Whether this line already carries priced add-ons.', 'sgs-blocks' ),
+						'type'        => 'boolean',
+						'readonly'    => true,
+					),
+					'hasChoiceFlow' => array(
+						'description' => __( 'Whether the product on this line links a published choice flow.', 'sgs-blocks' ),
 						'type'        => 'boolean',
 						'readonly'    => true,
 					),

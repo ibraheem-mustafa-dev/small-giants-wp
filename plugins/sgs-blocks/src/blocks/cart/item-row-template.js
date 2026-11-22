@@ -265,17 +265,20 @@ export function itemRowHtml( item, totals, opts = {} ) {
 			  escapeHtml( 'Save for later' ) +
 			  '</button>'
 			: '';
-	// A per-line invitation to finish configuring this item, shown only while
-	// there is something left to add. `hasLenses` comes from the plugin's own
-	// Store API extension (includes/cart-item-extensions.php) and is true once
-	// the line carries priced add-ons, so the link disappears for that frame
-	// the moment the shopper has chosen them — and stays for every other line
-	// in the same bag. The destination is the item's own product page, the one
-	// place the options pop-up can open. A link, not a button: it navigates.
+	// A per-line invitation to finish configuring this item, shown only on a
+	// line whose product links a choice flow and only while there is something
+	// left to add. Both facts come from the plugin's own Store API extension
+	// (includes/cart-item-extensions.php): `hasChoiceFlow` is true when the
+	// product links a published flow, `hasLenses` once the line carries priced
+	// add-ons, so the link disappears for that line the moment the shopper has
+	// chosen them, and never shows on a product with no flow to open. The
+	// destination is the item's own product page, the one place the options
+	// pop-up can open. A link, not a button: it navigates.
+	const hasChoiceFlow = true === item.extensions?.sgs?.hasChoiceFlow;
 	const alreadyConfigured = true === item.extensions?.sgs?.hasLenses;
 	const addOptionsHref = String( item.permalink ?? '' );
 	const addOptionsHtml =
-		showAddOptions && addOptionsLabel && ! alreadyConfigured && addOptionsHref
+		showAddOptions && addOptionsLabel && hasChoiceFlow && ! alreadyConfigured && addOptionsHref
 			? `<a class="sgs-cart__item-add-options sgs-cart__item-action" href="${ escapeHtml(
 					addOptionsHref
 			  ) }">${ escapeHtml( addOptionsLabel ) }</a>`
