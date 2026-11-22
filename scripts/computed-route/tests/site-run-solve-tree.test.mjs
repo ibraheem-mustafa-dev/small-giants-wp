@@ -45,3 +45,9 @@ test( 'negative controls: no tree named, the same file, a path outside the build
 	assert.equal( empty, null );
 	assert.equal( fs.existsSync( path.join( dir, 'trees', 'page', 'x.json' ) ), false );
 } );
+
+test( 'MUST FAIL: a run without the build stage (the foundation\'s inventory and propose paint pass) keeps no solve tree and never joins a path with no tree', () => {
+	const line = source.split( '\n' ).find( ( l ) => l.includes( 'writeSolveTree( {' ) );
+	assert.match( line, /const solved = tree \? writeSolveTree\( \{ buildDir: build, entry, builtFile: path\.join\( REPO, tree \) \} \) : null;/, 'the call is guarded on the tree the build made (tree is null when the run has no build stage)' );
+	assert.match( source, /if \( ! stages\.includes\( 'build' \) \) \{\s*tree = null;/, 'negative control: a run without build still sets no tree' );
+} );

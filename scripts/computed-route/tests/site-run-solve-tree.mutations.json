@@ -1,0 +1,4 @@
+[
+	{"file": "site-run.mjs", "find": "const solved = tree ? writeSolveTree( { buildDir: build, entry, builtFile: path.join( REPO, tree ) } ) : null;", "replace": "const solved = writeSolveTree( { buildDir: build, entry, builtFile: path.join( REPO, tree ) } );", "why": "a run without the build stage joins a null tree path and fails the surface"},
+	{"file": "site-run.mjs", "find": "if ( ! stages.includes( 'build' ) ) {\n\t\t\ttree = null;", "replace": "if ( false ) {\n\t\t\ttree = null;", "why": "a run without build makes a tree it never built"}
+]

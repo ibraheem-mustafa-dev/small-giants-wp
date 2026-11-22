@@ -597,8 +597,9 @@ export async function main( argv ) {
 		// The tree the gate chain reads for this surface: the copy a template built, else the Fill this build took (the whole Filled tree,
 		// its shell's nodes included).
 		builtTrees.set( key, slug ? tree : path.relative( REPO, path.join( ctx.out, 'filled.tree.json' ) ) );
-		// The tree this build used, kept where surfaces.json names the surface's tree, so Solve repairs what was built.
-		const solved = writeSolveTree( { buildDir: build, entry, builtFile: path.join( REPO, tree ) } );
+		// The tree this build used, kept where surfaces.json names the surface's tree, so Solve repairs what was built. A run
+		// without the build stage (inventory and propose, as the foundation's paint step runs) built nothing and keeps nothing.
+		const solved = tree ? writeSolveTree( { buildDir: build, entry, builtFile: path.join( REPO, tree ) } ) : null;
 		solved && console.log( `${ key } solve tree: ${ path.relative( REPO, solved ) }` );
 		// The applier: set what Fill and the build cannot, from the draft's runtime. It stops the surface like a failed build.
 		if ( ! await applyStage( { ctx, entry, key, slug, step, exec } ) ) {
