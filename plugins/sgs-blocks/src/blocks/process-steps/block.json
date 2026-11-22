@@ -284,6 +284,26 @@
 				"padding": {
 					"top": "var(--wp--preset--spacing--40)",
 					"bottom": "var(--wp--preset--spacing--40)"
+				},
+				"numberMargin": {
+					"bottom": "var(--wp--preset--spacing--20)",
+					"mobile": {
+						"bottom": "0"
+					},
+					"when": [
+						{
+							"attrs": {
+								"layout": "list"
+							},
+							"classes": [
+								"sgs-process-steps--layout-list"
+							],
+							"bottom": "0"
+						}
+					]
+				},
+				"titleMargin": {
+					"bottom": "var(--wp--preset--spacing--10)"
 				}
 			}
 		}

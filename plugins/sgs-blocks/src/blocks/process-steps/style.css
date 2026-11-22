@@ -268,9 +268,12 @@
 }
 
 /* The title's bottom margin spaces it from its description; a step with no
- * description keeps none (it would only pad the gap between steps). */
+ * description keeps none (it would only pad the gap between steps). The rule sets
+ * the title's gap property rather than its margin, so the title's declared default
+ * (the margin below) stays one value; the step's own content, not a block setting,
+ * decides this case. */
 .sgs-process-steps--layout-list .sgs-process-steps__title:last-child {
-	margin-bottom: 0;
+	--sgs-step-title-gap: 0px;
 }
 
 .sgs-process-steps--layout-list .sgs-process-steps__description {
@@ -288,7 +291,7 @@
 
 .sgs-process-steps__title {
 	font-size: var(--wp--preset--font-size--medium);
-	margin: 0 0 var(--wp--preset--spacing--10) 0;
+	margin: 0 0 var(--sgs-step-title-gap, var(--wp--preset--spacing--10)) 0;
 }
 
 /*

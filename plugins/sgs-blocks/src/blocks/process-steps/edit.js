@@ -51,18 +51,19 @@ const LAYOUT_OPTIONS = [
 
 // A step part's own margin: one per-device four-side box, shown in that part's panel. An unset side keeps the stylesheet's
 // margin (block.json's numberMargin, titleMargin and descriptionMargin, printed by render.php).
-function PartMarginBox( { attrName, label, attributes, setAttributes } ) {
+function PartMarginBox( { blockName, attrName, label, attributes, setAttributes } ) {
 	return (
 		<ResponsiveOverride
 			value={ attributes[ attrName ] }
 			onChange={ ( obj ) => setAttributes( { [ attrName ]: obj } ) }
 		>
-			{ ( { ownValue, setOwnValue } ) => (
+			{ ( { tier, ownValue, setOwnValue } ) => (
 				<SgsBoxControl
 					label={ label }
 					values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
 					units={ BOX_UNITS }
 					presets
+					defaults={ spacingDefaultsFor( blockName, attrName, { attributes, tier } ) }
 					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
 				/>
 			) }
@@ -611,7 +612,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							/>
 						);
 					} )() }
-					<PartMarginBox attrName="numberMargin" label={ __( 'Number margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
+					<PartMarginBox blockName={ name } attrName="numberMargin" label={ __( 'Number margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 			</InspectorControls>
 
@@ -655,7 +656,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						] }
 					/>
-					<PartMarginBox attrName="titleMargin" label={ __( 'Title margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
+					<PartMarginBox blockName={ name } attrName="titleMargin" label={ __( 'Title margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 			</InspectorControls>
 
@@ -682,7 +683,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						] }
 					/>
-					<PartMarginBox attrName="descriptionMargin" label={ __( 'Description margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
+					<PartMarginBox blockName={ name } attrName="descriptionMargin" label={ __( 'Description margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
 					<ResponsiveControl label={ __( 'Description maximum width', 'sgs-blocks' ) }>
 						{ ( breakpoint ) => (
 							<SgsLengthControl
