@@ -49,7 +49,7 @@ export function shouldStartForm( blocks, isNew, patterns ) {
 }
 
 let done = false;
-let started = false;
+let starts = 0; // form blocks added: the editor's own setup can replace the content once more, so a few tries
 const unsubscribe = subscribe( () => {
 	if ( done ) {
 		return;
@@ -64,15 +64,18 @@ const unsubscribe = subscribe( () => {
 		unsubscribe();
 		return;
 	}
+	if ( 'function' === typeof editor.__unstableIsEditorReady && ! editor.__unstableIsEditorReady() ) {
+		return; // the editor sets its initial content first; a block added before that is replaced
+	}
 	const blocks = select( 'core/block-editor' ).getBlocks();
-	if ( ! started && editor.isEditedPostNew() ) {
+	if ( starts < 3 && editor.isEditedPostNew() ) {
 		const core = select( 'core' );
 		const patterns = core && 'function' === typeof core.getBlockPatterns ? core.getBlockPatterns() : [];
 		if ( undefined === patterns ) {
 			return; // the patterns are still loading
 		}
 		if ( shouldStartForm( blocks, true, patterns ) ) {
-			started = true;
+			starts += 1;
 			dispatch( 'core/block-editor' ).insertBlocks( createBlock( 'sgs/form' ) );
 			return;
 		}
