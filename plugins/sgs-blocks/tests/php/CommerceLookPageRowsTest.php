@@ -137,7 +137,8 @@ final class CommerceLookPageRowsTest extends TestCase {
 		$this->assertStringContainsString( '.sgs-x .wc-blocks-components-select .wc-blocks-components-select__container{display:grid;grid-template-columns:minmax(0,1fr);}', $css );
 		$this->assertStringContainsString( '.sgs-x .wc-blocks-components-select .wc-blocks-components-select__label{grid-row:1;grid-column:1;}', $css );
 		$this->assertStringContainsString( '.sgs-x .wc-blocks-components-select .wc-blocks-components-select__expand{grid-row:2;grid-column:1;}', $css );
-		$this->assertStringContainsString( '.sgs-x.sgs-x .wc-blocks-components-select__select:focus{padding-inline-end:40px;}', $css, 'the room holds on focus' );
+		$this->assertStringContainsString( '.sgs-x.sgs-x.sgs-x .wc-blocks-components-select__select{padding-inline-end:40px;}', $css, 'the room out-ranks the focused select rule (0,3,0)' );
+		$this->assertStringNotContainsString( ':focus', $css, 'no focus selector of its own (the focus system owns focus looks)' );
 		// Negative control: the floating label (WooCommerce's own) prints none of it.
 		$floating = $this->css(
 			array(

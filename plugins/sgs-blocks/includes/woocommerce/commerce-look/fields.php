@@ -158,9 +158,9 @@ function sgs_commerce_look_select_above_css( string $block, string $root ): stri
 	if ( '' === $box || '' === $label || '' === $select || '' === $arrow ) {
 		return '';
 	}
-	// WooCommerce re-pads a focused select (`:focus`, one class more), so the end room is printed at rest and on focus
-	// under the scope class twice.
-	$room = sgs_commerce_look_selector( 'field_select', $block, $root . $root ) . ',' . sgs_commerce_look_selector( 'field_select', $block, $root . $root, ':focus' );
+	// WooCommerce re-pads a focused select with a (0,3,0) rule, so the end room leads with the scope class three times
+	// (0,4,0) and holds in every state without a state selector of its own.
+	$room = sgs_commerce_look_selector( 'field_select', $block, $root . $root . $root );
 	return $box . '{display:grid;grid-template-columns:minmax(0,1fr);}'
 		. $label . '{grid-row:1;grid-column:1;}'
 		. $select . '{grid-row:2;grid-column:1;}'
