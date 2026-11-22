@@ -507,6 +507,58 @@ $scoped_css[]       = sgs_emit_responsive_css(
 	)
 );
 
+// Per-device spacing and shape of a step's parts, all unset by default (an unset side or value keeps style.css): the
+// margin boxes of the number, title and description, the description's maximum width, and the step's own alignment of
+// its stacked parts. Scoped to the uid, so they out-rank style.css's bare class rules and the list layout's.
+foreach (
+	array(
+		'numberMargin'      => '.sgs-process-steps__number',
+		'titleMargin'       => '.sgs-process-steps__title',
+		'descriptionMargin' => '.sgs-process-steps__description',
+	) as $sgs_ps_margin_attr => $sgs_ps_margin_target
+) {
+	if ( empty( $attributes[ $sgs_ps_margin_attr ] ) || ! is_array( $attributes[ $sgs_ps_margin_attr ] ) ) {
+		continue;
+	}
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel . ' ' . $sgs_ps_margin_target,
+		array(
+			array(
+				'value' => $attributes[ $sgs_ps_margin_attr ],
+				'css'   => 'margin',
+				'box'   => true,
+			),
+		)
+	);
+}
+if ( ! empty( $attributes['descriptionMaxWidth'] ) && is_array( $attributes['descriptionMaxWidth'] ) ) {
+	$scoped_css[] = sgs_emit_responsive_css(
+		$root_sel . ' .sgs-process-steps__description',
+		array(
+			array(
+				'value'        => $attributes['descriptionMaxWidth'],
+				'css'          => 'max-width',
+				'unit_default' => 'px',
+			),
+		)
+	);
+}
+if ( ! empty( $attributes['stepAlignItems'] ) && is_array( $attributes['stepAlignItems'] ) ) {
+	$sgs_ps_align_allowed = array( 'flex-start', 'center', 'flex-end', 'stretch' );
+	$scoped_css[]         = sgs_emit_responsive_css(
+		$root_sel . ' .sgs-process-steps__step',
+		array(
+			array(
+				'value'     => $attributes['stepAlignItems'],
+				'css'       => 'align-items',
+				'transform' => static function ( $raw ) use ( $sgs_ps_align_allowed ) {
+					return in_array( $raw, $sgs_ps_align_allowed, true ) ? $raw : '';
+				},
+			),
+		)
+	);
+}
+
 $sgs_flex_wrap = (string) ( $attributes['flexWrap'] ?? '' );
 if ( in_array( $sgs_flex_wrap, array( 'nowrap', 'wrap' ), true ) ) {
 	$scoped_css[] = $root_sel . '{flex-wrap:' . $sgs_flex_wrap . ';}';

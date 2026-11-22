@@ -36,6 +36,7 @@ import {
 	boxPreview,
 	patchTier,
 	flattenPresetSetting,
+	tierBoxLonghands,
 } from '../../utils';
 import { cssLengthValue } from '../../utils/css-length';
 import { connectorLineStyleOf, connectorLineStyleProps } from '../../utils/connector-line';
@@ -46,6 +47,35 @@ import { spacingDefaultsFor } from '../../utils/spacing-defaults';
 const LAYOUT_OPTIONS = [
 	{ label: __( 'Row', 'sgs-blocks' ), value: 'row' },
 	{ label: __( 'List', 'sgs-blocks' ), value: 'list' },
+];
+
+// A step part's own margin: one per-device four-side box, shown in that part's panel. An unset side keeps the stylesheet's
+// margin (block.json's numberMargin, titleMargin and descriptionMargin, printed by render.php).
+function PartMarginBox( { attrName, label, attributes, setAttributes } ) {
+	return (
+		<ResponsiveOverride
+			value={ attributes[ attrName ] }
+			onChange={ ( obj ) => setAttributes( { [ attrName ]: obj } ) }
+		>
+			{ ( { ownValue, setOwnValue } ) => (
+				<SgsBoxControl
+					label={ label }
+					values={ ownValue && typeof ownValue === 'object' ? ownValue : {} }
+					units={ BOX_UNITS }
+					presets
+					onChange={ ( next ) => setOwnValue( normaliseResponsiveBox( next ) ) }
+				/>
+			) }
+		</ResponsiveOverride>
+	);
+}
+
+// The step's alignment of its stacked parts across the step (align-items), per device; render.php allows these four values.
+const STEP_ALIGN_OPTIONS = [
+	{ label: __( 'Start', 'sgs-blocks' ), value: 'flex-start' },
+	{ label: __( 'Centre', 'sgs-blocks' ), value: 'center' },
+	{ label: __( 'End', 'sgs-blocks' ), value: 'flex-end' },
+	{ label: __( 'Stretch', 'sgs-blocks' ), value: 'stretch' },
 ];
 
 const CONNECTOR_OPTIONS = [
@@ -174,6 +204,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		stepGap,
 		numberSize,
 		stepRowGap,
+		stepAlignItems,
+		descriptionMaxWidth,
 		titleColour,
 		titleColourGradient,
 		titleColourHover,
@@ -382,6 +414,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 		// The list layout draws no badge, so render.php drops the badge fill there.
 		...( 'list' === layout ? {} : backgroundPaintPreview( numberBackground, attributes.numberBackgroundGradient, palette ) ),
 		...typographyPreviewStyle( numberTypography, 'number', previewTier ),
+		...tierBoxLonghands( attributes.numberMargin, previewTier, 'margin' ),
 	};
 
 	// A step's own number colours beat the block-wide pair for that step (the list layout draws no badge fill).
@@ -395,11 +428,14 @@ export default function Edit( { attributes, setAttributes, name } ) {
 
 	const titleStyle = {
 		...typographyPreviewStyle( attributes, 'title', previewTier ),
+		...tierBoxLonghands( attributes.titleMargin, previewTier, 'margin' ),
 		...resolveTextColourPreviewStyle( titleColour, titleColourGradient, colourVar ),
 	};
 
 	const descStyle = {
 		...typographyPreviewStyle( descriptionTypography, 'description', previewTier ),
+		...tierBoxLonghands( attributes.descriptionMargin, previewTier, 'margin' ),
+		maxWidth: tierValue( descriptionMaxWidth, previewTier ) || undefined,
 		...resolveTextColourPreviewStyle( descriptionColour, descriptionColourGradient, colourVar ),
 	};
 
@@ -560,6 +596,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							/>
 						);
 					} )() }
+					<PartMarginBox attrName="numberMargin" label={ __( 'Number margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 			</InspectorControls>
 
@@ -603,6 +640,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						] }
 					/>
+					<PartMarginBox attrName="titleMargin" label={ __( 'Title margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
 				</PanelBody>
 			</InspectorControls>
 
@@ -629,6 +667,19 @@ export default function Edit( { attributes, setAttributes, name } ) {
 							},
 						] }
 					/>
+					<PartMarginBox attrName="descriptionMargin" label={ __( 'Description margin', 'sgs-blocks' ) } attributes={ attributes } setAttributes={ setAttributes } />
+					<ResponsiveControl label={ __( 'Description maximum width', 'sgs-blocks' ) }>
+						{ ( breakpoint ) => (
+							<SgsLengthControl
+								label={ __( 'Description maximum width', 'sgs-blocks' ) }
+								hideLabelFromVision
+								help={ __( 'Empty lets the description fill its step.', 'sgs-blocks' ) }
+								value={ descriptionMaxWidth?.[ breakpoint ] ?? '' }
+								onChange={ ( val ) => patchTier( attributes, setAttributes, 'descriptionMaxWidth', breakpoint, val || '' ) }
+								presets={ false }
+							/>
+						) }
+					</ResponsiveControl>
 				</PanelBody>
 			</InspectorControls>
 
@@ -792,6 +843,7 @@ export default function Edit( { attributes, setAttributes, name } ) {
 								layout: 'row',
 								stepGap: '',
 								stepRowGap: {},
+								stepAlignItems: undefined,
 								flexWrap: '',
 								numberGap: '',
 								connectorStyle: 'line',
@@ -865,6 +917,33 @@ export default function Edit( { attributes, setAttributes, name } ) {
 									/>
 								) }
 							</ResponsiveControl>
+						</ToolsPanelItem>
+						<ToolsPanelItem
+							label={ __( 'Align parts within a step', 'sgs-blocks' ) }
+							hasValue={ () => !! stepAlignItems && Object.keys( stepAlignItems ).length > 0 }
+							onDeselect={ () => setAttributes( { stepAlignItems: undefined } ) }
+						>
+							<ResponsiveOverride
+								label={ __( 'Align parts within a step', 'sgs-blocks' ) }
+								value={ stepAlignItems }
+								onChange={ ( obj ) => setAttributes( { stepAlignItems: obj } ) }
+							>
+								{ ( { tier, ownValue, setOwnValue } ) => (
+									<SelectControl
+										value={ ownValue || '' }
+										options={ [
+											{
+												label: 'desktop' === tier ? __( 'Centre (default)', 'sgs-blocks' ) : __( '— inherit —', 'sgs-blocks' ),
+												value: '',
+											},
+											...STEP_ALIGN_OPTIONS,
+										] }
+										onChange={ ( raw ) => setOwnValue( raw || undefined ) }
+										__nextHasNoMarginBottom
+										__next40pxDefaultSize
+									/>
+								) }
+							</ResponsiveOverride>
 						</ToolsPanelItem>
 						<ToolsPanelItem
 							label={ __( 'Wrap steps', 'sgs-blocks' ) }
@@ -1175,7 +1254,10 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					<div
 						key={ index }
 						className="sgs-process-steps__step"
-						style={ 'list' === layout && numberGap ? { columnGap: numberGap } : undefined }
+						style={ {
+							...( 'list' === layout && numberGap ? { columnGap: numberGap } : {} ),
+							alignItems: tierValue( stepAlignItems, previewTier ) || undefined,
+						} }
 					>
 						{ step.icon && (
 							<span

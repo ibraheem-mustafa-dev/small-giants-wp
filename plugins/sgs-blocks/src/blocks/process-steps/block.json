@@ -133,6 +133,7 @@
 					"prefix": "title",
 					"attrMap": {
 						"css:color": "titleColour",
+						"css:margin": "titleMargin",
 						"css:font-size": "titleFontSize",
 						"css:line-height": "titleLineHeight",
 						"css:font-weight": "titleFontWeight",
@@ -162,6 +163,7 @@
 					"prefix": "number",
 					"attrMap": {
 						"css:color": "numberColour",
+						"css:margin": "numberMargin",
 						"css:background-color": "numberBackground",
 						"css:background-image": "numberBackgroundGradient",
 						"css:width": "numberSize",
@@ -206,6 +208,8 @@
 					"prefix": "description",
 					"attrMap": {
 						"css:color": "descriptionColour",
+						"css:margin": "descriptionMargin",
+						"css:max-width": "descriptionMaxWidth",
 						"css:background-image": "descriptionColourGradient",
 						"css:font-size": "descriptionFontSize",
 						"css:font-weight": "descriptionFontWeight",
@@ -266,6 +270,7 @@
 					],
 					"attrMap": {
 						"css:gap": "numberGap",
+						"css:align-items": "stepAlignItems",
 						"css:transition-duration": "transitionDuration",
 						"css:transition-timing-function": "transitionEasing"
 					},
@@ -638,6 +643,26 @@
 			"type": "object",
 			"default": {},
 			"description": "Per-device space between rows of steps when they wrap or form a grid (a CSS length, desktop/tablet/mobile). Empty leaves the row gap to stepGap."
+		},
+		"stepAlignItems": {
+			"type": "object",
+			"description": "Per-device alignment of a step's parts (icon, number, title, description) across the step: flex-start, center, flex-end or stretch (align-items on the step, which stacks its parts in a column). Tier object {desktop,tablet,mobile}; unset keeps the stylesheet's centred steps."
+		},
+		"numberMargin": {
+			"type": "object",
+			"description": "Margin around each step's number badge, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
+		},
+		"titleMargin": {
+			"type": "object",
+			"description": "Margin around each step's title, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
+		},
+		"descriptionMargin": {
+			"type": "object",
+			"description": "Margin around each step's description, per device ({desktop,tablet,mobile} tier object of {top,right,bottom,left}). An unset side keeps the stylesheet margin."
+		},
+		"descriptionMaxWidth": {
+			"type": "object",
+			"description": "Per-device maximum width of each step's description (a CSS length, desktop/tablet/mobile). Unset leaves the description as wide as its step."
 		},
 		"numberGap": {
 			"type": "string",
