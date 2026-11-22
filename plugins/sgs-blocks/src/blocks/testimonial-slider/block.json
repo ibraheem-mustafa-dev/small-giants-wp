@@ -83,7 +83,7 @@
 				"arrow": {
 					"label": "Prev/next arrow",
 					"order": 3,
-					"clusters": [ "text", "fill", "layout" ],
+					"clusters": [ "text", "fill", "layout", "position" ],
 					"prefix": "arrow",
 					"attrMap": {
 						"css:background-color": "arrowColourBackground",
@@ -95,7 +95,12 @@
 						"css:width": "arrowSize",
 						"css:height": "arrowSize",
 						"css:box-shadow": "arrowShadow",
-						"css:box-shadow-color": "arrowShadowColour"
+						"css:box-shadow-color": "arrowShadowColour",
+						"css:position": "arrowPosition",
+						"css:top": "arrowInsetTop",
+						"css:right": "arrowInsetRight",
+						"css:bottom": "arrowInsetBottom",
+						"css:left": "arrowInsetLeft"
 					},
 					"states": {
 						"hover": {
@@ -108,7 +113,7 @@
 							}
 						}
 					},
-					"_note": "showArrows toggles visibility. The look is the button kit's `arrow` set (supports.sgs.builtinButtons, prefix arrow: colour, hover colour, border, radius, size, shadow), printed by includes/helpers-carousel-dots.php::sgs_carousel_controls_css; unset, style.css draws the 44px primary circle. The pause button wears the same set.",
+					"_note": "showArrows toggles visibility. The look is the button kit's `arrow` set (supports.sgs.builtinButtons, prefix arrow: colour, hover colour, border, radius, size, float, shadow), printed by includes/helpers-carousel-dots.php::sgs_carousel_controls_css; unset, style.css draws the 44px primary circle. The pause button wears the same set.",
 					"absentIn": [ "controls-off" ],
 					"absentWhy": "Arrows and dots print only when showArrows and showDots are on."
 				},

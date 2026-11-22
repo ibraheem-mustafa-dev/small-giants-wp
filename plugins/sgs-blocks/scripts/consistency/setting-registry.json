@@ -3656,6 +3656,72 @@
 			"divergence": "none",
 			"divergence_severity": "none",
 			"notes": "A block-owned frame sequence, not an sgsMotion layer; its timing is anim:duration."
+		},
+		{
+			"setting_key": "css:left",
+			"category": "css-property",
+			"label": "Position offset — left",
+			"optimal_control": {
+				"component": "SgsLengthControl inside ResponsiveOverride",
+				"props": {},
+				"preset_layer": null,
+				"units": "px/%/rem/auto, negative allowed",
+				"responsive_device_tier": true,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset clears to the block.json default"
+			},
+			"shared_component": null,
+			"spec_ref": "Part H (numeric+unit) + the built-in button kit's `float` group",
+			"current_state": "The button kit's {prefix}InsetLeft (sgs/testimonial-slider and sgs/container arrowInsetLeft): a per-device length for the part's left edge.",
+			"divergence": "none",
+			"divergence_severity": "none",
+			"notes": "Added 2026-11-22 with css:position. Pairs with css:top and css:bottom as the four edge offsets of a part placed by its edges; a negative length sets the part outside its box."
+		},
+		{
+			"setting_key": "css:right",
+			"category": "css-property",
+			"label": "Position offset — right",
+			"optimal_control": {
+				"component": "SgsLengthControl inside ResponsiveOverride",
+				"props": {},
+				"preset_layer": null,
+				"units": "px/%/rem/auto, negative allowed",
+				"responsive_device_tier": true,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset clears to the block.json default"
+			},
+			"shared_component": null,
+			"spec_ref": "Part H (numeric+unit) + the built-in button kit's `float` group",
+			"current_state": "The button kit's {prefix}InsetRight (sgs/testimonial-slider and sgs/container arrowInsetRight): a per-device length for the part's right edge.",
+			"divergence": "none",
+			"divergence_severity": "none",
+			"notes": "Added 2026-11-22 with css:position. Pairs with css:top and css:bottom as the four edge offsets of a part placed by its edges; a negative length sets the part outside its box."
+		},
+		{
+			"setting_key": "css:position",
+			"category": "css-property",
+			"label": "Position (in the flow, shifted, or placed by its edges)",
+			"optimal_control": {
+				"component": "SelectControl inside ResponsiveOverride (static, relative, absolute)",
+				"props": {},
+				"preset_layer": null,
+				"units": "n/a",
+				"responsive_device_tier": true,
+				"multi_value": "none",
+				"dropdown_completeness": "n/a",
+				"alpha_clearable": "n/a",
+				"reset_disclosure": "allowReset clears to the block.json default"
+			},
+			"shared_component": null,
+			"spec_ref": "Part H (enum -> SelectControl) + the built-in button kit's `float` group",
+			"current_state": "The button kit's {prefix}Position (sgs/testimonial-slider and sgs/container arrowPosition): static, relative or absolute per device.",
+			"divergence": "none",
+			"divergence_severity": "none",
+			"notes": "Added 2026-11-22. The value that decides whether css:top, css:right, css:bottom and css:left apply; unset leaves the part's own layout."
 		}
 	]
 }

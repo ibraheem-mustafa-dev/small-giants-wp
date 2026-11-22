@@ -128,7 +128,8 @@
 					"label": "Step title",
 					"order": 4,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "title",
 					"attrMap": {
@@ -158,7 +159,8 @@
 					"order": 3,
 					"clusters": [
 						"text",
-						"fill"
+						"fill",
+						"layout"
 					],
 					"prefix": "number",
 					"attrMap": {
@@ -203,7 +205,8 @@
 					"label": "Step description",
 					"order": 5,
 					"clusters": [
-						"text"
+						"text",
+						"layout"
 					],
 					"prefix": "description",
 					"attrMap": {

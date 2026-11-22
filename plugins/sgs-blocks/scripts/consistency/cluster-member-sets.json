@@ -862,6 +862,27 @@
 					]
 				},
 				{
+					"key": "css:left",
+					"label": "Position offset — left",
+					"suffixes": [
+						"Left"
+					]
+				},
+				{
+					"key": "css:right",
+					"label": "Position offset — right",
+					"suffixes": [
+						"Right"
+					]
+				},
+				{
+					"key": "css:position",
+					"label": "Position (in the flow, shifted, or placed by its edges)",
+					"suffixes": [
+						"Position"
+					]
+				},
+				{
 					"key": "css:z-index",
 					"label": "Stack order (z-index)",
 					"suffixes": [
