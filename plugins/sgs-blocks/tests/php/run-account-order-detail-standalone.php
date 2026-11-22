@@ -29,6 +29,8 @@ if ( ! function_exists( 'add_filter' ) ) { function add_filter() {} }
 if ( ! function_exists( 'add_action' ) ) { function add_action() {} }
 if ( ! function_exists( 'remove_filter' ) ) { function remove_filter() {} }
 
+// WooCommerce's order table (`woocommerce_order_details_table`): a marker table for the order it is given.
+if ( ! function_exists( 'woocommerce_order_details_table' ) ) { function woocommerce_order_details_table( $id ) { echo '<table class="woocommerce-table woocommerce-table--order-details" data-order="' . (int) $id . '"></table>'; } }
 if ( ! function_exists( 'wc_price' ) ) { function wc_price( $a, $args = array() ) { return '<span>£' . number_format( (float) $a, $args['decimals'] ?? 2 ) . '</span>'; } }
 if ( ! function_exists( 'wc_get_product' ) ) { function wc_get_product( $id ) { return new Fake_Parent(); } }
 class Fake_Parent { function get_image_id() { $GLOBALS['parent_photo_read'] = true; return 7; } }
@@ -43,6 +45,7 @@ class Fake_Order {
 	function get_date_completed() { return null === $this->completed_ts ? null : new Fake_Completed( $this->completed_ts ); }
 	function get_status() { return $this->status; }
 	function get_order_number() { return 'EC-1700'; }
+	function get_id() { return 1700; }
 	function get_date_created() { return new Fake_Date(); }
 	function get_shipping_method() { return 'pickup_location' === $this->method ? 'Local pickup' : 'Royal Mail'; }
 	function get_shipping_methods() { return array( new Fake_Method( $this->method ) ); }
@@ -148,6 +151,16 @@ ok( $has && false !== strpos( sgs_account_orders_list_html( array( new Fake_Orde
 
 $off = $has ? sgs_account_order_detail_html( new Fake_Order(), array( 'orderDetailLook' => true ) ) : 'x od-steps';
 ok( false === strpos( $off, 'od-steps' ) && false === strpos( $off, 'od-items' ) && false === strpos( $off, 'od-boxes' ) && false === strpos( $off, 'od-chat' ) && false === strpos( $off, 'od-back' ), 'each part is off until its own setting is on' );
+
+// The look switch alone never hides the order: with neither item rows nor boxes on, WooCommerce's own table prints.
+$lone = $has ? sgs_account_order_detail_html( new Fake_Order(), array( 'orderDetailLook' => true ) ) : '';
+ok( 1 === substr_count( $lone, 'woocommerce-table--order-details" data-order="1700"' ), 'with only orderDetailLook on, the WooCommerce order table for this order prints' );
+ok( false !== strpos( $lone, '<div class="sgs-account__od-table"><table' ) && strpos( $lone, 'od-table' ) > strpos( $lone, 'od-head' ), 'the table sits in its own part after the heading' );
+$items_only = $has ? sgs_account_order_detail_html( new Fake_Order(), array( 'orderDetailLook' => true, 'orderDetailItems' => true ) ) : 'woocommerce-table';
+$boxes_only = $has ? sgs_account_order_detail_html( new Fake_Order(), array( 'orderDetailLook' => true, 'orderDetailBoxes' => true ) ) : 'woocommerce-table';
+ok( false === strpos( $items_only, 'woocommerce-table' ) && false !== strpos( $items_only, 'od-items' ), 'item rows on: the block rows print and the WooCommerce table does not' );
+ok( false === strpos( $boxes_only, 'woocommerce-table' ) && false !== strpos( $boxes_only, 'od-boxes' ), 'boxes on: the block boxes print and the WooCommerce table does not' );
+ok( false === strpos( sgs_account_order_detail_html( new Fake_Order(), $all ), 'woocommerce-table' ), 'every part on: no WooCommerce table' );
 
 $help      = array( 'orderDetailHelpLabel' => 'Message us', 'orderDetailHelpUrl' => 'https://example.test/contact/' );
 $help_link = $has ? sgs_account_order_detail_html( new Fake_Order(), $help ) : '';

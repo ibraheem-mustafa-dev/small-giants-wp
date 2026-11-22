@@ -1,7 +1,8 @@
 <?php
 /**
  * SGS Account order detail: replaces WooCommerce's view-order page with the block's own order detail (back link,
- * heading and status, progress line, item rows, address / payment / total boxes, WhatsApp card). Swapped in by
+ * heading and status, progress line, item rows, address / payment / total boxes, WhatsApp card; WooCommerce's own order
+ * table when neither the item rows nor the boxes are on). Swapped in by
  * `Account_Extras::maybe_swap_view_order_template()` only while an sgs/account block renders with `orderDetailLook` on.
  *
  * @package SGS\Blocks

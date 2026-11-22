@@ -192,6 +192,25 @@ if ( ! function_exists( 'sgs_account_order_again_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sgs_account_order_wc_table_html' ) ) {
+	/**
+	 * WooCommerce's order table for one order (`woocommerce_order_details_table`: the items, totals and customer details
+	 * its view-order page prints), wrapped as the order page's `__od-table` part; '' without WooCommerce.
+	 *
+	 * @param object $order WC_Order.
+	 * @return string
+	 */
+	function sgs_account_order_wc_table_html( $order ): string {
+		if ( ! function_exists( 'woocommerce_order_details_table' ) || ! is_callable( array( $order, 'get_id' ) ) ) {
+			return '';
+		}
+		ob_start();
+		woocommerce_order_details_table( (int) $order->get_id() );
+		$table = trim( (string) ob_get_clean() );
+		return '' !== $table ? '<div class="sgs-account__od-table">' . $table . '</div>' : '';
+	}
+}
+
 if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 	/**
 	 * The order detail page for one order, from the block's settings.
@@ -239,6 +258,11 @@ if ( ! function_exists( 'sgs_account_order_detail_html' ) ) {
 		}
 		if ( $on( 'orderDetailItems' ) ) {
 			$html .= sgs_account_order_items_html( $order, $attributes );
+		}
+		if ( ! $on( 'orderDetailItems' ) && ! $on( 'orderDetailBoxes' ) ) {
+			// The look switch alone never hides the order: with neither the item rows nor the boxes on, WooCommerce's own
+			// order table (the one its view-order page prints) stands in for them.
+			$html .= sgs_account_order_wc_table_html( $order );
 		}
 		if ( $on( 'orderDetailBoxes' ) ) {
 			$pickup   = sgs_account_order_is_pickup( $order );
