@@ -12,7 +12,7 @@ import { candidates, siblings, isPseudoProperty, listedProperties } from './db.m
 import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, declaredTracks, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
-import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizeShape, isSizeProperty, holdsString } from './resolve-declared.mjs';
+import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizePercent, keywordForm, sizeShape, isSizeProperty, holdsString } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
 import { valueBlind } from './css-equivalence/effect.mjs';
 import { holdsValue, mapTiers } from './resolve-enum.mjs';
@@ -272,14 +272,19 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 	if ( shaped ) {
 		return shaped;
 	}
-	const keyword = sizeKeyword( { prop, raw, def } );
+	const keyword = sizeKeyword( { prop, raw, def } ) ?? sizePercent( { prop, raw, def, unit } );
 	if ( keyword ) {
 		return keyword;
 	}
 	const px = toPx( raw, fontPx );
 	if ( null === px ) {
 		// Keywords (none, normal, a font stack) are written as measured when the setting takes a string.
-		return [].concat( def?.type || [] ).includes( 'string' ) && 'line-height' !== prop ? { value: raw } : { error: `${ raw } cannot be held` };
+		if ( [].concat( def?.type || [] ).includes( 'string' ) && 'line-height' !== prop ) {
+			return { value: raw };
+		}
+		// Otherwise the keyword's own form where the setting has one (no added spacing is 0, no rotation is 0), else the row says why.
+		const form = keywordForm( { prop, raw, def } );
+		return form?.length ? formatValue( { prop, raw: form.length, def, unit, fontPx, forms, prefer, snapshot, log, where, layout } ) : form ?? { error: `${ raw } cannot be held` };
 	}
 	if ( undefined !== unit ) {
 		const n = '' === unit || 'unitless' === unit ? ( 'line-height' === prop ? round( px / fontPx ) : null ) : pxTo( px, unit, fontPx );

@@ -155,3 +155,39 @@ export function sizeKeyword( { prop, raw, def } ) {
 	const types = [].concat( def?.type || [] );
 	return types.includes( 'object' ) || types.includes( 'string' ) ? { value: v } : { error: `${ raw } cannot be held (the setting stores a number, so the keyword is not printed)` };
 }
+
+// A percentage of the parent as a size setting's value: { value } where the setting prints a CSS length string (a tier object, which
+// sgs_responsive_format_atom_value passes through includes/helpers-css-safety.php::sgs_css_length_value, or a string), { error } where
+// the setting stores a number of pixels (or a number beside a unit setting, `unit` given), so no percentage is a value it holds, and
+// null where `prop` is not a size property or `raw` is not a percentage. A count per device is refused earlier (sizeShape).
+const PERCENT = /^(-?\d*\.?\d+)%$/;
+export function sizePercent( { prop, raw, def, unit } ) {
+	const m = PERCENT.exec( clean( raw ) );
+	if ( ! m || ! SIZE_PROP.test( String( prop ?? '' ) ) ) {
+		return null;
+	}
+	return undefined === unit && holdsString( def ) ? { value: `${ Number( m[ 1 ] ) }%` } : { error: `${ raw } cannot be held (${ prop } is stored as a number of pixels, so a percentage of the parent is not a value it holds)` };
+}
+
+// A keyword no length converts, as the form a setting that cannot print it holds, from the property's own definition:
+//  - `letter-spacing` and `word-spacing` `normal` add no spacing (CSS Text 3: they compute to 0), so { length: '0px' } for the caller's
+//    own unit conversion;
+//  - `rotate: none` is no turn (CSS Transforms 2: the initial value, no rotation), so { value: 0 } for a setting that stores degrees
+//    as a number;
+//  - `line-height: normal` is the font's own spacing, which no number or length states: { error } naming that, so the row says what
+//    a measured line height would have to supply (lib/fill-normal-keywords.mjs writes one where the draft read has it).
+// null for any other keyword, and for a keyword a setting that holds it (a string) has already taken.
+export function keywordForm( { prop, raw, def } ) {
+	const v = clean( raw ).toLowerCase();
+	const types = [].concat( def?.type || [] );
+	if ( 'normal' === v && [ 'letter-spacing', 'word-spacing' ].includes( prop ) ) {
+		return { length: '0px' };
+	}
+	if ( 'none' === v && 'rotate' === prop ) {
+		return types.includes( 'number' ) && ! types.includes( 'object' ) ? { value: 0 } : null;
+	}
+	if ( 'normal' === v && 'line-height' === prop ) {
+		return { error: `${ raw } cannot be held (line-height normal is the font's own spacing, which no number or length states, so it is held only as a measured line height, and none was read for it here)` };
+	}
+	return null;
+}
