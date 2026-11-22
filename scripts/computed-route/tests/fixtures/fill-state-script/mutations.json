@@ -13,7 +13,7 @@
 	},
 	{
 		"file": "lib/fill-state.mjs",
-		"find": "reason: scriptGapReason( script, state, res.detail ? `${ res.gap }: ${ res.detail }` : res.gap ) } );",
+		"find": "reason: scriptGapReason( script, state, `${ asHover ? 'tried as the hover setting: ' : '' }${ res.detail ? `${ res.gap }: ${ res.detail }` : res.gap }` ) } );",
 		"replace": "reason: res.detail ? `${ res.gap }: ${ res.detail }` : res.gap } );",
 		"why": "the old gap reason for an open look on a block without an open setting"
 	},

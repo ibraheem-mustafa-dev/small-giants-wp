@@ -32,8 +32,9 @@ const HTML = `<!doctype html><style>.p{display:none;height:40px}.p.on{display:bl
 <button data-dc-tpl="47" data-panel="b" style="background:transparent;color:rgb(30, 42, 60)">Sectors</button>
 <button data-dc-tpl="47" style="background:transparent;color:rgb(30, 42, 60)">Contact</button>
 <button data-dc-tpl="60" style="color:rgb(30, 42, 60)">Tint<span data-dc-tpl="61" style="display:none">_</span></button>
-<button data-dc-tpl="70" style="color:rgb(30, 42, 60)">Control</button></nav>
-<div class="p" id="a" data-dc-tpl="80">A panel</div><div class="p" id="b" data-dc-tpl="81">B panel</div></div>
+<button data-dc-tpl="70" style="color:rgb(30, 42, 60)">Control</button>
+<button data-dc-tpl="90" style="color:rgb(30, 42, 60)">Late</button></nav>
+<div class="p" id="a" data-dc-tpl="80">A panel</div><div class="p" id="b" data-dc-tpl="81">B panel</div><div class="p" id="c" data-dc-tpl="82">C panel</div></div>
 <script>
 const items = [ ...document.querySelectorAll( '[data-dc-tpl="47"]' ) ];
 const open = ( el ) => {
@@ -52,6 +53,20 @@ const mark = tint.firstElementChild;
 tint.__reactProps$t = { onMouseEnter: () => { tint.style.color = 'rgb(200, 30, 30)'; mark.style.display = 'inline'; }, onMouseLeave: () => { tint.style.color = 'rgb(30, 42, 60)'; mark.style.display = 'none'; } };
 const ctl = document.querySelector( '[data-dc-tpl="70"]' );
 ctl.__reactProps$t = { onMouseEnter: () => ( ctl.dataset.seen = '1' ), onFocus: () => ( ctl.style.color = 'rgb(30, 42, 60)' ) };
+// The Late item shows its tint and panel 300 ms after the pointer arrives (a hover-intent timer) and cancels the timer when it leaves.
+const late = document.querySelector( '[data-dc-tpl="90"]' );
+let lateTimer = null;
+const lateShut = () => {
+	clearTimeout( lateTimer );
+	late.style.color = 'rgb(30, 42, 60)';
+	document.getElementById( 'c' ).classList.remove( 'on' );
+};
+late.__reactProps$t = { onMouseEnter: () => {
+	lateTimer = setTimeout( () => {
+		late.style.color = 'rgb(10, 126, 168)';
+		document.getElementById( 'c' ).classList.add( 'on' );
+	}, 300 );
+}, onMouseLeave: lateShut };
 const call = ( name ) => ( e ) => {
 	for ( let n = e.target; n && n !== document; n = n.parentNode ) {
 		n.__reactProps$t?.[ name ]?.( e );
@@ -63,7 +78,7 @@ document.addEventListener( 'focusin', call( 'onFocus' ) );
 document.addEventListener( 'focusout', call( 'onBlur' ) );
 </script>`;
 
-const JOBS = [ { id: 'about', finder: { tpl: 'Page/47#0' } }, { id: 'contact', finder: { tpl: 'Page/47#2' } }, { id: 'tint', finder: { tpl: 'Page/60#0' } }, { id: 'control', finder: { tpl: 'Page/70#0' } } ];
+const JOBS = [ { id: 'about', finder: { tpl: 'Page/47#0' } }, { id: 'contact', finder: { tpl: 'Page/47#2' } }, { id: 'tint', finder: { tpl: 'Page/60#0' } }, { id: 'control', finder: { tpl: 'Page/70#0' } }, { id: 'late', finder: { tpl: 'Page/90#0' } } ];
 
 let readCache = null;
 async function readPlanted() {
@@ -125,4 +140,44 @@ test( 'MUST FAIL: fillStates raises an open-panel look no calibrated setting hol
 	assert.deepEqual( acc.writes.map( ( w ) => [ w.attr, w.state, w.script ] ).sort(), [ [ 'headerBackgroundOpen', 'open', 'open-panel' ], [ 'headerColourOpen', 'open', 'open-panel' ] ] );
 	const hover = fillOne( 'sgs/nav-bar-menu', [ 'itemColourHover' ], out.looks.tint );
 	assert.deepEqual( hover.writes.map( ( w ) => [ w.attr, w.state, w.script ] ), [ [ 'itemColourHover', 'hover', 'hover' ] ], 'a script hover look goes through the hover writer' );
+} );
+
+test( 'MUST FAIL: a panel a timer opens 300 ms after the pointer arrives is still read as the open-panel look', async () => {
+	const { out, after } = await readPlanted();
+	const l = out.looks.late;
+	assert.ok( l, 'the read waits for the panel to open' );
+	assert.equal( l[ 0 ].script.kind, 'open-panel' );
+	assert.deepEqual( l[ 0 ].states, [ 'open' ] );
+	assert.equal( l[ 0 ].rendered.color, 'rgb(10, 126, 168)' );
+	assert.equal( out.looks.control, undefined, 'a handler that shows nothing is still no look, after the wait' );
+	assert.equal( after.tint, 'rgb(30, 42, 60)', 'the page is put back' );
+} );
+
+// An opener's open look of a property the block holds no open setting for (sgs/nav-bar-menu has itemBorderColourHover and no open
+// border colour), as the planted draft's Late item shows it.
+const openLook = ( items ) => [ { states: [ 'open' ], family: 'script', selector: 'script hover (Page/90)', tokens: [], declared: { 'border-bottom-color': 'rgb(20, 20, 20)' }, rendered: { 'border-bottom-color': 'rgb(20, 20, 20)' }, read: 'script', script: { kind: 'open-panel', events: [ 'hover' ], element: 'Page/90', items } } ];
+const one = [ { copy: 0, label: 'Late', look: true } ];
+
+test( 'MUST FAIL: an opener open-panel look the block holds no open setting for is written through the hover setting', () => {
+	const nav = fillOne( 'sgs/nav-bar-menu', [ 'itemBorderColourHover' ], openLook( one ) );
+	assert.deepEqual( nav.writes.map( ( w ) => [ w.attr, w.state, w.script ] ), [ [ 'itemBorderColourHover', 'hover', 'open-panel' ] ] );
+	assert.deepEqual( nav.unmapped.filter( ( u ) => 'border-bottom-color' === u.property ), [] );
+} );
+
+test( 'negative controls: an open setting the block holds, a copy without the look, a property with no hover setting and a hover look of its own keep the row', () => {
+	// The block holds an open colour setting (uncalibrated here): the row says so, nothing goes to the hover setting.
+	const held = fillOne( 'sgs/nav-bar-menu', [ 'itemColourHover' ], [ { ...openLook( one )[ 0 ], declared: { color: 'rgb(10, 126, 168)' }, rendered: { color: 'rgb(10, 126, 168)' } } ] );
+	assert.equal( held.writes.length, 0 );
+	assert.match( held.unmapped.find( ( u ) => 'color' === u.property ).reason, /not calibrated/ );
+	// A copy of the repeated element has no look: a block-wide hover setting would paint it too.
+	const mixed = fillOne( 'sgs/nav-bar-menu', [ 'itemBorderColourHover' ], openLook( [ ...one, { copy: 1, label: 'Contact', look: false } ] ) );
+	assert.equal( mixed.writes.length, 0 );
+	assert.match( mixed.unmapped[ 0 ].reason, /^script-look: open on Page\/90 \(open-panel look\): no-setting/ );
+	// No hover setting for the property either.
+	const none = fillOne( 'sgs/nav-bar-menu', [ 'itemColourHover' ], openLook( one ) );
+	assert.equal( none.writes.length, 0 );
+	assert.equal( none.unmapped.filter( ( u ) => 'border-bottom-color' === u.property ).length, 1 );
+	// The draft's own hover look for the same property on the element: one setting cannot hold both.
+	const both = fillOne( 'sgs/nav-bar-menu', [ 'itemBorderColourHover' ], [ ...openLook( one ), { states: [ 'hover' ], family: 'stylesheet', selector: 'a:hover', tokens: [], declared: { 'border-bottom-color': 'rgb(1, 2, 3)' }, rendered: { 'border-bottom-color': 'rgb(1, 2, 3)' }, read: 'stylesheet' } ] );
+	assert.deepEqual( both.writes.map( ( w ) => [ w.attr, w.state, w.script ?? null ] ), [ [ 'itemBorderColourHover', 'hover', null ] ] );
 } );

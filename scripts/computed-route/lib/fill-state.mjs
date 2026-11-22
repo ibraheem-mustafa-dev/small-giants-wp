@@ -26,7 +26,7 @@ import { resolveProperty, knownPaths, notPainted, canon, PX_TOL, INHERITED } fro
 import { initialOf } from './css-families.mjs';
 import { sameValue } from '../../parity/lib/compare.mjs';
 import { LOOSE } from './resolve.mjs';
-import { settingStates, statesVocabulary } from './db.mjs';
+import { settingStates, statesVocabulary, candidates } from './db.mjs';
 import { longhands } from './calibrate-props.mjs';
 import { alternateSlots } from './fill-resolve-state.mjs';
 import { READ_WIDTHS } from './fill-read.mjs';
@@ -37,7 +37,7 @@ import { stateDrafts, ancestorLook, ancestorHolds, motionHolds } from './fill-st
 
 export { stateDrafts, ancestorLook, motionHolds };
 import { MOTION_STATE_PROPS, stateHover } from './fill-state-motion.mjs';
-import { scriptGapReason, openSlots } from './fill-state-script.mjs';
+import { scriptGapReason, openSlots, openAsHover } from './fill-state-script.mjs';
 import { createPatch, tokenRoute, pickValue, pressVariant, ownedBySetting, applyTokenLooks, conflictRow, ringLook, restShadow } from './fill-state-tokens.mjs';
 import { focusSharesHover, settleFocusRests } from './fill-state-focus.mjs';
 
@@ -346,20 +346,24 @@ export function fillStates( { tree, nodes, reads, calFor, db, snapshot } ) {
 					continue;
 				}
 				const atRest = 'open' === state && hidden && ! held.has( state );
-				const gap = atRest ? null : stateGap( state, held );
-				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest ? [] : openSlots( cal, prop, slot, state ) ) ], calibration: cal, db, snapshot, log: [], state: atRest ? null : state, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } );
+				// An opener's open-panel look the block holds no open setting for is the look its hover setting holds
+				// (lib/fill-state-script.mjs::openAsHover); the write is then a hover write.
+				const asHover = ! atRest && ! pseudo && openAsHover( { script, state, held, hasHover: candidates( db, rec.name, prop, 'hover' ).length > 0, hasOpen: candidates( db, rec.name, prop, 'open' ).length > 0, hoverLook: drafts.has( `hover|${ pseudo }|${ prop }` ) } );
+				const writeState = asHover ? 'hover' : state;
+				const gap = atRest ? null : stateGap( writeState, held );
+				const res = gap ? { status: 'gap', gap } : resolveProperty( { node, block: rec.name, prop, draft: perWidth, baseline: () => undefined, slots: [ slot, ...( atRest || asHover ? [] : openSlots( cal, prop, slot, state ) ) ], calibration: cal, db, snapshot, log: [], state: atRest ? null : writeState, siblings: ctx.siblings, rest: pseudo ? undefined : restValue( reads, target.id, prop ) } );
 				if ( 'written' === res.status ) {
 					for ( const w of res.writes ) {
 						const { before, after } = setAttr( node, w );
 						atRest || taken.set( w.attr, w.value );
-						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( draftDefect ? { draftDefect } : {} ), ...( script ? { script: script.kind } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ) } );
+						out.writes.push( { node: ref, index: rec.index, block: rec.name, slot, prop, state: writeState, attr: w.attr, before, after, widths: Object.keys( res.included || {} ).map( Number ), how: 'fill-state', ...( 'code' === read ? { read } : {} ), ...( draftDefect ? { draftDefect } : {} ), ...( script ? { script: script.kind } : {} ), ...( atRest ? { surface: 'open look written as the resting look' } : {} ), ...( asHover ? { via: 'the draft shows this while the panel is open; the block holds no open setting for it, so its hover setting takes it' } : {} ) } );
 					}
 					const shared = 'hover' === state ? focusSharesHover( { drafts, pseudo, prop, snap: snapOf( target ), attrs: res.writes.map( ( w ) => w.attr ) } ) : null;
 					shared && shares.push( { node, ref, rec, row: { node: ref, block: rec.name, slot, property: prop, state: 'focus', value: JSON.stringify( perWidth ), reason: shared } } );
 				} else if ( 'equal' === res.status ) {
 					out.ledger.push( { node: ref, block: rec.name, slot, property: prop, state, value: JSON.stringify( perWidth ), kind: 'judged-equal', reason: `lib/fill-prop.mjs::resolveProperty returned equal: no tier of the draft's ${ state } value differs from what the node shows (lib/fill-prop.mjs::tiersDiffering), so nothing is written` } );
 				} else if ( 'gap' === res.status ) {
-					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: scriptGapReason( script, state, res.detail ? `${ res.gap }: ${ res.detail }` : res.gap ) } );
+					out.unmapped.push( { node: ref, block: rec.name, slot: target.slot, property: prop, state, value: JSON.stringify( perWidth ), reason: scriptGapReason( script, state, `${ asHover ? 'tried as the hover setting: ' : '' }${ res.detail ? `${ res.gap }: ${ res.detail }` : res.gap }` ) } );
 				}
 			}
 			if ( ! hidden ) {

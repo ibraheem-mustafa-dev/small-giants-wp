@@ -101,6 +101,24 @@ export function fireScript( [ finder, resolveSrc, types, handlerProps ] ) {
 	return [ ...document.body.querySelectorAll( '*' ) ].filter( ( e ) => ! owner.contains( e ) && shown( e ) ).length;
 }
 
+// How long a handler may take to show its panel (a hover-intent timer runs 100 to 300 ms), in ms.
+export const PANEL_WAIT_MS = 600;
+
+// After the enter event: waits for the element's own animations, then, while the event has shown nothing outside the handler's
+// element, up to PANEL_WAIT_MS for a panel a timer opens late, and lets the panel's own entrance finish. Returns the count of
+// elements shown outside the handler's element (fireScript's), which a read that opened a panel finds above `base`.
+async function awaitPanel( page, args, base ) {
+	const start = Date.now();
+	await settleAnimations( page, { floor: 120, cap: 3000 } );
+	let shown = await page.evaluate( fireScript, args );
+	while ( null !== base && null !== shown && shown <= base && Date.now() - start < PANEL_WAIT_MS ) {
+		await page.waitForTimeout( 50 );
+		shown = await page.evaluate( fireScript, args );
+	}
+	null !== base && null !== shown && shown > base && await settleAnimations( page, { floor: 60, cap: 3000 } );
+	return shown;
+}
+
 // One copy in one state: its declared values before and while the state's event holds, what the event showed elsewhere,
 // and the render of what changed; the leave event is fired and the logic state put back afterwards.
 async function readCopy( page, cdp, copy, trigger, resolveSrc ) {
@@ -112,8 +130,7 @@ async function readCopy( page, cdp, copy, trigger, resolveSrc ) {
 	await snapshotDraftState( page, SLOT );
 	try {
 		await page.evaluate( fireScript, [ copy.finder, resolveSrc, trigger.enter, trigger.props ] );
-		await settleAnimations( page, { floor: 120, cap: 3000 } );
-		const shownAfter = await page.evaluate( fireScript, [ copy.finder, resolveSrc, [], trigger.props ] );
+		const shownAfter = await awaitPanel( page, [ copy.finder, resolveSrc, [], trigger.props ], base );
 		const during = await declaredValues( cdp, copy.finder, resolveSrc, null, { tokens: true } ).catch( () => null );
 		const changed = Object.fromEntries( Object.entries( during || {} ).filter( ( [ p, v ] ) => before[ p ] !== v ) );
 		const rendered = Object.keys( changed ).length ? await page.evaluate( renderedOf, [ copy.finder, resolveSrc, Object.keys( changed ) ] ) : null;
@@ -170,6 +187,16 @@ export function scriptGapReason( script, state, gap ) {
 	}
 	const items = script.items?.length > 1 ? `; items with it: ${ script.items.filter( ( i ) => i.look ).map( ( i ) => i.label || `copy ${ i.copy }` ).join( ', ' ) || 'none' }; without it: ${ script.items.filter( ( i ) => ! i.look ).map( ( i ) => i.label || `copy ${ i.copy }` ).join( ', ' ) || 'none' }` : '';
 	return `script-look: ${ state } on ${ script.element }${ 'open-panel' === script.kind ? ' (open-panel look)' : '' }: ${ gap }${ items }`;
+}
+
+// Whether an open-panel look is written through the block's hover setting: an opener (an element whose handler shows a panel
+// outside it) shows the look while its panel is open, which a pointer over the opener causes, so where the block holds no open
+// setting for the property but holds a hover one, the hover setting takes it. Not when the draft has a hover look of its own for
+// the property on the element (two looks, one setting), nor when some copy of the repeated element lacks the look (the block-wide
+// hover setting would paint the copies that have no panel). `script`: the look's script record ({ kind, items }); `held`: the
+// block's setting states.
+export function openAsHover( { script, state, held, hasHover, hasOpen, hoverLook } ) {
+	return 'open' === state && 'open-panel' === script?.kind && held.has( 'hover' ) && hasHover && ! hasOpen && ! hoverLook && ( script.items || [] ).every( ( i ) => i.look );
 }
 
 // The element a path ends on, without its position or pseudo-element (`.x__item:nth-of-type(3) > .x__link::before` →
