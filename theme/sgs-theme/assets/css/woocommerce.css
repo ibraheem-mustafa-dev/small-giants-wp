@@ -785,9 +785,9 @@ body.sgs-shop-filters-no-desktop-heading .sgs-shop-filters:not(:modal) .sgs-shop
  *     `position:relative;z-index:1` rule (container/style.css:63) without a
  *     z-index fight. Only styled while `:modal` (i.e. genuinely in the top
  *     layer) so the desktop static-open state is untouched.
- * A CLOSED dialog (no `open` attribute) is `display:none` by the UA
- * stylesheet — zero tabbable descendants by construction, not by a
- * transform/z-index rule that can silently stop applying.
+ * A CLOSED dialog (no `open` attribute) is `display:none` (the rule below
+ * the base dialog rule) — zero tabbable descendants by construction, not by
+ * a transform/z-index rule that can silently stop applying.
  */
 
 dialog.sgs-shop-filters {
@@ -813,6 +813,20 @@ dialog.sgs-shop-filters {
 	   fixes it; auto margins win. Introduced by the <aside> -> <dialog>
 	   conversion, so it is corrected here at the source. */
 	margin: 0;
+}
+
+/* A closed panel takes no space, whatever layout class it carries. The browser's
+   own `dialog:not([open]) { display: none }` loses to any author rule that sets
+   `display`, and the panel is an sgs/container: `.sgs-container--stack`, its
+   per-instance scope rule (one class, or two in the compound form) and WordPress's
+   `is-layout-flex` / `is-layout-grid` all made the closed dialog a flex or grid
+   box, which the sheet's `translate` (8d) only moved out of sight: at 375px it
+   kept a 1,790px blank band in the page. The id outranks every layout rule.
+   Closing the sheet still slides it out: `display` transitions with
+   `allow-discrete` (8d), so the sheet stays painted until the slide ends. */
+dialog#sgs-shop-filters:not([open]),
+dialog.sgs-shop-filters:not([open]) {
+	display: none;
 }
 
 .sgs-shop-filters__scroll {

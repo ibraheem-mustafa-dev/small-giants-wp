@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop filter drawer fixture</title>
+<!--
+  Fixture for tests/shop-filters-drawer.test.mjs: the theme's real woocommerce.css and the container block's real
+  style.css, around the shop layout the archive template renders once sgs-shop-filters.js has turned the panel into a
+  <dialog>. The test swaps the panel's layout classes and the stylesheet under test (id="sgs-woocommerce-css").
+-->
+<link id="sgs-woocommerce-css" rel="stylesheet" href="../../assets/css/woocommerce.css">
+<link rel="stylesheet" href="../../../../plugins/sgs-blocks/src/blocks/container/style.css">
+<style>
+	/* WordPress core's layout rules (wp-includes/global-styles: layout definitions). */
+	body .is-layout-flow > * { margin-block-start: 0; }
+	body .is-layout-constrained > * { margin-inline: auto; }
+	body .is-layout-flex { display: flex; }
+	body .is-layout-grid { display: grid; }
+	/* The per-instance scope rules sgs/container prints (SGS_Container_Wrapper): a single scope class, and the
+	   two-class compound its supports and state selectors use. */
+	.sgs-container-t1 { display: flex; flex-wrap: nowrap; }
+	.sgs-container-t2.wp-block-sgs-container { display: grid; }
+	/* Fixture content heights only. */
+	body { margin: 0; }
+	.fixture-toolbar { height: 60px; }
+	.fixture-filters-body { height: 1790px; }
+	.fixture-grid { height: 900px; }
+</style>
+</head>
+<body class="is-enhanced">
+<div class="fixture-toolbar">
+	<button type="button" class="sgs-shop-filters__toggle sgs-shop-filters__toggle--toolbar">Filter</button>
+</div>
+<div class="wp-block-sgs-container sgs-container sgs-shop-layout">
+	<dialog id="sgs-shop-filters" class="wp-block-sgs-container sgs-container sgs-shop-filters">
+		<div class="sgs-shop-filters__scroll"><div class="fixture-filters-body">Filters</div></div>
+		<div class="sgs-shop-filters__sheet-footer"><button type="button" class="sgs-shop-filters__apply">Apply</button></div>
+	</dialog>
+	<div class="fixture-grid">Products</div>
+</div>
+<button type="button" class="sgs-shop-filters__sticky-trigger">Filter</button>
+</body>
+</html>

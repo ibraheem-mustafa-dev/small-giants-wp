@@ -5,7 +5,7 @@
  *   Desktop (≥782px): the filters block is a static, always-open, NON-MODAL
  *                      <dialog open> — renders in-flow as today's sticky sidebar.
  *   Mobile (<782px):   the filters block is a CLOSED <dialog> (no `open` attr,
- *                      so `display:none` by UA stylesheet — zero tabbable
+ *                      so `display:none` by woocommerce.css — zero tabbable
  *                      descendants by construction). The toggle button and a
  *                      scroll-triggered sticky trigger open it via
  *                      `.showModal()`, which promotes it to the browser's TOP
@@ -22,8 +22,9 @@
  *     z-index bump alone cannot win).
  *   - Native focus trap, Escape-to-close, focus restoration, and an inert
  *     background all come for free — no hand-rolled trapFocus/backdrop code.
- *   - A closed dialog (no `open` attribute) is `display:none` by the UA
- *     stylesheet, which is what makes "0 tabbable elements while closed" true
+ *   - A closed dialog (no `open` attribute) is `display:none` (the browser's
+ *     stylesheet, and woocommerce.css so that no layout class on the panel
+ *     overrides it), which is what makes "0 tabbable elements while closed" true
  *     BY CONSTRUCTION rather than by a rule (`transform`) that can silently
  *     stop being applied.
  *
