@@ -91,7 +91,10 @@ test( 'MUST FAIL: Eye Care\'s product and shop are refused, naming the record an
 	const product = read( EYE, 'product' );
 	const p = piecesPass( product );
 	// The related lists read the draft's logic and inventory, not the shop parts record, so they are the only pieces placed.
-	assert.deepEqual( p.placed.map( ( x ) => [ x.id, x.list, x.sameTermAs ] ), [ [ 'related', 'sameBrand', 'product_brand' ], [ 'related', 'related', 'pa_style' ] ] );
+	assert.deepEqual( p.placed.filter( ( x ) => 'related' === x.id ).map( ( x ) => [ x.id, x.list, x.sameTermAs ] ), [ [ 'related', 'sameBrand', 'product_brand' ], [ 'related', 'related', 'pa_style' ] ] );
+	// F-51: every element showing the product's brand as its whole words is bound to it, a link's address to the brand's page.
+	assert.deepEqual( [ ...new Set( p.placed.map( ( x ) => x.id ) ) ], [ 'related', 'brand' ] );
+	assert.ok( p.placed.filter( ( x ) => 'brand' === x.id ).some( ( x ) => /label <- sgs-product\/field brand; url <- sgs-product\/field brand_url/.test( x.bind ) ) );
 	assert.equal( countBlocks( p.tree, 'sgs/buybox' ), countBlocks( product.tree, 'sgs/buybox' ) );
 	assert.match( p.problems.join( '\n' ), /disagree on buybox-add-to-basket \(Eye Care Birmingham\/396\)/ );
 	assert.match( p.problems.join( '\n' ), /locates the title on Root\/360#0 \(div\), and the page's h1 is Root\/362#0/ );

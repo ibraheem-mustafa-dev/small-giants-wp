@@ -183,3 +183,23 @@ test( 'MUST FAIL: a picture inside the buy box\'s controls is never the gallery,
 	assert.equal( none.tree, undefined );
 	assert.match( none.notes[ 0 ], /the gallery is not placed: no node of the tree is built from the draft's gallery Root\/3#0/ );
 } );
+
+// F-51: a word the page repeats (the product's brand) is bound wherever it is an element's whole words; a link showing it
+// goes to the brand's own page.
+const BRAND = { id: 'brand', binds: BIND( 'brand' ), required: false, once: false, kind: 'product-field', find: { field: 'brand', every: true, linkKey: 'brand_url' } };
+const BRAND_SOURCE = SOURCE.replace( 'basketTotal: window.MM.basket.total,', 'basketTotal: window.MM.basket.total, seeAll: \'See all \' + p.brand,' );
+
+test( 'MUST FAIL: every element showing the product\'s brand as its whole words is bound to it, a link\'s address to the brand\'s page', () => {
+	const elements = [ ...INVENTORY.elements, el( 30, 6, 'a', '{{ p.brand }}', { words: 'Mama' } ), el( 31, 6, 'span', '{{ p.brand }}', { words: 'Mama' } ), el( 32, 6, 'a', 'See all {{ p.brand }}', { words: 'See all Mama' } ), el( 33, 12, 'span', '{{ r.brand }}', { words: 'Other' } ) ];
+	const tree = TREE();
+	tree[ 0 ].innerBlocks[ 0 ].innerBlocks.push( n( 'sgs/button', 30, { label: 'Mama' } ), n( 'sgs/button', 31, { label: 'Mama' } ), n( 'sgs/button', 32, { label: 'See all Mama' } ) );
+	tree[ 0 ].innerBlocks[ 1 ].innerBlocks.push( n( 'sgs/text', 33, { text: 'Other' } ) );
+	const got = place( ctx( { tree, inventory: { elements }, draftSource: BRAND_SOURCE, productFields: { ...FIELDS, brand: [ 'brand' ] } } ), BRAND );
+	assert.deepEqual( got.placed.map( ( p ) => [ p.at, p.bind ] ), [ [ 'Root/30#0', 'label <- sgs-product/field brand; url <- sgs-product/field brand_url' ], [ 'Root/31#0', 'label <- sgs-product/field brand' ] ] );
+	assert.deepEqual( binding( at( got.tree, 30 ) ).url, { source: 'sgs-product/field', args: { key: 'brand_url' } } );
+	// Negative controls: the brand among other words is a note, another product's brand (the related card) is not bound, a span drawn as a button gets no address.
+	assert.match( got.notes[ 0 ], /Root\/32#0 shows the brand among other words/ );
+	assert.equal( binding( at( got.tree, 33 ) ), undefined );
+	assert.equal( binding( at( got.tree, 31 ) ).url, undefined );
+	assert.match( place( ctx( { productFields: { ...FIELDS, brand: [] } } ), BRAND ).notes[ 0 ], /records have no brand field/ );
+} );

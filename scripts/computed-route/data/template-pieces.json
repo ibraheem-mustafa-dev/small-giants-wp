@@ -31,7 +31,8 @@
 				{ "id": "price", "binds": { "source": "sgs-product/field", "key": "price" }, "required": false, "kind": "product-field", "find": { "field": "price" } },
 				{ "id": "description", "binds": { "source": "sgs-product/field", "key": "short_description" }, "required": false, "kind": "product-field", "find": { "field": "description" } },
 				{ "id": "gallery", "block": "sgs/buybox", "required": false, "kind": "product-field", "find": { "field": "image", "surface": "buybox" } },
-				{ "id": "related", "block": "woocommerce/product-collection", "required": false, "once": false, "kind": "related" }
+				{ "id": "related", "block": "woocommerce/product-collection", "required": false, "once": false, "kind": "related" },
+				{ "id": "brand", "binds": { "source": "sgs-product/field", "key": "brand" }, "required": false, "once": false, "kind": "product-field", "find": { "field": "brand", "every": true, "linkKey": "brand_url" } }
 			]
 		},
 		"product-search-results": {

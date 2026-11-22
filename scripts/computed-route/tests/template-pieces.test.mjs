@@ -154,7 +154,7 @@ test( 'the committed map names the product page\'s buy box and bound title and t
 	assert.deepEqual( product.map( ( p ) => [ p.id, p.block ?? null, p.binds?.key ?? null, p.kind, p.required ] ), [
 		[ 'buy-box', 'sgs/buybox', null, 'buybox', true ], [ 'gift', 'sgs/gift-order', null, 'gift', false ], [ 'title', 'sgs/heading', 'title', 'product-field', true ], [ 'price', null, 'price', 'product-field', false ],
 		[ 'description', null, 'short_description', 'product-field', false ], [ 'gallery', 'sgs/buybox', null, 'product-field', false ],
-		[ 'related', 'woocommerce/product-collection', null, 'related', false ],
+		[ 'related', 'woocommerce/product-collection', null, 'related', false ], [ 'brand', null, 'brand', 'product-field', false ],
 	] );
 	assert.ok( product.filter( ( p ) => p.binds ).every( ( p ) => 'sgs-product/field' === p.binds.source ) );
 	const title = { name: 'sgs/heading', attributes: { metadata: { bindings: { content: { source: 'sgs-product/field', args: { key: 'title' } } } } }, innerBlocks: [] };

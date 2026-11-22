@@ -160,5 +160,29 @@
 		"find": "\tif ( ! nodes.length ) {",
 		"replace": "\tif ( false ) {",
 		"why": "a gallery no node is built from reports itself placed"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\tif ( piece.find.every && built.length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a repeated field binds one element or none"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "\t\tconst whole = 1 === holesOf( e.srcOwnText ).length && ! String( e.srcOwnText ).replace( /\\{\\{[^}]*\\}\\}/g, '' ).trim();",
+		"replace": "\t\tconst whole = true;",
+		"why": "a field among other words is bound and its words replaced"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "piece.find.linkKey && 'a' === e.tag && ",
+		"replace": "piece.find.linkKey && ",
+		"why": "a text showing the brand gets an address"
+	},
+	{
+		"file": "lib/template-piece-product-field.mjs",
+		"find": "piece.find.linkKey && 'a' === e.tag && Object.hasOwn( blockSchema( at.node.name ) || {}, 'url' ) ? linkNode(",
+		"replace": "false ? linkNode(",
+		"why": "a link showing the brand keeps the draft's one address"
 	}
 ]

@@ -22,6 +22,7 @@
 // The bound setting is the node's own words setting (lib/template-piece-draft.mjs::wordsSetting). An area found twice,
 // or not found, stays as it is and is a note; the required title not found is a problem.
 import { countBlocks } from './template-pieces.mjs';
+import { blockSchema } from './resolve.mjs';
 import { locateRun, runOf } from './template-piece-buybox.mjs';
 import { attrHolesOf, dcOf, hiddenPictureHoles, declsOf, draftLogic, holeReads, holesOf, inventoryIndex, locateParts, loopListOf, nodesWithin, recordSurface, refKey, treeNodes, wordsSetting } from './template-piece-draft.mjs';
 
@@ -47,6 +48,13 @@ function bindNode( node, element, bind ) {
 	const meta = node.attributes.metadata || {};
 	node.attributes.metadata = { ...meta, bindings: { ...( meta.bindings || {} ), [ attr ]: { source: bind.source, args: { key: bind.key } } } };
 	return attr;
+}
+
+// Binds a link node's address (`url`) to `bind` ({ source, key }). Returns true.
+function linkNode( node, bind ) {
+	const meta = node.attributes.metadata || {};
+	node.attributes.metadata = { ...meta, bindings: { ...( meta.bindings || {} ), url: { source: bind.source, args: { key: bind.key } } } };
+	return true;
 }
 
 // The record the title's hole reads: the declarations of its root (`p` of `{{ p.name }}`), or null.
@@ -102,6 +110,9 @@ function placeHole( ctx, piece, index, L ) {
 	const fed = index.elements.filter( ( e ) => OWN === e.template && shown( e ) && ! index.chain( e.key ).some( ( a ) => FIXED( index.byKey.get( a ) ) ) &&
 		holesOf( e.srcOwnText ).some( ( h ) => holeReads( L, h, roots, fields, loopListOf( e ) ) ) );
 	const built = fed.map( ( e ) => ( { e, at: nodeOf( tree, e.key ) } ) ).filter( ( x ) => x.at );
+	if ( piece.find.every && built.length ) {
+		return bindEvery( { key, tree, piece, built } );
+	}
 	if ( ! built.length ) {
 		return note( fed.length ? `the element(s) showing the product's ${ piece.find.field } (${ fed.map( ( e ) => e.key ).join( ', ' ) }) have no node of their own in this tree (they are inside the buy box, or another block absorbed them)` : `no element of the page shows the product's ${ piece.find.field }` );
 	}
@@ -117,6 +128,21 @@ function placeHole( ctx, piece, index, L ) {
 		return note( `${ at.node.name } at ${ e.key } holds no single setting with the element's words` );
 	}
 	return { tree, placed: [ { id: piece.id, block: at.node.name, at: e.key, bind: `${ attr } <- ${ piece.binds.source } ${ piece.binds.key }` } ] };
+}
+
+// Every element showing the field as its whole words is bound (`find.every`: a word the page repeats, the product's brand in
+// the breadcrumb and above the title); one showing it among other words is a note, as a binding would replace those.
+function bindEvery( { key, tree, piece, built } ) {
+	const placed = [];
+	const notes = [];
+	for ( const { e, at } of built ) {
+		const whole = 1 === holesOf( e.srcOwnText ).length && ! String( e.srcOwnText ).replace( /\{\{[^}]*\}\}/g, '' ).trim();
+		const attr = whole ? bindNode( at.node, e, piece.binds ) : null;
+		// A link showing the field goes where the field's own page is (`find.linkKey`, the brand's page for the brand), not the draft's one address.
+		const link = attr && piece.find.linkKey && 'a' === e.tag && Object.hasOwn( blockSchema( at.node.name ) || {}, 'url' ) ? linkNode( at.node, { source: piece.binds.source, key: piece.find.linkKey } ) : null;
+		attr ? placed.push( { id: piece.id, block: at.node.name, at: e.key, bind: `${ attr } <- ${ piece.binds.source } ${ piece.binds.key }${ link ? `; url <- ${ piece.binds.source } ${ piece.find.linkKey }` : '' }` } ) : notes.push( `${ key }: piece "${ piece.id }": ${ e.key } shows the ${ piece.find.field } ${ whole ? `but ${ at.node.name } holds no single setting with its words` : `among other words ("${ String( e.srcOwnText ).trim() }"), which a binding would replace` }` );
+	}
+	return placed.length ? { tree, placed, notes } : { notes };
 }
 
 function placeGallery( ctx, piece, index, L ) {
