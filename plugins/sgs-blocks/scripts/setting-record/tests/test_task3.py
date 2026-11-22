@@ -449,3 +449,27 @@ def test_a_timed_out_render_is_tried_once_more(tmp_path, monkeypatch):
         return SimpleNamespace(stdout=json.dumps({'ok': True, 'html': '<p></p>'}), stderr='')
     monkeypatch.setattr(subprocess, 'run', flaky)
     assert rn.render('sgs/text', {'x': 1})['ok'] is True and len(calls) == 2
+
+
+# ---------------------------------------------------------------- a tier written from the setting's own value
+def _bp(value, tier, setting='collapsePoint', props=('display',)):
+    return {'setting': setting, 'part': 'ROOT', 'props': list(props), 'state': None, 'tiers': [tier], 'values': [value]}
+
+
+def test_a_breakpoint_settings_tier_is_marked_with_its_edge_and_offset():
+    a, b = _bp(3, '@media(max-width:2.98px)'), _bp(768, '@media(max-width:767.98px)')
+    c = _bp('3', '@media (min-width:1024px) and (max-width:2.98px),(max-width:767.98px) and (max-width:2.98px)', props=('gap',))
+    d = _bp('768', '@media (min-width:1024px) and (max-width:767.98px),(max-width:767.98px) and (max-width:767.98px)', props=('gap',))
+    lo, hi = _bp(3, '@media(min-width:3px)', props=('flex',)), _bp(900, '@media(min-width:900px)', props=('flex',))
+    CK.symbolic_tiers([a, b, c, d, lo, hi])
+    assert a['symbolic'] == b['symbolic'] == {'edge': 'max', 'setting': 'collapsePoint', 'offset': -0.02}
+    assert c['symbolic'] == d['symbolic'] == {'edge': 'max', 'setting': 'collapsePoint', 'offset': -0.02}
+    assert lo['symbolic'] == {'edge': 'min', 'setting': 'collapsePoint', 'offset': 0.0}
+
+
+def test_a_tier_that_does_not_follow_the_value_is_not_marked():
+    fixed = [_bp(3, '@media(max-width:767.98px)'), _bp(768, '@media(max-width:1023.98px)')]  # moves, but not one for one
+    same = [_bp(3, '@media(max-width:767.98px)', props=('gap',)), _bp(768, '@media(max-width:767.98px)', props=('gap',))]
+    words = [_bp('a', '@media(max-width:2.98px)', props=('top',)), _bp('b', '@media(max-width:767.98px)', props=('top',))]
+    CK.symbolic_tiers(fixed + same + words)
+    assert not any('symbolic' in e for e in fixed + same + words)

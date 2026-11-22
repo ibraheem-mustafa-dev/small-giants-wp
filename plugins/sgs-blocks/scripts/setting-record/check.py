@@ -254,6 +254,56 @@ def entry_values(run: dict) -> dict:
     return out
 
 
+NUMBER = re.compile(r'(-?\d+(?:\.\d+)?)px')
+
+
+def _number(v):
+    """A setting value as a number of pixels (768, '768', '768px'), else None."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    m = re.fullmatch(r'\s*(-?\d+(?:\.\d+)?)(?:px)?\s*', str(v))
+    return float(m.group(1)) if m else None
+
+
+def symbolic_tiers(entries: list) -> None:
+    """Marks the entries whose media condition is written from the setting's own value (a breakpoint setting such as
+    collapsePoint: includes/nav-menu-submenu-css.php writes media_width('max', value - 1), which
+    class-sgs-breakpoints.php::query_width ends in .98, so the edge sits at value - 0.02). Two entries of one setting,
+    part, properties and state, each produced by one numeric value, whose conditions differ only in pixel numbers that
+    move one for one with the value (the same offset from it at every such place, all of one edge) both get
+    `symbolic: {edge, setting, offset}`: a reader substitutes the site's value; the literal tier stays the key."""
+    groups = {}
+    for e in entries:
+        vals = e.get('values') or []
+        n = _number(vals[0]) if len(vals) == 1 else None
+        if n is not None and e.get('tiers'):
+            groups.setdefault((e['setting'], e['part'], tuple(e['props']), e.get('state')), []).append((n, e))
+    for rows in groups.values():
+        found = {}
+        for i, (v1, e1) in enumerate(rows):
+            for v2, e2 in rows[i + 1:]:
+                if v1 == v2:
+                    continue
+                t1, t2 = ' '.join(e1['tiers']), ' '.join(e2['tiers'])
+                if NUMBER.sub('#', t1) != NUMBER.sub('#', t2):
+                    continue
+                n1 = [(m.start(), float(m.group(1))) for m in NUMBER.finditer(t1)]
+                n2 = [float(m.group(1)) for m in NUMBER.finditer(t2)]
+                moved = [(pos, a, b) for (pos, a), b in zip(n1, n2) if a != b]
+                if not moved:
+                    continue
+                offsets = {round(a - v1, 4) for _p, a, _b in moved} | {round(b - v2, 4) for _p, _a, b in moved}
+                edges = {('max' if t1[:pos].rstrip().endswith('max-width:') else 'min' if t1[:pos].rstrip().endswith('min-width:') else None)
+                         for pos, _a, _b in moved}
+                if len(offsets) == 1 and len(edges) == 1 and None not in edges:
+                    note = {'edge': edges.pop(), 'setting': e1['setting'], 'offset': offsets.pop()}
+                    found[id(e1)], found[id(e2)] = (e1, note), (e2, note)
+        for e, note in found.values():
+            e['symbolic'] = note
+
+
 # ---------------------------------------------------------------- comparing
 def compare(record: list, run: dict) -> dict:
     checked = [e for e in record if not e.get('runner')]
@@ -423,6 +473,7 @@ def check_block(args, block: str) -> int:
                 # seed_reference_data.py::_parse_setting_records refuses an unchecked entry, so none is written here
                 raise SystemExit(f'refusing to write {write}: it keeps entries marked runner (unchecked), which the '
                                  f'database seeder refuses: ' + ', '.join(sorted({e["setting"] for e in kept})))
+        symbolic_tiers(doc['entries'])
         errs = schema_errors(doc, need_kind=not args.no_proof)
         write.parent.mkdir(parents=True, exist_ok=True)
         write.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
