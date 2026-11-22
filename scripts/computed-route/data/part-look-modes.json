@@ -59,13 +59,64 @@
 				},
 				{
 					"setting": "ctaBehaviour",
-					"gap": "the block holds one button action for every card; the draft's button action is in its click handler, which the part-look reader does not read, and its words differ by product",
+					"gap": "the block holds one button action for every card; where the draft's button does different things per product, the catalogue writes each product's own action (_sgs_card_cta_action, add or page) and the card reads it with cardContentSource product (includes/product-card-per-product.php), so this setting is only the action of a product with none",
 					"evidencePart": "cta"
 				},
 				{
 					"setting": "ctaStyle",
-					"gap": "the block holds one primary-button style (primary, secondary or outline) for every card; the draft styles its button per product",
+					"gap": "the block holds one primary-button style (primary, secondary or outline) for every card, and the per-product reader holds a product's button words and action, not its style; the draft styles its button per product",
 					"evidencePart": "cta"
+				},
+				{
+					"setting": "showCta",
+					"value": false,
+					"whenAbsent": "cta",
+					"neighbours": [
+						"wrapper"
+					]
+				},
+				{
+					"setting": "cardContentSource",
+					"value": "product",
+					"from": {
+						"differs": [
+							"tag",
+							"price-note",
+							"cta"
+						]
+					},
+					"neighbours": [
+						"wrapper"
+					],
+					"note": "the per-product badge, price note and button words the catalogue writes (_sgs_card_*) render only in this mode"
+				},
+				{
+					"setting": "imageRatio",
+					"from": {
+						"aspect": "image"
+					},
+					"whenFound": "image"
+				},
+				{
+					"setting": "priceFromLowest",
+					"from": {
+						"pricePrefix": "price"
+					},
+					"whenFound": "price"
+				},
+				{
+					"setting": "showRating",
+					"value": true,
+					"whenFound": "rating",
+					"note": "the stars and count are the product's own reviews (includes/product-card-live-fill.php); a product with none shows no rating row while noReviewsText is empty, which the route never writes (D-5)"
+				},
+				{
+					"setting": "showRating",
+					"value": false,
+					"whenAbsent": "rating",
+					"neighbours": [
+						"wrapper"
+					]
 				}
 			]
 		},

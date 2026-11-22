@@ -1992,6 +1992,14 @@
 						"hasAmount": true
 					},
 					"perRoot": true
+				},
+				"rating": {
+					"from": "cards",
+					"match": {
+						"rating": true
+					},
+					"perRoot": true,
+					"pick": "first"
 				}
 			}
 		},

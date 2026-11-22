@@ -4,6 +4,11 @@
 //   whenFound / whenAbsent  a part (named in the block's locators) the draft draws, or does not draw, at any width
 //   neighbours              parts that must be found, so an absence is never read from a failed read
 //   from.text               the part's own words (all instances must agree), from.look the part's computed value of a property
+//   from.differs            parts whose words differ from one copy to the next (a per-product badge, note or button): `value`
+//                           is written when any of them does, nothing when every copy says the same
+//   from.aspect             a part's width to height at the widest width, every copy agreeing (a picture's shape: `W / H`,
+//                           a near-simple ratio as itself), written as the desktop tier of a tier object
+//   from.pricePrefix        a price part whose words put a word before the amount on some copy ("from £9.50"): true, else false
 //   value                   the literal to write when the condition holds
 // A rule whose setting the framework database does not hold for the block, whose instances disagree, or whose evidence is missing
 // is a gap row with the draft's evidence, never a guess. Pure: reads and database rows in, writes and gaps out.
@@ -12,6 +17,19 @@ import { WIDTHS, primitive } from './fill-part-look.mjs';
 const AMOUNT = /\s*[·•|–-]?\s*[£$€]\s?\d[\d.,]*|\s*\d[\d.,]*\s?[£$€]/;
 const has = ( reads, part ) => WIDTHS.some( ( w ) => ( reads[ part ]?.[ w ] || [] ).length );
 const instances = ( reads, part ) => reads[ part ]?.[ 1440 ] || WIDTHS.map( ( w ) => reads[ part ]?.[ w ] ).find( ( l ) => l?.length ) || [];
+
+const PREFIXED = /^[^£$€\d]*[A-Za-z][^£$€\d]*[£$€]\s?\d/;
+const SIMPLE = [ [ 1, 1 ], [ 4, 3 ], [ 3, 4 ], [ 3, 2 ], [ 2, 3 ], [ 16, 9 ], [ 9, 16 ], [ 4, 5 ], [ 5, 4 ], [ 2, 1 ], [ 1, 2 ] ];
+// The shape the copies of a part share (`W / H`), or null when they differ by more than 2% or have no size.
+export function aspectOf( list ) {
+	const rs = ( list || [] ).map( ( i ) => ( i.box?.w > 0 && i.box?.h > 0 ? i.box.w / i.box.h : null ) );
+	if ( ! rs.length || rs.some( ( r ) => null === r ) || Math.max( ...rs ) / Math.min( ...rs ) > 1.02 ) {
+		return null;
+	}
+	const r = rs[ 0 ];
+	const near = SIMPLE.find( ( [ w, h ] ) => Math.abs( r / ( w / h ) - 1 ) <= 0.02 );
+	return near ? `${ near[ 0 ] } / ${ near[ 1 ] }` : `${ Math.round( list[ 0 ].box.w ) } / ${ Math.round( list[ 0 ].box.h ) }`;
+}
 
 // The label of a button without the amount it carries ("Add to basket · £21.50" is "Add to basket").
 export const labelOf = ( text ) => String( text ).replace( AMOUNT, '' ).replace( /[\s·•|–-]+$/, '' ).trim();
@@ -68,6 +86,26 @@ export function evaluateModes( { block, rules, rows, reads } ) {
 				continue;
 			}
 			evidence = `the draft's ${ rule.from.look.part } ${ value ? 'has' : 'has no' } ${ rule.from.look.property }`;
+		}
+		if ( rule.from?.differs ) {
+			const varied = rule.from.differs.map( ( part ) => ( { part, texts: [ ...new Set( instances( reads, part ).map( ( i ) => labelOf( i.text ) ).filter( Boolean ) ) ] } ) ).filter( ( x ) => x.texts.length > 1 );
+			if ( ! varied.length ) {
+				out.settings[ rule.setting ] = { code: 'same' };
+				continue;
+			}
+			evidence = `the draft's cards differ per copy: ${ varied.map( ( x ) => `${ x.part } ${ JSON.stringify( x.texts.slice( 0, 4 ) ) }` ).join( '; ' ) }`;
+		} else if ( rule.from?.aspect ) {
+			const ratio = aspectOf( instances( reads, rule.from.aspect ) );
+			if ( ! ratio ) {
+				gap( 'the copies of the part differ in shape or have no size', rule.from.aspect );
+				continue;
+			}
+			value = { desktop: ratio };
+			evidence = `the draft's ${ rule.from.aspect } is ${ ratio } (width to height at the widest width)`;
+		} else if ( rule.from?.pricePrefix ) {
+			const texts = instances( reads, rule.from.pricePrefix ).map( ( i ) => String( i.text || '' ) );
+			value = texts.some( ( t ) => PREFIXED.test( t ) );
+			evidence = value ? `the draft's ${ rule.from.pricePrefix } reads ${ JSON.stringify( texts.find( ( t ) => PREFIXED.test( t ) ) ) }` : `no copy of the draft's ${ rule.from.pricePrefix } puts a word before its amount`;
 		}
 		if ( '' === value ) {
 			gap( 'the draft part has no words to write', evidence );

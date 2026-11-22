@@ -205,6 +205,10 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		if ( m.text && kindOf( el ) !== m.text ) {
 			return false;
 		}
+		// A star rating: a row of star glyphs (its words may follow), or an element its label names as a rating.
+		if ( undefined !== m.rating && ( /^[\u2605\u2606\u2B50\u2729\u272D]{3,}/.test( textOf( el ) ) || /\bout of 5\b|\bstars?\b|\brat(?:ed|ing)\b/i.test( el.getAttribute( 'aria-label' ) || '' ) ) !== m.rating ) {
+			return false;
+		}
 		if ( undefined !== m.ownText && ownText( el ) !== m.ownText ) {
 			return false;
 		}
