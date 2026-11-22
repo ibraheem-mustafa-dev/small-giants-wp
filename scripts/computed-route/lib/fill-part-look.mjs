@@ -388,6 +388,20 @@ function tiersFor( row, perWidth ) {
 	return { tiers };
 }
 
+// Whether a part's own locator finds only the current element (a menu's item marked aria-current): its rest read IS the current look.
+// A locator that names another (sameAs) is followed to the one it names.
+export function readsCurrent( locators, part ) {
+	let loc = locators?.parts?.[ part ];
+	for ( let guard = 0; loc?.sameAs && guard < 8; guard++ ) {
+		loc = locators.parts?.[ loc.sameAs ] ?? locators.anchors?.[ loc.sameAs ];
+	}
+	return true === loc?.match?.ariaCurrent;
+}
+
+// The look rows the reader pairs: every rest-state row with a part and a property, and every current-state row whose part's locator
+// finds the current element itself (readsCurrent), read from that element as the hover reader reads a hovered one.
+export const lookRowsOf = ( rows, locators ) => rows.filter( ( r ) => r.css_element && r.css_property && ( ! r.css_state || ( 'current' === r.css_state && readsCurrent( locators, r.css_element ) ) ) );
+
 // Pairs the draft with the settings. Inputs:
 //   block, rows (the block's settings: attr_name, attr_type, css_property, css_element, css_state, css_tier, is_responsive,
 //   tier_shape, enum_values), names (every attribute name of the block, for companions), locators ({ anchors, parts }),
@@ -397,8 +411,8 @@ function tiersFor( row, perWidth ) {
 export function buildLook( { block, rows, names, locators, reads, snapshot = null, selectorOf = () => null, faultOf = () => null, tableParts = [], switches = null, force = null, policy = null } ) {
 	const out = { block, writes: [], settings: {}, unpaired: [], noLocator: [], noSetting: [], conflicts: [], minority: [], gaps: [], unsupported: {}, widthVaries: [], atInitial: [], log: [] };
 	const nameSet = names instanceof Set ? names : new Set( names );
-	const look = rows.filter( ( r ) => r.css_element && r.css_property && ! r.css_state );
-	const stateful = rows.filter( ( r ) => r.css_element && r.css_property && r.css_state );
+	const look = lookRowsOf( rows, locators );
+	const stateful = rows.filter( ( r ) => r.css_element && r.css_property && r.css_state && ! look.includes( r ) );
 	const parts = [ ...new Set( look.map( ( r ) => r.css_element ) ) ].sort();
 	const mark = ( row, status, reason, extra = {} ) => {
 		out.settings[ row.attr_name ] = { status, reason, part: row.css_element, ...extra };
@@ -502,7 +516,8 @@ export function buildLook( { block, rows, names, locators, reads, snapshot = nul
 			t.widthVaries && out.widthVaries.push( { part, attr: row.attr_name, draft } );
 			mark( row, 'written', null, { ...( fault ? { knownFault: fault } : {} ) } );
 		}
-		out.noSetting.push( ...noSettingFor( { block, part, partRows, instances, selector: selectorOf( part ) } ) );
+		// A current-state part's other looks are its menu item's, held by that part's rest settings: no Custom CSS row for them.
+		partRows.some( ( r ) => ! r.css_state ) && out.noSetting.push( ...noSettingFor( { block, part, partRows, instances, selector: selectorOf( part ) } ) );
 	}
 	out.counts = {
 		parts: parts.length,

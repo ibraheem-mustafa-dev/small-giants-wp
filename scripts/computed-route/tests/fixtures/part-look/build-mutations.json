@@ -55,8 +55,8 @@
 	},
 	{
 		"file": "lib/fill-part-look.mjs",
-		"find": "const look = rows.filter( ( r ) => r.css_element && r.css_property && ! r.css_state );",
-		"replace": "const look = rows.filter( ( r ) => r.css_element && r.css_property );",
+		"find": "( ! r.css_state || ( 'current' === r.css_state && readsCurrent( locators, r.css_element ) ) )",
+		"replace": "true",
 		"why": "a hover setting is written from the resting read"
 	},
 	{

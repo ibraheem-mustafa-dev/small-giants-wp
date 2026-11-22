@@ -1,0 +1,32 @@
+[
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "( ! r.css_state || ( 'current' === r.css_state && readsCurrent( locators, r.css_element ) ) )",
+		"replace": "! r.css_state",
+		"why": "a current-state row is never read from the current element"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "( ! r.css_state || ( 'current' === r.css_state && readsCurrent( locators, r.css_element ) ) )",
+		"replace": "( ! r.css_state || readsCurrent( locators, r.css_element ) )",
+		"why": "a hover row of a current-item part is read from the resting element"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "\treturn true === loc?.match?.ariaCurrent;",
+		"replace": "\treturn !! loc;",
+		"why": "a locator that finds every item is taken for the current one"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "\t\tloc = locators.parts?.[ loc.sameAs ] ?? locators.anchors?.[ loc.sameAs ];",
+		"replace": "\t\tloc = locators.parts?.[ loc.sameAs ];",
+		"why": "a locator naming an anchor is not followed"
+	},
+	{
+		"file": "lib/fill-part-look.mjs",
+		"find": "\t\tpartRows.some( ( r ) => ! r.css_state ) && out.noSetting.push(",
+		"replace": "\t\tout.noSetting.push(",
+		"why": "the current item's menu looks become Custom CSS rows"
+	}
+]

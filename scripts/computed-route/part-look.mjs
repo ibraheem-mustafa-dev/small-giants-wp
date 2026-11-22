@@ -29,7 +29,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDb } from './lib/db.mjs';
-import { buildLook, tableSelector } from './lib/fill-part-look.mjs';
+import { buildLook, lookRowsOf, tableSelector } from './lib/fill-part-look.mjs';
 import { compareSettings, faultsOf } from './lib/part-look-compare.mjs';
 import { REPO, assertMayWrite, blockRows, customCssOf, liveProductPath, patchBlock, readParts, readSavedBlock, templateIdOf } from './lib/part-look-run.mjs';
 import { draftProductSlugs } from './lib/template-live-address.mjs';
@@ -234,7 +234,8 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			total: blockRowsOf.length, withPart: withPart.length, withoutPart: blockRowsOf.length - withPart.length,
 			withoutPartButProperty: blockRowsOf.filter( ( r ) => ! r.css_element && r.css_property ).map( ( r ) => r.attr_name ),
 		};
-		const lookRows = blockRowsOf.filter( ( r ) => r.css_element && r.css_property && ! r.css_state );
+		// The rows the reader pairs (a current-state row read from its current element included).
+		const lookRows = lookRowsOf( blockRowsOf, spec );
 		const partNames = [ ...new Set( lookRows.map( ( r ) => r.css_element ) ) ];
 		const located = ( part ) => Object.values( reads[ part ] || {} ).some( ( l ) => l.length );
 		const result = {
