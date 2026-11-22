@@ -64,6 +64,16 @@
 			"template": "archive-product",
 			"basket": false,
 			"entryOf": "shop"
+		},
+		"confirmation": {
+			"_comment": "The order confirmation's order lines card (F-44): sgs/order-items' look read from the draft's lines and their totals row on the confirmation page the template-order-confirmation entry names (its draftIndex). Parts are keyed by the css_element of the block's rows; its thumbnail settings carry no css_element in the database, so they have no locator yet. The order page needs a real order to be seen, so the surface carries verify false: --verify reads, compares and writes it but opens no live page.",
+			"group": "orderitems",
+			"block": "sgs/order-items",
+			"pageRole": "order-confirmation",
+			"template": "order-confirmation",
+			"basket": false,
+			"entryOf": "template-order-confirmation",
+			"verify": false
 		}
 	},
 	"groups": {
@@ -2909,6 +2919,141 @@
 						}
 					},
 					"pick": "first"
+				}
+			}
+		},
+		"orderitems": {
+			"_comment": "An order line is the smallest element holding a currency amount and two or more pieces of words of its own (the item's name and its options), not a control; a totals row is a row whose direct children are words then an amount. A line's name and options are its outermost pieces of words (the draft's runtime draws each value as a span inside the words around it, so a span inside another piece of words in the line is that piece's, not a line of its own). The card holding the lines is read only for the gap between rows (list); its padding is the card container's, not the block's.",
+			"anchors": {
+				"lines": {
+					"from": "page",
+					"match": {
+						"tag": [
+							"div",
+							"li",
+							"tr",
+							"article"
+						],
+						"has": {
+							"text": "currency"
+						},
+						"hasMany": {
+							"match": {
+								"ownText": true,
+								"text": "words",
+								"control": false
+							},
+							"atLeast": 2
+						},
+						"lacks": {
+							"control": true
+						}
+					},
+					"smallest": true
+				},
+				"card": {
+					"from": "page",
+					"match": {
+						"holdsAnchor": "lines",
+						"has": {
+							"childText": [
+								"words",
+								"currency"
+							],
+							"lacksAnchor": "lines"
+						}
+					},
+					"smallest": true
+				}
+			},
+			"parts": {
+				"row": {
+					"sameAs": "lines"
+				},
+				"list": {
+					"from": "page",
+					"match": {
+						"parentOfAnchor": "lines"
+					},
+					"smallest": true
+				},
+				"itemName": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false,
+						"notInside": {
+							"ownText": true,
+							"text": "words",
+							"inAnchor": "lines"
+						}
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 0
+					}
+				},
+				"name": {
+					"sameAs": "itemName"
+				},
+				"itemMeta": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "words",
+						"control": false,
+						"notInside": {
+							"ownText": true,
+							"text": "words",
+							"inAnchor": "lines"
+						}
+					},
+					"perRoot": true,
+					"pick": {
+						"index": 1
+					}
+				},
+				"meta": {
+					"sameAs": "itemMeta"
+				},
+				"itemPrice": {
+					"from": "lines",
+					"match": {
+						"ownText": true,
+						"text": "currency"
+					},
+					"perRoot": true,
+					"pick": "first"
+				},
+				"price": {
+					"sameAs": "itemPrice"
+				},
+				"totals": {
+					"from": "card",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"lacksAnchor": "lines"
+					},
+					"pick": "last"
+				},
+				"total": {
+					"from": "card",
+					"match": {
+						"childText": [
+							"words",
+							"currency"
+						],
+						"lacksAnchor": "lines"
+					},
+					"pick": "last",
+					"rel": {
+						"childIndex": 1,
+						"deepest": true
+					}
 				}
 			}
 		}

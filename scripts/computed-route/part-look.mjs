@@ -2,7 +2,7 @@
 // Reads a client's shop look from its draft and says which settings of the Cart, Checkout, `sgs/account` and `sgs/cart` blocks it
 // would write (template-rework Task 4, Spec 48 FR-48-87).
 //
-//   node scripts/computed-route/part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|my-account-in] [--site <scratch copy>]
+//   node scripts/computed-route/part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|my-account-in|confirmation] [--site <scratch copy>]
 //                                             [--compare] [--write [--only <attr,attr>] [--dry-run]] [--out <dir>] [--headed]
 //
 // It serves the client's draft itself, opens each surface at 1440, 768 and 375, locates each part of the block by the structure
@@ -49,7 +49,7 @@ import { readTargets, siteUrl, targetOf } from './lib/site-targets.mjs';
 import { readLiveSignedIn, readSignedInParts, shootLiveSignedIn, signedInSeedOf } from './lib/part-look-signed-in.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'shop-chips', 'shop-sort', 'my-account-in' ];
+const SURFACES = [ 'cart', 'checkout', 'my-account', 'header', 'product', 'shop', 'shop-chips', 'shop-sort', 'my-account-in', 'confirmation' ];
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 const SELECTOR_TABLE = path.join( REPO, 'plugins', 'sgs-blocks', 'includes', 'woocommerce', 'commerce-look', 'selectors.json' );
 
@@ -257,7 +257,11 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 				result.compare = compareSettings( { writes: build.writes, settings: build.settings, saved: saved.attrs, lookAttrs: lookRows.map( ( r ) => r.attr_name ), site: snapshot } );
 			}
 		}
-		const base0 = verify || shots ? ( site ? siteUrl( targetOf( site, readTargets() ), REPO ) : null ) : null;
+		// A surface whose page needs what a run cannot open (the order confirmation shows only at a real order's address) is read,
+		// compared and written, never verified (its locator's `verify: false`).
+		const verifies = verify && false !== loc.verify;
+		verify && ! verifies && notes.push( `${ surface }: not verified (its page shows only at a real order's address); read, compared and written only` );
+		const base0 = verifies || shots ? ( site ? siteUrl( targetOf( site, readTargets() ), REPO ) : null ) : null;
 		const openerDrawn = Object.entries( group.parts ).some( ( [ name, p ] ) => [].concat( p.match?.shopPart ?? [] ).includes( OPENER_PART ) && located( name ) );
 		let productPath = null;
 		const pagePathOf = () => {
@@ -282,9 +286,9 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 		if ( loc.signedIn && verify && ! login ) {
 			throw new Error( `--verify on ${ surface } needs --login <user:pass> (the seeded customer)` );
 		}
-		if ( verify && shots && base0 && signedIn?.login ) {
+		if ( verifies && shots && base0 && signedIn?.login ) {
 			result.shots = { before: await shootLiveSignedIn( { base: base0, pagePath: pagePathOf(), login: signedIn.login, orderView: signedIn.orderView, dir: outDir, prefix: `${ surface }-before` } ) };
-		} else if ( verify && shots && base0 && ! loc.signedIn ) {
+		} else if ( verifies && shots && base0 && ! loc.signedIn ) {
 			result.shots = { before: path.join( outDir, `${ surface }-before-1440.png` ) };
 			await shootLiveSurface( { base: base0, pagePath: pagePathOf(), product: false === loc.basket || ! seed ? null : seedOf( fs.readFileSync( seed, 'utf8' ) ), file: result.shots.before } );
 		}
@@ -292,7 +296,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			const set = Object.fromEntries( build.writes.filter( ( w ) => ! only || only.includes( w.attr ) || only.includes( w.companionOf ) ).map( ( w ) => [ w.attr, w.value ] ) );
 			result.written = { site, count: Object.keys( set ).length, output: Object.keys( set ).length ? patchBlock( { site, postId: result.postId, block: loc.block, set, file: path.join( outDir, `patch-${ surface }.json` ), dryRun } ) : 'nothing to write on this surface' };
 		}
-		if ( verify ) {
+		if ( verifies ) {
 			const short = loc.block.split( '/' )[ 1 ];
 			const live = liveSelectorsFor( { parts: partNames, blockKey, table, map: liveMap, elements: blockKey ? null : blockElementsOf( REPO, short ), short, block: loc.block } );
 			const base = siteUrl( targetOf( site, readTargets() ), REPO );
@@ -347,7 +351,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	try {
 		const client = flag( '--client' );
 		if ( ! client ) {
-			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|my-account-in] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>] [--strict]] [--out <dir>] [--headed]' );
+			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|shop-chips|shop-sort|my-account-in|confirmation] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>] [--strict]] [--out <dir>] [--headed]' );
 		}
 		const surface = flag( '--surface' );
 		if ( surface && ! SURFACES.includes( surface ) ) {
