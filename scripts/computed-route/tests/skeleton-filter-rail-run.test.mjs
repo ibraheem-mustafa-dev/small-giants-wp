@@ -76,3 +76,17 @@ test( 'MUST FAIL: railPass leaves the draft\'s filter button out of the skeleton
 	assert.deepEqual( noNode.proposal, {} );
 	assert.deepEqual( noNode.run.run, [ 'Root/9#0' ] );
 } );
+
+// The handler is the moustache's contents with its spaces trimmed (lib/skeleton-filter-rail.mjs::handlerOf): a handler whose name
+// starts or ends with the letter s, written with or without the spaces, is the same handler.
+test( 'MUST FAIL: railToggle reads a handler named with a leading or trailing s, spaced or not, as one handler', () => {
+	const tight = ( h ) => `<button sc-camel-on-click="{{${ h }}}" data-dc-tpl="1">Filter</button>`;
+	const inv = { elements: [
+		px( 'Root/1#0', null, 'div', '<div>' ), px( 'Root/5#0', 'Root/1#0', 'button', tight( 'showFilters' ), [ 375 ] ),
+		px( 'Root/9#0', 'Root/1#0', 'aside', '<aside>', [ 1440 ] ),
+	], revealed: [ px( 'Root/11#0', 'Root/9#0', 'button', click( 'showFilters' ).replace( 'Filter {{ n }}', '×' ), [ 375 ] ) ] };
+	assert.deepEqual( railToggle( { inventory: inv, railKey: 'Root/9#0' } ), { key: 'Root/5#0' } );
+	// Negative control: a handler that differs only by its letters is another handler.
+	const other = { ...inv, elements: inv.elements.map( ( e ) => ( 'Root/5#0' === e.key ? px( e.key, e.parentKey, 'button', tight( 'howFilter' ), [ 375 ] ) : e ) ) };
+	assert.equal( railToggle( { inventory: other, railKey: 'Root/9#0' } ), null );
+} );

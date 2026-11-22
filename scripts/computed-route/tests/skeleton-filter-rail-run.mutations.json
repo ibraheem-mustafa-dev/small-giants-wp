@@ -13,5 +13,6 @@
 	{"file": "lib/skeleton-filter-rail.mjs", "find": "{ ...r, action: 'remove', rule: 'filterRail', reason: notes.at( -1 ) } : r )", "replace": "{ ...r, reason: notes.at( -1 ) } : r )", "why": "the button's row is not a removal"},
 	{"file": "lib/skeleton-filter-rail.mjs", "find": "run: [ key, ...extra ] } : null;", "replace": "run: [ key ] } : null;", "why": "the filter button's paint is not part of the run"},
 	{"file": "lib/skeleton-filter-rail.mjs", "find": "const node = toggle?.key ? walk( skeleton ).find( ( n ) => toggle.key === n.draftRef?.tpl ) : null;", "replace": "const node = toggle?.key ? walk( skeleton )[ 0 ] : null;", "why": "the first node of the tree is dropped, not the filter button's"},
-	{"file": "lib/skeleton-filter-rail.mjs", "find": "return node ? { id: 'filter-rail', block: node.name, at: key, run: [ key, ...extra ] } : null;", "replace": "return { id: 'filter-rail', block: node?.name, at: key, run: [ key, ...extra ] };", "why": "a rail with no node of its own still reports a run"}
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "return node ? { id: 'filter-rail', block: node.name, at: key, run: [ key, ...extra ] } : null;", "replace": "return { id: 'filter-rail', block: node?.name, at: key, run: [ key, ...extra ] };", "why": "a rail with no node of its own still reports a run"},
+	{"file": "lib/skeleton-filter-rail.mjs", "find": "replace( /^\\{\\{\\s*|\\s*\\}\\}$/g, '' )", "replace": "replace( /^{{s*|s*}}$/g, '' )", "why": "the handler's leading or trailing letter s is stripped as if it were a space"}
 ]

@@ -43,7 +43,7 @@ export const placeableFacets = ( facets ) => ( facets || [] ).filter( ( f ) => '
 // `inventory`: the served inventory (its `revealed` elements hold the rail's drawer view); `railKey`: the placed rail's element.
 // Returns { key } for the one such button, { notes } when several are (none is taken), or null.
 const CLICK = [ 'sc-camel-on-click', 'onClick' ];
-const handlerOf = ( e ) => CLICK.map( ( name ) => String( attr( e, name ) ).replace( /^{{s*|s*}}$/g, '' ).trim() ).find( Boolean ) ?? '';
+const handlerOf = ( e ) => CLICK.map( ( name ) => String( attr( e, name ) ).replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim() ).find( Boolean ) ?? '';
 export function railToggle( { inventory, railKey } ) {
 	const all = [ ...( inventory?.elements || [] ), ...( inventory?.revealed || [] ) ];
 	const byKey = new Map();
