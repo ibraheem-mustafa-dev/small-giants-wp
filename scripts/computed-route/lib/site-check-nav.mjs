@@ -304,15 +304,17 @@ export async function megaItems( page, { url, shoot } ) {
 }
 
 // In-page: marks the header's visible burger (MARK="burger") and its drawer (MARK="drawer"): a header button whose
-// aria-controls names a <dialog>, a role=dialog element or a drawer. { burger, drawer, drawerAnywhere, controls, closer }.
+// aria-controls names the navigation drawer, the <dialog> that prints `data-sgs-nav-modality` (sgs/nav-drawer's render.php
+// is the only block that does; the basket's drawer dialog shares `data-sgs-nav-drawer` and a drawer-named class but carries
+// `data-sgs-cart-panel` and no modality, so it is never taken for the menu's). { burger, drawer, drawerAnywhere, controls, closer }.
 export function markDrawerInPage( mark ) {
 	document.querySelectorAll( `[${ mark }]` ).forEach( ( e ) => e.removeAttribute( mark ) );
 	const header = document.querySelector( '.sgs-site-header' ) || document.querySelector( 'header' ) || document.body;
-	const isDrawer = ( el ) => el && ( 'DIALOG' === el.tagName || 'dialog' === el.getAttribute( 'role' ) || /drawer/i.test( el.className ) );
+	const isDrawer = ( el ) => !! el && 'DIALOG' === el.tagName && el.hasAttribute( 'data-sgs-nav-modality' );
 	const visible = ( el ) => ( el.checkVisibility ? el.checkVisibility( { checkVisibilityCSS: true, checkOpacity: true } ) : !! el.offsetParent ) && el.getBoundingClientRect().width > 0;
 	const candidates = [ ...header.querySelectorAll( 'button[aria-controls]' ) ].filter( ( b ) => isDrawer( document.getElementById( b.getAttribute( 'aria-controls' ) ) ) );
 	const burger = candidates.find( visible );
-	const drawerAnywhere = candidates.length > 0 || !! document.querySelector( 'dialog[class*="drawer"], [class*="nav-drawer"][role="dialog"]' );
+	const drawerAnywhere = candidates.length > 0 || !! document.querySelector( 'dialog[data-sgs-nav-modality]' );
 	if ( ! burger ) {
 		return { burger: false, drawer: false, drawerAnywhere, controls: candidates[ 0 ]?.getAttribute( 'aria-controls' ) ?? null };
 	}

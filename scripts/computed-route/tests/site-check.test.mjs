@@ -5,7 +5,7 @@
 import test, { before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadChromium } from '../lib/fill-read.mjs';
-import { MARK, menuItems, megaItems, drawerItem, readHeaderLinksInPage } from '../lib/site-check-nav.mjs';
+import { MARK, menuItems, megaItems, drawerItem, markDrawerInPage, readHeaderLinksInPage } from '../lib/site-check-nav.mjs';
 import { readPartsInPage, modalItem, flowItem, formItem, wooItem } from '../lib/site-check-parts.mjs';
 import { verdictOf, parseOnly, checkRecord, renderMarkdown, exitCodeOf } from '../lib/site-check-report.mjs';
 import { pageTargets, flowsClient, rowsFor } from '../lib/site-check-site.mjs';
@@ -30,7 +30,7 @@ async function pageWith( html, width = 1440 ) {
 const drawerHtml = ( works ) => `
 	<header class="sgs-site-header"><nav class="sgs-nav-bar-menu"><a href="/shop/">Shop</a></nav>
 	<button class="burger" aria-controls="sgs-nav-drawer" aria-expanded="false">Menu</button></header>
-	<dialog id="sgs-nav-drawer" class="sgs-nav-drawer"><button class="sgs-nav-drawer__close">Close</button><a href="/shop/">Shop</a></dialog>
+	<dialog id="sgs-nav-drawer" class="sgs-nav-drawer" data-sgs-nav-drawer data-sgs-nav-modality="modal"><button class="sgs-nav-drawer__close">Close</button><a href="/shop/">Shop</a></dialog>
 	${ works ? `<script>
 		const b = document.querySelector( '.burger' ), d = document.getElementById( 'sgs-nav-drawer' );
 		b.onclick = () => { d.showModal(); b.setAttribute( 'aria-expanded', 'true' ); };
@@ -109,6 +109,52 @@ test( 'MUST FAIL: a drawer that opens from its burger and closes by its close bu
 	await page.close();
 	assert.equal( item.status, 'pass', item.error );
 	assert.match( item.detail, /closed by the close button/ );
+} );
+
+// The basket's drawer is a <dialog> with a drawer-named class and `data-sgs-nav-drawer` too (includes/helpers-cart-panel.php), but it
+// carries `data-sgs-cart-panel` and no `data-sgs-nav-modality`, which only sgs/nav-drawer prints.
+const basketHtml = ( works ) => `
+	<button class="basket" aria-controls="sgs-cart-drawer" aria-expanded="false">Basket</button>
+	<dialog id="sgs-cart-drawer" class="sgs-cart__panel sgs-cart__panel--drawer" data-sgs-nav-drawer data-sgs-cart-panel data-sgs-cart-mode="drawer"><button class="sgs-cart__panel-close">Close</button></dialog>
+	${ works ? `<script>
+		const b = document.querySelector( '.basket' ), d = document.getElementById( 'sgs-cart-drawer' );
+		b.onclick = () => { d.showModal(); b.setAttribute( 'aria-expanded', 'true' ); };
+		d.querySelector( 'button' ).onclick = () => { d.close(); b.setAttribute( 'aria-expanded', 'false' ); };
+	</script>` : '' }`;
+
+test( 'MUST FAIL: the basket drawer is not the menu drawer (a header with only a basket has no drawer; with both, the burger is the one of the menu)', async () => {
+	const only = await pageWith( `<header class="sgs-site-header"><nav><a href="/shop/">Shop</a></nav>${ basketHtml( true ).split( '<dialog' )[ 0 ] }</header><dialog${ basketHtml( true ).split( '<dialog' )[ 1 ] }`, 375 );
+	const none = await drawerItem( only, { width: 375, url: BASE, shoot } );
+	await only.close();
+	assert.equal( none.status, 'n-a', 'a basket button in the header is no burger, and its dialog no menu drawer' );
+	const both = await pageWith( `<header class="sgs-site-header"><nav><a href="/shop/">Shop</a></nav><button class="basket" aria-controls="sgs-cart-drawer" aria-expanded="false">Basket</button>
+		<button class="burger" aria-controls="sgs-nav-drawer" aria-expanded="false">Menu</button></header>
+		<dialog id="sgs-cart-drawer" class="sgs-cart__panel sgs-cart__panel--drawer" data-sgs-nav-drawer data-sgs-cart-panel><button>Close</button></dialog>
+		<dialog id="sgs-nav-drawer" class="sgs-nav-drawer" data-sgs-nav-drawer data-sgs-nav-modality="modal"><button class="sgs-nav-drawer__close">Close</button></dialog>
+		<script>
+			for ( const [ b, d ] of [ [ '.basket', 'sgs-cart-drawer' ], [ '.burger', 'sgs-nav-drawer' ] ] ) {
+				const btn = document.querySelector( b ), dlg = document.getElementById( d );
+				btn.onclick = () => { dlg.showModal(); btn.setAttribute( 'aria-expanded', 'true' ); };
+				dlg.querySelector( 'button' ).onclick = () => { dlg.close(); btn.setAttribute( 'aria-expanded', 'false' ); };
+			}
+		</script>`, 375 );
+	const marked = await both.evaluate( markDrawerInPage, MARK );
+	const item = await drawerItem( both, { width: 375, url: BASE, shoot } );
+	await both.close();
+	assert.equal( marked.controls, 'sgs-nav-drawer' );
+	assert.equal( item.status, 'pass', item.error );
+	assert.match( item.selector, /sgs-nav-drawer/ );
+} );
+
+test( 'negative control: a menu drawer that prints its modality marker is found, and a page with only a basket drawer reports no drawer anywhere', async () => {
+	const nav = await pageWith( drawerHtml( true ), 375 );
+	const found = await nav.evaluate( markDrawerInPage, MARK );
+	await nav.close();
+	assert.deepEqual( [ found.burger, found.drawer, found.drawerAnywhere, found.controls ], [ true, true, true, 'sgs-nav-drawer' ] );
+	const basket = await pageWith( `<header class="sgs-site-header"><nav><a href="/shop/">Shop</a></nav></header>${ basketHtml( false ) }`, 375 );
+	const none = await basket.evaluate( markDrawerInPage, MARK );
+	await basket.close();
+	assert.equal( none.drawerAnywhere, false );
 } );
 
 test( 'MUST FAIL: a drawer with no visible burger fails at the phone width and is n-a above it', async () => {

@@ -5,7 +5,7 @@
 // - a link on a page to the anchor of a modal or flow row opens something: the page holds a frame with that anchor, else the
 //   link is a dead opener and fails, as does a link to any other anchor that no frame and no element of the page holds;
 // - a parity walk whose live element is absent (the surface's root, shown by the draft, never found on the live page in a run)
-//   fails instead of passing (site-run.mjs's walk step).
+//   or whose run was refused fails instead of passing (site-run.mjs's walk step).
 import fs from 'fs';
 import { OPENABLE } from './intake-pagemap-openers.mjs';
 
@@ -49,11 +49,17 @@ export function deadOpeners( rows, page ) {
 		.map( ( a ) => ( { status: 'fail', subject: `opener #${ a } on ${ page.key }`, url: page.url, error: targets.has( a ) ? `a link opens the ${ OPENABLE[ targets.get( a ).postType ] } ${ a }, and the page holds no frame with that anchor` : `a link points at #${ a }, and the page holds no frame with that anchor and no element with that id or name` } ) );
 }
 
-// Why a walker report (scripts/parity/draft-live-walk.mjs report.json) fails because its live element is absent, or null.
-// Only pairs the draft shows in the run count (a state the draft does not show at that width is no absence). A run fails when
-// the surface's first such pair, its root, is missing on the live side; a missing child is a parity row of the report.
+// Why a walker report (scripts/parity/draft-live-walk.mjs report.json) fails, or null. A run the walker refused (a side
+// never reached its page's rest, lib/state-rest.mjs::unmeasuredRun: `run.refused`, its only pair the `(state)` row) measured
+// nothing, so it fails the walk rather than passing as a run with no differences. Otherwise only pairs the draft shows in the
+// run count (a state the draft does not show at that width is no absence): a run fails when the surface's first such pair,
+// its root, is missing on the live side; a missing child is a parity row of the report.
 export function walkAbsent( report ) {
 	for ( const run of report?.runs || [] ) {
+		if ( run.refused ) {
+			const why = [ run.refused.draft && `draft ${ run.refused.draft }`, run.refused.live && `live ${ run.refused.live }` ].filter( Boolean ).join( '; ' );
+			return `run "${ run.state }" at ${ run.width } was refused, not measured (${ why || 'a side was not at rest' })`;
+		}
 		const root = Object.entries( run.pairs || {} ).find( ( [ name, p ] ) => ! /^\(/.test( name ) && p?.draft && ! p.draft.missing );
 		if ( root?.[ 1 ]?.live?.missing ) {
 			return `the live page has no element for the surface's root (${ root[ 0 ] }) in run "${ run.state }" at ${ run.width }`;

@@ -47,14 +47,17 @@ export function liveBlocks( page, prefix ) {
 		const parents = {};
 		document.querySelectorAll( `[class*="${ pre }"]` ).forEach( ( el ) => {
 			const r = refOf( el );
-			if ( r && ! ( r in parents ) ) {
+			const b = el.getBoundingClientRect();
+			// A mega post renders twice (the bar's panel and the drawer's accordion row, includes/nav-menu-markup.php), so one ref
+			// can sit on two elements and only one shows at this width: the block's box and parent are both read from the first
+			// copy that shows (the first copy at all when none does), never box from one copy and parent from another.
+			if ( r && ( ! ( r in parents ) || ( b.width > 0 && ! boxes[ r ] ) ) ) {
 				let a = el.parentElement;
 				while ( a && ! refOf( a ) ) {
 					a = a.parentElement;
 				}
 				parents[ r ] = a ? refOf( a ) : null;
 			}
-			const b = el.getBoundingClientRect();
 			const cs = getComputedStyle( el );
 			const px = ( p ) => parseFloat( cs[ p ] ) || 0;
 			const run = textRun( el, false );

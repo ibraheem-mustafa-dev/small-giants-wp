@@ -95,6 +95,16 @@ test( 'MUST FAIL: a walk whose live root, or every live element, is absent fails
 	assert.equal( walkAbsent( null ), null );
 } );
 
+// A run the walker refused (lib/state-rest.mjs::unmeasuredRun) holds only its `(state)` row, so it has no root to find missing.
+test( 'MUST FAIL: a refused run fails the walk, whichever side was not at rest; a run with differences or a settled untriggered run does not', () => {
+	const refused = ( who ) => ( { state: 'open', width: 375, refused: who, pairs: { '(state)': { diffs: [ { kind: 'state', key: 'not-at-rest' } ] } } } );
+	assert.match( walkAbsent( { runs: [ refused( { draft: null, live: 'the page never settled' } ) ] } ), /run "open" at 375 was refused, not measured \(live the page never settled\)/ );
+	assert.match( walkAbsent( { runs: [ run( { 'gen-x-0': { draft: shown, live: shown } } ), refused( { draft: 'the draft never settled', live: null } ) ] } ), /refused, not measured \(draft the draft never settled\)/, 'a later run counts' );
+	// Negative controls: differences are parity rows, and a run both sides found nothing to trigger in is settled, not refused.
+	assert.equal( walkAbsent( { runs: [ run( { 'gen-x-0': { draft: shown, live: shown, diffs: [ { key: 'color' } ] } } ) ] } ), null );
+	assert.equal( walkAbsent( { runs: [ { state: 'open', width: 375, untriggered: { draft: 'x', live: 'x' }, pairs: { '(state)': { diffs: [ { key: 'nothing-to-trigger' } ] } } } ] } ), null );
+} );
+
 test( 'MUST FAIL: the walk step fails on an absent live element and passes its answer on otherwise, and site-run uses it', () => {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'walk-' ) );
 	const file = path.join( dir, 'report.json' );
