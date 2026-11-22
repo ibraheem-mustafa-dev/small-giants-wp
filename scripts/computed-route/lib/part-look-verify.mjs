@@ -252,7 +252,7 @@ export async function verifySurface( { buildInputs, built, readLive, patch, read
 		];
 		failures.push( `the draft located ${ draftLocated.length } part${ 1 === draftLocated.length ? '' : 's' } (${ draftLocated.join( ', ' ) }) and the live read compared no part and property pair${ reasons.length ? `: ${ reasons.join( '; ' ) }` : '' }` );
 	}
-	return { stillDiffers, kept, takenBack, noEffect, noSetting, droppedNoSetting: dropped, failures, counts: { compared: cmp1.compared.size, matched: cmp1.matched.size, differs: cmp1.differs.length, written: kept.length, takenBack: takenBack.length, stillShown: stillShown.length, noSettingBefore: built.noSetting.length, noSettingAfter: noSetting.filter( ( n ) => false !== n.liveRead ).length, partsWithSettings: partsWithSettings( rows, buildInputs.locators ).length, notVerified: nNot }, notVerified, allMatch: 0 === nNot && 0 === cmp1.differs.length && 0 === stillShown.length };
+	return { stillDiffers, kept, takenBack, noEffect, noSetting, droppedNoSetting: dropped, failures, counts: { compared: cmp1.compared.size, matched: cmp1.matched.size, differs: cmp1.differs.length, written: kept.length, takenBack: takenBack.length, stillShown: stillShown.length, noSettingBefore: built.noSetting.length, noSettingAfter: noSetting.filter( ( n ) => false !== n.liveRead ).length, partsWithSettings: partsWithSettings( rows, buildInputs.locators ).length, notVerified: nNot }, notVerified, allMatch: 0 === nNot && cmp1.compared.size > 0 && 0 === cmp1.differs.length && 0 === stillShown.length };
 }
 
 // ---- the browser effect -------------------------------------------------------------------------------------------------

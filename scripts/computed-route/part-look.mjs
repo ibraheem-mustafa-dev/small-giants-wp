@@ -18,6 +18,7 @@
 //              nothing) and reports what still differs. It needs a `local-mediatest-*` --site; set SGS_SECRETS_ROOT in a worktree.
 //              Every part with settings it did not compare (no locator, no draft element, no live selector or element, no look read
 //              on both sides) is listed as not verified, first, and the surface is a full match only when none is and nothing differs.
+//              --strict exits 1 when any verified surface is not a full match (by default the verdict is printed and the run passes).
 //              A surface whose draft located parts and whose live read compared none of them fails: the report is written, each reason is
 //              printed as VERIFY FAILED and the exit code is 1. A header read whose basket panel stays shut throws (exit 2).
 //   my-account-in  the account's signed-in views (orders, an order's page, addresses, details): the draft is signed in on its own
@@ -321,6 +322,12 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 	return { outDir, totals, report, failures, refusals };
 }
 
+// The surfaces a --strict verify fails: every verified surface that is not a full match (a part with settings not verified, a pair
+// that still differs, a switch whose part still shows, or nothing compared at all), each as one line with its counts.
+export function strictFailuresOf( surfaces ) {
+	return Object.values( surfaces || {} ).filter( ( s ) => s.verify && ! s.verify.allMatch ).map( ( s ) => `${ s.surface }: not a full match (${ s.verify.counts.notVerified } of ${ s.verify.counts.partsWithSettings } parts with settings not verified, ${ s.verify.counts.differs } pairs still differ, ${ s.verify.counts.compared } pairs compared)` );
+}
+
 // `--login user:pass`: the seeded customer the signed-in views are read as ({ user, pass }); the password may hold a colon.
 export function loginOf( text ) {
 	if ( ! text ) {
@@ -339,7 +346,7 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 	try {
 		const client = flag( '--client' );
 		if ( ! client ) {
-			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|my-account-in] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>]] [--out <dir>] [--headed]' );
+			throw new Error( 'usage: part-look.mjs --client <slug> [--surface cart|checkout|my-account|header|product|shop|my-account-in] [--site <scratch copy>] [--compare] [--write [--only <attr,attr>] [--dry-run]] [--verify --seed <seed-out.json> [--login <user:pass>] [--strict]] [--out <dir>] [--headed]' );
 		}
 		const surface = flag( '--surface' );
 		if ( surface && ! SURFACES.includes( surface ) ) {
@@ -358,7 +365,10 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 		if ( r.failures.length ) {
 			r.failures.forEach( ( f ) => console.error( `VERIFY FAILED ${ f }` ) );
 		}
-		if ( r.failures.length || r.refusals.length ) {
+		// --strict: a verify that is not a full match fails the run (by default it is reported and the run passes).
+		const strict = argv.includes( '--strict' ) ? strictFailuresOf( r.report.surfaces ) : [];
+		strict.forEach( ( f ) => console.error( `STRICT ${ f }` ) );
+		if ( r.failures.length || r.refusals.length || strict.length ) {
 			process.exitCode = 1;
 		}
 	} catch ( e ) {

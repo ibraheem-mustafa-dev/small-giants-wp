@@ -1,14 +1,14 @@
 [
 	{
 		"file": "lib/part-look-verify.mjs",
-		"find": "allMatch: 0 === nNot && 0 === cmp1.differs.length && 0 === stillShown.length };",
-		"replace": "allMatch: 0 === cmp1.differs.length && 0 === stillShown.length };",
+		"find": "allMatch: 0 === nNot && cmp1.compared.size > 0 && 0 === cmp1.differs.length && 0 === stillShown.length };",
+		"replace": "allMatch: cmp1.compared.size > 0 && 0 === cmp1.differs.length && 0 === stillShown.length };",
 		"why": "a verify with unpaired parts reads as a full match"
 	},
 	{
 		"file": "lib/part-look-verify.mjs",
-		"find": "allMatch: 0 === nNot && 0 === cmp1.differs.length && 0 === stillShown.length };",
-		"replace": "allMatch: 0 === nNot && 0 === stillShown.length };",
+		"find": "allMatch: 0 === nNot && cmp1.compared.size > 0 && 0 === cmp1.differs.length && 0 === stillShown.length };",
+		"replace": "allMatch: 0 === nNot && cmp1.compared.size > 0 && 0 === stillShown.length };",
 		"why": "a pair that differs reads as a full match"
 	},
 	{
@@ -76,5 +76,23 @@
 		"find": "the draft states ${ property } as ${ statedSize( property, s )?.text || s( property ) || 'nothing' } at 1440",
 		"replace": "the draft states ${ property } as ${ s( property ) || 'nothing' } at 1440",
 		"why": "the reason names the computed value, not what the draft states"
+	},
+	{
+		"file": "lib/part-look-verify.mjs",
+		"find": "allMatch: 0 === nNot && cmp1.compared.size > 0 && 0 === cmp1.differs.length",
+		"replace": "allMatch: 0 === nNot && 0 === cmp1.differs.length",
+		"why": "a verify that compared nothing is a full match"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": ".filter( ( s ) => s.verify && ! s.verify.allMatch )",
+		"replace": ".filter( ( s ) => s.verify )",
+		"why": "--strict fails a full match too"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": ".filter( ( s ) => s.verify && ! s.verify.allMatch )",
+		"replace": ".filter( ( s ) => ! s.verify?.allMatch )",
+		"why": "--strict fails a surface read without a verify"
 	}
 ]

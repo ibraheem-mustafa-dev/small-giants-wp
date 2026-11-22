@@ -11,6 +11,7 @@ import { READ_PROPS, buildLook } from '../lib/fill-part-look.mjs';
 import { compareSettings } from '../lib/part-look-compare.mjs';
 import { reportMarkdown } from '../lib/part-look-report.mjs';
 import { verifySurface } from '../lib/part-look-verify.mjs';
+import { strictFailuresOf } from '../part-look.mjs';
 
 const BASE = Object.fromEntries( READ_PROPS.map( ( p ) => [ p, /-width$|^margin|^padding|radius$|-gap$/.test( p ) ? '0px' : '' ] ) );
 Object.assign( BASE, { color: 'rgb(58, 42, 34)', 'background-color': 'rgba(0, 0, 0, 0)', 'font-size': '16px', 'line-height': '24px', 'letter-spacing': 'normal', 'font-style': 'normal', 'text-transform': 'none', 'text-decoration-line': 'none', 'text-align': 'start', 'box-shadow': 'none', display: 'block', 'border-top-style': 'none', 'border-right-style': 'none', 'border-bottom-style': 'none', 'border-left-style': 'none' } );
@@ -101,4 +102,22 @@ test( 'negative control: a part the draft draws only on narrower devices is stil
 	assert.equal( narrowUnstated.settings.aWidth.code, 'absent', 'a part drawn only on a phone, stating no size, is absent at 1440, not unreadable' );
 	const never = buildLook( inputs( rows, loc, {} ) );
 	assert.equal( never.settings.aWidth.code, 'unpaired' );
+} );
+
+test( 'MUST FAIL: a verify that compared nothing, with no part with settings, is no full match', async () => {
+	const v = await verify( { rows: [], locators: { anchors: {}, parts: {} }, reads: {}, live: {}, selectors: {} } );
+	assert.equal( v.counts.partsWithSettings, 0 );
+	assert.equal( v.allMatch, false, 'no vacuous truth' );
+} );
+
+test( 'MUST FAIL: --strict fails each verified surface that is not a full match, with its counts', async () => {
+	const partial = await verify( { live: { a: all( {} ) }, selectors: { a: '.a', e: '.e' }, selectorsNone: { d: 'none' } } );
+	const lines = strictFailuresOf( { checkout: { surface: 'checkout', verify: partial } } );
+	assert.deepEqual( lines, [ 'checkout: not a full match (4 of 5 parts with settings not verified, 0 pairs still differ, 16 pairs compared)' ] );
+} );
+
+test( 'negative control: --strict passes a full match and a surface read without a verify', async () => {
+	const rows = [ row( 'aColour', 'color', 'a' ) ];
+	const full = await verify( { rows, locators: { anchors: {}, parts: { a: { from: 'page', match: {} } } }, reads: { a: all( {} ) }, live: { a: all( {} ) }, selectors: { a: '.a' } } );
+	assert.deepEqual( strictFailuresOf( { cart: { surface: 'cart', verify: full }, shop: { surface: 'shop' } } ), [] );
 } );
