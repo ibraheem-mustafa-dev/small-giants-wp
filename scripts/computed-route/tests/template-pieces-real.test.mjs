@@ -132,8 +132,8 @@ test( 'MUST FAIL: Mama\'s order confirmation through the pass: one sgs/order-ite
 	assert.equal( number.length, 1 );
 	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
 	assert.deepEqual( placedLint( tree, got.tree, openDb() ), [] );
-	// What no order key holds is a site-supplied fact, bound and noted, when it reads the order; the eyebrow that picks fixed words by the order stays a problem row (as the order builder's own test proves).
-	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'acctEyebrow' ] );
+	// What no order key holds is a site-supplied fact, bound and noted, when it reads the order; the eyebrow that picks fixed words by the order stands once per phrase with its rule (F-12), so no problem row is left.
+	assert.deepEqual( got.problems, [] );
 	assert.equal( got.notes.filter( ( n ) => /site-supplied fact/.test( n ) ).length, 3 );
 } );
 

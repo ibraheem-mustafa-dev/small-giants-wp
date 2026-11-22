@@ -104,7 +104,7 @@ const keyOf = ( record, tag, words = null ) => Object.keys( record.elements ).fi
 
 // The database rows the order builder reads, planted (a block's words and address settings, the Show-to setting, the
 // order-items settings).
-const RULES = JSON.stringify( [ 'none', 'order-owner', 'order-has-gift', 'order-no-gift', 'order-guest', 'order-viewable' ] );
+const RULES = JSON.stringify( [ 'none', 'order-owner', 'order-has-gift', 'order-no-gift', 'order-guest', 'order-viewable', 'order-not-viewable', 'order-account-created', 'order-account-existing', 'order-collect', 'order-delivery' ] );
 const ROWS = [
 	...[ 'sgs/text', 'sgs/container', 'sgs/button', 'sgs/heading', 'sgs/order-items' ].map( ( b ) => ( { block_slug: b, attr_name: 'sgsConditionLoggedIn', attr_type: 'string', role: 'behaviour', enum_values: RULES } ) ),
 	{ block_slug: 'sgs/text', attr_name: 'text', attr_type: 'string', role: 'text-content' },
@@ -408,7 +408,10 @@ test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift not
 	assert.equal( ( s.match( /"name":"sgs\/order-items"/g ) || [] ).length, 1 );
 	const binds = got.placed.filter( ( p ) => p.key ).map( ( p ) => `${ p.block } ${ p.attribute } ${ p.key } ${ p.format ?? '' }`.trim() );
 	assert.deepEqual( binds, [ 'sgs/text text number Order %s. We’ve emailed your receipt, and you’ll get a tracking link as soon as it’s posted.', 'sgs/text text gift_to Dear %s,', 'sgs/text text gift_message', 'sgs/button url view_url', 'sgs/text text fact:bake_arrive Baking on {fact:bake_date} · with you from %s', 'sgs/text text fact:bake_date Zainab bakes it fresh on %s' ] );
-	assert.deepEqual( got.placed.filter( ( p ) => p.rule ).map( ( p ) => `${ p.at } ${ p.rule }` ), [ 'Confirmation/42 order-has-gift', 'Confirmation/49 order-no-gift', 'Confirmation/55 order-owner', 'Confirmation/61 order-guest', 'Confirmation/14 order-viewable', 'Confirmation/18 order-viewable', 'Confirmation/27 order-viewable', 'Confirmation/29 order-viewable' ] );
+	assert.deepEqual( got.placed.filter( ( p ) => p.rule ).map( ( p ) => `${ p.at } ${ p.rule }` ), [ 'Confirmation/42 order-has-gift', 'Confirmation/49 order-no-gift', 'Confirmation/55 order-owner', 'Confirmation/61 order-guest', 'Confirmation/14 order-viewable', 'Confirmation/18 order-viewable', 'Confirmation/27 order-viewable', 'Confirmation/57 order-account-created', 'Confirmation/57 order-account-existing', 'Confirmation/29 order-viewable' ] );
+	// The eyebrow chosen by createAccount stands once per phrase in the view-order card, each with its account rule (F-12).
+	const eyebrows = nodesIn( got.tree ).filter( ( n ) => 'Root/57#0' === n.draftRef?.tpl ).map( ( n ) => `${ n.name } ${ n.attributes.content } | ${ n.attributes.sgsConditionLoggedIn }` );
+	assert.deepEqual( eyebrows, [ 'sgs/heading your account is ready | order-account-created', 'sgs/heading all in one place | order-account-existing' ] );
 	// The "What’s coming" card (the title and the order lines) is the one container ruled for the lines: it is no empty box under a wrong key.
 	assert.equal( find( got.tree, 'Root/29#0' ).attributes.sgsConditionLoggedIn, 'order-viewable' );
 	assert.equal( find( got.tree, 'Root/28#0' ).attributes.sgsConditionLoggedIn, undefined );
@@ -416,23 +419,41 @@ test( "Mama's confirmation: one sgs/order-items, the number, gift name, gift not
 	assert.deepEqual( checkPieces( { key: 'order-confirmation', tree: got.tree, data: loadPieces() } ), [] );
 	// What no key holds: the bake and arrival dates (one block, one binding) and the step that reads the bake date (the second step
 	// only) are facts the site supplies, each listed for the owner. The eyebrow chosen by createAccount is no fact: it picks one of
-	// two fixed phrases by whether the order made an account, which no Show-to rule of the order says, so it stays a problem row.
-	assert.deepEqual( got.problems.map( ( p ) => /\{\{ ([\w.]+) \}\}/.exec( p )?.[ 1 ] ), [ 'acctEyebrow' ] );
+	// two fixed phrases by whether the order made an account, so it is split (above) and no problem row is left.
+	assert.deepEqual( got.problems, [] );
 	assert.deepEqual( got.notes.filter( ( n ) => /site-supplied fact/.test( n ) ).map( ( n ) => /site-supplied fact (\S+): \{\{ ([\w.]+) \}\}/.exec( n ).slice( 1 ).join( ' ' ) ), [ 'fact:bake_arrive arrive', 'fact:bake_date bakeDate', 'fact:bake_date s.d' ] );
 	assert.equal( find( got.tree, 'Root/27#1' ).attributes.metadata.bindings.text.args.key, 'fact:bake_date' );
 	assert.deepEqual( [ 'Root/27#0', 'Root/27#2', 'Root/27#3' ].map( ( t ) => find( got.tree, t ).attributes.metadata ), [ undefined, undefined, undefined ] );
 	// The draft's other blocks are kept: only the line row's nodes and the total row's went, for one block.
 	const refs = ( t ) => JSON.stringify( t ).match( /"tpl":"[^"]+"/g ).map( ( x ) => x.slice( 7, -1 ) );
 	assert.deepEqual( refs( tree ).filter( ( x ) => ! refs( got.tree ).includes( x ) ), [ 'Root/32#0', 'Root/34#0', 'Root/35#0', 'Root/36#0', 'Root/37#0', 'Root/38#0', 'Root/39#0', 'Root/40#0' ] );
-	assert.equal( refs( got.tree ).length, refs( tree ).length - 8 );
+	// Eight nodes went for one sgs/order-items, and the eyebrow stands twice.
+	assert.equal( refs( got.tree ).length, refs( tree ).length - 8 + 1 );
 } );
 
 test( "Eye Care's confirmation: the reference written as fixed words equals the id of the order its order action creates, so the number is bound with the words around it", () => {
 	const factRecord = JSON.parse( fs.readFileSync( path.join( FIX, 'eye-care-done-facts.json' ), 'utf8' ) );
 	const tree = JSON.parse( fs.readFileSync( path.join( FIX, 'eye-care-confirmation-skeleton.json' ), 'utf8' ) );
-	const got = placePieces( { key: 'order-confirmation', tree, data: loadPieces(), ctx: { factRecord, rootComponent: 'Eye Care Birmingham', handoffDir: path.join( REPO, 'sites', 'eye-care-ward-end', 'handoff' ), db: openDb() }, builders: { order: { place } } } );
+	const run = ( t ) => placePieces( { key: 'order-confirmation', tree: t, data: loadPieces(), ctx: { factRecord, rootComponent: 'Eye Care Birmingham', handoffDir: path.join( REPO, 'sites', 'eye-care-ward-end', 'handoff' ), db: openDb() }, builders: { order: { place } } } );
+	// The skeleton made before the data branch reader read the order's state holds neither account branch: each is a problem row.
+	const before = run( tree );
+	assert.deepEqual( before.problems.map( ( p ) => /(the branch \S+ \S+ \S+|\{\{ \w+ \}\})/.exec( p.replace( 'order-confirmation: ', '' ) )?.[ 1 ] ), [ 'the branch Eye Care Birmingham/847', 'the branch Eye Care Birmingham/851', '{{ doneAccountNote }}' ] );
+	// The skeleton the branch reader's inventory gives (lib/skeleton-data-branches.mjs, offline on the committed draft): the account
+	// note and View my orders are in it, and every order value and branch is placed.
+	const got = run( JSON.parse( fs.readFileSync( path.join( FIX, 'eye-care-confirmation-branches-skeleton.json' ), 'utf8' ) ) );
 	assert.deepEqual( got.problems, [] );
-	assert.deepEqual( got.placed[ 0 ], { id: 'order-number', block: 'sgs/heading', at: 'Eye Care Birmingham/845', attribute: 'content', key: 'number', format: 'Thank you — order %s.' } );
+	assert.deepEqual( got.placed.find( ( p ) => p.key ), { id: 'order-number', block: 'sgs/heading', at: 'Eye Care Birmingham/845', attribute: 'content', key: 'number', format: 'Thank you — order %s.' } );
+	// F-12 and F-13: the note chosen by collection or delivery, and the account note chosen by whether the order made the account,
+	// stand once per phrase with their rules; View my orders shows only to the order's owner.
+	const main = got.tree.find( ( n ) => 'Root/843#0' === n.draftRef?.tpl );
+	const row = ( n ) => `${ n.draftRef.tpl } ${ n.attributes.sgsConditionLoggedIn ?? '' } ${ ( n.attributes.text ?? n.attributes.label ?? '' ).slice( 0, 24 ) }`.trim();
+	assert.deepEqual( nodesIn( [ main ] ).filter( ( n ) => [ 'Root/846#0', 'Root/848#0', 'Root/852#0' ].includes( n.draftRef?.tpl ) ).map( row ), [
+		"Root/846#0 order-collect I'll WhatsApp you as soo",
+		'Root/846#0 order-delivery Confirmation is on its w',
+		'Root/848#0 order-account-created Your account is set up.',
+		'Root/848#0 order-account-existing It is saved in My accoun',
+		'Root/852#0 order-owner View my orders',
+	] );
 	assert.ok( got.notes.some( ( n ) => /"EC-10482" as fixed words in <h1> Eye Care Birmingham\/845; they equal the id of the record the draft's order action creates/.test( n ) ) );
 } );
 
@@ -747,4 +768,82 @@ test( 'MUST FAIL: the order lines piece reports the draft elements of the nodes 
 	const none = empty.placed.find( ( p ) => 'sgs/order-items' === p.block );
 	assert.ok( none, 'the block is still placed, in the loop container' );
 	assert.equal( none.run, undefined );
+} );
+
+// F-12: a value choosing one of two fixed phrases by one fact of the order becomes one block per phrase, each with its Show-to
+// rule (data/order-facts.json `choices`). A planted draft: an account eyebrow chosen by whether the order made an account (the
+// branch shows it only on an account order), collection or delivery words chosen by the order's method (and its negation), and
+// two choices no choice fits.
+const CHOICE_TEMPLATE = `<main><section><h1>Thanks, order {{ no }}</h1>
+<div><sc-for list="{{ items }}" as="it"><div><span>{{ it.qty }} × {{ it.name }}</span><b>{{ it.total }}</b></div></sc-for></div>
+<sc-if value="{{ hasAcct }}"><p>{{ eyebrow }}</p></sc-if>
+<p>{{ how }}</p><p>{{ how2 }}</p><p>{{ how3 }}</p><p>{{ back }}</p><p>{{ odd }}</p><p>{{ made }}</p>
+</section></main>`;
+const CHOICE_LOGIC = `class Component extends DCLogic {
+  renderVals() {
+    const M = window.STORE;
+    const money = n => '£' + n.toFixed(2);
+    const o = (M && M.order()) || { no: 'AB-1001', items: [ { name: 'Box', qty: 1, price: 5 } ], account: true, createAccount: false, method: 'post' };
+    return {
+      no: o.no, items: (o.items || []).map(it => ({ ...it, total: money(it.price * it.qty) })),
+      hasAcct: !!o.account,
+      eyebrow: o.createAccount ? 'Your account is ready' : 'All in one place',
+      how: o.method === 'collect' ? 'Ready to collect' : 'On its way',
+      how2: o.method !== 'pickup' ? 'Posting soon' : 'Come and get it',
+      how3: o.method === 'delivery' ? 'Posting' : 'Collecting',
+      back: o.acct && !o.acct.created ? 'Welcome back' : 'Welcome',
+      odd: o.mood ? 'Happy' : 'Calm',
+      made: o.created ? 'New' : 'Old'
+    };
+  }
+}`;
+const CHOICE_SAMPLES = { no: [ 'AB-1001' ], 'it.qty': [ 1 ], 'it.total': [ '£5.00' ] };
+
+test( 'MUST FAIL: a value choosing fixed words by one order fact takes a Show-to rule per phrase; a choice no entry of order-facts.json fits stays a problem row', () => {
+	const { record, draft } = plant( CHOICE_TEMPLATE, CHOICE_LOGIC, CHOICE_SAMPLES );
+	const r = readOrder( { record, tops: [ keyOf( record, 'main' ) ], draft, facts: FACTS } );
+	const by = Object.fromEntries( r.holes.map( ( h ) => [ h.expr, h ] ) );
+	assert.deepEqual( by.eyebrow.choice.phrases, [ { text: 'Your account is ready', rule: 'order-account-created' }, { text: 'All in one place', rule: 'order-account-existing' } ] );
+	assert.deepEqual( by.how.choice.phrases.map( ( p ) => p.rule ), [ 'order-collect', 'order-delivery' ] );
+	// `!==` a collection word: the first phrase is the delivery one.
+	assert.deepEqual( by.how2.choice.phrases.map( ( p ) => p.rule ), [ 'order-delivery', 'order-collect' ] );
+	// The compared word chooses the rule: a delivery word puts the delivery phrase first.
+	assert.deepEqual( by.how3.choice.phrases.map( ( p ) => p.rule ), [ 'order-delivery', 'order-collect' ] );
+	// A guard before a negated field (`o.acct && ! o.acct.created`) is read past: the first phrase is the existing account's.
+	assert.deepEqual( by.back.choice.phrases.map( ( p ) => p.rule ), [ 'order-account-existing', 'order-account-created' ] );
+	// Negative controls: a field no choice's words name, and a field whose words name a choice but not its group (an account).
+	assert.match( by.odd.problem, /chooses fixed words by the order's mood: no choice of order-facts\.json \(choices\) fits its test of mood/ );
+	assert.match( by.made.problem, /chooses fixed words by the order's created: no choice of order-facts\.json \(choices\) fits/ );
+	assert.equal( by.odd.choice, undefined );
+	// Without the choices the eyebrow is the old problem row.
+	const bare = readOrder( { record, tops: [ keyOf( record, 'main' ) ], draft, facts: { ...FACTS, choices: {} } } );
+	assert.match( bare.holes.find( ( h ) => 'eyebrow' === h.expr ).problem, /chooses fixed words by the order's createAccount/ );
+} );
+
+test( 'MUST FAIL: place stands a choice\'s block once per phrase with its rule; a branch rule the choice implies gives way, any other rule or words holding neither phrase is a problem row', () => {
+	const { record, draft } = plant( CHOICE_TEMPLATE, CHOICE_LOGIC, CHOICE_SAMPLES );
+	const ref = ( k ) => ( { tpl: `Root/${ k.split( '/' )[ 1 ] }#0` } );
+	const p = ( words ) => keyOf( record, 'p', words );
+	const tree = ( how2 = {} ) => [ { name: 'sgs/container', attributes: { tagName: 'main' }, draftRef: ref( keyOf( record, 'main' ) ), innerBlocks: [
+		{ name: 'sgs/text', attributes: { text: 'All in one place' }, draftRef: ref( p( 'eyebrow' ) ), innerBlocks: [] },
+		{ name: 'sgs/text', attributes: { text: 'On its way' }, draftRef: ref( p( '{{ how }}' ) ), innerBlocks: [] },
+		{ name: 'sgs/text', attributes: { text: 'Posting soon', ...how2 }, draftRef: ref( p( 'how2' ) ), innerBlocks: [] },
+	] } ];
+	const ctx = { key: 'order-confirmation', factRecord: record, rootComponent: 'Page', draft, db: fakeDb(), plugin: PLUGIN, orderFacts: FACTS };
+	const got = place( { ...ctx, tree: tree() }, { id: 'order-number', find: 'order-values' } );
+	const texts = got.tree[ 0 ].innerBlocks.map( ( n ) => `${ n.attributes.text } | ${ n.attributes.sgsConditionLoggedIn } | ${ n.draftRef.tpl }` );
+	assert.deepEqual( texts, [
+		`Your account is ready | order-account-created | ${ ref( p( 'eyebrow' ) ).tpl }`, `All in one place | order-account-existing | ${ ref( p( 'eyebrow' ) ).tpl }`,
+		`Ready to collect | order-collect | ${ ref( p( '{{ how }}' ) ).tpl }`, `On its way | order-delivery | ${ ref( p( '{{ how }}' ) ).tpl }`,
+		`Posting soon | order-delivery | ${ ref( p( 'how2' ) ).tpl }`, `Come and get it | order-collect | ${ ref( p( 'how2' ) ).tpl }`,
+	] );
+	// The eyebrow is the hasAcct branch's own block: its order-owner gave way to the account rules, which hold only where it does.
+	assert.ok( got.notes.some( ( n ) => /sat in a branch shown for order-owner; each of its phrases shows for its own rule \(order-account-created, order-account-existing\)/.test( n ) ) );
+	assert.ok( ! got.problems.some( ( x ) => /\{\{ (eyebrow|how|how2) \}\}/.test( x ) ), got.problems.join( '\n' ) );
+	// Negative controls: a block already shown for another order rule, and a block whose words hold neither phrase, are left as they are.
+	const ruled = place( { ...ctx, tree: tree( { sgsConditionLoggedIn: 'order-has-gift' } ) }, { id: 'order-number', find: 'order-values' } );
+	assert.ok( ruled.problems.some( ( x ) => /\{\{ how2 \}\}.*already shows only for order-has-gift: it is not split/.test( x ) ), ruled.problems.join( '\n' ) );
+	assert.equal( ruled.tree[ 0 ].innerBlocks.filter( ( n ) => n.draftRef.tpl === ref( p( 'how2' ) ).tpl ).length, 1 );
+	const other = place( { ...ctx, tree: tree( { text: 'Something else' } ) }, { id: 'order-number', find: 'order-values' } );
+	assert.ok( other.problems.some( ( x ) => /\{\{ how2 \}\}.*holds neither phrase in its words/.test( x ) ) );
 } );

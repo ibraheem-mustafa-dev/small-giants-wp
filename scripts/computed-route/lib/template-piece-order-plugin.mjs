@@ -79,6 +79,14 @@ export function orderFactsProblems( { facts, plugin, db } ) {
 			ruleAttr( db, 'sgs/text', rule ) || out.push( `order-facts.json: group "${ name }" names the Show-to rule "${ rule }", which no setting of sgs/text lists` );
 		}
 	}
+	for ( const [ name, c ] of Object.entries( facts.choices || {} ).filter( ( [ k ] ) => ! k.startsWith( '_' ) ) ) {
+		const rules = [ c.shown, c.hidden, ...Object.keys( c.values || {} ), ...( c.within || [] ) ].filter( Boolean );
+		( c.values ? 2 === Object.keys( c.values ).length : c.shown && c.hidden ) || out.push( `order-facts.json: choice "${ name }" needs either shown and hidden or exactly two values` );
+		c.group && ! facts.groups?.[ c.group ] && out.push( `order-facts.json: choice "${ name }" names the group "${ c.group }", which groups does not hold` );
+		for ( const rule of rules ) {
+			ruleAttr( db, 'sgs/text', rule ) || out.push( `order-facts.json: choice "${ name }" names the Show-to rule "${ rule }", which no setting of sgs/text lists` );
+		}
+	}
 	const items = facts.items || {};
 	const want = [ [ items.thumbnail, 'boolean' ], [ items.options, 'boolean' ], [ items.totalLabel, 'string' ], ...Object.values( items.rows || {} ).map( ( r ) => [ r.setting, 'boolean' ] ) ];
 	for ( const [ attr, type ] of want ) {

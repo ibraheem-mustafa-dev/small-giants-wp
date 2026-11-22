@@ -1,6 +1,7 @@
 // Data branches of a draft surface (Spec 48 §3.4 step 1, FR-48-96), the companion of lib/skeleton-reveal.mjs. The inventory
 // reads a draft in its opening state, and the reveal reader opens what a click or a state key shows. A branch (`sc-if`) whose
-// test the logic derives from data (a store, a fixture object, a global: never `this.state` or `this.props`) is shown only for
+// test the logic derives from data (a store, a fixture object, a global, or the order a one-file draft's order action keeps in its
+// state; never other `this.state` or `this.props`) is shown only for
 // some data, such as an order confirmation's gift note or its signed-in link: no click and no state key reaches it, so its
 // elements never reach the skeleton. This finds those branches and reads the page again with each one shown.
 //
@@ -8,8 +9,11 @@
 // `dataBranches: true`, inventoryBranches), because a state a working block draws itself (a signed-in account, an empty
 // basket, a product type) read into the skeleton would build the static imitation the working block replaces. Which
 // branches: every `sc-if` of the surface's component inside the surface's root whose test is a renderVals key (or its
-// negation) that is falsy at every width at rest (the fact record's sample of the test) and whose value in renderVals reads
-// no state, no props and no method of the component (its AST, lib/intake-ast.mjs). A test shown at rest, a width condition, a
+// negation) that is falsy at every width at rest (the fact record's sample of the test) and whose value in renderVals (a
+// renderVals that spreads other objects: the logic's value of that name) reads no state, no props and no method of the
+// component (its AST, lib/intake-ast.mjs), apart from state keys that hold the order: the keys the draft's order action writes
+// and nothing else fills (lib/template-piece-order-read.mjs::orderStateOf, found from a reference the surface writes as fixed
+// words, F-13), such as a `lastOrder` key. A test shown at rest, a width condition, a
 // state value and a loop item's field are left as they are (the reveal and width reads cover them); a test of one field of a
 // data value (`gift.on`) is not forced and is a note. Sibling branches that are each other's opposite need no pairing: the one
 // hidden at rest is read, the one shown at rest is in the opening read.
@@ -29,13 +33,13 @@
 // number or copy), else after the last element under its parent.
 import fs from 'fs';
 import path from 'path';
-import { classMethod, isFn, keyName, loadDraft, resolveName } from './intake-ast.mjs';
-import { returnsOf } from './intake-ast-eval.mjs';
+import { loadDraft, resolveName } from './intake-ast.mjs';
 import { stateKeysOf } from './read-logic-conditions.mjs';
 import { parseInstanceKey, templateKey } from './fact-key.mjs';
 import { loadFacts } from './fact-record.mjs';
 import { SERVED_ROOT } from './key-space.mjs';
 import { loadPieces, readsDataBranches } from './template-pieces.mjs';
+import { orderStateOf, originsOf, referencesIn, statePathOf, topValues } from './template-piece-order-read.mjs';
 import { settleAnimations } from '../../parity/lib/devtools.mjs';
 
 const DEPTH = 8;
@@ -44,15 +48,11 @@ const KEY = /^[A-Za-z_$][\w$]*$/;
 const strip = ( v ) => String( v ?? '' ).replace( /^\s*\{\{\s*|\s*\}\}\s*$/g, '' ).trim();
 const falsy = ( x ) => [ 'undefined', 'null' ].includes( x.t ) || ( 'boolean' === x.t && ! x.v ) || ( 'number' === x.t && 0 === x.v ) || ( 'string' === x.t && '' === x.v );
 
-// The value nodes renderVals gives a key (its value in each object renderVals returns).
-function renderValsOf( L, key ) {
-	const rv = classMethod( L, 'renderVals' );
-	const fn = rv && ( isFn( rv ) ? rv : rv.value );
-	return ( fn ? returnsOf( L, fn ) : [] ).filter( ( o ) => 'ObjectExpression' === o.type ).flatMap( ( o ) => o.properties.filter( ( p ) => 'ObjectProperty' === p.type && keyName( p ) === key ).map( ( p ) => p.value ) );
-}
 
-// Whether a value reads the component's state, props or one of its methods, through the variables it uses.
-export function readsComponent( L, node ) {
+// Whether a value reads the component's state, props or one of its methods, through the variables it uses. `orderKeys`: state
+// keys that hold the draft's order (lib/template-piece-order-read.mjs::orderStateOf); a read of the state under one of them is
+// the order's data, not the component's.
+export function readsComponent( L, node, orderKeys = null ) {
 	const seen = new Set();
 	const visit = ( n, depth ) => {
 		if ( ! n || depth > DEPTH || seen.has( n ) ) {
@@ -61,6 +61,12 @@ export function readsComponent( L, node ) {
 		seen.add( n );
 		if ( 'ThisExpression' === n.type ) {
 			return true;
+		}
+		if ( orderKeys?.size && 'MemberExpression' === n.type ) {
+			const from = originsOf( L, n );
+			if ( from.length && from.every( ( o ) => orderKeys.has( statePathOf( o )?.[ 0 ] ) ) ) {
+				return false;
+			}
 		}
 		if ( 'Identifier' === n.type ) {
 			const r = resolveName( L, n );
@@ -94,6 +100,9 @@ export function dataBranches( { record, draft, component, within = null } ) {
 	}
 	const stateKeys = new Set( stateKeysOf( L ) );
 	const els = Object.entries( record?.elements || {} ).filter( ( [ k, e ] ) => k.startsWith( `${ component }/` ) && ( ! within || k === within || ( e.template?.parentChain || [] ).includes( within ) ) ).map( ( [ key, e ] ) => ( { key, ...e } ) );
+	// The state a one-file draft's order action keeps the order in (only it sets those keys): a branch testing it is shown by the
+	// order's data, as a branch testing a store or a fixture is, so it is forced too (F-13).
+	const orderKeys = orderStateOf( L, referencesIn( els ) )?.keys ?? null;
 	const tests = new Map();
 	// Each hidden data branch: the key and value that show it, or a note naming why it is not forced.
 	for ( const e of els.filter( ( x ) => 'sc-if' === x.template?.tag ) ) {
@@ -109,8 +118,9 @@ export function dataBranches( { record, draft, component, within = null } ) {
 		// reader's; only a test whose renderVals value reads data is forced.
 		const top = key.split( '.' )[ 0 ];
 		const loopVar = ( e.template.membership?.scFor || [] ).some( ( f ) => f.as === top );
-		const values = KEY.test( top ) && ! loopVar ? renderValsOf( L, top ) : [];
-		if ( ! values.length || values.some( ( v ) => readsComponent( L, v ) ) ) {
+		// A state key is never looked up by its name elsewhere in the logic (its starting value is no renderVals value).
+		const values = KEY.test( top ) && ! loopVar ? topValues( L, top, ! stateKeys.has( top ) ) : [];
+		if ( ! values.length || values.some( ( v ) => readsComponent( L, v, orderKeys ) ) ) {
 			continue;
 		}
 		if ( ! KEY.test( key ) ) {

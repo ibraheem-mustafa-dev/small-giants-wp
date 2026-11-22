@@ -14,7 +14,12 @@
 //     is not the order lines is read per step when the logic writes the loop's list as an array of object literals;
 //   - each branch (`sc-if`) whose test reads the order takes the Show-to rule of the part it tests (a gift, an account),
 //     shown or hidden by the test's polarity; a branch that only hides a value its own content shows is a guard and needs
-//     no rule.
+//     no rule;
+//   - a one-file draft with no order lines keeps its order in the component state: the state its order action writes and
+//     nothing else fills, and the state values it copies into the order record (orderStateOf), read as the order's own;
+//   - a value choosing one of two fixed phrases by one order fact (`o.createAccount ? 'a' : 'b'`, `method === 'collect'`)
+//     carries its phrases, each with the Show-to rule data/order-facts.json `choices` gives it (choiceOf), so the builder
+//     stands its block once per phrase.
 // Pure apart from reading the draft file named by the fact record's component.
 import { classMethod, decodeEntities, enclosingFn, isFn, keyName, loadDraft, propName, resolveName, subtree } from './intake-ast.mjs';
 import { returnsOf } from './intake-ast-eval.mjs';
@@ -127,13 +132,13 @@ export function readsOf( L, n, depth = 0 ) {
 	return children( n ).flatMap( ( c ) => readsOf( L, c, depth + 1 ) );
 }
 
-// The value nodes a renderVals key holds (its value in each object renderVals returns), else every value the logic gives
-// that name (lib/shop-parts-logic.mjs::valuesOf).
-export function topValues( L, key ) {
+// The value nodes a renderVals key holds (its value in each object renderVals returns), else (unless `fallback` is false) every
+// value the logic gives that name (lib/shop-parts-logic.mjs::valuesOf), for a draft whose renderVals spreads other objects.
+export function topValues( L, key, fallback = true ) {
 	const rv = classMethod( L, 'renderVals' );
 	const fn = rv && ( isFn( rv ) ? rv : rv.value );
 	const hits = ( fn ? returnsOf( L, fn ) : [] ).filter( ( o ) => 'ObjectExpression' === o.type ).flatMap( ( o ) => o.properties.filter( ( p ) => 'ObjectProperty' === p.type && keyName( p ) === key ).map( ( p ) => p.value ) );
-	return hits.length ? hits : valuesOf( L, key );
+	return hits.length || ! fallback ? hits : valuesOf( L, key );
 }
 
 // The object literals that are the items of a list value: an array's object elements, a map callback's returned objects.
@@ -254,13 +259,15 @@ export function joinFormat( L, node ) {
 // The words that pick a key, a group or a row out of the order facts: the path's own words.
 const wordHit = ( segment, words ) => wordsOf( segment ).some( ( w ) => words.includes( w ) ) || words.includes( String( segment ).toLowerCase() );
 
-// The field of the record the draft's order action creates whose value is the literal `ref`, character for character: [ name ]
-// when one object literal of the logic holds `name: '<ref>'` and the function it sits in writes that object to the component's
-// state (`setState`): written there itself, or held in a variable that is (the order the action places, as the draft keeps it:
-// `placed: [ order ].concat( ... )`). Null when no such record holds it, or two records hold it in different fields.
-export function createdReference( L, ref ) {
-	const fields = new Set();
-	const within = ( n, outer ) => n.start >= outer.start && n.end <= outer.end;
+const within = ( n, outer ) => n.start >= outer.start && n.end <= outer.end;
+
+// What a function writes to the component's state: each setState argument, a variable argument by its value.
+const writtenBy = ( L, fn ) => subtree( L, fn ).filter( ( n ) => 'CallExpression' === n.type && 'setState' === propName( n.callee ) ).flatMap( ( c ) => c.arguments.map( ( x ) => ( 'Identifier' === x.type ? resolveName( L, x )?.init ?? x : x ) ) ).filter( Boolean );
+
+// The records of the logic that hold the literal `ref`, character for character, in one field and that their function writes
+// to the component's state: [ { field, fn, record } ] (see createdReference).
+function createdRecords( L, ref ) {
+	const out = [];
 	for ( const p of L.all.filter( ( n ) => 'ObjectProperty' === n.type && 'StringLiteral' === n.value?.type && n.value.value === ref ) ) {
 		const record = L.parent.get( p );
 		const fn = enclosingFn( L, record );
@@ -268,14 +275,163 @@ export function createdReference( L, ref ) {
 			continue;
 		}
 		const inside = subtree( L, fn );
-		// What the function writes to the state: each setState argument, a variable argument by its value.
-		const written = inside.filter( ( n ) => 'CallExpression' === n.type && 'setState' === propName( n.callee ) ).flatMap( ( c ) => c.arguments.map( ( x ) => ( 'Identifier' === x.type ? resolveName( L, x )?.init ?? x : x ) ) ).filter( Boolean );
+		const written = writtenBy( L, fn );
 		const up = L.parent.get( record );
 		const decl = 'VariableDeclarator' === up?.type && up.init === record && 'Identifier' === up.id.type ? up : null;
 		const held = !! decl && inside.some( ( n ) => 'Identifier' === n.type && n !== decl.id && n.name === decl.id.name && resolveName( L, n )?.decl === decl && written.some( ( w ) => within( n, w ) ) );
-		( held || written.some( ( w ) => within( record, w ) ) ) && fields.add( keyName( p ) );
+		( held || written.some( ( w ) => within( record, w ) ) ) && out.push( { field: keyName( p ), fn, record } );
 	}
+	return out;
+}
+
+// The field of the record the draft's order action creates whose value is the literal `ref`, character for character: [ name ]
+// when one object literal of the logic holds `name: '<ref>'` and the function it sits in writes that object to the component's
+// state (`setState`): written there itself, or held in a variable that is (the order the action places, as the draft keeps it:
+// `placed: [ order ].concat( ... )`). Null when no such record holds it, or two records hold it in different fields.
+export function createdReference( L, ref ) {
+	const fields = new Set( createdRecords( L, ref ).map( ( x ) => x.field ) );
 	return 1 === fields.size ? [ [ ...fields ][ 0 ] ] : null;
+}
+
+// The state path a read of the component's state names (`this.state.co.method`, or `S.co.method` with `S = this.state`, or a
+// name destructured from it): the fields below the state, else null for any other read.
+export function statePathOf( o ) {
+	if ( 'this' === o?.decl ) {
+		return 'state' === o.path[ 0 ] && o.path.length > 1 ? o.path.slice( 1 ) : null;
+	}
+	const init = isVarDecl( o?.decl ) ? o.decl.init : null;
+	return 'MemberExpression' === init?.type && 'ThisExpression' === init.object.type && ! init.computed && 'state' === init.property.name && o.path.length ? o.path : null;
+}
+
+// A value nothing reads as present: null, undefined, false, 0, '', an empty array or object (a reset, such as signing out).
+const emptyValue = ( v ) => ! v || 'NullLiteral' === v.type || ( 'Identifier' === v.type && 'undefined' === v.name ) || ( 'BooleanLiteral' === v.type && ! v.value ) || ( 'NumericLiteral' === v.type && 0 === v.value ) || ( 'StringLiteral' === v.type && '' === v.value ) || ( 'ArrayExpression' === v.type && ! v.elements.length ) || ( 'ObjectExpression' === v.type && ! v.properties.length );
+
+// The order references the draft elements' own words hold as fixed words (an order reference's shape, the holes left out).
+export const referencesIn = ( els ) => els.map( ( e ) => REFERENCE_IN.exec( String( e.template?.words || '' ).replace( /\{\{[^}]*\}\}/g, ' ' ) )?.[ 2 ] ).filter( Boolean );
+
+// The order a one-file draft keeps in its component state (D-3, F-13): the draft's order action is the function that writes to
+// the state the record holding a reference the page writes as fixed words (createdRecords; every such reference must point to
+// the one function). Returns null when there is none, else { fn, keys, values, copies }:
+//   - `keys`: the state keys that action writes and nothing else gives a value: every other object property of that name in
+//     the logic holds an empty value (the starting state, a sign-out reset), so the key holds this order and nothing else
+//     (`lastOrder`, `placed`); a key any other code fills (`bag`) is not the order's;
+//   - `values`: each such key's value node in the action's write (`lastOrder: { created, signedIn: !! s0.user }`);
+//   - `copies`: a state value the action copies, as it is, into a field of the record it creates (`method: s0.co.method`):
+//     the state path's text and the record's field, so reading that state value is reading the order's field.
+export function orderStateOf( L, refs ) {
+	const hits = L ? [ ...new Set( refs ) ].flatMap( ( ref ) => createdRecords( L, ref ) ) : [];
+	const fns = [ ...new Set( hits.map( ( h ) => h.fn ) ) ];
+	if ( 1 !== fns.length ) {
+		return null;
+	}
+	const fn = fns[ 0 ];
+	const patches = writtenBy( L, fn ).filter( ( n ) => 'ObjectExpression' === n.type );
+	const values = new Map();
+	for ( const p of patches.flatMap( ( o ) => o.properties ) ) {
+		'ObjectProperty' === p.type && keyName( p ) && values.set( keyName( p ), p.value );
+	}
+	const keys = new Set( [ ...values.keys() ].filter( ( k ) => L.all.every( ( n ) => 'ObjectProperty' !== n.type || keyName( n ) !== k || within( n, fn ) || emptyValue( n.value ) ) ) );
+	for ( const k of [ ...values.keys() ] ) {
+		keys.has( k ) || values.delete( k );
+	}
+	const copies = new Map();
+	for ( const record of new Set( hits.map( ( h ) => h.record ) ) ) {
+		for ( const p of record.properties.filter( ( x ) => 'ObjectProperty' === x.type && keyName( x ) ) ) {
+			const from = originsOf( L, p.value );
+			const path = 1 === from.length && ! from[ 0 ].money && ! from[ 0 ].joined ? statePathOf( from[ 0 ] ) : null;
+			path && copies.set( pathText( path ), [ keyName( p ) ] );
+		}
+	}
+	return { fn, keys, values, copies };
+}
+
+// The order origin a state read stands for, given orderStateOf's result: a read under an order key keeps its path and carries
+// `via`, the state paths the action's value for that field reads (`lastOrder.created` was made from `user` and `co.account`),
+// so a branch testing it is read by what it was made from; a read of a state value the action copies into the record is that
+// field of the order. Null for any other read.
+export function orderStateRead( L, state, o ) {
+	const sp = state ? statePathOf( o ) : null;
+	if ( ! sp ) {
+		return null;
+	}
+	if ( state.keys.has( sp[ 0 ] ) ) {
+		const value = state.values.get( sp[ 0 ] );
+		const field = sp.length > 1 && 'ObjectExpression' === value?.type ? value.properties.find( ( p ) => 'ObjectProperty' === p.type && keyName( p ) === sp[ 1 ] ) : null;
+		const via = field ? readsOf( L, field.value ).map( statePathOf ).filter( Boolean ) : [];
+		return { decl: 'order-state', path: sp, via, money: o.money, joined: o.joined };
+	}
+	for ( let n = sp.length; n > 0; n-- ) {
+		const field = state.copies.get( pathText( sp.slice( 0, n ) ) );
+		if ( field ) {
+			return { decl: 'order-state', path: [ ...field, ...sp.slice( n ) ], via: [], money: o.money, joined: o.joined };
+		}
+	}
+	return null;
+}
+
+// The words a read's path and what it was made from hold (orderStateRead's `via`).
+const readWords = ( o ) => [ ...o.path, ...( o.via || [] ).flat() ];
+
+// The Show-to rules a value choosing between two fixed phrases by one order fact gives each phrase (F-12): { phrases: [ { text,
+// rule } ], test } or { problem }. The value is `test ? 'a' : 'b'` (a variable holding it is followed); its test, past `!` and
+// guards (`o.x && o.x.y`: a left side reading only what the right side's path is under), is either a field of the order (the
+// choice of facts.choices whose words hit the field's words, or what it was made from, and whose group the same words hit) or an
+// equality of a field with a fixed word (`method === 'collect'`: the choice whose words hit the field and whose `values` name the
+// word). `toOrder(origin)` is the reader's own test of whether a read is of the order.
+export function choiceOf( L, node, facts, toOrder, depth = 0 ) {
+	if ( 'Identifier' === node?.type && depth < DEPTH ) {
+		const r = resolveName( L, node );
+		return 'var' === r?.kind && r.init && ! r.key ? choiceOf( L, r.init, facts, toOrder, depth + 1 ) : null;
+	}
+	const literal = ( n ) => ( 'StringLiteral' === n?.type ? n.value : 'TemplateLiteral' === n?.type && ! n.expressions.length ? n.quasis[ 0 ].value.cooked : null );
+	if ( 'ConditionalExpression' !== node?.type || null === literal( node.consequent ) || null === literal( node.alternate ) ) {
+		return null;
+	}
+	const phrases = [ literal( node.consequent ), literal( node.alternate ) ];
+	let test = node.test;
+	let pos = true;
+	const orderPaths = ( n ) => readsOf( L, n ).map( toOrder ).filter( Boolean );
+	for ( let guard = 0; guard < DEPTH; guard++ ) {
+		if ( 'UnaryExpression' === test.type && '!' === test.operator ) {
+			pos = ! pos;
+			test = test.argument;
+		} else if ( 'LogicalExpression' === test.type && '&&' === test.operator && orderPaths( test.left ).length && orderPaths( test.left ).every( ( l ) => orderPaths( test.right ).some( ( r ) => under( r.path, l.path ) ) ) ) {
+			test = test.right;
+		} else {
+			break;
+		}
+	}
+	const choices = Object.entries( facts.choices || {} ).filter( ( [ k ] ) => ! k.startsWith( '_' ) );
+	const groupHit = ( c, words ) => ! c.group || words.some( ( s ) => wordHit( s, facts.groups?.[ c.group ]?.words || [] ) );
+	const eq = 'BinaryExpression' === test.type && [ '===', '==', '!==', '!=' ].includes( test.operator ) ? test : null;
+	const word = eq ? literal( eq.right ) ?? literal( eq.left ) : null;
+	const field = eq ? ( null !== literal( eq.right ) ? eq.left : eq.right ) : test;
+	const reads = [ ...new Map( orderPaths( field ).map( ( o ) => [ pathText( o.path ), o ] ) ).values() ];
+	const deepest = reads.filter( ( o ) => ! reads.some( ( x ) => under( x.path, o.path ) ) );
+	if ( 1 !== deepest.length ) {
+		return { problem: deepest.length ? `its test reads several fields of the order (${ deepest.map( ( o ) => pathText( o.path ) ).join( ', ' ) })` : 'its test reads nothing of the order' };
+	}
+	const read = deepest[ 0 ];
+	let rules = null;
+	let name = null;
+	if ( eq && null !== word ) {
+		const hits = choices.filter( ( [ , c ] ) => c.values && wordHit( read.path.at( -1 ), c.words || [] ) && groupHit( c, readWords( read ) ) ).map( ( [ name, c ] ) => {
+			const names = Object.keys( c.values );
+			const rule = names.find( ( r ) => wordHit( word, c.values[ r ] ) );
+			return rule && 2 === names.length ? { name, pair: [ rule, names.find( ( r ) => r !== rule ) ] } : null;
+		} ).filter( Boolean );
+		const same = [ '===', '==' ].includes( eq.operator ) === pos;
+		hits.length > 1 || ( name = hits[ 0 ]?.name ?? null );
+		rules = 1 === hits.length ? ( same ? hits[ 0 ].pair : [ hits[ 0 ].pair[ 1 ], hits[ 0 ].pair[ 0 ] ] ) : null;
+	} else if ( ! eq ) {
+		const hits = choices.filter( ( [ , c ] ) => c.shown && c.hidden && read.path.some( ( s ) => wordHit( s, c.words || [] ) ) && groupHit( c, readWords( read ) ) );
+		hits.length > 1 || ( name = hits[ 0 ]?.[ 0 ] ?? null );
+		rules = 1 === hits.length ? ( pos ? [ hits[ 0 ][ 1 ].shown, hits[ 0 ][ 1 ].hidden ] : [ hits[ 0 ][ 1 ].hidden, hits[ 0 ][ 1 ].shown ] ) : null;
+	}
+	if ( ! rules ) {
+		return { problem: `no choice of order-facts.json (choices) fits its test of ${ pathText( read.path ) }${ eq ? ` against "${ word }"` : '' }` };
+	}
+	return { phrases: phrases.map( ( text, i ) => ( { text, rule: rules[ i ] } ) ), test: pathText( read.path ), choice: name };
 }
 
 // The order as the draft shows it: { lines, rows, holes, branches, problems, notes } (see the header). `record` is the fact
@@ -289,7 +445,7 @@ export function readOrder( { record, tops, draft, facts, plugin = null } ) {
 	const byKey = new Map( els.map( ( e ) => [ e.key, e ] ) );
 	const problems = [];
 	const notes = [];
-	const out = { lines: null, rows: [], holes: [], branches: [], problems, notes, numberPath: null, order: null };
+	const out = { lines: null, rows: [], holes: [], branches: [], problems, notes, numberPath: null, order: null, state: null };
 	// An order reference written as fixed words. When the words equal, character for character, a field of the record the
 	// draft's order action creates (createdReference), they are that field of the order: a value bound like a hole (`literal`
 	// the words it replaces). Otherwise no value of the logic shows it, so nothing can bind it and the page would show that one
@@ -346,7 +502,14 @@ export function readOrder( { record, tops, draft, facts, plugin = null } ) {
 		};
 	}
 	const D = out.order?.decl ?? null;
-	const ofOrder = ( list ) => list.filter( ( o ) => D && o.decl === D && ! ( out.order.listPath.length && ( samePath( o.path, out.order.listPath ) || under( o.path, out.order.listPath ) ) ) );
+	// The order a one-file draft keeps in its state (orderStateOf): its reads count as the order's beside the lines' object.
+	const state = orderStateOf( L, referencesIn( els ) );
+	if ( state ) {
+		out.state = { keys: [ ...state.keys ], copies: Object.fromEntries( [ ...state.copies ].map( ( [ k, v ] ) => [ k, pathText( v ) ] ) ) };
+		notes.push( `the draft's order action keeps the order in its state (${ [ ...state.keys ].join( ', ' ) || 'no key of its own' }${ state.copies.size ? `; it copies ${ [ ...state.copies ].map( ( [ k, v ] ) => `${ k } into the order's ${ pathText( v ) }` ).join( ', ' ) }` : '' }), so what reads it reads the order` );
+	}
+	const toOrder = ( o ) => ( D && o.decl === D ? ( out.order.listPath.length && ( samePath( o.path, out.order.listPath ) || under( o.path, out.order.listPath ) ) ? null : o ) : orderStateRead( L, state, o ) );
+	const ofOrder = ( list ) => list.map( toOrder ).filter( Boolean );
 
 	// The value node of each step of a loop whose list the logic writes as an array of object literals (the same steps the
 	// skeleton holds as `<key>#<step>`): [ node | null ] per step, or null when the loop's list is built another way or the
@@ -442,8 +605,15 @@ export function readOrder( { record, tops, draft, facts, plugin = null } ) {
 			h.problem = `the value {{ ${ h.expr } }} (${ h.el }) sits in the loop ${ h.loops.at( -1 ) }, which is not the order lines, and reads the order's ${ h.reads.join( ', ' ) }: no binding reaches a loop item`;
 			continue;
 		}
+		// A value choosing one of two fixed phrases by one order fact is one block per phrase, each with its Show-to rule (F-12).
+		const nodes = ! h.paths.length && 'text' === h.where && ! h.literal ? valuesFor( byKey.get( h.el ), h ).map( ( x ) => x.node ) : [];
+		const choice = 1 === nodes.length ? choiceOf( L, nodes[ 0 ], facts, toOrder ) : null;
+		if ( choice?.phrases ) {
+			h.choice = choice;
+			continue;
+		}
 		if ( 1 !== h.paths.length ) {
-			h.problem = h.paths.length
+			h.problem = choice?.problem ? `the value {{ ${ h.expr } }} (${ h.el }) chooses fixed words by the order's ${ h.reads.join( ', ' ) }: ${ choice.problem }, so no Show-to rule holds that choice` : h.paths.length
 				? `the value {{ ${ h.expr } }} (${ h.el }) joins several order fields (${ h.paths.map( pathText ).join( ', ' ) }): one binding holds one key`
 				: `the value {{ ${ h.expr } }} (${ h.el }) chooses fixed words by the order's ${ h.reads.join( ', ' ) }: no binding key or Show-to rule holds that choice`;
 			continue;
@@ -519,7 +689,7 @@ export function readOrder( { record, tops, draft, facts, plugin = null } ) {
 		const paths = [ ...new Set( reads.map( ( o ) => pathText( o.path ) ) ) ];
 		const content = out.holes.filter( ( h ) => ( byKey.get( h.el )?.template?.membership?.scIf || [] ).some( ( s ) => s.key === e.key ) );
 		const bound = new Set( content.filter( ( h ) => h.key && 1 === h.paths.length ).map( ( h ) => pathText( h.paths[ 0 ] ) ) );
-		const groups = [ ...new Set( reads.flatMap( ( o ) => Object.entries( facts.groups || {} ).filter( ( [ , g ] ) => o.path.some( ( s ) => wordHit( s, g.words ) ) ).map( ( [ k ] ) => k ) ) ) ];
+		const groups = [ ...new Set( reads.flatMap( ( o ) => Object.entries( facts.groups || {} ).filter( ( [ , g ] ) => readWords( o ).some( ( s ) => wordHit( s, g.words ) ) ).map( ( [ k ] ) => k ) ) ) ];
 		const b = { el: e.key, test, reads: paths, shown };
 		// A guard reads only what its content binds, and the parts of the order above it (`o.gift && o.gift.to`), and its content
 		// is nothing but the elements showing those values, so nothing of it shows once the value prints nothing.

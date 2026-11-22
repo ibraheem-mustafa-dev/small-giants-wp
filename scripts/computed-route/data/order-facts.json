@@ -18,6 +18,11 @@
 		"billing_address": { "group": "billing", "words": [ "address", "line", "street", "addr" ] }
 	},
 	"viewable": "order-viewable",
+	"choices": {
+		"_about": "A value that picks one of two fixed phrases by one fact of the order (lib/template-piece-order-read.mjs::choiceOf) becomes one block per phrase, each with its Show-to rule (F-12). A choice by a field of the order itself (`o.createAccount ? 'a' : 'b'`) is the choice whose `words` hit a segment of the field's path, and whose `group`'s words hit the path or what the draft's order action made the field from; the phrase shown when the field is set takes `shown`, the other `hidden`. A choice by a field equal to a fixed word (`method === 'collect'`) is the choice whose `words` hit the field's last segment and whose `values` (exactly two Show-to rules, each with the words of the value it stands for) name the word; the other phrase takes the other rule. Every rule must be one the framework database lists for the Show-to setting.",
+		"account-created": { "group": "account", "words": [ "create", "created", "new", "register", "registered", "signup" ], "shown": "order-account-created", "hidden": "order-account-existing", "within": [ "order-owner" ] },
+		"collection": { "words": [ "method", "fulfilment", "fulfillment", "shipping", "delivery" ], "values": { "order-collect": [ "collect", "collection", "pickup", "pick", "click" ], "order-delivery": [ "delivery", "deliver", "post", "ship", "shipping", "courier" ] } }
+	},
 	"groups": {
 		"gift": { "words": [ "gift", "present", "giftnote" ], "shown": "order-has-gift", "hidden": "order-no-gift" },
 		"account": { "words": [ "account", "user", "customer", "member", "acct", "registered" ], "shown": "order-owner", "hidden": "order-guest" },

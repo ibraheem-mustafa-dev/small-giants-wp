@@ -19,6 +19,7 @@
 import { templateKeyOf } from './fact-key.mjs';
 import { openDb } from './db.mjs';
 import { draftOf, readOrder, sourceText } from './template-piece-order-read.mjs';
+import { decodeEntities } from './intake-ast.mjs';
 import { boundAttr, loadOrderFacts, orderFactsProblems, pluginFacts, ruleAttr, settingType } from './template-piece-order-plugin.mjs';
 
 // Every node of a tree with the list holding it and its ancestors: [ { node, list, up: [ node ] } ] in document order.
@@ -217,6 +218,10 @@ function placeValues( ctx, piece, r ) {
 
 	// Bindings, on the block holding each classified value.
 	const ancestorsOf = ( k ) => [ k, ...( record[ k ]?.template?.parentChain || [] ) ];
+	// The value's own element or the nearest element around it in the skeleton, inside every branch the value sits in (a block
+	// outside the value's branch shows whether or not the order has it, so it never holds the value).
+	const branches = ( k ) => ( record[ k ]?.template?.membership?.scIf || [] ).map( ( s ) => s.key );
+	const holderOf = ( h ) => ancestorsOf( h.el ).find( ( k ) => byKey.has( k ) && branches( h.el ).every( ( b ) => branches( k ).includes( b ) ) );
 	const boundNodes = [];
 	// A value no key holds is a fact the site supplies; one block binds one key, so a block with several of them takes the first
 	// as its key and the others as `{fact:<name>}` tokens in its words. Built-in keys go first, so a key is never the token.
@@ -225,17 +230,14 @@ function placeValues( ctx, piece, r ) {
 	// What the owner must supply for a fact: shown in the run report beside the other notes.
 	const factNote = ( x, holder ) => `site-supplied fact ${ x.key }: {{ ${ x.expr } }} in ${ holder } reads the order's ${ x.paths.map( ( p ) => p.join( '.' ) ).join( ', ' ) }, which no key of ${ plugin.source } holds, so the site supplies it through the ${ plugin.factFilter } filter (name ${ x.key.slice( plugin.factPrefix.length ) }); the value is empty, and the block shows nothing, until it does`;
 	for ( const h of [ ...order.holes ].sort( ( a, b ) => Number( !! a.fact ) - Number( !! b.fact ) ) ) {
-		if ( h.absorbed || taken.has( h ) ) {
+		if ( h.absorbed || h.choice || taken.has( h ) ) {
 			continue;
 		}
 		if ( h.problem ) {
 			problems.push( h.problem );
 			continue;
 		}
-		// The value's own element or the nearest element around it in the skeleton, inside every branch the value sits in (a
-		// block outside the value's branch shows whether or not the order has it, so it never holds the value).
-		const branches = ( k ) => ( record[ k ]?.template?.membership?.scIf || [] ).map( ( s ) => s.key );
-		const holder = ancestorsOf( h.el ).find( ( k ) => byKey.has( k ) && branches( h.el ).every( ( b ) => branches( k ).includes( b ) ) );
+		const holder = holderOf( h );
 		if ( ! holder ) {
 			problems.push( `the value {{ ${ h.expr } }} (${ h.el }, ${ h.key }) is not in the skeleton: the draft did not show it when it was read` );
 			continue;
@@ -323,8 +325,44 @@ function placeValues( ctx, piece, r ) {
 			problems.push( `${ node.name } (${ holder }) holds no setting with the Show-to rule ${ viewable }, so its sample order words show to a visitor who may not view the order` );
 		}
 	}
+	splitChoices( { order, facts, plugin, db, byKey, keyOf, holderOf, ruleOn, piece, placed, problems, notes } );
 	const cards = ruleOrderCards( { tree, r, rootComponent: ctx.rootComponent, piece } );
 	return { tree, placed: [ ...placed, ...cards.placed ], problems: [ ...new Set( problems ) ].map( at ), notes: [ ...new Set( [ ...notes, ...cards.notes ] ) ].map( at ) };
+}
+
+// A value choosing one of two fixed phrases by one order fact (lib/template-piece-order-read.mjs::choiceOf, F-12): the block
+// holding it stands once per phrase, in its place, each copy with its phrase in the block's words setting (the attribute a
+// binding of words would write) and the phrase's Show-to rule. A block the branch around it already rules keeps standing under
+// the choice's rule only when the choice lists that rule as one its own rules imply (`within`: an account made with the order is
+// on an account, so `order-owner` gives way to `order-account-created`); any other rule already there, a block with no words
+// setting, or words holding neither phrase is a problem row and the block is left as the draft's resting phrase. Changes the
+// tree in place and pushes to `placed`, `problems` and `notes`.
+function splitChoices( { order, facts, plugin, db, byKey, keyOf, holderOf, ruleOn, piece, placed, problems, notes } ) {
+	const norm = ( t ) => decodeEntities( String( t ?? '' ) ).replace( /\s+/g, ' ' ).trim();
+	for ( const h of order.holes.filter( ( x ) => x.choice ) ) {
+		const c = facts.choices?.[ h.choice.choice ] || {};
+		const holder = holderOf( h );
+		if ( ! holder ) {
+			problems.push( `the value {{ ${ h.expr } }} (${ h.el }) chooses its words by the order's ${ h.choice.test } and is not in the skeleton: the draft did not show it when it was read` );
+			continue;
+		}
+		for ( const { node, list } of byKey.get( holder ) ) {
+			const attr = boundAttr( db, plugin.supported, node.name, 'text-content' );
+			const words = attr ? norm( node.attributes?.[ attr ] ) : '';
+			const resting = h.choice.phrases.filter( ( p ) => words.includes( norm( p.text ) ) );
+			const had = ruleOn( node );
+			const attrs = h.choice.phrases.map( ( p ) => ruleAttr( db, node.name, p.rule ) );
+			const why = ! attr ? 'holds no words setting' : 1 !== resting.length ? `holds ${ resting.length ? 'both phrases' : 'neither phrase' } in its words` : attrs.some( ( a ) => ! a ) ? `holds no Show-to setting with ${ h.choice.phrases.map( ( p ) => p.rule ).join( ' and ' ) }` : had && had !== facts.viewable && ! ( c.within || [] ).includes( had ) ? `already shows only for ${ had }` : null;
+			if ( why ) {
+				problems.push( `${ node.name } (${ holder }) shows {{ ${ h.expr } }}, which chooses its words by the order's ${ h.choice.test }, and ${ why }: it is not split into one block per phrase` );
+				continue;
+			}
+			const copies = h.choice.phrases.map( ( p, i ) => ( { ...structuredClone( node ), attributes: { ...structuredClone( node.attributes || {} ), [ attr ]: words.replace( norm( resting[ 0 ].text ), () => p.text ), [ attrs[ i ] ]: p.rule } } ) );
+			list.splice( list.indexOf( node ), 1, ...copies );
+			had && notes.push( `${ node.name } (${ holder }) sat in a branch shown for ${ had }; each of its phrases shows for its own rule (${ h.choice.phrases.map( ( p ) => p.rule ).join( ', ' ) }), which holds only where ${ had } does` );
+			h.choice.phrases.forEach( ( p ) => placed.push( { id: piece.id, block: node.name, at: keyOf( node ), rule: p.rule, words: p.text } ) );
+		}
+	}
 }
 
 // Places one order piece (see the header). `ctx`: { key, tree, factRecord, rootComponent, handoffDir, db?, draft?,

@@ -44,9 +44,9 @@ const SAMPLES = { hasNote: [ false ], noNote: [ true ], hasTo: [ false ], hasPs:
 
 // The fact record of a planted template as intake writes it (lib/fact-record.mjs): each start tag an element, its parent chain,
 // loops and branches, its holes and their samples. `width` names the tests that are width conditions.
-function plant( { width = [ 'wide' ] } = {} ) {
+function plant( { width = [ 'wide' ], template = TEMPLATE, logic = LOGIC, samples = SAMPLES } = {} ) {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'data-branches-' ) );
-	fs.writeFileSync( path.join( dir, 'Page.dc.html' ), `<!DOCTYPE html><html><body><x-dc><div>${ TEMPLATE }</div></x-dc><script type="text/x-dc" data-dc-script>${ LOGIC }</script></body></html>` );
+	fs.writeFileSync( path.join( dir, 'Page.dc.html' ), `<!DOCTYPE html><html><body><x-dc><div>${ template }</div></x-dc><script type="text/x-dc" data-dc-script>${ logic }</script></body></html>` );
 	const draft = loadDraft( dir, 'Page.dc.html' );
 	const elements = {};
 	const stack = [];
@@ -72,7 +72,7 @@ function plant( { width = [ 'wide' ] } = {} ) {
 	for ( const e of Object.values( elements ) ) {
 		[ ...e.template.words.matchAll( /\{\{\s*([\w.]+)\s*\}\}/g ) ].forEach( ( h, i ) => e.template.holes.push( { id: `text#${ i }`, where: 'text', expr: h[ 1 ] } ) );
 		for ( const h of e.template.holes ) {
-			SAMPLES[ h.expr ] && ( e.logic.holes[ h.id ] = { 1440: { v: SAMPLES[ h.expr ].map( ( v ) => ( { t: typeof v, v } ) ) }, 375: { v: SAMPLES[ h.expr ].map( ( v ) => ( { t: typeof v, v } ) ) } } );
+			samples[ h.expr ] && ( e.logic.holes[ h.id ] = { 1440: { v: samples[ h.expr ].map( ( v ) => ( { t: typeof v, v } ) ) }, 375: { v: samples[ h.expr ].map( ( v ) => ( { t: typeof v, v } ) ) } } );
 		}
 		delete e.key;
 	}
@@ -238,7 +238,50 @@ test( 'MUST FAIL: only a page surface with an intake skeleton and a draft file f
 	assert.deepEqual( hosts( 'Page' ), [ 'Page' ] );
 } );
 
-test( "Mama's confirmation: the gift note (with its name, one level down) and the signed-in link are its data branches; Eye Care's has none", () => {
+// A one-file draft keeping its order in the state (F-13): the order action writes the record whose id the page shows as fixed words.
+const ORDER_TEMPLATE = `<main><h1>Thanks, order XY-1234.</h1>
+<sc-if value="{{ hasAcct }}"><p>Saved to your account</p></sc-if>
+<sc-if value="{{ inBag }}"><p>Still in the bag</p></sc-if>
+<sc-if value="{{ mixed }}"><p>Order and a click</p></sc-if>
+</main>`;
+const orderLogic = ( extra = '' ) => `class Component extends DCLogic {
+  state = { last: null, bag: [], open: false, placed: [] };
+  renderVals() {
+    const S = this.state;
+    return {
+      hasAcct: !!(S.last && S.last.signedIn), inBag: S.bag.length > 0, mixed: !!(S.last && S.open),
+      place: () => { const s0 = this.state; const order = { id: 'XY-1234', total: 5 }; this.setState( { placed: [ order ].concat( s0.placed ), last: { signedIn: !!s0.user }, bag: [] } ); },
+      add: () => this.setState( { bag: [ 1 ] } ),
+      signOut: () => this.setState( { last: null, user: null } ),${ extra }
+    };
+  }
+}`;
+const ORDER_SAMPLES = { hasAcct: [ false ], inBag: [ false ], mixed: [ false ] };
+
+test( 'MUST FAIL: a branch testing state only the order action sets is the order data and is forced; state any click sets, or a test reading other state, is not', () => {
+	const read = ( template, logic ) => {
+		const { draft, record } = plant( { template, logic, samples: ORDER_SAMPLES } );
+		return dataBranches( { record, draft, component: 'Page', within: mainOf( record ) } ).branches.map( ( b ) => [ b.test, b.keys ] );
+	};
+	// `last` is written by the order action and only reset to null elsewhere (signing out), so hasAcct reads the order.
+	assert.deepEqual( read( ORDER_TEMPLATE, orderLogic() ), [ [ 'hasAcct', { hasAcct: true } ] ] );
+	// Negative controls: another action giving `last` a value makes it ordinary state; with no fixed reference the page names no
+	// order action; a reference no record holds names none either.
+	assert.deepEqual( read( ORDER_TEMPLATE, orderLogic( " peek: () => this.setState( { last: { signedIn: true } } )," ) ), [] );
+	assert.deepEqual( read( ORDER_TEMPLATE.replace( ', order XY-1234', '' ), orderLogic() ), [] );
+	assert.deepEqual( read( ORDER_TEMPLATE.replace( 'XY-1234', 'XY-9999' ), orderLogic() ), [] );
+} );
+
+test( "Eye Care's confirmation: the account note and View my orders, which test the order its order action keeps in the state, are its data branches", () => {
+	const eye = JSON.parse( fs.readFileSync( path.join( FIX, 'eye-care-done-facts.json' ), 'utf8' ) );
+	const eyeDraft = loadDraft( path.join( REPO, 'sites', 'eye-care-ward-end', 'handoff' ), 'Eye Care Birmingham.dc.html' );
+	assert.deepEqual( dataBranches( { record: eye, draft: eyeDraft, component: 'Eye Care Birmingham', within: 'Eye Care Birmingham/843' } ).branches.map( ( b ) => [ b.el, b.keys ] ), [
+		[ 'Eye Care Birmingham/847', { doneHasAccount: true } ],
+		[ 'Eye Care Birmingham/851', { doneHasAccount: true } ],
+	] );
+} );
+
+test( "Mama's confirmation: the gift note (with its name, one level down) and the signed-in link are its data branches", () => {
 	const record = JSON.parse( fs.readFileSync( path.join( FIX, 'mamas-confirmation-facts.json' ), 'utf8' ) );
 	const draft = loadDraft( path.join( REPO, 'sites', 'mamas-munches-redesign', 'handoff' ), 'Confirmation.dc.html' );
 	const { branches, notes } = dataBranches( { record, draft, component: 'Confirmation', within: 'Confirmation/6' } );
@@ -247,9 +290,6 @@ test( "Mama's confirmation: the gift note (with its name, one level down) and th
 		[ 'Confirmation/54', { hasAcct: true }, [] ],
 	] );
 	assert.deepEqual( notes, [] );
-	const eye = JSON.parse( fs.readFileSync( path.join( FIX, 'eye-care-done-facts.json' ), 'utf8' ) );
-	const eyeDraft = loadDraft( path.join( REPO, 'sites', 'eye-care-ward-end', 'handoff' ), 'Eye Care Birmingham.dc.html' );
-	assert.deepEqual( dataBranches( { record: eye, draft: eyeDraft, component: 'Eye Care Birmingham', within: 'Eye Care Birmingham/843' } ).branches, [] );
 } );
 
 test( 'MUST FAIL: the inventory step reads the branches with the reader\'s own collector and changes nothing without them', async () => {
