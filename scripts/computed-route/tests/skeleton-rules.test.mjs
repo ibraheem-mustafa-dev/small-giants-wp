@@ -983,3 +983,40 @@ test( 'formControl: a <label> that lays its label text and control out as a colu
 	assert.deepEqual( [ column.action, column.rule, column.conserve ], [ 'remove', 'formControl', [ { kind: 'host-layout', node: 'Root/3#0', looks: [ 'layout' ] } ] ] );
 	assert.ok( ! tick.problems.some( ( p ) => /paint conservation/.test( p ) ), tick.problems.join( '\n' ) );
 } );
+
+// rules.solitaryIcon.glyphDisc: a typed glyph alone in a painted round box of equal width and height is sgs/icon with the glyph
+// as its emoji character, never text and never the brand name (an emoji written there drew a star).
+const DISC = 'width:32px;height:32px;border-radius:999px;background:#f9cf6e;border:2px solid #3a2a22;display:flex;align-items:center;justify-content:center';
+const disc = ( words, o = {} ) => {
+	const box = o.box || { x: 0, y: 0, w: 32, h: 32 };
+	const glyph = E( 'span', { words, style: o.style ?? DISC, box, ...( o.tag ? {} : {} ) } );
+	const root = section( [ o.wrap ? E( o.wrap, { attrs: o.wrap === 'a' ? { href: '/x' } : {} }, [ glyph ] ) : glyph, E( 'p', { words: 'Brewer\u2019s yeast gives you B-vitamins' } ) ] );
+	return run( root );
+};
+const iconAt = ( r, words ) => row( r, ( x ) => x.words === words );
+const nodes = ( r ) => r.skeleton.flatMap( function flat( n ) { return [ n, ...( n.innerBlocks || [] ).flatMap( flat ) ]; } );
+
+test( 'MUST FAIL: a tick or a star in a painted round box is an icon with the glyph as its emoji character; an emoji disc is never written as a brand name', () => {
+	for ( const g of [ '\u2713', '\u2726', '\u2190', '\u00a3' ] ) {
+		const r = disc( g );
+		assert.deepEqual( settled( iconAt( r, g ) ), { block: 'sgs/icon', action: null, rule: 'solitaryIcon' }, g );
+		const n = nodes( r ).find( ( x ) => 'sgs/icon' === x.name );
+		assert.deepEqual( n.attributes, { iconSource: 'emoji', emojiChar: g }, g );
+	}
+	const heart = nodes( disc( '\u2665\uFE0F' ) ).find( ( x ) => 'sgs/icon' === x.name );
+	assert.deepEqual( heart.attributes, { iconSource: 'emoji', emojiChar: '\u2665\uFE0F' } );
+	assert.equal( 'brandName' in heart.attributes, false );
+} );
+
+test( 'negative control: a plus, an opening quote, a glyph in an unpainted box, a box that is not round or square, a glyph in a link or button and the rule removed stay text', () => {
+	const text = ( r, g ) => 'sgs/icon' !== iconAt( r, g )?.block;
+	assert.ok( text( disc( '+' ), '+' ), 'a plus is a control' );
+	assert.ok( text( disc( '\u201c' ), '\u201c' ), 'an opening quote' );
+	assert.ok( text( disc( '\u2713', { style: 'color:#f9cf6e;font-size:20px' } ), '\u2713' ), 'no painted box' );
+	assert.ok( text( disc( '\u2713', { style: 'width:32px;height:32px;border-radius:4px;background:#f9cf6e;border:2px solid #3a2a22' } ), '\u2713' ), 'not round' );
+	assert.ok( text( disc( '\u2713', { box: { x: 0, y: 0, w: 60, h: 32 } } ), '\u2713' ), 'not square' );
+	assert.ok( text( disc( '\u2713', { wrap: 'button' } ), '\u2713' ), 'inside a button' );
+	assert.ok( text( disc( '\u2713', { wrap: 'a' } ), '\u2713' ), 'inside a link' );
+	const off = run( section( [ E( 'span', { words: '\u2713', style: DISC, box: { x: 0, y: 0, w: 32, h: 32 } } ), E( 'p', { words: 'Brewer\u2019s yeast' } ) ] ), { facts: ( () => { const f = facts(); delete f.decisions.rules.solitaryIcon.glyphDisc; return f; } )() } );
+	assert.ok( text( off, '\u2713' ), 'the rule removed' );
+} );

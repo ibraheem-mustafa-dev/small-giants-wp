@@ -231,6 +231,25 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	const iconOnly = ( e ) => bare( e ) && hasSvg( e );
 	const emojiOnly = ( e ) => ! m.blockKids( e ).length && EMOJI.test( m.words( e ).replace( /\s+/g, '' ) );
+	// A typed glyph (a tick, a star, an arrow, a currency sign) alone in a painted round box of equal width and height, outside
+	// any link or button (rules.solitaryIcon.glyphDisc): a disc the draft draws, so it is an icon, never text. A sign that means a
+	// control (`notIcons`: plus, minus, cross) or opens a quotation is no disc, and an emoji has its own test (emojiOnly).
+	const glyphDisc = ( e, st ) => {
+		const G = R.solitaryIcon?.glyphDisc;
+		const w = m.words( e ).trim();
+		if ( ! G || m.blockKids( e ).length || [ ...w ].length !== 1 || ! /^[^\p{L}\p{N}\s]$/u.test( w ) || EMOJI.test( w ) || ( G.notIcons || [] ).includes( w ) || interactive( e ) || ancestors( e ).some( ( a ) => [ 'a', 'button' ].includes( view.realTag( a ) ) || interactive( a ) ) || ! ( view.ownPaint( e ) || [ st.background, st[ 'background-color' ], st.border, st[ 'border-width' ] ].some( ( x ) => x && ! /^(?:none|transparent|initial|unset|0)/.test( String( x ).trim() ) ) ) ) {
+			return false;
+		}
+		const boxes = Object.values( e.box || {} ).filter( ( b ) => b && b.w > 0 && b.h > 0 );
+		const radius = String( st[ 'border-radius' ] ?? '' ).trim();
+		return boxes.length > 0 && boxes.every( ( b ) => Math.abs( b.w - b.h ) <= 1.5 && b.w >= ( G.minPx ?? 0 ) ) && ( '50%' === radius || boxes.every( ( b ) => ( px( radius ) ?? 0 ) >= Math.min( b.w, b.h ) / 2 - 1 ) );
+	};
+	// The icon block's emoji settings for one typed glyph or emoji: its source and the character, both from the database.
+	const emojiAttrs = ( block, glyph ) => {
+		const E = R.solitaryIcon?.emoji;
+		const char = block ? facts.firstAttrByRole( block, 'icon-emoji' ) : null;
+		return E && char && ( facts.enumOf?.( block, E.sourceSetting ) || [] ).includes( E.source ) ? { [ E.sourceSetting ]: E.source, [ char ]: glyph } : {};
+	};
 	const desc = ( e ) => m.blockKids( e ).flatMap( ( k ) => [ k, ...desc( k ) ] );
 	const handlerOf = ( e ) => /sc-camel-on-click="\{\{\s*([^}\s]+)\s*\}\}"/.exec( e.snippet || '' )?.[ 1 ] || '';
 	// A control the visitor operates: a button, anything with a click handler, a pressed or expanded state. It is never
@@ -825,7 +844,17 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 			const split = R.splitMenu && 'header' === surface.kind ? surface.splitMenu : null;
 			return v( 'navigation', { block: R.navigation.bySurface[ surface.kind ], absorb: true, ...( split ? { split: { after: split.after, readAt: e.key }, attributes: { splitSide: sidesOf( split ).nav } } : {} ) } );
 		},
-		( { e } ) => ( ! m.isIconLink( e ) && ( iconOnly( e ) || emojiOnly( e ) || bindingGlyph( e ) ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null ),
+		( { e, st } ) => {
+			if ( m.isIconLink( e ) ) {
+				return null;
+			}
+			// A typed emoji or glyph disc is the icon block's emoji: its character, never written as the icon's brand name.
+			if ( emojiOnly( e ) || glyphDisc( e, st ) ) {
+				const attributes = emojiAttrs( R.solitaryIcon?.block, m.words( e ).trim() );
+				return v( 'solitaryIcon', { block: R.solitaryIcon?.block, ...( Object.keys( attributes ).length ? { attributes, drawsWords: true } : {} ) } );
+			}
+			return iconOnly( e ) || bindingGlyph( e ) ? v( 'solitaryIcon', { block: R.solitaryIcon?.block } ) : null;
+		},
 		// The call to action that ends a card link is the card's button, holding the card's link.
 		( { e } ) => {
 			const card = actionOf( e );

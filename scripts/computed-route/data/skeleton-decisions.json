@@ -547,7 +547,13 @@
 			"reason": "a header control outside the nav that opens a mega panel is an item of the second header menu, so it is a menu bar bound to that menu (the main menu owns the drawer's burger) and the item and its panel are one thing (Spec 48 FR-48-30)"
 		},
 		"solitaryIcon": {
-			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon; an emoji inside running text stays typed in the text",
+			"emoji": { "sourceSetting": "iconSource", "source": "emoji" },
+			"glyphDisc": {
+				"minPx": 16,
+				"notIcons": [ "+", "−", "×", "✕", "“", "”" ],
+				"reason": "a typed glyph (a tick, a star, an arrow, a currency sign) alone in a painted round box of equal width and height, outside any link or button, is a disc the draft draws: sgs/icon with the glyph as its emoji character; a plus, minus, cross or opening quote is a control or a quotation, never a disc"
+			},
+			"reason": "a glyph on its own (any icon library, an emoji alone, or a glyph the draft injects from a script value) is sgs/icon, an emoji or typed glyph as the icon's emoji character (never its brand name); an emoji inside running text stays typed in the text",
 			"block": "sgs/icon"
 		},
 		"label": {
