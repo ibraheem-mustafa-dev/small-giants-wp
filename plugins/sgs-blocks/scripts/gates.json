@@ -2492,5 +2492,23 @@
     "added_commit": null,
     "budget_ms": 3000,
     "order": 282
+  },
+  {
+    "id": "migrate-scalar-tier",
+    "cmd": "python scripts/migrate-scalar-tier.py --check",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 1100,
+    "order": 283
+  },
+  {
+    "id": "find-scalar-tier-attrs",
+    "cmd": "python scripts/find-scalar-tier-attrs.py --check --no-box",
+    "tier": "fast",
+    "added_D": null,
+    "added_commit": null,
+    "budget_ms": 6500,
+    "order": 284
   }
 ]
