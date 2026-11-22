@@ -32,9 +32,9 @@
 //     uploaded twice), `_sgs_photo_to_come` on each product carrying it, and `photoToCome` in catalogue.json's
 //     `sites.<site>` record; an image the product already has (its file exists) is never replaced by it, a draft image replaces it, and
 //     the marker is cleared once the product shows another image. The product card shows it as the product's photo;
-//   - a product the route made takes the draft's place in the shop as its menu_order (`menuOrder`), and every product gets
-//     the card's per-product words the draft holds (`card`: `_sgs_card_badge`, `_sgs_card_price_note`, `_sgs_card_cta_label`,
-//     `_sgs_card_cta_action`) where it has none; a value it holds is never replaced.
+//   - a product the route made takes the draft's place in the shop as its menu_order (`menuOrder`) and the card's per-product
+//     words the draft holds (`card`: `_sgs_card_badge`, `_sgs_card_price_note`, `_sgs_card_cta_label`, `_sgs_card_cta_action`)
+//     where it has none; a value it holds is never replaced, and a product the route only adopted gets neither.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -115,7 +115,7 @@ function missing( p, s, state, catalogue ) {
 	if ( ours && Number.isInteger( p.menuOrder ) && Number.isInteger( s.menuOrder ) && s.menuOrder !== p.menuOrder ) {
 		out.push( `its place in the shop (menu order ${ p.menuOrder }, now ${ s.menuOrder })` );
 	}
-	const cardLack = Object.entries( p.card || {} ).filter( ( [ k ] ) => s.card && '' === s.card[ k ] );
+	const cardLack = ours ? Object.entries( p.card || {} ).filter( ( [ k ] ) => s.card && '' === s.card[ k ] ) : [];
 	cardLack.length && out.push( `its card ${ cardLack.map( ( [ k, v ] ) => `${ k } "${ v }"` ).join( ', ' ) }` );
 	if ( 'variable' === p.type && s.type === p.type && ( ours || ! s.variations.length ) ) {
 		const lack = p.variations.filter( ( v ) => ! s.variations.includes( v.sku ) );

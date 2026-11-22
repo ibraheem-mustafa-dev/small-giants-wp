@@ -101,14 +101,15 @@ test( 'MUST FAIL: the catalogue step sets a route-made product\'s menu order and
 	assert.ok( ! run( repo, s.runPhp, false ).out.some( ( l ) => /menu order|its card/.test( l ) ), 'a fresh read plans neither again' );
 } );
 
-test( 'a product the route did not make keeps its menu order; it still gains card words it lacks', () => {
+test( 'MUST FAIL: a product the route did not make keeps its menu order and gets no card words', () => {
 	const { repo, catalogue } = setup();
 	const jar = { ...catalogue.products[ 0 ], menuOrder: 3, card: { badge: 'Fresh' } };
 	fs.writeFileSync( path.join( repo, 'sites', 'demo', 'build', 'catalogue.json' ), `${ JSON.stringify( { ...catalogue, products: [ jar ] }, null, 2 ) }\n` );
 	const s = shop( seed( { sku: 'SEEDED', grain: { id: 3, name: 'pa_grain', options: [ 20, 21 ], position: 1, visible: true, variation: true } } ) );
 	const line = run( repo, s.runPhp, false ).out.find( ( l ) => /^ {2}complete jar:/.test( l ) );
-	assert.match( line, /its card badge "Fresh"/ );
+	assert.doesNotMatch( line, /its card/ );
 	assert.doesNotMatch( line, /menu order/ );
 	run( repo, s.runPhp, true );
 	assert.equal( s.state().posts[ 50 ].menu_order, undefined );
+	assert.equal( s.state().posts[ 50 ].meta._sgs_card_badge, undefined, 'an adopted product gets no card words' );
 } );

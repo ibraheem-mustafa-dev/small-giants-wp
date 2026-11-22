@@ -8,7 +8,9 @@
 	{"file": "lib/catalogue-card-facts.mjs", "find": "return 1 === fields.length ? found[ role ].filter( ( h ) => h.field === fields[ 0 ] ) : [];", "replace": "return found[ role ];", "why": "a role two fields fill is written from the first"},
 	{"file": "lib/catalogue-read.mjs", "find": "menuOrder: out.products.length,", "replace": "menuOrder: 0,", "why": "every product takes the first place"},
 	{"file": "lib/site-build-catalogue.mjs", "find": "if ( ours && Number.isInteger( p.menuOrder ) && Number.isInteger( s.menuOrder ) && s.menuOrder !== p.menuOrder ) {", "replace": "if ( Number.isInteger( p.menuOrder ) && Number.isInteger( s.menuOrder ) && s.menuOrder !== p.menuOrder ) {", "why": "an adopted product's order is planned"},
-	{"file": "lib/site-build-catalogue.mjs", "find": "const cardLack = Object.entries( p.card || {} ).filter( ( [ k ] ) => s.card && '' === s.card[ k ] );", "replace": "const cardLack = Object.entries( p.card || {} );", "why": "card words the product has are planned again"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "const cardLack = ours ? Object.entries( p.card || {} ).filter( ( [ k ] ) => s.card && '' === s.card[ k ] ) : [];", "replace": "const cardLack = ours ? Object.entries( p.card || {} ) : [];", "why": "card words the product has are planned again"},
 	{"file": "lib/site-build-catalogue-php.mjs", "find": "&& '' === (string) get_post_meta( $id, $sgs_card_keys[ $k ], true ) ) {", "replace": ") {", "why": "card words the product has are replaced"},
-	{"file": "lib/site-build-catalogue-php.mjs", "find": "if ( $ours && isset( $p['menuOrder'] ) &&", "replace": "if ( isset( $p['menuOrder'] ) &&", "why": "an adopted product's order is changed"}
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "if ( $ours && isset( $p['menuOrder'] ) &&", "replace": "if ( isset( $p['menuOrder'] ) &&", "why": "an adopted product's order is changed"},
+	{"file": "lib/site-build-catalogue.mjs", "find": "const cardLack = ours ? Object.entries(", "replace": "const cardLack = true ? Object.entries(", "why": "an adopted product's card words are planned"},
+	{"file": "lib/site-build-catalogue-php.mjs", "find": "foreach ( $ours ? (array) ( $p['card'] ?? array() ) : array() as $k => $v ) {", "replace": "foreach ( (array) ( $p['card'] ?? array() ) as $k => $v ) {", "why": "an adopted product's card words are written"}
 ]

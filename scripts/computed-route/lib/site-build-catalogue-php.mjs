@@ -307,9 +307,9 @@ foreach ( $steps as $s ) {
 	// The shop's own order is the draft's (its place in the record lists), on a product the route made.
 	if ( $ours && isset( $p['menuOrder'] ) && (int) $wc->get_menu_order() !== (int) $p['menuOrder'] ) { $wc->set_menu_order( (int) $p['menuOrder'] ); }
 	$id = $wc->save();
-	// The product card's per-product words (includes/product-card-per-product.php), each only where the product has none.
+	// The product card's per-product words (includes/product-card-per-product.php), each only where the product has none, on a product the route made.
 	$sgs_card_keys = array( 'badge' => '_sgs_card_badge', 'note' => '_sgs_card_price_note', 'label' => '_sgs_card_cta_label', 'action' => '_sgs_card_cta_action' );
-	foreach ( (array) ( $p['card'] ?? array() ) as $k => $v ) {
+	foreach ( $ours ? (array) ( $p['card'] ?? array() ) : array() as $k => $v ) {
 		if ( isset( $sgs_card_keys[ $k ] ) && '' !== (string) $v && '' === (string) get_post_meta( $id, $sgs_card_keys[ $k ], true ) ) { update_post_meta( $id, $sgs_card_keys[ $k ], sanitize_text_field( (string) $v ) ); }
 	}
 	if ( ! $ours ) {
