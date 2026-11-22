@@ -212,7 +212,7 @@
 			]
 		},
 		"woocommerce/product-filter-chips": {
-			"_comment": "The shop's filter chips (F-6): a count drawn inside a chip is the chips block's count pill. Which chip is the 'all' choice and whether one chip is pressed at a time are not read here (the rail rule's segmented row decides the one-choice look).",
+			"_comment": "The shop's filter chips (F-6): a count drawn inside a chip is the chips block's count pill; the first chip pressed on load whose count is larger than every other chip's is the All chip (its words without the count are sgsChipAllLabel, its count pill sgsChipAllCount); a press of an unpressed chip that releases the pressed one is one at a time (sgsChipSingle), one that keeps it is several at a time. A row with no counts proves no All chip, so its label is left unwritten.",
 			"rules": [
 				{
 					"setting": "sgsChipCountPill",
@@ -226,6 +226,37 @@
 					"neighbours": [
 						"chip-list"
 					]
+				},
+				{
+					"setting": "sgsChipAllLabel",
+					"from": {
+						"text": "chip-all",
+						"minus": "chip-all-count"
+					},
+					"whenFound": "chip-all",
+					"whenLargest": {
+						"part": "chip-all-count",
+						"over": "chip-other-count"
+					}
+				},
+				{
+					"setting": "sgsChipAllCount",
+					"value": true,
+					"whenFound": "chip-all-count",
+					"whenLargest": {
+						"part": "chip-all-count",
+						"over": "chip-other-count"
+					}
+				},
+				{
+					"setting": "sgsChipSingle",
+					"value": true,
+					"whenFound": "chip-single"
+				},
+				{
+					"setting": "sgsChipSingle",
+					"value": false,
+					"whenFound": "chip-multiple"
 				}
 			]
 		},

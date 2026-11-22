@@ -3284,7 +3284,7 @@
 			}
 		},
 		"shopchips": {
-			"_comment": "A row of three or more pressable chips (buttons carrying aria-pressed, one pressed): the row is chip-list, a chip not pressed is chip, the pressed one chip-selected, and a count drawn inside a chip is chip-count. Parts are keyed by the css_element of the chips block's rows.",
+			"_comment": "A row of three or more pressable chips (buttons carrying aria-pressed, one pressed): the row is chip-list, a chip not pressed is chip, the pressed one chip-selected, and a count drawn inside a chip is chip-count. Parts are keyed by the css_element of the chips block's rows. chip-all is the first chip of the row when it is pressed on load (the unfiltered choice, proved by its count being larger than every other chip's: chip-all-count against chip-other-count); `probe: press` presses a chip that is not pressed on the open page (lib/part-look-press.mjs) and reads whether the pressed chip is released (one at a time: chip-single) or kept (chip-multiple).",
 			"anchors": {
 				"chipRow": {
 					"from": "page",
@@ -3309,6 +3309,17 @@
 						}
 					},
 					"smallest": true
+				},
+				"chipAll": {
+					"from": "chipRow",
+					"match": {
+						"tag": [
+							"button"
+						],
+						"ariaOn": true,
+						"firstSibling": true
+					},
+					"pick": "first"
 				}
 			},
 			"parts": {
@@ -3347,8 +3358,31 @@
 						}
 					},
 					"pick": "first"
+				},
+				"chip-all": {
+					"sameAs": "chipAll"
+				},
+				"chip-all-count": {
+					"from": "chipAll",
+					"match": {
+						"text": "count"
+					},
+					"pick": "first"
+				},
+				"chip-other-count": {
+					"from": "chipRow",
+					"match": {
+						"inside": {
+							"tag": [
+								"button"
+							],
+							"firstSibling": false
+						},
+						"text": "count"
+					}
 				}
-			}
+			},
+			"probe": "press"
 		},
 		"shopsort": {
 			"_comment": "The shop's sort select: the first select on the shop page (a select inside a product card is the card's own choice, not the sort).",

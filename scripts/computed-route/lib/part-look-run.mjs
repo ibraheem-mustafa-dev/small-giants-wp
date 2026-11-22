@@ -14,6 +14,7 @@ import { wpEvalRunner } from './calibration-refs.mjs';
 import { productAddressPhp, readLiveFacts } from './template-live-address.mjs';
 import { assertSiteContact } from './site-contact.mjs';
 import { readHover } from './part-look-hover.mjs';
+import { readPress } from './part-look-press.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 export const REPO = path.resolve( HERE, '..', '..', '..' );
@@ -89,6 +90,7 @@ export const unlocatedParts = ( group, reads ) => ( group?.mustLocate || [] ).fi
 // Reads every part of a locator group from a served draft at each width: { part: { width: [ { key, tag, text, box, styles } ] } }.
 // `files` are tried in order; a part no earlier file located is taken from a later one (the sign-in page's fields for the account).
 // `hover` names the parts whose instances are also hovered (lib/part-look-hover.mjs: each gains `hover`).
+// A spec with `probe: press` also presses a chip that is not pressed (lib/part-look-press.mjs): the read gains `chip-single` or `chip-multiple`.
 // A surface whose config names an `empty` script (the client's part-look.json: the script that empties the basket, run like `init`) is
 // read a second time at each width with that script in place of `init`, taking only the parts the first read did not locate (the
 // basket drawer's empty state). Each anchor the group's `emptyPins` names ({ anchor: part }) is pinned in that read to the element the
@@ -107,6 +109,7 @@ export async function readParts( { draftDir, files, spec, names, pages, config =
 				try {
 					const found = await page.evaluate( findPartsInPage, { spec, names, props: READ_PROPS, pages } );
 					hover.length && await readHover( { page, found, parts: hover, log } );
+					spec.probe && 'press' === spec.probe && await readPress( { page, found, log } );
 					for ( const [ part, list ] of Object.entries( found ) ) {
 						if ( ! list.length || ( filled[ part ] && filled[ part ] !== file ) ) {
 							continue;

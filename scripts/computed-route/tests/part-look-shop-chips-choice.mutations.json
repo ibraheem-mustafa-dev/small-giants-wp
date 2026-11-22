@@ -1,0 +1,62 @@
+[
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "( null === el.previousElementSibling ) !== m.firstSibling",
+		"replace": "true",
+		"why": "a pressed chip that is not first is read as the All chip"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "theirs.some( ( n ) => n >= mine )",
+		"replace": "theirs.some( ( n ) => n > mine )",
+		"why": "a first chip whose count only equals another's is the All chip"
+	},
+	{
+		"file": "lib/part-look-modes.mjs",
+		"find": "! theirs.length ||",
+		"replace": "",
+		"why": "a first chip counted while no other chip is counted is the All chip"
+	},
+	{
+		"file": "lib/part-look-press.mjs",
+		"find": "if ( ! pressedNow ) {",
+		"replace": "if ( false ) {",
+		"why": "a press that changed nothing reads a verdict"
+	},
+	{
+		"file": "lib/part-look-press.mjs",
+		"find": "wasPressed ? 'multiple' : 'single'",
+		"replace": "wasPressed ? 'single' : 'multiple'",
+		"why": "the one-at-a-time and several-at-a-time verdicts are swapped"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"firstSibling\": true",
+		"replace": "\"firstSibling\": false",
+		"why": "the All chip is looked for among chips that are not first"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"probe\": \"press\"",
+		"replace": "\"probe\": \"none\"",
+		"why": "the chips surface does not ask for the press probe"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"whenFound\": \"chip-single\"",
+		"replace": "\"whenFound\": \"chip-multiple\"",
+		"why": "a single-choice row is never switched to one at a time"
+	},
+	{
+		"file": "lib/part-look-run.mjs",
+		"find": "spec.probe && 'press' === spec.probe &&",
+		"replace": "false &&",
+		"why": "the run never presses a chip"
+	},
+	{
+		"file": "part-look.mjs",
+		"find": "...( group.probe ? { probe: group.probe } : {} )",
+		"replace": "",
+		"why": "the command does not hand the group's probe to the read"
+	}
+]

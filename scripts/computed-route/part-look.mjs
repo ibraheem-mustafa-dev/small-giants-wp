@@ -199,7 +199,7 @@ export async function runPartLook( { client, surfaces: wanted = SURFACES, site =
 			controls.why && notes.push( `${ surface }: the flow opener is not located: ${ controls.why }` );
 		}
 		const builtin = declaredButtons( loc.block );
-		const spec = { anchors: group.anchors, parts: group.parts, shopParts, routeHandlers, rootName: String( mainFile ).replace( /\.dc\.html$/, '' ), ...( group.emptyPins ? { emptyPins: group.emptyPins } : {} ) };
+		const spec = { anchors: group.anchors, parts: group.parts, shopParts, routeHandlers, rootName: String( mainFile ).replace( /\.dc\.html$/, '' ), ...( group.emptyPins ? { emptyPins: group.emptyPins } : {} ), ...( group.probe ? { probe: group.probe } : {} ) };
 		const also = ( loc.alsoRead || [] ).map( ( role ) => pages[ role ] ).filter( Boolean );
 		const { rows: blockRowsOf, names } = blockRows( loc.block, db );
 		const blockKey = [ 'woocommerce/cart', 'woocommerce/checkout' ].includes( loc.block ) ? loc.block.split( '/' )[ 1 ] : null;
