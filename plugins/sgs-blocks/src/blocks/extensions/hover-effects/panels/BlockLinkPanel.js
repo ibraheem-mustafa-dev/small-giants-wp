@@ -9,7 +9,7 @@
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { LinkPopoverField } from '../../../../components';
-import { LINK_SOURCES_ALL } from '../../../../shared/link-source-options';
+import { LINK_SOURCES_BLOCK_LINK } from '../../../../shared/link-source-options';
 
 /**
  * @param {Object}   props
@@ -112,7 +112,7 @@ export default function BlockLinkPanel( {
 					linkTarget: sgsBlockLinkTarget ? '_blank' : '_self',
 					linkSource: sgsBlockLinkSource,
 				} }
-				linkSources={ LINK_SOURCES_ALL }
+				linkSources={ LINK_SOURCES_BLOCK_LINK }
 				targetMode="boolean"
 				showRel={ false }
 				onChange={ ( next ) => {

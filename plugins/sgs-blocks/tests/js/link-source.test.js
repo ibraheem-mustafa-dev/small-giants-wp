@@ -21,6 +21,7 @@ import {
 	LINK_SOURCES_WEB,
 	LINK_SOURCES_PAGES,
 	LINK_SOURCES_NO_TOP,
+	LINK_SOURCES_BLOCK_LINK,
 	LINK_SOURCE_OPTIONS,
 	LINK_SOURCE_HELP,
 } from '../../src/shared/link-source-options';
@@ -91,6 +92,28 @@ describe( 'resolveLinkSource (twin of sgs_resolve_link_source)', () => {
 		expect( resolveLinkSource( 'google', '' ).url ).toBe( 'https://g.page/r/acme' );
 		delete window.sgsBlocksData;
 		expect( resolveLinkSource( 'google', TYPED ).url ).toBe( TYPED );
+	} );
+} );
+
+describe( 'order-view: the current order page', () => {
+	it( 'previews the typed URL in the editor, where there is no order, and the order address when one is known', () => {
+		expect( href( 'order-view' ) ).toBe( TYPED );
+		expect( href( 'order-view', '' ) ).toBe( '' );
+		expect( resolveLinkSource( 'order-view', TYPED, { orderViewUrl: 'https://example.test/view-order/7/' } ).url ).toBe( 'https://example.test/view-order/7/' );
+		expect( resolveLinkSource( 'order-view', TYPED, { orderViewUrl: 'javascript:alert(1)' } ).url ).toBe( TYPED );
+	} );
+
+	it( 'the block link offers it with a help line and a row label; the shared sets do not', () => {
+		expect( LINK_SOURCES_BLOCK_LINK ).toContain( 'order-view' );
+		expect( LINK_SOURCES_ALL ).not.toContain( 'order-view' );
+		expect( LINK_SOURCE_HELP[ 'order-view' ] ).toEqual( expect.any( String ) );
+		expect( linkSourceMode( 'order-view' ) ).toBe( 'order-view' );
+		expect( linkSourceRowText( 'order-view', TYPED ) ).toBe( `This order’s page: ${ TYPED }` );
+	} );
+
+	it( 'the server resolver names the same source', () => {
+		const php = fs.readFileSync( path.join( __dirname, '../../includes/helpers-link-source.php' ), 'utf8' );
+		expect( php ).toContain( "case 'order-view':" );
 	} );
 } );
 

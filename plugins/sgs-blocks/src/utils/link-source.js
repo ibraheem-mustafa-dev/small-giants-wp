@@ -78,6 +78,7 @@ export function editorSiteInfo() {
  * @param {Object} [context.siteInfo]  `window.sgsBlocksData.siteInfo` shape; defaults to the live one.
  * @param {string} [context.permalink] Current permalink of a `post:<id>` target, when known.
  * @param {string} [context.accountUrl] The account destination, when known.
+ * @param {string} [context.orderViewUrl] The current order's view address, when known (never in the editor).
  * @return {{url: string, attrs: Object<string,string>}} Resolved href ('' = no link) and extra attributes.
  */
 export function resolveLinkSource( source, typedUrl, context = {} ) {
@@ -101,6 +102,10 @@ export function resolveLinkSource( source, typedUrl, context = {} ) {
 	}
 	if ( 'account' === value ) {
 		return { url: context.accountUrl || typed.url, attrs: {} };
+	}
+	if ( 'order-view' === value ) {
+		const orderUrl = context.orderViewUrl || '';
+		return orderUrl && isSafeLinkUrl( orderUrl ) ? { url: orderUrl, attrs: {} } : typed;
 	}
 	return typed;
 }

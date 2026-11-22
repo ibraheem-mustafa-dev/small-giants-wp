@@ -61,6 +61,7 @@ export const LINK_SOURCE_HELP = {
 	tiktok: siteInfoHelp( __( 'TikTok link', 'sgs-blocks' ) ),
 	top: __( 'Scrolls smoothly to the top of the page and moves keyboard/screen-reader focus there.', 'sgs-blocks' ),
 	account: __( 'Links to the WooCommerce My Account page, or the login screen when WooCommerce is not active.', 'sgs-blocks' ),
+	'order-view': __( 'On an order confirmation, links to that order’s page in the customer’s account, for the signed-in customer who placed it. Anyone else, and any page without an order, uses the typed URL (leave it empty for no link).', 'sgs-blocks' ),
 	'add-to-basket': __( 'One tap adds the product below to the basket. Without JavaScript, or when the product cannot be added, it links to the product page; the typed URL is used if the product is missing or unavailable.', 'sgs-blocks' ),
 	post: __( 'Follows the chosen page or post: if its address changes, the link updates. If it is deleted or unpublished, the last address picked is used.', 'sgs-blocks' ),
 };
@@ -80,4 +81,7 @@ export const LINK_SOURCES_NO_TOP = LINK_SOURCES_ALL.filter( ( source ) => 'top' 
 /** For a destination that must be a page address (a redirect, a language or store URL). */
 export const LINK_SOURCES_PAGES = [ 'post' ];
 /** For a link that must be a web page (https): pages plus the web Site Info links. */
+// A whole-block link may also go to the current order's page (sgs/container cards on an order confirmation).
+export const LINK_SOURCES_BLOCK_LINK = [ ...LINK_SOURCES_ALL, 'order-view' ];
+
 export const LINK_SOURCES_WEB = [ 'post', 'directions', 'google', 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok' ];

@@ -18,6 +18,8 @@
  * - 'facebook', 'instagram', 'twitter', 'linkedin', 'youtube', 'tiktok'   Site Info socials.
  * - 'top'           back to the top of the page (focus handled by sgs/button's view module).
  * - 'account'       the WooCommerce My Account page, else the login screen.
+ * - 'order-view'    the current order's view-order page (the order an order confirmation shows), for its signed-in
+ *                   owner only (Order_Binding's `view_url`); anyone else keeps the typed URL.
  * - 'add-to-basket' needs a product, so sgs/button resolves it itself (includes/helpers-button-add-to-basket.php);
  *                   here it returns the typed URL like any source that cannot resolve.
  *
@@ -188,6 +190,19 @@ if ( ! function_exists( 'sgs_resolve_link_source' ) ) {
 					'url'   => $sgs_account_url,
 					'attrs' => array(),
 				);
+
+			case 'order-view':
+				// The current order's view-order page (the order the confirmation shows), read through the sgs/order
+				// binding so only its signed-in owner gets it; anyone else, or a page with no order, keeps the typed URL.
+				$sgs_order_view = class_exists( '\SGS\Blocks\Order_Binding' )
+					? (string) \SGS\Blocks\Order_Binding::get_value( array( 'key' => 'view_url' ) )
+					: '';
+				return '' !== trim( $sgs_order_view ) && sgs_link_source_is_safe_url( $sgs_order_view )
+					? array(
+						'url'   => $sgs_order_view,
+						'attrs' => array(),
+					)
+					: $typed;
 
 			case 'url':
 			default:

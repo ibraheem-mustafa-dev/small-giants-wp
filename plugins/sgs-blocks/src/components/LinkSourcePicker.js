@@ -9,7 +9,7 @@
  * (sgs/button's `url` + `linkSource` pair). Values: '' = the typed URL (the default; emits
  * nothing), `post:<id>` = a page or post by ID, otherwise the source name ('phone',
  * 'email', 'whatsapp', 'directions', 'google', 'facebook', 'instagram', 'twitter',
- * 'linkedin', 'youtube', 'tiktok', 'top'). No block.json enum (a post ID cannot be
+ * 'linkedin', 'youtube', 'tiktok', 'top', 'order-view'). No block.json enum (a post ID cannot be
  * enumerated): the server allow-lists it, so an unknown value keeps the typed URL.
  *
  * The URL attribute keeps the typed URL: the fallback while a Site Info field is empty,
@@ -76,6 +76,9 @@ export function linkSourceLabel( mode ) {
 	if ( 'top' === mode ) {
 		return __( 'Back to top', 'sgs-blocks' );
 	}
+	if ( 'order-view' === mode ) {
+		return __( 'This order’s page', 'sgs-blocks' );
+	}
 	const option = SITE_INFO_SOURCE_OPTIONS.find( ( o ) => o.value === mode );
 	return option ? option.label : '';
 }
@@ -124,6 +127,7 @@ export default function LinkSourcePicker( { value, sources, pendingPost, onPendi
 		...( offered.includes( 'post' ) ? [ { value: 'post', label: __( 'Page or post on this site', 'sgs-blocks' ) } ] : [] ),
 		...siteInfoOptions,
 		...( offered.includes( 'top' ) ? [ { value: 'top', label: __( 'Back to top', 'sgs-blocks' ) } ] : [] ),
+		...( offered.includes( 'order-view' ) ? [ { value: 'order-view', label: __( 'This order’s page (order confirmation)', 'sgs-blocks' ) } ] : [] ),
 	];
 
 	const handleChange = ( picked ) => {

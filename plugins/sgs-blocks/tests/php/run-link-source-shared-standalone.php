@@ -105,6 +105,16 @@ namespace {
 
 namespace SGS\Blocks {
 
+	/** The order binding's view_url read: '' for a viewer who is not the order's signed-in owner, null with no order. */
+	class Order_Binding {
+		/** @var string|null */
+		public static $view_url = null;
+
+		public static function get_value( $args ) {
+			return is_array( $args ) && 'view_url' === ( $args['key'] ?? '' ) ? self::$view_url : null;
+		}
+	}
+
 	/** In-memory Site Info with the real store's dot-notation reads. */
 	class Sgs_Site_Info {
 		/** @var array<string,mixed> */
@@ -250,6 +260,19 @@ namespace {
 	ok( ' data-sgs-link-source="top"' === sgs_link_source_attrs_html( 'top' ), 'sgs_link_source_attrs_html(top) prints the escaped data attribute' );
 	ok( '' === sgs_link_source_attrs_html( '' ) && '' === sgs_link_source_attrs_html( 'phone' ) && '' === sgs_link_source_attrs_html( 'post:12' ), 'every other source adds no attributes' );
 	ok( 'https://example.test/wp-login.php' === href( 'account', $typed ), 'account: the login screen without WooCommerce' );
+
+	// --- This order's page (the confirmation's order) ----------------------------------------------
+	\SGS\Blocks\Order_Binding::$view_url = 'https://example.test/my-account/view-order/1700/';
+	ok( 'https://example.test/my-account/view-order/1700/' === href( 'order-view', $typed ), "order-view: the current order's view address for its signed-in owner" );
+	\SGS\Blocks\Order_Binding::$view_url = '';
+	ok( $typed === href( 'order-view', $typed ), 'order-view: a viewer who is not the owner gets the typed URL' );
+	ok( '' === href( 'order-view', '' ), 'order-view: not the owner and no typed URL is no link' );
+	\SGS\Blocks\Order_Binding::$view_url = null;
+	ok( $typed === href( 'order-view', $typed ), 'order-view: no current order keeps the typed URL' );
+	\SGS\Blocks\Order_Binding::$view_url = 'javascript:alert(1)';
+	ok( $typed === href( 'order-view', $typed ), 'order-view: a refused scheme keeps the typed URL' );
+	\SGS\Blocks\Order_Binding::$view_url = null;
+	ok( '' === sgs_link_source_attrs_html( 'order-view' ), 'order-view adds no attributes' );
 
 	// --- sgs_link_attributes(): unchanged without a source, resolved with one ------------------------
 	\SGS\Blocks\Sgs_Site_Info::$store = $full_site_info;
