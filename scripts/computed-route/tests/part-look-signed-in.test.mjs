@@ -203,6 +203,28 @@ test( 'MUST FAIL: an order list of whole-row buttons that each hold an amount: e
 	assert.equal( ( await locate( ORDERS ) ).ordersRows[ 0 ].tag, 'div' );
 } );
 
+test( 'MUST FAIL: whole-row priced buttons are orders only with an order\'s own sign, a status pill or a date: a saved list or a plan list of priced rows is not', async () => {
+	const saved = ( name, price ) => `<button style="display:grid;grid-template-columns:1fr auto;width:100%;padding:16px;border:0;background:#fff;text-align:left"><span>${ name }</span><span>${ price }</span></button>`;
+	const list = page( `<h2>Saved</h2><div style="display:flex;flex-direction:column;gap:1px">${ saved( 'Aviator', '£120.00' ) }${ saved( 'Round', '£95.00' ) }</div>` );
+	assert.deepEqual( ( await locate( list ) ).ordersRows, [] );
+	await tabPage.setContent( list );
+	assert.equal( await tabPage.evaluate( openItemInPage ), false, 'a saved list of priced rows opens no order page' );
+	const plan = ( name ) => `<button style="display:grid;grid-template-columns:1fr auto auto;width:100%;padding:16px;border:0;background:#fff;text-align:left"><span>${ name }</span><span style="background:#EFEAE2;padding:4px 8px">Every month</span><span>£12.00</span></button>`;
+	assert.deepEqual( ( await locate( page( `<h2>Plans</h2><div>${ plan( 'Wipes' ) }${ plan( 'Spray' ) }</div>` ) ) ).ordersRows, [], 'a square chip with no date is no order sign' );
+	// Positive controls: the date leaf (Eye Care's rows) and a rounded status pill each make the rows orders.
+	assert.equal( ( await locate( ROWS ) ).ordersRows.length, 2 );
+	const dated = ( no ) => `<button style="display:grid;grid-template-columns:1fr auto auto;width:100%;padding:16px;border:0;background:#fff;text-align:left"><span><span>${ no }</span><span>12 October 2026</span></span><span style="background:#EFEAE2;padding:4px 8px">Ready</span><span>£40.00</span></button>`;
+	const dates = page( `<h2>Orders</h2><div>${ dated( 'EC-1' ) }${ dated( 'EC-2' ) }</div>` );
+	assert.equal( ( await locate( dates ) ).ordersRows.length, 2, 'a date with a square chip (Eye Care\'s rows) is an order' );
+	await tabPage.setContent( dates );
+	assert.equal( await tabPage.evaluate( openItemInPage ), true );
+	const pilled = ( no ) => `<button style="display:grid;grid-template-columns:1fr auto auto;width:100%;padding:16px;border:0;background:#fff;text-align:left"><span>${ no }</span><span style="${ PILL }">Ready</span><span>£40.00</span></button>`;
+	const pills = page( `<h2>Orders</h2><div>${ pilled( 'EC-1' ) }${ pilled( 'EC-2' ) }</div>` );
+	assert.equal( ( await locate( pills ) ).ordersRows.length, 2 );
+	await tabPage.setContent( pills );
+	assert.equal( await tabPage.evaluate( openItemInPage ), true );
+} );
+
 test( 'the live views: the account page, each menu view but signing out, then the seeded order', () => {
 	const menu = [ { href: 'http://x.test/my-account/', logout: false }, { href: 'http://x.test/my-account/orders/', logout: false }, { href: '/my-account/edit-address/', logout: false }, { href: 'http://x.test/my-account/customer-logout/?_wpnonce=1', logout: true } ];
 	assert.deepEqual( liveViewPaths( { accountPath: '/my-account/', menu, orderView: '/my-account/view-order/7/' } ), [ '/my-account/', '/my-account/orders/', '/my-account/edit-address/', '/my-account/view-order/7/' ] );

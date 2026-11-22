@@ -139,7 +139,7 @@
 	},
 	{
 		"file": "lib/part-look-signed-in.mjs",
-		"find": "( isControl( el ) || [ ...el.querySelectorAll( '*' ) ].some( isControl ) )",
+		"find": "( ( isControl( el ) && orderSign( el ) ) || [ ...el.querySelectorAll( '*' ) ].some( isControl ) )",
 		"replace": "[ ...el.querySelectorAll( '*' ) ].some( isControl )",
 		"why": "a whole-row button holding an amount is not taken for an item, so a one-file draft's order page is never opened"
 	},
@@ -151,15 +151,15 @@
 	},
 	{
 		"file": "data/part-locators.json",
-		"find": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"button\",\n\t\t\t\t\t\t\t\t\t\"a\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\t\t\"hasAmount\": true",
-		"replace": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"button\",\n\t\t\t\t\t\t\t\t\t\"a\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true",
+		"find": "\"repeats\": true,\n\t\t\t\t\t\t\t\t\"hasAmount\": true,\n\t\t\t\t\t\t\t\t\"hasDate\": true",
+		"replace": "\"repeats\": true,\n\t\t\t\t\t\t\t\t\"hasDate\": true",
 		"why": "a repeated row with no amount is taken for an order card"
 	},
 	{
 		"file": "data/part-locators.json",
-		"find": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"button\",\n\t\t\t\t\t\t\t\t\t\"a\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true,",
-		"replace": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"span\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true,",
-		"why": "a whole-row button is not an order card"
+		"find": "\"hasAmount\": true,\n\t\t\t\t\t\t\t\t\"has\": {\n\t\t\t\t\t\t\t\t\t\"pill\": true\n\t\t\t\t\t\t\t\t}",
+		"replace": "\"hasAmount\": true,\n\t\t\t\t\t\t\t\t\"has\": {\n\t\t\t\t\t\t\t\t\t\"pill\": false\n\t\t\t\t\t\t\t\t}",
+		"why": "a whole-row priced button with a status pill and no date is not an order card"
 	},
 	{
 		"file": "data/part-locators.json",
@@ -184,5 +184,35 @@
 		"find": ".sort( ( [ a ], [ b ] ) => Number( !! parts[ a ]?.sameViewAs ) - Number( !! parts[ b ]?.sameViewAs ) )",
 		"replace": "",
 		"why": "a list part found before its list in the same view is dropped"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "( ( isControl( el ) && orderSign( el ) ) ||",
+		"replace": "( isControl( el ) ||",
+		"why": "a saved list of priced whole-row buttons opens as an order page"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "( ! d.children.length && DATE.test( d.textContent || '' ) ) || isPill( d )",
+		"replace": "isPill( d )",
+		"why": "a dated row with a square chip (Eye Care's orders) is not opened"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "( ! d.children.length && DATE.test( d.textContent || '' ) ) || isPill( d )",
+		"replace": "( ! d.children.length && DATE.test( d.textContent || '' ) )",
+		"why": "a row with a status pill and no date is not opened"
+	},
+	{
+		"file": "lib/fill-part-look-page.mjs",
+		"find": "if ( undefined !== m.hasDate && [ ...el.querySelectorAll( '*' ) ].some( ( d ) => ! d.children.length && DATE.test( textOf( d ) ) ) !== m.hasDate ) {",
+		"replace": "if ( false ) {",
+		"why": "a priced row with no date is an order card"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"hasAmount\": true,\n\t\t\t\t\t\t\t\t\"hasDate\": true",
+		"replace": "\"hasAmount\": true,\n\t\t\t\t\t\t\t\t\"hasDate\": false",
+		"why": "a dated whole-row order is not an order card"
 	}
 ]

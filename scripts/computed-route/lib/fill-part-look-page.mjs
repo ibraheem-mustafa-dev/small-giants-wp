@@ -30,7 +30,7 @@
 // least 40% of its height: a status chip),
 // shopPart (an element the client's shop parts record locates for that part id: `spec.shopParts` maps an id to { dc, tpl } template
 // keys, and `spec.rootName` is the served page's own component), onlyChild (the only element in its parent), hasAmount (its text holds an
-// amount, whole or inside a sentence), minSiblings,
+// amount, whole or inside a sentence), hasDate (a leaf inside it holds a date: a day beside a month, or a numeric date), minSiblings,
 // precedesAnchor (the match comes before an anchor's element in the same row or the same parent: the column labels above a
 // loop of lines), allChildren (a matcher every direct child satisfies), rule (a line the draft draws: an hr, an empty strip
 // under 4px tall, or an element with a top or bottom border but not a border on every side, so a boxed card is not a rule),
@@ -48,6 +48,9 @@
 // returned with its own { tpl, host } stamp.
 export function findPartsInPage( { spec, names, props, pages } ) {
 	const AMOUNT = /[£$€]\s?\d|\d\s?[£$€]/;
+	// A date on its own or in a line ("12 October 2026", "Sat 7 Nov", "Nov 7", "07/11/2026", "2026-11-07"): a day beside a month, or
+	// a numeric date.
+	const DATE = /\b\d{1,2}(?:st|nd|rd|th)?\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\b|\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b|\b\d{1,2}\/\d{1,2}\/\d{2,4}\b|\b\d{4}-\d{2}-\d{2}\b/i;
 	// An amount on its own ("£21.50", "-£3", "12,50€"); a sentence that mentions one is words.
 	const CURRENCY = /^[-−+]?\s?([£$€]\s?\d[\d.,]*|\d[\d.,]*\s?[£$€])$/;
 	const norm = ( s ) => String( s || '' ).replace( /\s+/g, ' ' ).trim();
@@ -271,6 +274,9 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 			return false;
 		}
 		if ( undefined !== m.onlyChild && ( 1 === el.parentElement?.children.length ) !== m.onlyChild ) {
+			return false;
+		}
+		if ( undefined !== m.hasDate && [ ...el.querySelectorAll( '*' ) ].some( ( d ) => ! d.children.length && DATE.test( textOf( d ) ) ) !== m.hasDate ) {
 			return false;
 		}
 		if ( undefined !== m.hasAmount && AMOUNT.test( textOf( el ) ) !== m.hasAmount ) {

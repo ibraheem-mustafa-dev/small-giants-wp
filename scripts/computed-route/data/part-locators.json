@@ -2624,7 +2624,7 @@
 					"pick": "first"
 				},
 				"orderCards": {
-					"_comment": "An order card: a repeated card holding an amount and a control (its own open button), else a repeated control that itself holds an amount (a whole-row button, as a one-file draft draws its orders).",
+					"_comment": "An order card: a repeated card holding an amount and a control (its own open button), else a repeated control that itself holds an amount and an order's own sign, a date or a status pill (a whole-row button, as a one-file draft draws its orders); a saved list or a plan list of priced rows has neither.",
 					"any": [
 						{
 							"from": "content",
@@ -2652,7 +2652,24 @@
 								],
 								"control": true,
 								"repeats": true,
-								"hasAmount": true
+								"hasAmount": true,
+								"hasDate": true
+							},
+							"smallest": true
+						},
+						{
+							"from": "content",
+							"match": {
+								"tag": [
+									"button",
+									"a"
+								],
+								"control": true,
+								"repeats": true,
+								"hasAmount": true,
+								"has": {
+									"pill": true
+								}
 							},
 							"smallest": true
 						}

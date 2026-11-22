@@ -159,14 +159,22 @@ export function viewInPage() {
 
 // In-page: opens the first listed item's own page: the first of two or more repeated cards outside the account menu that each hold
 // an amount and a control, through that card's last control; or, where each item is itself a control holding an amount (a whole-row
-// button), through that control. Returns whether it found one to click.
+// button) that also holds an order's own sign, a date or a status pill (as the orderCards anchor of data/part-locators.json), through
+// that control; a saved list or a plan list of priced rows has neither. Returns whether it found one to click.
 export function openItemInPage() {
 	const AMOUNT = /[£$€]\s?\d|\d\s?[£$€]/;
+	const DATE = /\b\d{1,2}(?:st|nd|rd|th)?\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\b|\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b|\b\d{1,2}\/\d{1,2}\/\d{2,4}\b|\b\d{4}-\d{2}-\d{2}\b/i;
 	const isControl = ( el ) => [ 'BUTTON', 'A' ].includes( el.tagName ) || 'button' === el.getAttribute( 'role' );
 	const signature = ( el ) => `${ el.tagName }|${ [ ...el.children ].map( ( c ) => c.tagName ).join( ',' ) }`;
+	const isPill = ( el ) => {
+		const s = getComputedStyle( el );
+		const h = el.getBoundingClientRect().height;
+		return !! s.backgroundColor && 'transparent' !== s.backgroundColor && ! /^rgba\([^)]*,\s*0\)$/.test( s.backgroundColor ) && h > 0 && parseFloat( s.borderTopLeftRadius ) >= 0.4 * h;
+	};
+	const orderSign = ( el ) => [ ...el.querySelectorAll( '*' ) ].some( ( d ) => ( ! d.children.length && DATE.test( d.textContent || '' ) ) || isPill( d ) );
 	const main = document.querySelector( 'main' ) || document.body;
 	const inMenu = ( el ) => !! el.closest( 'nav, [role=navigation], [role=tablist], header, footer' );
-	const cards = [ ...main.querySelectorAll( '*' ) ].filter( ( el ) => ! inMenu( el ) && 'TR' !== el.tagName && el.getBoundingClientRect().height > 0 && AMOUNT.test( el.textContent || '' ) && ( isControl( el ) || [ ...el.querySelectorAll( '*' ) ].some( isControl ) ) && [ ...( el.parentElement?.children || [] ) ].some( ( s ) => s !== el && signature( s ) === signature( el ) ) );
+	const cards = [ ...main.querySelectorAll( '*' ) ].filter( ( el ) => ! inMenu( el ) && 'TR' !== el.tagName && el.getBoundingClientRect().height > 0 && AMOUNT.test( el.textContent || '' ) && ( ( isControl( el ) && orderSign( el ) ) || [ ...el.querySelectorAll( '*' ) ].some( isControl ) ) && [ ...( el.parentElement?.children || [] ) ].some( ( s ) => s !== el && signature( s ) === signature( el ) ) );
 	const smallest = cards.filter( ( c ) => ! cards.some( ( o ) => o !== c && c.contains( o ) ) );
 	const first = smallest[ 0 ];
 	const controls = first ? ( isControl( first ) ? [ first ] : [ ...first.querySelectorAll( '*' ) ].filter( isControl ) ) : [];
