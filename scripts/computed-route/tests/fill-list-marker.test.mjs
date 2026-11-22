@@ -86,3 +86,22 @@ test( 'MUST FAIL: Fill writes the item markers it reads at the marker parts', ()
 	assert.deepEqual( tree[ 0 ].attributes.items.map( ( i ) => [ i.iconSource, i.iconName ] ), [ [ 'lucide', 'check' ], [ 'lucide', 'check' ] ] );
 	assert.equal( tree[ 0 ].attributes.markerType, 'icon' );
 } );
+
+// A setting can list the marker part as measured from another anchor (a hover reading, `.x__item:nth-of-type(1) > .x__icon`,
+// without the block's root step) beside the block's own form; the marker slots follow the node's measured slots, not the shortest.
+const SHORT = ( k ) => `.sgs-icon-list__item:nth-of-type(${ k }) > .sgs-icon-list__icon`;
+const twoForms = { block: 'sgs/icon-list', settings: { ...cal.settings, iconColourHover: { slot: MARK( 1 ), slots: [ MARK( 1 ), SHORT( 1 ) ] }, iconSvgHover: { slot: `${ SHORT( 1 ) } > svg`, slots: [ `${ SHORT( 1 ) } > svg` ] } } };
+
+test( 'MUST FAIL: a marker part also listed from another anchor does not hide the node\'s measured marker slots', () => {
+	assert.equal( markerPart( twoForms.settings ), SHORT( 1 ), 'the shortest form is the other anchor\'s' );
+	assert.deepEqual( markerSlots( { cal: twoForms, slots: [ '', MARK( 1 ), MARK( 2 ), MARK( 3 ) ] } ), { 1: MARK( 1 ), 2: MARK( 2 ), 3: MARK( 3 ) } );
+	const r = marker( { [ MARK( 1 ) ]: { words: '✦' }, [ MARK( 2 ) ]: { words: '→' } }, 'sgs/icon-list', twoForms );
+	assert.deepEqual( r.writes.find( ( w ) => 'items' === w.attr ).value.map( ( i ) => [ i.iconSource, i.iconName ] ), [ [ 'emoji', '✦' ], [ 'emoji', '→' ] ] );
+	assert.equal( r.writes.find( ( w ) => 'markerType' === w.attr ).value, 'emoji' );
+} );
+
+test( 'negative control: slots measured from the other anchor pair with that form, and a calibration with one form is unchanged', () => {
+	assert.deepEqual( markerSlots( { cal: twoForms, slots: [ SHORT( 1 ), SHORT( 2 ) ] } ), { 1: SHORT( 1 ), 2: SHORT( 2 ) } );
+	assert.deepEqual( markerSlots( { cal, slots: [ MARK( 1 ), MARK( 2 ) ] } ), { 1: MARK( 1 ), 2: MARK( 2 ) } );
+	assert.deepEqual( markerSlots( { cal: twoForms, slots: [ '', ITEM( 1 ) ] } ), {} );
+} );

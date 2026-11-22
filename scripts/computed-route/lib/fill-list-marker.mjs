@@ -41,12 +41,18 @@ export function iconItems( db, block ) {
 // `slot` and `slots`), or null: the shortest slot under a repeated step that is not a pseudo-element and whose `<slot> > svg`
 // the calibration also names (the part the block's own svg sits in).
 export function markerPart( settings ) {
+	return markerParts( settings )[ 0 ] ?? null;
+}
+
+// Every marker part the calibration names, shortest first: one setting can also list the part as measured from another anchor
+// (a hover reading's `.x__item:nth-of-type(1) > .x__icon` beside the block's `.x > .x__item:nth-of-type(1) > .x__icon`), so a
+// reader matching the node's measured slots tries each.
+export function markerParts( settings ) {
 	const all = new Set();
 	for ( const s of Object.values( settings || {} ) ) {
 		[ s?.slot, ...( s?.slots || [] ) ].filter( ( p ) => 'string' === typeof p ).forEach( ( p ) => all.add( p ) );
 	}
-	const parts = [ ...all ].filter( ( p ) => /:nth-of-type\(\d+\)/.test( p ) && ! p.includes( '::' ) && all.has( `${ p } > svg` ) );
-	return parts.sort( ( a, b ) => a.length - b.length || a.localeCompare( b ) )[ 0 ] ?? null;
+	return [ ...all ].filter( ( p ) => /:nth-of-type\(\d+\)/.test( p ) && ! p.includes( '::' ) && all.has( `${ p } > svg` ) ).sort( ( a, b ) => a.length - b.length || a.localeCompare( b ) );
 }
 
 // The part's slot for item copy `k`: its last repeated step set to k.
@@ -156,12 +162,14 @@ export function drawnByCss( r ) {
 // marker; a copy with none pairs its own item part's CSS marker with the block's `::marker` (`<item slot>::marker`) where `reads`
 // shows the item's element drawing one.
 export function markerSlots( { cal, slots, reads = {} } ) {
-	const part = markerPart( cal?.settings );
+	const copy = ( s ) => Number( [ ...s.matchAll( NTH ) ].at( -1 )?.[ 1 ] ?? NaN );
+	// The part among the calibration's that the node's measured slots hold the most copies of.
+	const hits = ( part ) => slots.filter( ( s ) => Number.isFinite( copy( s ) ) && markerSlotAt( part, copy( s ) ) === s ).length;
+	const part = markerParts( cal?.settings ).map( ( p ) => [ p, hits( p ) ] ).sort( ( a, b ) => b[ 1 ] - a[ 1 ] )[ 0 ]?.[ 0 ] ?? null;
 	const out = {};
 	if ( ! part ) {
 		return out;
 	}
-	const copy = ( s ) => Number( [ ...s.matchAll( NTH ) ].at( -1 )?.[ 1 ] ?? NaN );
 	for ( const s of slots ) {
 		Number.isFinite( copy( s ) ) && markerSlotAt( part, copy( s ) ) === s && ( out[ copy( s ) ] = s );
 	}

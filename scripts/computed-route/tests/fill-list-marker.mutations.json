@@ -1,8 +1,8 @@
 [
 	{
 		"file": "lib/fill-list-marker.mjs",
-		"find": "&& all.has( `${ p } > svg` ) );",
-		"replace": "&& true );",
+		"find": "&& all.has( `${ p } > svg` ) ).sort(",
+		"replace": "&& true ).sort(",
 		"why": "a part that holds no svg is taken as the marker part"
 	},
 	{
