@@ -36,7 +36,7 @@ import { QUERY_DESKTOP, QUERY_TABLET_UP } from '../../utils/breakpoints';
 import { composeShadow } from '../../utils/shadow-layers';
 import { presetNames } from '../button/preset-names';
 import { galleryStickerPreviewCss, stickerCorner } from './gallery-sticker-preview';
-import { cartFormMock } from './canvas-cart-form';
+import { cartFormMock, instalmentsNoteMock } from './canvas-cart-form';
 import buttonKitStyle from '../../components/button-kit/button-kit-style';
 const PICKER_STYLES = [ 'outlined', 'filled', 'ghost', 'tile' ];
 const BADGE_POSITIONS = [
@@ -244,6 +244,19 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		`${ root } .sgs-buybox__notify-status`,
 		tier
 	);
+	// The instalments note under the button (render.php's instalmentsLine rule and instalmentsLineColour).
+	css += typographyPreviewCss(
+		attributes,
+		'instalmentsLine',
+		`${ root } .sgs-buybox__instalments`,
+		tier
+	);
+	if ( attributes.instalmentsLineColour ) {
+		css += `${ root } .sgs-buybox__instalments{color:${
+			resolveColourToken( attributes.instalmentsLineColour, palette ) ||
+			attributes.instalmentsLineColour
+		};}`;
+	}
 	css += typographyPreviewCss(
 		attributes,
 		'guidedMeter',
@@ -571,6 +584,13 @@ export function buyboxMockCss( attributes, scope, palette, tier = 'desktop' ) {
 		if ( badgeDecls.length ) {
 			css += `${ root } .sgs-buybox__pick-box .sgs-option-picker__term-badge,${ root } .sgs-buybox__pick-box .sgs-buybox-pick__option-badge{${ badgeDecls.join( ';' ) };}`;
 		}
+		// The badge's size (pickBadgeFontSize), as render.php's pickBadge typography rule prints it.
+		css += typographyPreviewCss(
+			attributes,
+			'pickBadge',
+			`${ root } .sgs-buybox__pick-box .sgs-option-picker__term-badge,${ root } .sgs-buybox__pick-box .sgs-buybox-pick__option-badge`,
+			tier
+		);
 		if ( attributes.pickPricedGap ) {
 			css += `${ pill } .sgs-option-picker__options{gap:${ safeLength( attributes.pickPricedGap ) };}`;
 		}
@@ -1494,6 +1514,7 @@ export function BuyboxCanvasMock( { attributes, tier, palette, extras, uid = 'sg
 				) }
 				{ true === attributes.noteField && <SampleNote attributes={ attributes } /> }
 				{ ! sideCart && cartForm }
+				{ instalmentsNoteMock( attributes ) }
 				{ false !== attributes.notifyEnabled && (
 					<SampleNotifyForm attributes={ attributes } />
 				) }

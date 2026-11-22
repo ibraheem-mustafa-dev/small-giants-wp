@@ -97,6 +97,14 @@ export function typedCardPreview( attrs, tier ) {
 			...labelBox( attrs.tagPadding, attrs.tagBorderRadius, attrs.tagBackgroundColour, attrs.tagFullWidth ),
 			...( isCssGradient( attrs.tagBackgroundColourGradient ) ? backgroundPaintPreview( '', attrs.tagBackgroundColourGradient ) : {} ),
 			...textColour( attrs.tagTextColour, attrs.tagTextColourGradient ),
+			// tagBorderWidth and tagBorderColour, as render.php's sgs_border_element_decls() rule paints them.
+			...sgsBorderPreview(
+				{
+					widthValues: attrs.tagBorderWidth,
+					colourValue: attrs.tagBorderColour,
+				},
+				tier
+			),
 		},
 		brand: {
 			...typographyPreviewStyle( attrs, 'brand', tier ),

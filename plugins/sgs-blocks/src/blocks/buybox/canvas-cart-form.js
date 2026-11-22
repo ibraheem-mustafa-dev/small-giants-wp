@@ -89,3 +89,29 @@ export function cartFormMock( { attributes, cartVariant, cartStyle, openerStyle,
 		</div>
 	);
 }
+
+/**
+ * The instalments note under the button (instalmentsNote), as render.php prints it: the typed note with a sample amount in
+ * place of its first %s (the canvas has no product price), so the note's look settings show where the client edits them.
+ *
+ * @param {Object} attributes Block attributes.
+ * @return {Element|null} The note, or null while no note is set.
+ */
+export function instalmentsNoteMock( attributes ) {
+	const note = String( attributes.instalmentsNote || '' ).trim();
+	if ( ! note ) {
+		return null;
+	}
+	// The amount is a real element between the note's two halves, as sgs_instalments_note_fill() places it (no %s: after
+	// the note and a space).
+	const at = note.indexOf( '%s' );
+	const before = at < 0 ? `${ note } ` : note.slice( 0, at );
+	const after = at < 0 ? '' : note.slice( at + 2 );
+	return (
+		<p className="sgs-buybox__instalments">
+			<AuthoredText value={ before } />
+			<span className="sgs-buybox__instalments-amount">£10.00</span>
+			{ after && <AuthoredText value={ after } /> }
+		</p>
+	);
+}
