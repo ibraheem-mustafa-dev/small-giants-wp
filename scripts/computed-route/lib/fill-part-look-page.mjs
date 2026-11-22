@@ -522,6 +522,9 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		return '';
 	};
 	const SIZES = [ 'width', 'height', 'min-width', 'min-height', 'max-width', 'flex-basis', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left' ];
+	// A form control does not inherit its font: with no font family the draft's code states for it (inline, a matching rule, or
+	// `font: inherit`), its computed family is the browser's own control font, not the draft's look. '1' then, else ''.
+	const uaFont = ( el ) => ( [ 'select', 'input', 'textarea', 'button' ].includes( el.tagName.toLowerCase() ) && ! declared( el, 'font-family' ) ? '1' : '' );
 	// The side column of a two-column grid the draft splits by unequal fractions (`1.35fr 1fr`): the width the ratio gives the smaller
 	// fraction's track at this width. '' for anything else: one column, equal fractions (`1fr 1fr`), a fixed track beside a fluid one
 	// (`80px 1fr`), the larger fraction's column, or an element spanning both tracks.
@@ -600,7 +603,7 @@ export function findPartsInPage( { spec, names, props, pages } ) {
 		out[ name ] = els.map( ( el ) => {
 			const s = styleOf( el );
 			const r = box( el );
-			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10, y: Math.round( r.top + window.scrollY ) }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'stack:gap': loc.stackGap ? stackGap( el ) : '', 'mark:text-left': markTextLeft( el ), 'label:above': labelAbove( el ) } };
+			return { key: pathOf( el ), ...stampOf( el ), tag: el.tagName.toLowerCase(), text: textOf( el ).slice( 0, 300 ), box: { w: Math.round( r.width * 10 ) / 10, h: Math.round( r.height * 10 ) / 10, y: Math.round( r.top + window.scrollY ) }, styles: { ...Object.fromEntries( props.map( ( p ) => [ p, s.getPropertyValue( p ) ] ) ), ...Object.fromEntries( SIZES.map( ( p ) => [ `decl:${ p }`, declared( el, p ) ] ) ), 'track:width': trackWidth( el ), 'ua:font': uaFont( el ), 'stack:gap': loc.stackGap ? stackGap( el ) : '', 'mark:text-left': markTextLeft( el ), 'label:above': labelAbove( el ) } };
 		} );
 	}
 	return out;

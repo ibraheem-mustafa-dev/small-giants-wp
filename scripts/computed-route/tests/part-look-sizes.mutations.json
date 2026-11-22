@@ -61,8 +61,8 @@
 	},
 	{
 		"file": "lib/fill-part-look-page.mjs",
-		"find": ", 'track:width': trackWidth( el ), 'stack:gap'",
-		"replace": ", 'stack:gap'",
+		"find": ", 'track:width': trackWidth( el ), 'ua:font'",
+		"replace": ", 'ua:font'",
 		"why": "the track width is never read in the page"
 	},
 	{

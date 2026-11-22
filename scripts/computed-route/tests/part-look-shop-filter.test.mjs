@@ -28,7 +28,7 @@ function rowsOf( block ) {
 		} else if ( o && 'object' === typeof o ) {
 			if ( [ 'filterLook', 'chipGap' ].includes( o.id ) ) {
 				for ( const [ name, a ] of Object.entries( o.attributes || {} ) ) {
-					( ! a.blocks || a.blocks.includes( block ) ) && ( o.rule?.blocks || [] ).concat( a.blocks || [] ).includes( block ) && out.push( { attr_name: name, attr_type: a.type, css_property: a.css_property || null, css_element: a.css_element || null, css_state: null, css_tier: null, is_responsive: a.tier_shape ? 1 : 0, tier_shape: a.tier_shape || null, enum_values: null, default_value: null } );
+					( ! a.blocks || a.blocks.includes( block ) ) && ( o.rule?.blocks || [] ).concat( a.blocks || [] ).includes( block ) && out.push( { attr_name: name, attr_type: a.type, css_property: a.css_property || null, css_element: a.css_element || null, css_state: a.css_state || null, css_tier: null, is_responsive: a.tier_shape ? 1 : 0, tier_shape: a.tier_shape || null, enum_values: null, default_value: null } );
 				}
 			}
 			Object.values( o ).forEach( walk );
@@ -96,6 +96,18 @@ test( 'negative controls: chips with no count pill turn it off; a row with none 
 	assert.equal( ( two[ 'chip-list' ] || [] ).length, 0 );
 } );
 
+test( 'MUST FAIL: a select\'s font family is written only where the draft states one; the browser\'s own control font is no look', async () => {
+	const rows = rowsOf( 'woocommerce/catalog-sorting' );
+	const pair = async ( html ) => {
+		const got = await read( html, 'shopsort', [ 'sort-select' ] );
+		return buildLook( { block: 'woocommerce/catalog-sorting', rows, names: rows.map( ( r ) => r.attr_name ), locators: LOC.groups.shopsort, reads: { 'sort-select': wide( got[ 'sort-select' ] ) } } ).writes.find( ( w ) => 'sgsSortFontFamily' === w.attr )?.value;
+	};
+	assert.equal( await pair( '<select><option>Featured</option></select>' ), undefined );
+	// Negative controls: a family the draft states on the select, or inherits by font: inherit, is written.
+	assert.equal( await pair( '<select style="font-family:Georgia"><option>Featured</option></select>' ), 'Georgia' );
+	assert.equal( await pair( '<div style="font-family:Karla"><select style="font:inherit"><option>Featured</option></select></div>' ), 'Karla' );
+} );
+
 test( 'MUST FAIL: the sort select is found and paired with the sorting block\'s settings; a select inside a card is not it', async () => {
 	const got = await read( `<article><select><option>Size</option></select></article>${ SORT }`, 'shopsort', [ 'sort-select' ] );
 	assert.equal( ( got[ 'sort-select' ] || [] ).length, 1 );
@@ -103,7 +115,13 @@ test( 'MUST FAIL: the sort select is found and paired with the sorting block\'s 
 	const rows = rowsOf( 'woocommerce/catalog-sorting' );
 	const look = buildLook( { block: 'woocommerce/catalog-sorting', rows, names: rows.map( ( r ) => r.attr_name ), locators: LOC.groups.shopsort, reads: { 'sort-select': wide( got[ 'sort-select' ] ) } } );
 	const attrs = look.writes.map( ( w ) => w.attr ).sort();
-	assert.deepEqual( attrs, [ 'sgsSortBackground', 'sgsSortBorderColour', 'sgsSortBorderRadius', 'sgsSortBorderWidth', 'sgsSortFontWeight' ] );
+	// The rows carry their own state (css_state hover, from the roster as from the database): the draft's resting select gives no hover
+	// value, so the two hover settings are not written. The height is the draft's stated 50px. The select states no font family, so its
+	// browser font is no look of the draft's (the page read's ua:font) and sgsSortFontFamily is not written.
+	assert.deepEqual( attrs, [ 'sgsSortBackground', 'sgsSortBorderColour', 'sgsSortBorderRadius', 'sgsSortBorderWidth', 'sgsSortFontWeight', 'sgsSortHeight' ] );
+	assert.equal( look.writes.find( ( w ) => 'sgsSortHeight' === w.attr ).value, '50px' );
+	assert.equal( look.settings.sgsSortFontFamily.status, 'not-written' );
+	assert.equal( look.settings.sgsSortHoverBackground.status, 'not-written' );
 	const only = await read( '<article><select><option>Size</option></select></article>', 'shopsort', [ 'sort-select' ] );
 	assert.equal( ( only[ 'sort-select' ] || [] ).length, 0 );
 } );

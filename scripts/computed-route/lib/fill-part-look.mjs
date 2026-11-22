@@ -123,6 +123,10 @@ export function primitive( property, styles, row = {}, keep = false ) {
 			return '' === v || INITIAL[ property ] === v || 'normal' === v || ( 'auto' === v && 'align-self' === property ) || ( '0' === v && 'flex-grow' === property ) ? null : v;
 		}
 		case 'font': {
+			// A control's browser font (the page read's ua:font: no family stated for it) is no look of the draft's: nothing to write.
+			if ( '1' === s( 'ua:font' ) ) {
+				return null;
+			}
 			// The first family of the stack: the fallbacks after it differ between a draft and a theme without changing the look.
 			const v = s( 'font-family' ).split( ',' )[ 0 ].trim().replace( /^["']|["']$/g, '' );
 			return v || undefined;
