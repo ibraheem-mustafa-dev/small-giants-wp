@@ -41,6 +41,8 @@ import * as gift from './template-piece-gift.mjs';
 import * as wooLayout from './template-piece-woo-layout.mjs';
 import * as frame from './template-piece-frame.mjs';
 import * as account from './template-piece-account.mjs';
+import * as related from './template-piece-related.mjs';
+import { loadCatalogue } from './catalogue-read.mjs';
 import { draftLinksFor } from './draft-link.mjs';
 import { commerceOf } from './skeleton-commerce-region.mjs';
 import { lintSkeleton } from '../lint.mjs';
@@ -49,12 +51,14 @@ import { conservationRows, identityOf, paintProblems, unreadList, STRICT_DEFAULT
 import { recordFor, openersFor, recordView } from './skeleton-record.mjs';
 
 // The builders the pass runs, by piece kind.
-export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account };
+export const BUILDERS = { buybox, gift, 'product-field': productField, 'shop-sort': shopSort, order, 'woo-layout': wooLayout, frame, account, related };
 // The kinds whose builder reads the client's fact record (lib/template-piece-order.mjs::place, lib/template-piece-woo-layout.mjs::place
 // and lib/template-piece-frame.mjs::place read ctx.factRecord).
 export const FACT_KINDS = [ 'order', 'woo-layout', 'frame' ];
 // The kinds whose builder resolves draft links to site addresses (lib/template-piece-account.mjs::place reads ctx.draftLinks).
 export const LINK_KINDS = [ 'account' ];
+// The kinds whose builder reads the client's catalogue (lib/template-piece-related.mjs::place reads ctx.catalogue: its id key, brand and facets).
+export const CATALOGUE_KINDS = [ 'related' ];
 
 // The fields of the draft's product records, by role: { name, price, rrp, brand, description, image } (each a list of field
 // names, over every record list the catalogue reader finds: lib/catalogue-records.mjs::recordLists, ::imageFields,
@@ -106,6 +110,7 @@ export function pieceContext( { repo, client, entry, inventory, pieces = [], fac
 		pageRows,
 		draftLinks: pieces.some( ( p ) => LINK_KINDS.includes( p.kind ) ) ? draftLinksFor( { repo, client } ) : null,
 		pageRowId: entry?.target?.postId ?? null,
+		catalogue: pieces.some( ( p ) => CATALOGUE_KINDS.includes( p.kind ) ) ? loadCatalogue( repo, client ) : null,
 	};
 }
 

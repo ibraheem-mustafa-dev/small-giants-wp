@@ -42,7 +42,10 @@ test( 'MUST FAIL: Mama\'s product skeleton gets one buy box, a bound title and d
 	assert.equal( treeNodes( got.tree ).filter( ( r ) => /^Add to basket ·/.test( r.node.attributes?.label || '' ) ).length, 0 );
 	const title = treeNodes( got.tree ).find( ( r ) => 'Root/27#0' === refKey( r.node ) ).node;
 	assert.deepEqual( title.attributes.metadata.bindings.content, { source: 'sgs-product/field', args: { key: 'title' } } );
-	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'buy-box', 'gift', 'title', 'description', 'gallery' ] );
+	assert.deepEqual( got.placed.map( ( p ) => p.id ), [ 'buy-box', 'gift', 'title', 'description', 'gallery', 'related' ] );
+	// F-54: "You might also like" lists the other products, so it is WooCommerce's related products collection of product cards.
+	const rel = got.placed.find( ( p ) => 'related' === p.id );
+	assert.deepEqual( [ rel.at, rel.collection, rel.perPage, rel.list ], [ 'Root/136#0, in place of Root/136#0', 'woocommerce/product-collection/related', 3, 'related' ] );
 	// The buy box takes the grid holding the gallery and the information column (F-50): the column's blocks before the controls
 	// (eyebrow, title, rating, description) render above the price, the gift between the choices and the form, the assurances
 	// and the accordion below it; the layout's stacking comes from the draft's boxes.
@@ -84,10 +87,12 @@ test( 'MUST FAIL: Mama\'s shop skeleton gets WooCommerce\'s sorting and results 
 	assert.equal( countBlocks( got.tree, 'sgs/option-picker' ), 1 );
 } );
 
-test( 'MUST FAIL: Eye Care\'s product and shop are refused, naming the record and inventory that disagree, and change nothing', () => {
+test( 'MUST FAIL: Eye Care\'s product and shop are refused, naming the record and inventory that disagree, and change nothing but the related lists', () => {
 	const product = read( EYE, 'product' );
 	const p = piecesPass( product );
-	assert.deepEqual( p.tree, product.tree );
+	// The related lists read the draft's logic and inventory, not the shop parts record, so they are the only pieces placed.
+	assert.deepEqual( p.placed.map( ( x ) => [ x.id, x.list, x.sameTermAs ] ), [ [ 'related', 'sameBrand', 'product_brand' ], [ 'related', 'related', 'pa_style' ] ] );
+	assert.equal( countBlocks( p.tree, 'sgs/buybox' ), countBlocks( product.tree, 'sgs/buybox' ) );
 	assert.match( p.problems.join( '\n' ), /disagree on buybox-add-to-basket \(Eye Care Birmingham\/396\)/ );
 	assert.match( p.problems.join( '\n' ), /locates the title on Root\/360#0 \(div\), and the page's h1 is Root\/362#0/ );
 	const shop = read( EYE, 'shop' );

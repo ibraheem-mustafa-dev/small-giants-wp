@@ -1,0 +1,68 @@
+[
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\tif ( ! leaves.length ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a list that keeps the shown product is taken as related"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\tif ( same.length > 1 ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a list sharing two fields is taken as sharing the first"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\tif ( others > 0 ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a filter a collection cannot hold is dropped"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\tif ( ! count ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a list cut to no count is taken"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "return both.every( Boolean ) ? Math.max( ...both ) : null;",
+		"replace": "return both[ 0 ];",
+		"why": "a choice of counts takes the first, not the largest"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\tconst facet = ( catalogue?.facets || [] ).find( ( f ) => f.field === field );",
+		"replace": "\tconst facet = null;",
+		"why": "a facet field makes no taxonomy"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\tif ( rel.field && ! tax ) {",
+		"replace": "\tif ( false ) {",
+		"why": "a field with no taxonomy becomes WooCommerce's related collection"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "\t\tif ( index.children( loop.holder ).some( ( k ) => ! loop.copies.includes( k ) ) ) {",
+		"replace": "\t\tif ( false ) {",
+		"why": "a holder with more than its cards is replaced whole"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "nodes.some( ( r ) => r.list !== nodes[ 0 ].list ) || ",
+		"replace": "",
+		"why": "nodes in two places are merged"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "...( tax ? { sgsSameTermAs: tax } : { collection: RELATED_COLLECTION } ),",
+		"replace": "...( tax ? {} : { collection: RELATED_COLLECTION } ),",
+		"why": "the shared term is never written"
+	},
+	{
+		"file": "lib/template-piece-related.mjs",
+		"find": "displayLayout: { type: 'flex', columns: Math.min( columns, rel.count ), shrinkColumns: true },",
+		"replace": "displayLayout: { type: 'flex', columns: 3, shrinkColumns: true },",
+		"why": "the draft's columns are not read"
+	}
+]
