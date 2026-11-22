@@ -12,7 +12,10 @@
  *     shrinks), read by 'fixed'.
  *
  * 'span' takes the whole row of a grid parent (`grid-column:1/-1`) and prints no
- * flex declarations; every other tier then resets the span (`grid-column:auto`).
+ * flex declarations. The span rule is bounded to the devices that hold it (a media
+ * query per run of spanning devices), so a device the span does not reach prints no
+ * `grid-column` at all and the block's own placement there (a form field's half or
+ * third of the form's six tracks) is untouched.
  * 'fill' takes the space left over in the row (`flex:1 1 0%`), so the
  * siblings keep their natural size and this block gets the rest; 'fit' sizes
  * to the content (and, in a column, no longer stretches across it); 'fixed' holds the given width. The rules land on the
@@ -62,21 +65,85 @@ function child_sizing_tier_width( string $mode, string $raw ): string {
 /**
  * The CSS declarations for one resolved sizing state.
  *
- * @param string $mode      'fit' | 'fill' | 'fixed' | '' (natural).
+ * 'span' has none here: it takes the row through `child_sizing_span_rules()`, bounded to its own devices.
+ *
+ * @param string $mode      'fit' | 'fill' | 'fixed' | 'span' | '' (natural).
  * @param string $width     Sanitised CSS length ('' when unset).
  * @param bool   $any_fixed Whether any tier uses a fixed width, so 'fit' and
  *                          'fill' must also cancel that width at their tier.
- * @param bool   $any_span  Whether any tier spans the row, so every other tier
- *                          must also cancel the grid span (`grid-column:auto`).
  * @return string Declarations without braces ('' = emit nothing).
  */
-function child_sizing_declarations( string $mode, string $width, bool $any_fixed, bool $any_span = false ): string {
-	if ( 'span' === $mode ) {
-		// The whole row of a grid parent; no flex declarations.
-		return 'grid-column:1/-1;';
+function child_sizing_declarations( string $mode, string $width, bool $any_fixed ): string {
+	return 'span' === $mode ? '' : child_sizing_flex_declarations( $mode, $width, $any_fixed );
+}
+
+/**
+ * The span rules: `grid-column:1/-1` inside a media query for each run of adjacent devices that span, so no device
+ * the span does not reach has its `grid-column` touched. All three devices print one plain rule.
+ *
+ * @param string $selector The scoped selector.
+ * @param bool[] $spans    Whether each tier spans: desktop, tablet, mobile keys.
+ * @return string CSS text ('' when no tier spans).
+ */
+function child_sizing_span_rules( string $selector, array $spans ): string {
+	$d    = ! empty( $spans['desktop'] );
+	$t    = ! empty( $spans['tablet'] );
+	$m    = ! empty( $spans['mobile'] );
+	$rule = $selector . '{grid-column:1/-1;}';
+	if ( $d && $t && $m ) {
+		return $rule;
 	}
-	$decls = child_sizing_flex_declarations( $mode, $width, $any_fixed );
-	return $any_span ? 'grid-column:auto;' . $decls : $decls;
+	$runs = array();
+	if ( $d && $t ) {
+		$runs[] = 'tablet-up';
+	} elseif ( $d ) {
+		$runs[] = 'desktop';
+	} elseif ( $t && $m ) {
+		$runs[] = 'tablet';
+	} elseif ( $t ) {
+		$runs[] = 'tablet-only';
+	}
+	if ( $m && ! $t ) {
+		$runs[] = 'mobile';
+	}
+	$css = '';
+	foreach ( $runs as $range ) {
+		$css .= \SGS_Breakpoints::media( $range ) . '{' . $rule . '}';
+	}
+	return $css;
+}
+
+/**
+ * The scoped child-sizing CSS for the three devices' resolved modes and widths.
+ *
+ * @param string $selector Scoped selector (marker class + scope class).
+ * @param array  $modes    Per-tier `sgsChildSizing` values (desktop, tablet, mobile: string or null to inherit).
+ * @param array  $widths   Per-tier `sgsChildWidth` values.
+ * @return string CSS text; '' when nothing is set.
+ */
+function child_sizing_css( string $selector, array $modes, array $widths ): string {
+	$resolved  = array();
+	$spans     = array();
+	$any_fixed = false;
+	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
+		$mode              = (string) sgs_resolve_tier( $modes, $tier, '' )['value'];
+		$mode              = in_array( $mode, array( 'fit', 'fill', 'fixed', 'span' ), true ) ? $mode : '';
+		$width             = child_sizing_tier_width( $mode, (string) sgs_resolve_tier( $widths, $tier, '' )['value'] );
+		$resolved[ $tier ] = array( $mode, $width );
+		$spans[ $tier ]    = 'span' === $mode;
+		$any_fixed         = $any_fixed || ( 'fixed' === $mode && '' !== $width );
+	}
+
+	// One state key per tier (mode + width) so the shared tier emitter can
+	// diff tiers and skip a tier that matches the one above.
+	$states = array();
+	$css_by = array();
+	foreach ( $resolved as $tier => $pair ) {
+		$key             = $pair[0] . '|' . $pair[1];
+		$states[ $tier ] = $key;
+		$css_by[ $key ]  = child_sizing_declarations( $pair[0], $pair[1], $any_fixed );
+	}
+	return sgs_emit_tier_rules_map( $selector, $states, $css_by, '', '|' ) . child_sizing_span_rules( $selector, $spans );
 }
 
 /**
@@ -141,36 +208,14 @@ function inject_child_sizing( $block_content, $block ) {
 		}
 		return $out;
 	};
-	$modes     = $normalise( $attrs['sgsChildSizing'] );
-	$widths    = $normalise( $attrs['sgsChildWidth'] ?? array() );
-
-	$resolved  = array();
-	$any_fixed = false;
-	$any_span  = false;
-	foreach ( array( 'desktop', 'tablet', 'mobile' ) as $tier ) {
-		$mode              = (string) sgs_resolve_tier( $modes, $tier, '' )['value'];
-		$mode              = in_array( $mode, array( 'fit', 'fill', 'fixed', 'span' ), true ) ? $mode : '';
-		$width             = child_sizing_tier_width( $mode, (string) sgs_resolve_tier( $widths, $tier, '' )['value'] );
-		$resolved[ $tier ] = array( $mode, $width );
-		$any_fixed         = $any_fixed || ( 'fixed' === $mode && '' !== $width );
-		$any_span          = $any_span || 'span' === $mode;
-	}
-
-	// One state key per tier (mode + width) so the shared tier emitter can
-	// diff tiers and skip a tier that matches the one above.
-	$states = array();
-	$css_by = array();
-	foreach ( $resolved as $tier => $pair ) {
-		$key             = $pair[0] . '|' . $pair[1];
-		$states[ $tier ] = $key;
-		$css_by[ $key ]  = child_sizing_declarations( $pair[0], $pair[1], $any_fixed, $any_span );
-	}
-	if ( '' === implode( '', $css_by ) ) {
+	$modes  = $normalise( $attrs['sgsChildSizing'] );
+	$widths = $normalise( $attrs['sgsChildWidth'] ?? array() );
+	if ( '' === child_sizing_css( '.sgs-child-sizing.x', $modes, $widths ) ) {
 		return $block_content;
 	}
 
-	$css_for = static function ( string $scope_class ) use ( $states, $css_by ): string {
-		return sgs_emit_tier_rules_map( '.sgs-child-sizing.' . $scope_class, $states, $css_by, '', '|' );
+	$css_for = static function ( string $scope_class ) use ( $modes, $widths ): string {
+		return child_sizing_css( '.sgs-child-sizing.' . $scope_class, $modes, $widths );
 	};
 	// Two classes (marker + scope) so a per-instance choice outranks a block's own single-class sizing default
 	// such as `.sgs-button--full`.
