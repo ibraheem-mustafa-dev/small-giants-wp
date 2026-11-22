@@ -1462,9 +1462,12 @@ function sgs_border_gradient_css( string $selector, string $normal_paint, ?strin
  *                               visitor points at the item for the page they are already on).
  *                               Default `[]` is the acceptance condition: every existing caller
  *                               that omits this parameter emits byte-identical CSS.
+ * @param string $hover_suffix  Optional. Text placed after the `:hover` and `:focus-visible` state of `$selector` in the hover rule (a descendant
+ *                               combinator and selector, e.g. ' > .sgs-bg-overlay'), so a layer that never receives the pointer itself
+ *                               (`pointer-events:none`) takes its hover paint from its parent's hover. Default '' keeps the state on `$selector`.
  * @return string Scoped CSS (zero or more rules), or '' when there is nothing to paint.
  */
-function sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover, array $extra_states = array() ): string {
+function sgs_emit_state_colour_css( string $selector, array $decls_normal, array $decls_hover, array $extra_states = array(), string $hover_suffix = '' ): string {
 	$css = '';
 
 	if ( $decls_normal ) {
@@ -1490,7 +1493,7 @@ function sgs_emit_state_colour_css( string $selector, array $decls_normal, array
 	}
 
 	if ( $decls_hover ) {
-		$css .= sgs_hover_state_rules( $selector, implode( ';', $decls_hover ), ':focus-visible' );
+		$css .= sgs_hover_state_rules( $selector, implode( ';', $decls_hover ), ':focus-visible', $hover_suffix );
 	}
 
 	return $css;

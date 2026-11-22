@@ -171,7 +171,8 @@ if ( ! function_exists( 'sgs_bg_overlay_css' ) ) {
 		$css      = $selector . '{' . $overlay_decls . '}';
 		$hover    = sgs_overlay_decls( (string) ( $attrs['backgroundOverlayColourHover'] ?? '' ), (string) ( $attrs['backgroundOverlayGradientHover'] ?? '' ) );
 		if ( '' !== $hover ) {
-			$css .= sgs_emit_state_colour_css( $selector, array(), array( $hover ) );
+			// The overlay takes no pointer events (media-bg.css), so its hover paint hangs off the block root's hover.
+			$css .= sgs_emit_state_colour_css( '.' . $uid, array(), array( $hover ), array(), ' > .' . sgs_bg_media_capability()['overlay_class'] );
 		}
 		$opacity = sgs_responsive_normalise_object( $attrs['backgroundOverlayOpacity'] ?? null );
 		foreach ( array( 'tablet', 'mobile' ) as $device ) {
