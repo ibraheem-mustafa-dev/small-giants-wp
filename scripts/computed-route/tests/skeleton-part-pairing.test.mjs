@@ -284,6 +284,11 @@ test( 'MUST FAIL (no holds signal): a disc holding a picture is the part that ho
 	assert.deepEqual( run( [ node( 'Root/3#0', 'img' ) ] ).slots, { '.badge': { tpl: 'Root/2#0' } }, 'the disc that holds the picture is the badge' );
 	assert.deepEqual( run( [ node( 'Root/3#0', 'span', [], { words: 'Need advice?' } ) ] ).slots, { '.text': { tpl: 'Root/2#0' } }, 'the box that holds words is the text box' );
 	assert.equal( run( [ node( 'Root/3#0', 'img' ), node( 'Root/4#0', 'span', [], { words: 'Need advice?' } ) ] ).ambiguous.length, 1, 'a box holding both fits neither by what it holds' );
+	// A card body that holds words (with a picture beside them) and a price row that holds words alone are both boxes of words: a draft box
+	// holding words is dropped from the icon-only parts only, never narrowed to the words-only part.
+	const CARD2 = { ...CARD, elements: { '': flat( 'div' ), '.body': flat( 'div', { width: '300px', 'background-color': 'rgb(37, 211, 102)' } ), '.body > .pic': flat( 'img', { width: '40px' } ), '.body > .name': flat( 'span', { width: '90px' } ), '.price': flat( 'span', { width: '300px', 'background-color': 'rgb(37, 211, 102)' } ), '.price > .amount': flat( 'span', { width: '60px' } ) }, parts: {} };
+	const body = node( 'Root/2#0', 'div', [ node( 'Root/3#0', 'span', [], { words: 'Zookie' } ) ], { box: { x: 0, y: 0, w: 300, h: 80 } } );
+	assert.equal( pairAbsorbed( { host: node( 'Root/1#0', 'div', [ body ] ), absorbed: [ { element: body, looks: [ 'background' ] } ], kids, calibration: { ...CARD2, settings: { bodyFill: { slot: '.body', property: 'background-color' }, priceFill: { slot: '.price', property: 'background-color' } } }, finder } ).ambiguous.length, 1, 'a box of words is not narrowed to the words-only part' );
 } );
 
 // A bag button's count: the block draws its trigger twice (alone, and inside a wrapper) with a badge pinned to the corner;
