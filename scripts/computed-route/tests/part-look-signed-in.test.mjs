@@ -148,6 +148,30 @@ test( 'the views open through the draft\'s own controls: each repeated menu cont
 	assert.equal( await tabPage.evaluate( openItemInPage ), false, 'negative control: cards with no amount list no item to open' );
 } );
 
+// A one-file draft's order list: each order is one whole-row button holding its number, date, summary, status pill and amount (Eye Care's).
+const ROW = ( no, total ) => `<button style="display:grid;grid-template-columns:1fr 2fr auto auto;gap:10px 20px;width:100%;padding:20px;border:0;background:#fff;text-align:left"><span style="display:flex;flex-direction:column"><span>${ no }</span><span>12 Oct 2026</span></span><span>Frames and lenses</span><span style="${ PILL }">Ready</span><span><span>${ total }</span><svg width="14" height="14" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></span></button>`;
+const ROWS = page( `<h2>Orders</h2><div style="display:flex;flex-direction:column;gap:1px">${ ROW( 'EC-1042', '£185.00' ) }${ ROW( 'EC-1037', '£92.50' ) }</div>` );
+
+test( 'MUST FAIL: an order list of whole-row buttons that each hold an amount: each row is an order card and the first row opens the item page', async () => {
+	const r = await locate( ROWS );
+	assert.equal( r.ordersRows.length, 2 );
+	assert.ok( r.ordersRows.every( ( c ) => 'button' === c.tag ) );
+	assert.deepEqual( texts( r[ 'order-number' ] ), [ 'EC-1042', 'EC-1037' ] );
+	assert.deepEqual( texts( r[ 'order-total' ] ), [ '£185.00', '£92.50' ] );
+	assert.deepEqual( texts( r[ 'order-status' ] ), [ 'Ready', 'Ready' ] );
+	await tabPage.setContent( `${ ROWS }<script>window.clicked=[];document.querySelectorAll('main button').forEach((b)=>b.addEventListener('click',()=>window.clicked.push(b.textContent.trim().slice(0,7))));</script>` );
+	assert.equal( await tabPage.evaluate( openItemInPage ), true );
+	assert.deepEqual( await tabPage.evaluate( () => window.clicked ), [ 'EC-1042' ], 'the first row itself is clicked, never a menu tab' );
+	// Negative controls: rows with no amount, and one lone row holding an amount, are no list of items.
+	await tabPage.setContent( page( `<h2>Plans</h2><div>${ ROW( 'A', 'none' ) }${ ROW( 'B', 'none' ) }</div>` ) );
+	assert.equal( await tabPage.evaluate( openItemInPage ), false, 'repeated rows with no amount list no item' );
+	assert.deepEqual( ( await locate( page( `<h2>Plans</h2><div>${ ROW( 'A', 'none' ) }${ ROW( 'B', 'none' ) }</div>` ) ) ).ordersRows, [] );
+	await tabPage.setContent( page( `<h2>One</h2><div>${ ROW( 'EC-1', '£5.00' ) }</div>` ) );
+	assert.equal( await tabPage.evaluate( openItemInPage ), false, 'one row on its own is no list' );
+	// A list of cards that each hold a control keeps its card (the card's control is clicked, as before).
+	assert.equal( ( await locate( ORDERS ) ).ordersRows[ 0 ].tag, 'div' );
+} );
+
 test( 'the live views: the account page, each menu view but signing out, then the seeded order', () => {
 	const menu = [ { href: 'http://x.test/my-account/', logout: false }, { href: 'http://x.test/my-account/orders/', logout: false }, { href: '/my-account/edit-address/', logout: false }, { href: 'http://x.test/my-account/customer-logout/?_wpnonce=1', logout: true } ];
 	assert.deepEqual( liveViewPaths( { accountPath: '/my-account/', menu, orderView: '/my-account/view-order/7/' } ), [ '/my-account/', '/my-account/orders/', '/my-account/edit-address/', '/my-account/view-order/7/' ] );

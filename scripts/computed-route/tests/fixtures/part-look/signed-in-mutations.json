@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "data/part-locators.json",
-		"find": "\"div\",\n\t\t\t\t\t\t\t\"li\",\n\t\t\t\t\t\t\t\"article\",\n\t\t\t\t\t\t\t\"section\"\n\t\t\t\t\t\t],\n\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\"hasAmount\": true,",
-		"replace": "\"div\",\n\t\t\t\t\t\t\t\"li\",\n\t\t\t\t\t\t\t\"article\",\n\t\t\t\t\t\t\t\"section\",\n\t\t\t\t\t\t\t\"tr\"\n\t\t\t\t\t\t],\n\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\"hasAmount\": true,",
+		"find": "\"div\",\n\t\t\t\t\t\t\t\t\t\"li\",\n\t\t\t\t\t\t\t\t\t\"article\",\n\t\t\t\t\t\t\t\t\t\"section\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\t\t\"hasAmount\": true,",
+		"replace": "\"div\",\n\t\t\t\t\t\t\t\t\t\"li\",\n\t\t\t\t\t\t\t\t\t\"article\",\n\t\t\t\t\t\t\t\t\t\"section\",\n\t\t\t\t\t\t\t\t\t\"tr\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\t\t\"hasAmount\": true,",
 		"why": "a table's rows are taken for order cards"
 	},
 	{
@@ -136,5 +136,29 @@
 		"find": "\t\t1440 === width && notes.push( 'the first tab lists no item",
 		"replace": "\t\tnotes.push( 'the first tab lists no item",
 		"why": "the missing item is noted at every width, not once"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "( isControl( el ) || [ ...el.querySelectorAll( '*' ) ].some( isControl ) )",
+		"replace": "[ ...el.querySelectorAll( '*' ) ].some( isControl )",
+		"why": "a whole-row button holding an amount is not taken for an item, so a one-file draft's order page is never opened"
+	},
+	{
+		"file": "lib/part-look-signed-in.mjs",
+		"find": "( isControl( first ) ? [ first ] : [ ...first.querySelectorAll( '*' ) ].filter( isControl ) )",
+		"replace": "[ ...first.querySelectorAll( '*' ) ].filter( isControl )",
+		"why": "a whole-row item is never clicked itself"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"button\",\n\t\t\t\t\t\t\t\t\t\"a\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true,\n\t\t\t\t\t\t\t\t\"hasAmount\": true",
+		"replace": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"button\",\n\t\t\t\t\t\t\t\t\t\"a\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true",
+		"why": "a repeated row with no amount is taken for an order card"
+	},
+	{
+		"file": "data/part-locators.json",
+		"find": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"button\",\n\t\t\t\t\t\t\t\t\t\"a\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true,",
+		"replace": "\"tag\": [\n\t\t\t\t\t\t\t\t\t\"span\"\n\t\t\t\t\t\t\t\t],\n\t\t\t\t\t\t\t\t\"control\": true,\n\t\t\t\t\t\t\t\t\"repeats\": true,",
+		"why": "a whole-row button is not an order card"
 	}
 ]

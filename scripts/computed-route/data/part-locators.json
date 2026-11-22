@@ -2073,21 +2073,39 @@
 					"pick": "first"
 				},
 				"orderCards": {
-					"from": "content",
-					"match": {
-						"tag": [
-							"div",
-							"li",
-							"article",
-							"section"
-						],
-						"repeats": true,
-						"hasAmount": true,
-						"has": {
-							"control": true
+					"_comment": "An order card: a repeated card holding an amount and a control (its own open button), else a repeated control that itself holds an amount (a whole-row button, as a one-file draft draws its orders).",
+					"any": [
+						{
+							"from": "content",
+							"match": {
+								"tag": [
+									"div",
+									"li",
+									"article",
+									"section"
+								],
+								"repeats": true,
+								"hasAmount": true,
+								"has": {
+									"control": true
+								}
+							},
+							"smallest": true
+						},
+						{
+							"from": "content",
+							"match": {
+								"tag": [
+									"button",
+									"a"
+								],
+								"control": true,
+								"repeats": true,
+								"hasAmount": true
+							},
+							"smallest": true
 						}
-					},
-					"smallest": true
+					]
 				},
 				"addressCards": {
 					"from": "plainContent",
