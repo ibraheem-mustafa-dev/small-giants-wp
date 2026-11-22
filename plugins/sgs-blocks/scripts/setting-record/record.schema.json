@@ -227,6 +227,13 @@
         }
       },
       "additionalProperties": false
+    },
+    "proofCache": {
+      "type": "array",
+      "description": "One object per proofKeys entry, in the same order: what the proof found for it ('v': proved, blind, refiled or removed; 'kind'; 'cause'; 'to': the parts it was re-filed to) and 'fp', the fingerprint of everything that proof read (proof.py::Fingerprints). check.py reuses an outcome whose fingerprint still matches instead of proving the entry again.",
+      "items": {
+        "type": "object"
+      }
     }
   }
 }

@@ -174,6 +174,7 @@ class Pages:
         files = D.sheet_order(list(D.sheet_files(run['plugin'], short, run['children'])) + [f for b in parents for f in D.sheet_files(run['plugin'], b, [])])
         run['proofSheetFiles'] = files  # the stamp names them (stamp.py::block_inputs), the parents' sheets included
         texts = [f.read_text(encoding='utf-8', errors='ignore') for f in files]
+        self.texts, self.theme_text = texts, css or ''  # what the entries' fingerprints read (Fingerprints)
         self.base = CP.Page.static_rules(([css] if css else []) + texts)
         # static_rules numbers the user-agent sheet from 0 and each sheet after it from 10,000 in steps of 100,000: the
         # theme (the first sheet) holds the rules numbered in this range
@@ -340,6 +341,51 @@ def part_of_element(page, el) -> str | None:
     if not classes:
         return None
     return min(classes, key=lambda c: (len(c), c))
+
+
+VAR_REF = re.compile(r'var\(\s*(--[\w-]+)')
+
+
+def cache_key(e: dict) -> str:
+    """An entry's key as the record's proof cache holds it (the key before the proof: setting, part, props, state, tiers)."""
+    return json.dumps([e['setting'], e['part'], list(e['props']), e.get('state'), list(e.get('tiers') or [])])
+
+
+class Fingerprints:
+    """What one entry's proof reads, as one hash: the plain and changed renders of each of its pairs, every declaration
+    (in the theme, the block's and its parents' stylesheets) of a property the entry names or of a longhand of one, the
+    declarations of every custom property those read (followed through), the page frame, and the check's own code
+    (stamp.py::check_hash). An entry whose fingerprint equals the one the record keeps is not proved again."""
+
+    def __init__(self, run: dict, pages):
+        import stamp as ST
+        self.run = run
+        self.index = {}
+        for text in ([pages.theme_text] if pages.theme_text else []) + list(pages.texts) + [pages.shell.get('css') or '']:
+            for sel, body, media in D.read_css(text):
+                for prop, value in D.decls_of(body):
+                    rule = (prop, value, sel, media)
+                    for name in {prop, *(CP.expand(prop, 'initial') if not prop.startswith('--') else ())}:
+                        self.index.setdefault(name, []).append(rule)
+        self.base = [ST.check_hash(run['plugin']), pages.frame, pages.theme.get('error')]
+
+    def rules_for(self, names) -> list:
+        seen, todo, out = set(), list(names), set()
+        while todo:
+            n = todo.pop()
+            if n in seen:
+                continue
+            seen.add(n)
+            for rule in self.index.get(n, ()):
+                out.add(rule)
+                todo.extend(VAR_REF.findall(rule[1]))
+        return sorted(out)
+
+    def of(self, e: dict, names, pairs) -> str:
+        import stamp as ST
+        res = self.run['results']
+        renders = [[(res.get(j) or {}).get('html', ''), (res.get(j) or {}).get('css', '')] for pair in pairs for j in pair]
+        return ST.text_hash(json.dumps([self.base, cache_key(e), renders, self.rules_for(names)], default=str))
 
 
 def longhands(props) -> list:
@@ -579,6 +625,9 @@ def prove(short: str, run: dict):
                        'parents': {'names': [p['name'] for p in pages.shell['parents']], 'error': pages.shell['error']}}
     scan = scan_of(run, short)
     dead_seen = {}
+    fps = Fingerprints(run, pages)
+    reuse = run.get('reuse') or {}  # entry key -> what an earlier proof found, with its fingerprint (check.py)
+    report['cache'], report['reused'] = {}, 0
     for k, e in run['entries'].items():
         setting, part, props, state, tiers = e['setting'], e['part'], e['props'], e['state'], e['tiers']
         names = longhands(props)
@@ -589,156 +638,170 @@ def prove(short: str, run: dict):
         conds = conditions_of(tiers)
         widths = sorted(R.tier_widths(tiers) or WIDTHS)
         verdict, evidence, kind, cause, refile = None, None, None, None, set()
-        container = [t for t in tiers if t.lstrip().startswith('@container')]
-        never_taken = next((t for t in tiers if t.lstrip().startswith('@supports') and not C.supports_holds(t.lstrip()[len('@supports'):])), None)
-        nested = None if never_taken else forbidden_nesting(run['plugin'], short, part, pages, pairs)
-        if never_taken:
-            verdict, evidence = 'removed', (f'the rule sits under `{never_taken.strip()}`, which a current Chromium never takes (cascade.supports_holds: a property test it '
-                                            f'implements holds, so the fallback written under `not` never applies); the entry is a fallback for engines the proof does not assume')
-        elif nested:
-            verdict, evidence = 'removed', nested
-        elif state and not holdable(state):
-            verdict, cause, evidence = 'blind', 'state-not-holdable', f'state {state} is a token the proof cannot hold'
-        elif container and not all(C.container_evaluable('container ' + t.lstrip()[len('@container'):].strip()) for t in container):
-            verdict, cause, evidence = 'blind', 'container-query', f'it holds under a container query ({container[0]}) that tests more than the width, which the proof cannot evaluate'
-        elif container and not pages.frame:
-            verdict, cause, evidence = 'blind', 'container-query', f'it holds under a container query ({container[0]}) and the page frame\'s width is unknown here ({pages.theme["error"] or "no layout given"})'
+        fp = fps.of(e, names, pairs)
+        hit = reuse.get(cache_key(e))
+        reused = bool(hit) and hit.get('fp') == fp
+        if reused:
+            # nothing the proof of this entry reads has moved: its renders, every rule that declares its properties or a
+            # custom property they read (theme and parents included), the page frame and the check's own code
+            verdict, kind, cause, refile = hit['v'], hit.get('kind'), hit.get('cause'), set(hit.get('to') or [])
+            evidence = f"reused: its renders, its properties' rules and the check are as when it was proved ({verdict})"
+            report['reused'] += 1
         else:
-            # A difference the block's own sheets already show is a proof as it stands; the theme sheet can only hide it
-            # behind a rule whose values it cannot always resolve. Only an entry that is not proved so is judged with the
-            # theme loaded.
-            r = scan_pairs(plain, run, setting, part, names, pairs, held, conds, widths, selectors)
-            if r['verdict'] != 'proved':
-                r = scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors)
-            if r['verdict'] is None and not (r['seen_part'] and r['matched']):
-                extra = completion(pages, run, scan, setting, part, names, pairs, held, conds, widths, selectors, missing_part=not r['seen_part'])
-                if extra:
-                    report['completions'].append({'setting': setting, 'part': part, 'with': extra['with']})
-                    pairs = pairs + [extra['pair']]
+            container = [t for t in tiers if t.lstrip().startswith('@container')]
+            never_taken = next((t for t in tiers if t.lstrip().startswith('@supports') and not C.supports_holds(t.lstrip()[len('@supports'):])), None)
+            nested = None if never_taken else forbidden_nesting(run['plugin'], short, part, pages, pairs)
+            if never_taken:
+                verdict, evidence = 'removed', (f'the rule sits under `{never_taken.strip()}`, which a current Chromium never takes (cascade.supports_holds: a property test it '
+                                                f'implements holds, so the fallback written under `not` never applies); the entry is a fallback for engines the proof does not assume')
+            elif nested:
+                verdict, evidence = 'removed', nested
+            elif state and not holdable(state):
+                verdict, cause, evidence = 'blind', 'state-not-holdable', f'state {state} is a token the proof cannot hold'
+            elif container and not all(C.container_evaluable('container ' + t.lstrip()[len('@container'):].strip()) for t in container):
+                verdict, cause, evidence = 'blind', 'container-query', f'it holds under a container query ({container[0]}) that tests more than the width, which the proof cannot evaluate'
+            elif container and not pages.frame:
+                verdict, cause, evidence = 'blind', 'container-query', f'it holds under a container query ({container[0]}) and the page frame\'s width is unknown here ({pages.theme["error"] or "no layout given"})'
+            else:
+                # A difference the block's own sheets already show is a proof as it stands; the theme sheet can only hide it
+                # behind a rule whose values it cannot always resolve. Only an entry that is not proved so is judged with the
+                # theme loaded.
+                r = scan_pairs(plain, run, setting, part, names, pairs, held, conds, widths, selectors)
+                if r['verdict'] != 'proved':
                     r = scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors)
-            if r['verdict'] is None:
-                sweep = override_sweep(pages, run, setting, pairs)
-                if sweep:
-                    # a per-device override: every value of it over every desktop value it can override
-                    pairs = pairs + [x for x in sweep if x not in pairs]
-                    r = scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors)
-                    report.setdefault('overrideSweeps', {})[setting] = len(sweep)
-            seen_part, matched, refile = r['seen_part'], r['matched'], r['refile']
-            verdict, evidence, kind = r['verdict'], r['evidence'], r['kind']
-            if verdict is None:
-                unnamed = unnamed_states(selectors)
-                if not seen_part:
-                    src = part_source(run['plugin'], short, part, scan)
-                    if src['kind'] == 'dead':
-                        verdict, evidence = 'removed', src['evidence']
-                        d = dead_seen.setdefault(src['token'], {'part': src['token'], 'evidence': src['evidence'], 'entries': 0})
-                        d['entries'] += 1
-                    else:
-                        verdict, cause, evidence = 'blind', src['cause'], f'the part is not in the server render ({src["evidence"]})'
-                elif not matched and unnamed:
-                    # the rule waits on a state nothing in the render decides (a visitor's or the browser's)
-                    verdict, cause, evidence = 'blind', 'state-not-holdable', f'the rule holds in a state the record cannot name ({", ".join(unnamed)}), which the proof cannot hold'
-                elif not matched:
-                    # the entry's own rule matches no element of the part here: a fixture without that markup, not a wrong entry
-                    need = sorted({c for s in selectors for c in C.required_classes(C.resting(_strip_pseudo(s), held))} - _present(pages, pairs, held, conds))
-                    verdict, cause, evidence = 'blind', 'rule-needs-absent-markup', f'the rule needs what no render here carries: {need[:4] or sorted(selectors)[:1]}'
-                elif refile:
-                    verdict, evidence = 'refiled', sorted(refile)
-                else:
-                    theme, undefined, kinds = set(), set(), {}
-                    for b, c in pairs:
-                        for j in (b, c):
-                            pg = pages.get(j, held, conds)
-                            for el, pse in pg.elements(part)[:1]:
-                                for w in widths:
-                                    theme |= outside_vars(pg, el, pse, names, w, conds, pages.known)
-                                    undefined |= outside_vars(pg, el, pse, names, w, conds, pages.known, with_known=True, kinds=kinds)
-                    # every property read and undefined here gets a placeholder, the block's own included: the setting may
-                    # switch whether a token another setting defines is read
-                    token = token_test(pages, pairs, part, names, widths, held, conds, theme | undefined, kinds) if (theme or undefined) else ''
-                    scripted = script_set_tokens(run['plugin'], theme) if theme and not token else []
-                    if theme and not token and not scripted:
-                        # the value comes from a token no page here defines, and the setting does not switch which one is
-                        # read: the token's value is the site's, not this setting's, so the entry is judged as any other
-                        theme = set()
-                    changed_decl = declaration_changes(pages, pairs, part, names, widths, held, conds)
-                    probes = [] if theme else [w for w in probe_widths(tiers, pages.breaks, widths) if w not in widths]
-                    wide = scan_pairs(pages, run, setting, part, names, pairs, held, conds, probes, selectors) if probes else None
-                    if wide and wide['verdict'] != 'proved':
-                        wide = None
-                    other = None if (theme or wide) else scan_pairs(pages, run, setting, part, names, sibling_pairs(run, setting, pairs), held, conds, widths, selectors)
-                    second = '' if (theme or wide or (other and other['verdict'])) else second_value(pages, run, pairs, setting, part, names, widths, held, conds)
-                    under = '' if (theme or wide or second or not changed_decl) else underlay_test(pages, pairs, part, names, widths, held, conds)
-                    if token:
-                        # the setting switches which token the value reads: proved whatever each site's token holds
-                        verdict, evidence, kind = 'proved', token, 'switched-on'
-                    elif scripted:
-                        # a front-end script writes the token (from what the setting printed): only a browser sees its value
-                        verdict, cause = 'blind', 'script-set-token'
-                        evidence = f'the value reads {scripted[0][0]}, which a front-end script sets ({scripted[0][1]}): the browser pass reads it'
-                    elif wide:
-                        # the sampled screens miss it: a screen width between two breakpoints shows the setting's paint
-                        verdict, kind = 'proved', wide['kind']
-                        evidence = f'at a screen width between the sampled ones ({", ".join(map(str, probes))}px probed): {wide["evidence"]}' if isinstance(wide['evidence'], str) else [['probe width', *d] for d in wide['evidence']]
-                    elif unnamed and not second:
+                if r['verdict'] is None and not (r['seen_part'] and r['matched']):
+                    extra = completion(pages, run, scan, setting, part, names, pairs, held, conds, widths, selectors, missing_part=not r['seen_part'])
+                    if extra:
+                        report['completions'].append({'setting': setting, 'part': part, 'with': extra['with']})
+                        pairs = pairs + [extra['pair']]
+                        r = scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors)
+                if r['verdict'] is None:
+                    sweep = override_sweep(pages, run, setting, pairs)
+                    if sweep:
+                        # a per-device override: every value of it over every desktop value it can override
+                        pairs = pairs + [x for x in sweep if x not in pairs]
+                        r = scan_pairs(pages, run, setting, part, names, pairs, held, conds, widths, selectors)
+                        report.setdefault('overrideSweeps', {})[setting] = len(sweep)
+                seen_part, matched, refile = r['seen_part'], r['matched'], r['refile']
+                verdict, evidence, kind = r['verdict'], r['evidence'], r['kind']
+                if verdict is None:
+                    unnamed = unnamed_states(selectors)
+                    if not seen_part:
+                        src = part_source(run['plugin'], short, part, scan)
+                        if src['kind'] == 'dead':
+                            verdict, evidence = 'removed', src['evidence']
+                            d = dead_seen.setdefault(src['token'], {'part': src['token'], 'evidence': src['evidence'], 'entries': 0})
+                            d['entries'] += 1
+                        else:
+                            verdict, cause, evidence = 'blind', src['cause'], f'the part is not in the server render ({src["evidence"]})'
+                    elif not matched and unnamed:
+                        # the rule waits on a state nothing in the render decides (a visitor's or the browser's)
                         verdict, cause, evidence = 'blind', 'state-not-holdable', f'the rule holds in a state the record cannot name ({", ".join(unnamed)}), which the proof cannot hold'
-                    elif other and other['verdict'] == 'proved':
-                        # this test value left the property as it was (the plain state already holds it); another value of the setting moves it
-                        verdict, kind = 'proved', other['kind']
-                        evidence = f'with another test value of the setting: {other["evidence"]}' if isinstance(other['evidence'], str) else [['another test value', *d] for d in other['evidence']]
-                    elif second:
-                        # a test value under a floor or a coincidence: a second value moves the property
-                        verdict, evidence, kind = 'proved', second, 'value'
-                    elif under:
-                        # the declaration the setting switches on computes to the plain value here, but not over a sentinel
-                        verdict, evidence, kind = 'proved', under, 'switched-on'
-                    elif changed_decl and _OVERRIDE.match(setting) and report.get('overrideSweeps', {}).get(setting, 0) > 1:
-                        # a per-device override tried over every desktop value it can override (override_sweep), the same also over
-                        # the underlay: the declaration is written but its value is the one the part already has in every combination
-                        verdict, evidence = 'removed', (f'a per-device override tried in {report["overrideSweeps"][setting]} combinations of its values over the values of the setting it '
-                                                        f'overrides: the part computes the same in every one, also over a sentinel underlay; the winning declaration changes ({changed_decl}) '
-                                                        f'but never its value')
-                    elif changed_decl and other_value_tried(run, setting, pairs) and restated_value(pages, pairs, part, names, widths, held, conds):
-                        verdict, evidence = 'removed', (f'the setting changes which rule declares the property, not its value ({restated_value(pages, pairs, part, names, widths, held, conds)}; '
-                                                        f'{changed_decl}): the rule restates what the plain render already declares, also with a second test value and over a sentinel underlay')
-                    elif changed_decl:
-                        verdict, cause, evidence = 'blind', 'same-value-here', f'the winning declaration changes ({changed_decl}) but computes to the same value in these renders, also over a sentinel underlay (it inherits, or meets a floor or the initial value)'
-                    elif container and not pages.frame_all:
-                        # the container's width between the three sampled screens is not seen: no difference here is no proof of none
-                        verdict, cause, evidence = 'blind', 'container-query', f'under a container query ({container[0]}): the container is {sorted(set(pages.frame.values()))} px wide at the three screen widths, and the threshold of its rule may sit between them'
-                    elif theme_winner(pages, pairs, part, names, widths, held, conds):
-                        verdict, cause, evidence = 'blind', 'same-value-here', 'the winning declaration is a rule of the theme in this page frame, the same with and without the setting (' + theme_winner(pages, pairs, part, names, widths, held, conds) + '): another layout would not apply it, so the entry stays'
+                    elif not matched:
+                        # the entry's own rule matches no element of the part here: a fixture without that markup, not a wrong entry
+                        need = sorted({c for s in selectors for c in C.required_classes(C.resting(_strip_pseudo(s), held))} - _present(pages, pairs, held, conds))
+                        verdict, cause, evidence = 'blind', 'rule-needs-absent-markup', f'the rule needs what no render here carries: {need[:4] or sorted(selectors)[:1]}'
+                    elif refile:
+                        verdict, evidence = 'refiled', sorted(refile)
                     else:
-                        # the note reads the last pair whose changed page draws the part (a completion or sibling pair may not)
-                        drawn = next((pr for pr in reversed(pairs) if pages.get(pr[1], held, conds).elements(part)), pairs[-1])
-                        verdict, evidence = 'removed', 'the winning declaration is the same with and without the setting, also with a second test value: ' + winner_note(pages, drawn, part, names, widths, held, conds)
-        if verdict == 'removed' and str(evidence).startswith(MEASURED_REMOVALS) and not part_drawn(pages, pairs, part, held, conds):
-            # A removal that says it measured the part (nothing on it moves) needs an element of the part on some page; with
-            # none (only a selector matched) nothing was read, so the entry stays, unproven, never removed. Removals that
-            # need no element (a rule a browser never applies, a rule that can match nothing, a class no source prints) stand.
-            verdict, cause = 'blind', 'part-not-rendered'
-            evidence = f'no page draws the part {part} (its rule matched, its element was never found), so the proof read nothing: {evidence}'
+                        theme, undefined, kinds = set(), set(), {}
+                        for b, c in pairs:
+                            for j in (b, c):
+                                pg = pages.get(j, held, conds)
+                                for el, pse in pg.elements(part)[:1]:
+                                    for w in widths:
+                                        theme |= outside_vars(pg, el, pse, names, w, conds, pages.known)
+                                        undefined |= outside_vars(pg, el, pse, names, w, conds, pages.known, with_known=True, kinds=kinds)
+                        # every property read and undefined here gets a placeholder, the block's own included: the setting may
+                        # switch whether a token another setting defines is read
+                        token = token_test(pages, pairs, part, names, widths, held, conds, theme | undefined, kinds) if (theme or undefined) else ''
+                        scripted = script_set_tokens(run['plugin'], theme) if theme and not token else []
+                        if theme and not token and not scripted:
+                            # the value comes from a token no page here defines, and the setting does not switch which one is
+                            # read: the token's value is the site's, not this setting's, so the entry is judged as any other
+                            theme = set()
+                        changed_decl = declaration_changes(pages, pairs, part, names, widths, held, conds)
+                        probes = [] if theme else [w for w in probe_widths(tiers, pages.breaks, widths) if w not in widths]
+                        wide = scan_pairs(pages, run, setting, part, names, pairs, held, conds, probes, selectors) if probes else None
+                        if wide and wide['verdict'] != 'proved':
+                            wide = None
+                        other = None if (theme or wide) else scan_pairs(pages, run, setting, part, names, sibling_pairs(run, setting, pairs), held, conds, widths, selectors)
+                        second = '' if (theme or wide or (other and other['verdict'])) else second_value(pages, run, pairs, setting, part, names, widths, held, conds)
+                        under = '' if (theme or wide or second or not changed_decl) else underlay_test(pages, pairs, part, names, widths, held, conds)
+                        if token:
+                            # the setting switches which token the value reads: proved whatever each site's token holds
+                            verdict, evidence, kind = 'proved', token, 'switched-on'
+                        elif scripted:
+                            # a front-end script writes the token (from what the setting printed): only a browser sees its value
+                            verdict, cause = 'blind', 'script-set-token'
+                            evidence = f'the value reads {scripted[0][0]}, which a front-end script sets ({scripted[0][1]}): the browser pass reads it'
+                        elif wide:
+                            # the sampled screens miss it: a screen width between two breakpoints shows the setting's paint
+                            verdict, kind = 'proved', wide['kind']
+                            evidence = f'at a screen width between the sampled ones ({", ".join(map(str, probes))}px probed): {wide["evidence"]}' if isinstance(wide['evidence'], str) else [['probe width', *d] for d in wide['evidence']]
+                        elif unnamed and not second:
+                            verdict, cause, evidence = 'blind', 'state-not-holdable', f'the rule holds in a state the record cannot name ({", ".join(unnamed)}), which the proof cannot hold'
+                        elif other and other['verdict'] == 'proved':
+                            # this test value left the property as it was (the plain state already holds it); another value of the setting moves it
+                            verdict, kind = 'proved', other['kind']
+                            evidence = f'with another test value of the setting: {other["evidence"]}' if isinstance(other['evidence'], str) else [['another test value', *d] for d in other['evidence']]
+                        elif second:
+                            # a test value under a floor or a coincidence: a second value moves the property
+                            verdict, evidence, kind = 'proved', second, 'value'
+                        elif under:
+                            # the declaration the setting switches on computes to the plain value here, but not over a sentinel
+                            verdict, evidence, kind = 'proved', under, 'switched-on'
+                        elif changed_decl and _OVERRIDE.match(setting) and report.get('overrideSweeps', {}).get(setting, 0) > 1:
+                            # a per-device override tried over every desktop value it can override (override_sweep), the same also over
+                            # the underlay: the declaration is written but its value is the one the part already has in every combination
+                            verdict, evidence = 'removed', (f'a per-device override tried in {report["overrideSweeps"][setting]} combinations of its values over the values of the setting it '
+                                                            f'overrides: the part computes the same in every one, also over a sentinel underlay; the winning declaration changes ({changed_decl}) '
+                                                            f'but never its value')
+                        elif changed_decl and other_value_tried(run, setting, pairs) and restated_value(pages, pairs, part, names, widths, held, conds):
+                            verdict, evidence = 'removed', (f'the setting changes which rule declares the property, not its value ({restated_value(pages, pairs, part, names, widths, held, conds)}; '
+                                                            f'{changed_decl}): the rule restates what the plain render already declares, also with a second test value and over a sentinel underlay')
+                        elif changed_decl:
+                            verdict, cause, evidence = 'blind', 'same-value-here', f'the winning declaration changes ({changed_decl}) but computes to the same value in these renders, also over a sentinel underlay (it inherits, or meets a floor or the initial value)'
+                        elif container and not pages.frame_all:
+                            # the container's width between the three sampled screens is not seen: no difference here is no proof of none
+                            verdict, cause, evidence = 'blind', 'container-query', f'under a container query ({container[0]}): the container is {sorted(set(pages.frame.values()))} px wide at the three screen widths, and the threshold of its rule may sit between them'
+                        elif theme_winner(pages, pairs, part, names, widths, held, conds):
+                            verdict, cause, evidence = 'blind', 'same-value-here', 'the winning declaration is a rule of the theme in this page frame, the same with and without the setting (' + theme_winner(pages, pairs, part, names, widths, held, conds) + '): another layout would not apply it, so the entry stays'
+                        else:
+                            # the note reads the last pair whose changed page draws the part (a completion or sibling pair may not)
+                            drawn = next((pr for pr in reversed(pairs) if pages.get(pr[1], held, conds).elements(part)), pairs[-1])
+                            verdict, evidence = 'removed', 'the winning declaration is the same with and without the setting, also with a second test value: ' + winner_note(pages, drawn, part, names, widths, held, conds)
+            if verdict == 'removed' and str(evidence).startswith(MEASURED_REMOVALS) and not part_drawn(pages, pairs, part, held, conds):
+                # A removal that says it measured the part (nothing on it moves) needs an element of the part on some page; with
+                # none (only a selector matched) nothing was read, so the entry stays, unproven, never removed. Removals that
+                # need no element (a rule a browser never applies, a rule that can match nothing, a class no source prints) stand.
+                verdict, cause = 'blind', 'part-not-rendered'
+                evidence = f'no page draws the part {part} (its rule matched, its element was never found), so the proof read nothing: {evidence}'
         row = {'setting': setting, 'part': part, 'props': props, 'state': state, 'tiers': tiers, 'verdict': verdict, 'evidence': evidence}
         if verdict == 'proved':
             out[k] = {**e, 'kind': kind}
             report['proved'].append(row)
         elif verdict == 'blind':
             row['unproved'] = cause or unproved_slug(str(evidence))
-            out[k] = {**e, 'kind': _kind_guess(run, pairs, setting), 'unproved': row['unproved']}
+            out[k] = {**e, 'kind': kind if reused else _kind_guess(run, pairs, setting), 'unproved': row['unproved']}
             report['blind'].append(row)
         elif verdict == 'refiled':
             for p in sorted(refile):
                 n = {**e, 'part': p}
-                n['kind'] = _kind_guess(run, pairs, setting)
+                n['kind'] = kind if reused else _kind_guess(run, pairs, setting)
                 out[(setting, p, tuple(props), state, tuple(tiers))] = n
             report['refiled'].append(row)
         else:
             report['removed'].append(row)
+        written = out.get(k) or next((out[(setting, p, tuple(props), state, tuple(tiers))] for p in sorted(refile)), {}) if verdict != 'removed' else {}
+        report['cache'][cache_key(e)] = {x: v for x, v in (('fp', fp), ('v', verdict), ('kind', written.get('kind')),
+                                                           ('cause', row.get('unproved')), ('to', sorted(refile) or None)) if v is not None}
     report['deadParts'] = sorted(dead_seen.values(), key=lambda d: d['part'])
     counts = {v: len(report[v]) for v in ('proved', 'refiled', 'removed', 'blind')}
     counts['byKind'] = {kd: sum(1 for e in out.values() if e.get('kind') == kd) for kd in ('value', 'switched-on')}
     counts['byCause'] = {c: sum(1 for e in out.values() if e.get('unproved') == c) for c in sorted({e['unproved'] for e in out.values() if e.get('unproved')})}
     counts['completions'] = len(report['completions'])
+    counts['reused'] = report['reused']
     counts['deadParts'] = len(report['deadParts'])
     report['counts'] = counts
     return out, report

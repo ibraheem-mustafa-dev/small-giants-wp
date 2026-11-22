@@ -642,3 +642,43 @@ def test_an_editor_script_edit_keeps_renders_and_selects_no_block(tmp_path):
     assert ST.select(plugin, records, {}, tmp_path, '') == {}
     records['sgs/demo']['stamp']['inputs']['src/blocks/demo/edit.js'] = 'an older stamp listed it'
     assert ST.select(plugin, records, {}, tmp_path, '') == {}
+
+
+
+# ---------------------------------------------------------------- proof fingerprints: a rewrite re-proves only what moved
+import proof as PR  # noqa: E402
+
+
+def _fps(sheet: str, theme: str = ''):
+    pages = SimpleNamespace(texts=[sheet], theme_text=theme, shell={'css': ''}, frame={'w': 1}, theme={'error': None})
+    run = {'plugin': PLUGIN, 'results': {'b': {'html': '<p class="sgs-demo"></p>', 'css': ''},
+                                         'c': {'html': '<p class="sgs-demo x"></p>', 'css': ''}}}
+    return PR.Fingerprints(run, pages)
+
+
+ENTRY = {'setting': 'textColour', 'part': 'ROOT', 'props': ['color'], 'state': None, 'tiers': []}
+
+
+def test_a_fingerprint_moves_with_its_own_property_and_the_custom_properties_it_reads():
+    base = '.sgs-demo{color:var(--c)} .x{--c:red} .sgs-demo{margin:0}'
+    fp = _fps(base).of(ENTRY, ['color'], [('b', 'c')])
+    assert _fps(base.replace('margin:0', 'margin:4px')).of(ENTRY, ['color'], [('b', 'c')]) == fp  # another property
+    assert _fps(base.replace('--c:red', '--c:blue')).of(ENTRY, ['color'], [('b', 'c')]) != fp  # a custom property it reads
+    assert _fps(base, theme='p{color:green}').of(ENTRY, ['color'], [('b', 'c')]) != fp  # the theme's rule for it
+
+
+def test_a_shorthand_counts_for_its_longhands():
+    entry = {**ENTRY, 'setting': 'borderWidth', 'props': ['border-top-width']}
+    fp = _fps('.a{border:1px solid}').of(entry, ['border-top-width'], [('b', 'c')])
+    assert _fps('.a{border:2px solid}').of(entry, ['border-top-width'], [('b', 'c')]) != fp
+
+
+def test_the_writer_keeps_each_outcome_beside_its_key_and_reads_it_back():
+    k = ('textColour', 'ROOT', ('color',), None, ())
+    cache = {PR.cache_key({'setting': 'textColour', 'part': 'ROOT', 'props': ['color'], 'state': None, 'tiers': []}):
+             {'fp': 'abc', 'v': 'proved', 'kind': 'value'}}
+    lst = CK.cache_list([k], cache)
+    assert lst == [{'fp': 'abc', 'v': 'proved', 'kind': 'value'}]
+    keys = [list(k[:2]) + [list(k[2]), k[3], list(k[4])]]
+    reuse = dict(zip((json.dumps(x) for x in keys), lst))
+    assert reuse[PR.cache_key({'setting': 'textColour', 'part': 'ROOT', 'props': ('color',), 'state': None, 'tiers': ()})]['v'] == 'proved'

@@ -457,7 +457,8 @@ def diff_placements(base, changed, short, sheets):
     out = []
     runtime = [(s, p, v, m, 'runtime') for (m, s, p), v in rm.items()]
     allrules = sheets + runtime
-    changed_rules = [k for k in set(rb) | set(rm) if rb.get(k) != rm.get(k) and PROP_RE.fullmatch(k[2])]
+    # sorted: a set's order changes from process to process, and the first placement of an item names its example selector
+    changed_rules = sorted(k for k in set(rb) | set(rm) if rb.get(k) != rm.get(k) and PROP_RE.fullmatch(k[2]))
     consumers = lambda name: live_consumers(name, allrules, rm, em, short, frozenset(changed_rules))  # noqa: E731
     for media, sel, prop in changed_rules:
         if prop.startswith('--'):

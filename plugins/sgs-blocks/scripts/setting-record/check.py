@@ -383,6 +383,11 @@ def schema_errors(doc: dict, need_kind: bool) -> list:
     return [f'{"/".join(str(p) for p in e.absolute_path)}: {e.message}' for e in jsonschema.Draft202012Validator(schema).iter_errors(doc)][:20]
 
 
+def cache_list(plain_keys, cache: dict) -> list:
+    """The proof's outcomes in `proofKeys` order (one object per key: fingerprint, verdict, kind, cause, re-file target)."""
+    return [cache.get(json.dumps(list(k[:2]) + [list(k[2]), k[3], list(k[4])])) or {} for k in plain_keys]
+
+
 def new_stamp(args, short: str, run: dict, fixtures: dict) -> dict:
     """The stamp a record written or refreshed now carries (stamp.py::make_stamp)."""
     import stamp as ST
@@ -459,7 +464,15 @@ def check_block(args, block: str) -> int:
     if not args.no_proof:
         import proof as PR
         tp = time.time()
+        # the outcomes an earlier proof of this block found, each with its fingerprint (proof.py::Fingerprints): an
+        # entry whose inputs have not moved is not proved again (--fresh proves every entry)
+        prior = args.write or (args.write_dir / f'{short}.json' if args.write_dir else None) or args.record \
+            or (args.record_dir / f'{short}.json' if args.record_dir else None)
+        if prior and prior.is_file() and not getattr(args, 'fresh', False):
+            pd = json.loads(prior.read_text(encoding='utf-8'))
+            run['reuse'] = dict(zip((json.dumps(k) for k in pd.get('proofKeys') or []), pd.get('proofCache') or []))
         entries, proof = PR.prove(short, run)
+        proof_cache = proof.pop('cache', {})
         proof['seconds'] = round(time.time() - tp, 1)
         browser = apply_browser_verdicts(short, args.plugin, entries)
         if browser is not None:
@@ -481,6 +494,7 @@ def check_block(args, block: str) -> int:
                                           **({'values': values[key(e)]} if values.get(key(e)) else {})} for e in entries.values()],
                                  key=lambda e: json.dumps(key(e))),
                'proofKeys': [list(k[:2]) + [list(k[2]), k[3], list(k[4])] for k in plain_keys],
+               **({'proofCache': cache_list(plain_keys, proof_cache)} if proof is not None else {}),
                'accounted': {'testedNoPaint': run['stats']['testedNoPaint'], 'replacesBlock': run['stats']['replacesBlock'],
                              'unvalued': run['stats']['unvalued'], 'partNotNamed': run['unnamed']},
                'stamp': new_stamp(args, short, run, fixtures)}
@@ -522,6 +536,7 @@ def check_block(args, block: str) -> int:
             if args.no_proof:
                 raise SystemExit('--restamp needs the proof: a stamp says the record was checked in full against these files')
             doc['stamp'] = new_stamp(args, short, run, fixtures)
+            doc['proofCache'] = cache_list(plain_keys, proof_cache)
             record_file.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
             report['restamped'] = str(record_file)
     cov = run['stats']['coverage']
@@ -557,6 +572,7 @@ def main(argv=None):
     ap.add_argument('--instances', type=Path)
     ap.add_argument('--instances-dir', type=Path)
     ap.add_argument('--no-proof', action='store_true')
+    ap.add_argument('--fresh', action='store_true', help="prove every entry, ignoring the record's saved proof outcomes")
     ap.add_argument('--strict-parts', action='store_true', help='also fail on parts block.json declares but nothing prints, or prints but never declares')
     ap.add_argument('--out', type=Path, default=RN.CACHE_ROOT / 'reports')
     ap.add_argument('--self-test', action='store_true')
