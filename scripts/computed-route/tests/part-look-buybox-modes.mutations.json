@@ -1,0 +1,32 @@
+[
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"whenAbsent\": \"price-row\",\n\t\t\t\t\t\"neighbours\": [\n\t\t\t\t\t\t\"add-to-cart\"\n\t\t\t\t\t],",
+		"replace": "\"whenAbsent\": \"price-row\",",
+		"why": "a failed read turns the price row off"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"value\": \"_sgs_rrp\",",
+		"replace": "\"value\": \"_rrp\",",
+		"why": "the RRP is read from a key the catalogue does not write"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"text\": \"rrp-pill\",\n\t\t\t\t\t\t\"label\": true",
+		"replace": "\"text\": \"rrp-pill\",\n\t\t\t\t\t\t\"label\": false",
+		"why": "the saving amount stays in the prefix"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"whenFound\": \"savingBadge\",\n\t\t\t\t\t\"neighbours\": [\n\t\t\t\t\t\t\"rrp-price\"\n\t\t\t\t\t]",
+		"replace": "\"whenFound\": \"savingBadge\"",
+		"why": "a badge is turned on with no RRP to save against"
+	},
+	{
+		"file": "data/part-look-modes.json",
+		"find": "\"setting\": \"showStockStatus\",\n\t\t\t\t\t\"value\": true,\n\t\t\t\t\t\"whenFound\": \"stock\"",
+		"replace": "\"setting\": \"showStockStatus\",\n\t\t\t\t\t\"value\": true,\n\t\t\t\t\t\"whenFound\": \"add-to-cart\"",
+		"why": "the stock line is turned on where the draft draws none"
+	}
+]

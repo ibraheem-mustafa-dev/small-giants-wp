@@ -163,6 +163,54 @@
 					"neighbours": [
 						"add-to-cart"
 					]
+				},
+				{
+					"setting": "showPriceRow",
+					"value": false,
+					"whenAbsent": "price-row",
+					"neighbours": [
+						"add-to-cart"
+					],
+					"note": "price-row is the parent of the price the shop parts record locates by structure (its `price` rule); a draft that draws the price only inside its controls (a pack tile, the add button) has none, and a draft that draws a price row keeps the block's own"
+				},
+				{
+					"setting": "rrpMetaKey",
+					"value": "_sgs_rrp",
+					"whenFound": "rrp-price",
+					"note": "the catalogue writes each product's recommended price to _sgs_rrp (lib/site-build-catalogue-php.mjs)"
+				},
+				{
+					"setting": "rrpShowPrice",
+					"value": true,
+					"whenFound": "rrp-price"
+				},
+				{
+					"setting": "rrpSavingPrefix",
+					"from": {
+						"text": "rrp-pill",
+						"label": true
+					},
+					"whenFound": "rrp-pill"
+				},
+				{
+					"setting": "showStockStatus",
+					"value": true,
+					"whenFound": "stock"
+				},
+				{
+					"setting": "stockInStockLabel",
+					"from": {
+						"text": "stock"
+					},
+					"whenFound": "stock"
+				},
+				{
+					"setting": "gallerySavingBadge",
+					"value": true,
+					"whenFound": "savingBadge",
+					"neighbours": [
+						"rrp-price"
+					]
 				}
 			]
 		},
