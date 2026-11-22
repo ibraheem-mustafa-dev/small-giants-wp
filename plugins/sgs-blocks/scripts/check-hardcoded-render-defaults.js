@@ -371,6 +371,9 @@ const ATTR_ELEMENT_OVERRIDES = {
 	'account::labelGap': [ 'field-label' ],
 	// sgs/account Round 9: each new setting paints one element the stylesheet's other rules are not.
 	'account::ordersRowPadding': [ 'orders-row' ],
+	// ordersRowGap paints the list holding the order rows through helpers-account-look-css.php's scoped rule, only while set;
+	// the stylesheet's own gaps belong to other rows and cards.
+	'account::ordersRowGap': [ 'orders-row-gap' ],
 	'account::ordersEmptyPadding': [ 'orders-empty' ],
 	'account::ordersPillPadding': [ 'orders-pill' ],
 	'account::addressCardPadding': [ 'address-card' ],

@@ -65,6 +65,7 @@ if ( ! function_exists( 'sgs_account_cell_rows' ) ) {
 		array( 'loginRememberMinHeight', 'len', '@r .woocommerce-form-login__rememberme', array( 'min-height' ), '' ),
 		array( 'loginRememberGap', 'len', '@r .woocommerce-form-login__rememberme', array( 'gap' ), '' ),
 		array( 'rememberCheckboxSize', 'len', '@r .woocommerce-form-login__rememberme input[type="checkbox"]', array( 'width', 'height' ), '' ),
+		array( 'hideRequiredMarks', 'tog', '@r form .required', array( 'display:none' ), '' ),
 		array( 'privacyLinkTextDecoration', 'sel', '@r .woocommerce-privacy-policy-text a', array( 'text-decoration' ), '' ),
 		// Reset view: spacing and size.
 		array( 'resetFormMaxWidth', 'len', '@root:has(form.lost_reset_password.woocommerce-ResetPassword)', array( 'max-width' ), '' ),
@@ -115,6 +116,7 @@ if ( ! function_exists( 'sgs_account_cell_rows' ) ) {
 		array( 'orderDetailTotalRowRuleWidth', 'edge', '@r .sgs-account__od-row--total', array( 'border-top' ), '' ),
 		array( 'orderDetailTitleMarginBottom', 'len', '@r .sgs-account__od-title', array( 'margin-bottom' ), '' ),
 		array( 'orderDetailItemMetaMarginTop', 'len', '@r .sgs-account__od-item-meta', array( 'margin-top' ), '' ),
+		array( 'ordersRowRadius', 'len', '@r.sgs-account--orders-rows table.woocommerce-orders-table .woocommerce-orders-table__row,@r .sgs-account__orders-list .sgs-account__order', array( 'border-radius' ), '' ),
 		array( 'ordersRowTextDecoration', 'sel', '@r .sgs-account__order,@r .sgs-account__order:hover,@r .sgs-account__order *', array( 'text-decoration' ), '' ),
 		// Orders, tabs and signed-out width.
 		array( 'ordersEmptyButtonMinHeight', 'len', '@r .sgs-account__orders-empty-actions .sgs-button', array( 'min-height' ), '' ),

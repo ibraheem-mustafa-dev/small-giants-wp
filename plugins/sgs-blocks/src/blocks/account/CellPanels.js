@@ -50,6 +50,7 @@ const ROWS_AUTH = [
 	[ 'loginRememberMinHeight', 'len', __( 'Remember me row minimum height', 'sgs-blocks' ) ],
 	[ 'loginRememberGap', 'len', __( 'Remember me row gap', 'sgs-blocks' ) ],
 	[ 'rememberCheckboxSize', 'len', __( 'Remember me checkbox size', 'sgs-blocks' ) ],
+	[ 'hideRequiredMarks', 'tog', __( 'Hide the required-field asterisks (fields stay required)', 'sgs-blocks' ) ],
 	[ 'privacyLinkTextDecoration', 'sel', __( 'Privacy text link underline', 'sgs-blocks' ) ],
 ];
 
@@ -108,6 +109,7 @@ const ROWS_ORDER = [
 	[ 'orderDetailTotalRowRuleWidth', 'edge', __( 'Total row top rule width', 'sgs-blocks' ) ],
 	[ 'orderDetailTitleMarginBottom', 'len', __( 'Heading: space under', 'sgs-blocks' ) ],
 	[ 'orderDetailItemMetaMarginTop', 'len', __( 'Item detail line: space above', 'sgs-blocks' ) ],
+	[ 'ordersRowRadius', 'len', __( 'Order row corner radius', 'sgs-blocks' ) ],
 	[ 'ordersRowTextDecoration', 'sel', __( 'Order row underline', 'sgs-blocks' ) ],
 ];
 
@@ -132,7 +134,7 @@ const UNDERLINE = [
  * @param {Function} p.setAttributes Attribute setter.
  * @return {JSX.Element} A length per device.
  */
-function TierLength( { name, label, attributes, setAttributes } ) {
+export function TierLength( { name, label, attributes, setAttributes } ) {
 	return (
 		<ResponsiveOverride
 			label={ label }

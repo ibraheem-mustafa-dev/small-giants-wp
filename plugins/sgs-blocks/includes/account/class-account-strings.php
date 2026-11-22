@@ -64,6 +64,9 @@ final class Account_Strings {
 			'savePassword'      => 'Save',
 			'updatePassword'    => 'Update password',
 			'passwordMismatch'  => 'Passwords do not match.',
+			'passwordLabel'               => 'Password',
+			'registerPasswordLabel'       => 'Password',
+			'registerPasswordPlaceholder' => '',
 		);
 	}
 
@@ -106,7 +109,10 @@ final class Account_Strings {
 			// by `register_heading()` on the finished markup, not by the gettext map.
 			// `passwordMismatch` is also kept out of the map: the reset template recognises WooCommerce's queued
 			// notice by that original text and swaps in the client's wording itself.
-			if ( 'registerHeading' === $key || 'passwordMismatch' === $key ) {
+			// The sign-in and create-account password labels share WooCommerce's "Password", and the create-account
+			// placeholder has no WooCommerce text at all, so all three are set on the finished markup by
+			// `password_fields()`.
+			if ( in_array( $key, array( 'registerHeading', 'passwordMismatch', 'passwordLabel', 'registerPasswordLabel', 'registerPasswordPlaceholder' ), true ) ) {
 				continue;
 			}
 			$map[ self::supported()[ $key ] ] = $text;
@@ -143,6 +149,46 @@ final class Account_Strings {
 			1
 		);
 		return is_string( $out ) ? $out : $html;
+	}
+
+	/**
+	 * Put the client's password wording on WooCommerce's rendered sign-in and create-account forms: the sign-in label
+	 * (`label[for=password]`), the create-account label (`label[for=reg_password]`), each keeping WooCommerce's required
+	 * mark after the words, and a placeholder on the create-account password field (`#reg_password`). A key the client
+	 * left empty leaves its part as WooCommerce printed it.
+	 *
+	 * @param string $html WooCommerce's rendered output.
+	 * @return string
+	 */
+	public static function password_fields( string $html ): string {
+		$labels = array(
+			'password'     => self::$values['passwordLabel'] ?? '',
+			'reg_password' => self::$values['registerPasswordLabel'] ?? '',
+		);
+		foreach ( $labels as $for => $text ) {
+			if ( '' === $text || false === strpos( $html, 'for="' . $for . '"' ) ) {
+				continue;
+			}
+			// The words run from the label's opening tag to the first child element (the required mark) or the end.
+			$out  = preg_replace_callback(
+				'#(<label\b[^>]*\bfor="' . $for . '"[^>]*>)([^<]*)#',
+				static fn( array $m ): string => $m[1] . \esc_html( $text ) . ( false !== strpos( $m[2], '&nbsp;' ) ? '&nbsp;' : '' ),
+				$html,
+				1
+			);
+			$html = is_string( $out ) ? $out : $html;
+		}
+		$placeholder = self::$values['registerPasswordPlaceholder'] ?? '';
+		if ( '' !== $placeholder && false !== strpos( $html, 'id="reg_password"' ) ) {
+			$out  = preg_replace_callback(
+				'#<input\b(?![^>]*\bplaceholder=)([^>]*\bid="reg_password"[^>]*)>#',
+				static fn( array $m ): string => '<input placeholder="' . \esc_attr( $placeholder ) . '"' . $m[1] . '>',
+				$html,
+				1
+			);
+			$html = is_string( $out ) ? $out : $html;
+		}
+		return $html;
 	}
 
 	/**

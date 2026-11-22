@@ -107,7 +107,7 @@ try {
 	} elseif ( class_exists( 'WC_Shortcode_My_Account' ) ) {
 		\WC_Shortcode_My_Account::output( array() );
 	}
-	$wc_output = \SGS\Blocks\Account_Strings::register_heading( sgs_account_register_markup( sgs_account_edit_account_markup( (string) ob_get_clean(), $attributes ), $attributes ) );
+	$wc_output = \SGS\Blocks\Account_Strings::password_fields( \SGS\Blocks\Account_Strings::register_heading( sgs_account_register_markup( sgs_account_edit_account_markup( (string) ob_get_clean(), $attributes ), $attributes ) ) );
 		$wc_output        = sgs_account_button_icons( $wc_output, $attributes );
 } finally {
 	while ( ob_get_level() > $sgs_buffer_level ) {

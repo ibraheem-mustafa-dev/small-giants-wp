@@ -10,7 +10,7 @@
 import { __ } from '@wordpress/i18n';
 import { PanelBody, ToggleControl, CheckboxControl, TextControl } from '@wordpress/components';
 import { ToggleGroupControl, ToggleGroupControlOption, ToolsPanel, ToolsPanelItem } from '../../components/primitives';
-import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl } from '../../components';
+import { ResponsiveControl, ResponsiveOverride, IconPicker, SgsLengthControl, SgsBorderControl, ShadowControl } from '../../components';
 import { Toggle, Choice, TextField } from './extraControls';
 import { patchTier } from '../../utils';
 import ScrollbarStyleControl from '../../components/ScrollbarStyleControl';
@@ -72,6 +72,11 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 					menuOrder: undefined,
 					tabHeadings: undefined,
 					headingMarginBottom: undefined,
+					menuItemBorderWidth: undefined,
+					menuItemBorderStyle: undefined,
+					menuItemBorderColour: undefined,
+					menuItemShadow: undefined,
+					menuItemShadowColour: undefined,
 				} )
 			}
 		>
@@ -119,6 +124,42 @@ export default function MenuPanel( { attributes, setAttributes } ) {
 						{ label: __( 'Bar inside the item', 'sgs-blocks' ), value: '' },
 						{ label: __( 'Line on the edge', 'sgs-blocks' ), value: 'line' },
 					] }
+				/>
+			</ToolsPanelItem>
+
+			<ToolsPanelItem
+				label={ __( 'Menu item border and shadow', 'sgs-blocks' ) }
+				hasValue={ () =>
+					!! attributes.menuItemBorderStyle ||
+					!! attributes.menuItemBorderColour ||
+					!! attributes.menuItemShadow ||
+					( !! attributes.menuItemBorderWidth && Object.keys( attributes.menuItemBorderWidth ).length > 0 )
+				}
+				onDeselect={ () =>
+					setAttributes( {
+						menuItemBorderWidth: undefined,
+						menuItemBorderStyle: undefined,
+						menuItemBorderColour: undefined,
+						menuItemShadow: undefined,
+						menuItemShadowColour: undefined,
+					} )
+				}
+			>
+				<SgsBorderControl
+					widthValues={ attributes.menuItemBorderWidth ?? {} }
+					onWidthChange={ ( next ) => setAttributes( { menuItemBorderWidth: next } ) }
+					styleValue={ attributes.menuItemBorderStyle }
+					onStyleChange={ ( val ) => setAttributes( { menuItemBorderStyle: val || undefined } ) }
+					colourLabel={ __( 'Menu item border colour', 'sgs-blocks' ) }
+					colourValue={ attributes.menuItemBorderColour }
+					onColourChange={ ( val ) => setAttributes( { menuItemBorderColour: val || undefined } ) }
+					colourLinked
+				/>
+				<ShadowControl
+					label={ __( 'Menu item shadow', 'sgs-blocks' ) }
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					attrNames={ { base: 'menuItemShadow', colour: 'menuItemShadowColour' } }
 				/>
 			</ToolsPanelItem>
 

@@ -539,7 +539,10 @@
 							"css:display": "ordersLook",
 							"css:background-color": "ordersRowBackground",
 							"css:border-color": "ordersRowBorderColour",
-							"css:padding": "ordersRowPadding"
+							"css:padding": "ordersRowPadding",
+							"css:border-radius": "ordersRowRadius",
+							"css:box-shadow": "ordersRowShadow",
+							"css:box-shadow-color": "ordersRowShadowColour"
 						},
 						"states": {
 							"hover": {
@@ -1139,6 +1142,31 @@
 							"css:display": "hideRememberMe"
 						}
 					},
+					"requiredMark": {
+						"selector": "form .required",
+						"motion": false,
+						"label": "Required-field asterisks",
+						"order": 126,
+						"clusters": [
+							"layout"
+						],
+						"attrMap": {
+							"css:display": "hideRequiredMarks"
+						}
+					},
+					"ordersRowsList": {
+						"selector": ".sgs-account--orders-rows table.woocommerce-orders-table tbody",
+						"motion": false,
+						"label": "Order rows list",
+						"order": 127,
+						"clusters": [
+							"layout"
+						],
+						"attrMap": {
+							"css:gap": "ordersRowGap"
+						},
+						"_note": "The list holding the order rows (the bordered rows, or the block's own row list): the space between rows."
+					},
 					"headerBlock": {
 						"selector": ".sgs-account__header",
 						"label": "Page header",
@@ -1225,7 +1253,12 @@
 							"css:min-height": "menuItemMinHeight",
 							"css:padding": "menuItemPadding",
 							"css:border-radius": "menuItemRadius",
-							"css:gap": "menuItemGap"
+							"css:gap": "menuItemGap",
+							"css:border-width": "menuItemBorderWidth",
+							"css:border-style": "menuItemBorderStyle",
+							"css:border-color": "menuItemBorderColour",
+							"css:box-shadow": "menuItemShadow",
+							"css:box-shadow-color": "menuItemShadowColour"
 						},
 						"_note": "Every menu item box, current or not: height, padding, corners and the gap between label and count."
 					},
@@ -2794,6 +2827,22 @@
 			"ordersRowPadding": {
 				"type": "object"
 			},
+			"ordersRowRadius": {
+				"type": "object",
+				"description": "Order row corner radius per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"ordersRowGap": {
+				"type": "object",
+				"description": "Space between order rows per device: {desktop,tablet,mobile}. Set, the rows become separate cards, each framed in the rows' border colour. Unset keeps the joined rows."
+			},
+			"ordersRowShadow": {
+				"type": "string",
+				"description": "Order row shadow: a preset slug or a CSS box-shadow value. Unset = none."
+			},
+			"ordersRowShadowColour": {
+				"type": "string",
+				"description": "Order row shadow colour. Unset = the preset's own colour."
+			},
 			"ordersNumberFontSize": {
 				"type": "object"
 			},
@@ -3025,6 +3074,33 @@
 			"menuItemGap": {
 				"type": "object",
 				"description": "Gap between a menu item's icon, text and count per device: {desktop,tablet,mobile}. Unset keeps the stylesheet."
+			},
+			"menuItemBorderWidth": {
+				"type": "object",
+				"description": "Menu item border width: a four-side box, or one box per device. Unset = no border."
+			},
+			"menuItemBorderStyle": {
+				"type": "string",
+				"enum": [
+					"",
+					"none",
+					"solid",
+					"dashed",
+					"dotted",
+					"double"
+				]
+			},
+			"menuItemBorderColour": {
+				"type": "string",
+				"description": "Menu item border colour. Unset = the text colour."
+			},
+			"menuItemShadow": {
+				"type": "string",
+				"description": "Menu item shadow: a preset slug or a CSS box-shadow value. Unset = none."
+			},
+			"menuItemShadowColour": {
+				"type": "string",
+				"description": "Menu item shadow colour. Unset = the preset's own colour."
 			},
 			"menuListGap": {
 				"type": "object",
@@ -5203,6 +5279,10 @@
 			},
 			"hideRememberMe": {
 				"type": "boolean"
+			},
+			"hideRequiredMarks": {
+				"type": "boolean",
+				"description": "Hide WooCommerce's required-field asterisks in the block's forms (the fields stay required and screen readers still hear it). Unset keeps them."
 			},
 			"loginButtonFontSize": {
 				"type": "object"

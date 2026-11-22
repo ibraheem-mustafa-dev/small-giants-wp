@@ -3,8 +3,9 @@
  */
 import { __ } from '@wordpress/i18n';
 import { PanelBody } from '@wordpress/components';
-import { fillRow, textRow } from '../../components';
+import { fillRow, textRow, ShadowControl } from '../../components';
 import { TextField, TierBox, Toggle, TYPE_TARGET } from './extraControls';
+import { TierLength } from './CellPanels';
 
 // [ row key, label, background attribute, text attribute ]
 const STATUSES = [
@@ -35,6 +36,17 @@ export default function OrdersPanel( { attributes, setAttributes } ) {
 			/>
 			{ attributes.ordersLook && <TierBox { ...p } name="ordersRowPadding" label={ __( 'Row padding', 'sgs-blocks' ) } /> }
 			{ attributes.ordersLook && <TierBox { ...p } name="ordersPillPadding" label={ __( 'Status pill padding', 'sgs-blocks' ) } /> }
+			{ ( attributes.ordersLook || attributes.ordersRowList ) && (
+				<>
+					<TierLength { ...p } name="ordersRowGap" label={ __( 'Space between rows (set: separate cards)', 'sgs-blocks' ) } />
+					<ShadowControl
+						label={ __( 'Row shadow', 'sgs-blocks' ) }
+						attributes={ attributes }
+						setAttributes={ setAttributes }
+						attrNames={ { base: 'ordersRowShadow', colour: 'ordersRowShadowColour' } }
+					/>
+				</>
+			) }
 			<Toggle
 				{ ...p }
 				name="ordersEmptyState"

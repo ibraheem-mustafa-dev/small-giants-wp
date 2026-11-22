@@ -111,6 +111,35 @@ if ( ! function_exists( 'sgs_account_menu_look_css' ) ) {
 			$css[]  = '@media (forced-colors:active){' . $link . '{border-inline-start:' . $width . ' solid CanvasText;}}';
 			$css[]  = $link . '::after{content:none;}';
 		}
+		// Every menu item's own frame and shadow (the current item's indicator line, drawn as a shadow, stays on top).
+		$item   = $root_sel . '.sgs-account nav.woocommerce-MyAccount-navigation li.woocommerce-MyAccount-navigation-link > a';
+		$border = sgs_border_element_decls(
+			$attributes,
+			'menuItem',
+			$item,
+			array(
+				'colour' => array( 'base' => 'menuItemBorderColour' ),
+				'radius' => false,
+			)
+		);
+		$shadow = sgs_shadow_decls(
+			$attributes,
+			array(
+				'base'   => 'menuItemShadow',
+				'colour' => 'menuItemShadowColour',
+			),
+			'sgs/account'
+		);
+		$decls  = array_merge( $border['base'], $shadow['normal'] );
+		$css[]  = $decls ? $item . '{' . implode( ';', $decls ) . ';}' : '';
+		$css[]  = implode( '', $border['rules'] );
+		$css[]  = sgs_emit_tier_decls(
+			$item,
+			array(
+				'tablet' => $border['tablet'],
+				'mobile' => $border['mobile'],
+			)
+		);
 		$css[] = sgs_typography_css_rule( $attributes, 'menuCount', $root_sel . ' .sgs-account__menu-count', '', false, false, $tiered );
 		$css[] = sgs_text_states_css( $root_sel . ' .sgs-account__menu-count', $attributes, array( 'base' => 'menuCountColour' ) );
 		return implode( '', array_filter( $css ) );
@@ -155,6 +184,32 @@ if ( ! function_exists( 'sgs_account_orders_look_css' ) ) {
 					),
 				)
 			);
+			$row_shadow = sgs_shadow_decls(
+				$attributes,
+				array(
+					'base'   => 'ordersRowShadow',
+					'colour' => 'ordersRowShadowColour',
+				),
+				'sgs/account'
+			);
+			$css[]      = $row_shadow['normal'] ? $row . '{' . implode( ';', $row_shadow['normal'] ) . ';}' : '';
+			// A gap makes the rows separate cards: the list drops its hairline fill and frame, and each row takes the
+			// frame in the rows' border colour.
+			$list = $row_list ? $table : $table . ' tbody';
+			$gap  = sgs_emit_responsive_css(
+				$list,
+				array(
+					array(
+						'value'     => $attributes['ordersRowGap'] ?? array(),
+						'css'       => 'gap',
+						'transform' => 'sgs_account_length_transform',
+					),
+				)
+			);
+			if ( '' !== $gap ) {
+				$frame = '' !== $line ? $line : 'var(--wp--preset--color--border, #e2e2e2)';
+				$css[] = $list . '{background:none;border:0;}' . $row . '{border:1px solid ' . $frame . ';}' . $gap;
+			}
 			$cells = array(
 				'ordersNumber' => array( $row_list ? '.sgs-account__order-number' : '.woocommerce-orders-table__cell-order-number', 'ordersNumberColour' ),
 				'ordersDate'   => array( $row_list ? '.sgs-account__order-date' : '.woocommerce-orders-table__cell-order-date', 'ordersDateColour' ),
