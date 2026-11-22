@@ -104,10 +104,17 @@ export const isSizeProperty = ( prop ) => SIZE_PROP.test( String( prop ?? '' ) )
 
 // Whether a tier-object setting holds a count per device (columns, items) and not a length. A length setting stores one string per
 // device ("340px", includes/helpers-responsive.php::sgs_responsive_format_atom_value); a count setting's default tiers are numbers.
-const countsPerDevice = ( def ) => [].concat( def?.type || [] ).includes( 'object' ) && Object.values( def?.default && 'object' === typeof def.default ? def.default : {} ).some( ( v ) => 'number' === typeof v );
+export const countsPerDevice = ( def ) => [].concat( def?.type || [] ).includes( 'object' ) && Object.values( def?.default && 'object' === typeof def.default ? def.default : {} ).some( ( v ) => 'number' === typeof v );
 
 // Whether a setting holds a CSS string as its value (one string, or one string per device), not a number, a count per device
 // or a value from a list.
+// A column setting that holds a number of columns rather than a track list: its calibrated form is `count` (the calibration
+// wrote a number and read the tracks it painted, lib/calibrate-markers.mjs), else its per-device defaults are numbers. A track
+// list setting calibrates `repeat`.
+export function holdsCount( def, forms ) {
+	return [].concat( forms || [] ).includes( 'count' ) || ( ! [].concat( forms || [] ).includes( 'repeat' ) && countsPerDevice( def ) );
+}
+
 export function holdsString( def ) {
 	const types = [].concat( def?.type || [] );
 	return ! Array.isArray( def?.enum ) && ( types.includes( 'string' ) || ( types.includes( 'object' ) && ! countsPerDevice( def ) ) );

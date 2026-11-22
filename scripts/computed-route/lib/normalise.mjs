@@ -116,6 +116,13 @@ export function tracksSetting( raw ) {
 	return { value: r.every( ( n ) => 1 === n ) ? `repeat(${ r.length }, minmax(0, 1fr))` : r.map( ( n ) => `minmax(0, ${ n }fr)` ).join( ' ' ) };
 }
 
+// The number of tracks a measured grid-template-columns lists, as the whole number a column-count setting holds: "1fr 1fr 1fr"
+// computed at a width ("160px 160px 160px") is 3. Tracks not all in px cannot be counted.
+export function trackCount( raw ) {
+	const r = trackRatios( raw );
+	return r ? { value: r.length } : { error: `${ raw } cannot be held as a track count` };
+}
+
 // One track of a declared list: a flexible, fixed or content-sized size, alone or inside minmax()/fit-content().
 const TRACK_LENGTH = /^(?:0|-?\d*\.?\d+(?:px|em|rem|%|vw|vh|ch|ex))$/;
 const TRACK_SIZE = /^(?:\d*\.?\d+fr|auto|min-content|max-content)$/;

@@ -9,10 +9,10 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { candidates, siblings, isPseudoProperty, listedProperties } from './db.mjs';
-import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, declaredTracks, round } from './normalise.mjs';
+import { parseLength, toPx, pxTo, snapColour, snapFontFamily, ratioSetting, tracksSetting, trackCount, declaredTracks, round } from './normalise.mjs';
 import { applyClamp } from './fill-values.mjs';
 import { familyOf, settingKey, foldParts, unfoldValue, physicalOf, storedKeys, reachedBy, canonicalName } from './css-families.mjs';
-import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizePercent, keywordForm, sizeShape, isSizeProperty, holdsString } from './resolve-declared.mjs';
+import { declaredTiers, declaredUnit, declaredLength, resolveWeightKeyword, sizeKeyword, sizePercent, keywordForm, sizeShape, isSizeProperty, holdsString, holdsCount } from './resolve-declared.mjs';
 import { consult } from './css-equivalence/index.mjs';
 import { valueBlind } from './css-equivalence/effect.mjs';
 import { holdsValue, mapTiers } from './resolve-enum.mjs';
@@ -222,7 +222,8 @@ function formatValue( { prop, raw, def, unit, fontPx, forms, prefer, snapshot, l
 		return ratioSetting( raw, def );
 	}
 	if ( 'grid-template-columns' === prop ) {
-		return tracksSetting( raw );
+		// A column-count setting holds the number of tracks, never the track string (a string cast to a count reads 1).
+		return holdsCount( def, forms ) ? trackCount( raw ) : tracksSetting( raw );
 	}
 	if ( Array.isArray( def?.enum ) ) {
 		const hit = def.enum.includes( raw ) ? raw : def.enum.find( ( v ) => '' !== v && sameAlignment( prop, v, raw, layout ) );
@@ -752,7 +753,7 @@ export function resolve( input, ctx ) {
 		}
 		// A declared column track list is written as declared (lib/normalise.mjs::declaredTracks) where the setting holds a
 		// string; the measured shares stay the answer where the code declares none or one the setting cannot hold.
-		const tracks = 'grid-template-columns' === short && holdsString( def ) ? declaredTracks( d, raw ) : null;
+		const tracks = 'grid-template-columns' === short && holdsString( def ) && ! holdsCount( def, forms ) ? declaredTracks( d, raw ) : null;
 		if ( tracks ) {
 			return tracks;
 		}
