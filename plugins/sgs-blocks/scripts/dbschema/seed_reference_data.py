@@ -474,6 +474,7 @@ def _parse_setting_record(path: Path) -> dict:
         if kind is not None and kind not in _RECORD_KINDS:
             raise SettingRecordError(f"{where} kind must be one of {_RECORD_KINDS} or null, got {kind!r}")
         unproved = _optional_str(where, entry.get("unproved"), "unproved")
+        accepted = _optional_str(where, entry.get("accepted"), "accepted")
         selector = _optional_str(where, entry.get("selector"), "selector")
         values = entry.get("values")
         if values is not None and not isinstance(values, list):
@@ -491,7 +492,7 @@ def _parse_setting_record(path: Path) -> dict:
             )
         seen_keys.add(key)
         entries.append((
-            block, entry["setting"], entry["part"], props, state, tiers, kind, unproved, selector,
+            block, entry["setting"], entry["part"], props, state, tiers, kind, unproved, accepted, selector,
             None if values is None else json.dumps(values, ensure_ascii=False),
             None if symbolic is None else json.dumps(symbolic, ensure_ascii=False),
         ))
@@ -547,8 +548,8 @@ def _seed_setting_records(conn: sqlite3.Connection, records_dir: Path | str | No
             [row for r in records for row in r["parts"]],
         )
         conn.executemany(
-            "INSERT INTO setting_placements (block_slug, setting, part, props, state, tiers, kind, unproved, selector, "
-            "setting_values, symbolic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO setting_placements (block_slug, setting, part, props, state, tiers, kind, unproved, accepted, "
+            "selector, setting_values, symbolic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [row for r in records for row in r["entries"]],
         )
         expected = {

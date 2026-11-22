@@ -115,6 +115,10 @@
           "symbolic": {
             "type": "object",
             "description": "For a tier written from the setting's own value (a breakpoint setting): {edge, setting, offset}."
+          },
+          "accepted": {
+            "type": "string",
+            "description": "Set on an unproven entry whose shape (setting, element role, properties, state, media) is proved on another block and removed on none (accept.py): names those blocks. A reader may act on its kind."
           }
         },
         "if": {

@@ -478,6 +478,8 @@ def check_block(args, block: str) -> int:
                 raise SystemExit(f'refusing to write {write}: it keeps entries marked runner (unchecked), which the '
                                  f'database seeder refuses: ' + ', '.join(sorted({e["setting"] for e in kept})))
         symbolic_tiers(doc['entries'])
+        import accept as AC
+        report['accepted'] = AC.mark_against_folder(doc, write.parent)
         errs = schema_errors(doc, need_kind=not args.no_proof)
         write.parent.mkdir(parents=True, exist_ok=True)
         write.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')

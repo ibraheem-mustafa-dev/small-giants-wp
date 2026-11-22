@@ -218,7 +218,7 @@ def test_setting_records_schema_versions_one_and_two_both_seed(tmp_path, monkeyp
         "stamp": {"sha": "abc"},
         "accounted": {"testedNoPaint": ["x"], "replacesBlock": "sgs/old", "unvalued": ["y"], "partNotNamed": ["z"]},
         "proofKeys": {"ignored": True},
-        "entries": [_entry(values=["a", "b"], symbolic={"colour": "var(--x)"}, unproved="no value", kind=None)],
+        "entries": [_entry(values=["a", "b"], symbolic={"colour": "var(--x)"}, unproved="no value", kind=None, accepted="proved on sgs/old")],
     }
     (folder / "new.json").write_text(json.dumps(v2), encoding="utf-8")
     _seed_records(db, folder)
@@ -227,8 +227,8 @@ def test_setting_records_schema_versions_one_and_two_both_seed(tmp_path, monkeyp
         assert con.execute("SELECT block_slug, schema_version FROM setting_record_blocks ORDER BY 1").fetchall() == [("sgs/new", 2), ("sgs/old", 1)]
         assert con.execute("SELECT part, tag, parent_part, built_by FROM block_part_order WHERE block_slug='sgs/new' AND position=1").fetchone() == ("p__b", "span", "p__a", "script")
         assert con.execute("SELECT tag, parent_part, built_by FROM block_part_order WHERE block_slug='sgs/new' AND position=0").fetchone() == (None, None, None)
-        assert con.execute("SELECT setting_values, symbolic, kind, unproved FROM setting_placements WHERE block_slug='sgs/new'").fetchone() == (
-            '["a", "b"]', '{"colour": "var(--x)"}', None, "no value")
+        assert con.execute("SELECT setting_values, symbolic, kind, unproved, accepted FROM setting_placements WHERE block_slug='sgs/new'").fetchone() == (
+            '["a", "b"]', '{"colour": "var(--x)"}', None, "no value", "proved on sgs/old")
         assert con.execute("SELECT stamp, tested_no_paint, replaces_block, unvalued, part_not_named FROM setting_record_blocks WHERE block_slug='sgs/new'").fetchone() == (
             '{"sha": "abc"}', '["x"]', "sgs/old", '["y"]', '["z"]')
     finally:

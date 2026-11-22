@@ -493,3 +493,43 @@ def test_a_core_change_the_canaries_carried_is_stamped_into_every_record(tmp_pat
         st = json.loads((rd / f'{b}.json').read_text(encoding='utf-8'))['stamp']
         assert st['inputs']['includes/boot.php'] == ST.file_hash(boot) and st['check'] == ST.check_hash(plugin)
         assert st['inputs'][f'src/blocks/{b}/render.php'] == 'r'  # an own input is never refreshed here
+
+
+
+# ---------------------------------------------------------------- accepted: proved on another block (Bean, 2026-11-22)
+import accept as AC  # noqa: E402
+
+
+def _e(setting, part, props, unproved=None):
+    e = {'setting': setting, 'part': part, 'props': list(props), 'state': None, 'tiers': []}
+    if unproved:
+        e['unproved'] = unproved
+    return e
+
+
+def _key(e):
+    return [e['setting'], e['part'], e['props'], e['state'], e['tiers']]
+
+
+def test_an_unproven_entry_proved_in_the_same_shape_elsewhere_is_accepted():
+    proved = _e('sgsFocusRests', 'sgs-info-toggle', ['background-color'])
+    own = _e('titleColour', 'sgs-b__title', ['color'])
+    a = {'block': 'sgs/a', 'entries': [proved, _e('titleColour', 'sgs-a__title', ['color'])], 'proofKeys': []}
+    a['proofKeys'] = [_key(x) for x in a['entries']]
+    b = {'block': 'sgs/b', 'entries': [_e('sgsFocusRests', 'sgs-info-toggle', ['background-color'], 'part-not-rendered'),
+                                       dict(own, unproved='part-not-rendered'),
+                                       _e('titleColour', 'sgs-b__title', ['font-size'], 'part-not-rendered')]}
+    assert AC.mark(b, *AC.library({'sgs/a': a})) == 2
+    assert b['entries'][0]['accepted'] == 'proved on sgs/a'           # a shared part: the same element
+    assert b['entries'][1]['accepted'] == 'proved on sgs/a'           # its own part by element name (__title)
+    assert 'accepted' not in b['entries'][2]                          # another property: not the same shape
+
+
+def test_a_shape_the_proof_removed_anywhere_is_not_accepted():
+    a = {'block': 'sgs/a', 'entries': [_e('gap', 'ROOT', ['gap'])], 'proofKeys': []}
+    a['proofKeys'] = [_key(x) for x in a['entries']]
+    c = {'block': 'sgs/c', 'entries': [], 'proofKeys': [_key(_e('gap', 'ROOT', ['gap']))]}  # removed by c's proof
+    b = {'block': 'sgs/b', 'entries': [_e('gap', 'ROOT', ['gap'], 'rule-needs-absent-markup')]}
+    assert AC.mark(b, *AC.library({'sgs/a': a, 'sgs/c': c})) == 0 and 'accepted' not in b['entries'][0]
+    b['entries'][0]['accepted'] = 'stale'
+    assert AC.mark(b, *AC.library({'sgs/c': c})) == 0 and 'accepted' not in b['entries'][0]  # a stale mark is cleared

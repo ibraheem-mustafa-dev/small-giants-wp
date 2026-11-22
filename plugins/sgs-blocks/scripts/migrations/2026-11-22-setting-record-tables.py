@@ -39,6 +39,7 @@ CREATE TABLE setting_placements (
   tiers          TEXT NOT NULL,
   kind           TEXT CHECK( kind IN ( 'value', 'switched-on' ) OR kind IS NULL ),
   unproved       TEXT,
+  accepted       TEXT,
   selector       TEXT,
   setting_values TEXT,
   symbolic       TEXT,
