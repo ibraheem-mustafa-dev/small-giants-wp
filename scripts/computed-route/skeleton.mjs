@@ -164,7 +164,8 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	// The shop's filter rail, placed by the rules, is a replaced run too, and the draft's own filter button leaves the tree for the theme's
 	// trigger (lib/skeleton-filter-rail.mjs::railPass); so is the commerce region the rules' WooCommerce block stands for whole
 	// (lib/skeleton-commerce-region.mjs::regionRun: the shop's product collection, its cards and their state copies).
-	const railed = railPass( { inventory, proposal: r.proposal, skeleton: r.skeleton } );
+	const draftFile = p.draftDir && p.draftIndex ? path.join( p.draftDir, p.draftIndex ) : null;
+	const railed = railPass( { inventory, proposal: r.proposal, skeleton: r.skeleton, source: draftFile && fs.existsSync( draftFile ) ? fs.readFileSync( draftFile, 'utf8' ) : null } );
 	Object.assign( r.proposal, railed.proposal );
 	r.skeleton = railed.skeleton;
 	const pieces = piecesPass( { repo, client, entry: readSurface( repo, client, surface ), tree: r.skeleton, inventory, paint: { runs: [ railed.run, regionRun( { proposal: r.proposal, skeleton: r.skeleton, inventory } ) ].filter( Boolean ), problems: r.problems, rows: r.proposal.rows, facts, rootComponent: served ? ctx.rootComponent : null, calibration: calSettingsFor( site, cache ) } } );

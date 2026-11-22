@@ -90,3 +90,33 @@ test( 'MUST FAIL: railToggle reads a handler named with a leading or trailing s,
 	const other = { ...inv, elements: inv.elements.map( ( e ) => ( 'Root/5#0' === e.key ? px( e.key, e.parentKey, 'button', tight( 'howFilter' ), [ 375 ] ) : e ) ) };
 	assert.equal( railToggle( { inventory: other, railKey: 'Root/9#0' } ), null );
 } );
+
+// Eye Care's saved shop inventory (tests/fixtures/skeleton-commerce/ec-shop-rail-inventory.json: the rail, its subtree, the draft's
+// FILTER button and their ancestors, trimmed from what `skeleton.mjs inventory --saved` wrote) holds no revealed drawer controls: the
+// drawer's close and apply buttons are read from the rail's template element in the draft's own file, so the draft's FILTER button
+// is found and leaves the tree for the theme's own trigger.
+test( 'MUST FAIL: on Eye Care\'s saved shop inventory the draft\'s filter button is found from the rail\'s template; without the draft it is not', async () => {
+	const fs = await import( 'node:fs' );
+	const path = await import( 'node:path' );
+	const { fileURLToPath } = await import( 'node:url' );
+	const here = path.dirname( fileURLToPath( import.meta.url ) );
+	const inventory = JSON.parse( fs.readFileSync( path.join( here, 'fixtures', 'skeleton-commerce', 'ec-shop-rail-inventory.json' ), 'utf8' ) );
+	const source = fs.readFileSync( path.join( here, '..', '..', '..', 'sites', 'eye-care-ward-end', 'handoff', 'Eye Care Birmingham.dc.html' ), 'utf8' );
+	const railKey = inventory.elements.find( ( e ) => 'aside' === e.tag ).key;
+	assert.equal( ( inventory.revealed || [] ).length, 0, 'the saved inventory revealed nothing' );
+	assert.deepEqual( railToggle( { inventory, railKey, source } ), { key: 'Root/254#0' } );
+	// Negative controls: no draft file finds nothing, and an inventory numbered from another version of the draft (its rail's stamp
+	// names a template element of another tag) reads no handler from the template.
+	assert.equal( railToggle( { inventory, railKey } ), null );
+	const shifted = { ...inventory, elements: inventory.elements.map( ( e ) => ( e.key === railKey ? { ...e, tpl: e.tpl + 2 } : e ) ) };
+	assert.equal( railToggle( { inventory: shifted, railKey, source } ), null );
+	// The pass drops the button from the tree and records the removal.
+	const tree = [ { name: 'sgs/container', attributes: {}, innerBlocks: [ { name: 'sgs/button', attributes: { label: 'Filter' }, innerBlocks: [], draftRef: { tpl: 'Root/254#0' } }, { name: 'sgs/container', attributes: {}, innerBlocks: [], draftRef: { tpl: railKey } } ] } ];
+	const proposal = { filterRail: { key: railKey, groups: [], notes: [] }, counts: { skeletonNodes: 3, expandedNodes: 3, removed: 0 }, rows: [ { key: 'Root/254#0', block: 'sgs/button', action: null } ] };
+	const out = railPass( { inventory, proposal, skeleton: tree, source } );
+	assert.equal( JSON.stringify( out.skeleton ).includes( 'Root/254#0' ), false );
+	assert.equal( out.proposal.counts.removed, 1 );
+	assert.deepEqual( out.run.run, [ railKey, 'Root/254#0' ] );
+	// skeleton.mjs hands the pass the surface's own draft file.
+	assert.match( fs.readFileSync( path.join( here, '..', 'skeleton.mjs' ), 'utf8' ), /railPass\( \{ inventory, proposal: r\.proposal, skeleton: r\.skeleton, source: draftFile && fs\.existsSync\( draftFile \) \? fs\.readFileSync\( draftFile, 'utf8' \) : null \} \)/ );
+} );

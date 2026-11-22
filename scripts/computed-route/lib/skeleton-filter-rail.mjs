@@ -32,6 +32,8 @@
 // so that paint is the filter's missing features and not a paint conservation problem.
 // Pure: the inventory model, the commerce region and the catalogue's filter data in, the rail out.
 
+import { parseTemplate } from './shop-parts-read.mjs';
+
 const squash = ( s ) => String( s ?? '' ).replace( /\s+/g, ' ' ).trim();
 const shown = ( e ) => Object.values( e.visible || {} ).some( Boolean );
 const attr = ( e, name ) => String( e.attrs?.[ name ] ?? new RegExp( `^<[^>]*\\s${ name }="([^"]*)"`, 'i' ).exec( e.snippet || '' )?.[ 1 ] ?? '' );
@@ -45,11 +47,34 @@ export const placeableFacets = ( facets ) => ( facets || [] ).filter( ( f ) => '
 // (archive-product.html's `.sgs-shop-filters__toggle`), so a second one built from the draft would show two. It is the shown
 // button or link outside the rail whose click handler is also the handler of an element inside the rail (the drawer's close
 // control and its "show results" button run the same handler that opens it), found by the handler, never by its words.
-// `inventory`: the served inventory (its `revealed` elements hold the rail's drawer view); `railKey`: the placed rail's element.
+// `inventory`: the served inventory (its `revealed` elements hold the rail's drawer view); `railKey`: the placed rail's element;
+// `source`: the entry draft's own file, whose template holds the drawer's controls even where the inventory never revealed them
+// (a saved inventory: the rail's buttons inside the drawer's closed branch are read from the template element the rail's stamp names).
 // Returns { key } for the one such button, { notes } when several are (none is taken), or null.
 const CLICK = [ 'sc-camel-on-click', 'onClick' ];
 const handlerOf = ( e ) => CLICK.map( ( name ) => String( attr( e, name ) ).replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim() ).find( Boolean ) ?? '';
-export function railToggle( { inventory, railKey } ) {
+// The click handlers of the buttons inside the template element stamped `tpl` (support.js stamps the k-th element of the entry
+// draft's template with data-dc-tpl k: lib/shop-parts-read.mjs::parseTemplate), when that element is the rail's own tag (an
+// inventory read from another version of the draft numbers its elements differently, and reads nothing here).
+function templateHandlers( source, tpl, tag ) {
+	if ( ! source || null == tpl ) {
+		return [];
+	}
+	const find = ( n ) => {
+		for ( const c of n.children || [] ) {
+			const hit = c.tag ? ( c.tpl === Number( tpl ) ? c : find( c ) ) : null;
+			if ( hit ) {
+				return hit;
+			}
+		}
+		return null;
+	};
+	const all = ( n ) => ( n.children || [] ).filter( ( c ) => c.tag ).flatMap( ( c ) => [ c, ...all( c ) ] );
+	const node = find( parseTemplate( source ) );
+	return node && node.tag === tag ? all( node ).filter( ( c ) => 'button' === c.tag ).map( ( c ) => String( c.attrs.onClick || c.attrs.onclick || '' ).replace( /^\{\{\s*|\s*\}\}$/g, '' ).trim() ).filter( Boolean ) : [];
+}
+
+export function railToggle( { inventory, railKey, source = null } ) {
 	const all = [ ...( inventory?.elements || [] ), ...( inventory?.revealed || [] ) ];
 	const byKey = new Map();
 	all.forEach( ( e ) => byKey.has( e.key ) || byKey.set( e.key, e ) );
@@ -64,7 +89,8 @@ export function railToggle( { inventory, railKey } ) {
 		return null;
 	}
 	const inside = ( e ) => chain( e.key ).includes( railKey );
-	const handlers = new Set( all.filter( ( e ) => e.key !== railKey && inside( e ) ).map( handlerOf ).filter( Boolean ) );
+	const rail = byKey.get( railKey );
+	const handlers = new Set( [ ...all.filter( ( e ) => e.key !== railKey && inside( e ) ).map( handlerOf ).filter( Boolean ), ...( 'Root' === rail.template ? templateHandlers( source, rail.tpl, rail.tag ) : [] ) ] );
 	const hits = ( inventory.elements || [] ).filter( ( e ) => [ 'button', 'a' ].includes( e.tag ) && shown( e ) && ! inside( e ) && handlers.has( handlerOf( e ) ) );
 	if ( hits.length > 1 ) {
 		return { notes: [ `the rail's drawer has ${ hits.length } buttons outside it running the handler its own controls run (${ hits.map( ( e ) => e.key ).join( ', ' ) }), so none is taken for the filter button` ] };
@@ -76,9 +102,9 @@ export function railToggle( { inventory, railKey } ) {
 // skeleton, since the theme's own trigger stays: its row becomes a removal naming the rail's rule and its node leaves the tree. The
 // rail's draft element and the button's are the filter's run (railRun). Returns { skeleton, proposal: { rows, counts, filterRail }, run }
 // with the inputs unchanged; the same tree, an empty proposal part and a null run when the proposal placed no rail or no button.
-export function railPass( { inventory, proposal, skeleton } ) {
+export function railPass( { inventory, proposal, skeleton, source = null } ) {
 	const key = proposal?.filterRail?.key;
-	const toggle = key ? railToggle( { inventory, railKey: key } ) : null;
+	const toggle = key ? railToggle( { inventory, railKey: key, source } ) : null;
 	const walk = ( list ) => ( list || [] ).flatMap( ( n ) => [ n, ...walk( n.innerBlocks ) ] );
 	const node = toggle?.key ? walk( skeleton ).find( ( n ) => toggle.key === n.draftRef?.tpl ) : null;
 	const drop = ( list ) => ( list || [] ).filter( ( n ) => n !== node ).map( ( n ) => ( n.innerBlocks?.length ? { ...n, innerBlocks: drop( n.innerBlocks ) } : n ) );
