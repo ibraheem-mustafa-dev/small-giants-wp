@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import {
 	SgsLengthControl,
+	SgsGapControl,
 	ResponsiveOverride,
 	SgsBoxControl,
 	BOX_UNITS,
@@ -9,9 +10,9 @@ import {
 import { ToolsPanelItem } from '../../components/primitives';
 
 /**
- * SGS Nav Bar Menu — the "List layout" panel's top-level link extras, shown
- * on sgs/nav-bar-menu only: link minimum height, badge padding, badge corner
- * radius and the space before a badge. Rendered inside ListLayoutPanel's
+ * SGS nav menus — the "List layout" panel's top-level link extras: link minimum
+ * height, badge padding, badge corner radius and the space before a badge, and
+ * (`showItemGap`, sgs/nav-drawer-menu only) the gap between a row's parts. Rendered inside ListLayoutPanel's
  * ToolsPanel, which these items register with through context.
  *
  * @param {Object}   root0                       Props.
@@ -19,6 +20,8 @@ import { ToolsPanelItem } from '../../components/primitives';
  * @param {Object}   root0.itemBadgePadding      Tier object of {top,right,bottom,left} boxes.
  * @param {string}   root0.itemBadgeBorderRadius A CSS length.
  * @param {string}   root0.itemBadgeGap          A CSS length.
+ * @param {boolean}  [root0.showItemGap]         True on `sgs/nav-drawer-menu` only: shows the row gap.
+ * @param {Object}   [root0.itemGap]             Tier object of gap values (one length, or `row column`).
  * @param {Function} root0.setAttributes         The block's attribute setter.
  */
 export default function LinkExtrasItems( {
@@ -26,6 +29,8 @@ export default function LinkExtrasItems( {
 	itemBadgePadding,
 	itemBadgeBorderRadius,
 	itemBadgeGap,
+	showItemGap = false,
+	itemGap,
 	setAttributes,
 } ) {
 	return (
@@ -99,6 +104,29 @@ export default function LinkExtrasItems( {
 					onChange={ ( val ) => setAttributes( { itemBadgeGap: val || '' } ) }
 				/>
 			</ToolsPanelItem>
+
+			{ showItemGap && (
+				<ToolsPanelItem
+					hasValue={ () => Object.keys( itemGap ?? {} ).length > 0 }
+					label={ __( 'Row gap', 'sgs-blocks' ) }
+					onDeselect={ () => setAttributes( { itemGap: {} } ) }
+				>
+					<ResponsiveOverride
+						value={ itemGap }
+						onChange={ ( obj ) => setAttributes( { itemGap: obj } ) }
+					>
+						{ ( { ownValue, effectiveValue, inherited, setOwnValue } ) => (
+							<SgsGapControl
+								label={ __( 'Row gap', 'sgs-blocks' ) }
+								help={ __( 'The space between a row’s parts: its label and a trailing icon or arrow, an ornament, a badge. Empty keeps the row as it is.', 'sgs-blocks' ) }
+								value={ ownValue || '' }
+								placeholder={ inherited ? effectiveValue : '' }
+								onChange={ ( val ) => setOwnValue( val || '' ) }
+							/>
+						) }
+					</ResponsiveOverride>
+				</ToolsPanelItem>
+			) }
 		</>
 	);
 }

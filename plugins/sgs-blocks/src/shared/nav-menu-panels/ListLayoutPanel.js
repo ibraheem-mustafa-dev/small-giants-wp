@@ -34,6 +34,8 @@ import LinkExtrasItems from './LinkExtrasItems';
  *                                             LinkExtrasItems rows.
  * @param {Object}   [root0.itemPadding]       The bar's `itemPadding` attribute, a tier
  *                                             object of {top,right,bottom,left} boxes.
+ * @param {boolean}  [root0.showItemGap]       True on `sgs/nav-drawer-menu` only: shows "Row gap" (`itemGap`).
+ * @param {Object}   [root0.itemGap]           The block's `itemGap` attribute, a tier object of gap values.
  * @param {boolean}  [root0.showSubmenuLinkPadding] Shows "Dropdown link padding"
  *                                             (`submenuLinkPadding`) — Spec 36 "Item hover
  *                                             paint": the same per-device box control as
@@ -58,6 +60,8 @@ export default function ListLayoutPanel( {
 	itemBadgePadding,
 	itemBadgeBorderRadius,
 	itemBadgeGap,
+	showItemGap = false,
+	itemGap,
 	showSubmenuLinkPadding = false,
 	submenuLinkPadding,
 	showFlexWrap = false,
@@ -73,6 +77,7 @@ export default function ListLayoutPanel( {
 					padding: {},
 					...( showMargin ? { margin: {} } : {} ),
 					...( showItemPadding ? { itemPadding: {}, itemMinHeight: {}, itemBadgePadding: {}, itemBadgeBorderRadius: '', itemBadgeGap: '' } : {} ),
+					...( showItemGap ? { itemGap: {} } : {} ),
 					...( showSubmenuLinkPadding ? { submenuLinkPadding: {} } : {} ),
 					...( showFlexWrap ? { flexWrap: '' } : {} ),
 				} )
@@ -241,6 +246,8 @@ export default function ListLayoutPanel( {
 					itemBadgePadding={ itemBadgePadding }
 					itemBadgeBorderRadius={ itemBadgeBorderRadius }
 					itemBadgeGap={ itemBadgeGap }
+					showItemGap={ showItemGap }
+					itemGap={ itemGap }
 					setAttributes={ setAttributes }
 				/>
 			) }

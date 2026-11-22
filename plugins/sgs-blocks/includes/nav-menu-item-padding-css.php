@@ -74,6 +74,27 @@ if ( ! function_exists( 'sgs_nav_item_padding_css' ) ) {
 			);
 		}
 
+		/*
+		 * itemGap — the gap between the parts of a link row (ornament, label,
+		 * badge, trailing icon), per device. Unset prints nothing: a row keeps
+		 * its own spacing. Only `sgs/nav-drawer-menu` holds the attribute; the
+		 * other nav menu block reads an empty value and prints no rule.
+		 */
+		if ( is_array( $attributes['itemGap'] ?? null ) && array() !== $attributes['itemGap'] ) {
+			$css .= sgs_emit_responsive_css(
+				$link_sel,
+				array(
+					array(
+						'value'     => $attributes['itemGap'],
+						'css'       => 'gap',
+						'transform' => static function ( $raw ): string {
+							return sgs_css_length_value( (string) $raw );
+						},
+					),
+				)
+			);
+		}
+
 		$item_padding = $attributes['itemPadding'] ?? null;
 		if ( is_array( $item_padding ) && array() !== $item_padding ) {
 			$item_padding_start = array();

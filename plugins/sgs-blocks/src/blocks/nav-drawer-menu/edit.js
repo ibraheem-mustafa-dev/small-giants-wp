@@ -608,6 +608,8 @@ export default function Edit( { attributes, setAttributes, name } ) {
 					itemBadgePadding={ attributes.itemBadgePadding }
 					itemBadgeBorderRadius={ attributes.itemBadgeBorderRadius }
 					itemBadgeGap={ attributes.itemBadgeGap }
+					showItemGap
+					itemGap={ attributes.itemGap }
 					setAttributes={ setAttributes }
 				/>
 
