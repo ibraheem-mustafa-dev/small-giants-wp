@@ -14,7 +14,8 @@
 const b64 = ( v ) => Buffer.from( JSON.stringify( v ) ).toString( 'base64' );
 
 // A term name as WordPress reads it back, decoded: its name sanitiser stores `&` as `&amp;` (and quotes and angle brackets as
-// their entities), while the catalogue holds the draft's own words, so names are compared decoded.
+// their entities), while the catalogue holds the draft's own words, so the site's names are decoded before they are compared
+// (the draft's never are: a name the draft writes with a literal `&amp;` is stored `&amp;amp;` and decodes back to it).
 const ENTITIES = { '&amp;': '&', '&#038;': '&', '&#38;': '&', '&quot;': '"', '&#039;': "'", '&#39;': "'", '&apos;': "'", '&lt;': '<', '&gt;': '>' };
 export const decodeName = ( s ) => String( s ?? '' ).replace( /&(?:amp|quot|apos|lt|gt|#0?38|#0?39);/g, ( e ) => ENTITIES[ e ] ?? e );
 
@@ -44,9 +45,9 @@ export function planFacets( catalogue, state ) {
 			notes.push( `attribute ${ taxOf( f.slug ) } is named "${ s.label }" on the site, the draft's filter "${ f.label }"; its name is left` );
 		}
 		const terms = Object.fromEntries( Object.entries( s.terms || {} ).map( ( [ k, v ] ) => [ decodeName( k ), v ] ) );
-		const held = ( t ) => Object.prototype.hasOwnProperty.call( terms, decodeName( t.name ) );
+		const held = ( t ) => Object.prototype.hasOwnProperty.call( terms, t.name );
 		const lack = f.terms.filter( ( t ) => ! held( t ) );
-		const bare = f.terms.filter( ( t ) => t.swatch && held( t ) && ! terms[ decodeName( t.name ) ] );
+		const bare = f.terms.filter( ( t ) => t.swatch && held( t ) && ! terms[ t.name ] );
 		const what = [ lack.length && `term(s) ${ lack.map( ( t ) => t.name ).join( ', ' ) }`, bare.length && `the swatch of ${ bare.map( ( t ) => t.name ).join( ', ' ) }` ].filter( Boolean );
 		actions.push( { slug: f.slug, action: what.length ? 'complete' : 'exists', say: what.length ? `complete attribute ${ taxOf( f.slug ) } (id ${ s.id }): add ${ what.join( ' and ' ) }` : `exists attribute ${ taxOf( f.slug ) } (id ${ s.id })` } );
 	}
@@ -63,7 +64,7 @@ export function facetLack( catalogue, p, s ) {
 			continue;
 		}
 		const have = ( s.facets?.[ f.slug ] || [] ).map( decodeName );
-		const lack = want.filter( ( n ) => ! have.includes( decodeName( n ) ) );
+		const lack = want.filter( ( n ) => ! have.includes( n ) );
 		if ( ! ( s.attributes || [] ).includes( taxOf( f.slug ) ) || ( lack.length && ( ours || ! have.length ) ) ) {
 			out.push( `${ f.label } ${ ( lack.length ? lack : want ).join( '/' ) }` );
 		}

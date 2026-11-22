@@ -139,7 +139,7 @@
 	},
 	{
 		"file": "lib/site-build-catalogue-axes.mjs",
-		"find": "( held[ taxOf( a.slug ) ] || [] ).map( decodeName ).includes( decodeName( n ) )",
+		"find": "( held[ taxOf( a.slug ) ] || [] ).map( decodeName ).includes( n )",
 		"replace": "( held[ taxOf( a.slug ) ] || [] ).includes( n )",
 		"why": "a choice term WordPress stores escaped (&amp;) is planned as missing on every run"
 	}

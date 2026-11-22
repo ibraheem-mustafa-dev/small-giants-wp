@@ -121,7 +121,8 @@ function toggleOf( ev ) {
 const countWording = ( count ) => {
 	const words = squash( count?.words );
 	const nums = words.match( /\d+/g ) || [];
-	return 1 === nums.length ? { words: words.replace( /\d+/, '%d' ), number: Number( nums[ 0 ] ) } : null;
+	// Any other % is written %% (the theme hands the words to sprintf).
+	return 1 === nums.length ? { words: words.replace( /%/g, '%%' ).replace( /\d+/, '%d' ), number: Number( nums[ 0 ] ) } : null;
 };
 
 // The one-product branch of the count's hole: { one, many } (the words for one and for several), or null.
@@ -387,7 +388,7 @@ echo wp_json_encode( array( 'mods' => (object) $out ) );`;
 }
 
 const blank = ( v ) => null == v || '' === v;
-const same = ( a, b ) => ( 'boolean' === typeof b ? Boolean( a ) && ! [ '0', 'false', '' ].includes( String( a ) ) === b : String( a ) === String( b ) );
+const same = ( a, b ) => ( 'boolean' === typeof b ? ( Boolean( a ) && ! [ '0', 'false', '' ].includes( String( a ) ) ) === b : String( a ) === String( b ) );
 
 // The plan: { set: { mod: value }, exists: [ mod ], left: [ say ] } from the decisions and the site's values.
 export function planShopOptions( decided, state ) {

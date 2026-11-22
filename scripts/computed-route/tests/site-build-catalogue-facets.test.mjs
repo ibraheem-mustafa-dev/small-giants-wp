@@ -151,3 +151,14 @@ test( 'MUST FAIL: a facet term or a product filter term WordPress stores escaped
 	assert.equal( none.facets.find( ( a ) => 'shade' === a.slug ).say, 'complete attribute pa_shade (id 11): add term(s) Salt & pepper' );
 	assert.match( none.actions[ 0 ].say, /lacks filter Shade Salt & pepper$/ );
 } );
+
+test( 'MUST FAIL: a draft name holding a literal &amp; is held when the site stores it &amp;amp;; the draft\'s side is never decoded', () => {
+	const { catalogue } = setup();
+	const lit = { ...catalogue, facets: catalogue.facets.map( ( f ) => ( 'shade' === f.slug ? { ...f, terms: [ ...f.terms, { name: 'Salt &amp; pepper', swatch: '' } ] } : f ) ) };
+	const facets = allFacets( catalogue, { shade: { terms: { ...allFacets( catalogue ).shade.terms, 'Salt &amp;amp; pepper': '' } } } );
+	assert.equal( planCatalogue( lit, site( [], { facets } ) ).facets.find( ( a ) => 'shade' === a.slug ).action, 'exists' );
+	// Negative control: the site's plain & is not the draft's literal &amp;.
+	const plain = allFacets( catalogue, { shade: { terms: { ...allFacets( catalogue ).shade.terms, 'Salt &amp; pepper': '' } } } );
+	assert.equal( planCatalogue( lit, site( [], { facets: plain } ) ).facets.find( ( a ) => 'shade' === a.slug ).action, 'complete' );
+} );
+

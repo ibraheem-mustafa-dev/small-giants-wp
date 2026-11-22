@@ -252,3 +252,14 @@ test( 'MUST FAIL: with no filter button named by the proposal, the button outsid
 	Object.assign( inv.elements.find( ( e ) => 3 === e.tpl ), { snippet: '<button sc-camel-on-click="{{ openCart }}" data-dc-tpl="3">' } );
 	assert.equal( values( decideShopOptions( ARTEFACTS( { inventory: inv, proposal } ) ) ).sgs_shop_toggle_count, undefined );
 } );
+
+test( 'MUST FAIL: a stored false matches a draft false, and a stray % in the count words is written %% for the theme\'s sprintf', () => {
+	const plan = planShopOptions( { set: { a: { value: false, evidence: 'e' }, b: { value: true, evidence: 'e' } } }, { mods: { a: false, b: '0' } } );
+	assert.deepEqual( plan.exists, [ 'a' ] );
+	assert.equal( plan.left.length, 1, 'a stored 0 against a draft true is left and noted' );
+	const inv = INVENTORY();
+	Object.assign( inv.elements.find( ( e ) => 2 === e.tpl ), { words: '16 frames, 100 % fresh'.replace( '100 ', '' ) } );
+	const d = values( decideShopOptions( ARTEFACTS( { inventory: inv } ) ) );
+	assert.equal( d.sgs_shop_count_label, '%d frames, %% fresh' );
+} );
+
