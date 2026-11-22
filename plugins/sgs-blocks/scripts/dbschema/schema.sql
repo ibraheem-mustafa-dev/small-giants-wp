@@ -1,12 +1,12 @@
 -- SGS framework knowledge-base schema
--- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-10-30
+-- GENERATED VERBATIM from the live DB's sqlite_master. Regenerated 2026-11-22
 -- by: python dbschema/check_schema_drift.py --regenerate
 -- Do NOT hand-edit: byte-fidelity to the live schema is the entire point.
 -- Regenerate rather than patch, then run: python dbschema/check_schema_drift.py --check
 --
 -- EXCLUDED: SQLite-internal objects (sqlite_*) — SQLite creates these itself and
 -- REFUSES an explicit CREATE ('object name reserved for internal use').
--- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1, sqlite_autoindex_motion_presets_1, sqlite_autoindex_motion_targets_1, sqlite_autoindex_motion_fields_1, sqlite_autoindex_states_1, sqlite_autoindex_property_equivalents_1, sqlite_autoindex_block_source_gaps_1, sqlite_autoindex_block_identity_facts_1
+-- Present in the live DB: sqlite_autoindex_blocks_1, sqlite_autoindex_block_attributes_1, sqlite_sequence, sqlite_autoindex_block_supports_1, sqlite_autoindex_block_capabilities_1, sqlite_autoindex_style_variations_1, sqlite_autoindex_patterns_1, sqlite_autoindex_theme_parts_1, sqlite_autoindex_plugins_1, sqlite_autoindex_hooks_1, sqlite_autoindex_pattern_coverage_1, sqlite_autoindex_property_suffixes_1, sqlite_autoindex_modifier_suffixes_1, sqlite_autoindex_indexed_files_1, sqlite_autoindex_docs_1, sqlite_autoindex_schema_metadata_1, sqlite_autoindex_design_tokens_1, sqlite_autoindex_html_tag_to_core_block_1, sqlite_autoindex_slots_1, sqlite_autoindex_roles_1, sqlite_autoindex_block_composition_1, sqlite_autoindex_variant_slots_1, sqlite_autoindex_array_item_schema_1, sqlite_autoindex_fx_effects_1, sqlite_autoindex_schema_migrations_1, sqlite_autoindex_components_1, sqlite_autoindex_motion_presets_1, sqlite_autoindex_motion_targets_1, sqlite_autoindex_motion_fields_1, sqlite_autoindex_states_1, sqlite_autoindex_property_equivalents_1, sqlite_autoindex_block_source_gaps_1, sqlite_autoindex_block_identity_facts_1, sqlite_autoindex_setting_placements_1, sqlite_autoindex_block_part_order_1, sqlite_autoindex_setting_record_blocks_1
 
 -- table: array_item_schema
 CREATE TABLE array_item_schema (
@@ -60,6 +60,17 @@ CREATE TABLE block_identity_facts (
   source     TEXT NOT NULL CHECK( source IN ( 'code', 'live' ) ),
   evidence   TEXT NOT NULL,
   PRIMARY KEY ( block_slug, fact, value, source )
+);
+
+-- table: block_part_order
+CREATE TABLE block_part_order (
+  block_slug  TEXT NOT NULL,
+  position    INTEGER NOT NULL,
+  part        TEXT NOT NULL,
+  tag         TEXT,
+  parent_part TEXT,
+  built_by    TEXT CHECK( built_by IN ( 'php', 'script' ) OR built_by IS NULL ),
+  UNIQUE ( block_slug, position )
 );
 
 -- table: block_selectors
@@ -359,6 +370,35 @@ CREATE TABLE schema_metadata (
 -- table: schema_migrations
 CREATE TABLE schema_migrations (filename TEXT PRIMARY KEY, applied_at TEXT NOT NULL);
 
+-- table: setting_placements
+CREATE TABLE setting_placements (
+  block_slug     TEXT NOT NULL,
+  setting        TEXT NOT NULL,
+  part           TEXT NOT NULL,
+  props          TEXT NOT NULL,
+  state          TEXT NOT NULL DEFAULT '',
+  tiers          TEXT NOT NULL,
+  kind           TEXT CHECK( kind IN ( 'value', 'switched-on' ) OR kind IS NULL ),
+  unproved       TEXT,
+  accepted       TEXT,
+  selector       TEXT,
+  setting_values TEXT,
+  symbolic       TEXT,
+  UNIQUE ( block_slug, setting, part, props, state, tiers )
+);
+
+-- table: setting_record_blocks
+CREATE TABLE setting_record_blocks (
+  block_slug      TEXT PRIMARY KEY,
+  schema_version  INTEGER NOT NULL,
+  stamp           TEXT,
+  tested_no_paint TEXT,
+  replaces_block  TEXT,
+  unvalued        TEXT,
+  part_not_named  TEXT,
+  record_json     TEXT NOT NULL
+);
+
 -- table: slots
 CREATE TABLE slots (
           slot_name        TEXT NOT NULL,
@@ -482,3 +522,9 @@ CREATE INDEX idx_patterns_mood          ON patterns(mood);
 
 -- index: idx_patterns_style
 CREATE INDEX idx_patterns_style         ON patterns(style);
+
+-- index: idx_setting_placements_block
+CREATE INDEX idx_setting_placements_block ON setting_placements ( block_slug );
+
+-- index: idx_setting_placements_setting
+CREATE INDEX idx_setting_placements_setting ON setting_placements ( setting );
