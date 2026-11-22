@@ -363,8 +363,9 @@ export function makeRules( { m, facts, surface = {}, hooks, motion = new Set(), 
 	};
 	// Whether a control's click handler scrolls the page to its top and writes no state (lib/skeleton-scroll-top.mjs).
 	const scrollsTop = ( e ) => !! handlerOf( e ) && !! view.entry?.( e ) && handlerScrollsTop( { folder: path.join( facts.repo, 'sites', facts.client, 'handoff' ), record: { sources: view.sources }, component: view.entry( e ).template.component, handler: handlerOf( e ) } );
-	// A link whose address the draft takes from a script value, not a written address.
-	const scriptHref = ( e ) => /\{\{/.test( e.attrs?.href ?? '' );
+	// A link whose address the draft takes from one script value of its own state (`href="{{ orderHref }}"`, a bare name, never a member of
+	// a loop's item), read from the markup: the inventory's `href` holds the value the draft rendered with.
+	const scriptHref = ( e ) => /^<a\b[^>]*\shref="\{\{\s*[A-Za-z_$][\w$]*\s*\}\}"/.test( e.snippet ?? '' );
 	const realHref = ( e ) => ( e.attrs?.href && '#' !== e.attrs.href && ! /\{\{/.test( e.attrs.href ) ? e.attrs.href : null );
 	// A form control (an <input>, <select>, the draft's <sc-raw-select> or a <textarea>) and the field block it becomes,
 	// by its rendered input type; null for anything else.

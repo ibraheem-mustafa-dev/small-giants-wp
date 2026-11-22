@@ -483,7 +483,7 @@ test( 'cardAction: a card the draft draws as one link is one whole-card link, th
 } );
 
 test( 'cardAction: a card whose address is a script value keeps it on the button for the later order stage, the card unlinked (rules.cardAction.boundLink); MUST FAIL when the card takes the link', () => {
-	const bound = section( [ E( 'a', { attrs: { href: '{{ orderHref }}' } }, [ E( 'span', { words: 'all in one place' } ), E( 'span', { words: 'Follow this order in your account' } ), E( 'span', { words: 'View order →' } ) ] ) ] );
+	const bound = section( [ E( 'a', { attrs: { href: 'Account.dc.html?order=MM-1042' }, snippet: '<a href="{{ orderHref }}" data-dc-tpl="2"></a>' }, [ E( 'span', { words: 'all in one place' } ), E( 'span', { words: 'Follow this order in your account' } ), E( 'span', { words: 'View order →' } ) ] ) ] );
 	const r = run( bound );
 	const link = byTag( r, 'a' );
 	assert.equal( link.block, 'sgs/container' );
@@ -491,6 +491,10 @@ test( 'cardAction: a card whose address is a script value keeps it on the button
 	const action = byWords( r, 'View order →' );
 	assert.equal( action?.rule, 'cardAction' );
 	assert.ok( ! action.attributes.visualOnly, 'the button stays the link, not a cue' );
+	// A member of a loop's item is not a state value of its own: a card linked so, ending in a call to action, takes the card link.
+	const item = section( [ E( 'a', { attrs: { href: '/a' }, snippet: '<a href="{{ t.href }}" data-dc-tpl="2"></a>' }, [ E( 'h3', { words: 'Alpha' } ), E( 'p', { words: 'About alpha' } ), E( 'span', { words: 'Explore Alpha →' } ) ] ) ] );
+	assert.equal( byTag( run( item ), 'a' ).attributes.sgsBlockLink, '/a' );
+	assert.equal( byWords( run( item ), 'Explore Alpha →' ).attributes.visualOnly, true );
 	const off = run( bound, { facts: ( () => { const f = facts(); delete f.decisions.rules.cardAction.boundLink; return f; } )() } );
 	assert.equal( byWords( off, 'View order →' ).attributes.visualOnly, true, 'with the flag removed the card is the link and the button a cue' );
 } );
