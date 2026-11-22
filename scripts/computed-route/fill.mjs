@@ -34,6 +34,7 @@ import { openRunLedger } from './lib/run-ledger.mjs';
 import { fillRunRows } from './lib/run-ledger-fill.mjs';
 import { fillStates } from './lib/fill-state.mjs';
 import { sampleMotion } from './lib/fill-entrance.mjs';
+import { revealMarkWrites } from './lib/fill-reveal-marks.mjs';
 import { confirmRecords, defectIndex } from './lib/fill-confirm.mjs';
 import { imageRecords } from './lib/fill-media.mjs';
 import { logoSizeWrites } from './lib/fill-logo-size.mjs';
@@ -360,6 +361,11 @@ export async function fillSurface( o ) {
 		const motion = motionWrites( { nodes, flat, refOf, records: intakeParts.records, rootComponent: intakeParts.rootComponent, sampled, loops, mdb: motionDb( db ), db, schema: loadMotionSchema(), rawSnapshot, template: templateOf( facts ), draftCss: draftCssOf( o.draftDir, o.draftIndex ), reads, calFor } );
 		result.writes.push( ...motion.writes );
 		result.unmapped.push( ...motion.unmapped );
+		// A draft element carrying a scroll-reveal mark takes the token entrance where no record gave it one (lib/fill-reveal-marks.mjs).
+		const revealed = revealMarkWrites( { nodes, flat, refOf, inventory, mdb: motionDb( db ), schema: loadMotionSchema() } );
+		result.writes.push( ...revealed.writes );
+		result.unmapped.push( ...revealed.unmapped );
+		result.notes.push( ...revealed.notes );
 		// A header the draft pins by its own CSS is sticky per tier (lib/fill-header-sticky.mjs).
 		const sticky = stickyHeaderWrites( { nodes, flat, refOf, reads, writes: result.writes } );
 		result.writes.push( ...sticky.writes );
