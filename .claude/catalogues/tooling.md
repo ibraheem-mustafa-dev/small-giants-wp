@@ -19,8 +19,8 @@ Searching one directory and concluding a tool does not exist is a live failure m
 
 | Directory | Runnable files | Holds |
 |---|---|---|
-| `scripts/` | 1667 | repo-wide tooling (naming lint, site utilities) |
-| `plugins/sgs-blocks/scripts/` | 969 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
+| `scripts/` | 1677 | repo-wide tooling (naming lint, site utilities) |
+| `plugins/sgs-blocks/scripts/` | 975 | **the bulk** — every gate, audit, codemod, DB and pipeline tool |
 | `.claude/hooks/` | 7 | session + commit hooks (handoff preflight, doc gates) |
 | `.claude/skills/wp-sgs-deploy/scripts/` | 0 | deploy-skill helpers |
 
@@ -102,7 +102,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 
 ⚠ The naming is not consistent — the same idea appears as `census-*`, `survey-*`, `audit-*`, `check-*`, `scan-*`, `probe-*` and `report-*`. Grep for the SUBJECT (colour, gradient, token, element, inline, parity), never for the verb you happen to have in mind.
 
-#### `plugins/sgs-blocks/scripts/` — 862 scripts
+#### `plugins/sgs-blocks/scripts/` — 868 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -395,7 +395,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `fanout-overlay-sibling-attrs.py` | manifest+npm+script-call | D6 (hover + responsive-tier siblings) and |
 | `fanout-shadow-lift-attr.py` | manifest | adds the `shadowLiftOnHover` block-level switch (boolean, |
 | `fanout-surface-ground-attrs.py` | manifest+script-call | U-1 commit 4e fan-out of `surfaceBlur` / |
-| `find-scalar-tier-attrs.py` | manifest+script-call+test-import | Find saved old-shape (scalar) values of attributes that became per-breakpoint objects. |
+| `find-scalar-tier-attrs.py` | manifest+npm+script-call+test-import | Find saved old-shape (scalar) values of attributes that became per-breakpoint objects. |
 | `fix-render-tier-object-spacing.py` | script-call | One-off fix (2026-09-06): render.php CSS-emission side of the tier-object |
 | `focus-system/census.js` | manifest+script-call | The census for check-focus-system.js: runs the right scanner over every corpus file and tallies items (each in exactly one category) per category and… |
 | `focus-system/check.js` | manifest+script-call | The binary gate for check-focus-system.js (plan §3, "Gate"): --check fails on any finding in a target category, on `unrecognised`, on a stale allow… |
@@ -620,7 +620,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrate-palette-roster-slugs.py` | script-call | Palette roster migration (Spec 32 FR-32-14): five palette slugs for heading text, link, link hover |
 | `migrate-render-closures.py` | manifest+npm | Adopt the shared render helpers in place of per-file inline sanitiser closures. |
 | `migrate-scalar-tier-live.php` | script-call+test-import | Live-content sweep for attributes that became per-breakpoint objects (FW-F, FP-14), the generalised form of migrate-gallery-layout.php. |
-| `migrate-scalar-tier.py` | manifest+script-call | turn a scalar block.json attribute family into per-breakpoint objects. |
+| `migrate-scalar-tier.py` | manifest+npm+script-call | turn a scalar block.json attribute family into per-breakpoint objects. |
 | `migrate-section-gutter-tokens.py` | manifest+npm+script-call | Per-tier section padding and gutter tokens (Spec 32 FR-32-15), added to the framework theme.json and every |
 | `migrate-shadow-presets.py` | manifest | Shadow preset migration (U-1 commit 4f-1 step 6): the four old theme shadows are replaced by |
 | `migrate-stored-tier-scalars.py` | — | fold a flat per-device scalar into ONE tier object, |
@@ -648,6 +648,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `migrations/2026-10-20-states-table.py` | manifest | - Spec 48 FR-48-81, the states wave (plan .claude/plans/archive/2026-10-20-states-wave.md). |
 | `migrations/2026-10-21-property-equivalents-intrinsic-ratio.py` | manifest | - Spec 48 FR-48-8 step 5, the `intrinsic-ratio` condition. |
 | `migrations/2026-10-30-block-identity-facts-table.py` | manifest+script-call | - Spec 48 F1 step A0/A1 (plan .claude/plans/2026-10-30-clone-recognition-fixes.md, |
+| `migrations/2026-11-22-setting-record-tables.py` | manifest+test-import | - the setting record's three tables (plan .claude/plans/2026-11-21-setting-record.md, Task 3). |
 | `minify-css.mjs` | script-call | Minify hand-written CSS for the deploy payload (deploy_minify.py calls it). |
 | `minify-js.mjs` | script-call | Minify hand-written JavaScript for the deploy payload (deploy_minify.py calls it). |
 | `motion-qa/lib/form-states-judges.mjs` | script-call | Pure judges, self-test and argument parsing for `probe-motion-form-states.mjs`. |
@@ -831,12 +832,17 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `setting-record/check.py` | manifest+script-call | The setting-record check: run a block's real render code offline for every setting and compare what changes with the |
 | `setting-record/computed.py` | manifest+script-call | Compute a property's value on an element of a rendered page, offline: the cascade (cascade.py), inheritance, var() |
 | `setting-record/diff.py` | hook+manifest+script-call+test-import | What one setting changes: a plain render and a changed render of the same block compared, as placements. |
+| `setting-record/included-files.php` | script-call | Loaded before the offline runner (php -d auto_prepend_file=...) by the setting check's renderer (render.py::Renderer): when the render ends it writes… |
 | `setting-record/instances.py` | manifest+script-call | The renders an offline block check needs to see what every setting of one block changes. |
 | `setting-record/leaf_values.py` | script-call | Test values for the settings `instances.py` cannot value from a type and a name alone, read from the block's own code. |
 | `setting-record/proof.py` | script-call | Prove each placement the run found with the cascade, and decide its kind. |
 | `setting-record/render.py` | manifest+script-call+skill+test-import | Render a block offline through the plugin's own runner (scripts/qa/lib/render-css-harness.php), with a cache. |
 | `setting-record/scriptsets.py` | script-call | What a front-end script sets on the page after the server render: the classes and attributes only a browser shows. |
+| `setting-record/seed_fixtures.py` | manifest+script-call | Give every block a fixture in fixtures.json from the two curated sources that already exist, never by hand per block. |
 | `setting-record/selftest.py` | script-call | Prove the setting-record check can fail: plant four faults, one per scratch copy of the plugin, and see the check name each. |
+| `setting-record/shipped-css.js` | script-call | The CSS a block's stylesheet ships as: the source text with the build's own postbuild rewrites applied, in the order package.json's `postbuild` runs… |
+| `setting-record/stamp.py` | manifest+script-call+test-import | What a block's record was checked against, and which blocks a change touches. |
+| `setting-record/summarise.py` | script-call+skill | The library report: every block's check report (<block>.check.json, written by check.py --out DIR) read into one |
 | `setting-record/theme.py` | hook+manifest+script-call+skill+test-import | The CSS a page carries from the framework theme before any block sheet, and the page frame's measurements. |
 | `setting-record/vocab.py` | script-call+test-import | The vocabulary rules that decide when two descriptions of a block name the same thing, kept apart from the |
 | `sgs-update-v2.py` | manifest+script-call+skill+test-import | 14-stage holistic refresh of the SGS framework knowledge base. |
@@ -969,7 +975,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `wiring-fingerprint/wf_table.py` | script-call | The names the Cart and Checkout look table builds (`includes/woocommerce/commerce-look/selectors.json`). |
 | `wiring-fingerprint/wf_tokens.py` | manifest+script-call | Channel tokens: what one PHP statement emits. |
 
-#### `scripts/` — 836 scripts
+#### `scripts/` — 838 scripts
 
 | Script | Wired | Purpose (its own words) |
 |---|---|---|
@@ -1465,6 +1471,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/lib/resolve-side-effects.mjs` | manifest+script-call | The tie rule for settings that all paint one property on one element, by what else each one paints there |
 | `computed-route/lib/resolve.mjs` | manifest+script-call | The one property-to-setting engine (FR-47-1, R-47-3). Given a block, the rendered element (slot) a difference sits on, a CSS property, a state and… |
 | `computed-route/lib/reveal-merge.mjs` | script-call | Reveal states of a draft surface, the pure half (Spec 48 §3.4 step 1). Content a draft shows only after a click (a closed accordion's answer, a later… |
+| `computed-route/lib/route-sweep.mjs` | script-call | The all-client regression sweep's library (tools/route-sweep.mjs): the saved records every client's surfaces are proposed from, the summary and node… |
 | `computed-route/lib/rule-origin.mjs` | manifest+script-call | Where a CSS rule the live probes read came from: `inline` (the element's style attribute), `custom-css` (a block's sgsCustomCss residual, the route's… |
 | `computed-route/lib/run-ledger-build.mjs` | manifest+script-call | The build and apply stages' run ledger rows (lib/run-ledger.mjs), written by site-run.mjs once each stage has run. Pure. |
 | `computed-route/lib/run-ledger-fill.mjs` | manifest+script-call | Fill's run ledger rows (lib/run-ledger.mjs): what Fill did with each draft look of each target, written by fill.mjs after its outputs from the run's… |
@@ -1679,6 +1686,7 @@ Every runnable script, with the purpose its own author wrote and HOW IT RUNS - n
 | `computed-route/tools/presentational-hints.mjs` | — | Derives data/presentational-hints.json from the WHATWG HTML Rendering section (clone coverage plan step 1.6): every HTML attribute the browser turns… |
 | `computed-route/tools/probe-openers.mjs` | skill | Read-only proof of the state opener: for each surface state of an export, in intake's sandbox, applies the keys with… |
 | `computed-route/tools/residual-classify.mjs` | — | Classifies a Fill run's UNMAPPED rows the way the residual Custom CSS pass does (lib/fill-residual-css.mjs::classifyRow): residual (class a: all five… |
+| `computed-route/tools/route-sweep.mjs` | script-call | The all-client regression sweep: proposes (and optionally Fills) every surface of every client from frozen saved records, offline, and compares the… |
 | `computed-route/tools/run-tests.mjs` | manifest | The route's test command: `node scripts/computed-route/tools/run-tests.mjs [test file ...]` (default every tests/*.test.mjs), which is also `npm… |
 | `computed-route/tools/scratch-target.mjs` | manifest+script-call | Records a scratch copy of a local mirror as a site target, so a route run can name it with `--site` (lib/site-targets.mjs). |
 | `computed-route/tools/setting-families.mjs` | manifest | Lists the rows of saved Fill runs that a block already has a setting for and Fill left unwritten, by family |
