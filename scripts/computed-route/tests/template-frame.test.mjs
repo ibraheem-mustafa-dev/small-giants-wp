@@ -57,7 +57,12 @@ test( 'a page that imports the shared header and footer mounts both; one in the 
 test( 'MUST FAIL: the frame piece marks the bar as the template\'s own part and the main with its frame, dropping the page wrapper', () => {
 	const got = place( ctxOf(), PIECE );
 	assert.deepEqual( got.tree.map( ( n ) => [ n.draftRef.tpl, n.templatePart ?? null, n.templateFrame ?? null ] ), [ [ 'Root/2#0', 'checkout-header', null ], [ 'Root/4#0', null, { header: 'checkout-header', footer: null } ] ] );
-	assert.deepEqual( got.placed, [ { id: 'frame', block: 'core/template-part', at: 'Root/2#0' } ] );
+	// MUST FAIL: the dropped page wrapper is named in `own`, so its paint is the frame's missing feature (lib/template-pieces-context.mjs::piecesPaint).
+	assert.deepEqual( got.placed, [ { id: 'frame', block: 'core/template-part', at: 'Root/2#0', own: [ 'Root/1#0' ] } ] );
+	// Negative control: a tree whose bar and main already sit at the top drops no wrapper and names none.
+	const flat = ctxOf();
+	flat.tree = flat.tree[ 0 ].innerBlocks;
+	assert.deepEqual( place( flat, PIECE ).placed, [ { id: 'frame', block: 'core/template-part', at: 'Root/2#0' } ] );
 } );
 
 test( 'a page that does mount the shared header and footer keeps its tree, so the copy keeps both shared parts', () => {

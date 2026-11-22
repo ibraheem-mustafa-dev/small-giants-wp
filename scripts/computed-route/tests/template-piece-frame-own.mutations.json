@@ -1,0 +1,4 @@
+[
+	{"file": "lib/template-piece-frame.mjs", "find": "...( wrapped ? { own: [ root.key ] } : {} )", "replace": "", "why": "the frame does not name the page wrapper it drops"},
+	{"file": "lib/template-piece-frame.mjs", "find": "...( wrapped ? { own: [ root.key ] } : {} )", "replace": "own: [ root.key ]", "why": "the frame names a wrapper it kept"}
+]

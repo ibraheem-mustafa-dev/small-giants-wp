@@ -15,6 +15,6 @@
 	{"file":"lib/template-copies.mjs","find":"\tif ( marked ) {","replace":"\tif ( false ) {","why":"the copy ignores the frame marks and frames the page with the shared parts"},
 	{"file":"lib/template-piece-frame.mjs","find":"if ( 'shared' === frame.header && 'shared' === frame.footer ) {","replace":"if ( true ) {","why":"the frame is never marked"},
 	{"file":"lib/template-piece-frame.mjs","find":"if ( ! mainNode || ( 'own' === frame.header && ! barNode ) ) {","replace":"if ( ! mainNode ) {","why":"a tree read without its bar loses the shared header"},
-	{"file":"lib/template-piece-frame.mjs","find":"const top = tree.length === 1 && keyOf( tree[ 0 ] ) === root.key && root !== mainEl ? tree[ 0 ].innerBlocks || [] : tree;","replace":"const top = tree;","why":"the page wrapper is not looked into for the bar and the main"},
+	{"file":"lib/template-piece-frame.mjs","find":"const top = wrapped ? tree[ 0 ].innerBlocks || [] : tree;","replace":"const top = tree;","why":"the page wrapper is not looked into for the bar and the main"},
 	{"file":"lib/template-piece-frame.mjs","find":"{ ...barNode, templatePart: slug }","replace":"{ ...barNode }","why":"the bar is not marked as the template's part"}
 ]

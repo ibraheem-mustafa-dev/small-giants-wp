@@ -54,6 +54,18 @@ test( 'MUST FAIL: paint inside the buy box\'s run that no located part reads is 
 	assert.match( none.problems.join( '\n' ), /Root\/9#0 background/ );
 } );
 
+test( 'MUST FAIL: an element a piece took away alone (own) is that piece\'s missing feature; what sits inside it stays with the check', () => {
+	const got = place( ctx(), PIECE );
+	const bare = got.placed.map( ( { run, ...x } ) => x );
+	const out = pieceCtx.piecesPaint( { key: 'checkout', inventory: INVENTORY, rows: [], tree: got.tree, placed: [ ...bare, { id: 'frame', block: 'core/template-part', at: 'Root/1#0', own: [ 'Root/9#0' ] } ], problems: [] } );
+	assert.deepEqual( out.missing.map( ( m ) => [ m.piece, m.block, m.key ] ), [ [ 'frame', 'core/template-part', 'Root/9#0' ] ] );
+	assert.match( out.notes.join( '\n' ), /^checkout: inside core\/template-part's draft elements \(Root\/9#0\) the draft paints 1 element .*: Root\/9#0 background$/m );
+	const paint = out.problems.join( '\n' );
+	assert.doesNotMatch( paint, /Root\/9#0/ );
+	// Negative control: the mark inside the element taken away is not claimed by it.
+	assert.match( paint, /Root\/20#0 background/ );
+} );
+
 test( 'MUST FAIL: a paint pairing problem about an element inside the buy box\'s run is its missing feature with the pairing reason; one outside every run, one with a copy outside and one naming no element stay problems', () => {
 	const got = place( ctx(), PIECE );
 	const out = pieceCtx.piecesPaint( { key: 'single-product', inventory: INVENTORY, rows: [], tree: got.tree, placed: got.placed, problems: [ KEPT, PAIR_IN, PAIR_COPY, PAIR_UNKNOWN, STALE ] } );

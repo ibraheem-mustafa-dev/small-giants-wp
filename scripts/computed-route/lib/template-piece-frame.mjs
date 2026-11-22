@@ -3,7 +3,8 @@
 // the fact record. A page that mounts the shared header and footer leaves the tree as it is (the copy takes the site's
 // shared parts). Otherwise the main node is marked `templateFrame: { header, footer }` (each a part slug, or null for none),
 // and a page that draws its own top bar has that bar's node marked `templatePart: <template>-header` and set beside the main
-// at the top of the tree (the page wrapper that held both is dropped: it is the page itself, which the template is). The
+// at the top of the tree (the page wrapper that held both is dropped: it is the page itself, which the template is, and the placed
+// row names it in `own`, so its paint is the frame's missing feature, not a paint conservation problem). The
 // bar is in the tree only when the surface's inventory was read from the page wrapper (lib/template-frame.mjs::
 // inventoryRootFor); an inventory read from the main alone leaves the tree as it is, with a note, so the shared header
 // stays until the bar is read.
@@ -24,7 +25,8 @@ export function place( ctx, piece ) {
 	if ( 'shared' === frame.header && 'shared' === frame.footer ) {
 		return { tree, notes: [ `${ ctx.key }: the copy keeps the shared header and footer parts (${ why })` ] };
 	}
-	const top = tree.length === 1 && keyOf( tree[ 0 ] ) === root.key && root !== mainEl ? tree[ 0 ].innerBlocks || [] : tree;
+	const wrapped = tree.length === 1 && keyOf( tree[ 0 ] ) === root.key && root !== mainEl;
+	const top = wrapped ? tree[ 0 ].innerBlocks || [] : tree;
 	const mainNode = top.find( ( n ) => keyOf( n ) === mainEl.key );
 	const barKey = frame.bar ? `Root/${ frame.bar.split( '/' ).pop() }#0` : null;
 	const barNode = barKey ? top.find( ( n ) => keyOf( n ) === barKey ) : null;
@@ -38,7 +40,9 @@ export function place( ctx, piece ) {
 	const out = [ ...( barNode ? [ { ...barNode, templatePart: slug } ] : [] ), { ...mainNode, templateFrame: { header, footer } } ];
 	return {
 		tree: out,
-		placed: [ { id: piece.id, block: 'core/template-part', at: barNode ? barKey : mainEl.key } ],
+		// `own`: the page wrapper the copy drops (the template is the page), whose own paint no node reads any more; what sits inside it
+		// is read at its own nodes (lib/template-pieces-context.mjs::piecesPaint).
+		placed: [ { id: piece.id, block: 'core/template-part', at: barNode ? barKey : mainEl.key, ...( wrapped ? { own: [ root.key ] } : {} ) } ],
 		notes: [ `${ ctx.key }: the copy's header is ${ header ? `the ${ header } part` : 'none' } and its footer ${ footer ? `the ${ footer } part` : 'none' } (${ why })`, ...others.map( ( n ) => `${ ctx.key }: ${ n.name } ${ keyOf( n ) ?? '' } stood beside the page's <main> and its top bar, so the template does not hold it` ) ],
 	};
 }

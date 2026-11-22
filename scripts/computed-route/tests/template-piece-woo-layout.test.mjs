@@ -221,6 +221,8 @@ test( 'MUST FAIL: Mama\'s checkout read from its page: its own bar as the templa
 	}
 	// The bar keeps the draft's back link, logo and secure note.
 	assert.deepEqual( refs( [ got.tree[ 0 ] ] ), [ 'Root/7#0', 'Root/8#0', 'Root/9#0', 'Root/10#0', 'Root/11#0', 'Root/12#0' ] );
+	// MUST FAIL: the frame names the page wrapper it dropped (`own`), so its paint is the frame's missing feature.
+	assert.deepEqual( got.placed.find( ( p ) => 'core/template-part' === p.block ), { id: 'frame', block: 'core/template-part', at: 'Root/7#0', own: [ 'Root/6#0' ] } );
 } );
 
 test( 'Mama\'s checkout read from <main> (the committed inventory): the block stands in and the head stays, and the frame is left for the page read', () => {
