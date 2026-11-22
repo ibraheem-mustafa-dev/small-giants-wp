@@ -739,6 +739,65 @@
 	font-size: 0.85rem;
 }
 
+/* Gift box placed after the items: inside the scrolling list, under the last line (the list's own padding frames it). */
+:where(.sgs-cart__panel) .sgs-cart__panel-gift--after-items {
+	padding: 12px 0;
+}
+
+/* ── Upsell row — one product offered under the basket lines (upsellProductId) ───────── */
+:where(.sgs-cart__panel) .sgs-cart__panel-upsell {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	border-radius: 12px;
+	background-color: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-upsell[hidden] {
+	display: none;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-upsell-image {
+	flex: none;
+	width: 56px;
+	height: 56px;
+	border-radius: 8px;
+	object-fit: cover;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-upsell-text {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-upsell-title {
+	margin: 0;
+	font-weight: 700;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-upsell-body {
+	margin: 0;
+	font-size: 0.85rem;
+}
+
+:where(.sgs-cart__panel) .sgs-cart__panel-upsell-add {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0 16px;
+	border: 1.5px solid currentColor;
+	border-radius: 999px;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-weight: 700;
+	text-decoration: none;
+	cursor: pointer;
+}
+
 /* ── Item row ─────────────────────────────────────────────────────────────────── */
 :where(.sgs-cart__panel) .sgs-cart__item {
 	display: grid;

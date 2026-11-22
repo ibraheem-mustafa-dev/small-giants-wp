@@ -147,3 +147,101 @@ function sgs_cart_footer_band_css( array $attributes, string $p ): array {
 
 	return array_values( array_filter( $css ) );
 }
+
+/**
+ * Scoped CSS for the drawer's extra looks that are more than one declaration on one element: the text Remove link's
+ * decoration, the empty basket's vertical place, the gift box's and gift fields' borders, the helper line's colour, and
+ * the upsell button's border, fill and hover. Their sizes, paddings, radii, fills and type print through the panel's
+ * shared loops (helpers-cart-panel-css.php::sgs_cart_panel_css). Nothing set prints nothing.
+ *
+ * @param array  $attributes Block attributes.
+ * @param string $p          The panel selector prefix, `.{uid}.sgs-cart__panel`.
+ * @return string[] CSS rule strings.
+ */
+function sgs_cart_drawer_extras_css( array $attributes, string $p ): array {
+	$css = array();
+
+	// A text decoration on the Remove link draws its own line, so the bottom border the stylesheet draws goes.
+	if ( '' !== (string) ( $attributes['itemRemoveTextDecoration'] ?? '' ) ) {
+		$css[] = $p . ' .sgs-cart__item-remove.sgs-cart__item-remove--text{border-bottom-width:0;}';
+	}
+
+	// Centred: the empty basket takes the free height of the item list (a flex column) above and below it.
+	if ( 'center' === ( $attributes['panelEmptyPlacement'] ?? '' ) ) {
+		$css[] = $p . ' .sgs-cart__panel-empty{margin-top:auto;margin-bottom:auto;}';
+	}
+
+	// The helper line is drawn faded by default; a chosen colour is drawn at full strength.
+	$help = sgs_colour_value( trim( (string) ( $attributes['giftHelpColour'] ?? '' ) ) );
+	if ( '' !== $help ) {
+		$css[] = $p . ' .sgs-cart__panel-gift-help{color:' . $help . ';opacity:1;}';
+	}
+
+	// Borders of the gift box, both gift fields and the upsell button, each through the shared border assembler.
+	$gift_box_sel = $p . ' .sgs-cart__panel-gift';
+	$gift_box     = sgs_border_element_decls(
+		$attributes,
+		'giftBox',
+		$gift_box_sel,
+		array(
+			'colour' => array( 'base' => 'giftBoxBorderColour' ),
+			'radius' => false,
+		)
+	);
+	$gift_field_sel = $p . ' .sgs-cart__panel-gift-to,' . $p . ' .sgs-cart__panel-gift-message';
+	$gift_field     = sgs_border_element_decls(
+		$attributes,
+		'giftField',
+		$gift_field_sel,
+		array(
+			'colour' => array( 'base' => 'giftFieldBorderColour' ),
+			'radius' => false,
+		)
+	);
+	$upsell_add_sel = $p . ' .sgs-cart__panel-upsell-add';
+	$upsell_add     = sgs_border_element_decls(
+		$attributes,
+		'upsellButton',
+		$upsell_add_sel,
+		array(
+			'colour' => array( 'base' => 'upsellButtonBorderColour' ),
+			'radius' => false,
+		)
+	);
+	foreach ( array(
+		array( $gift_box_sel, $gift_box ),
+		array( $gift_field_sel, $gift_field ),
+		array( $upsell_add_sel, $upsell_add ),
+	) as list( $sel, $border ) ) {
+		if ( $border['base'] ) {
+			$css[] = $sel . '{' . implode( ';', $border['base'] ) . ';}';
+		}
+		if ( $border['tablet'] ) {
+			$css[] = sgs_emit_tier_decls( $sel, array( 'tablet' => $border['tablet'] ) );
+		}
+		if ( $border['mobile'] ) {
+			$css[] = sgs_emit_tier_decls( $sel, array( 'mobile' => $border['mobile'] ) );
+		}
+		$css = array_merge( $css, $border['rules'] );
+	}
+
+	$button = $p . ' .sgs-cart__panel-upsell-add';
+	$css[]  = sgs_fill_states_css(
+		$button,
+		$attributes,
+		array(
+			'base'  => 'upsellButtonBg',
+			'hover' => 'upsellButtonBgHover',
+		)
+	);
+	$css[]  = sgs_text_states_css(
+		$button,
+		$attributes,
+		array(
+			'base'  => 'upsellButtonColour',
+			'hover' => 'upsellButtonColourHover',
+		)
+	);
+
+	return array_values( array_filter( $css ) );
+}

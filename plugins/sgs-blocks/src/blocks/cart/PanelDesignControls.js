@@ -26,7 +26,7 @@ const TEXT_TARGETS = [
 	[ 'itemPrice', __( 'Item price', 'sgs-blocks' ), {} ],
 	[ 'itemAction', __( 'Item links', 'sgs-blocks' ), { showWeight: false } ],
 	[ 'subtotal', __( 'Subtotal', 'sgs-blocks' ), {} ],
-	[ 'freeDeliveryText', __( 'Free-delivery message', 'sgs-blocks' ), {} ],
+	[ 'freeDeliveryText', __( 'Free-delivery message', 'sgs-blocks' ), { showLineHeight: true } ],
 	[ 'checkout', __( 'Checkout button', 'sgs-blocks' ), { showLetterSpacing: true, showTransform: true } ],
 	[ 'panelNote', __( 'Note under Checkout', 'sgs-blocks' ), { showWeight: false, showTextAlign: true } ],
 ].map( ( [ prefix, label, fields ] ) => ( {
@@ -42,6 +42,7 @@ const TEXT_TARGETS = [
 const LENGTHS = [
 	[ 'panelMaxWidth', __( 'Panel width (maximum)', 'sgs-blocks' ), '400px' ],
 	[ 'panelCloseSize', __( 'Close icon size', 'sgs-blocks' ), '24px' ],
+	[ 'panelCloseTapSize', __( 'Close button tap area', 'sgs-blocks' ), '44px' ],
 	[ 'panelBodyGap', __( 'Space between items', 'sgs-blocks' ), '16px' ],
 	[ 'itemThumbSize', __( 'Item image size', 'sgs-blocks' ), '64px' ],
 	[ 'itemGap', __( 'Space beside the item image', 'sgs-blocks' ), '12px' ],

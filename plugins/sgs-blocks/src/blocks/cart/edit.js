@@ -17,6 +17,8 @@ import PanelButtonsDesign from './PanelButtonsDesign';
 import PanelFooterDesign from './PanelFooterDesign';
 import PanelItemRowControls from './PanelItemRowControls';
 import PanelEmptyGiftControls from './PanelEmptyGiftControls';
+import PanelDrawerExtrasControls from './PanelDrawerExtrasControls';
+import PanelDrawerLookControls from './PanelDrawerLookControls';
 import PanelItemRowDesign from './PanelItemRowDesign';
 import PanelPreview from './PanelPreview';
 import { triggerStyles } from './panel-preview-style';
@@ -185,6 +187,12 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					hasPanel={ hasPanel }
 				/>
 
+				<PanelDrawerExtrasControls
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+				/>
+
 				<PanelItemRowControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
@@ -255,6 +263,11 @@ export default function Edit( { attributes, setAttributes, name, clientId } ) {
 					hasDrawer={ hasDrawer }
 				/>
 				<PanelItemRowDesign
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					hasPanel={ hasPanel }
+				/>
+				<PanelDrawerLookControls
 					attributes={ attributes }
 					setAttributes={ setAttributes }
 					hasPanel={ hasPanel }

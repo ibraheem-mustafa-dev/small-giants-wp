@@ -38,8 +38,8 @@ final class CartPanelSurfaceTest extends TestCase {
 			. ' $panel_bg_slug = isset( $attributes["panelBg"] ) ? (string) $attributes["panelBg"] : "base";'
 			. ' $panel_text_slug = isset( $attributes["panelTextColour"] ) ? (string) $attributes["panelTextColour"] : "contrast";'
 			. ' $free_delivery_fill_colour = ""; $free_delivery_track_colour = "";'
-			. ' $sgs_cart_tier_keys = array( "desktop", "tablet", "mobile" ); $sgs_cart_tier_media = array( "desktop" => "", "tablet" => "@media (max-width:1023px)", "mobile" => "@media (max-width:767px)" );'
-			. ' $sgs_cart_tier_ranges = array( "desktop" => "(min-width:1024px)", "tablet" => "(min-width:768px) and (max-width:1023px)", "mobile" => "(max-width:767px)" );'
+			. ' $sgs_cart_tier_keys = array( "desktop", "tablet", "mobile" ); $sgs_cart_tier_media = array( "desktop" => "", "tablet" => "@media (max-width:1023.98px)", "mobile" => "@media (max-width:767.98px)" );'
+			. ' $sgs_cart_tier_ranges = array( "desktop" => "(min-width:1024px)", "tablet" => "(min-width:768px) and (max-width:1023.98px)", "mobile" => "(max-width:767.98px)" );'
 			. ' $trigger_tiers = array( "lg" => "icon", "md" => "icon", "sm" => "icon" ); $trigger_mixed = false; $trigger_has_pill = false; $trigger_ranges = array( "pill" => array(), "icon" => array() );'
 			. ' require ' . var_export( $root . '/src/blocks/cart/render-scoped-css.php', true ) . ';'
 			. ' foreach ( $scoped_css as $rule ) { if ( 0 === strpos( (string) $rule, ".sgs-cart-x.sgs-cart__panel::after" ) ) { echo $rule; } }';

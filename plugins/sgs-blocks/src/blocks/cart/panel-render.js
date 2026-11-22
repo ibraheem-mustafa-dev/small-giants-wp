@@ -60,6 +60,11 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	let drawn = 0;
 	// The centred empty state (opt-in): server-built markup kept in a template and copied in whenever the basket is empty.
 	const emptyTemplate = panelRoot.querySelector( '[data-sgs-cart-empty-template]' );
+	// Opt-in pieces that sit under the basket lines inside the scrolling list (the gift box placed after the items, the upsell
+	// row): printed after the list, moved in under the rows while the basket has lines, and moved back out before the list is
+	// replaced by the empty or error state. They are never rebuilt, so their fields keep what the shopper typed and focus.
+	const afterRows = [ ...panelRoot.querySelectorAll( '[data-sgs-cart-after-rows]' ) ];
+	const upsellEl = panelRoot.querySelector( '[data-sgs-cart-upsell]' );
 
 	const emptyMessage = itemsEl.dataset.emptyMessage || 'Your cart is empty';
 	const emptyCtaLabel = itemsEl.dataset.emptyCtaLabel || 'Continue shopping';
@@ -92,9 +97,42 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	}
 
 	/**
+	 * Put the after-rows pieces back after the list, in their order, before the list's content is replaced.
+	 */
+	function homeAfterRows() {
+		if ( afterRows.some( ( el ) => el.parentNode === itemsEl ) ) {
+			itemsEl.after( ...afterRows );
+		}
+	}
+
+	/**
+	 * Replace the basket lines with these rows, keeping the after-rows pieces in place under them.
+	 *
+	 * @param {string} html The rows' markup.
+	 */
+	function setRows( html ) {
+		if ( ! afterRows.length ) {
+			itemsEl.innerHTML = html;
+			return;
+		}
+		[ ...itemsEl.children ].forEach( ( child ) => {
+			if ( ! afterRows.includes( child ) ) {
+				child.remove();
+			}
+		} );
+		afterRows.forEach( ( el ) => {
+			if ( el.parentNode !== itemsEl ) {
+				itemsEl.append( el );
+			}
+		} );
+		afterRows[ 0 ].insertAdjacentHTML( 'beforebegin', html );
+	}
+
+	/**
 	 * Render the empty-cart state — distinct + actionable, not a blank panel.
 	 */
 	function renderEmpty() {
+		homeAfterRows();
 		itemsEl.removeAttribute( 'aria-busy' );
 		if ( emptyTemplate ) {
 			itemsEl.replaceChildren( emptyTemplate.content.cloneNode( true ) );
@@ -124,6 +162,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 * Render an error state (network/API failure) — never a silent blank panel.
 	 */
 	function renderError() {
+		homeAfterRows();
 		itemsEl.removeAttribute( 'aria-busy' );
 		itemsEl.innerHTML =
 			'<p class="sgs-cart__panel-error">' +
@@ -146,9 +185,7 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 	 */
 	function renderItems( cart ) {
 		itemsEl.removeAttribute( 'aria-busy' );
-		itemsEl.innerHTML = cart.items
-			.map( ( item ) => itemRowHtml( item, cart.totals, itemOpts ) )
-			.join( '' );
+		setRows( cart.items.map( ( item ) => itemRowHtml( item, cart.totals, itemOpts ) ).join( '' ) );
 		itemsEl.querySelectorAll( '[data-sgs-rich-remove]' ).forEach( ( slot ) => {
 			appendAuthoredText( slot, itemOpts.removeLabel || 'Remove', { links: false } );
 		} );
@@ -183,6 +220,12 @@ export function initPanel( panelRoot, { freeDelivery } = {} ) {
 		updateFreeDeliveryProgress( freeDeliveryEl, cart, freeDelivery );
 		updatePanelExtras( panelRoot, cart );
 		gift.sync( cart );
+		if ( upsellEl ) {
+			// The upsell row shows while the basket has lines and none of them is its product (or a variation of it).
+			const offered = Number( upsellEl.dataset.sgsCartUpsell ) || 0;
+			const lines = Array.isArray( cart?.items ) ? cart.items : [];
+			upsellEl.hidden = ! lines.length || lines.some( ( line ) => offered === Number( line.id ) || offered === Number( line.parent_id ) );
+		}
 		publishCart( cart );
 	}
 

@@ -506,6 +506,7 @@ $trigger_html = sgs_cart_trigger_html( $trigger_mode, $trigger_inner_html, $trig
 // ── Drawer additions: the gift box and the centred empty state. Each prints nothing until its setting is on. ──────────────
 $gift_box_html    = '';
 $empty_state_html = '';
+$upsell_html      = '';
 if ( $has_panel ) {
 	if ( ! empty( $attributes['panelGiftShow'] ) ) {
 		// The route and the session value belong to sgs/gift-order; the box only reads and writes them (view script: panel-gift.js).
@@ -524,6 +525,7 @@ if ( $has_panel ) {
 				'nonce'         => wp_create_nonce( 'wp_rest' ),
 				'to_max'        => (int) $gift_limits['to'],
 				'message_max'   => (int) $gift_limits['message'],
+				'placement'     => 'after-items' === ( $attributes['panelGiftPlacement'] ?? 'footer' ) ? 'after-items' : 'footer',
 			)
 		);
 		if ( class_exists( '\SGS\Blocks\Gift_Order\Gift_Order_Store_Api' ) ) {
@@ -557,6 +559,35 @@ if ( $has_panel ) {
 	if ( '' !== (string) $empty_image['css'] ) {
 		$scoped_css[] = (string) $empty_image['css'];
 	}
+	// The upsell row: one product offered under the basket lines, added the way the empty state's button adds its product.
+	$upsell_pid = absint( $attributes['upsellProductId'] ?? 0 );
+	if ( $upsell_pid > 0 && function_exists( 'wc_get_product' ) ) {
+		$upsell_wc_product = wc_get_product( $upsell_pid );
+		if ( $upsell_wc_product && 'publish' === get_post_status( $upsell_pid ) ) {
+			$upsell_product               = sgs_cart_empty_product( $upsell_wc_product );
+			$upsell_product['name']       = wp_strip_all_tags( (string) $upsell_wc_product->get_name() );
+			$upsell_product['rest_url']   = esc_url_raw( rest_url( 'sgs/v1/cart/add-item' ) );
+			$upsell_product['nonce']      = wp_create_nonce( 'wp_rest' );
+			$upsell_product['price_text'] = html_entity_decode( wp_strip_all_tags( wc_price( (float) $upsell_product['price'] ) ), ENT_QUOTES, 'UTF-8' );
+			$upsell_html                  = sgs_cart_upsell_html(
+				array(
+					'product'      => $upsell_product,
+					'title'        => (string) ( $attributes['upsellTitle'] ?? '' ),
+					'text'         => (string) ( $attributes['upsellText'] ?? '' ),
+					'button_label' => (string) ( $attributes['upsellButtonLabel'] ?? '' ),
+					'image_html'   => false === ( $attributes['upsellShowImage'] ?? true ) ? '' : (string) $upsell_wc_product->get_image(
+						'woocommerce_gallery_thumbnail',
+						array(
+							'class'   => 'sgs-cart__panel-upsell-image',
+							'alt'     => '',
+							'loading' => 'lazy',
+						)
+					),
+				)
+			);
+		}
+	}
+
 	$empty_state_html = sgs_cart_empty_state_html(
 		array(
 			'heading'      => $empty_cart_message,
@@ -600,6 +631,7 @@ $panel_args = array(
 	'show_add_options'   => ! empty( $attributes['itemShowAddOptions'] ),
 	'add_options_label'  => sanitize_text_field( $attributes['itemAddOptionsLabel'] ?? '' ),
 	'gift_html'          => $gift_box_html,
+	'upsell_html'        => $upsell_html,
 	'empty_state_html'   => $empty_state_html,
 );
 

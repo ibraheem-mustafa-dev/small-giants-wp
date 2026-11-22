@@ -32,6 +32,8 @@ if ( ! function_exists( 'sgs_cart_gift_box_html' ) ) {
 	 *     @type string $nonce         The `wp_rest` nonce the route checks.
 	 *     @type int    $to_max        Longest recipient name.
 	 *     @type int    $message_max   Longest note.
+	 *     @type string $placement     'footer' (default: between the item list and the footer) or 'after-items' (the view script
+	 *                                 keeps it inside the scrolling list, under the last line).
 	 * }
 	 * @return string Escaped markup.
 	 */
@@ -39,10 +41,13 @@ if ( ! function_exists( 'sgs_cart_gift_box_html' ) ) {
 		$id   = (string) ( $args['id'] ?? 'sgs-cart' );
 		$help = trim( (string) ( $args['help'] ?? '' ) );
 
+		$after = 'after-items' === ( $args['placement'] ?? 'footer' );
 		$html  = sprintf(
-			'<div class="sgs-cart__panel-gift" data-sgs-cart-gift data-rest-url="%1$s" data-nonce="%2$s" hidden>',
+			'<div class="sgs-cart__panel-gift%3$s" data-sgs-cart-gift%4$s data-rest-url="%1$s" data-nonce="%2$s" hidden>',
 			esc_url( (string) ( $args['rest_url'] ?? '' ) ),
-			esc_attr( (string) ( $args['nonce'] ?? '' ) )
+			esc_attr( (string) ( $args['nonce'] ?? '' ) ),
+			$after ? ' sgs-cart__panel-gift--after-items' : '',
+			$after ? ' data-sgs-cart-after-rows' : ''
 		);
 		$html .= sprintf( '<label class="sgs-cart__panel-gift-switch" for="%s-gift">', esc_attr( $id ) );
 		$html .= sprintf( '<input id="%s-gift" class="sgs-cart__panel-gift-checkbox" type="checkbox" />', esc_attr( $id ) );
@@ -234,6 +239,61 @@ if ( ! function_exists( 'sgs_cart_empty_state_html' ) ) {
 				esc_url( '' !== $url ? $url : (string) ( $args['shop_url'] ?? '' ) ),
 				sgs_rich_text_kses( $link_label, false )
 			);
+		}
+		return $html . '</div>';
+	}
+}
+
+if ( ! function_exists( 'sgs_cart_upsell_html' ) ) {
+	/**
+	 * The upsell row: an optional picture, a heading, an optional line of text and an Add button for one product. It starts
+	 * hidden; the view script keeps it under the basket lines, inside the scrolling list, while the basket holds an item and
+	 * not this product. The button adds the product the way the empty state's button does (`data-sgs-cart-empty-add`, with
+	 * the SGS cart proxy body for a variation or picks), or links to the product page when no one-tap add exists.
+	 *
+	 * @param array $args {
+	 *     Resolved values.
+	 *
+	 *     @type array  $product      `sgs_cart_empty_product()` result plus `price_text`, `name`, `rest_url` and `nonce`.
+	 *     @type string $title        Heading; '' uses the product name.
+	 *     @type string $text         Line under the heading with an optional `{price}`; '' prints none.
+	 *     @type string $button_label Button label with an optional `{price}`; '' uses "Add".
+	 *     @type string $image_html   The product picture's markup; '' prints none.
+	 * }
+	 * @return string Escaped markup, or '' with no product.
+	 */
+	function sgs_cart_upsell_html( array $args ): string {
+		$product = is_array( $args['product'] ?? null ) ? $args['product'] : null;
+		if ( null === $product || (int) ( $product['id'] ?? 0 ) <= 0 ) {
+			return '';
+		}
+		$price = wp_strip_all_tags( (string) ( $product['price_text'] ?? '' ) );
+		$words = static function ( string $template ) use ( $price ): string {
+			return str_replace( '{price}', $price, wp_strip_all_tags( $template ) );
+		};
+		$title = trim( (string) ( $args['title'] ?? '' ) );
+		$title = '' === $title ? (string) ( $product['name'] ?? '' ) : $title;
+		$text  = trim( (string) ( $args['text'] ?? '' ) );
+		$label = trim( (string) ( $args['button_label'] ?? '' ) );
+		$label = '' === $label ? __( 'Add', 'sgs-blocks' ) : $label;
+
+		$html = sprintf( '<div class="sgs-cart__panel-upsell" data-sgs-cart-upsell="%d" data-sgs-cart-after-rows hidden>', (int) $product['id'] );
+		$img  = (string) ( $args['image_html'] ?? '' );
+		if ( '' !== $img ) {
+			$html .= $img; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce's escaped product image markup.
+		}
+		$html .= '<div class="sgs-cart__panel-upsell-text"><p class="sgs-cart__panel-upsell-title">' . esc_html( $words( $title ) ) . '</p>';
+		if ( '' !== $text ) {
+			$html .= '<p class="sgs-cart__panel-upsell-body">' . esc_html( $words( $text ) ) . '</p>';
+		}
+		$html .= '</div>';
+		if ( (int) ( $product['add_id'] ?? 0 ) > 0 ) {
+			$proxy = is_array( $product['body'] ?? null )
+				? sprintf( ' data-add-body="%1$s" data-rest-url="%2$s" data-nonce="%3$s"', esc_attr( (string) wp_json_encode( $product['body'] ) ), esc_url( (string) ( $product['rest_url'] ?? '' ) ), esc_attr( (string) ( $product['nonce'] ?? '' ) ) )
+				: '';
+			$html .= sprintf( '<button type="button" class="sgs-cart__panel-upsell-add" data-sgs-cart-empty-add="%1$d"%3$s>%2$s</button>', (int) $product['add_id'], esc_html( $words( $label ) ), $proxy ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $proxy is built from esc_attr/esc_url above.
+		} else {
+			$html .= sprintf( '<a class="sgs-cart__panel-upsell-add" href="%1$s">%2$s</a>', esc_url( (string) ( $product['url'] ?? '' ) ), esc_html( $words( $label ) ) );
 		}
 		return $html . '</div>';
 	}

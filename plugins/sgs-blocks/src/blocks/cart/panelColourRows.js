@@ -48,6 +48,23 @@ export default function buildPanelColourRows( { attributes, setAttributes, hasPa
 		[ 'panelTaxNoteColour', __( 'Note under the subtotal', 'sgs-blocks' ) ],
 		[ 'freeDeliveryBandBg', __( 'Free-delivery band background', 'sgs-blocks' ) ],
 		[ 'panelNoteColour', __( 'Note under Checkout', 'sgs-blocks' ) ],
+		[ 'emptyBodyColour', __( 'Empty-cart line of text', 'sgs-blocks' ) ],
+		[ 'emptyLinkColour', __( 'Empty-cart text link', 'sgs-blocks' ) ],
+		...( attributes.panelGiftShow
+			? [
+					[ 'giftBoxBg', __( 'Gift box background', 'sgs-blocks' ) ],
+					[ 'giftHelpColour', __( 'Gift box helper line', 'sgs-blocks' ) ],
+					[ 'giftFieldBg', __( 'Gift box fields background', 'sgs-blocks' ) ],
+			  ]
+			: [] ),
+		...( Number( attributes.upsellProductId ) > 0
+			? [
+					[ 'upsellBg', __( 'Upsell row background', 'sgs-blocks' ) ],
+					[ 'upsellTextColour', __( 'Upsell line under the heading', 'sgs-blocks' ) ],
+					[ 'upsellButtonBg', __( 'Upsell button background', 'sgs-blocks' ), 'upsellButtonBgHover' ],
+					[ 'upsellButtonColour', __( 'Upsell button text', 'sgs-blocks' ), 'upsellButtonColourHover' ],
+			  ]
+			: [] ),
 	];
 	const state = ( key, label, attr ) => ( {
 		key,

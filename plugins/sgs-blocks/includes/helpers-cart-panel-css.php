@@ -21,17 +21,27 @@ require_once __DIR__ . '/helpers-cart-panel-items-css.php';
  * @return string A CSS colour value.
  */
 function sgs_cart_panel_surface(): string {
-	$fallback = 'var(--wp--preset--color--surface, Canvas)';
-	$page     = function_exists( 'wp_get_global_styles' ) ? wp_get_global_styles( array( 'color', 'background' ) ) : null;
-	$page     = is_string( $page ) ? trim( $page ) : '';
+	$slug = 'surface';
+	$page = function_exists( 'wp_get_global_styles' ) ? wp_get_global_styles( array( 'color', 'background' ) ) : null;
+	$page = is_string( $page ) ? trim( $page ) : '';
 	if ( preg_match( '/^var:preset\|color\|([a-z0-9-]+)$/', $page, $m ) || preg_match( '/^var\(--wp--preset--color--([a-z0-9-]+)\)$/', $page, $m ) ) {
-		return 'var(--wp--preset--color--' . $m[1] . ', Canvas)';
+		$slug = $m[1];
+	} elseif ( '' !== $page && sgs_is_css_colour( $page ) && '' !== sgs_colour_value( $page ) ) {
+		return sgs_colour_value( $page );
 	}
-	if ( '' !== $page && sgs_is_css_colour( $page ) ) {
-		$value = sgs_colour_value( $page );
-		return '' === $value ? $fallback : $value;
-	}
-	return $fallback;
+	return sgs_cart_canvas_fallback( sgs_colour_value( $slug ) );
+}
+
+/**
+ * A palette colour reference with the browser's page colour (`Canvas`) as its fallback in place of the shared colour
+ * helper's `currentColor`; any other value unchanged.
+ *
+ * @param string $value A value from sgs_colour_value().
+ * @return string
+ */
+function sgs_cart_canvas_fallback( string $value ): string {
+	$tail = ', currentColor)';
+	return str_ends_with( $value, $tail ) ? substr( $value, 0, -strlen( $tail ) ) . ', Canvas)' : $value;
 }
 
 /**
@@ -117,6 +127,15 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		'panelView'        => '.sgs-cart__panel-view',
 		'panelNote'        => '.sgs-cart__panel-note',
 		'panelTaxNote'     => '.sgs-cart__panel-tax-note',
+		'itemRemove'       => '.sgs-cart__item-remove--text',
+		'emptyBody'        => '.sgs-cart__panel-empty-body',
+		'emptyLink'        => '.sgs-cart__panel-empty-link',
+		'giftLabel'        => '.sgs-cart__panel-gift-label',
+		'giftHelp'         => '.sgs-cart__panel-gift-help',
+		'giftMessage'      => '.sgs-cart__panel-gift-message',
+		'upsellTitle'      => '.sgs-cart__panel-upsell-title',
+		'upsellText'       => '.sgs-cart__panel-upsell-body',
+		'upsellButton'     => '.sgs-cart__panel-upsell-add',
 	);
 	foreach ( $typography as $prefix => $sel ) {
 		$rule = sgs_typography_css_rule( $attributes, $prefix, $p . ' ' . $sel, '', false, false, sgs_object_attr_keys( 'sgs/cart' ) );
@@ -155,6 +174,12 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		'checkoutBg'             => array( '.sgs-cart__panel-checkout', 'background-color' ),
 		'checkoutColour'         => array( '.sgs-cart__panel-checkout', 'color' ),
 		'panelNoteColour'        => array( '.sgs-cart__panel-note', 'color' ),
+		'emptyBodyColour'        => array( '.sgs-cart__panel-empty-body', 'color' ),
+		'emptyLinkColour'        => array( '.sgs-cart__panel-empty-link', 'color' ),
+		'giftBoxBg'              => array( '.sgs-cart__panel-gift', 'background-color' ),
+		'giftFieldBg'            => array( '.sgs-cart__panel-gift-to,' . $p . ' .sgs-cart__panel-gift-message', 'background-color' ),
+		'upsellBg'               => array( '.sgs-cart__panel-upsell', 'background-color' ),
+		'upsellTextColour'       => array( '.sgs-cart__panel-upsell-body', 'color' ),
 	);
 	foreach ( $paints as $key => $target ) {
 		$value = $colour( $key );
@@ -181,7 +206,7 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 			'sweep' => false,
 		)
 	);
-	foreach ( array_merge( sgs_cart_qty_stepper_css( $attributes, $p ), sgs_cart_view_cart_css( $attributes, $p ), sgs_cart_footer_band_css( $attributes, $p ) ) as $options_rule ) {
+	foreach ( array_merge( sgs_cart_qty_stepper_css( $attributes, $p ), sgs_cart_view_cart_css( $attributes, $p ), sgs_cart_footer_band_css( $attributes, $p ), sgs_cart_drawer_extras_css( $attributes, $p ) ) as $options_rule ) {
 		$css[] = $options_rule;
 	}
 	// Checkout hover and keyboard focus (touch-safe pair).
@@ -205,6 +230,10 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		array( ' .sgs-cart__panel-empty-message', 'emptyMessageGap', array( 'margin-bottom' ) ),
 		array( ' .sgs-cart__free-delivery-track', 'freeDeliveryTrackHeight', array( 'height' ) ),
 		array( ' .sgs-cart__panel-checkout', 'checkoutMinHeight', array( 'min-height' ) ),
+		array( ' .sgs-cart__panel-close', 'panelCloseTapSize', array( 'min-width', 'min-height' ) ),
+		array( ' .sgs-cart__item-stepper .sgs-cart__item-qty-input', 'itemQtyNumberWidth', array( 'width', 'min-width' ) ),
+		array( ' .sgs-cart__panel-empty-body', 'emptyBodyMaxWidth', array( 'max-width' ) ),
+		array( ' .sgs-cart__panel-upsell-image', 'upsellImageSize', array( 'width', 'height' ) ),
 	);
 	foreach ( $tiers as $row ) {
 		$css[] = $tier( $p . $row[0], $row[1], $row[2] );
@@ -216,6 +245,13 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		array( ' .sgs-cart__panel-empty', 'panelEmptyPadding', 'padding' ),
 		array( ' .sgs-cart__panel-empty-cta', 'emptyCtaPadding', 'padding' ),
 		array( ' .sgs-cart__free-delivery-track', 'freeDeliveryBarMargin', 'margin' ),
+		array( ' .sgs-cart__item-remove--text', 'itemRemovePadding', 'padding' ),
+		array( ' .sgs-cart__panel-empty-link', 'emptyLinkPadding', 'padding' ),
+		array( ' .sgs-cart__panel-gift', 'giftBoxPadding', 'padding' ),
+		array( ' .sgs-cart__panel-gift', 'giftBoxMargin', 'margin' ),
+		array( ' .sgs-cart__panel-gift-to,' . $p . ' .sgs-cart__panel-gift-message', 'giftFieldPadding', 'padding' ),
+		array( ' .sgs-cart__panel-upsell', 'upsellPadding', 'padding' ),
+		array( ' .sgs-cart__panel-upsell-add', 'upsellButtonPadding', 'padding' ),
 	);
 	foreach ( $boxes as $row ) {
 		$css[] = $tier( $p . $row[0], $row[1], array( $row[2] ), true );
@@ -228,6 +264,11 @@ function sgs_cart_panel_css( array $attributes, string $uid, bool $is_drawer ): 
 		'itemQtyRadius'           => '.sgs-cart__item-stepper',
 		'checkoutRadius'          => '.sgs-cart__panel-checkout,' . $p . ' .sgs-cart__panel-view',
 		'freeDeliveryTrackRadius' => '.sgs-cart__free-delivery-track',
+		'giftBoxRadius'           => '.sgs-cart__panel-gift',
+		'giftFieldRadius'         => '.sgs-cart__panel-gift-to,' . $p . ' .sgs-cart__panel-gift-message',
+		'upsellRadius'            => '.sgs-cart__panel-upsell',
+		'upsellImageRadius'       => '.sgs-cart__panel-upsell-image',
+		'upsellButtonRadius'      => '.sgs-cart__panel-upsell-add',
 	);
 	foreach ( $radii as $key => $sel ) {
 		$radius = sgs_css_length_value( (string) ( $attributes[ $key ] ?? '' ) );

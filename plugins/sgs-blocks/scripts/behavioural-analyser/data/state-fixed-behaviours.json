@@ -803,6 +803,11 @@
   },
   {
    "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
+   "selector": ":where(.sgs-cart__panel) .sgs-cart__panel-upsell[hidden]",
+   "reason": "the upsell row the view script hides (its product is in the basket, or the basket is empty) leaves layout (display none); the hidden attribute is behaviour set by panel-render.js, not a look"
+  },
+  {
+   "file": "plugins/sgs-blocks/src/blocks/cart/style.css",
    "selector": ".sgs-cart__item-add-options:hover",
    "reason": "fixed paint, no setting (baseline 2026-10-20)"
   },

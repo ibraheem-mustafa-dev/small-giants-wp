@@ -165,7 +165,7 @@ function sgs_cart_panel_body_html( array $args ): string {
 
 	// Optional drawer additions, each printed only when its setting built it: the gift box between the rows and the footer, and the
 	// rich empty state as a template the view script copies in when the basket is empty.
-	$gift_html  = (string) ( $args['gift_html'] ?? '' );
+	$gift_html  = (string) ( $args['gift_html'] ?? '' ) . (string) ( $args['upsell_html'] ?? '' );
 	$empty_html = '' !== (string) ( $args['empty_state_html'] ?? '' )
 		? '<template data-sgs-cart-empty-template>' . $args['empty_state_html'] . '</template>'
 		: '';

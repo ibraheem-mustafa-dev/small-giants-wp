@@ -100,7 +100,14 @@
 				"panelEmptyPadding": [ "panelEmptyPadding" ],
 				"emptyCtaPadding": [ "emptyCtaPadding" ],
 				"freeDeliveryBarMargin": [ "freeDeliveryBarMargin" ],
-				"freeDeliveryBandPadding": [ "freeDeliveryBandPadding" ]
+				"freeDeliveryBandPadding": [ "freeDeliveryBandPadding" ],
+				"itemRemovePadding": [ "itemRemovePadding" ],
+				"emptyLinkPadding": [ "emptyLinkPadding" ],
+				"giftBoxPadding": [ "giftBoxPadding" ],
+				"giftBoxMargin": [ "giftBoxMargin" ],
+				"giftFieldPadding": [ "giftFieldPadding" ],
+				"upsellPadding": [ "upsellPadding" ],
+				"upsellButtonPadding": [ "upsellButtonPadding" ]
 			},
 			"elements": {
 				"item-actions": {
@@ -372,7 +379,8 @@
 					"prefix": "panelClose",
 					"attrMap": {
 						"css:color": "panelCloseColour",
-						"css:width": "panelCloseSize"
+						"css:min-width": "panelCloseTapSize",
+						"css:min-height": "panelCloseTapSize"
 					},
 					"absentIn": [ "icon-link", "pill-link", "flyout-panel" ],
 					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel. The close button is drawer-only; a flyout panel closes on outside click and Escape."
@@ -633,7 +641,8 @@
 					"prefix": "itemRemove",
 					"attrMap": {
 						"css:color": "itemRemoveColour",
-						"css:border-color": "itemRemoveBorderColour"
+						"css:border-color": "itemRemoveBorderColour",
+						"css:padding": "itemRemovePadding"
 					}
 				},
 				"panelFooter": {
@@ -751,6 +760,273 @@
 						"css:color": "panelNoteColour"
 					},
 					"absentIn": [ "icon-link", "pill-link" ],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"panelCloseIcon": {
+					"selector": ".sgs-cart__panel-close svg",
+					"motion": false,
+					"label": "Panel close icon",
+					"order": 39,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "panelCloseIcon",
+					"attrMap": {
+						"css:width": "panelCloseSize",
+						"css:height": "panelCloseSize"
+					},
+					"_note": "The x glyph inside the drawer close button: panelCloseSize sizes it, panelCloseTapSize sizes the button around it.",
+					"absentIn": [
+						"icon-link",
+						"pill-link",
+						"flyout-panel"
+					],
+					"absentWhy": "Link mode builds no panel, and the close button is drawer-only."
+				},
+				"itemQtyNumber": {
+					"selector": ".sgs-cart__item-qty-input",
+					"motion": false,
+					"label": "Item quantity number",
+					"order": 40,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "itemQtyNumber",
+					"attrMap": {
+						"css:width": "itemQtyNumberWidth"
+					},
+					"_note": "The number between the stepper buttons (itemQtyStyle stepper).",
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"emptyBody": {
+					"selector": ".sgs-cart__panel-empty-body",
+					"motion": false,
+					"label": "Empty-basket text line",
+					"order": 41,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "emptyBody",
+					"attrMap": {
+						"css:color": "emptyBodyColour",
+						"css:max-width": "emptyBodyMaxWidth"
+					},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"emptyLink": {
+					"selector": ".sgs-cart__panel-empty-link",
+					"motion": false,
+					"label": "Empty-basket text link",
+					"order": 42,
+					"clusters": [
+						"text",
+						"layout"
+					],
+					"prefix": "emptyLink",
+					"attrMap": {
+						"css:color": "emptyLinkColour",
+						"css:padding": "emptyLinkPadding"
+					},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"giftBox": {
+					"selector": ".sgs-cart__panel-gift",
+					"motion": false,
+					"label": "Gift box",
+					"order": 43,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "giftBox",
+					"attrMap": {
+						"css:background-color": "giftBoxBg",
+						"css:border-width": "giftBoxBorderWidth",
+						"css:border-style": "giftBoxBorderStyle",
+						"css:border-color": "giftBoxBorderColour",
+						"css:border-radius": "giftBoxRadius",
+						"css:padding": "giftBoxPadding",
+						"css:margin": "giftBoxMargin"
+					},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"giftLabel": {
+					"selector": ".sgs-cart__panel-gift-label",
+					"motion": false,
+					"label": "Gift box label",
+					"order": 44,
+					"clusters": [
+						"text"
+					],
+					"prefix": "giftLabel",
+					"attrMap": {},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"giftHelp": {
+					"selector": ".sgs-cart__panel-gift-help",
+					"motion": false,
+					"label": "Gift box helper line",
+					"order": 45,
+					"clusters": [
+						"text"
+					],
+					"prefix": "giftHelp",
+					"attrMap": {
+						"css:color": "giftHelpColour"
+					},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"giftMessage": {
+					"selector": ".sgs-cart__panel-gift-message",
+					"motion": false,
+					"label": "Gift note field",
+					"order": 46,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "giftMessage",
+					"attrMap": {
+						"css:background-color": "giftFieldBg",
+						"css:border-width": "giftFieldBorderWidth",
+						"css:border-style": "giftFieldBorderStyle",
+						"css:border-color": "giftFieldBorderColour",
+						"css:border-radius": "giftFieldRadius",
+						"css:padding": "giftFieldPadding"
+					},
+					"_note": "The gift note field; the recipient field takes the same field look (giftField*).",
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"upsell": {
+					"selector": ".sgs-cart__panel-upsell",
+					"motion": false,
+					"label": "Upsell row",
+					"order": 47,
+					"clusters": [
+						"fill",
+						"layout"
+					],
+					"prefix": "upsell",
+					"attrMap": {
+						"css:background-color": "upsellBg",
+						"css:border-radius": "upsellRadius",
+						"css:padding": "upsellPadding"
+					},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"upsellTitle": {
+					"selector": ".sgs-cart__panel-upsell-title",
+					"motion": false,
+					"label": "Upsell heading",
+					"order": 48,
+					"clusters": [
+						"text"
+					],
+					"prefix": "upsellTitle",
+					"attrMap": {},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"upsellText": {
+					"selector": ".sgs-cart__panel-upsell-body",
+					"motion": false,
+					"label": "Upsell text line",
+					"order": 49,
+					"clusters": [
+						"text"
+					],
+					"prefix": "upsellText",
+					"attrMap": {
+						"css:color": "upsellTextColour"
+					},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"upsellImage": {
+					"selector": ".sgs-cart__panel-upsell-image",
+					"motion": false,
+					"label": "Upsell picture",
+					"order": 50,
+					"clusters": [
+						"layout"
+					],
+					"prefix": "upsellImage",
+					"attrMap": {
+						"css:width": "upsellImageSize",
+						"css:height": "upsellImageSize",
+						"css:border-radius": "upsellImageRadius"
+					},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
+					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
+				},
+				"upsellButton": {
+					"selector": ".sgs-cart__panel-upsell-add",
+					"motion": false,
+					"label": "Upsell button",
+					"order": 51,
+					"clusters": [
+						"text",
+						"fill",
+						"layout"
+					],
+					"prefix": "upsellButton",
+					"attrMap": {
+						"css:color": "upsellButtonColour",
+						"css:background-color": "upsellButtonBg",
+						"css:border-width": "upsellButtonBorderWidth",
+						"css:border-style": "upsellButtonBorderStyle",
+						"css:border-color": "upsellButtonBorderColour",
+						"css:border-radius": "upsellButtonRadius",
+						"css:padding": "upsellButtonPadding"
+					},
+					"absentIn": [
+						"icon-link",
+						"pill-link"
+					],
 					"absentWhy": "Link mode opens the cart page and builds no flyout or drawer panel."
 				}
 			}
@@ -1758,6 +2034,81 @@
 			"default": 3,
 			"description": "Number of instalments used to compute the amount in panelInstalmentsNote."
 		},
+		"itemRemoveFontSize": {"type": "object", "default": {}},
+		"itemRemoveFontSizeUnit": {"type": "string", "default": "px"},
+		"itemRemoveLineHeight": {"type": "object", "default": {}},
+		"itemRemoveLineHeightUnit": {"type": "string", "default": ""},
+		"itemRemoveTextDecoration": {"type": "string", "enum": ["", "none", "underline", "line-through"], "default": "", "description": "Text decoration of the text-style Remove link. Set, it replaces the line drawn under the link (its bottom border)."},
+		"itemRemovePadding": {"type": "object", "default": {}, "description": "Padding of the text-style Remove link: tier object of boxes. Empty keeps the stylesheet default."},
+		"itemQtyNumberWidth": {"type": "object", "default": {}, "description": "Width of the number between the stepper buttons, per device (CSS length). Empty keeps the stylesheet default (3 characters, at least 22px)."},
+		"freeDeliveryTextLineHeight": {"type": "object", "default": {}},
+		"freeDeliveryTextLineHeightUnit": {"type": "string", "default": ""},
+		"panelEmptyPlacement": {"type": "string", "enum": ["", "center"], "default": "", "description": "Where the empty basket sits in the panel: '' at the top (default), 'center' centred in the space the item list takes."},
+		"emptyBodyFontSize": {"type": "object", "default": {}},
+		"emptyBodyFontSizeUnit": {"type": "string", "default": "px"},
+		"emptyBodyLineHeight": {"type": "object", "default": {}},
+		"emptyBodyLineHeightUnit": {"type": "string", "default": ""},
+		"emptyBodyColour": {"type": "string", "default": "", "description": "Colour of the line of text under the empty-basket heading."},
+		"emptyBodyMaxWidth": {"type": "object", "default": {}, "description": "Widest the line of text under the empty-basket heading may run, per device (CSS length). Empty keeps the stylesheet default."},
+		"emptyLinkFontSize": {"type": "object", "default": {}},
+		"emptyLinkFontSizeUnit": {"type": "string", "default": "px"},
+		"emptyLinkFontWeight": {"type": "string", "default": ""},
+		"emptyLinkColour": {"type": "string", "default": "", "description": "Colour of the empty-basket text link."},
+		"emptyLinkPadding": {"type": "object", "default": {}, "description": "Padding of the empty-basket text link: tier object of boxes. Empty keeps the stylesheet default."},
+		"panelCloseTapSize": {"type": "object", "default": {}, "description": "Close button tap area (its width and height floor), per device (CSS length). Empty keeps the stylesheet default (44px, or the icon alone when panelCloseSize is set)."},
+		"panelGiftPlacement": {"type": "string", "enum": ["footer", "after-items"], "default": "footer", "description": "Where the gift box sits: 'footer' (default) between the item list and the footer, or 'after-items' inside the scrolling list, under the last line."},
+		"giftBoxBg": {"type": "string", "default": "", "description": "Gift box background colour."},
+		"giftBoxBorderWidth": {"type": "object", "default": {}, "description": "Gift box border width (box object). Empty keeps no border."},
+		"giftBoxBorderStyle": {"type": "string", "default": "", "description": "Gift box border style."},
+		"giftBoxBorderColour": {"type": "string", "default": "", "description": "Gift box border colour."},
+		"giftBoxRadius": {"type": "string", "default": "", "description": "Gift box corner radius (CSS length). Empty keeps square corners."},
+		"giftBoxPadding": {"type": "object", "default": {}, "description": "Gift box padding: tier object of boxes. Empty keeps the stylesheet default."},
+		"giftBoxMargin": {"type": "object", "default": {}, "description": "Gift box margin: tier object of boxes. Empty keeps the stylesheet default."},
+		"giftLabelFontSize": {"type": "object", "default": {}},
+		"giftLabelFontSizeUnit": {"type": "string", "default": "px"},
+		"giftLabelFontWeight": {"type": "string", "default": ""},
+		"giftHelpFontSize": {"type": "object", "default": {}},
+		"giftHelpFontSizeUnit": {"type": "string", "default": "px"},
+		"giftHelpColour": {"type": "string", "default": "", "description": "Colour of the helper line under the gift label (set, it is drawn at full strength)."},
+		"giftFieldBg": {"type": "string", "default": "", "description": "Background colour of the gift name and note fields."},
+		"giftFieldBorderWidth": {"type": "object", "default": {}, "description": "Border width of the gift name and note fields (box object). Empty keeps the browser border."},
+		"giftFieldBorderStyle": {"type": "string", "default": "", "description": "Border style of the gift name and note fields."},
+		"giftFieldBorderColour": {"type": "string", "default": "", "description": "Border colour of the gift name and note fields."},
+		"giftFieldRadius": {"type": "string", "default": "", "description": "Corner radius of the gift name and note fields (CSS length)."},
+		"giftFieldPadding": {"type": "object", "default": {}, "description": "Padding of the gift name and note fields: tier object of boxes. Empty keeps the stylesheet default."},
+		"giftMessageFontFamily": {"type": "string", "default": ""},
+		"giftMessageFontSize": {"type": "object", "default": {}},
+		"giftMessageFontSizeUnit": {"type": "string", "default": "px"},
+		"giftMessageLineHeight": {"type": "object", "default": {}},
+		"giftMessageLineHeightUnit": {"type": "string", "default": ""},
+		"upsellProductId": {"type": "integer", "default": 0, "description": "A product offered in a row under the basket lines, with an Add button (0 prints no row). The row hides while that product is in the basket. A simple product, or a variable product whose default options are all set, is added in one tap; any other product makes the button a link to its page."},
+		"upsellTitle": {"type": "string", "default": "", "description": "The upsell row's heading. Empty uses the product's name."},
+		"upsellText": {"type": "string", "default": "", "description": "A line of text under the upsell heading; {price} is replaced with the product's current price. Empty prints none."},
+		"upsellButtonLabel": {"type": "string", "default": "Add", "description": "The upsell button's label; {price} is replaced with the product's current price."},
+		"upsellShowImage": {"type": "boolean", "default": true, "description": "Show the product's picture at the start of the upsell row."},
+		"upsellBg": {"type": "string", "default": "", "description": "Upsell row background colour."},
+		"upsellRadius": {"type": "string", "default": "", "description": "Upsell row corner radius (CSS length)."},
+		"upsellPadding": {"type": "object", "default": {}, "description": "Upsell row padding: tier object of boxes. Empty keeps the stylesheet default."},
+		"upsellTitleFontSize": {"type": "object", "default": {}},
+		"upsellTitleFontSizeUnit": {"type": "string", "default": "px"},
+		"upsellTitleFontWeight": {"type": "string", "default": ""},
+		"upsellTextFontSize": {"type": "object", "default": {}},
+		"upsellTextFontSizeUnit": {"type": "string", "default": "px"},
+		"upsellTextColour": {"type": "string", "default": "", "description": "Colour of the line under the upsell heading."},
+		"upsellImageSize": {"type": "object", "default": {}, "description": "Upsell picture size (square), per device (CSS length). Empty keeps the stylesheet default (56px)."},
+		"upsellImageRadius": {"type": "string", "default": "", "description": "Upsell picture corner radius (CSS length)."},
+		"upsellButtonBg": {"type": "string", "default": "", "description": "Upsell button background colour."},
+		"upsellButtonBgHover": {"type": "string", "default": "", "description": "Upsell button background colour on hover and keyboard focus."},
+		"upsellButtonColour": {"type": "string", "default": "", "description": "Upsell button text colour."},
+		"upsellButtonColourHover": {"type": "string", "default": "", "description": "Upsell button text colour on hover and keyboard focus."},
+		"upsellButtonBorderWidth": {"type": "object", "default": {}, "description": "Upsell button border width (box object). Empty keeps the stylesheet border."},
+		"upsellButtonBorderStyle": {"type": "string", "default": "", "description": "Upsell button border style."},
+		"upsellButtonBorderColour": {"type": "string", "default": "", "description": "Upsell button border colour."},
+		"upsellButtonRadius": {"type": "string", "default": "", "description": "Upsell button corner radius (CSS length)."},
+		"upsellButtonFontSize": {"type": "object", "default": {}},
+		"upsellButtonFontSizeUnit": {"type": "string", "default": "px"},
+		"upsellButtonFontWeight": {"type": "string", "default": ""},
+		"upsellButtonPadding": {"type": "object", "default": {}, "description": "Upsell button padding: tier object of boxes. Empty keeps the stylesheet default."},
 		"emptyImageSource": {"type":"object","_generated":"media-atoms"},
 		"emptyImageLoading": {"type":"string","_generated":"media-atoms"},
 		"emptyImageAlt": {"type":"string","_generated":"media-atoms"},
