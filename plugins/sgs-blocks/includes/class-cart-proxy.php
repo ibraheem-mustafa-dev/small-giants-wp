@@ -262,16 +262,32 @@ final class Cart_Proxy {
 	// ── Availability handler ──────────────────────────────────────────────────
 
 	/**
+	 * Which manifest answers the availability of a product: 'variable' (`Product_Manifest::build()`), 'simple'
+	 * (`Product_Manifest::build_simple()`, the buy box's own form for a simple product), or null for any other product
+	 * (grouped, external, none), which the endpoint refuses as an invalid product.
+	 *
+	 * @param mixed $product The `wc_get_product()` result.
+	 * @return string|null
+	 */
+	public static function availability_source( $product ): ?string {
+		if ( $product instanceof \WC_Product_Variable ) {
+			return 'variable';
+		}
+		return ( $product instanceof \WC_Product && $product->is_type( 'simple' ) ) ? 'simple' : null;
+	}
+
+	/**
 	 * Handle GET /sgs/v1/cart/availability/{id}.
 	 *
 	 * Returns the current in-stock status for every combo of the given variable
-	 * product so the client can re-grey option-picker pills after a post-load
+	 * product, or the one combo of a simple product, so the client can re-grey
+	 * option-picker pills (or hide a simple product's form) after a post-load
 	 * out-of-stock event (409 from add-item). No price data is returned —
 	 * only the availability booleans needed for the client-side greying pass.
 	 *
 	 * Security chain:
 	 *   1. CSRF   — X-WP-Nonce (wp_rest) header, identical to add-item.
-	 *   2. IDOR   — product must be published + a WooCommerce variable product.
+	 *   2. IDOR   — product must be published + a WooCommerce variable or simple product.
 	 *   3. Rate-limit — 20 requests per IP per 60 s (read-only, lighter cap).
 	 *   4. No price leak — combos are stripped to { inStock: bool } only.
 	 *
@@ -289,7 +305,7 @@ final class Cart_Proxy {
 			);
 		}
 
-		// ── Step 2: IDOR — published variable product only ───────────────────
+		// ── Step 2: IDOR — a published variable or simple product only ───────
 		$product_id = \absint( $request->get_param( 'id' ) );
 
 		if ( 'product' !== \get_post_type( $product_id ) ) {
@@ -317,7 +333,8 @@ final class Cart_Proxy {
 		}
 
 		$product = \wc_get_product( $product_id );
-		if ( ! $product instanceof \WC_Product_Variable ) {
+		$source  = self::availability_source( $product );
+		if ( null === $source ) {
 			return new \WP_Error(
 				'sgs_invalid_product',
 				\__( 'Invalid product ID.', 'sgs-blocks' ),
@@ -329,7 +346,7 @@ final class Cart_Proxy {
 		// cap (~80 combos / M-C9), so refuse to build live availability for an
 		// oversized catalogue — bounds the per-request build cost so this
 		// read-only endpoint cannot be turned into a CPU sink on a huge product.
-		if ( \count( $product->get_children() ) > 200 ) {
+		if ( 'variable' === $source && \count( $product->get_children() ) > 200 ) {
 			return new \WP_Error(
 				'sgs_invalid_product',
 				\__( 'Invalid product ID.', 'sgs-blocks' ),
@@ -386,7 +403,9 @@ final class Cart_Proxy {
 		// the manifest is already warm from the page render.
 		require_once __DIR__ . '/class-product-manifest.php';
 
-		$manifest = Product_Manifest::build( $product_id );
+		// A simple product's manifest holds one combination (`Product_Manifest::SIMPLE_KEY`), the key the buy box's context
+		// holds for it, so a simple product that sold out after the page loaded is marked out of stock like a variation.
+		$manifest = 'simple' === $source ? Product_Manifest::build_simple( $product_id ) : Product_Manifest::build( $product_id );
 		if ( null === $manifest ) {
 			return new \WP_Error(
 				'sgs_manifest_error',

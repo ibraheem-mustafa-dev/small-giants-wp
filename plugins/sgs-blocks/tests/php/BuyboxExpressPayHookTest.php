@@ -49,6 +49,33 @@ final class BuyboxExpressPayHookTest extends TestCase {
 		}
 	}
 
+	/** The product page of the standard fixture's product turned simple, rendered with WooCommerce's price functions (a simple product's manifest reads them). */
+	private static function simple_product_page(): string {
+		$dir     = __DIR__ . '/../fixtures/buybox';
+		$fixture = json_decode( (string) file_get_contents( $dir . '/standard.json' ), true, 512, JSON_THROW_ON_ERROR );
+		$fixture['product'] = array_merge( $fixture['product'], array( 'type' => 'simple', 'price' => '9', 'sku' => 'LC-1' ) );
+		$fixture['context'] = array( 'postId' => 52 );
+		$fixture['queried'] = array( 'id' => 52, 'post_type' => 'product' );
+		$cmd   = escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( $dir . '/flow-render-wrapper.php' ) . ' --slug sgs/buybox --motion-targets';
+		$files = array();
+		foreach ( array( 'attrs', 'product', 'manifest', 'context', 'queried' ) as $key ) {
+			$files[ $key ] = tempnam( sys_get_temp_dir(), 'sgsep' );
+			file_put_contents( $files[ $key ], json_encode( $fixture[ $key ] ?? new stdClass(), JSON_THROW_ON_ERROR ) );
+			$cmd .= ' --' . $key . '-file ' . escapeshellarg( $files[ $key ] );
+		}
+		try {
+			$out = (string) shell_exec( $cmd . ' 2>&1' );
+		} finally {
+			array_map( 'unlink', $files );
+		}
+		$start   = strpos( $out, '{"ok"' );
+		$decoded = false === $start ? null : json_decode( substr( $out, $start ), true );
+		if ( ! is_array( $decoded ) || ! ( $decoded['ok'] ?? false ) ) {
+			throw new RuntimeException( 'render.php failed: ' . ( $decoded['error'] ?? $out ) );
+		}
+		return (string) $decoded['html'];
+	}
+
 	private static function all_tags(): string {
 		return self::TAG . ',' . self::BEFORE . ',' . self::BUTTON;
 	}
@@ -139,6 +166,21 @@ final class BuyboxExpressPayHookTest extends TestCase {
 		$this->assertStringContainsString( '<p class="sgs-buybox__express-note sgs-sr-only">', $html );
 		$this->assertStringNotContainsString( 'aria-live', substr( $html, (int) strpos( $html, 'sgs-buybox__express-note' ), 200 ), 'a static note: a live region would announce on every pick change' );
 		$this->assertLessThan( (int) strpos( $html, '<div class="sgs-buybox__express"' ), (int) strpos( $html, 'sgs-buybox__express-note' ), 'the note sits beside the wrapper, outside it' );
+	}
+
+	public function test_the_note_asks_for_options_only_where_the_product_has_them(): void {
+		$this->assertStringContainsString( 'once the options above are chosen.</p>', self::product_page(), 'a variable product waits for its chosen options' );
+		putenv( 'SGS_QA_ECHO_ACTIONS=' . self::all_tags() );
+		putenv( 'SGS_QA_DECLARE_CLASSES=' . self::PLUGIN_CLASS );
+		try {
+			$html = self::simple_product_page();
+		} finally {
+			putenv( 'SGS_QA_ECHO_ACTIONS' );
+			putenv( 'SGS_QA_DECLARE_CLASSES' );
+		}
+		$this->assertStringContainsString( '<p class="sgs-buybox__express-note sgs-sr-only">', $html, 'the simple product prints the express buttons and their note' );
+		$this->assertStringContainsString( 'once the choices above are complete.</p>', $html, 'MUST FAIL: a simple product shopper is told the choices above, not options' );
+		$this->assertStringNotContainsString( 'options above are chosen', $html, 'MUST FAIL: no product with nothing to choose is asked to choose options' );
 	}
 
 	public function test_the_filter_false_with_the_plugin_present_prints_nothing(): void {

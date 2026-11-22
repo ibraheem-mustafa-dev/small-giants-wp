@@ -558,7 +558,12 @@ if ( ! function_exists( 'sgs_buybox_after_cart_form_action' ) ) {
 				}
 				if ( '' !== $express ) {
 					echo '<span hidden data-wp-init="callbacks.initExpress" data-wp-watch="callbacks.syncExpress"></span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed markup.
-					echo '<p class="sgs-buybox__express-note sgs-sr-only">' . esc_html__( 'Express payment buttons become available once the options above are chosen.', 'sgs-blocks' ) . '</p>';
+					// A product with options waits for a chosen variation; any other product only for its compulsory picks or note,
+					// so its shopper is never told to choose options it does not have.
+					$express_note = $product->is_type( 'variable' )
+						? __( 'Express payment buttons become available once the options above are chosen.', 'sgs-blocks' )
+						: __( 'Express payment buttons become available once the choices above are complete.', 'sgs-blocks' );
+					echo '<p class="sgs-buybox__express-note sgs-sr-only">' . esc_html( $express_note ) . '</p>';
 					echo '<div class="sgs-buybox__express" data-state="unavailable" inert>' . $express . '<input type="hidden" name="quantity" value="1" /></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the payment plugin's own escaped markup.
 					if ( $defer_express && function_exists( 'SGS\Blocks\sgs_express_defer_armed' ) ) {
 						\SGS\Blocks\sgs_express_defer_armed( true );
