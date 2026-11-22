@@ -26,6 +26,19 @@ import re
 from pathlib import Path
 
 STAMP_VERSION = 2
+
+
+def check_hash(plugin: Path) -> str:
+    """One hash of the check's own code (scripts/setting-record: its modules, scripts, runner hooks and schema, not the
+    fixtures or tests) and of the offline runner (scripts/qa/lib): a change to either reaches every block alike."""
+    plugin = Path(plugin)
+    files = [f for pat in ('*.py', '*.js', '*.php', 'record.schema.json') for f in (plugin / 'scripts' / 'setting-record').glob(pat)]
+    files += list((plugin / 'scripts' / 'qa' / 'lib').glob('*.php'))
+    h = hashlib.md5()
+    for f in sorted(set(files), key=lambda f: f.name):
+        h.update(f.name.encode())
+        h.update(file_hash(f).encode())
+    return h.hexdigest()[:16]
 CORE_MIN = 20  # stamps needed before the files they all load count as core
 
 
@@ -135,7 +148,8 @@ def make_stamp(plugin: Path, short: str, fixture: dict, shared: dict, fixtures_d
     """`fixture` and `shared` are the block's fixtures.json entry and `_shared` as written (what select() reads back);
     `included` every PHP file the renders loaded (render.py::Renderer.included); `sheets` every stylesheet read."""
     tokens = rendered_tokens(results)
-    return {'version': STAMP_VERSION, 'inputs': block_inputs(plugin, short, fixture, shared, fixtures_dir, included, sheets),
+    return {'version': STAMP_VERSION, 'check': check_hash(plugin),
+            'inputs': block_inputs(plugin, short, fixture, shared, fixtures_dir, included, sheets),
             'outputs': outputs_hash(results), 'theme': theme_reach(theme_rules(theme), tokens['classes'], tokens['tags']), **tokens}
 
 
@@ -164,6 +178,7 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
             for s in stamps.values() if s.get('inputs')]
     core = set.intersection(*sets) if len(sets) >= CORE_MIN else set()
     now_theme = theme_rules(theme)
+    now_check = check_hash(plugin)
     out = {}
     for block, st in stamps.items():
         short = block.split('/', 1)[-1]
@@ -194,6 +209,8 @@ def select(plugin: Path, records: dict, fixtures: dict, fixtures_dir: Path, them
                     own.append(f'{rel} is new')
             if st.get('theme') != theme_reach(now_theme, st.get('classes') or [], st.get('tags') or []):
                 own.append('a theme rule that can reach its rendered elements changed')
+            if st.get('check') != now_check:
+                core_r.append("the check's code or the offline runner changed")
         if own or core_r:
             out[block] = {'own': own, 'core': core_r}
     return out

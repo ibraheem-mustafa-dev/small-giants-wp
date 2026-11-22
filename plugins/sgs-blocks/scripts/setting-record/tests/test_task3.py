@@ -299,8 +299,9 @@ def test_stylesheets_cascade_in_source_order_not_by_cache_name(tmp_path, monkeyp
 
 def test_the_core_is_php_outside_block_folders_and_needs_a_library():
     inputs = {'includes/boot.php': 'a', 'fixture-entry': 'f', 'src/shared/x.css': 's', 'src/blocks/demo/render.php': 'r'}
-    few = {f'sgs/b{i}': {'stamp': {'inputs': dict(inputs)}} for i in range(3)}
-    many = {f'sgs/b{i}': {'stamp': {'inputs': dict(inputs)}} for i in range(ST.CORE_MIN)}
+    check = ST.check_hash(Path('E:/nowhere'))
+    few = {f'sgs/b{i}': {'stamp': {'inputs': dict(inputs), 'check': check}} for i in range(3)}
+    many = {f'sgs/b{i}': {'stamp': {'inputs': dict(inputs), 'check': check}} for i in range(ST.CORE_MIN)}
     for records in (few, many):
         for doc in records.values():
             doc['stamp']['inputs'] = {k: 'changed' for k in inputs}
@@ -316,7 +317,7 @@ def test_the_core_is_php_outside_block_folders_and_needs_a_library():
 def test_an_unchanged_fixture_entry_is_not_a_change(tmp_path):
     fixtures = {'sgs/demo': {'attributes': {'a': 1}}, '_shared': {'preconditions': {'x': {}}}}
     inputs = ST.block_inputs(tmp_path, 'demo', fixtures['sgs/demo'], fixtures['_shared'], tmp_path, [], [])
-    records = {'sgs/demo': {'stamp': {'inputs': inputs, 'theme': ST.theme_reach({}, [], [])}}}
+    records = {'sgs/demo': {'stamp': {'inputs': inputs, 'theme': ST.theme_reach({}, [], []), 'check': ST.check_hash(tmp_path)}}}
     assert ST.select(tmp_path, records, fixtures, tmp_path, '') == {}
     fixtures['_shared']['preconditions']['y'] = {}
     assert ST.select(tmp_path, records, fixtures, tmp_path, '')['sgs/demo']['own'] == ['fixture-shared changed']
@@ -374,3 +375,77 @@ def test_a_worker_that_exits_is_that_blocks_failure(monkeypatch):
 def test_the_root_check_reads_single_quoted_classes(monkeypatch):
     run = fake_run(monkeypatch, "<div class='sgs-demo wp-block-sgs-demo'>hi</div>")
     assert run['stats']['coverage']['rootPrinted'] is True
+
+
+# ---------------------------------------------------------------- the build gate (check.py --changed)
+import datetime as _dt  # noqa: E402
+import changed as CH  # noqa: E402
+
+
+def _gate(monkeypatch, tmp_path, records, pending=None, roster=('sgs/a', 'sgs/b'), sel=None):
+    rd = tmp_path / 'records'
+    rd.mkdir(parents=True)
+    for b in records:
+        (rd / f"{b.split('/', 1)[1]}.json").write_text(json.dumps({'block': b, 'stamp': {}}), encoding='utf-8')
+    pf = tmp_path / 'pending.json'
+    pf.write_text(json.dumps({'blocks': pending or {}}), encoding='utf-8')
+    monkeypatch.setattr(CH, 'PENDING', pf)
+    monkeypatch.setattr(SF, 'roster', lambda plugin=None: list(roster))
+    monkeypatch.setattr(ST, 'select', lambda *a, **k: sel or {})
+    import theme as TH
+    monkeypatch.setattr(TH, 'theme_css', lambda root: '')
+    return CH.plan(PLUGIN, rd, tmp_path / 'fixtures.json', today=_dt.date(2026, 11, 22))
+
+
+def test_a_block_without_a_record_fails_the_gate_unless_pending(monkeypatch, tmp_path):
+    p = _gate(monkeypatch, tmp_path, ['sgs/a'])
+    assert p['problems'] == ['sgs/b has no record: ' + CH.fix_command('sgs/b')]
+    p = _gate(monkeypatch, tmp_path / 'x', ['sgs/a'], pending={'sgs/b': {'owner': 'd8', 'reason': 'template rework', 'until': '2026-11-28'}})
+    assert p['problems'] == []
+
+
+def test_a_lapsed_pending_entry_and_an_orphan_record_fail(monkeypatch, tmp_path):
+    p = _gate(monkeypatch, tmp_path, ['sgs/a', 'sgs/gone'], pending={'sgs/b': {'owner': 'd8', 'until': '2026-11-21'}})
+    assert any('lapsed on 2026-11-21' in m for m in p['problems'])
+    assert any(m.startswith('sgs/gone has a record but no block') for m in p['problems'])
+
+
+def test_only_touched_blocks_run_and_a_core_change_runs_the_canaries(monkeypatch, tmp_path):
+    roster = ('sgs/a', 'sgs/b', 'sgs/heading', 'sgs/button')
+    p = _gate(monkeypatch, tmp_path, list(roster), roster=roster, sel={'sgs/a': {'own': ['x changed'], 'core': []}})
+    assert p['full'] == ['sgs/a'] and p['canary'] == []
+    p = _gate(monkeypatch, tmp_path / 'y', list(roster), roster=roster, sel={'sgs/b': {'own': [], 'core': ['includes/boot.php changed']}})
+    assert p['full'] == [] and p['canary'] == list(CH.CANARIES)
+
+
+def test_a_change_to_the_check_or_the_runner_is_a_core_change(tmp_path, monkeypatch):
+    fixtures = {'sgs/demo': {}}
+    inputs = ST.block_inputs(tmp_path, 'demo', {}, {}, tmp_path, [], [])
+    records = {'sgs/demo': {'stamp': {'inputs': inputs, 'theme': ST.theme_reach({}, [], []), 'check': ST.check_hash(PLUGIN)}}}
+    monkeypatch.setattr(ST, 'check_hash', lambda plugin: 'other')
+    out = ST.select(tmp_path, records, fixtures, tmp_path, '')
+    assert out['sgs/demo']['core'] == ["the check's code or the offline runner changed"] and out['sgs/demo']['own'] == []
+
+
+def test_a_finding_names_the_entry_and_the_fix(capsys):
+    res = {'add': [{'setting': 'colour', 'part': 'title', 'props': ['color'], 'state': 'hover', 'tiers': []}], 'remove': [], 'change': []}
+    CK.print_findings('sgs/demo', res, {}, [])
+    err = capsys.readouterr().err
+    assert 'colour -> title color hover' in err
+    assert CH.fix_command('sgs/demo') in err and '--write plugins/sgs-blocks/scripts/data/setting-records/demo.json' in err
+
+
+def test_a_timed_out_render_is_tried_once_more(tmp_path, monkeypatch):
+    monkeypatch.setattr(RN, 'CACHE_ROOT', tmp_path)
+    rn = RN.Renderer(PLUGIN, {}, PLUGIN, 'text')
+    import subprocess
+    calls = []
+
+    def flaky(cmd, **k):
+        calls.append(1)
+        if len(calls) == 1:
+            raise subprocess.TimeoutExpired(cmd, 1)
+        Path(k['env']['SGS_SETTING_RECORD_INCLUDED']).write_text('[]', encoding='utf-8')
+        return SimpleNamespace(stdout=json.dumps({'ok': True, 'html': '<p></p>'}), stderr='')
+    monkeypatch.setattr(subprocess, 'run', flaky)
+    assert rn.render('sgs/text', {'x': 1})['ok'] is True and len(calls) == 2

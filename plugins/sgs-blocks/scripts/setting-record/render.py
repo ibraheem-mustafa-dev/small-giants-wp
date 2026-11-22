@@ -20,7 +20,9 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 DEFAULT_PLUGIN = HERE.parents[1]
-CACHE_ROOT = Path(os.environ.get('SGS_SETTING_RECORD_CACHE') or HERE / '.cache')
+# outside the checkout, so a gate run in a temporary worktree (deploy_ship.py::run_isolated) starts warm, as
+# deploy_cache.py keeps ~/.cache/sgs-deploy; renders are keyed by a hash of the code they read, so a stale one is never used
+CACHE_ROOT = Path(os.environ.get('SGS_SETTING_RECORD_CACHE') or Path.home() / '.cache' / 'sgs-setting-record')
 WORKERS = int(os.environ.get('SGS_SETTING_RECORD_WORKERS') or max(2, os.cpu_count() or 8))
 TIMEOUT = int(os.environ.get('SGS_SETTING_RECORD_TIMEOUT') or 120)  # seconds one render may take
 
@@ -208,11 +210,14 @@ class Renderer:
             ifile.write_text(json.dumps(inner), encoding='utf-8')
             cmd += ['--inner-blocks-file', str(ifile)]
         t0 = time.time()
-        try:
-            env = {**(self.env or os.environ), 'SGS_SETTING_RECORD_INCLUDED': str(inc)}
-            p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=str(self.plugin), timeout=TIMEOUT, env=env)
-        except subprocess.TimeoutExpired:
-            return {'ok': False, 'error': f'the render did not finish in {TIMEOUT} s', 'secs': round(time.time() - t0, 3), 'notices': []}
+        env = {**(self.env or os.environ), 'SGS_SETTING_RECORD_INCLUDED': str(inc)}
+        for attempt in (1, 2):  # a render the busy machine starved is tried once more before it counts as failed
+            try:
+                p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', cwd=str(self.plugin), timeout=TIMEOUT, env=env)
+                break
+            except subprocess.TimeoutExpired:
+                if attempt == 2:
+                    return {'ok': False, 'error': f'the render did not finish in {TIMEOUT} s (tried twice)', 'secs': round(time.time() - t0, 3), 'notices': []}
         res = last_json(p.stdout)
         if res is None:
             res = {'ok': False, 'error': 'no JSON result: ' + (p.stderr[-500:] or p.stdout[-500:])}

@@ -14,6 +14,8 @@ Usage:
   python check.py sgs/button --write button.json                  write the record from the code
   python check.py sgs/button sgs/cart --record-dir DIR            several blocks at once, one process each (--write-dir DIR to write)
   python check.py --self-test                                     prove the check fails on planted faults
+  python check.py --changed [--no-proof]                          the build gate: only the blocks a change touches (changed.py)
+  python check.py --changed --restamp                             the same, refreshing the stamp of every record that passes
 Options: --plugin P (a plugin copy; default this repo's), --fixtures F, --instances PLAN.json | --instances-dir DIR
 (replay a saved instance plan instead of generating one from block.json), --no-proof, --out DIR (reports).
 """
@@ -317,6 +319,65 @@ def schema_errors(doc: dict, need_kind: bool) -> list:
     return [f'{"/".join(str(p) for p in e.absolute_path)}: {e.message}' for e in jsonschema.Draft202012Validator(schema).iter_errors(doc)][:20]
 
 
+def new_stamp(args, short: str, run: dict, fixtures: dict) -> dict:
+    """The stamp a record written or refreshed now carries (stamp.py::make_stamp)."""
+    import stamp as ST
+    import theme as TH
+    return ST.make_stamp(args.plugin, short, fixtures.get(f'sgs/{short}') or {}, fixtures.get('_shared') or {},
+                         args.fixtures.parent, run['results'], run['renderer'].included,
+                         run.get('proofSheetFiles') or run['sheetFiles'], TH.theme_css(Path(args.plugin).resolve().parents[1]))
+
+
+def print_findings(block: str, res: dict, parts: dict, errs: list, limit: int = 12) -> None:
+    """What differs between the code and the record, entry by entry, and the command that rewrites the record."""
+    import changed as CH
+
+    def show(e):
+        where = ' '.join(x for x in (e.get('state') or '', ' '.join(e.get('tiers') or [])) if x)
+        return f"{e['setting']} -> {e['part']} {'/'.join(e['props'])}{' ' + where if where else ''}"
+    lines = [f'  the code paints, the record lacks: {show(e)}' for e in res['add']]
+    lines += [f'  the record has, the code no longer paints: {show(e)}' for e in res['remove']]
+    lines += [f"  {c['setting']} -> {c['part']} {'/'.join(c['props'])}: record {c['record']}, code {c['code']}" for c in res['change']]
+    if parts.get('orderChanged'):
+        lines.append(f"  part order: record {parts['orderChanged']['record']}, code {parts['orderChanged']['code']}")
+    lines += [f'  record file: {e}' for e in errs]
+    print(f'{block}: its record differs from the code ({len(lines)} finding(s))', file=sys.stderr)
+    for ln in lines[:limit]:
+        print(ln, file=sys.stderr)
+    if len(lines) > limit:
+        print(f'  ... and {len(lines) - limit} more in the report ({block.split("/", 1)[1]}.check.json)', file=sys.stderr)
+    print(f'  if the change is intended, rewrite the record and commit it with the change: {CH.fix_command(block)}', file=sys.stderr)
+
+
+def check_changed(args) -> int:
+    """The build gate: the blocks a change touches (changed.py::plan), checked against the committed records."""
+    import changed as CH
+    import stamp as ST
+    records_dir = args.record_dir or RECORDS
+    p = CH.plan(args.plugin, records_dir, args.fixtures)
+    for m in p['problems']:
+        print(f'FAIL {m}', file=sys.stderr)
+    blocks = list(p['full'])
+    for b in blocks:
+        print(f"{b}: checked ({'; '.join(p['reasons'][b]['own'][:3])})")
+    fixtures = json.loads(args.fixtures.read_text(encoding='utf-8')) if args.fixtures.is_file() else {}
+    for b in p['canary']:
+        short = b.split('/', 1)[1]
+        run = run_block(short, args.plugin, fixtures, args.fixtures.parent, None)
+        stamped = (json.loads((records_dir / f'{short}.json').read_text(encoding='utf-8')).get('stamp') or {}).get('outputs')
+        if ST.outputs_hash(run['results']) != stamped:
+            print(f'{b}: a file every block loads changed and its renders moved: checked')
+            blocks.append(b)
+        else:
+            print(f'{b}: a file every block loads changed; its renders are the same')
+    if not blocks:
+        print(f'setting record: no block touched ({len(CH.load_records(records_dir))} records)')
+        return 1 if p['problems'] else 0
+    args.record_dir, args.blocks = records_dir, [b.split('/', 1)[1] for b in blocks]
+    worst = check_block(args, args.blocks[0]) if len(blocks) == 1 else check_many(args)
+    return max(worst, 1 if p['problems'] else 0)
+
+
 # ---------------------------------------------------------------- one block
 def check_block(args, block: str) -> int:
     t0 = time.time()
@@ -346,8 +407,6 @@ def check_block(args, block: str) -> int:
         kept = []
         if write.is_file():
             kept = [e for e in json.loads(write.read_text(encoding='utf-8')).get('entries', []) if e.get('runner')]
-        import stamp as ST
-        import theme as TH
         values = entry_values(run)
         doc = {'block': f'sgs/{short}', 'schemaVersion': 2, 'parts': parts['order'],
                'entries': sorted(kept + [{**{k: v for k, v in e.items() if v is not None or k == 'state'},
@@ -356,9 +415,7 @@ def check_block(args, block: str) -> int:
                'proofKeys': [list(k[:2]) + [list(k[2]), k[3], list(k[4])] for k in plain_keys],
                'accounted': {'testedNoPaint': run['stats']['testedNoPaint'], 'replacesBlock': run['stats']['replacesBlock'],
                              'unvalued': run['stats']['unvalued'], 'partNotNamed': run['unnamed']},
-               'stamp': ST.make_stamp(args.plugin, short, fixtures.get(f'sgs/{short}') or {}, fixtures.get('_shared') or {},
-                                      args.fixtures.parent, run['results'], run['renderer'].included,
-                                      run.get('proofSheetFiles') or run['sheetFiles'], TH.theme_css(Path(args.plugin).resolve().parents[1]))}
+               'stamp': new_stamp(args, short, run, fixtures)}
         if write.resolve().parent == RECORDS.resolve():
             if args.no_proof:
                 raise SystemExit(f'refusing to write {write} without the proof: a record in {RECORDS} carries proved kinds')
@@ -388,11 +445,21 @@ def check_block(args, block: str) -> int:
         # A part block.json declares but nothing prints, or one printed but never declared, is a fault in the block, not
         # in its record: reported always, failing only with --strict-parts (until every block's declarations are whole).
         bad = bad or (args.strict_parts and bool(parts['declaredNotPrinted'] or parts['printedNotDeclared']))
+        if bad:
+            print_findings(f'sgs/{short}', res, parts, errs)
+        elif getattr(args, 'restamp', False):
+            if args.no_proof:
+                raise SystemExit('--restamp needs the proof: a stamp says the record was checked in full against these files')
+            doc['stamp'] = new_stamp(args, short, run, fixtures)
+            record_file.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + '\n', encoding='utf-8')
+            report['restamped'] = str(record_file)
     cov = run['stats']['coverage']
     floor = [] if cov['rootPrinted'] else ['the default render ' + ('is empty' if cov['defaultEmpty'] else 'does not print the block root')]
     if run['stats']['renderFailedOnly']:
         floor.append(f"{len(run['stats']['renderFailedOnly'])} setting(s) whose every render failed")
     report['coverageFloor'] = floor
+    for f in floor:
+        print(f'sgs/{short}: {f}: its fixture must render the block (fixtures.json; README, Reading a report)')
     bad = bad or bool(floor)
     report['parts'] = parts
     if proof is not None:
@@ -422,6 +489,8 @@ def main(argv=None):
     ap.add_argument('--strict-parts', action='store_true', help='also fail on parts block.json declares but nothing prints, or prints but never declares')
     ap.add_argument('--out', type=Path, default=RN.CACHE_ROOT / 'reports')
     ap.add_argument('--self-test', action='store_true')
+    ap.add_argument('--changed', action='store_true', help='only the blocks a change touches, against the committed records (the build gate)')
+    ap.add_argument('--restamp', action='store_true', help="refresh the stamp of each record whose check passes (needs the proof)")
     ap.add_argument('--all', action='store_true', help='every block in src/blocks (from its block.json)')
     ap.add_argument('--jobs', type=int, default=int(os.environ.get('SGS_SETTING_RECORD_JOBS') or 0),
                     help='blocks checked at once with several blocks (default: a quarter of the cores, at least 2)')
@@ -432,6 +501,8 @@ def main(argv=None):
     if args.self_test:
         import selftest
         return selftest.main(args)
+    if args.changed:
+        return check_changed(args)
     if not args.blocks:
         ap.error('name a block, or --self-test')
     if len(args.blocks) == 1:
