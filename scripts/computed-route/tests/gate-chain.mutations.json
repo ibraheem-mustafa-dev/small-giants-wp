@@ -1,0 +1,4 @@
+[
+	{"file": "lib/gate-chain.mjs", "find": "\tif ( c.paintMissing ) {\n\t\treturn stale( c.paintMissing );", "replace": "\tif ( false ) {\n\t\treturn stale( c.paintMissing );", "why": "a block with no site look passes G0"},
+	{"file": "lib/gate-chain.mjs", "find": "\tif ( ! c ) {\n\t\treturn stale( 'the block has no setting record' );", "replace": "\tif ( ! c ) {\n\t\treturn stale( 'unreadable' );", "why": "G0 does not say the block has no record"}
+]

@@ -117,6 +117,149 @@ export function partPaths( part, look ) {
 	return [ ...out ].sort( byDepth );
 }
 
+// ---------------------------------------------------------------- a rule's subject below its part
+
+// A selector's compounds at the top level, each with the combinator before it (`''` for the first, `' '` descendant, `>`,
+// `+`, `~`); a functional pseudo-class keeps its argument inside its compound, and a :where() or :is() wrapping the whole
+// selector is read through. Null for a selector list or unbalanced brackets: the caller keeps the part as the subject.
+export function compounds( selector ) {
+	const balanced = ( t ) => {
+		let d = 0;
+		for ( const ch of t ) {
+			d += '(' === ch ? 1 : ')' === ch ? -1 : 0;
+			if ( d < 0 ) {
+				return false;
+			}
+		}
+		return 0 === d;
+	};
+	let s = String( selector ?? '' ).trim();
+	for ( let m = s.match( /^:(?:where|is)\(([\s\S]*)\)$/ ); m && balanced( m[ 1 ] ); m = s.match( /^:(?:where|is)\(([\s\S]*)\)$/ ) ) {
+		s = m[ 1 ].trim();
+	}
+	if ( ! s || ! balanced( s ) ) {
+		return null;
+	}
+	const out = [];
+	let depth = 0;
+	let cur = '';
+	let comb = '';
+	for ( const ch of s ) {
+		depth += '(' === ch || '[' === ch ? 1 : ')' === ch || ']' === ch ? -1 : 0;
+		if ( 0 === depth && ',' === ch ) {
+			return null;
+		}
+		if ( 0 === depth && /[\s>+~]/.test( ch ) && ! ( '(' === ch || ')' === ch ) ) {
+			if ( cur ) {
+				out.push( { comb, text: cur } );
+				cur = '';
+				comb = ' ';
+			}
+			if ( /[>+~]/.test( ch ) ) {
+				comb = ch;
+			}
+			continue;
+		}
+		cur += ch;
+	}
+	if ( cur ) {
+		out.push( { comb, text: cur } );
+	}
+	return out;
+}
+
+// A compound's own classes (those inside a functional pseudo-class are left out).
+const FUNCTIONAL = /:(?:not|is|where|has)\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\)/g;
+const ownClasses = ( text ) => [ ...String( text ).replace( FUNCTIONAL, '' ).matchAll( /\.([A-Za-z0-9_-]+)/g ) ].map( ( m ) => m[ 1 ] );
+const SIMPLE_TAG = /^[a-z][a-z0-9]*$/;
+const SIMPLE_CLASS = /^\.([A-Za-z0-9_-]+)$/;
+const args = ( inner ) => {
+	const out = [];
+	let d = 0;
+	let cur = '';
+	for ( const ch of inner ) {
+		d += '(' === ch ? 1 : ')' === ch ? -1 : 0;
+		if ( 0 === d && ',' === ch ) {
+			out.push( cur.trim() );
+			cur = '';
+		} else {
+			cur += ch;
+		}
+	}
+	return [ ...out, cur.trim() ].filter( Boolean );
+};
+const functionals = ( text, name ) => [ ...String( text ).matchAll( new RegExp( `:${ name }\\(((?:[^()]|\\((?:[^()]|\\([^()]*\\))*\\))*)\\)`, 'g' ) ) ].map( ( m ) => args( m[ 1 ] ) );
+
+// Whether the element at `path` in the site look can be a compound's subject: its tag, its own classes, the plain tags and
+// classes of its :not() (an attribute or a longer argument is taken as not excluding) and of a :where() or :is() it carries
+// (an argument that is not a plain tag or class is taken as matching). Positional and state pseudo-classes are not tested.
+function compoundHolds( text, path, look ) {
+	const el = look?.elements?.[ path ] || {};
+	const tag = ( el[ '375' ] || el[ 375 ] || Object.values( el )[ 0 ] || {} )._tag ?? null;
+	const has = new Set( look?.pathClasses?.[ path ] || [] );
+	const head = String( text ).replace( FUNCTIONAL, '' ).match( /^([a-zA-Z][a-zA-Z0-9]*)/ );
+	if ( head && tag && head[ 1 ].toLowerCase() !== tag ) {
+		return false;
+	}
+	if ( ownClasses( text ).some( ( c ) => ! has.has( c ) ) ) {
+		return false;
+	}
+	const one = ( a ) => ( SIMPLE_TAG.test( a ) ? a === tag : SIMPLE_CLASS.test( a ) ? has.has( a.slice( 1 ) ) : null );
+	if ( functionals( text, 'not' ).flat().some( ( a ) => true === one( a ) ) ) {
+		return false;
+	}
+	return [ ...functionals( text, 'is' ), ...functionals( text, 'where' ) ].every( ( alts ) => alts.some( ( a ) => false !== one( a ) ) );
+}
+
+// The look's paths a record row paints. The record names the nearest part the rule reaches; its selector says whether the
+// rule's subject is that part or an element below it (a container's grid item padding: `.sgs-container--grid >
+// .sgs-container__inner > :not(…)`, the inner's children; a text indent: `.sgs-x :is(p, .wp-block-sgs-text) + :is(…)`,
+// each paragraph that follows another). The compounds after the part are matched right to left against the look's paths
+// below it, which are in document order: a descendant, a child (`>`), the next sibling (`+`) or a later one (`~`). A part
+// with a tag or a pseudo-element, a selector that does not name the part, and a list of selectors keep the part as the
+// subject (partPaths).
+export function rowPaths( row, look, block ) {
+	const own = partPaths( row.part, look );
+	const part = String( row.part ?? '' );
+	const comps = /[\s:]/.test( part ) || ! row.selector ? null : compounds( row.selector );
+	if ( ! comps?.length ) {
+		return own;
+	}
+	const short = slugOf( block );
+	const names = ( c ) => ( 'ROOT' === part ? ownClasses( c.text ).some( ( k ) => k === `sgs-${ short }` || k === `wp-block-sgs-${ short }` ) : ownClasses( c.text ).includes( part ) );
+	const at = comps.map( names ).lastIndexOf( true );
+	if ( at < 0 || at === comps.length - 1 ) {
+		return own;
+	}
+	const rest = comps.slice( at + 1 );
+	const paths = Object.keys( look?.elements || {} ).filter( ( p ) => ! p.includes( '::' ) && ! p.startsWith( '@' ) );
+	const order = new Map( paths.map( ( p, i ) => [ p, i ] ) );
+	const parentOf = ( p ) => ( p.includes( ' > ' ) ? p.slice( 0, p.lastIndexOf( ' > ' ) ) : '' === p ? null : '' );
+	const below = ( q, p ) => p !== q && ( '' === q || p.startsWith( `${ q } > ` ) );
+	// How `p` stands to the element `q` the previous compound matched, by the combinator before p's compound.
+	const related = ( comb, q, p ) => {
+		if ( ' ' === comb ) {
+			return below( q, p );
+		}
+		if ( '>' === comb ) {
+			return parentOf( p ) === q;
+		}
+		const sibs = paths.filter( ( s ) => s !== '' && parentOf( s ) === parentOf( p ) && order.get( s ) < order.get( p ) && ! below( s, p ) );
+		const prev = sibs.filter( ( s ) => parentOf( s ) === parentOf( p ) ).sort( ( a, b ) => order.get( a ) - order.get( b ) );
+		return '+' === comb ? prev.at( -1 ) === q : prev.includes( q );
+	};
+	// The paths the compounds up to `i` can match, each related to one the compound before it matched (the part's own
+	// paths before the first); every path stays below the part.
+	let matched = own;
+	for ( const step of rest ) {
+		const prev = matched;
+		matched = paths.filter( ( p ) => own.some( ( h ) => below( h, p ) ) && compoundHolds( step.text, p, look ) && prev.some( ( q ) => related( step.comb, q, p ) ) );
+	}
+	const pe = rest.at( -1 ).text.match( /::(before|after)\b/ );
+	const pseudo = pe ? `::${ pe[ 1 ] }` : '';
+	return [ ...new Set( matched.map( ( p ) => p + pseudo ) ) ].sort( byDepth );
+}
+
 // ---------------------------------------------------------------- tiers
 
 const CONDITION = /\((min|max)-width\s*:\s*([\d.]+)px\)/g;
@@ -197,7 +340,7 @@ export function recordRows( db, block ) {
 
 // One setting's entry from its usable rows: the rows on its own property (the block_attributes row's, else the first
 // row's) give its slots and widths; its other rows are its effects.
-function settingEntry( name, rows, row, look, facts ) {
+function settingEntry( block, name, rows, row, look, facts ) {
 	const long = ( props ) => [ ...new Set( props.flatMap( ( p ) => [ p, ...longhands( p ) ] ) ) ];
 	const own = longhands( row?.css_property || '' );
 	const primaryProps = own.length ? long( own ) : long( rows[ 0 ].props );
@@ -207,7 +350,7 @@ function settingEntry( name, rows, row, look, facts ) {
 	const wantState = row?.css_state || null;
 	const inState = onProp.filter( ( r ) => ( r.state || null ) === wantState );
 	const main = inState.length ? inState : onProp.length ? onProp : rows;
-	const pathsOf = ( r ) => partPaths( r.part, look );
+	const pathsOf = ( r ) => rowPaths( r, look, block );
 	const slots = [ ...new Set( main.flatMap( pathsOf ) ) ].sort( byDepth );
 	if ( ! slots.length ) {
 		return null;
@@ -325,7 +468,7 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 	const settings = {};
 	for ( const [ name, rows ] of usable ) {
 		const row = attrRow( handle, block, name );
-		const e = look ? settingEntry( name, rows, row, look, facts[ name ] ) : bareEntry( rows, row );
+		const e = look ? settingEntry( block, name, rows, row, look, facts[ name ] ) : bareEntry( rows, row );
 		if ( e ) {
 			settings[ name ] = e;
 		}

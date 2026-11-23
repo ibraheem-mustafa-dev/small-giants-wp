@@ -1,7 +1,7 @@
 [
 	{
 		"file": "lib/foundation-parts.mjs",
-		"find": "matchAll( /no default paint for \\S+ \\(([^)]*)\\)/g )",
+		"find": "matchAll( /no default (?:paint|look) for \\S+ \\(([^)]*)\\)/g )",
 		"replace": "matchAll( /zzz( )/g )",
 		"why": "no block is read from the gate's message"
 	},

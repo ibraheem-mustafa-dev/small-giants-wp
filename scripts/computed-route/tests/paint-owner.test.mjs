@@ -1,5 +1,4 @@
-// Proves the paint ownership rule (lib/cache.mjs::paintOwner, read by readPaint, so loadCalibration, paintSkip and
-// paintStale): a paint file is its folder's. writePaint stamps the folder's site (`paintFolder`); an unstamped file whose
+// Proves the paint ownership rule (lib/cache.mjs::paintOwner, read by readPaint, paintSkip and paintStale): a paint file is its folder's. writePaint stamps the folder's site (`paintFolder`); an unstamped file whose
 // recorded site is a scratch copy no targets file names any more belongs to the folder it sits in; a file recorded on a
 // site the targets files name, or stamped for another folder, is still refused. On 2026-11-15 two scratch copies of a
 // mirror calibrated into its test site's folder; once their targets entries were removed every one of those paints was
@@ -9,7 +8,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { readPaint, writePaint, loadCalibration, paintSkip, paintStale, paintOwner, paintSite, writeSlotMap } from '../lib/cache.mjs';
+import { readPaint, writePaint, paintSkip, paintStale, paintOwner, paintSite, writeSlotMap } from '../lib/cache.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 
 // A scratch copy name no targets file names (lib/site-targets.mjs::SCRATCH_NAME).
@@ -30,9 +29,6 @@ test( 'MUST FAIL: an unstamped paint a removed scratch copy wrote into a mirror\
 	assert.equal( paintSite( GONE ), GONE, 'the fixture name must be one no targets file names' );
 	assert.equal( readPaint( dir, 'local-mamas', 'sgs/heading' )?.elements[ '' ][ 1440 ].color, 'red', 'the mirror reads its folder\'s paint' );
 	assert.equal( readPaint( dir, 'mamas-test', 'sgs/heading' )?.elements[ '' ][ 1440 ].color, 'red', 'the test site reads its own folder\'s paint' );
-	const cal = loadCalibration( dir, 'sgs/heading', 'local-mamas' );
-	assert.equal( cal.paintMissing, undefined );
-	assert.equal( cal.elements[ '' ][ 1440 ].color, 'red' );
 	assert.match( paintSkip( dir, 'sgs/heading', 'local-mamas', 'pk' ) ?? '', /current/, 'calibrate keeps it rather than re-measuring a paint it cannot see' );
 	assert.equal( paintStale( dir, 'sgs/heading', 'local-mamas', 'other' ), true );
 } );
@@ -41,7 +37,6 @@ test( 'negative control: an unstamped paint recorded on a named site that resolv
 	const dir = fresh();
 	unstamped( dir, 'mamas-test', 'sandybrown' );
 	assert.equal( readPaint( dir, 'local-mamas', 'sgs/heading' ), null );
-	assert.match( loadCalibration( dir, 'sgs/heading', 'local-mamas' ).paintMissing, /local-mamas/ );
 	// A recorded site the targets files name keeps its own folder even when it is a scratch-copy name.
 	const targets = { 'local-mediatest-named': { mirrorOf: 'sandybrown' }, 'local-mamas': { mirrorOf: 'mamas-test' } };
 	assert.equal( paintOwner( { site: 'local-mediatest-named' }, 'mamas-test', targets ), 'sandybrown' );

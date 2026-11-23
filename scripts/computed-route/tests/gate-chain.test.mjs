@@ -1,5 +1,5 @@
-// Proves FR-48-64: each gate G0 to G7 stops a planted row at exactly that gate with its failure class, the browser-version
-// check of G0, fail-closed inputs, a measurement that is not a measurement (R-48-4), and the passing chain.
+// Proves FR-48-64: each gate G0 to G7 stops a planted row at exactly that gate with its failure class, G0's check that the
+// block has a setting record with its site look, fail-closed inputs, a measurement that is not a measurement (R-48-4), and the passing chain.
 import test from 'node:test';
 import fs from 'fs';
 import os from 'os';
@@ -11,8 +11,7 @@ import { finalWalk } from '../gate-chain.mjs';
 
 const fresh = () => ( {
 	dbRefreshedAt: '2026-10-22T10:00:00Z', blockCommittedAt: '2026-10-21T10:00:00Z',
-	cache: { slotKey: 'abc', playwrightVersion: '1.58.2', browserVersion: '145.0.1' }, deployHash: 'abc',
-	installed: { playwrightVersion: '1.58.2', browserVersion: '145.0.1' },
+	cache: { recordKey: 'abc', settings: {}, elements: { '': {} } },
 	manifest: { schema_version: '1.0', files: { 'a.dc.html': 'h1', 'support.js': 'h2' } },
 	intake: { schema_version: '1.0', files: { 'a.dc.html': 'h1', 'support.js': 'h2' } }, schemaVersion: '1.0', blockChanges: [],
 } );
@@ -36,30 +35,16 @@ test( 'MUST FAIL G0: a DB refreshed before the block\'s last commit is I-stale',
 	assert.equal( g0Freshness( fresh() ).pass, true );
 } );
 
-test( 'MUST FAIL G0: a cache measured on another deploy is I-stale', () => {
-	const i = fresh();
-	i.deployHash = 'zzz';
-	assert.equal( g0Freshness( i ).class, 'I-stale' );
-} );
-
-test( 'MUST FAIL G0: a browser or Playwright version that differs from the installed one is I-stale, and an unrecorded version fails too', () => {
+test( 'MUST FAIL G0: a block with no setting record, or a record with no site look, is I-stale and says why', () => {
 	let i = fresh();
-	i.installed.browserVersion = '146.0.0';
-	assert.match( g0Freshness( i ).evidence.line, /browserVersion 145\.0\.1.*146\.0\.0/ );
+	i.cache = null;
+	assert.deepEqual( [ g0Freshness( i ).pass, g0Freshness( i ).class ], [ false, 'I-stale' ] );
+	assert.match( g0Freshness( i ).evidence.line, /no setting record/ );
 	i = fresh();
-	i.installed.playwrightVersion = '1.59.0';
-	assert.equal( g0Freshness( i ).class, 'I-stale' );
-	i = fresh();
-	delete i.cache.browserVersion;
-	assert.equal( g0Freshness( i ).pass, false );
-	i = fresh();
-	i.installed = {};
-	assert.equal( g0Freshness( i ).pass, false );
-	// a version recorded nowhere is not a match
-	i = fresh();
-	delete i.cache.browserVersion;
-	i.installed = { playwrightVersion: '1.58.2' };
-	assert.match( g0Freshness( i ).evidence.line, /not recorded/ );
+	i.cache = { ...i.cache, elements: {}, paintMissing: 'no site look of sgs/demo for acme' };
+	assert.deepEqual( [ g0Freshness( i ).pass, g0Freshness( i ).class ], [ false, 'I-stale' ] );
+	assert.match( g0Freshness( i ).evidence.line, /no site look of sgs\/demo for acme/ );
+	assert.match( g0Freshness( fresh() ).evidence.line, /site look abc/, 'negative control: a record with its look passes and names the look' );
 } );
 
 test( 'MUST FAIL G0: intake hashes that differ from MANIFEST, a wrong schema_version, and unreadable inputs are I-stale', () => {
@@ -216,7 +201,7 @@ test( 'MUST FAIL: a row passing every gate is a framework-gap candidate with its
 
 test( 'MUST FAIL: a planted row stops at exactly the gate it fails, with that gate\'s class, and later gates are not reached', async () => {
 	const planted = {
-		G0: [ () => ( { ...fresh(), installed: { playwrightVersion: '1.58.2', browserVersion: '9' } } ), 'I-stale' ],
+		G0: [ () => ( { ...fresh(), cache: { settings: {}, elements: {}, paintMissing: 'no site look' } } ), 'I-stale' ],
 		G1: [ ( r ) => g1( { pairing: { by: 'words' } }, r ), 'W-walker' ],
 		G2: [ () => ( { property: 'padding-top', declared: '8px', renderedDraft: '24px', fr34Passes: false, ledgered: false, unread: null } ), 'render-wins' ],
 		G3: [ () => { const d = db(); add( d, 'sgs/card', 'paddingTop', null, null, 'spacing-token', 'sgs' ); return { db: d, block: 'sgs/card', ancestors: [], property: 'padding-top', state: null }; }, 'I-unrouted' ],

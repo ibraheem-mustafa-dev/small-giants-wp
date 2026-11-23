@@ -6,15 +6,23 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import os from 'os';
 import { runTriage } from '../triage.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '..', '..', '..' );
 const SURFACE = 'mfx';
 const PANEL = 'cr-ref-mfx-0';
 const GROUP = 'cr-ref-mfx-1';
-// A group the panel's calibrated groupPadding slot (.sgs-mega-panel__content > .sgs-mega-group) does not cover, so no
-// enclosing setting decides the row and only the canvas citation can (the content tiles became settable 2026-10-09).
+// A group the panel's groupPadding slot (.sgs-mega-panel__content > .sgs-mega-group) does not cover, so no enclosing
+// setting decides the row and only the canvas citation can (the content tiles became settable 2026-10-09).
 const PANEL_PATH = '.sgs-mega-panel__aside > .sgs-mega-group:nth-of-type(1)';
+// The records as the route reads them: the panel's groupPadding paints the content column's groups; the group has a look
+// and no setting of its own that paints its padding.
+const GROUP_SLOT = '.sgs-mega-panel__content > .sgs-mega-group';
+const CACHE = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-triage-manifest-' ) );
+writeRecordFixture( CACHE, 'sgs/mega-panel', { block: 'sgs/mega-panel', settings: { groupPadding: { slot: GROUP_SLOT, slots: [ GROUP_SLOT ], property: 'padding-top', state: null, reachedAt: [ 375, 768, 1440 ], effects: [], tiers: [ [] ], forms: [] } }, discovered: {}, elements: { '': { 1440: { _tag: 'div' } }, [ GROUP_SLOT ]: { 1440: { _tag: 'div', 'padding-top': '0px' } } } } );
+writeRecordFixture( CACHE, 'sgs/mega-group', { block: 'sgs/mega-group', settings: {}, discovered: {}, elements: { '': { 1440: { _tag: 'div', 'padding-top': '0px' } } } } );
 
 const tree = () => [ { name: 'sgs/mega-panel', attributes: { className: PANEL }, innerBlocks: [ { name: 'sgs/mega-group', attributes: { className: GROUP } } ] } ];
 const row = () => ( { kind: 'style', key: 'padding-top', draft: '26px', live: '0px', ref: GROUP, path: '', pair: 'grp', state: 'mfx-state', width: 1440, accepted: null,
@@ -43,7 +51,7 @@ function fixture( surfaceEntry ) {
 function triageWith( surfaceEntry ) {
 	const f = fixture( surfaceEntry );
 	try {
-		return runTriage( { client: f.client, surface: SURFACE, report: f.report, out: f.out } );
+		return runTriage( { client: f.client, surface: SURFACE, report: f.report, out: f.out, cache: CACHE } );
 	} finally {
 		fs.rmSync( f.root, { recursive: true, force: true } );
 	}

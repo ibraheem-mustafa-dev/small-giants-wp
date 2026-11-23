@@ -7,8 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, loadCalibration, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss, instancesDue } from '../lib/cache.mjs';
-import { calibrationFor } from '../solve.mjs';
+import { splitCalibration, writeSlotMap, writePaint, readPaint, readSlotMap, slotMapSkip, paintSkip, paintStale, paintFile, paintSite, slotMapLosses, lossDestination, slotMapWriteDecision, parseAllowLoss, instancesDue } from '../lib/cache.mjs';
 import { READ_KEY } from '../lib/calibrate-props.mjs';
 
 const el = ( colour ) => ( { '': { 375: { color: colour }, 768: { color: colour }, 1440: { color: colour } } } );
@@ -89,11 +88,7 @@ test( 'MUST FAIL TO SHARE: a reader asked for site B paint never returns A', () 
 	const dir = fresh();
 	run( dir, 'site-a', 'red' );
 	assert.equal( readPaint( dir, 'site-b', 'sgs/heading' ), null );
-	const cal = loadCalibration( dir, 'sgs/heading', 'site-b' );
-	assert.deepEqual( cal.elements, {} );
-	assert.match( cal.paintMissing, /site-b/ );
-	assert.deepEqual( calibrationFor( 'sgs/heading', 'site-b', dir ).elements, {} );
-	assert.equal( calibrationFor( 'sgs/heading', 'site-a', dir ).elements[ '' ][ 1440 ].color, 'red' );
+	assert.equal( readPaint( dir, 'site-a', 'sgs/heading' ).elements[ '' ][ 1440 ].color, 'red' );
 	// A paint file copied into B's folder but naming A is not B's.
 	fs.mkdirSync( path.join( dir, 'site-b' ), { recursive: true } );
 	fs.copyFileSync( paintFile( dir, 'site-a', 'sgs/heading' ), paintFile( dir, 'site-b', 'sgs/heading' ) );

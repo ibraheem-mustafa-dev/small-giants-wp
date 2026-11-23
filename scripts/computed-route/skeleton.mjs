@@ -181,7 +181,7 @@ export function proposeSurface( { client, surface, repo = REPO, siteName = null,
 	return { ...r, paths: p, facts, inventory, clientDecisions };
 }
 
-export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
+export async function main( argv, { read = readInventory, repo = REPO, cache = undefined } = {} ) {
 	const cmd = argv[ 0 ];
 	const flag = ( n ) => ( argv.includes( n ) ? argv[ argv.indexOf( n ) + 1 ] : null );
 	const client = flag( '--client' );
@@ -212,7 +212,7 @@ export async function main( argv, { read = readInventory, repo = REPO } = {} ) {
 		json( p.inventory, inv );
 		log( `inventory ${ surface }: ${ inv.elements.length } elements, ${ Object.keys( inv.elements.reduce( ( a, e ) => Object.assign( a, e.screenshots ), {} ) ).length ? 'screenshots in' : 'no screenshots in' } ${ p.shots }, ${ inv.checks.duplicateKeys } duplicate keys` );
 	} else if ( 'propose' === cmd ) {
-		const r = proposeSurface( { client, surface, repo, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ), runLedger: openRunLedger( flag( '--run-ledger' ) ) } );
+		const r = proposeSurface( { client, surface, repo, cache, siteName: flag( '--site-name' ), allowMissingPaint: allowMissingPaintArg( argv ), runLedger: openRunLedger( flag( '--run-ledger' ) ) } );
 		const c = r.proposal.counts;
 		log( `propose ${ surface }: ${ c.skeletonNodes } skeleton nodes (${ c.expandedNodes } with Fill's generated icons), ${ c.low } low confidence, ${ c.removed } removed or absorbed, ${ c.unresolved } unresolved, ${ r.problems.length } problems` );
 		r.problems.forEach( ( x ) => log( ` - ${ x }` ) );

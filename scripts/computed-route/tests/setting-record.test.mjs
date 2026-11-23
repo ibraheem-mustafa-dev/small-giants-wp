@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop } from '../lib/setting-record.mjs';
+import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop, rowPaths, compounds } from '../lib/setting-record.mjs';
 import { calibrationForNode } from '../lib/paint-state.mjs';
 
 const BLOCK = 'sgs/demo';
@@ -154,6 +154,44 @@ test( 'MUST FAIL: a client runs a shop when its page map holds a shop or product
 	assert.equal( runsShop( 'product-client', repo ), true );
 	assert.equal( runsShop( 'brochure-client', repo ), false, 'negative control: pages and posts only' );
 	assert.equal( runsShop( 'no-map-yet', repo ), false, 'a client with no page map runs no shop' );
+} );
+
+// A look with a part that holds, in document order, a paragraph with a span, a paragraph, an svg and a third paragraph.
+const P1 = '.sgs-demo__inner > p:nth-of-type(1)';
+const P2 = '.sgs-demo__inner > p:nth-of-type(2)';
+const P3 = '.sgs-demo__inner > p:nth-of-type(3)';
+const SVG = '.sgs-demo__inner > svg';
+const SPAN = `${ P1 } > span`;
+const NESTED = {
+	elements: { '': at( { _tag: 'div' } ), '.sgs-demo__inner': at( { _tag: 'div' } ), [ P1 ]: at( { _tag: 'p' } ), [ SPAN ]: at( { _tag: 'span' } ), [ P2 ]: at( { _tag: 'p' } ), [ SVG ]: at( { _tag: 'svg' } ), [ P3 ]: at( { _tag: 'p' } ) },
+	pathClasses: { '': [ 'sgs-demo', 'wp-block-sgs-demo' ], '.sgs-demo__inner': [ 'sgs-demo__inner' ], [ P1 ]: [ 'wp-block-sgs-text' ], [ SPAN ]: [], [ P2 ]: [ 'wp-block-sgs-text' ], [ SVG ]: [], [ P3 ]: [ 'wp-block-sgs-text' ] },
+};
+const paths = ( part, selector ) => rowPaths( { part, selector }, NESTED, BLOCK );
+
+test( 'MUST FAIL: a rule whose selector picks elements below the part paints those elements, not the part', () => {
+	assert.deepEqual( paths( 'sgs-demo__inner', ':where( .sgs-demo--grid > .sgs-demo__inner > :not( [aria-hidden="true"] ):not( svg ) )' ), [ P1, P2, P3 ], 'the grid items: the part\'s children the :not() leaves, never a grandchild' );
+	assert.deepEqual( paths( 'ROOT', '.sgs-demo.wp-block-sgs-demo :is(p, .wp-block-sgs-text) + :is(p, .wp-block-sgs-text)' ), [ P2 ], 'a paragraph straight after another' );
+	assert.deepEqual( paths( 'ROOT', '.sgs-demo p ~ p' ), [ P2, P3 ], 'any later sibling' );
+	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo__inner span' ), [ SPAN ], 'a descendant two levels down' );
+	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo__inner > span' ), [], 'a child combinator is not a descendant' );
+	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo__inner > :first-child::before' ), [ `${ P1 }::before`, `${ P2 }::before`, `${ P3 }::before`, `${ SVG }::before` ], 'a positional pseudo-class is not tested; the pseudo-element is kept' );
+	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo__inner > h2' ), [], 'a subject the look does not draw places nothing' );
+	// The loader places a setting from such a row on those elements.
+	const db = fixtureDb( [ { setting: 'itemPadding', part: 'sgs-demo__inner', props: [ 'padding' ] } ] );
+	db.prepare( 'UPDATE setting_placements SET selector = ? WHERE setting = ?' ).run( '.sgs-demo--grid > .sgs-demo__inner > :not( svg )', 'itemPadding' );
+	assert.deepEqual( loadRecord( BLOCK, CLIENT, { db, dir: lookDir( NESTED ), build: false } ).settings.itemPadding.slots, [ P1, P2, P3 ] );
+	// negative controls: a rule on the part itself, a selector that does not name the part, a tag part and a selector list keep the part
+	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo > .sgs-demo__inner' ), [ '.sgs-demo__inner' ] );
+	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo--pill .sgs-demo__badge' ), [ '.sgs-demo__inner' ] );
+	assert.deepEqual( paths( 'sgs-demo__inner', '.sgs-demo__inner > p, .sgs-demo__inner > svg' ), [ '.sgs-demo__inner' ] );
+	assert.deepEqual( paths( 'ROOT p', '.sgs-demo p + p' ), [ P1, P2, P3 ], 'a tag part is read by partPaths' );
+} );
+
+test( 'compounds reads a selector at its top level, through a :where() that wraps it', () => {
+	assert.deepEqual( compounds( ':where( .a > .b :not( .c, .d ) )' ), [ { comb: '', text: '.a' }, { comb: '>', text: '.b' }, { comb: ' ', text: ':not( .c, .d )' } ] );
+	assert.deepEqual( compounds( '.a + .b ~ .c' ).map( ( c ) => c.comb ), [ '', '+', '~' ] );
+	assert.equal( compounds( '.a, .b' ), null );
+	assert.equal( compounds( '.a:not(.b' ), null );
 } );
 
 test( 'tier conditions as a plain screen holds them', () => {

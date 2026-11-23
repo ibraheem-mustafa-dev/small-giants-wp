@@ -24,7 +24,7 @@ after( () => made.forEach( ( d ) => fs.rmSync( d, { recursive: true, force: true
 const write = ( file, text ) => ( fs.mkdirSync( path.dirname( file ), { recursive: true } ), fs.writeFileSync( file, text ) );
 const ok = () => ( { ok: true, seconds: 1 } );
 const clean = ( keys ) => Object.fromEntries( keys.map( ( k ) => [ k, Object.fromEntries( [ 'inventory', 'propose', 'fill', 'build', 'apply', 'walk' ].map( ( s ) => [ s, ok() ] ) ) ] ) );
-const gapStatus = ( keys, blocks ) => Object.fromEntries( keys.map( ( k ) => [ k, { inventory: ok(), propose: { ok: false, seconds: 1, detail: paintGapMessage( { gaps: blocks, site: SITE, client: 'acme', what: `propose ${ k }` } ).slice( 0, 600 ) } } ] ) );
+const gapStatus = ( keys, blocks ) => Object.fromEntries( keys.map( ( k ) => [ k, { inventory: ok(), propose: { ok: false, seconds: 1, detail: paintGapMessage( { gaps: blocks, client: 'acme', what: `propose ${ k }` } ).slice( 0, 600 ) } } ] ) );
 
 // A temporary checkout for client `acme` and the fake ports over it. `over` replaces any port or file behaviour.
 function world( { hosted = false, committed = false, source = null, gaps = [ [ 'sgs/hero', 'sgs/accordion' ] ], failExec = {}, allow = [], dropDrawer = false, pending = false } = {} ) {
@@ -117,8 +117,8 @@ test( 'MUST FAIL: each step runs the command the plan names, with the client, si
 
 test( 'MUST FAIL: the blocks a stage names without paint are read from every failed stage, and a failure that is not a paint gap is listed apart', () => {
 	const status = {
-		header: { propose: { ok: false, seconds: 1, detail: paintGapMessage( { gaps: [ 'sgs/hero' ], site: SITE, client: 'acme' } ) } },
-		footer: { fill: { ok: false, seconds: 1, detail: `exit 1: ${ paintGapMessage( { gaps: [ 'sgs/hero', 'sgs/gallery' ], site: SITE, client: 'acme' } ) }` }, inventory: ok() },
+		header: { propose: { ok: false, seconds: 1, detail: paintGapMessage( { gaps: [ 'sgs/hero' ], client: 'acme' } ) } },
+		footer: { fill: { ok: false, seconds: 1, detail: `exit 1: ${ paintGapMessage( { gaps: [ 'sgs/hero', 'sgs/gallery' ], client: 'acme' } ) }` }, inventory: ok() },
 		drawer: { inventory: { ok: false, seconds: 1, detail: 'no saved intake inventory for the state-driven surface' } },
 	};
 	assert.deepEqual( gapsInStatus( status ), [ 'sgs/hero', 'sgs/gallery' ] );

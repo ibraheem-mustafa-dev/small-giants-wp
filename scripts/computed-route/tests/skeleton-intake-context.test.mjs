@@ -9,6 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
 import { proposeSurface, reviewSurface, intakeContext, main } from '../skeleton.mjs';
+import { unlookedRecords } from './fixtures/unlooked-records.mjs';
 import { loadFacts } from '../lib/skeleton-facts.mjs';
 import { servedKey, servedMotion, isServedInventory } from '../lib/key-space.mjs';
 
@@ -23,6 +24,7 @@ const SIG = footer.elements.find( ( e ) => /^Root\/\d+#0$/.test( e.key ) && ( e.
 const KEY = SIG?.key ?? '';
 const KEY_PATH = KEY.replace( /^Root/, '' );
 const db = openDb();
+const UNLOOKED = unlookedRecords( db );
 
 test( 'the committed footer inventory holds a root-host paragraph with words (the key the tests below read)', () => {
 	assert.ok( SIG, `sites/${ CLIENT }/build/skeleton/footer.inventory.json has no element keyed Root/<n>#0 that is a <p> with words; the tests that read KEY have no subject` );
@@ -53,9 +55,9 @@ const spy = ( seen ) => ( args ) => {
 
 test( 'propose without an intakeSurface refuses and names the missing link', () => {
 	const f = fixture( { entry: { site: 'x' } } );
-	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( [] ) } ), /no intakeSurface/ );
+	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, cache: UNLOOKED, propose: spy( [] ) } ), /no intakeSurface/ );
 	const bad = fixture( { entry: { site: 'x', intakeSurface: 'gone' } } );
-	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: bad.repo, db, propose: spy( [] ) } ), /"gone", which is not in/ );
+	assert.throws( () => proposeSurface( { client: CLIENT, surface: 'footer', repo: bad.repo, db, cache: UNLOOKED, propose: spy( [] ) } ), /"gone", which is not in/ );
 	f.done();
 	bad.done();
 } );
@@ -63,7 +65,7 @@ test( 'propose without an intakeSurface refuses and names the missing link', () 
 test( 'propose passes the intake skeleton kind, name, built post and looping templates under the intake slug', () => {
 	const seen = [];
 	const f = fixture( { built: { 'S-14': { postId: 7 } } } );
-	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
+	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, cache: UNLOOKED, propose: spy( seen ) } );
 	const a = seen[ 0 ];
 	assert.equal( a.surface, 'site-footer' );
 	assert.equal( a.surfaceKind, 'footer' );
@@ -78,11 +80,11 @@ test( 'a served inventory applies decisions saved in intake space; an import cha
 	const own = { block: 'sgs/heading', signature: `${ sig.tag }|${ sig.words.replace( /\s+/g, ' ' ).trim() }` };
 	const chain = `${ ROOT }>Child@5#0/3#0`;
 	const seen = [];
-	// No site: the real proposer's blocks have no default paint for a fixture site, and a site's paint gate is not this test's subject.
+	// Every block's look is empty (tests/fixtures/unlooked-records.mjs): the paint gate is not this test's subject.
 	const f = fixture( { entry: { intakeSurface: 'site-footer' }, decisions: { surfaces: { 'site-footer': { [ `${ ROOT }${ KEY_PATH }` ]: own, [ chain ]: own } } } } );
-	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( seen ) } );
+	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, cache: UNLOOKED, propose: spy( seen ) } );
 	assert.deepEqual( Object.keys( seen[ 0 ].clientDecisions.surfaces[ 'site-footer' ] ), [ KEY, chain ] );
-	const real = proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db } );
+	const real = proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, cache: UNLOOKED } );
 	assert.equal( real.proposal.rows.find( ( r ) => KEY === r.key ).source, 'client decision' );
 	f.done();
 } );
@@ -90,14 +92,14 @@ test( 'a served inventory applies decisions saved in intake space; an import cha
 test( 'the review shows a decision saved under the intake slug in intake key space, for a served inventory', () => {
 	const marker = 'sgs/review-marker-block';
 	const f = fixture( { decisions: { surfaces: { 'site-footer': { [ `${ ROOT }${ KEY_PATH }` ]: { block: marker } } } } } );
-	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, propose: spy( [] ) } );
+	proposeSurface( { client: CLIENT, surface: 'footer', repo: f.repo, db, cache: UNLOOKED, propose: spy( [] ) } );
 	assert.ok( reviewSurface( { client: CLIENT, surface: 'footer', repo: f.repo } ).includes( marker ) );
 	f.done();
 } );
 
 test( 'decide refuses without an intakeSurface, as propose does', async () => {
 	const f = fixture( { entry: { site: 'x' } } );
-	await assert.rejects( () => main( [ 'decide', '--client', CLIENT, '--surface', 'footer', '--key', KEY, '--block', 'sgs/heading' ], { repo: f.repo } ), /no intakeSurface/ );
+	await assert.rejects( () => main( [ 'decide', '--client', CLIENT, '--surface', 'footer', '--key', KEY, '--block', 'sgs/heading' ], { repo: f.repo, cache: UNLOOKED } ), /no intakeSurface/ );
 	assert.equal( fs.readFileSync( path.join( f.repo, 'sites', CLIENT, 'build', 'skeleton', 'decisions.json' ), 'utf8' ), '{"surfaces":{}}' );
 	f.done();
 } );
@@ -127,14 +129,14 @@ test( 'key-space helpers rewrite only a root-host key', () => {
 } );
 
 test( 'MUST FAIL: main passes its repo option to every call: propose reads and writes the given repo, never the default one', async () => {
-	// No site, as above: the real proposer runs, and no fixture site has default paint.
+	// Empty looks, as above: the real proposer runs, and the paint gate is not this test's subject.
 	const f = fixture( { entry: { intakeSurface: 'site-footer' } } );
 	const other = 'zz-repo-option-client';
 	fs.renameSync( path.join( f.repo, 'sites', CLIENT ), path.join( f.repo, 'sites', other ) );
 	const log = console.log;
 	console.log = () => {};
 	try {
-		await main( [ 'propose', '--client', other, '--surface', 'footer' ], { repo: f.repo } );
+		await main( [ 'propose', '--client', other, '--surface', 'footer' ], { repo: f.repo, cache: UNLOOKED } );
 	} finally {
 		console.log = log;
 	}
@@ -151,7 +153,7 @@ test( 'MUST FAIL: decide with --block validates the block against the given repo
 	const log = console.log;
 	console.log = () => {};
 	try {
-		await main( [ 'decide', '--client', other, '--surface', 'footer', '--key', KEY, '--block', 'sgs/heading' ], { repo: f.repo } );
+		await main( [ 'decide', '--client', other, '--surface', 'footer', '--key', KEY, '--block', 'sgs/heading' ], { repo: f.repo, cache: UNLOOKED } );
 	} finally {
 		console.log = log;
 	}

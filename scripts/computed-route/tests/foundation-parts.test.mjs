@@ -8,9 +8,9 @@ import { intakeCurrent, layoutSurfaces, pageMapBuilt, paintGapsOf, snapshotDiff,
 import { paintGapMessage } from '../lib/paint-gate.mjs';
 
 test( 'MUST FAIL: the blocks a paint-gate message names are read back from the message the gate builds, one or many, each once', () => {
-	const one = paintGapMessage( { gaps: [ 'sgs/hero' ], site: 'local-mediatest-acme', client: 'acme', what: 'propose header' } );
+	const one = paintGapMessage( { gaps: [ 'sgs/hero' ], client: 'acme', what: 'propose header' } );
 	assert.deepEqual( paintGapsOf( one ), [ 'sgs/hero' ] );
-	const many = paintGapMessage( { gaps: [ 'sgs/accordion', 'sgs/accordion-item', 'sgs/hero' ], site: 'local-mediatest-acme', client: 'acme', what: 'fill footer' } );
+	const many = paintGapMessage( { gaps: [ 'sgs/accordion', 'sgs/accordion-item', 'sgs/hero' ], client: 'acme', what: 'fill footer' } );
 	assert.deepEqual( paintGapsOf( many ), [ 'sgs/accordion', 'sgs/accordion-item', 'sgs/hero' ] );
 	assert.deepEqual( paintGapsOf( `exit 1: ${ one } | ${ many }` ), [ 'sgs/hero', 'sgs/accordion', 'sgs/accordion-item' ], 'two messages in one text give the union, first-seen order' );
 	assert.deepEqual( paintGapsOf( 'exit 1: the tree was rejected (core/paragraph, x)' ), [], 'negative control: another failure names no block' );

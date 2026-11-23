@@ -1,5 +1,5 @@
 // The pure parts of the foundation command (build-foundation.mjs): the facts it reads from files and command output, each tested on its own.
-//   - paintGapsOf: the blocks a stage names as having no default paint on the run's site, read from the message lib/paint-gate.mjs
+//   - paintGapsOf: the blocks a stage names as having no default look for the client, read from the message lib/paint-gate.mjs
 //     builds (a propose stage's detail, or a Fill log's tail), so the foundation calibrates exactly those blocks.
 //   - layoutSurfaces: the surfaces whose built post is a page-map layout row (header, footer, nav drawer), in that order, and the layout rows
 //     the manifest has no surface for. The basket drawer is not a row of its own: it is `sgs/cart`'s panel, set by the header's Fill.
@@ -13,10 +13,11 @@
 import { LAYOUT_TYPES } from './site-build-map.mjs';
 import { sharesIds } from './site-targets.mjs';
 
-// Every block name a text lists as having no default paint (the message of lib/paint-gate.mjs::paintGapMessage), each once, in first-seen order.
+// Every block name a text lists as having no default look (the message of lib/paint-gate.mjs::paintGapMessage; an older
+// message said `paint`), each once, in first-seen order.
 export function paintGapsOf( text ) {
 	const out = new Set();
-	for ( const m of String( text ?? '' ).matchAll( /no default paint for \S+ \(([^)]*)\)/g ) ) {
+	for ( const m of String( text ?? '' ).matchAll( /no default (?:paint|look) for \S+ \(([^)]*)\)/g ) ) {
 		m[ 1 ].split( ',' ).map( ( b ) => b.trim() ).filter( ( b ) => /^[a-z0-9-]+\/[a-z0-9-]+$/.test( b ) ).forEach( ( b ) => out.add( b ) );
 	}
 	return [ ...out ];

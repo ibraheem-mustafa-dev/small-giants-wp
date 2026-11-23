@@ -1,6 +1,6 @@
 // A Fill run that aborts leaves the tracked sites/<client>/build/<surface>.origin.json as it was (fill.mjs::fillSurface writes
 // it with the run's outputs): a draft folder with no page to serve is refused after the skeleton is read, and the half-resolved
-// origin map is never written. The run reads an empty calibration cache, so no block has a slot map and the paint gate
+// origin map is never written. The skeleton's one block has a fixture record with an empty look, so the paint gate
 // (lib/paint-gate.mjs) has nothing to stop on.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,6 +8,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { fillSurface } from '../fill.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 
 function fixture() {
 	const work = fs.mkdtempSync( path.join( os.tmpdir(), 'fill-origin-' ) );
@@ -18,6 +19,7 @@ function fixture() {
 	fs.writeFileSync( path.join( repo, 'sites', 'acme', 'theme-snapshot.json' ), JSON.stringify( { settings: { color: { palette: [] } } } ) );
 	fs.writeFileSync( path.join( work, 'skeleton.json' ), JSON.stringify( [ { name: 'sgs/text', draftRef: { tpl: 'Root/1#0' }, attributes: {} } ] ) );
 	fs.mkdirSync( path.join( work, 'draft' ) );
+	writeRecordFixture( path.join( work, 'cache' ), 'sgs/text', { block: 'sgs/text', settings: {}, elements: {} } );
 	return { work, repo, origin: path.join( build, 'home.origin.json' ) };
 }
 

@@ -109,9 +109,9 @@ function supportsIndex() {
 }
 
 // One surface's Solve report, its final walk and the surface ctx lib/triage.mjs::triage reads. measuredReach replaces
-// the client's canvas-confirm.json lookup (confirm-canvas.mjs's candidates mode passes a recorder). close() releases
-// the DB.
-export function surfaceContext( { client, surface, report: reportArg = null, measuredReach: reachOverride = null } ) {
+// the client's canvas-confirm.json lookup (confirm-canvas.mjs's candidates mode passes a recorder). `cache`: a folder of
+// fixture records (tests), else the setting record and the client's look. close() releases the DB.
+export function surfaceContext( { client, surface, report: reportArg = null, measuredReach: reachOverride = null, cache = undefined } ) {
 	const buildDir = path.join( REPO, 'sites', client, 'build' );
 	const manifest = JSON.parse( fs.readFileSync( path.join( buildDir, 'surfaces.json' ), 'utf8' ) );
 	const s = manifest[ surface ];
@@ -158,7 +158,7 @@ export function surfaceContext( { client, surface, report: reportArg = null, mea
 		},
 		roster: JSON.parse( fs.readFileSync( ROSTER, 'utf8' ) ).extensions || [],
 		supportsFor: ( block ) => supports[ block ] || {},
-		calFor: calibrationForClient( client ),
+		calFor: calibrationForClient( client, cache ),
 		// The client's divergence ledger: an entry accepting a node in full places every row positioned after it.
 		ledger: loadLedger( path.join( buildDir, 'qa', 'divergences.json' ) ),
 		measuredReach,
@@ -177,8 +177,8 @@ export function surfaceContext( { client, surface, report: reportArg = null, mea
 	return { buildDir, reportFile, walkFile, report, walkReport, ctx, close: () => db.close() };
 }
 
-export function runTriage( { client, surface, report: reportArg = null, out = null } ) {
-	const { buildDir, reportFile, walkFile, report, walkReport, ctx, close } = surfaceContext( { client, surface, report: reportArg } );
+export function runTriage( { client, surface, report: reportArg = null, out = null, cache = undefined } ) {
+	const { buildDir, reportFile, walkFile, report, walkReport, ctx, close } = surfaceContext( { client, surface, report: reportArg, cache } );
 	const result = triage( report, walkReport, surface, ctx );
 	close();
 	const rel = ( f ) => path.relative( REPO, f ).split( path.sep ).join( '/' );

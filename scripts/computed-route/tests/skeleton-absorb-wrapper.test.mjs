@@ -10,6 +10,7 @@
 import nodeTest from 'node:test';
 import assert from 'node:assert/strict';
 import { loadCalibration } from '../lib/cache.mjs';
+import { FIXTURE_RECORDS } from '../tools/record-fixtures.mjs';
 import { absorbSlot, onlyContent, positioned, clash } from '../lib/skeleton-absorb-wrapper.mjs';
 import { makeSlotRows } from '../lib/skeleton-write-slots.mjs';
 import { checkRecords } from '../lib/skeleton-paint-conservation.mjs';
@@ -17,9 +18,13 @@ import { skeletonProblems, cleanTree } from '../lib/fill-skeleton.mjs';
 import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { N, run, find, build, draftRepo, facts, db } from './fixtures/skeleton-widgets/build.mjs';
 
-const CAL = loadCalibration( new URL( '../cache', import.meta.url ).pathname.replace( /^\/([A-Za-z]:)/, '$1' ), 'sgs/container', 'indus-test' );
-const NO_CAL = ! CAL?.settings ? 'no sgs/container slot map in cache/' : null;
-const test = NO_CAL ? ( name, fn ) => nodeTest( name, { skip: `needs the indus-test calibration of sgs/container in cache/ (gitignored; run calibrate.mjs): ${ NO_CAL }` }, fn ) : nodeTest;
+const CAL = loadCalibration( FIXTURE_RECORDS, 'sgs/container', 'indus-foods' );
+// The checked-in record (tests/fixtures/records/indus-foods/container.record.json, tools/record-fixtures.mjs): a missing one
+// fails here rather than skipping.
+if ( ! CAL?.elements?.[ '' ] ) {
+	throw new Error( 'no fixture record of sgs/container for indus-foods: node tools/record-fixtures.mjs --client indus-foods --blocks sgs/container' );
+}
+const test = nodeTest;
 const INNER = '.sgs-container__inner';
 const cal = ( b ) => ( 'sgs/container' === b ? CAL.settings : {} );
 

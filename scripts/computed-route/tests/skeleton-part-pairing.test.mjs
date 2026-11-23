@@ -8,6 +8,7 @@ import { partModel, draftKind, pairAbsorbed, pairingNotes, glyphy, wordsClass, u
 import { checkRecords } from '../lib/skeleton-paint-conservation.mjs';
 import { absorbedSlots } from '../lib/skeleton-conserve-slots.mjs';
 import { calPartsFor } from '../lib/skeleton-context.mjs';
+import { writeRecordFixture } from '../lib/setting-record.mjs';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -163,18 +164,15 @@ test( 'an ambiguous pairing is listed with its candidates and reads nothing; two
 	assert.deepEqual( [ ps.slots, ps.pseudo ], [ {}, [ { key: 'Root/31#0', part: '.opt:nth-of-type(n)::before' } ] ] );
 } );
 
-test( 'calPartsFor reads a block\'s parts from its slot map\'s own site where the surface\'s site has no default paint', () => {
+test( 'calPartsFor reads a block\'s parts, settings and text from the client\'s record, and none for a block with no record', () => {
 	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'sgs-parts-' ) );
 	try {
-		fs.writeFileSync( path.join( dir, 'tiles.json' ), JSON.stringify( { block: 'sgs/tiles', site: 'site-a', settings: SETTINGS, text: CAL.text } ) );
-		fs.mkdirSync( path.join( dir, 'site-a' ) );
-		fs.writeFileSync( path.join( dir, 'site-a', 'tiles.paint.json' ), JSON.stringify( { block: 'sgs/tiles', site: 'site-a', elements: ELEMENTS } ) );
-		const b = calPartsFor( 'site-b', dir )( 'tiles' );
-		assert.deepEqual( [ Object.keys( b.elements ).length, b.settings, b.text ], [ Object.keys( ELEMENTS ).length, SETTINGS, CAL.text ] );
-		fs.mkdirSync( path.join( dir, 'site-b' ) );
-		fs.writeFileSync( path.join( dir, 'site-b', 'tiles.paint.json' ), JSON.stringify( { block: 'sgs/tiles', site: 'site-b', elements: { '': at( 'div', 10 ) } } ) );
-		assert.deepEqual( Object.keys( calPartsFor( 'site-b', dir )( 'tiles' ).elements ), [ '' ], 'a site\'s own paint is read first' );
-		assert.equal( calPartsFor( 'site-b', dir )( 'none' ), null );
+		writeRecordFixture( dir, 'sgs/tiles', { block: 'sgs/tiles', settings: SETTINGS, text: CAL.text, elements: ELEMENTS }, 'client-a' );
+		writeRecordFixture( dir, 'sgs/tiles', { block: 'sgs/tiles', settings: SETTINGS, text: CAL.text, elements: { '': at( 'div', 10 ) } }, 'client-b' );
+		const a = calPartsFor( 'client-a', dir )( 'tiles' );
+		assert.deepEqual( [ Object.keys( a.elements ).length, a.settings, a.text ], [ Object.keys( ELEMENTS ).length, SETTINGS, CAL.text ] );
+		assert.deepEqual( Object.keys( calPartsFor( 'client-b', dir )( 'tiles' ).elements ), [ '' ], 'each client\'s own look' );
+		assert.equal( calPartsFor( 'client-b', dir )( 'none' ), null );
 	} finally {
 		fs.rmSync( dir, { recursive: true, force: true } );
 	}

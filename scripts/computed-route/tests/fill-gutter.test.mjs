@@ -8,6 +8,7 @@ import { skeletonNodes, cleanTree } from '../lib/fill-skeleton.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadCalibration } from '../lib/cache.mjs';
+import { FIXTURE_RECORDS } from '../tools/record-fixtures.mjs';
 import { gutterBaseline } from '../lib/fill-gutter.mjs';
 
 const db = openDb();
@@ -17,9 +18,13 @@ const BOX = { display: 'block', color: 'rgb(20, 20, 20)', 'font-size': '16px', '
 // The block's real calibration: its instance's default paint of side padding is 0px (nested in the wrapper's gutter).
 // It is read for indus-test (the mirror a registered scratch copy of it maps to), from the gitignored cache: a worktree whose
 // cache holds no indus-test paint of sgs/container skips these tests and says why, rather than failing on a missing file.
-const CAL = { 'sgs/container': loadCalibration( new URL( '../cache', import.meta.url ).pathname.replace( /^\/([A-Za-z]:)/, '$1' ), 'sgs/container', 'indus-test' ) };
-const NO_CAL = ! CAL[ 'sgs/container' ] ? 'no sgs/container slot map in cache/' : CAL[ 'sgs/container' ].paintMissing ?? null;
-const test = NO_CAL ? ( name, fn ) => nodeTest( name, { skip: `needs the indus-test calibration of sgs/container in cache/ (gitignored; run calibrate.mjs): ${ NO_CAL }` }, fn ) : nodeTest;
+const CAL = { 'sgs/container': loadCalibration( FIXTURE_RECORDS, 'sgs/container', 'indus-foods' ) };
+// The checked-in record (tests/fixtures/records/indus-foods/container.record.json, tools/record-fixtures.mjs): a missing one
+// fails here rather than skipping.
+if ( ! CAL[ 'sgs/container' ]?.elements?.[ '' ] ) {
+	throw new Error( 'no fixture record of sgs/container for indus-foods: node tools/record-fixtures.mjs --client indus-foods --blocks sgs/container' );
+}
+const test = nodeTest;
 
 // main (contentWidth full) > section; the section's draft pads `pad` (top, right, bottom, left) at every width.
 function run( { pad = [ 38, 0, 38, 0 ], inner = null, sectionAttrs = {}, mainAttrs = { contentWidth: { desktop: 'full' } }, kid = { x: 0, w: 1000 }, gutter = GUTTER } = {} ) {

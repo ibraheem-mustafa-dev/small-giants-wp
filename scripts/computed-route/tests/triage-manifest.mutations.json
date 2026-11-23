@@ -1,0 +1,4 @@
+[
+	{ "file": "triage.mjs", "find": "canvas: !! s.canvas,", "replace": "canvas: false,", "why": "the manifest canvas flag never reaches the triage context" },
+	{ "file": "triage.mjs", "find": "calFor: calibrationForClient( client, cache ),", "replace": "calFor: calibrationForClient( client ),", "why": "triage reads no fixture records it is given" }
+]
