@@ -6,7 +6,7 @@ Run everything with `python plugins/sgs-blocks/scripts/migrate-media-system/cli.
 
 ## Targets
 
-- Repo files: theme patterns, templates and parts, `sites/*/build/` trees, block fixtures, calibration fixtures. `fix --apply` rewrites them in place.
+- Repo files: theme patterns, templates and parts, `sites/*/build/` trees, block fixtures, the computed-route data files (`scripts/computed-route/data/*.json`; the tool still names this kind `calibration`). `fix --apply` rewrites them in place.
 - Saved content on a local mirror (`/var/www/local-<name>` in WSL Ubuntu): every store that holds block markup, read by `export-content.php`:
   - every row of the posts table, whatever its post type or status (pages, posts, the SGS post types, `wp_template`, `wp_template_part`, `wp_block`, `wp_navigation`, revisions);
   - post meta values holding plain markup (the canary's `_sgs_qa_*_backup` rows); a serialised or JSON-encoded value holding `wp:sgs/` markup is `unsupported`;
