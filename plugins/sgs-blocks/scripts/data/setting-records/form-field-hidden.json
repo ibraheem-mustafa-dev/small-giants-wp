@@ -124,6 +124,7 @@
  },
  "stamp": {
   "version": 2,
+  "check": "50fe66df9433c151",
   "inputs": {
    "assets/css/accordion-filter.css": "1bae515f798524b3",
    "assets/css/device-toggle.css": "23d9bfd781a843c0",
@@ -378,8 +379,6 @@
    "includes/trustpilot-helpers.php": "4166b2887e3c2cfc",
    "includes/wishlist/class-wishlist-cards-rest.php": "798a1e92e1c2dc2a",
    "src/blocks/form-field-hidden/block.json": "535ff6a4bb70faab",
-   "src/blocks/form-field-hidden/edit.js": "d8580779dbeb5841",
-   "src/blocks/form-field-hidden/index.js": "928718f5386186ac",
    "src/blocks/form-field-hidden/render.php": "2b90826ab8a8af13",
    "src/blocks/form/render.php": "780194f5563799a2",
    "src/shared/info-toggle.css": "210a5fa94dc11c4a",
@@ -389,7 +388,7 @@
    "shipped:src/blocks/form/saved-progress/style.css": "a6245e6b47b15672",
    "shipped:src/blocks/form/style.css": "2ce747e573bec5ee",
    "shipped:src/blocks/form/tiles-sheet/style.css": "5a43d6ffdf6d6cec",
-   "fixture-entry": "d0ecab19175802e1",
+   "fixture-entry": "a5acbe95f725c2c1",
    "fixture-shared": "61d9f70d4bb7e36a"
   },
   "outputs": "933538b1ba5f8a38",
@@ -408,7 +407,32 @@
   "tags": [
    "div",
    "input"
-  ],
-  "check": "00207896689d27d1"
- }
+  ]
+ },
+ "proofCache": [
+  {
+   "fp": "28554b5e78cb6ae3",
+   "v": "blind",
+   "kind": "switched-on",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "929032ee9c827ba4",
+   "v": "blind",
+   "kind": "switched-on",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "3405d330eb7da02d",
+   "v": "removed"
+  },
+  {
+   "fp": "9986dee8762c59dd",
+   "v": "removed"
+  },
+  {
+   "fp": "122e5bd6f23cc388",
+   "v": "removed"
+  }
+ ]
 }

@@ -1953,6 +1953,7 @@
  },
  "stamp": {
   "version": 2,
+  "check": "50fe66df9433c151",
   "inputs": {
    "assets/css/accordion-filter.css": "1bae515f798524b3",
    "assets/css/device-toggle.css": "23d9bfd781a843c0",
@@ -2200,19 +2201,16 @@
    "src/blocks/notice-banner/helpers.php": "13fc787070244dd8",
    "src/blocks/notice-banner/render.php": "9b74c32c389af756",
    "src/blocks/notice-message/block.json": "d91fc7189cf1e09b",
-   "src/blocks/notice-message/edit.js": "efcabd4111ccbbf8",
    "src/blocks/notice-message/editor.css": "df4bfcce7153b169",
    "src/blocks/notice-message/helpers.php": "3fb9b2d9468c5412",
-   "src/blocks/notice-message/index.js": "e87f8de8a88574ff",
    "src/blocks/notice-message/render.php": "3111795f9f3795c3",
-   "src/blocks/notice-message/save.js": "1561b9b3978f24ee",
    "src/blocks/notice-message/style.css": "61d73763fd931cdb",
    "src/blocks/text/render.php": "bae6bf3e5b4852ff",
    "src/shared/info-toggle.css": "210a5fa94dc11c4a",
    "shipped:src/blocks/notice-banner/style.css": "616830d31ac5a04f",
    "shipped:src/blocks/notice-message/style.css": "61d73763fd931cdb",
    "shipped:src/blocks/text/style.css": "205323a182969df1",
-   "fixture-entry": "384ddd2db2712abb",
+   "fixture-entry": "1d72a6303dc53f16",
    "fixture-shared": "61d9f70d4bb7e36a"
   },
   "outputs": "d61491141a0935a5",
@@ -2265,7 +2263,303 @@
    "div",
    "p",
    "style"
-  ],
-  "check": "00207896689d27d1"
- }
+  ]
+ },
+ "proofCache": [
+  {
+   "fp": "bfed57fcf56c8770",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e3c7a62b64d0255a",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "69d03cced11fdf83",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "99e66138994a84df",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "eaeda3ffd5489ccb",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "ac8129f878498e61",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "02ea6560bed5824e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "12f5c9d8a7988da6",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "01d154723b555ef1",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "547c468d850e3531",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "1b88e67ac9da57c5",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "a4227cffdaf92f84",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "d1d97a72c964c79f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "db50af22a6925b06",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "29b6bcbb2c721cc7",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "7c3d2fba730da19f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "65482f64d97f1c23",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "76d6bc718ffc2be5",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "1ab00404887b02c5",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "dee09d7ec3f4443f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "05130916edfe731b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "0ff0248fd42f934a",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e14cd632a2c24d34",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "61578d983246fb70",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "17b5db92f6b9db81",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "a6bb140da86da641",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "a6f7a4a8d01b163c",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "99f204875ffbdfe2",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "3e9033ab739d12e6",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "fe5617dcc9219249",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "0a6a40830f36012b",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "aeb25ca52a1ce866",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "38951c5725d6db1e",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e5299c525a46493a",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "8ae40a819fd43ada",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "b976c4631f93f0a6",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "5ac1b11edd29f933",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "376d1c62930f19ef",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "edcd94cbd3029fa8",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "6954eefec758bc20",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "08cc611b91d1434f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "25096e0d15f254af",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "88aa1a13e78ba41f",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "7f851075b18fdd98",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "604ce2b6d18fb1a6",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "b1d17cc7a3f46beb",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "efe67d6653a22d9d",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "b3e2c4271ce175e6",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "b7e2e3d64ee8fede",
+   "v": "blind",
+   "kind": "switched-on",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "65b9be7f1d598bbf",
+   "v": "blind",
+   "kind": "switched-on",
+   "cause": "part-not-rendered"
+  },
+  {
+   "fp": "91c420b70bc3c6f4",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "45513dd30a7cfcdc",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "e296c3c9137822e5",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "8fa97fde28787564",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "fce134bb6adb8df4",
+   "v": "proved",
+   "kind": "switched-on"
+  },
+  {
+   "fp": "9762c6375f765c9d",
+   "v": "removed"
+  },
+  {
+   "fp": "aa850e62784263da",
+   "v": "proved",
+   "kind": "value"
+  },
+  {
+   "fp": "93a9579ec69174b4",
+   "v": "removed"
+  },
+  {
+   "fp": "7bdb789f2aa557cd",
+   "v": "proved",
+   "kind": "switched-on"
+  }
+ ]
 }
