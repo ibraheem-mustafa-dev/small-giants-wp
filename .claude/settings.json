@@ -53,7 +53,9 @@
       "WebFetch",
       "Bash(grep -o -i -E '.{0,80}sage.{0,80}' design_handoff_ward_end_eye_care_v2/\"Eye Care Birmingham.dc.html\")",
       "WebSearch",
-      "Cd"
+      "Cd",
+      "mcp__plugin_context7_context7__query-docs",
+      "mcp__hostinger__search"
     ],
     "deny": [
       "Bash(git stash *)",
