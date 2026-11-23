@@ -3,9 +3,10 @@
 
     audit  runs the deploy's old-shape audit (plugins/sgs-blocks/scripts/audit-post-content-blocks.py, the way
            deploy_guards.py::step_oldshape_audit runs it) on the mirror's stored post_content; exit 1 on a HIGH finding.
-    media  checks that every attachment the mirror's posts use (a `wp-image-<id>` class, a block attribute named `id` or
-           ending in `Id`, a featured image) and every `wp-content/uploads/...` link has its file in the mirror's uploads
-           folder; exit 1 and name each miss otherwise.
+    media  checks that every attachment the mirror's posts use (a `wp-image-<id>` class, a block attribute that holds a
+           media id: `mediaId`, `audioId`, or the `id` of a media object beside its uploads URL; a featured image) and
+           every `wp-content/uploads/...` link (a `srcset` entry, a query string and `%20` read correctly) has its file in
+           the mirror's uploads folder; exit 1 and name each miss otherwise.
 
     python scripts/local-wp/mirror_precheck.py audit --posts posts.json --target <remote-target>
     python scripts/local-wp/mirror_precheck.py media --posts posts.json --attachment-ids ids.txt --meta meta.tsv --files files.txt
@@ -24,13 +25,20 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from urllib.parse import unquote
 
 SCRIPTS = Path(__file__).resolve().parents[2] / "plugins" / "sgs-blocks" / "scripts"
 AUDIT = SCRIPTS / "audit-post-content-blocks.py"
 BASELINE = SCRIPTS / "oldshape-audit-baseline.json"
-ID_ATTR = re.compile(r'"(?:id|[A-Za-z]+Id|[A-Za-z]+ID)"\s*:\s*(\d+)')
+BLOCK_COMMENT = re.compile(r"<!--\s+wp:[a-z][a-z0-9_/-]*\s+(\{.*?\})\s+/?-->", re.S)
+# An attribute that holds an attachment id is named for its media (`mediaId`, `audioId`, `heroImageId`), or is the `id` of a
+# media object (`{"url": ".../uploads/a.jpg", "id": 55}`) or of a core media block, which sits beside an uploads URL. A term,
+# user, product or page id (`termId`, `productId`, a navigation link's `id`) is never one, so it cannot match an attachment.
+MEDIA_ID_KEY = re.compile(r"^(?:[A-Za-z]*(?:Media|Image|Photo|Logo|Audio|Video|Poster|Thumbnail|Attachment|Avatar)|media|image|photo|logo|audio|video|poster|thumbnail|attachment|avatar)(?:Id|ID)$")
 WP_IMAGE = re.compile(r"wp-image-(\d+)")
-UPLOADS_URL = re.compile(r"wp-content/uploads/([A-Za-z0-9_./ %~+-]+)")
+# The path ends at whitespace (a `srcset` descriptor follows), a quote, a bracket, `?`, `#`, `,` or a backslash; it is
+# percent-decoded before it is compared with the uploads file list.
+UPLOADS_URL = re.compile(r"wp-content/uploads/([^\s\"'<>()?#,\\]+)")
 
 
 def scratch_root() -> str:
@@ -54,12 +62,30 @@ def run_audit(posts: list[dict], target_key: str, work: Path) -> int:
     return subprocess.call(cmd, env=dict(os.environ))
 
 
+def _media_ids_in(value: object, found: set[int]) -> None:
+    """Adds the attachment ids a block attribute value holds: a media-named id key, or an `id` beside an uploads URL."""
+    if isinstance(value, dict):
+        beside_uploads = any(isinstance(v, str) and "/uploads/" in v for v in value.values())
+        for key, item in value.items():
+            if isinstance(item, int) and not isinstance(item, bool) and (MEDIA_ID_KEY.match(key) or (key == "id" and beside_uploads)):
+                found.add(item)
+            else:
+                _media_ids_in(item, found)
+    elif isinstance(value, list):
+        for item in value:
+            _media_ids_in(item, found)
+
+
 def referenced_attachment_ids(posts: list[dict], attachment_ids: set[int]) -> set[int]:
     found: set[int] = set()
     for post in posts:
         content = post.get("post_content") or ""
-        for pattern in (WP_IMAGE, ID_ATTR):
-            found.update(int(n) for n in pattern.findall(content))
+        found.update(int(n) for n in WP_IMAGE.findall(content))
+        for attrs in BLOCK_COMMENT.findall(content):
+            try:
+                _media_ids_in(json.loads(attrs), found)
+            except ValueError:
+                continue
     return found & attachment_ids
 
 
@@ -77,7 +103,7 @@ def missing_media(posts: list[dict], attachments: dict[int, str], thumbnails: di
                 problems.append(f"post {pid} uses attachment {att}: it has no file record")
             elif rel not in files:
                 problems.append(f"post {pid} uses attachment {att}: uploads/{rel} is missing")
-        for rel in sorted(set(UPLOADS_URL.findall(post.get("post_content") or ""))):
+        for rel in sorted({unquote(found) for found in UPLOADS_URL.findall(post.get("post_content") or "")}):
             if rel not in files:
                 problems.append(f"post {pid} links /wp-content/uploads/{rel}: the file is missing")
     return problems
