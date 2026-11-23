@@ -63,7 +63,7 @@ It reads both URLs from `.claude/secrets/<name>.env` (`WP_URL_<KEY>`), backs up 
 
 ## Back up a site's database before editing it
 
-`bash scripts/local-wp/backup-remote-db.sh <target> [label]` dumps a deploy target's database to `~/backups/db/<host>-<timestamp>[-label].sql.gz` on its own server (any site in the roster, a live one included, because it only reads) and fails unless the file is whole: not empty, a valid gzip, ending in mysqldump's completion line. It prints the restore command and keeps the newest 12 per host. Run it before any script edits a live site's content or settings: a deploy can roll code back, never a database change, and Hostinger's `wp db export` writes nothing. The file holds customer details and payment settings, so it stays on the server.
+`bash scripts/local-wp/backup-remote-db.sh <target> [label]` dumps a deploy target's database to `~/backups/db/<host>-<timestamp>[-label].sql.gz` on its own server (any site in the roster, a live one included, because it only reads) and fails unless the file is whole: not empty, a valid gzip, ending in mysqldump's completion line. It prints the restore command and keeps the newest 12 unlabelled (routine) dumps per host: a labelled dump is a deliberate safety copy and is never pruned, so name one before a risky edit (`prune-db-backups.sh`, tested by `bash scripts/local-wp/test-prune-db-backups.sh`). Run it before any script edits a live site's content or settings: a deploy can roll code back, never a database change, and Hostinger's `wp db export` writes nothing. The file holds customer details and payment settings, so it stays on the server.
 
 ## Push the mirror to the test site
 
