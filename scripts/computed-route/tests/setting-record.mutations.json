@@ -1,200 +1,35 @@
 [
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\tif ( r.unproved && ! r.accepted ) {\n\t\t\t( unprovedAt",
-		"replace": "\t\tif ( false ) {\n\t\t\t( unprovedAt",
-		"why": "an unproved placement that is not accepted is acted on as proven"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\tif ( r.unproved && ! r.accepted ) {\n\t\t\t( unprovedAt",
-		"replace": "\t\tif ( r.unproved ) {\n\t\t\t( unprovedAt",
-		"why": "an accepted placement is refused"
-	},
-	{
-		"file": "lib/paint-state.mjs",
-		"find": "\tconst cal = raw && node ? withNodeValues( raw, node.attributes || {}, schema ) : raw;",
-		"replace": "\tconst cal = raw;",
-		"why": "a breakpoint a setting names keeps the record's own value on every node"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tconst at = Number( value ) + Number( symbolic.offset || 0 );",
-		"replace": "\tconst at = Number( value );",
-		"why": "the max edge ignores the breakpoint's offset"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\tif ( props.length && slots.length && ! settings[ name ] ) {",
-		"replace": "\t\tif ( false ) {",
-		"why": "a setting that paints only beside its partner is never placed"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "tiers: [ [] ], fromAttributes: true };",
-		"replace": "tiers: [ [] ], fromAttributes: true }; dead.push( name );",
-		"why": "a setting placed from its row is also called dead"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tconst hosts = Object.keys( classes ).filter( ( p ) => ( 'ROOT' === head ? '' === p : ( classes[ p ] || [] ).includes( head ) ) );",
-		"replace": "\tconst hosts = Object.keys( classes ).filter( ( p ) => ( 'ROOT' === head ? '' === p : p.endsWith( `.${ head }` ) ) );",
-		"why": "a part is found only by the class its path step shows"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\t\t\tout.add( base + pseudo );\n\t\t\t}\n\t\t} else if",
-		"replace": "\t\t\t\tout.add( base );\n\t\t\t}\n\t\t} else if",
-		"why": "a tag part keeps no pseudo-element"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\t} else if ( hosts.includes( base ) ) {\n\t\t\tout.add( base + pseudo );",
-		"replace": "\t\t} else if ( hosts.includes( base ) && ! pseudo ) {\n\t\t\tout.add( base + pseudo );",
-		"why": "a pseudo-element a setting draws is not found"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tconst inState = onProp.filter( ( r ) => ( r.state || null ) === wantState );",
-		"replace": "\tconst inState = onProp;",
-		"why": "a setting's state is taken from whichever row comes first"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\tforms: facts?.forms || [],\n\t\ttransform: null,\n\t\treachedAt: WIDTHS.filter",
-		"replace": "\t\tforms: [ 'clamp', 'vw' ],\n\t\ttransform: null,\n\t\treachedAt: WIDTHS.filter",
-		"why": "every setting claims the fluid forms"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\tconst stops = blocked.filter(",
-		"replace": "\t\tconst stops = [].filter(",
-		"why": "an inherited setting reaches past a descendant that paints the property itself"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\treturn PLAIN_SCREEN.has( c );",
-		"replace": "\treturn true;",
-		"why": "a reduced-motion or forced-colours tier reads as holding on a plain screen"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tconst untested = Object.keys( unprovedAt ).filter( ( k ) => ! usableAt.has( k ) );",
-		"replace": "\tconst untested = Object.keys( unprovedAt );",
-		"why": "a setting with a usable placement is still listed untested"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\treturn Array.isArray( rows ) && rows.some( ( r ) => [ 'shop', 'product' ].includes( r?.postType ) );",
-		"replace": "\treturn Array.isArray( rows ) && rows.length > 0;",
-		"why": "every client with a page map is read as running a shop"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\treturn Array.isArray( rows ) && rows.some( ( r ) => [ 'shop', 'product' ].includes( r?.postType ) );",
-		"replace": "\treturn Array.isArray( rows ) && rows.some( ( r ) => 'shop' === r?.postType );",
-		"why": "a client selling products with no shop page is read as running none"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tconst pathsOf = ( r ) => rowPaths( r, look, block );",
-		"replace": "\tconst pathsOf = ( r ) => partPaths( r.part, look );",
-		"why": "a rule's subject below its part is read as the part"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tif ( at < 0 || at === comps.length - 1 ) {\n\t\treturn own;",
-		"replace": "\tif ( at < 0 || at <= comps.length - 1 ) {\n\t\treturn own;",
-		"why": "every selector keeps the part as the subject"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\treturn '+' === comb ? prev.at( -1 ) === q : prev.includes( q );",
-		"replace": "\t\treturn prev.includes( q );",
-		"why": "the next-sibling combinator reads as any later sibling"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tif ( functionals( text, 'not' ).flat().some( ( a ) => true === one( a ) ) ) {",
-		"replace": "\tif ( false ) {",
-		"why": "a :not() excludes nothing"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\tif ( '>' === comb ) {\n\t\t\treturn parentOf( p ) === q;",
-		"replace": "\t\tif ( '>' === comb ) {\n\t\t\treturn below( q, p );",
-		"why": "a child combinator reads as a descendant"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tif ( head && tag && head[ 1 ].toLowerCase() !== tag ) {",
-		"replace": "\tif ( false ) {",
-		"why": "a compound's tag is not tested"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\tif ( 0 === depth && ',' === ch ) {\n\t\t\treturn null;",
-		"replace": "\t\tif ( false ) {\n\t\t\treturn null;",
-		"why": "a selector list is read as one selector"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tdue.filter( done ).forEach( ( b ) => checked.add( `${ dir }|${ client }|${ b }` ) );",
-		"replace": "",
-		"why": "every run asks the builder again"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\treturn due.filter( ( b ) => ! done( b ) );",
-		"replace": "\treturn [];",
-		"why": "a block the builder failed is not returned"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "const due = [ ...new Set( blocks ) ].filter( ( b ) => /^sgs\\//.test( b ) && ",
-		"replace": "const due = [ ...new Set( blocks ) ].filter( ( b ) => ",
-		"why": "a core block is sent to the builder"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\tconst conditions = [ ...query.matchAll( /\\(([^()]*)\\)/g ) ].map( ( m ) => m[ 1 ].replace( /\\s+/g, '' ) );",
-		"replace": "\t\tconst conditions = [ ...query.matchAll( /\\(([^()]*)\\)/g ) ].map( ( m ) => m[ 1 ] );",
-		"why": "spaces inside the brackets make a tier hold nowhere"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\treturn topLevel( t.replace( /^@media\\s*/, '' ) ).some( ( query ) => {",
-		"replace": "\treturn topLevel( t.replace( /^@media\\s*/, '' ) ).every( ( query ) => {",
-		"why": "a media list holds only where every query holds"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\treturn ! /^@supports\\s+not\\b/.test( t );",
-		"replace": "\t\treturn false;",
-		"why": "an @supports tier holds nowhere"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\tif ( range && ( range[ 1 ] || range[ 4 ] ) ) {",
-		"replace": "\tif ( false ) {",
-		"why": "range syntax holds nowhere"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": " || k.startsWith( `sgs-${ short }--` ) ) : ownClasses",
-		"replace": " ) : ownClasses",
-		"why": "a root named by its modifier is not found in the selector"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\t\tunplaced[ name ] = `its rule picks no element of the default look",
-		"replace": "\t\t\tvoid `its rule picks no element of the default look",
-		"why": "a setting the look cannot place is dropped silently"
-	},
-	{
-		"file": "lib/setting-record.mjs",
-		"find": "\t\t...( band ? { contentBand: band.slot } : {} ),",
-		"replace": "",
-		"why": "the record would name no band, so the declared reading never applies"
-	}
+	{"file": "lib/setting-record.mjs", "find": "\t\tif ( r.unproved && ! r.accepted ) {\n\t\t\t( unprovedAt", "replace": "\t\tif ( false ) {\n\t\t\t( unprovedAt", "why": "an unproved placement that is not accepted is acted on as proven"},
+	{"file": "lib/setting-record.mjs", "find": "\t\tif ( r.unproved && ! r.accepted ) {\n\t\t\t( unprovedAt", "replace": "\t\tif ( r.unproved ) {\n\t\t\t( unprovedAt", "why": "an accepted placement is refused"},
+	{"file": "lib/paint-state.mjs", "find": "\tconst cal = raw && node ? withNodeValues( raw, node.attributes || {}, schema ) : raw;", "replace": "\tconst cal = raw;", "why": "a breakpoint a setting names keeps the record's own value on every node"},
+	{"file": "lib/setting-record.mjs", "find": "\tconst at = Number( value ) + Number( symbolic.offset || 0 );", "replace": "\tconst at = Number( value );", "why": "the max edge ignores the breakpoint's offset"},
+	{"file": "lib/setting-record.mjs", "find": "\t\tif ( props.length && slots.length && ! settings[ name ] ) {", "replace": "\t\tif ( false ) {", "why": "a setting that paints only beside its partner is never placed"},
+	{"file": "lib/setting-record.mjs", "find": "tiers: [ [] ], fromAttributes: true };", "replace": "tiers: [ [] ], fromAttributes: true }; dead.push( name );", "why": "a setting placed from its row is also called dead"},
+	{"file": "lib/setting-record.mjs", "find": "\tconst hosts = Object.keys( classes ).filter( ( p ) => ( 'ROOT' === head ? '' === p : ( classes[ p ] || [] ).includes( head ) ) );", "replace": "\tconst hosts = Object.keys( classes ).filter( ( p ) => ( 'ROOT' === head ? '' === p : p.endsWith( `.${ head }` ) ) );", "why": "a part is found only by the class its path step shows"},
+	{"file": "lib/setting-record.mjs", "find": "\t\t\t\tout.add( base + pseudo );\n\t\t\t}\n\t\t} else if", "replace": "\t\t\t\tout.add( base );\n\t\t\t}\n\t\t} else if", "why": "a tag part keeps no pseudo-element"},
+	{"file": "lib/setting-record.mjs", "find": "\t\t} else if ( hosts.includes( base ) ) {\n\t\t\tout.add( base + pseudo );", "replace": "\t\t} else if ( hosts.includes( base ) && ! pseudo ) {\n\t\t\tout.add( base + pseudo );", "why": "a pseudo-element a setting draws is not found"},
+	{"file": "lib/setting-record.mjs", "find": "\tconst inState = onProp.filter( ( r ) => ( r.state || null ) === wantState );", "replace": "\tconst inState = onProp;", "why": "a setting's state is taken from whichever row comes first"},
+	{"file": "lib/setting-record.mjs", "find": "\t\tforms: facts?.forms || [],\n\t\ttransform: null,\n\t\treachedAt: WIDTHS.filter", "replace": "\t\tforms: [ 'clamp', 'vw' ],\n\t\ttransform: null,\n\t\treachedAt: WIDTHS.filter", "why": "every setting claims the fluid forms"},
+	{"file": "lib/setting-record.mjs", "find": "\t\tconst stops = blocked.filter(", "replace": "\t\tconst stops = [].filter(", "why": "an inherited setting reaches past a descendant that paints the property itself"},
+	{"file": "lib/setting-record.mjs", "find": "\treturn PLAIN_SCREEN.has( c );", "replace": "\treturn true;", "why": "a reduced-motion or forced-colours tier reads as holding on a plain screen"},
+	{"file": "lib/setting-record.mjs", "find": "\tconst untested = Object.keys( unprovedAt ).filter( ( k ) => ! usableAt.has( k ) );", "replace": "\tconst untested = Object.keys( unprovedAt );", "why": "a setting with a usable placement is still listed untested"},
+	{"file": "lib/setting-record.mjs", "find": "\treturn Array.isArray( rows ) && rows.some( ( r ) => [ 'shop', 'product' ].includes( r?.postType ) );", "replace": "\treturn Array.isArray( rows ) && rows.length > 0;", "why": "every client with a page map is read as running a shop"},
+	{"file": "lib/setting-record.mjs", "find": "\treturn Array.isArray( rows ) && rows.some( ( r ) => [ 'shop', 'product' ].includes( r?.postType ) );", "replace": "\treturn Array.isArray( rows ) && rows.some( ( r ) => 'shop' === r?.postType );", "why": "a client selling products with no shop page is read as running none"},
+	{"file": "lib/setting-record.mjs", "find": "\tconst pathsOf = ( r ) => rowPaths( r, look, block );", "replace": "\tconst pathsOf = ( r ) => partPaths( r.part, look );", "why": "a rule's subject below its part is read as the part"},
+	{"file": "lib/setting-record.mjs", "find": "\tif ( at < 0 || at === comps.length - 1 ) {\n\t\treturn own;", "replace": "\tif ( at < 0 || at <= comps.length - 1 ) {\n\t\treturn own;", "why": "every selector keeps the part as the subject"},
+	{"file": "lib/setting-record.mjs", "find": "\t\treturn '+' === comb ? prev.at( -1 ) === q : prev.includes( q );", "replace": "\t\treturn prev.includes( q );", "why": "the next-sibling combinator reads as any later sibling"},
+	{"file": "lib/setting-record.mjs", "find": "\tif ( functionals( text, 'not' ).flat().some( ( a ) => true === one( a ) ) ) {", "replace": "\tif ( false ) {", "why": "a :not() excludes nothing"},
+	{"file": "lib/setting-record.mjs", "find": "\t\tif ( '>' === comb ) {\n\t\t\treturn parentOf( p ) === q;", "replace": "\t\tif ( '>' === comb ) {\n\t\t\treturn below( q, p );", "why": "a child combinator reads as a descendant"},
+	{"file": "lib/setting-record.mjs", "find": "\tif ( head && tag && head[ 1 ].toLowerCase() !== tag ) {", "replace": "\tif ( false ) {", "why": "a compound's tag is not tested"},
+	{"file": "lib/setting-record.mjs", "find": "\t\tif ( 0 === depth && ',' === ch ) {\n\t\t\treturn null;", "replace": "\t\tif ( false ) {\n\t\t\treturn null;", "why": "a selector list is read as one selector"},
+	{"file": "lib/setting-record.mjs", "find": "\tdue.filter( done ).forEach( ( b ) => checked.add( `${ dir }|${ client }|${ b }` ) );", "replace": "", "why": "every run asks the builder again"},
+	{"file": "lib/setting-record.mjs", "find": "\treturn due.filter( ( b ) => ! done( b ) );", "replace": "\treturn [];", "why": "a block the builder failed is not returned"},
+	{"file": "lib/setting-record.mjs", "find": "const due = [ ...new Set( blocks ) ].filter( ( b ) => /^sgs\\//.test( b ) && ", "replace": "const due = [ ...new Set( blocks ) ].filter( ( b ) => ", "why": "a core block is sent to the builder"},
+	{"file": "lib/setting-record.mjs", "find": "\t\tconst conditions = [ ...query.matchAll( /\\(([^()]*)\\)/g ) ].map( ( m ) => m[ 1 ].replace( /\\s+/g, '' ) );", "replace": "\t\tconst conditions = [ ...query.matchAll( /\\(([^()]*)\\)/g ) ].map( ( m ) => m[ 1 ] );", "why": "spaces inside the brackets make a tier hold nowhere"},
+	{"file": "lib/setting-record.mjs", "find": "\treturn topLevel( t.replace( /^@media\\s*/, '' ) ).some( ( query ) => {", "replace": "\treturn topLevel( t.replace( /^@media\\s*/, '' ) ).every( ( query ) => {", "why": "a media list holds only where every query holds"},
+	{"file": "lib/setting-record.mjs", "find": "\t\treturn ! /^@supports\\s+not\\b/.test( t );", "replace": "\t\treturn false;", "why": "an @supports tier holds nowhere"},
+	{"file": "lib/setting-record.mjs", "find": "\tif ( range && ( range[ 1 ] || range[ 4 ] ) ) {", "replace": "\tif ( false ) {", "why": "range syntax holds nowhere"},
+	{"file": "lib/setting-record.mjs", "find": " || k.startsWith( `sgs-${ short }--` ) ) : ownClasses", "replace": " ) : ownClasses", "why": "a root named by its modifier is not found in the selector"},
+	{"file": "lib/setting-record.mjs", "find": "\t\t\tunplaced[ name ] = `its rule picks no element of the default look", "replace": "\t\t\tvoid `its rule picks no element of the default look", "why": "a setting the look cannot place is dropped silently"},
+	{ "file": "lib/setting-record.mjs", "find": "\t\t...( band ? { contentBand: band.slot } : {} ),", "replace": "", "why": "the record would name no band, so the declared reading never applies" }
 ]
