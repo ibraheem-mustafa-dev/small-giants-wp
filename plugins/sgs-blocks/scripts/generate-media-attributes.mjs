@@ -295,6 +295,15 @@ function selfTest() {
 		unadopted !== fixText && none.next === unadopted && none.entries.length === 0
 	);
 
+	// A per-device box atom is responsive and its own box family in the DB; a per-device plain atom is responsive with no
+	// family; a flat box atom carries neither (sgs-update's name rule and box_only shape hold it).
+	const boxEntry = overrideEntry( 'sgs/x', { name: 'layerPadding' }, { role: 'layout', emitter: 'sides' }, '', true ).fields;
+	ck( 'a per-device sides atom is responsive and its own box family', 1 === boxEntry.is_responsive && 'layerPadding' === boxEntry.box_family && 'tier_object' === boxEntry.tier_shape );
+	const plainEntry = overrideEntry( 'sgs/x', { name: 'layerFit' }, { role: 'visual', emitter: 'plain' }, '', true ).fields;
+	ck( 'a per-device plain atom is responsive with no box family', 1 === plainEntry.is_responsive && undefined === plainEntry.box_family );
+	const flatEntry = overrideEntry( 'sgs/x', { name: 'layerBorderWidth' }, { role: 'visual', emitter: 'sides' }, '', false ).fields;
+	ck( 'a flat sides atom claims no responsiveness or family', undefined === flatEntry.is_responsive && undefined === flatEntry.box_family && undefined === flatEntry.tier_shape );
+
 	fails.forEach( ( f ) => process.stdout.write( `  FAIL ${ f }\n` ) );
 	// NEGATIVE CONTROL - prove the harness can register a failure at all.
 	// A self-test never seen to go red is a decoration.

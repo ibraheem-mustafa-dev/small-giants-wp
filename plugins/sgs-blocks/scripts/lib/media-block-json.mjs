@@ -265,7 +265,15 @@ function spaced( value ) {
 export function overrideEntry( slug, attr, setting, companion, tiered ) {
 	const fields = { role: setting.role };
 	if ( tiered ) {
+		// A per-device setting is responsive in the framework DB too: without it sgs-update falls back to the name rule (a
+		// `...Padding` name reads as a flat box) and scripts/wp-build-page.js refuses the per-device value Fill writes.
 		fields.tier_shape = 'tier_object';
+		fields.is_responsive = 1;
+		// A per-device box (a `sides` setting: four sides per device) is its own box family, named after its attribute as
+		// supports.sgs.boxFamilies names one, so a writer puts one side's value into each device's box, never the bare value.
+		if ( 'sides' === setting.emitter ) {
+			fields.box_family = attr.name;
+		}
 	}
 	if ( companion ) {
 		fields.alt_companion_attr = companion;
