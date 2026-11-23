@@ -4,6 +4,7 @@
   python plugins/sgs-blocks/scripts/check-named-extension-scope.py --survey --site <local mirror or scratch copy>
   python plugins/sgs-blocks/scripts/check-named-extension-scope.py --check --site <local mirror or scratch copy>
   python plugins/sgs-blocks/scripts/check-named-extension-scope.py --self-test
+  npm run check:named-extension-scope -- --site local-<mirror>      (from plugins/sgs-blocks; what follows -- is added to --check)
 
 A `named` extension (src/blocks/extensions/extension-roster.json, rule mode "named") gives its attributes to the blocks
 its rule names, such as the commerce look on woocommerce/cart and woocommerce/checkout. The server registers extension
@@ -101,7 +102,7 @@ def main() -> int:
     if a.survey == a.check:
         ap.error("pass exactly one of --survey, --check or --self-test")
     if not a.site or not re.fullmatch(r"local-[a-z0-9-]+", a.site):
-        ap.error("--site must be a local mirror or scratch copy (local-...)")
+        ap.error("--site must be a local mirror or scratch copy (local-...); from the npm line: npm run check:named-extension-scope -- --site local-<mirror>")
     scope = named_scope(json.loads(ROSTER.read_text(encoding="utf-8")))
     try:
         res = probe(a.site, scope)
