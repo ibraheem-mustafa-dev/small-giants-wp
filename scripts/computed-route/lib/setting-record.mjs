@@ -36,6 +36,19 @@ export const WIDTHS = [ 375, 768, 1440 ];
 export const SITE_LOOK_DIR = path.join( HERE, '..', 'site-look' );
 const BUILDER = path.join( REPO, 'plugins/sgs-blocks/scripts/site-look/site_look.py' );
 
+// The setting record's fixtures: per block, the plain block a new node renders (`attributes`), its variants, preconditions and
+// paint states. The site look draws every block from these entries (site_look.py::build_block), so Fill reads the same ones for
+// the defaults it compares against. `checkAttributes`, the extras only the record check merges in
+// (setting-record/instances.py::check_fixture), are left out, as the site look leaves them out.
+export const RECORD_FIXTURES = path.join( REPO, 'plugins/sgs-blocks/scripts/setting-record/fixtures.json' );
+export function recordFixtures( file = RECORD_FIXTURES ) {
+	const all = JSON.parse( fs.readFileSync( file, 'utf8' ) );
+	return Object.fromEntries( Object.entries( all ).filter( ( [ k ] ) => ! k.startsWith( '_' ) ).map( ( [ k, v ] ) => {
+		const { checkAttributes, ...plain } = v || {};
+		return [ k, plain ];
+	} ) );
+}
+
 const slugOf = ( block ) => String( block ).replace( /^sgs\//, '' );
 const depth = ( p ) => ( '' === p ? 0 : p.split( ' > ' ).length );
 const byDepth = ( a, b ) => depth( a ) - depth( b ) || ( a < b ? -1 : a > b ? 1 : 0 );

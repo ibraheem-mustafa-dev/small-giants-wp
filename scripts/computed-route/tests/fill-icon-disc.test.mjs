@@ -16,9 +16,10 @@ import { openDb } from '../lib/db.mjs';
 import { alternateSlots } from '../lib/fill-resolve-state.mjs';
 import { gateFor } from '../lib/fill-fixture.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const CAL = JSON.parse( fs.readFileSync( new URL( './fixtures/fill-icon-disc/calibration.json', import.meta.url ), 'utf8' ) );
-const FIXTURES = JSON.parse( fs.readFileSync( new URL( '../calibration-fixtures.json', import.meta.url ), 'utf8' ) );
+const FIXTURES = recordFixtures();
 const db = openDb();
 const WIDTHS = [ 375, 768, 1024, 1440, 1920 ];
 const SVG = '.sgs-icon__shape > .sgs-icon__glyph > svg';

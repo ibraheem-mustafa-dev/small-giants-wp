@@ -1,49 +1,49 @@
 [
 	{
-		"file": "calibration-fixtures.json",
-		"find": "      \"gridTemplateColumns\": { \"layout\": \"grid\" },\n",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t\"gridTemplateColumns\": {\n\t\t\t\t\"layout\": \"grid\"\n\t\t\t},\n\t\t\t",
 		"replace": "",
 		"why": "the column template is calibrated on a flex row again"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "      \"gridAutoRows\": { \"layout\": \"grid\" },\n",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t\"gridAutoRows\": {\n\t\t\t\t\"layout\": \"grid\"\n\t\t\t},\n\t\t\t",
 		"replace": "",
 		"why": "the grid row height is calibrated on a flex row again"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "      \"justifyItems\": { \"layout\": \"grid\" }\n",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t\"justifyItems\": {\n\t\t\t\t\"layout\": \"grid\"\n\t\t\t}\n\t\t",
 		"replace": "      \"justifyItems\": { \"layout\": \"flex\" }\n",
 		"why": "the item alignment is calibrated on a flex row again"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "          \"equals\": {\n            \"triggerStyle\": \"pill\"\n          }",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t\t\t\"equals\": {\n\t\t\t\t\t\t\"triggerStyle\": \"pill\"\n\t\t\t\t\t}\n\t\t\t\t",
 		"replace": "          \"equals\": {\n            \"triggerStyle\": \"icon\"\n          }",
 		"why": "the cart's pill paint state matches an icon trigger"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "        \"attributes\": {\n          \"triggerStyle\": \"pill\",\n          \"pillCountStyle\": \"bubble\"\n        }\n      }\n    ],",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t\t\"attributes\": {\n\t\t\t\t\t\"triggerStyle\": \"pill\",\n\t\t\t\t\t\"pillCountStyle\": \"bubble\"\n\t\t\t\t}\n\t\t\t}\n\t\t],\n\t\t",
 		"replace": "        \"attributes\": {\n          \"triggerStyle\": \"icon\",\n          \"pillCountStyle\": \"bubble\"\n        }\n      }\n    ],",
 		"why": "the cart's pill state is measured on an icon trigger"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "    \"paintStates\": [\n      {\n        \"name\": \"text-only\",\n        \"when\": {\n          \"equals\": {\n            \"badgeStyle\": \"text-only\"\n          }\n        },\n        \"attributes\": {\n          \"badgeStyle\": \"text-only\"\n        }\n      }\n    ]\n",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\"paintStates\": [\n\t\t\t{\n\t\t\t\t\"name\": \"text-only\",\n\t\t\t\t\"when\": {\n\t\t\t\t\t\"equals\": {\n\t\t\t\t\t\t\"badgeStyle\": \"text-only\"\n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\t\t\"attributes\": {\n\t\t\t\t\t\"badgeStyle\": \"text-only\"\n\t\t\t\t}\n\t\t\t}\n\t\t],",
 		"replace": "",
 		"why": "the trust bar's text-only badge has no paint state again (the draft's plain items are judged against the icon badge paint)"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "          \"equals\": {\n            \"badgeStyle\": \"text-only\"\n          }",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t\t\t\"equals\": {\n\t\t\t\t\t\t\"badgeStyle\": \"text-only\"\n\t\t\t\t\t}\n\t\t\t\t",
 		"replace": "          \"equals\": {\n            \"badgeStyle\": \"icon-bare\"\n          }",
 		"why": "the trust bar's paint state matches another badge style"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "        \"attributes\": {\n          \"badgeStyle\": \"text-only\"\n        }",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t\t\"attributes\": {\n\t\t\t\t\t\"badgeStyle\": \"text-only\"\n\t\t\t\t}\n\t\t\t",
 		"replace": "        \"attributes\": {\n          \"badgeStyle\": \"icon-bare\"\n        }",
 		"why": "the trust bar's paint state is measured on the wrong badge style"
 	}

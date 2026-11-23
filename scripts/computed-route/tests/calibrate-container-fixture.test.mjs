@@ -1,4 +1,4 @@
-// The container's default paint is measured on a container with no SVG background (calibration-fixtures.json `sgs/container`).
+// The container's default paint is measured on a container with no SVG background (the setting record's fixtures.json `sgs/container`).
 // A node with bgSvgContent gets `.sgs-container--has-bg-svg { overflow: hidden }`; a fixture that carried the SVG in its base
 // attributes recorded that overflow as the default paint of every container, so Fill settled a draft's `overflow: hidden` as
 // "already shown" on a container that paints it visible and wrote nothing (the plate photo's ring then lost its clip). The SVG
@@ -10,9 +10,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { planInstances } from '../lib/calibrate.mjs';
 import { matchesPaintState } from '../lib/paint-state.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const FX = JSON.parse( fs.readFileSync( path.join( HERE, '../calibration-fixtures.json' ), 'utf8' ) );
+const FX = recordFixtures();
 const SNAP = { palette: [], spacing: [], fontSizes: [] };
 const plan = ( block ) => planInstances( block, { rows: [], enumRows: [], schema: {}, snapshot: SNAP, fixture: FX[ block ] } ).instances;
 

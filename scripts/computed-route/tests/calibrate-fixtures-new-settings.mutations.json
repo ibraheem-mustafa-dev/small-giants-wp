@@ -1,13 +1,13 @@
 [
 	{
-		"file": "calibration-fixtures.json",
-		"find": "      {\n        \"brandDisplay\": \"text\",\n        \"brandTextTile\": true\n      }",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t{\n\t\t\t\t\"brandDisplay\": \"text\",\n\t\t\t\t\"brandTextTile\": true\n\t\t\t}\n\t\t",
 		"replace": "      {\n        \"brandDisplay\": \"text\"\n      }",
 		"why": "the name-tile variant is missing, so calibration never measures the tile"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "      {\n        \"orientation\": \"horizontal\"\n      }",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t{\n\t\t\t\t\"orientation\": \"horizontal\"\n\t\t\t}\n\t\t",
 		"replace": "      {\n        \"orientation\": \"vertical\"\n      }",
 		"why": "the timeline is never measured horizontal, so the ring and cards never print"
 	}

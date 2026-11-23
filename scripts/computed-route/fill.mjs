@@ -73,7 +73,7 @@ import { walkerConfigs, WALK_WIDTHS } from './lib/fill-config.mjs';
 import { walkerStates, walkRefusalRows } from './lib/walker-states.mjs';
 import { fillReport, unmappedList, readFailureRows, emptyPictureRows, passSettled } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
-import { prepareLooks } from './lib/setting-record.mjs';
+import { prepareLooks, recordFixtures } from './lib/setting-record.mjs';
 import { assertPaints, treeBlocks, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
@@ -244,7 +244,8 @@ export async function fillSurface( o ) {
 		stackOverlayLayers( reads, nodes ).forEach( ( line ) => log( `overlay stack: ${ line }` ) );
 		const defectLooks = addDefectLooks( { reads, jobs: nodes.flatMap( ( n ) => n.targets.map( ( t ) => ( { id: t.id, finder: t.finder } ) ) ), facts, draftDefects: intakeParts.draftDefects, rootComponent: intakeParts.rootComponent } );
 		const ledgerFile = path.join( buildDir, 'qa', 'divergences.json' );
-		const fixtures = JSON.parse( fs.readFileSync( path.join( HERE, 'calibration-fixtures.json' ), 'utf8' ) );
+		// The fixtures the site look drew each block from (the plain block, lib/setting-record.mjs::recordFixtures).
+		const fixtures = recordFixtures();
 		const result = fillTree( {
 			tree, nodes, reads, db, calFor, origin: reads.origin,
 			// The skeleton inventory: each draft element's parent, for a part a draft element lays out (lib/fill-part-pairing.mjs::draftParents).

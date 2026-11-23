@@ -6,7 +6,7 @@
 // (the 999px radius held as the pill's default; the border only on the pill). Now each width is judged in the mode in force there:
 // the phone's radius goes to the icon trigger's own setting, and the phone's border, which no icon-mode setting holds, is a row of
 // the phone's widths alone that the residual pass writes as Custom CSS for those widths only. The fixture and the settings'
-// rows are the real ones (calibration-fixtures.json, the framework DB); the calibration mirrors the cart's measured paint.
+// rows are the real ones (the setting record's fixtures.json, the framework DB); the calibration mirrors the cart's measured paint.
 // Contacts no site (tools/run-tests.mjs).
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -24,9 +24,10 @@ import { openDb } from '../lib/db.mjs';
 import { unpairedPart } from '../lib/fill-part-pairing.mjs';
 import { coveredBySetting } from '../lib/fill-held.mjs';
 import { nodeCalFor } from '../lib/fill-resolve.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const FIXTURES = JSON.parse( fs.readFileSync( path.join( HERE, '..', 'calibration-fixtures.json' ), 'utf8' ) );
+const FIXTURES = recordFixtures();
 const BLOCK = 'sgs/cart';
 const fixture = FIXTURES[ BLOCK ];
 const schema = blockSchema( BLOCK );

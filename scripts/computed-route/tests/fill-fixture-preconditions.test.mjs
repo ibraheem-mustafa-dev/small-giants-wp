@@ -13,9 +13,10 @@ import { fillTree } from '../lib/fill-resolve.mjs';
 import { openDb } from '../lib/db.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
 import { fixturePreconditions } from '../lib/fill-fixture.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const FIXTURES = JSON.parse( fs.readFileSync( path.join( HERE, '..', 'calibration-fixtures.json' ), 'utf8' ) );
+const FIXTURES = recordFixtures();
 const WIDTHS = [ 375, 768, 1024, 1440, 1920 ];
 const SIDES = [ 'top', 'right', 'bottom', 'left' ];
 const sides = ( part, v ) => Object.fromEntries( SIDES.map( ( s ) => [ `border-${ s }-${ part }`, v ] ) );

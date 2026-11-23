@@ -118,7 +118,8 @@ test( 'MUST FAIL (2026-10-09: business-info addressLink had no presence reading)
 	const { instanceCtx } = await import( '../lib/calibrate.mjs' );
 	const { variantInfo } = await import( '../lib/db.mjs' );
 	const { blockSchema } = await import( '../lib/resolve.mjs' );
-	const { default: fixtures } = await import( '../calibration-fixtures.json', { with: { type: 'json' } } );
+	const { recordFixtures } = await import( '../lib/setting-record.mjs' );
+	const fixtures = recordFixtures();
 	const block = 'sgs/business-info';
 	const fixture = fixtures[ block ];
 	const variant = variantInfo( db, block );

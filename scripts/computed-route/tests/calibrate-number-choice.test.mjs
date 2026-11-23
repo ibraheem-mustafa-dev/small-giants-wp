@@ -13,10 +13,11 @@ import { openDb } from '../lib/db.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
 import { contentRowsFor, planContentInstances, collectContent, isStructureRow, structureValues, structurePresenceValues } from '../lib/calibrate-content.mjs';
 import { structureRowsFor, unreadOf } from '../lib/fill-unread.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const db = openDb();
-const fixture = JSON.parse( fs.readFileSync( path.join( HERE, '..', 'calibration-fixtures.json' ), 'utf8' ) )[ 'sgs/nav-bar-menu' ];
+const fixture = recordFixtures()[ 'sgs/nav-bar-menu' ];
 const BAR = ( n ) => `.sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon > .sgs-nav-bar-menu__burger-bar:nth-of-type(${ n })`;
 // A content read: every width shows the given burger bars.
 const readOf = ( bars ) => Object.fromEntries( [ 375, 768, 1440 ].map( ( w ) => [ w, Object.fromEntries( bars.map( ( n ) => [ BAR( n ), { shown: true } ] ) ) ] ) );

@@ -8,10 +8,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { buildTree, planInstances, preconditionsFor } from '../lib/calibrate.mjs';
 import { matchesPaintState } from '../lib/paint-state.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
-const FX = JSON.parse( fs.readFileSync( path.join( HERE, '../calibration-fixtures.json' ), 'utf8' ) );
+const FX = recordFixtures();
 const render = ( short ) => fs.readFileSync( path.join( REPO, 'plugins/sgs-blocks/src/blocks', short, 'render.php' ), 'utf8' );
 const blockJson = ( short ) => JSON.parse( fs.readFileSync( path.join( REPO, 'plugins/sgs-blocks/src/blocks', short, 'block.json' ), 'utf8' ) );
 // A variant's effective attributes, as planInstances merges them.
@@ -72,10 +73,6 @@ test( 'MUST FAIL (CR17: __before can never appear on the address variant): every
 	assert.ok( carrying.some( ( v ) => v.textBefore ) );
 } );
 
-test( 'business-info names its own chunk and plans enough instances to need chunking', () => {
-	assert.equal( FX[ 'sgs/business-info' ].chunk, 100 );
-} );
-
 test( 'MUST FAIL (mega-group sgsChildSizing discovered empty): the group is built inside a mega-panel in columns style', () => {
 	const fx = FX[ 'sgs/mega-group' ];
 	assert.deepEqual( fx.parents.map( ( p ) => p.name ), [ 'sgs/mega-panel' ] );
@@ -119,11 +116,12 @@ test( 'every fixture variant names only attributes its block declares (or an ext
 				assert.ok( declared.has( k ) || universal.has( k ) || /^sgs[A-Z]/.test( k ), `${ block } variant names undeclared attribute ${ k }` );
 			}
 		}
-		// A per-setting precondition names a declared setting and declared attributes only.
+		// A per-setting precondition names a declared setting and declared attributes only (or an extension attribute, as a
+		// variant may: a button's motion that its icon background needs).
 		for ( const [ setting, attrs ] of Object.entries( fx.preconditions || {} ) ) {
 			assert.ok( declared.has( setting ), `${ block } precondition for undeclared setting ${ setting }` );
 			for ( const k of Object.keys( attrs ) ) {
-				assert.ok( declared.has( k ), `${ block } precondition sets undeclared attribute ${ k }` );
+				assert.ok( declared.has( k ) || /^sgs[A-Z]/.test( k ), `${ block } precondition sets undeclared attribute ${ k }` );
 			}
 		}
 	}

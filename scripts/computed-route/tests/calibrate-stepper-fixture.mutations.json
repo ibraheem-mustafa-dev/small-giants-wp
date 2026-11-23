@@ -1,5 +1,20 @@
 [
-	{"file": "calibration-fixtures.json", "find": "    \"familyPreconditions\": {\n      \"stepper\": {\n        \"progressStyle\": \"circles\"", "replace": "    \"familyPreconditions\": {\n      \"stepperX\": {\n        \"progressStyle\": \"circles\"", "why": "the family stem names no setting"},
-	{"file": "calibration-fixtures.json", "find": "      \"stepper\": {\n        \"progressStyle\": \"circles\"", "replace": "      \"stepper\": {\n        \"progressStyle\": \"badge\"", "why": "the precondition draws the badge, not the circles"},
-	{"file": "lib/calibrate-instances.mjs", "find": "for ( const [ attr, value ] of Object.entries( row.attr_name.startsWith( stem ) ? attrs : {} ) ) {", "replace": "for ( const [ attr, value ] of Object.entries( row.attr_name === stem ? attrs : {} ) ) {", "why": "a family precondition reaches only a setting named exactly as its stem"}
+	{
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\"familyPreconditions\": {\n\t\t\t\"stepper\": {\n\t\t\t\t\"progressStyle\": \"circles\"",
+		"replace": "    \"familyPreconditions\": {\n      \"stepperX\": {\n        \"progressStyle\": \"circles\"",
+		"why": "the family stem names no setting"
+	},
+	{
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\n\t\t\t\"stepper\": {\n\t\t\t\t\"progressStyle\": \"circles\"",
+		"replace": "      \"stepper\": {\n        \"progressStyle\": \"badge\"",
+		"why": "the precondition draws the badge, not the circles"
+	},
+	{
+		"file": "lib/calibrate-instances.mjs",
+		"find": "for ( const [ attr, value ] of Object.entries( row.attr_name.startsWith( stem ) ? attrs : {} ) ) {",
+		"replace": "for ( const [ attr, value ] of Object.entries( row.attr_name === stem ? attrs : {} ) ) {",
+		"why": "a family precondition reaches only a setting named exactly as its stem"
+	}
 ]

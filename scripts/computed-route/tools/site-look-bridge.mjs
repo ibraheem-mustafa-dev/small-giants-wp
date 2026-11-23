@@ -23,10 +23,11 @@ import { loadSnapshot } from '../lib/normalise.mjs';
 import { planInstances, instanceCtx, longhands, discoverEffects } from '../lib/calibrate.mjs';
 import { STATE_LOOK_PROPS } from '../lib/calibrate-instances.mjs';
 import { contentRowsFor, planContentInstances, collectContent } from '../lib/calibrate-content.mjs';
+import { RECORD_FIXTURES } from '../lib/setting-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const REPO = path.resolve( HERE, '../../..' );
-export const RECORD_FIXTURES = path.join( REPO, 'plugins/sgs-blocks/scripts/setting-record/fixtures.json' );
+export { RECORD_FIXTURES };
 // setting-record/render.py::PLACEHOLDERS: the runner's stand-in image, named so the runner fills in its id and URL.
 export const STAND_IN_IMAGE = { id: '{{image}}', url: '{{image.url}}' };
 

@@ -11,9 +11,10 @@ import { openDb } from '../lib/db.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
 import { absentByDefault, withoutOmittedAbsences } from '../lib/fill-fixture.mjs';
 import { presenceDecisions } from '../lib/fill-presence.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const CAL = JSON.parse( fs.readFileSync( new URL( './fixtures/fill-omitted-absence/calibration.json', import.meta.url ), 'utf8' ) );
-const FIXTURES = JSON.parse( fs.readFileSync( new URL( '../calibration-fixtures.json', import.meta.url ), 'utf8' ) );
+const FIXTURES = recordFixtures();
 const db = openDb();
 const schema = blockSchema( 'sgs/testimonial' );
 const st = { fixtures: FIXTURES, db, fixtureViews: new Map() };

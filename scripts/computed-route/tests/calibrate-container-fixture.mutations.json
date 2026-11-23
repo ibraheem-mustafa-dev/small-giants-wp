@@ -1,20 +1,20 @@
 [
 	{
-		"file": "calibration-fixtures.json",
-		"find": "\"has\": [\n            \"bgSvgContent\"\n          ]",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\"has\": [\n\t\t\t\t\t\t\"bgSvgContent\"\n\t\t\t\t\t]\n\t\t\t\t",
 		"replace": "\"lacks\": [\n            \"bgSvgContent\"\n          ]",
 		"why": "the SVG state matches a node that does not carry the SVG"
 	},
 	{
-		"file": "calibration-fixtures.json",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
 		"find": "\"name\": \"bg-svg\",",
 		"replace": "\"name\": \"bg-svg-gone\",",
 		"why": "the SVG state is renamed so the paint is not kept"
 	},
 	{
-		"file": "calibration-fixtures.json",
-		"find": "      \"tagName\": \"div\"\n    },\n    \"variants\": [\n      {},\n      {\n        \"flexWrap\": \"wrap\"",
-		"replace": "      \"tagName\": \"div\",\n      \"bgSvgContent\": \"<svg></svg>\"\n    },\n    \"variants\": [\n      {},\n      {\n        \"flexWrap\": \"wrap\"",
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\"sgs/container\": {\n\t\t\"attributes\": {\n\t\t\t\"tagName\": \"div\"\n\t\t},",
+		"replace": "\"sgs/container\": {\n\t\t\"attributes\": {\n\t\t\t\"tagName\": \"div\",\n\t\t\t\"bgSvgContent\": \"<svg></svg>\"\n\t\t},",
 		"why": "the base fixture carries the SVG again"
 	}
 ]

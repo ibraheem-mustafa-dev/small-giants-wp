@@ -1,6 +1,6 @@
 // sgs/choice-flow's stepper settings (stepperColour, stepperActiveColour) paint the numbered circles the block draws only
 // under progressStyle 'circles' (render.php echoes .sgs-choice-flow__stepper only then); the fixture renders the bar, so
-// both read dead with their part never drawn. calibration-fixtures.json gives the stepper family that precondition.
+// both read dead with their part never drawn. the setting record's fixtures.json gives the stepper family that precondition.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'fs';
@@ -10,9 +10,10 @@ import { planInstances, instanceCtx } from '../lib/calibrate-instances.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
 import { openDb, attrsFor, variantInfo } from '../lib/db.mjs';
 import { longhands } from '../lib/calibrate-props.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
-const FX = JSON.parse( fs.readFileSync( path.join( HERE, '../calibration-fixtures.json' ), 'utf8' ) );
+const FX = recordFixtures();
 const SNAP = { palette: [ { slug: 'primary', colour: { r: 10, g: 120, b: 60, a: 1 } } ], spacing: [], fontSizes: [] };
 const BLOCK = 'sgs/choice-flow';
 

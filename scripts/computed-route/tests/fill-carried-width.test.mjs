@@ -14,10 +14,10 @@ import { addRefs } from '../lib/tree.mjs';
 import { fillTree } from '../lib/fill-resolve.mjs';
 import { openDb } from '../lib/db.mjs';
 import { carriedFor } from '../lib/fill-fixture.mjs';
-import { fixtureKeyOf } from '../lib/calibrate-incremental.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
 const CAL = JSON.parse( fs.readFileSync( new URL( './fixtures/fill-carried-width/calibration.json', import.meta.url ), 'utf8' ) );
-const FIXTURES = JSON.parse( fs.readFileSync( new URL( '../calibration-fixtures.json', import.meta.url ), 'utf8' ) );
+const FIXTURES = recordFixtures();
 const db = openDb();
 const WIDTHS = [ 375, 768, 1024, 1440, 1920 ];
 const snap = ( styles, w, h ) => ( { styles, pseudo: {}, rect: { x: 0, y: 0, w, h }, inFlow: true, words: '', href: null } );
@@ -54,12 +54,4 @@ test( 'negative control: no width written, no switch; a node already holding wid
 	assert.equal( carriedFor( { fixtures: FIXTURES }, 'sgs/button', 'colourBackground', {} ), null, 'a setting with no precondition carries nothing' );
 	assert.equal( carriedFor( { fixtures: null }, 'sgs/button', 'customWidth', {} ), null, 'no fixtures read, nothing carried' );
 	assert.equal( carriedFor( { fixtures: FIXTURES }, 'sgs/social-icons', 'childIconLabelPosition', {} ), null, 'a precondition the fixture does not list under carries is calibration scaffolding, not a switch Fill writes' );
-} );
-
-test( 'the carries list does not move the fixture key, so no block is recalibrated for it', () => {
-	const f = FIXTURES[ 'sgs/button' ];
-	const { carries, ...rest } = f;
-	assert.ok( Array.isArray( carries ), 'the button fixture lists what it carries' );
-	assert.equal( fixtureKeyOf( f ), fixtureKeyOf( rest ) );
-	assert.notEqual( fixtureKeyOf( { ...rest, preconditions: {} } ), fixtureKeyOf( f ) );
 } );

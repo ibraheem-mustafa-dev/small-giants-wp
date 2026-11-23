@@ -1,4 +1,4 @@
-// The calibration fixtures put the block into the states the new block settings paint in (data: calibration-fixtures.json):
+// The calibration fixtures put the block into the states the new block settings paint in (data: the setting record's fixtures.json):
 // the brand strip's name tile (`brandTextTile` with `brandDisplay` text) and the timeline's horizontal orientation, where the
 // year ring and the entry cards print. Without these variants calibration measures neither the tile nor the ring, and Fill
 // has no slot to read them at (2026-11-19). Pure: reads the fixtures file and the framework database only.
@@ -9,9 +9,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { openDb } from '../lib/db.mjs';
+import { recordFixtures } from '../lib/setting-record.mjs';
 
-const FILE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..', 'calibration-fixtures.json' );
-const fixtures = JSON.parse( fs.readFileSync( FILE, 'utf8' ) );
+const fixtures = recordFixtures();
 const db = openDb();
 const has = ( block, attr ) => !! db.prepare( 'SELECT 1 AS x FROM block_attributes WHERE block_slug = ? AND attr_name = ?' ).get( block, attr );
 

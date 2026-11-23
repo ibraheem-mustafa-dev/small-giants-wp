@@ -1,5 +1,20 @@
 [
-	{ "file": "calibration-fixtures.json", "find": "\"layerBorderWidth\": {", "replace": "\"borderWidth\": {", "why": "the fixture before the fix: the empty state's border is a dead attribute, so the layer draws nothing" },
-	{ "file": "calibration-fixtures.json", "find": "\"layerBorderStyle\": \"solid\",", "replace": "\"layerBorderStyle\": \"none\",", "why": "the empty state's border style draws no border" },
-	{ "file": "calibration-fixtures.json", "find": "\"layerWidth\": {", "replace": "\"width\": {", "why": "a paint state names a renamed size attribute" }
+	{
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\"layerBorderWidth\": {",
+		"replace": "\"borderWidth\": {",
+		"why": "the fixture before the fix: the empty state's border is a dead attribute, so the layer draws nothing"
+	},
+	{
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\"layerBorderStyle\": \"solid\",",
+		"replace": "\"layerBorderStyle\": \"none\",",
+		"why": "the empty state's border style draws no border"
+	},
+	{
+		"file": "../../plugins/sgs-blocks/scripts/setting-record/fixtures.json",
+		"find": "\"layerWidth\": {",
+		"replace": "\"width\": {",
+		"why": "a paint state names a renamed size attribute"
+	}
 ]
