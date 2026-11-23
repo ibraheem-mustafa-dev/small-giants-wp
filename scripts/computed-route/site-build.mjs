@@ -175,7 +175,7 @@ if ( args.includes( '--flow-links' ) ) {
 }
 if ( args.includes( '--menus' ) ) {
 	try {
-		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
+		const rows = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site, targets );
 		const runPhp = wpEvalRunner( target, site, repo, { readOnly: ! apply } );
 		const planFor = () => {
 			const link = readLinkTextReport( { repo, client } );
@@ -222,7 +222,7 @@ const print = ( plan ) => {
 
 try {
 	// The rows as this site sees them: ids written for another site name nothing here.
-	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site );
+	const original = rowsForSite( readPageMap( mapFile ), readIdsSite( mapFile ), site, targets );
 	const runPhp = wpEvalRunner( target, site, repo, { readOnly: ! apply } );
 	const wp = wpCommand( target, site, repo, { readOnly: ! apply } );
 	const ids = {};

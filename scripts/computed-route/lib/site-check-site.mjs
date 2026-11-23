@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { candidateRoots, parseEnv } from '../../parity/flows/lib/browser.mjs';
 import { flowsOutRoot } from '../../parity/flows/lib/flow.mjs';
-import { hasPost, rowKey, readIdsSite, readPageMap, rowsForSite } from './site-build-map.mjs';
+import { hasPost, rowKey, readIdsSite, readPageMap, rowsForSite, siteOf } from './site-build-map.mjs';
 import { assertSiteContact } from './site-contact.mjs';
 
 // The calibration target of `site` (calibration-targets.json: envFile, envKey, mirrorOf, pluginDir), else the plain
@@ -56,10 +56,12 @@ export const STORE_EXAMPLES = { product: '/wp-json/wc/store/v1/products?per_page
 // The page map's ids belong to the site its `page-map.site` names. A mirror and its test site share ids both ways
 // (calibration-targets.json `mirrorOf`): checking the mirror keeps the test site's ids, and checking the test site keeps
 // ids written on its mirror (the clone is built on the mirror and copied with push-to-remote.sh, which keeps post ids).
-// Any other site's ids are dropped (lib/site-build-map.mjs::rowsForSite).
+// A scratch copy (`scratchOf`) counts as the site it copies, so a copy of a mirror shares with the mirror's test site and with the
+// mirror itself. Any other site's ids are dropped (lib/site-build-map.mjs::rowsForSite).
 export function rowsFor( rows, idsSite, target, targets = {} ) {
-	const shared = idsSite && ( target.mirrorOf === idsSite || targets[ idsSite ]?.mirrorOf === target.site );
-	return rowsForSite( rows, idsSite, shared ? idsSite : target.site );
+	const as = ( name ) => siteOf( name, targets );
+	const shared = idsSite && ( as( target.mirrorOf ) === as( idsSite ) || as( targets[ idsSite ]?.mirrorOf ) === as( target.site ) );
+	return rowsForSite( rows, idsSite, shared ? idsSite : target.site, targets );
 }
 
 // The rows the page check loads: { pages: [{ key, slug, title, url, menus }], examples: [{ key, slug, kind, url }],

@@ -169,9 +169,25 @@ export const readIdsSite = ( mapFile ) => ( fs.existsSync( idsSiteFile( mapFile 
 export const writeIdsSite = ( mapFile, site ) => fs.writeFileSync( idsSiteFile( mapFile ), `${ site }
 ` );
 
+// The site a name stands for: a scratch copy (`scratchOf` in the calibration targets) holds its source's posts and ids, so it
+// resolves to the source, following a chain of copies. Names in a `scratchOf` loop resolve to the first of them in sort order.
+export function siteOf( name, targets = {} ) {
+	const seen = [];
+	let at = name;
+	while ( at && Object.hasOwn( targets, at ) && targets[ at ]?.scratchOf ) {
+		if ( seen.includes( at ) ) {
+			return [ ...seen ].sort()[ 0 ];
+		}
+		seen.push( at );
+		at = targets[ at ].scratchOf;
+	}
+	return at;
+}
+
 // The rows as a run against `site` should plan from them: ids written for another site name nothing there, so they are
-// dropped (a post carrying a row key is adopted, FR-48-17) and the run's write-back replaces them.
-export const rowsForSite = ( rows, idsSite, site ) => ( idsSite && idsSite !== site ? rows.map( ( r ) => ( { ...r, id: null } ) ) : rows );
+// dropped (a post carrying a row key is adopted, FR-48-17) and the run's write-back replaces them. A scratch copy counts as
+// the site it copies (`siteOf` through `targets`); with no `targets` the names are compared as they stand.
+export const rowsForSite = ( rows, idsSite, site, targets = {} ) => ( idsSite && siteOf( idsSite, targets ) !== siteOf( site, targets ) ? rows.map( ( r ) => ( { ...r, id: null } ) ) : rows );
 
 export const treeHash = ( tree ) => crypto.createHash( 'sha256' ).update( JSON.stringify( tree ) ).digest( 'hex' );
 
