@@ -87,6 +87,7 @@ export function buildSummary( template, values ) {
  *
  * @param {Object}   input
  * @param {string}   input.template   Summary template.
+ * @param {string}   [input.templateOne] Template used instead while exactly one option is picked; empty uses `template`.
  * @param {number}   input.pack       Pack size (0 when the product has none).
  * @param {string}   input.packLabel  Pack option label.
  * @param {string}   input.variation  The other chosen options, lower-case, joined (for example "oat base, milk chips").
@@ -95,12 +96,13 @@ export function buildSummary( template, values ) {
  * @param {boolean}  input.sharing    True when the group shares the pack.
  * @return {string}
  */
-export function summaryFor( { template, pack, packLabel, variation, labels, counts, sharing } ) {
+export function summaryFor( { template, templateOne, pack, packLabel, variation, labels, counts, sharing } ) {
 	if ( 0 === labels.length ) {
 		return '';
 	}
 	const split = sharing && pack > 0 ? splitText( labels, counts, pack ) : labels.join( ', ' );
-	return buildSummary( template, {
+	const chosen = 1 === labels.length && templateOne ? templateOne : template;
+	return buildSummary( chosen, {
 		pack: pack > 0 ? pack : '',
 		pack_label: packLabel,
 		variation,

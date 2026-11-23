@@ -38,6 +38,7 @@ function initRoot( root ) {
 
 	const seed = parse( root.getAttribute( 'data-wp-context' ) );
 	const template = shell.dataset.summary || 'Your {pack}: {split}';
+	const templateOne = shell.dataset.summaryOne || '';
 	const packAxis = shell.dataset.packAxis || '';
 	const packUnits = parse( shell.dataset.packUnits );
 	const packLabels = parse( shell.dataset.packLabels );
@@ -263,6 +264,7 @@ function initRoot( root ) {
 		const text = lead
 			? summaryFor( {
 				template,
+				templateOne,
 				pack: pack(),
 				packLabel: packLabels[ selections[ packAxis ] ] || '',
 				variation: variationText(),

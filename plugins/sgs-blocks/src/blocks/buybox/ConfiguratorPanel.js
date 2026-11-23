@@ -168,7 +168,7 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 		<InspectorControls>
 			<PanelBody title={ __( 'Pick a set', 'sgs-blocks' ) } initialOpen>
 				<Checklist productId={ productId } list={ state.list } failed={ state.failed } />
-				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', previewLayerAxis: '', pickHideGallery: false, pickHidePreview: false, pickSideAxis: '', pickSideButton: false, showPriceRow: true } ) }>
+				<ToolsPanel label={ __( 'Settings', 'sgs-blocks' ) } resetAll={ () => setAttributes( { groupStyles: {}, summaryText: 'Your {pack}: {split}', summaryTextOne: '', previewLayerAxis: '', pickHideGallery: false, pickHidePreview: false, pickSideAxis: '', pickSideButton: false, showPriceRow: true } ) }>
 				<Item label={ __( 'Option group looks', 'sgs-blocks' ) } name="groupStyles" fallback={ {} } attributes={ attributes } setAttributes={ setAttributes }>
 					{ ( state.list ? state.list.groups : [] ).map( ( group ) => (
 						<SelectControl
@@ -188,6 +188,16 @@ export default function ConfiguratorPanel( { attributes, setAttributes } ) {
 						value={ attributes.summaryText ?? 'Your {pack}: {split}' }
 						onChange={ ( val ) => setAttributes( { summaryText: val } ) }
 						help={ __( 'Also {pack_label}, {variation}, {picks} and {count}. Unknown words in braces are removed.', 'sgs-blocks' ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</Item>
+				<Item label={ __( 'Summary text for one pick', 'sgs-blocks' ) } name="summaryTextOne" fallback={ '' } attributes={ attributes } setAttributes={ setAttributes }>
+					<TextControl
+						label={ __( 'Summary text for one pick', 'sgs-blocks' ) }
+						value={ attributes.summaryTextOne || '' }
+						onChange={ ( val ) => setAttributes( { summaryTextOne: val } ) }
+						help={ __( 'Used instead of the summary text while the shopper has picked exactly one option, for example {split} to read "All 20 Vanilla". Empty uses the summary text for every count.', 'sgs-blocks' ) }
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>

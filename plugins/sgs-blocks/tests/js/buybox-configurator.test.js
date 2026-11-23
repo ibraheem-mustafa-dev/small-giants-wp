@@ -59,6 +59,13 @@ describe( 'summary', () => {
 	test( 'one pick reads All N', () => {
 		expect( splitText( [ 'Mango' ], [ 20 ], 20 ) ).toBe( 'All 20 Mango' );
 	} );
+	test( 'the one-pick template, when set, is used only while exactly one option is picked', () => {
+		const base = { template: 'Your {pack}: {split}', templateOne: '{split}', pack: 20, packLabel: '20 pack', variation: '', sharing: true };
+		expect( summaryFor( { ...base, labels: [ 'Vanilla' ], counts: [ 20 ] } ) ).toBe( 'All 20 Vanilla' );
+		expect( summaryFor( { ...base, labels: [ 'Vanilla', 'Mango' ], counts: [ 10, 10 ] } ) ).toBe( 'Your 20: 10 Vanilla · 10 Mango' );
+		expect( summaryFor( { ...base, templateOne: '', labels: [ 'Vanilla' ], counts: [ 20 ] } ) ).toBe( 'Your 20: All 20 Vanilla' );
+		expect( summaryFor( { ...base, templateOne: undefined, labels: [ 'Vanilla' ], counts: [ 20 ] } ) ).toBe( 'Your 20: All 20 Vanilla' );
+	} );
 	test( 'an unknown token is removed and zero picks give no sentence', () => {
 		expect( buildSummary( 'Your {pack} {nope}: {picks}', { pack: 8, picks: 'Mango' } ) ).toBe( 'Your 8: Mango' );
 		expect( summaryFor( { template: '{split}', pack: 8, packLabel: '', variation: '', labels: [], counts: [], sharing: true } ) ).toBe( '' );

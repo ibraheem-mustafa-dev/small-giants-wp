@@ -3480,6 +3480,11 @@
 			"default": "Your {pack}: {split}",
 			"description": "Pick a set only: the one-line summary under the preview. Tokens: {pack}, {pack_label}, {variation}, {split}, {picks}, {count}. Unknown tokens are removed."
 		},
+		"summaryTextOne": {
+			"type": "string",
+			"default": "",
+			"description": "Pick a set only: the summary used instead of summaryText while exactly one option is picked, with the same tokens (for example '{split}' reads 'All 20 Vanilla'). Empty uses summaryText for every count."
+		},
 		"previewLayerAxis": {
 			"type": "string",
 			"default": "",

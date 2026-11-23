@@ -405,6 +405,7 @@ if ( ! function_exists( 'sgs_buybox_configurator_open' ) ) {
 	function sgs_buybox_configurator_open( array $state, array $attributes ): string {
 		$template = trim( (string) ( $attributes['summaryText'] ?? '' ) );
 		$template = '' !== $template ? $template : 'Your {pack}: {split}';
+		$one      = trim( (string) ( $attributes['summaryTextOne'] ?? '' ) );
 		$pack     = $state['pack'];
 		$layer    = sanitize_key( (string) ( $attributes['previewLayerAxis'] ?? '' ) );
 		$layer_c  = array();
@@ -421,6 +422,9 @@ if ( ! function_exists( 'sgs_buybox_configurator_open' ) ) {
 		}
 		$out  = '<div class="sgs-buybox-pick' . ( ! empty( $attributes['pickHidePreview'] ) ? ' sgs-buybox-pick--no-preview' : '' ) . ( ! empty( $attributes['pickerDotTickInside'] ) ? ' sgs-buybox-pick--dot-tick' : '' ) . ( ! empty( $attributes['pickSideButton'] ) ? ' sgs-buybox-pick--side-cart' : '' ) . '" data-sgs-pick';
 		$out .= ' data-summary="' . esc_attr( $template ) . '"';
+		if ( '' !== $one ) {
+			$out .= ' data-summary-one="' . esc_attr( $one ) . '"';
+		}
 		$out .= ' data-pack-axis="' . esc_attr( $pack['key'] ) . '"';
 		$out .= ' data-pack-units="' . esc_attr( (string) wp_json_encode( (object) $pack['units'] ) ) . '"';
 		$out .= ' data-pack-labels="' . esc_attr( (string) wp_json_encode( (object) $pack_l ) ) . '"';

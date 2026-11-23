@@ -85,6 +85,13 @@ final class BuyboxConfiguratorRenderTest extends TestCase {
 		$this->assertStringContainsString( 'data-sgs-caption', $html );
 	}
 
+	public function test_the_one_pick_summary_prints_only_when_set(): void {
+		$html = self::html( array( 'summaryTextOne' => '{split}' ) );
+		$this->assertStringContainsString( 'data-summary-one="{split}"', $html );
+		$this->assertStringNotContainsString( 'data-summary-one', self::html( array() ) );
+		$this->assertStringNotContainsString( 'data-summary-one', self::html( array( 'summaryTextOne' => '  ' ) ) );
+	}
+
 	public function test_group_styles_map_onto_the_picker_enum(): void {
 		$tile = self::html( array( 'groupStyles' => array( 'flavour' => 'tile' ) ) );
 		$this->assertStringContainsString( 'sgs-buybox-pick__options--tile', $tile );

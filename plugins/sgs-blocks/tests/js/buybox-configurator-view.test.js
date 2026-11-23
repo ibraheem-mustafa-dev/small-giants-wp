@@ -2,9 +2,9 @@
  * @jest-environment jsdom
  */
 
-const GROUP = ( share, start = '', hint = '' ) => `
+const GROUP = ( share, start = '', hint = '', summaryOne = '' ) => `
 <div class="sgs-buybox sgs-buybox--configurator" data-sgs-pick-summary="1" data-wp-context='{"selectedAxes":{"pa_size":"small"},"combos":{"pa_size:small":{"priceMinor":2380}},"currencySymbol":"£"}'>
-  <div data-sgs-pick data-summary="Your {pack}: {split}" data-pack-axis="pa_size" data-pack-units='{"small":20}' data-pack-labels='{"small":"20 pack"}' data-layer-axis="" data-layer-colours="{}">
+  <div data-sgs-pick data-summary="Your {pack}: {split}"${ summaryOne ? ` data-summary-one="${ summaryOne }"` : '' } data-pack-axis="pa_size" data-pack-units='{"small":20}' data-pack-labels='{"small":"20 pack"}' data-layer-axis="" data-layer-colours="{}">
     <div class="sgs-buybox-pick__groups">
       <div data-sgs-pick-group="flavour" data-least="1" data-most="3" data-overflow="replace" data-share="${ share }" data-label="Flavour" data-limit-message="Up to 3" data-least-message="Choose at least 1 flavour">
         ${ hint ? `<p><span class="sgs-buybox-pick__hint" data-sgs-hint-template="${ hint }" aria-live="polite">stale</span></p>` : '' }
@@ -20,9 +20,9 @@ const GROUP = ( share, start = '', hint = '' ) => `
   <form class="buybox__cart-form"><button type="submit" class="buybox__add-to-cart">Add</button></form>
 </div>`;
 
-async function setup( share, start, hint = '' ) {
+async function setup( share, start, hint = '', summaryOne = '' ) {
 	jest.resetModules();
-	document.body.innerHTML = GROUP( share, start, hint );
+	document.body.innerHTML = GROUP( share, start, hint, summaryOne );
 	window.requestAnimationFrame = ( cb ) => cb();
 	await import( '../../src/blocks/buybox/configurator-view.js' );
 	return document.querySelector( '.sgs-buybox' );
@@ -35,6 +35,14 @@ const click = ( root, slug ) => {
 };
 
 describe( 'Pick a set view', () => {
+	test( 'a one-pick summary template reads alone for one pick and gives way to the summary for more', async () => {
+		const root = await setup( 'equal', 'vanilla', '', '{split}' );
+		expect( root.querySelector( '[data-sgs-caption]' ).textContent ).toBe( 'All 20 Vanilla' );
+		click( root, 'mango' );
+		expect( root.querySelector( '[data-sgs-caption]' ).textContent ).toBe( 'Your 20: 10 Vanilla · 10 Mango' );
+		click( root, 'mango' );
+		expect( root.querySelector( '[data-sgs-caption]' ).textContent ).toBe( 'All 20 Vanilla' );
+	} );
 	test( 'Start with is selected and the equal split is shown', async () => {
 		const root = await setup( 'equal', 'vanilla' );
 		expect( root.querySelector( '[data-sgs-caption]' ).textContent ).toBe( 'Your 20: All 20 Vanilla' );
