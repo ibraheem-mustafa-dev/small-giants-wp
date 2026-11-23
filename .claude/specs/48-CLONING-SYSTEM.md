@@ -463,7 +463,7 @@ The walker compares the built surface with the draft and is the closing comparis
     - **Aspect ratio:** `aspect-ratio` is dropped while both boxes agree (`compare.mjs::ratioHeld`).
     - **Flow:** a pass-through pair (item 22) is placed in the flow by its items' top (`compare-state.mjs::flowOffsets`).
     - **Bare wrappers:** a one-side-only presence row is dropped for an element that paints nothing, shows nothing of its own (searching under `display: contents` and `visibility: hidden` boxes) and lies within the boxes of nested pairs measured on both sides; each such drop is listed in the pair's `dropped` (`compare-state.mjs::bareWrapper`).
-    - **Draft cache:** the draft cache key carries a snapshot version (`lib/draft-cache.mjs`), so a cache written before a snapshot field existed is never read as that field's absence.
+    - **Draft cache:** the draft cache key carries a snapshot version (`lib/draft-cache.mjs`), so a cache written before a snapshot field existed is never read as that field's absence. A cache file kept across runs (the site run's walk stage keeps one per surface under `qa/parity/draft-cache/`) also keys each entry by a hash of the draft's served files, of the walker's own code and of the config's draft side (`cacheParts`), so a changed input walks the draft afresh; `--fresh-draft` skips the cache.
     - **Links:** the links check applies the config's exclusions (selectors and `{ js }` finders) inside a chosen `linkRoot`, as the word check does; one that holds the root never applies (`lib/links.mjs::collectLinksIn`).
 
     Each rule has planted controls where the draft paints or moves and the live does not. Falsified by a dropped row whose property, state or content was not read on both sides.

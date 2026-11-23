@@ -64,6 +64,7 @@ python plugins/sgs-blocks/scripts/push-theme-snapshot.py --client <slug> --targe
 | Block, theme and client-site work | `/sgs-wp-engine` (+ `/wp-block-development` for core block-API questions) |
 | Deploy ceremony | `/wp-sgs-deploy` |
 | Cloning (Spec 48) | the computed route in `scripts/computed-route` (LEDGER Front H); `/sgs-update` after framework changes |
+| Iterate on one stage of a clone without rerunning the whole pipeline | `site-run.mjs --stages ...` (`scripts/computed-route/README.md` "Running only what a change needs") |
 | DB and schema questions | `/sgs-db`, `python ~/.claude/hooks/wp-blocks.py dump` |
 | Pages built with banned core blocks | `plugins/sgs-blocks/scripts/migrate-core-blocks/` (see its README) |
 | Which pages can a plugin or theme change alter at all? (seconds; run it first: it says whether the render check is needed, and on which pages of which mirror) | `python scripts/render-scope/render-scope.py --before <checkout> --after <checkout> --mirrors local-mamas,local-indus,local-eye-care` (README) |
