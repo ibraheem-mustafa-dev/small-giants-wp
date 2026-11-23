@@ -18,7 +18,7 @@ import { sumAbsorbedPadding, absorbedParts } from '../lib/fill-absorbed.mjs';
 const db = openDb();
 const INNER = '.sgs-container__inner';
 const CAL = { 'sgs/container': loadCalibration( FIXTURE_RECORDS, 'sgs/container', 'indus-foods' ) };
-// The checked-in record (tests/fixtures/records/indus-foods/container.record.json, tools/record-fixtures.mjs): a missing one
+// The checked-in record (tests/fixtures/records/indus-foods/container.record.json.gz, tools/record-fixtures.mjs): a missing one
 // fails here rather than skipping.
 if ( ! CAL[ 'sgs/container' ]?.elements?.[ '' ] ) {
 	throw new Error( 'no fixture record of sgs/container for indus-foods: node tools/record-fixtures.mjs --client indus-foods --blocks sgs/container' );

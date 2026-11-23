@@ -25,8 +25,8 @@
 	},
 	{
 		"file": "lib/resolve.mjs",
-		"find": "return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );",
-		"replace": "return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && canGive( r, c ) && holdsDisplay( r );",
+		"find": "return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( state ?? null ) && canGive( r, c ) && holdsDisplay( r ) && inForce( c );",
+		"replace": "return c && paths( c ).some( ( p ) => loose( p ) === slot && sameKind( p ) ) && ( ! c.property || c.property === short || reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( state ?? null ) && canGive( r, c ) && holdsDisplay( r );",
 		"why": "a setting of the other mode stays a candidate, so the pill's radius ties with the icon's"
 	},
 	{

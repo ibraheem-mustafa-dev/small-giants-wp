@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Writes the route tests' checked-in fixture records: each named block's record for one client as the route reads it
 // (lib/setting-record.mjs::loadRecord: the setting record in the framework database and the client's site look), saved
-// with writeRecordFixture under tests/fixtures/records/<client>/<block>.record.json. A test reads them by passing that
+// gzip-compressed with writeRecordFixture under tests/fixtures/records/<client>/<block>.record.json.gz (a record runs to
+// megabytes as text; the reader takes either form). A test reads them by passing that
 // folder as its cache (lib/cache.mjs::loadCalibration), so it holds still while the database and the looks move on.
 //   node scripts/computed-route/tools/record-fixtures.mjs --client <slug> --blocks <sgs/a,sgs/b> [--look-dir <dir>] [--full]
 //   --look-dir: read the site looks from this folder instead of the route's own (scripts/computed-route/site-look); a look
@@ -43,8 +44,9 @@ if ( process.argv[ 1 ] && path.resolve( process.argv[ 1 ] ) === fileURLToPath( i
 			console.error( `${ block }: ${ r ? r.paintMissing : 'no setting record' }` );
 			continue;
 		}
-		writeRecordFixture( FIXTURE_RECORDS, block, fixtureOf( r, argv.includes( '--full' ) ), client );
-		const file = path.join( FIXTURE_RECORDS, client, `${ block.replace( /^sgs\//, '' ) }.record.json` );
+		const file = writeRecordFixture( FIXTURE_RECORDS, block, fixtureOf( r, argv.includes( '--full' ) ), client, { gzip: true } );
+		const plain = file.replace( /\.gz$/, '' );
+		fs.existsSync( plain ) && fs.rmSync( plain );
 		console.log( `${ path.relative( process.cwd(), file ) } ${ Math.round( fs.statSync( file ).size / 1024 ) } KB` );
 	}
 	process.exit( bad ? 1 : 0 );

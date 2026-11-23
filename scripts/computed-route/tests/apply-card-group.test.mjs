@@ -6,12 +6,13 @@ import { motionTools, writeOf } from '../lib/apply-family-statemotion.mjs';
 import { judge } from '../apply.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadCalibration } from '../lib/cache.mjs';
+import { FIXTURE_RECORDS } from '../tools/record-fixtures.mjs';
 import { parseColour } from '../lib/normalise.mjs';
 import { groupHosts, hostedFacts } from '../lib/apply-group-read.mjs';
 
 const db = openDb();
 const tools = motionTools( db, null );
-const calFor = ( block ) => loadCalibration( new URL( '../cache', import.meta.url ).pathname.replace( /^\/(\w:)/, '$1' ), block, 'local-test' );
+const calFor = ( block ) => loadCalibration( FIXTURE_RECORDS, block, 'indus-foods' );
 const snapshot = { palette: [ { slug: 'accent-text', colour: parseColour( 'rgb(216, 202, 80)' ) } ], spacing: [], fontSizes: [], fontFamilies: [] };
 const target = { ref: 'cr-ref-t-1', tpl: 'Root/1#0' };
 const box = ( x, y, w, h ) => ( { x, y, w, h } );

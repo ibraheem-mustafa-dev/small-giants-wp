@@ -8,14 +8,17 @@ import { firstFamily } from './fill-confirm.mjs';
 
 const distinct = ( values ) => [ ...new Set( values.filter( ( v ) => undefined !== v && '' !== v && null !== v ) ) ];
 
-// The setting that holds `prop` on the block's part `element` in `state`, with the slot calibration paints it at.
+// The setting that holds `prop` on the block's part `element` in `state`, with the slot its record places it at and the
+// state it paints in there (`paints`: a part that stands for a state, the tile-selected part a tile setting paints in its
+// `checked` state, is one element of the record in that state), or null for the record's resting state.
 export function settingAt( { db, block, calFor, element, prop, state = null } ) {
 	const row = candidates( db, block, prop, state ).find( ( r ) => r.css_element === element );
 	if ( ! row ) {
 		return null;
 	}
 	const cal = calFor( block );
-	return { attr: row.attr_name, slot: cal?.settings?.[ row.attr_name ]?.slot ?? exactHome( db, block, cal, element ) ?? '' };
+	const placed = cal?.settings?.[ row.attr_name ];
+	return { attr: row.attr_name, slot: placed?.slot ?? exactHome( db, block, cal, element ) ?? '', paints: placed?.state ?? null };
 }
 
 // A colour as a setting holds it: a palette slug where the palette paints exactly that colour, else the hex (or `transparent`).
@@ -72,7 +75,9 @@ export function partItems( { ctx, element, prop, state = null, drafts, lives, la
 	if ( ! at ) {
 		return [ { status: 'no-setting', prop: label ?? prefix, state: state ?? undefined, why: `${ ctx.block } has no ${ state ?? 'resting' } setting for ${ prop } on ${ element }${ why }` } ];
 	}
-	if ( ! at.slot ) {
+	// No slot, or a part that stands for a state its record paints in (asked at rest: the resolver would find the resting
+	// setting of the same element there too): the part's own setting is written by its name.
+	if ( ! at.slot || ( at.paints && ! state ) ) {
 		const row = candidates( ctx.db, ctx.block, prop, state ).find( ( r ) => r.css_element === element );
 		const direct = directItem( { ctx, at, row, element, prop, state, want: want[ 0 ], label, check } );
 		if ( direct ) {

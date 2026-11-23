@@ -19,6 +19,7 @@
 import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
+import zlib from 'zlib';
 import { fileURLToPath } from 'url';
 import { openDb, attrRow } from './db.mjs';
 import { longhands } from './calibrate.mjs';
@@ -404,22 +405,27 @@ function elementPaths( block, element, look, elementsOf = blockElements ) {
 }
 
 // A test's record for one block (writeRecordFixture): the whole object the loader returns, written for one client
-// (`<dir>/<client>/<block>.record.json`, read only for that client) or for any (`<dir>/<block>.record.json`). Only a
-// folder a test names holds one; the route's own runs read the framework database and the site look.
+// (`<dir>/<client>/<block>.record.json`, read only for that client) or for any (`<dir>/<block>.record.json`), as JSON or
+// gzip-compressed JSON (`.record.json.gz`: the checked-in records tools/record-fixtures.mjs writes). Only a folder a test
+// names holds one; the route's own runs read the framework database and the site look. The path of the file that holds
+// it, the client's own before any client's (the path of the plain any-client file when none exists).
 export function recordFixtureFile( dir, block, client = null ) {
-	const own = client ? path.join( dir, String( client ), `${ slugOf( block ) }.record.json` ) : null;
-	return own && fs.existsSync( own ) ? own : path.join( dir, `${ slugOf( block ) }.record.json` );
+	const name = `${ slugOf( block ) }.record.json`;
+	const places = [ ...( client ? [ path.join( dir, String( client ), name ) ] : [] ), path.join( dir, name ) ];
+	return places.flatMap( ( f ) => [ f, `${ f }.gz` ] ).find( ( f ) => fs.existsSync( f ) ) ?? path.join( dir, name );
 }
 
-export function writeRecordFixture( dir, block, record, client = null ) {
-	const file = client ? path.join( dir, String( client ), `${ slugOf( block ) }.record.json` ) : path.join( dir, `${ slugOf( block ) }.record.json` );
+export function writeRecordFixture( dir, block, record, client = null, { gzip = false } = {} ) {
+	const file = path.join( dir, ...( client ? [ String( client ) ] : [] ), `${ slugOf( block ) }.record.json${ gzip ? '.gz' : '' }` );
 	fs.mkdirSync( path.dirname( file ), { recursive: true } );
-	fs.writeFileSync( file, JSON.stringify( record, null, 1 ) );
+	fs.writeFileSync( file, gzip ? zlib.gzipSync( JSON.stringify( record ), { level: 9 } ) : JSON.stringify( record, null, 1 ) );
+	return file;
 }
 
 // A fixture record as the loader returns it: one with no `elements` has no site look, so it carries `paintMissing`.
 export function readRecordFixture( dir, block, client ) {
-	const rec = JSON.parse( fs.readFileSync( recordFixtureFile( dir, block, client ), 'utf8' ) );
+	const file = recordFixtureFile( dir, block, client );
+	const rec = JSON.parse( file.endsWith( '.gz' ) ? zlib.gunzipSync( fs.readFileSync( file ) ).toString( 'utf8' ) : fs.readFileSync( file, 'utf8' ) );
 	if ( rec.elements ) {
 		return rec;
 	}

@@ -11,14 +11,14 @@ import { layerTargets } from '../lib/apply-layer-targets.mjs';
 import { declaredSides, layerRef } from '../lib/decoration-layers.mjs';
 import { changesPost, insertsOf, patchesFor, restoreOf } from '../lib/apply-ops.mjs';
 import { loadCalibration } from '../lib/cache.mjs';
+import { FIXTURE_RECORDS } from '../tools/record-fixtures.mjs';
 import { openDb } from '../lib/db.mjs';
 import { loadSnapshot } from '../lib/normalise.mjs';
 
 const HERE = path.dirname( new URL( import.meta.url ).pathname.replace( /^\/(\w:)/, '$1' ) );
 const db = openDb();
 const decisions = JSON.parse( fs.readFileSync( path.join( HERE, '../data/skeleton-decisions.json' ), 'utf8' ) );
-const calibrations = path.join( HERE, '../cache' );
-const calFor = ( block ) => loadCalibration( calibrations, block, 'local-indus' );
+const calFor = ( block ) => loadCalibration( FIXTURE_RECORDS, block, 'indus-foods' );
 const snapshot = loadSnapshot( path.join( HERE, '../../../sites/indus-foods/theme-snapshot.json' ) );
 
 // A fixture skeleton for surface `demo`: a section (Root/1) holding a ring (Root/2, paired), a glow layer (Root/3), a glare layer

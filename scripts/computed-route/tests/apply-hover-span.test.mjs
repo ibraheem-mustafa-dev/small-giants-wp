@@ -5,6 +5,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { loadCalibration } from '../lib/cache.mjs';
+import { FIXTURE_RECORDS } from '../tools/record-fixtures.mjs';
 import { loadSnapshot } from '../lib/normalise.mjs';
 import { recordIndex } from '../lib/apply-records.mjs';
 import { hoverDeclarations, spanItems } from '../lib/apply-hover-span.mjs';
@@ -15,7 +16,7 @@ const handoff = JSON.parse( fs.readFileSync( path.join( HERE, '..', '..', '..', 
 const snapshot = loadSnapshot( path.join( HERE, '..', '..', '..', 'sites', 'indus-foods', 'theme-snapshot.json' ) );
 const main = handoff.drafts?.[ 0 ]?.dc;
 const db = openDb();
-const calFor = ( block ) => loadCalibration( path.join( HERE, '..', 'cache' ), block, 'local-indus' );
+const calFor = ( block ) => loadCalibration( FIXTURE_RECORDS, block, 'indus-foods' );
 // The footer's Back to top: the button (726) with its ring (727) inside it, as the real records give them.
 const button = { ref: 'cr-ref-footer-45', key: 'cr-ref-footer-45', tpl: 'Root/726#0' };
 const ring = { ref: 'cr-ref-footer-46', key: 'cr-ref-footer-46', tpl: 'Root/727#0' };

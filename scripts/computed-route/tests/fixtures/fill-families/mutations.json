@@ -37,8 +37,8 @@
 	},
 	{
 		"file": "lib/resolve.mjs",
-		"find": "reachedBy( prop ).includes( c.property ) ) && canGive( r, c )",
-		"replace": "false ) && canGive( r, c )",
+		"find": "reachedBy( prop ).includes( c.property ) ) && ( c.state ?? null ) === ( state ?? null ) && canGive( r, c )",
+		"replace": "false ) && ( c.state ?? null ) === ( state ?? null ) && canGive( r, c )",
 		"why": "overflow-x would not find the calibrated overflow setting"
 	},
 	{

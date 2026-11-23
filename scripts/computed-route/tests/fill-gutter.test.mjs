@@ -19,7 +19,7 @@ const BOX = { display: 'block', color: 'rgb(20, 20, 20)', 'font-size': '16px', '
 // It is read for indus-test (the mirror a registered scratch copy of it maps to), from the gitignored cache: a worktree whose
 // cache holds no indus-test paint of sgs/container skips these tests and says why, rather than failing on a missing file.
 const CAL = { 'sgs/container': loadCalibration( FIXTURE_RECORDS, 'sgs/container', 'indus-foods' ) };
-// The checked-in record (tests/fixtures/records/indus-foods/container.record.json, tools/record-fixtures.mjs): a missing one
+// The checked-in record (tests/fixtures/records/indus-foods/container.record.json.gz, tools/record-fixtures.mjs): a missing one
 // fails here rather than skipping.
 if ( ! CAL[ 'sgs/container' ]?.elements?.[ '' ] ) {
 	throw new Error( 'no fixture record of sgs/container for indus-foods: node tools/record-fixtures.mjs --client indus-foods --blocks sgs/container' );

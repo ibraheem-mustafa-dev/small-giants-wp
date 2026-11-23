@@ -19,7 +19,7 @@ import { proposeSkeleton } from '../lib/skeleton-propose.mjs';
 import { N, run, find, build, draftRepo, facts, db } from './fixtures/skeleton-widgets/build.mjs';
 
 const CAL = loadCalibration( FIXTURE_RECORDS, 'sgs/container', 'indus-foods' );
-// The checked-in record (tests/fixtures/records/indus-foods/container.record.json, tools/record-fixtures.mjs): a missing one
+// The checked-in record (tests/fixtures/records/indus-foods/container.record.json.gz, tools/record-fixtures.mjs): a missing one
 // fails here rather than skipping.
 if ( ! CAL?.elements?.[ '' ] ) {
 	throw new Error( 'no fixture record of sgs/container for indus-foods: node tools/record-fixtures.mjs --client indus-foods --blocks sgs/container' );

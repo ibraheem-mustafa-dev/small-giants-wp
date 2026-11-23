@@ -141,8 +141,10 @@ test( 'negative control: the Indus burger bars\' hover colour is held by the but
 	assert.deepEqual( followed( follow( { cal: followCal(), taken: new Map( [ [ 'burgerColourHover', 'surface' ] ] ) } ) ), [ 'background-color', 'color' ] );
 	const focusRule = { barColourFocus: setting( 'color', { state: 'focus', slot: bar( 1 ), slots: [ bar( 1 ) ] } ) };
 	assert.deepEqual( followed( follow( { cal: followCal( focusRule ), taken: new Map( [ [ 'burgerColourHover', 'surface' ] ] ) } ) ), [ 'background-color', 'color' ], 'a focus rule of the bar is not a hover rule' );
-	const { readFileSync } = await import( 'node:fs' );
-	const real = JSON.parse( readFileSync( new URL( '../cache/nav-bar-menu.json', import.meta.url ), 'utf8' ) );
+	// sgs/nav-bar-menu's checked-in record in Indus's look (tests/fixtures/records/indus-foods, tools/record-fixtures.mjs).
+	const { loadCalibration } = await import( '../lib/cache.mjs' );
+	const { FIXTURE_RECORDS } = await import( '../tools/record-fixtures.mjs' );
+	const real = loadCalibration( FIXTURE_RECORDS, 'sgs/nav-bar-menu', 'indus-foods' );
 	const holds = ( taken ) => ancestorHolds( { cal: real, state: 'hover', slot: bar( 1 ), prop: 'color', ancestor: burger, aprop: 'color', taken } );
 	assert.equal( holds( new Map( [ [ 'burgerColourHover', 'surface' ] ] ) ), true );
 	assert.equal( holds( new Map( [ [ 'burgerHoverColour', 'primary' ] ] ) ), false, 'the ground\'s hover write does not hold the colour' );

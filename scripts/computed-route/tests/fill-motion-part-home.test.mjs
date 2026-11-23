@@ -7,6 +7,8 @@ import assert from 'node:assert/strict';
 import { openDb } from '../lib/db.mjs';
 import { partForSlot, targetName } from '../lib/fill-motion.mjs';
 import { exactHome, partHome } from '../lib/fill-part-pairing.mjs';
+import { loadCalibration } from '../lib/cache.mjs';
+import { FIXTURE_RECORDS } from '../tools/record-fixtures.mjs';
 
 const db = openDb();
 const ICON = '.sgs-nav-bar-menu__toggle-wrap > .sgs-nav-bar-menu__burger > .sgs-nav-bar-menu__burger-icon';
@@ -31,18 +33,17 @@ test( 'negative control: the class match still wins, no calibration finds nothin
 	assert.equal( partForSlot( 'sgs/nav-bar-menu', bar( 2 ), targets, ( el ) => exactHome( db, 'sgs/nav-bar-menu', twice, el ) ), null, 'two parts homed at one slot are no answer' );
 } );
 
-// Real calibration (cache/nav-bar-menu.json) and the framework DB's motion targets: the item part's settings are
-// calibrated at link 3 (`.sgs-nav-bar-menu__item:nth-of-type(3) > .sgs-nav-bar-menu__link`), a slot whose last compound
-// carries no `__item` class, so no link is the item part by its home.
-test( 'MUST FAIL: a nav link is not the item part because calibration measured the item settings at link 3', async () => {
-	const { readFileSync } = await import( 'node:fs' );
+// sgs/nav-bar-menu's checked-in record in Eye Care's look and the framework DB's motion targets: the item part's settings are
+// placed at a link (`.sgs-nav-bar-menu__item:nth-of-type(n) > .sgs-nav-bar-menu__link`; calibration measured them at link 3,
+// the record at link 1), a slot whose last compound carries no `__item` class, so no link is the item part by its home.
+test( 'MUST FAIL: a nav link is not the item part because the record places the item settings at a link', async () => {
 	const { motionDb } = await import( '../lib/motion-db.mjs' );
-	const real = JSON.parse( readFileSync( new URL( '../cache/nav-bar-menu.json', import.meta.url ), 'utf8' ) );
+	const real = loadCalibration( FIXTURE_RECORDS, 'sgs/nav-bar-menu', 'eye-care-ward-end' );
 	const realTargets = motionDb( db ).targetsOf( 'sgs/nav-bar-menu' );
 	const realHome = ( element ) => exactHome( db, 'sgs/nav-bar-menu', real, element );
 	const link = ( n ) => `.sgs-nav-bar-menu__bar > .sgs-nav-bar-menu__item:nth-of-type(${ n }) > .sgs-nav-bar-menu__link`;
 	assert.ok( realTargets.some( ( t ) => 'item' === t.cssElement ), 'the DB declares an item motion part' );
-	assert.equal( realHome( 'item' ), link( 3 ), 'calibration homes the item part at link 3' );
+	assert.match( realHome( 'item' ), /^\.sgs-nav-bar-menu__bar > \.sgs-nav-bar-menu__item:nth-of-type\(\d+\) > \.sgs-nav-bar-menu__link$/, 'the record homes the item part at a link' );
 	for ( const n of [ 1, 2, 3 ] ) {
 		assert.equal( partForSlot( 'sgs/nav-bar-menu', link( n ), realTargets, realHome ), null, `link ${ n }` );
 	}
@@ -54,9 +55,8 @@ test( 'MUST FAIL: a nav link is not the item part because calibration measured t
 } );
 
 test( 'negative control: a home with no position step is the part, on the real site-header-row calibration (content band)', async () => {
-	const { readFileSync } = await import( 'node:fs' );
 	const { motionDb } = await import( '../lib/motion-db.mjs' );
-	const real = JSON.parse( readFileSync( new URL( '../cache/site-header-row.json', import.meta.url ), 'utf8' ) );
+	const real = loadCalibration( FIXTURE_RECORDS, 'sgs/site-header-row', 'eye-care-ward-end' );
 	const rowHome = ( element ) => exactHome( db, 'sgs/site-header-row', real, element );
 	assert.equal( rowHome( 'content-band' ), '.sgs-container__inner' );
 	assert.equal( partForSlot( 'sgs/site-header-row', '.sgs-container__inner', motionDb( db ).targetsOf( 'sgs/site-header-row' ), rowHome ), 'content-band' );

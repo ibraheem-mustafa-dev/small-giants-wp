@@ -5,6 +5,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { loadCalibration } from '../lib/cache.mjs';
+import { FIXTURE_RECORDS } from '../tools/record-fixtures.mjs';
 import { loadSnapshot } from '../lib/normalise.mjs';
 import { tiles } from '../lib/apply-family-tiles.mjs';
 import { floatedLabel } from '../lib/apply-family-form.mjs';
@@ -14,7 +15,7 @@ import { openDb } from '../lib/db.mjs';
 const db = openDb();
 const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const snapshot = loadSnapshot( path.join( HERE, '..', '..', '..', 'sites', 'indus-foods', 'theme-snapshot.json' ) );
-const calFor = ( block ) => loadCalibration( path.join( HERE, '..', 'cache' ), block, 'local-indus' );
+const calFor = ( block ) => loadCalibration( FIXTURE_RECORDS, block, 'indus-foods' );
 const at = ( f ) => ( { 1440: f } );
 
 const tile = ( bg, border, color ) => ( { 'background-color': bg, 'border-top-color': border, 'border-top-width': '2px', 'box-shadow': 'none', color, transform: 'none', translate: 'none', scale: 'none', rotate: 'none' } );

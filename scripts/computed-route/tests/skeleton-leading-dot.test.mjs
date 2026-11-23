@@ -6,7 +6,7 @@
 // kept, and the absorbed dot is read at the label's leading layer, the `::before` its dot settings paint
 // (lib/skeleton-conserve-slots.mjs::absorbedSlots, leadingLooks, leadingMark), which the skeleton lint lets a slot name
 // (lib/fill-skeleton.mjs::skeletonProblems) and Fill reads from the dot's own element. Stacked rows of a dot and words stay
-// one list (Bean, 2026-10-19). The Fill test runs on the block's real calibration (cache/label.json, gitignored) and is skipped
+// one list (Bean, 2026-10-19). The Fill test runs on the block's checked-in record (tests/fixtures/records/mamas-munches-redesign/label.record.json.gz) and is skipped
 // without it. No site, no browser.
 // Mutation list: tests/skeleton-leading-dot.mutations.json.
 import nodeTest from 'node:test';
@@ -21,6 +21,7 @@ import { skeletonNodes, skeletonProblems, cleanTree } from '../lib/fill-skeleton
 import { fillTree } from '../lib/fill-resolve.mjs';
 import { addRefs } from '../lib/tree.mjs';
 import { loadCalibration } from '../lib/cache.mjs';
+import { FIXTURE_RECORDS } from '../tools/record-fixtures.mjs';
 
 const test = nodeTest;
 const REPO = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), '../../..' );
@@ -126,10 +127,10 @@ test( 'MUST FAIL: the skeleton lint lets the leading layer name a draft element 
 	assert.match( skeletonProblems( tree( { '.x::before': { tpl: 'Root/3#0' } } ) ).join( '\n' ), /names a pseudo layer/ );
 } );
 
-// Fill on the label's real calibration: the dot's own element read at the label's leading layer writes the dot's colour and size.
-const CAL = loadCalibration( path.join( REPO, 'scripts', 'computed-route', 'cache' ), 'sgs/label', 'local-mamas' );
-const NO_CAL = ! CAL ? 'no sgs/label slot map in cache/' : CAL.paintMissing ?? null;
-( NO_CAL ? ( name, fn ) => nodeTest( name, { skip: `needs the local-mamas calibration of sgs/label in cache/ (gitignored; run calibrate.mjs): ${ NO_CAL }` }, fn ) : nodeTest )( 'MUST FAIL: Fill reads the dot element at the leading layer into the label\'s dot colour and size', () => {
+// Fill on the label's checked-in record: the dot's own element read at the label's leading layer writes the dot's colour and size.
+// The checked-in record (tests/fixtures/records/mamas-munches-redesign/label.record.json.gz, tools/record-fixtures.mjs).
+const CAL = loadCalibration( FIXTURE_RECORDS, 'sgs/label', 'mamas-munches-redesign' );
+nodeTest( 'MUST FAIL: Fill reads the dot element at the leading layer into the label\'s dot colour and size', () => {
 	const sk = [ { name: 'sgs/label', draftRef: '.line', draftSlots: { [ LEADING_LAYER ]: '.dot' }, attributes: { text: WORDS, dot: true }, innerBlocks: [] } ];
 	const nodes = skeletonNodes( sk );
 	const el = ( styles, rect ) => ( { styles, pseudo: {}, rect, inFlow: true, words: '', href: null } );
