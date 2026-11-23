@@ -13,8 +13,9 @@ This script sets that up over SSH with WP-CLI, reusing build-deploy.py's TARGETS
   3. saves the SMTP connection through FluentSMTP's own Settings::store() with
      key_store `wp_config` (Smtp/Handler.php::setSettings then reads the two
      constants), so the option shape is always the installed plugin's own;
-  4. turns email logging on and the daily sending digest on (FluentSMTP's email
-     alert: sent and failed counts; instant alerts are Telegram/Slack/Discord only);
+  4. turns email logging on, and FluentSMTP's daily sending digest (sent and failed counts; instant
+     alerts are Telegram/Slack/Discord only) off unless --digest asks for it (Bean, 2026-11-23: the
+     digests from every site flooded his inbox);
   5. runs --check, and with --test-to sends a test email and reads its log row.
 
 The sender address and name default to the site's Site Info email and site title,
@@ -108,7 +109,7 @@ class Site:
 
 
 CONFIGURE_PHP = r"""
-list( $from_email, $from_name, $alert_email, $host, $port, $encryption ) = $args;
+list( $from_email, $from_name, $alert_email, $host, $port, $encryption, $digest ) = $args;
 $info        = (array) get_option( 'sgs_site_info', array() );
 $site_email  = is_email( $info['email'] ?? '' ) ? $info['email'] : get_option( 'admin_email' );
 $from_email  = is_email( $from_email ) ? $from_email : $site_email;
@@ -130,7 +131,7 @@ $misc['default_connection'] = md5( $from_email );
 $misc['log_emails']         = 'yes';
 $model->updateMiscSettings( $misc );
 $notify = $model->notificationSettings();
-$notify['enabled']      = 'yes';
+$notify['enabled']      = 'yes' === $digest ? 'yes' : 'no';
 $notify['notify_email'] = $alert_email;
 $notify['notify_days']  = array( 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' );
 update_option( '_fluent_smtp_notify_settings', $notify, false );
@@ -239,8 +240,9 @@ def provision(site: Site, args: argparse.Namespace, password: str) -> None:
 
     print("4/4 FluentSMTP connection, logging and digest")
     saved = site.php(CONFIGURE_PHP, args.from_email, args.from_name, args.alert_email,
-                     SMTP_HOST, str(SMTP_PORT), SMTP_ENCRYPTION)
-    print(f"  sender {saved['from_name']} <{saved['from_email']}>, digest to {saved['alert_email']}")
+                     SMTP_HOST, str(SMTP_PORT), SMTP_ENCRYPTION, "yes" if args.digest else "no")
+    print(f"  sender {saved['from_name']} <{saved['from_email']}>, "
+          + (f"digest to {saved['alert_email']}" if args.digest else "digest off"))
 
 
 def main() -> int:
@@ -252,7 +254,8 @@ def main() -> int:
     parser.add_argument("--secret-key", help="the key holding the mailbox password")
     parser.add_argument("--from-email", default="", help="default: the Site Info email")
     parser.add_argument("--from-name", default="", help="default: the site title")
-    parser.add_argument("--alert-email", default="", help="daily digest recipient; default: the Site Info email")
+    parser.add_argument("--digest", action="store_true", help="turn FluentSMTP's daily sending digest on (off by default)")
+    parser.add_argument("--alert-email", default="", help="daily digest recipient (with --digest); default: the Site Info email")
     parser.add_argument("--test-to", default="", help="send a test email to this address after setup")
     parser.add_argument("--redirect-all-to", default="", metavar="ADDRESS|off",
                         help="TEST SITES ONLY: send every email to ADDRESS (real recipients shown in the subject); 'off' removes it")
