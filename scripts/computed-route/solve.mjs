@@ -13,6 +13,7 @@ import { spawn, spawnSync } from 'child_process';
 import { fileURLToPath, pathToFileURL } from 'url';
 import { openDb, statesVocabulary } from './lib/db.mjs';
 import { loadCalibration } from './lib/cache.mjs';
+import { prepareLooks } from './lib/setting-record.mjs';
 import { assertPaints, treeBlocks, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { loadSnapshot } from './lib/normalise.mjs';
 import { resolve, resolveViaAncestor } from './lib/resolve.mjs';
@@ -54,7 +55,9 @@ export function calibrationFor( block, client, dir = path.join( HERE, 'cache' ) 
 }
 
 // The block-to-record function for one client, the shape every reader takes as `calFor`.
-export const calibrationForClient = ( client, dir = path.join( HERE, 'cache' ) ) => ( block ) => calibrationFor( block, client, dir );
+// `prepare( blocks )` builds the client's missing looks for those blocks in one parallel run (lib/setting-record.mjs::
+// prepareLooks); the paint gate calls it before it reads them.
+export const calibrationForClient = ( client, dir = path.join( HERE, 'cache' ) ) => Object.assign( ( block ) => calibrationFor( block, client, dir ), { prepare: ( blocks ) => prepareLooks( blocks, client ) } );
 
 // A block that wraps its own root element only in some modes (icon-list adds a <div> or <nav> around its <ul> when it has
 // a heading or a landmark; business-info wraps its value) is calibrated in one mode and measured on a page in another. A

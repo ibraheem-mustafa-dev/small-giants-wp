@@ -73,6 +73,7 @@ import { walkerConfigs, WALK_WIDTHS } from './lib/fill-config.mjs';
 import { walkerStates, walkRefusalRows } from './lib/walker-states.mjs';
 import { fillReport, unmappedList, readFailureRows, emptyPictureRows, passSettled } from './lib/fill-report.mjs';
 import { calibrationFor } from './solve.mjs';
+import { prepareLooks } from './lib/setting-record.mjs';
 import { assertPaints, treeBlocks, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { motionSettled, motionRejudged, transitionListOutcomes } from './lib/fill-motion-settle.mjs';
 import { stateMap } from './lib/state-map.mjs';
@@ -89,7 +90,7 @@ const REPO = path.resolve( HERE, '../..' );
 // The record loader for one client (solve.mjs::calibrationFor): each block's setting record and its look in the client's
 // theme snapshot, or a test's fixture records in `dir` (lib/setting-record.mjs::writeRecordFixture).
 export function calibrationLoader( client, dir = null ) {
-	return ( block ) => calibrationFor( block, client, dir ? path.resolve( dir ) : undefined );
+	return Object.assign( ( block ) => calibrationFor( block, client, dir ? path.resolve( dir ) : undefined ), { prepare: ( blocks ) => prepareLooks( blocks, client ) } );
 }
 
 // `--mirror <url> <file>` (repeatable) as { url: absolute file path }.

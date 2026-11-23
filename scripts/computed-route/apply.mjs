@@ -45,6 +45,7 @@ import { positionTargets } from './lib/apply-position.mjs';
 import { attrsFor } from './lib/db.mjs';
 import { partHome } from './lib/fill-part-pairing.mjs';
 import { loadCalibration } from './lib/cache.mjs';
+import { prepareLooks } from './lib/setting-record.mjs';
 import { assertPaints, allowMissingPaintArg } from './lib/paint-gate.mjs';
 import { openDb } from './lib/db.mjs';
 import { draftLinksFor } from './lib/draft-link.mjs';
@@ -346,10 +347,10 @@ async function main() {
 	};
 	const calCache = path.join( HERE, 'cache' );
 	const calibrations = new Map();
-	const calFor = ( block ) => {
+	const calFor = Object.assign( ( block ) => {
 		calibrations.has( block ) || calibrations.set( block, loadCalibration( calCache, block, client ) );
 		return calibrations.get( block );
-	};
+	}, { prepare: ( blocks ) => prepareLooks( blocks, client ) } );
 	const props = familyProps( FAMILIES );
 	const db = openDb();
 	const links = draftLinksFor( { repo: REPO, client } );

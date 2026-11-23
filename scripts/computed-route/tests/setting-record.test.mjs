@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop, rowPaths, compounds } from '../lib/setting-record.mjs';
+import { loadRecord, partPaths, tierHolds, reachedAtOf, symbolicTiers, withNodeValues, runsShop, rowPaths, compounds, prepareLooks } from '../lib/setting-record.mjs';
 import { calibrationForNode } from '../lib/paint-state.mjs';
 
 const BLOCK = 'sgs/demo';
@@ -192,6 +192,26 @@ test( 'compounds reads a selector at its top level, through a :where() that wrap
 	assert.deepEqual( compounds( '.a + .b ~ .c' ).map( ( c ) => c.comb ), [ '', '+', '~' ] );
 	assert.equal( compounds( '.a, .b' ), null );
 	assert.equal( compounds( '.a:not(.b' ), null );
+} );
+
+test( 'MUST FAIL: the missing looks of a run are built in one call of the builder; a built block is not asked again, a failed one is returned', () => {
+	const repo = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-prep-' ) );
+	fs.mkdirSync( path.join( repo, 'sites', 'acme' ), { recursive: true } );
+	fs.writeFileSync( path.join( repo, 'sites', 'acme', 'theme-snapshot.json' ), '{}' );
+	const dir = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-setting-record-prep-looks-' ) );
+	const calls = [];
+	const run = ( cmd, args ) => ( calls.push( args ), { status: 1, stdout: [ 'heading: built', 'button: current', 'text: FAILED ValueError: no fixture' ].join( '\r\n' ) } );
+	assert.deepEqual( prepareLooks( [ 'sgs/heading', 'sgs/button', 'sgs/text', 'core/paragraph', 'sgs/heading' ], 'acme', { dir, repo, build: true, run } ), [ 'sgs/text' ] );
+	assert.equal( calls.length, 1, 'one builder call for the whole run' );
+	assert.equal( calls[ 0 ][ calls[ 0 ].indexOf( '--blocks' ) + 1 ], 'sgs/heading,sgs/button,sgs/text', 'each SGS block once; a core block has no look' );
+	prepareLooks( [ 'sgs/heading', 'sgs/button' ], 'acme', { dir, repo, build: true, run } );
+	assert.equal( calls.length, 1, 'built and current blocks are not asked again' );
+	prepareLooks( [ 'sgs/text' ], 'acme', { dir, repo, build: true, run } );
+	assert.equal( calls.length, 2, 'a failed block is asked again' );
+	// negative controls: nothing is built with building off (SGS_NO_SITE) or for a client with no theme snapshot
+	assert.deepEqual( prepareLooks( [ 'sgs/icon' ], 'acme', { dir, repo, build: false, run } ), [] );
+	assert.deepEqual( prepareLooks( [ 'sgs/icon' ], 'nobody', { dir, repo, build: true, run } ), [] );
+	assert.equal( calls.length, 2 );
 } );
 
 test( 'tier conditions as a plain screen holds them', () => {

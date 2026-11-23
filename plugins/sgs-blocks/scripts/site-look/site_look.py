@@ -900,9 +900,16 @@ def main(argv=None) -> int:
     jobs = [(b, snap, a.woocommerce, str(a.out / a.site), a.site) for b in blocks]
     failed = 0
     if a.jobs > 1 and len(jobs) > 1:
+        # one block's failure is reported and the rest still build, as in the one-at-a-time path below
         with ProcessPoolExecutor(a.jobs) as ex:
-            for b, how in ex.map(write_block, jobs):
-                print(f'{b}: {how}')
+            futures = [(j, ex.submit(write_block, j)) for j in jobs]
+            for j, fut in futures:
+                try:
+                    b, how = fut.result()
+                    print(f'{b}: {how}', flush=True)
+                except Exception as exc:  # noqa: BLE001
+                    failed += 1
+                    print(f'{j[0]}: FAILED {type(exc).__name__}: {exc}', flush=True)
     else:
         for j in jobs:
             try:

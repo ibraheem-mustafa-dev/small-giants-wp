@@ -66,6 +66,11 @@ test( 'negative control: a tree whose blocks all have a look passes, a block the
 	assert.throws( () => assertPaints( { blocks: treeBlocks( SKELETON ), calFor, client: ACME, what: 'fill home' } ), GAPS );
 	assert.doesNotThrow( () => assertPaints( { blocks: treeBlocks( SKELETON ), calFor: calibrationLoader( null, cache ), client: null, what: 'census' } ), 'a run with no client reads no look by design' );
 	assert.deepEqual( treeBlocks( SKELETON ), [ 'sgs/container', 'sgs/text', 'sgs/heading', 'sgs/button' ] );
+	// The gate has the run's looks built in one batch before it reads them (calFor.prepare, lib/setting-record.mjs::prepareLooks).
+	const asked = [];
+	const prepared = Object.assign( ( b ) => calFor( b ), { prepare: ( blocks ) => asked.push( blocks ) } );
+	assert.doesNotThrow( () => assertPaints( { blocks: treeBlocks( tree ), calFor: prepared, client: ACME, what: 'fill home' } ) );
+	assert.deepEqual( asked, [ [ 'sgs/container', 'sgs/text', 'core/paragraph', 'sgs/no-slot-map' ] ] );
 } );
 
 // A temp repo holding one surface for the skeleton writer, after tests/skeleton-intake-context.test.mjs.

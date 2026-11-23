@@ -68,6 +68,8 @@ export function assertPaints( { blocks, calFor, client = null, what, allow = [],
 	if ( ! client ) {
 		return [];
 	}
+	// The run's missing looks are built in one parallel batch first (calFor.prepare, lib/setting-record.mjs::prepareLooks).
+	calFor.prepare?.( blocks );
 	const gaps = paintGaps( blocks, calFor );
 	const stop = gaps.filter( ( b ) => ! allow.includes( b ) );
 	if ( stop.length ) {

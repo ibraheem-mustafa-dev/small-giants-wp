@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { loadCalibration } from './cache.mjs';
+import { prepareLooks } from './setting-record.mjs';
 import { assertPaints, treeBlocks } from './paint-gate.mjs';
 import { formLinksFor } from './skeleton-form-link.mjs';
 import { detectReferences } from './references.mjs';
@@ -16,7 +17,7 @@ const CACHE = path.join( path.dirname( fileURLToPath( import.meta.url ) ), '..',
 
 // A block's setting record in one client's look (lib/cache.mjs::loadCalibration), the reader the ones below and
 // assertSkeletonPaints share. `dir` holds a test's fixture records (lib/setting-record.mjs::writeRecordFixture).
-export const calibrationsAt = ( client, dir = CACHE ) => ( slug ) => loadCalibration( dir, slug, client );
+export const calibrationsAt = ( client, dir = CACHE ) => Object.assign( ( slug ) => loadCalibration( dir, slug, client ), { prepare: ( blocks ) => prepareLooks( blocks, client ) } );
 
 // The element keys of a block's default look for a client (slot targets), or none when it has no look.
 export const calKeysFor = ( client, dir = CACHE ) => ( slug ) => Object.keys( calibrationsAt( client, dir )( slug )?.elements || {} );

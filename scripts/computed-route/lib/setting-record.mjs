@@ -19,6 +19,7 @@
 import fs from 'fs';
 import path from 'path';
 import { spawnSync } from 'child_process';
+import os from 'os';
 import zlib from 'zlib';
 import { fileURLToPath } from 'url';
 import { openDb, attrRow } from './db.mjs';
@@ -59,6 +60,27 @@ const lookFile = ( dir, client, block ) => path.join( dir, client, `${ slugOf( b
 export const siteLookFile = ( client, block, dir = SITE_LOOK_DIR ) => lookFile( dir, String( client ), block );
 
 const checked = new Set();
+
+// Builds (or confirms current) the site looks of many blocks for one client in one parallel run of the builder, before a
+// run reads them one by one: a cold look takes minutes to render, and siteLook alone builds one block at a time. Each
+// block is then checked for this process, so siteLook does not ask the builder again. Nothing is built with SGS_NO_SITE
+// set, for a client with no theme snapshot, or for blocks already checked. Returns the blocks the builder could not build.
+// `run` stands in for spawnSync (tests).
+export function prepareLooks( blocks, client, { dir = SITE_LOOK_DIR, repo = REPO, build = ! process.env.SGS_NO_SITE, run = spawnSync } = {} ) {
+	const snapshot = path.join( repo, 'sites', String( client ), 'theme-snapshot.json' );
+	const due = [ ...new Set( blocks ) ].filter( ( b ) => /^sgs\//.test( b ) && ! checked.has( `${ dir }|${ client }|${ b }` ) );
+	if ( ! build || ! client || ! due.length || ! fs.existsSync( snapshot ) ) {
+		return [];
+	}
+	const jobs = String( Math.max( 1, Math.min( due.length, Math.floor( os.cpus().length / 2 ) || 1 ) ) );
+	const args = [ BUILDER, '--snapshot', snapshot, '--site', client, '--out', dir, '--blocks', due.join( ',' ), '--jobs', jobs, ...( runsShop( client, repo ) ? [ '--woocommerce' ] : [] ) ];
+	const r = run( 'python', args, { encoding: 'utf8', cwd: REPO } );
+	// A block the builder reports built or current is checked; any other is left for siteLook, which says why when it is read.
+	const reported = String( r.stdout || '' ).split( /\r?\n/ );
+	const done = ( b ) => reported.some( ( line ) => [ 'built', 'current' ].some( ( how ) => line.startsWith( `${ slugOf( b ) }: ${ how }` ) ) );
+	due.filter( done ).forEach( ( b ) => checked.add( `${ dir }|${ client }|${ b }` ) );
+	return due.filter( ( b ) => ! done( b ) );
+}
 
 // The block's site look for the client (sites/<client>/theme-snapshot.json), built (or confirmed current) by the builder
 // once per process. With SGS_NO_SITE set (the route's tests) nothing is built: a missing look reads as missing.
