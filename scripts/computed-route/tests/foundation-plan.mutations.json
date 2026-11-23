@@ -1,12 +1,6 @@
 [
 	{
 		"file": "lib/foundation-plan.mjs",
-		"find": "'--stages', 'inventory,propose', '--jobs', '1',",
-		"replace": "'--stages', 'inventory,propose,fill', '--jobs', '1',",
-		"why": "the paint pass runs more than it needs"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
 		"find": "holds: () => ( intakeCurrent( { intake: readJson( p.intake ), manifest: readJson( p.manifest ) } ) && gitignoredPresent() ?",
 		"replace": "holds: () => ( gitignoredPresent() ?",
 		"why": "a changed handoff leaves the intake as it was"
@@ -34,48 +28,6 @@
 		"find": "\t\t\t\tran.intake = true;\n",
 		"replace": "",
 		"why": "a run that read the draft does not propose the skeletons again"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
-		"find": "\t\t\tapplicable: () => ( ran.intake || ran.calibrated ? null :",
-		"replace": "\t\t\tapplicable: () => ( ran.intake ? null :",
-		"why": "a calibration alone does not propose the skeletons again"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
-		"find": "\t\t\tapplicable: () => ( ran.intake || ran.calibrated ? null :",
-		"replace": "\t\t\tapplicable: () => ( true ? null :",
-		"why": "the skeletons are proposed again on every run"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
-		"find": "\t\t\t\t\tran.calibrated = true;\n",
-		"replace": "",
-		"why": "the calibration is not noted"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
-		"find": "filter( ( b ) => ! options.allowMissingPaint.includes( b ) );",
-		"replace": "filter( ( b ) => true );",
-		"why": "a named allowance is calibrated"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
-		"find": "\t\t\t\t\tif ( other.length ) {",
-		"replace": "\t\t\t\t\tif ( false ) {",
-		"why": "a failure that names no block is read as a clean pass"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
-		"find": "for ( let round = 1; round <= PAINT_ROUNDS; round++ ) {",
-		"replace": "for ( let round = 1; round <= 1; round++ ) {",
-		"why": "the paint loop gives up after one round"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
-		"find": "commands.calibrate( { client, site, blocks: gaps } )",
-		"replace": "commands.calibrate( { client, site, blocks: [ 'sgs/hero' ] } )",
-		"why": "a fixed list is calibrated instead of the blocks named"
 	},
 	{
 		"file": "lib/foundation-plan.mjs",
@@ -163,18 +115,6 @@
 	},
 	{
 		"file": "lib/foundation-plan.mjs",
-		"find": "\treturn paintGapsOf( text );\n}",
-		"replace": "\treturn paintGapsOf( text ).slice( 0, 1 );\n}",
-		"why": "only the first block a stage names is calibrated"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
-		"find": "filter( ( [ , r ] ) => ! r.ok && ! paintGapsOf( r.detail ).length )",
-		"replace": "filter( ( [ , r ] ) => ! r.ok )",
-		"why": "a paint gap is reported as another failure"
-	},
-	{
-		"file": "lib/foundation-plan.mjs",
 		"find": "\tmedia: ( { client, site } ) => [ 'node', [ `${ ROUTE }/media-upload.mjs`, client, '--site', site, '--apply' ] ],",
 		"replace": "\tmedia: ( { client, site } ) => [ 'node', [ `${ ROUTE }/media-upload.mjs`, client, '--site', site ] ],",
 		"why": "the pictures are listed, not uploaded"
@@ -196,5 +136,53 @@
 		"find": "const picks = v.failed.some( ( l ) => / finalise: /.test( l ) );",
 		"replace": "const picks = false;",
 		"why": "a surface awaiting a pick is told to fix a failure, not to run the finaliser"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "holds: async () => heldBy( 'looks', await looksFp(),",
+		"replace": "holds: async () => 'held' || heldBy( 'looks', await looksFp(),",
+		"why": "the looks hold whatever changed"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "fileSha( at( 'plugins', 'sgs-blocks', 'scripts', 'setting-record', 'fixtures.json' ) ), ",
+		"replace": "",
+		"why": "changed fixtures leave the looks as they were"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "joinFp( client, snapshotSha(), await ports.buildDigest(), ",
+		"replace": "joinFp( client, snapshotSha(), ",
+		"why": "a new block build leaves the looks as they were"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "ran.intake || ran.looks ? null",
+		"replace": "ran.intake ? null",
+		"why": "a look rebuild alone does not propose the skeletons again"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\t\tran.looks = true;\n",
+		"replace": "",
+		"why": "the look rebuild is not noted"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "applicable: () => ( ran.intake || ran.looks ? null :",
+		"replace": "applicable: () => ( true ? null :",
+		"why": "the skeletons are proposed again on every run"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": ", ...( shop ? [ '--woocommerce' ] : [] ) ] ],",
+		"replace": " ] ],",
+		"why": "a shop client's looks are built without the shop stylesheet"
+	},
+	{
+		"file": "lib/foundation-plan.mjs",
+		"find": "\t\t\tid: 'skeletons', deps: [ 'looks' ],",
+		"replace": "\t\t\tid: 'skeletons', deps: [],",
+		"why": "the skeletons are proposed from looks that failed to build"
 	}
 ]

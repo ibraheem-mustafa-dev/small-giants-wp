@@ -4,13 +4,13 @@
 //   node scripts/computed-route/build-foundation.mjs <client> --site <target>
 //        [--plan] [--force step,step] [--through step] [--replace-snapshot] [--allow-missing-paint sgs/a,sgs/b] [--allow-unpicked] [--picks <file>]
 // The steps run in this order (lib/foundation-plan.mjs): preflight, handoff-check, intake-files, intake, apply-review, tokens, plugin-build, sync,
-// snapshot-push, site-info, media, site-build, manifest, paint, skeletons, surfaces. Each prints one line: `ok`, `skip` with the reason (its result is
+// snapshot-push, site-info, media, site-build, manifest, looks, skeletons, surfaces. Each prints one line: `ok`, `skip` with the reason (its result is
 // current, or it has nothing to do by design), `FAIL` with the next action, or `stop` when a step it depends on failed. A step that already holds a
 // current result is skipped, so a rerun after a failure costs little; the state is kept in sites/<client>/build/foundation/<site>.json (gitignored) and
 // each step's own logs in sites/<client>/build/qa/foundation/<stamp>/. Exit 0 when no step failed or stopped, 1 otherwise, 2 on a usage error.
 //   --plan                  prints what each step would do (or why it would not) and runs nothing; the preflight makes only its file checks, and no site is contacted
 //   --force a,b             runs the named steps whatever they hold
-//   --through step          runs the steps up to and including `step` and none after it (`--through site-build` stops before the paint, the skeletons and the
+//   --through step          runs the steps up to and including `step` and none after it (`--through site-build` stops before the looks, the skeletons and the
 //                           header, footer and drawer); the summary says which steps were left out
 //   --replace-snapshot      lets the token extraction replace the client's committed theme-snapshot.json, from a worktree only; without it a client that
 //                           has a snapshot keeps it and the extraction is written to a scratch file and compared

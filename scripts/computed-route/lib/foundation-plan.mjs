@@ -21,10 +21,10 @@
 //   media            media-upload.mjs --apply: the handoff's pictures into the site's library and the record the readers look up.
 //   site-build       site-build.mjs --apply: every page-map row's post, menus and layout; held when every row has its id on this site.
 //   manifest         manifest.mjs --apply: surfaces.json; held when every layout row has a surface.
-//   paint            site-run.mjs --stages inventory,propose on the layout surfaces, then calibrate.mjs on exactly the blocks the paint gate names on
-//                    --site, until the propose stage passes (at most three rounds).
-//   skeletons        intake.mjs --rerun-skeletons then --apply-review --go-through, only when this run read the draft or calibrated (a first run's
-//                    skeleton records carry no calibration keys).
+//   looks            plugins/sgs-blocks/scripts/site-look/site_look.py --all: every block's site look for the client from its committed snapshot,
+//                    offline (no site), with the shop stylesheet when the page map has a shop (lib/setting-record.mjs::runsShop); the builder
+//                    skips a look whose key has not moved; held when the snapshot, the block build, the fixtures and the builder are as last built.
+//   skeletons        intake.mjs --rerun-skeletons then --apply-review --go-through, only when this run read the draft or rebuilt the looks.
 //   surfaces         lib/clone-surface.mjs::cloneSurfaces on the header, footer and nav drawer (the basket drawer is the header's cart block), Solve included
 //                    when the ports carry `solve`; `--picks <file>` is applied first.
 import fs from 'fs';
@@ -33,12 +33,14 @@ import crypto from 'crypto';
 import { applyPicksFile, cloneSurfaces } from './clone-surface.mjs';
 import { distroOf, runPreflight } from './foundation-preflight.mjs';
 import { heldByState } from './foundation-run.mjs';
-import { intakeCurrent, layoutSurfaces, pageMapBuilt, paintGapsOf, snapshotDiff, tokenOutput, wslPath } from './foundation-parts.mjs';
+import { intakeCurrent, layoutSurfaces, pageMapBuilt, snapshotDiff, tokenOutput, wslPath } from './foundation-parts.mjs';
+import { runsShop } from './setting-record.mjs';
 import { mediaAssets } from './media-upload.mjs';
 
-export const PAINT_ROUNDS = 3;
-export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'site-build', 'manifest', 'paint', 'skeletons', 'surfaces' ];
+export const STEP_IDS = [ 'preflight', 'handoff-check', 'intake-files', 'intake', 'apply-review', 'tokens', 'plugin-build', 'sync', 'snapshot-push', 'site-info', 'media', 'site-build', 'manifest', 'looks', 'skeletons', 'surfaces' ];
 const ROUTE = 'scripts/computed-route';
+// The site look builder's worker processes (each renders a block's instances offline).
+export const LOOK_JOBS = 8;
 
 export const sha = ( data ) => crypto.createHash( 'sha256' ).update( data ).digest( 'hex' );
 const fileSha = ( file ) => ( fs.existsSync( file ) && fs.statSync( file ).isFile() ? sha( fs.readFileSync( file ) ) : null );
@@ -60,22 +62,11 @@ export const commands = {
 	media: ( { client, site } ) => [ 'node', [ `${ ROUTE }/media-upload.mjs`, client, '--site', site, '--apply' ] ],
 	siteBuild: ( { client, site } ) => [ 'node', [ `${ ROUTE }/site-build.mjs`, client, '--site', site, '--apply' ] ],
 	manifest: ( { client, site } ) => [ 'node', [ `${ ROUTE }/manifest.mjs`, client, '--site', site, '--apply' ] ],
-	calibrate: ( { client, site, blocks } ) => [ 'node', [ `${ ROUTE }/calibrate.mjs`, '--site', site, '--client', client, '--blocks', blocks.join( ',' ) ] ],
+	looks: ( { client, shop } ) => [ 'python', [ 'plugins/sgs-blocks/scripts/site-look/site_look.py', '--snapshot', `sites/${ client }/theme-snapshot.json`, '--site', client, '--out', `${ ROUTE }/site-look`, '--all', '--jobs', String( LOOK_JOBS ), ...( shop ? [ '--woocommerce' ] : [] ) ] ],
 };
 
 // The one-line failure of a command that exited non-zero, with what to do next.
 const failed = ( id, r, next ) => Object.assign( new Error( `${ id } exited ${ r.code }: ${ r.tail }` ), { next } );
-
-// The block names in the status of a site run whose propose or fill stage stopped on the paint gate, each once.
-export function gapsInStatus( status ) {
-	const text = Object.values( status ?? {} ).flatMap( ( s ) => Object.values( s ) ).filter( ( r ) => ! r.ok ).map( ( r ) => r.detail ).join( '\n' );
-	return paintGapsOf( text );
-}
-
-// The failed stages of a status object that are not a paint gap, as "<surface> <stage>: <detail>" lines.
-export function otherFailures( status ) {
-	return Object.entries( status ?? {} ).flatMap( ( [ key, stages ] ) => Object.entries( stages ).filter( ( [ , r ] ) => ! r.ok && ! paintGapsOf( r.detail ).length ).map( ( [ stage, r ] ) => `${ key } ${ stage }: ${ r.detail }` ) );
-}
 
 // The steps for `ctx` ({ client, site, repo, targets, options, ports, log }).
 export function buildSteps( ctx ) {
@@ -122,6 +113,9 @@ export function buildSteps( ctx ) {
 		: tokenOutput( { committedExists: fs.existsSync( p.snapshot ), replace: options.replaceSnapshot, mainCheckout: fs.existsSync( at( '.git' ) ) && fs.statSync( at( '.git' ) ).isDirectory() } ) );
 	const entryDraft = () => readJson( p.manifest )?.entry_drafts?.[ 0 ];
 	const snapshotSha = () => fileSha( p.snapshot );
+	// The looks' inputs: the snapshot, the block build, the fixtures the looks are drawn from and the builder (site_look.py keeps
+	// its own per-block key as well, so a run whose inputs moved rebuilds only the looks whose key moved).
+	const looksFp = async () => joinFp( client, snapshotSha(), await ports.buildDigest(), fileSha( at( 'plugins', 'sgs-blocks', 'scripts', 'setting-record', 'fixtures.json' ) ), fileSha( at( 'plugins', 'sgs-blocks', 'scripts', 'site-look', 'site_look.py' ) ), runsShop( client, repo ) );
 	const localOnly = ( what ) => ( local ? null : `${ site } is a hosted site: ${ what }` );
 
 	const steps = [
@@ -260,50 +254,34 @@ export function buildSteps( ctx ) {
 			run: () => cmd( 'manifest', commands.manifest( { client, site } ), 'it lists each row it could not settle' ),
 		},
 		{
-			id: 'paint', deps: [ 'manifest', 'sync', 'tokens', 'apply-review' ], title: 'calibrate exactly the blocks the paint gate names on the site',
-			fingerprint: async () => joinFp( site, snapshotSha(), fileSha( p.intake ), await ports.buildDigest(), layout().found.map( ( s ) => s.key ).join( ',' ) ),
-			holds: async () => heldBy( 'paint', joinFp( site, snapshotSha(), fileSha( p.intake ), await ports.buildDigest(), layout().found.map( ( s ) => s.key ).join( ',' ) ), 'the layout surfaces propose with no paint gap for this build and snapshot' ),
+			id: 'looks', deps: [ 'tokens', 'plugin-build', 'apply-review' ], title: `site_look.py --all: every block's site look for the client, offline`,
+			fingerprint: () => looksFp(),
+			holds: async () => heldBy( 'looks', await looksFp(), `every block's site look was built for this snapshot, block build, fixtures and builder` ),
 			run: async () => {
-				const { found, missing } = layout();
-				if ( missing.length || ! found.length ) {
-					throw Object.assign( new Error( missing.length ? `no surface for the layout row${ 1 === missing.length ? '' : 's' } ${ missing.map( ( m ) => m.slug ).join( ', ' ) }` : 'the page map has no header, footer or drawer row' ), { next: `node ${ ROUTE }/manifest.mjs ${ client } --site ${ site } --apply` } );
-				}
-				const keys = found.map( ( s ) => s.key );
-				const done = [];
-				for ( let round = 1; round <= PAINT_ROUNDS; round++ ) {
-					const r = await ports.launch( [ client, '--site', site, '--only', keys.join( ',' ), '--stages', 'inventory,propose', '--jobs', '1', ...( options.allowMissingPaint.length ? [ '--allow-missing-paint', options.allowMissingPaint.join( ',' ) ] : [] ) ] );
-					if ( ! r.status ) {
-						throw new Error( `the propose pass wrote no status: ${ r.error }` );
-					}
-					const gaps = gapsInStatus( r.status ).filter( ( b ) => ! options.allowMissingPaint.includes( b ) );
-					const other = otherFailures( r.status );
-					if ( other.length ) {
-						throw Object.assign( new Error( `the propose pass failed: ${ other.join( '; ' ).slice( 0, 500 ) }` ), { next: `read ${ r.runDir }` } );
-					}
-					if ( ! gaps.length ) {
-						return done.length ? `calibrated ${ done.join( ', ' ) }; the layout surfaces propose with no paint gap` : 'no block lacked its default paint';
-					}
-					await cmd( 'paint', commands.calibrate( { client, site, blocks: gaps } ), 'calibrate.mjs prints each block it could not measure; one that cannot be calibrated is named in --allow-missing-paint' );
-					ran.calibrated = true;
-					done.push( ...gaps );
-				}
-				throw Object.assign( new Error( `blocks still lack paint after ${ PAINT_ROUNDS } rounds: ${ done.join( ', ' ) }` ), { next: 'the blocks calibrated each round are named above; a block whose fill adds another each round needs --allow-missing-paint for it' } );
+				const shop = runsShop( client, repo );
+				await cmd( 'looks', commands.looks( { client, shop } ), `site_look.py names each block it could not build (FAILED): fix that block's fixture or render, then rerun` );
+				ran.looks = true;
+				return `every block's site look is current for ${ client }${ shop ? ' (with the shop stylesheet)' : '' }`;
 			},
 		},
 		{
-			id: 'skeletons', deps: [ 'paint' ], title: 'intake.mjs --rerun-skeletons, then --apply-review --go-through',
-			applicable: () => ( ran.intake || ran.calibrated ? null : 'this run neither read the draft nor calibrated, so the skeleton records already carry their calibration keys' ),
+			id: 'skeletons', deps: [ 'looks' ], title: 'intake.mjs --rerun-skeletons, then --apply-review --go-through',
+			applicable: () => ( ran.intake || ran.looks ? null : 'this run neither read the draft nor rebuilt the site looks, so the skeleton records already carry their keys' ),
 			run: async () => {
 				await cmd( 'skeletons', commands.rerunSkeletons( { client } ), 'it proposes offline from the saved inventories: rerun it' );
 				return cmd( 'skeletons', commands.applyReview( { client } ), 'a row the review cannot take is listed in build/intake/go-through-open.json' );
 			},
 		},
 		{
-			id: 'surfaces', deps: [ 'skeletons', 'paint', 'manifest' ], title: 'clone-surface: the header, footer and nav drawer',
+			id: 'surfaces', deps: [ 'skeletons', 'looks', 'manifest' ], title: 'clone-surface: the header, footer and nav drawer',
 			fingerprint: () => joinFp( site, fileSha( p.intake ), fileSha( p.surfaces ), snapshotSha() ),
 			holds: () => heldBy( 'surfaces', joinFp( site, fileSha( p.intake ), fileSha( p.surfaces ), snapshotSha() ), 'the layout surfaces passed every stage for this intake.json and snapshot' ),
 			run: async () => {
-				const keys = layout().found.map( ( s ) => s.key );
+				const { found, missing } = layout();
+				if ( missing.length || ! found.length ) {
+					throw Object.assign( new Error( missing.length ? `no surface for the layout row${ 1 === missing.length ? '' : 's' } ${ missing.map( ( m ) => m.slug ).join( ', ' ) }` : 'the page map has no header, footer or drawer row' ), { next: `node ${ ROUTE }/manifest.mjs ${ client } --site ${ site } --apply` } );
+				}
+				const keys = found.map( ( s ) => s.key );
 				if ( options.picks ) {
 					const picked = await applyPicksFile( { repo, client, file: options.picks, exec: ( args ) => ports.exec( 'picks', 'node', [ `${ ROUTE }/intake.mjs`, ...args ] ) } );
 					log( `${ picked.ok ? 'ok  ' : 'FAIL' } picks - ${ picked.detail }` );
