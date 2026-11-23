@@ -294,7 +294,7 @@ export function proposeSkeleton( { inventory, facts, surface, surfaceKind = null
 		// A block whose children are the draft's repeated units keeps their parts' look as its own settings: a closed and an
 		// open unit's row, header, icon and answer are read at the calibrated children's paths (lib/skeleton-child-slots.mjs::unitSlots).
 		const unitCfg = r.units ? R[ r.rule ]?.childSlots : null;
-		const us = unitCfg ? unitSlots( { cfg: unitCfg, units: r.units.units, open: r.units.open, m, finder, settings: calSettings( block ), revealed: inventory.revealed || [] } ) : null;
+		const us = unitCfg ? unitSlots( { cfg: unitCfg, units: r.units.units, open: r.units.open, m, finder, settings: calSettings( block ), revealed: inventory.revealed || [], attrs: calParts( block )?.pathAttrs ?? null } ) : null;
 		us && Object.assign( slots, us.slots );
 		us?.notes.length && ( row.slotNotes = [ ...( row.slotNotes || [] ), ...us.notes ] );
 		// An option picker's chips (rules.optionSet.chipSlots): the pill settings are read at the draft's chips.

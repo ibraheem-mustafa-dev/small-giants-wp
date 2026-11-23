@@ -74,15 +74,19 @@ export const UNIT_PARTS = Object.keys( PARTS );
 // each record an element only that state shows, with the `reveal` { component, keys } that shows it): the open unit is then
 // the first unit holding exactly one revealed panel (shownOpen), and each current path is read in that state (`reveals`: the
 // path's { component, keys }, which Fill sets before reading it: lib/fill-read.mjs::readRevealed).
+// Which child is which is a fact of the block's render where the look records its elements' attributes (`attrs`, the
+// look's pathAttrs: the item the fixture saves open carries `open`): the current child is the first child the settings
+// reach whose element is in `currentState` (inState), the resting child the first that is not. A setting placed on every
+// child says nothing about which is open, so the settings' own slots decide only when the look records no attributes.
 // units: [{ el, control, rendered, title, category, key }]; open: the indices of the units shown open. Returns { slots,
 // states, reveals, notes }.
-export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {}, revealed = [] } ) {
+export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {}, revealed = [], attrs = null } ) {
 	const out = { slots: {}, states: {}, reveals: {}, notes: [] };
 	if ( ! cfg ) {
 		return out;
 	}
 	const stepOf = ( name ) => stepsOf( settings[ name ]?.slot )[ 0 ] ?? null;
-	const child = { resting: stepOf( cfg.resting ), current: stepOf( cfg.current ) };
+	const child = attrs && cfg.currentState ? childrenByState( cfg, settings, attrs ) : { resting: stepOf( cfg.resting ), current: stepOf( cfg.current ) };
 	const shown = units.find( ( u, i ) => open.includes( i ) ) ?? null;
 	const opened = shown ? null : units.map( ( u ) => shownOpen( u, revealed, m ) ).find( Boolean ) ?? null;
 	const unit = { resting: units.find( ( u, i ) => ! open.includes( i ) ) ?? null, current: shown ?? opened?.unit ?? null };
@@ -112,6 +116,21 @@ export function unitSlots( { cfg, units = [], open = [], m, finder, settings = {
 		}
 	}
 	return out;
+}
+
+// The attributes that put an element in a state as the record names it (setting-record/instances.py::STATE_TRIGGERS and
+// its aria- names): an open disclosure, the current page's link.
+const STATE_ATTRS = { open: [ [ 'open', null ], [ 'aria-expanded', 'true' ] ], current: [ [ 'aria-current', null ] ] };
+
+// Whether an element carrying `own` ({ attribute: value }) is in `state`.
+export const inState = ( own, state ) => ( STATE_ATTRS[ state ] || [] ).some( ( [ a, v ] ) => undefined !== own?.[ a ] && ( null === v || own[ a ] === v ) );
+
+// { resting, current }: the first steps of the slots the childSlots settings reach, the current child the first whose
+// element is in cfg.currentState, the resting child the first that is not (null where none is).
+function childrenByState( cfg, settings, attrs ) {
+	const names = [ cfg.resting, cfg.current, ...( cfg.parts || [] ).map( ( p ) => p.setting ) ];
+	const steps = [ ...new Set( names.flatMap( ( n ) => [ settings[ n ]?.slot, ...( settings[ n ]?.slots || [] ) ] ).map( ( s ) => stepsOf( s )[ 0 ] ).filter( Boolean ) ) ];
+	return { resting: steps.find( ( c ) => ! inState( attrs[ c ], cfg.currentState ) ) ?? null, current: steps.find( ( c ) => inState( attrs[ c ], cfg.currentState ) ) ?? null };
 }
 
 // A unit as the state that opens it shows it: { unit (its panel the one revealed panel), reveal }, or null. A revealed panel

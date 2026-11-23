@@ -125,3 +125,33 @@ test( 'MUST FAIL WITHOUT THE CURRENT STATE: each current path carries the state 
 	// negative control: a config naming no state marks no path.
 	assert.deepEqual( run().states, {} );
 } );
+
+// The setting record places a setting on every element of its part, so headerFontWeight sits on both children's headers and
+// says nothing about which child is closed; the site look records the open child's own attribute (pathAttrs: the item the
+// fixture saves open carries `open`), which decides it.
+const both = ( p ) => ( { slot: `${ ONE }${ p }`, slots: [ `${ ONE }${ p }`, `${ TWO }${ p }` ] } );
+const recorded = { headerFontWeight: both( ' > .header' ), itemBackgroundOpen: both( '' ), itemShadow: both( '' ), headerPadding: both( ' > .header' ), iconCircleBorderWidth: both( ' > .header > .icons' ), contentPadding: both( ' > .content' ) };
+const openCfg = { ...cfg, currentState: 'open' };
+
+test( 'MUST FAIL WITHOUT THE LOOK\'S ATTRIBUTES: with every setting on both children, the child the look marks open is the current child and the other the resting one', () => {
+	const r = unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: recorded, attrs: { [ ONE ]: { open: '' } } } );
+	assert.deepEqual( r.slots, {
+		[ TWO ]: { tpl: 'unit1' },
+		[ `${ TWO } > .header` ]: { tpl: 'control1' },
+		[ `${ TWO } > .header > .icons` ]: { tpl: 'ring1' },
+		[ ONE ]: { tpl: 'unit0' },
+		[ `${ ONE } > .content` ]: { tpl: 'panel0' },
+	} );
+	assert.equal( r.states[ ONE ], 'open' );
+	// The same look with the second child open swaps them (the first carries aria-expanded="false": closed).
+	const swapped = unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: recorded, attrs: { [ ONE ]: { 'aria-expanded': 'false' }, [ TWO ]: { 'aria-expanded': 'true' } } } );
+	assert.equal( swapped.slots[ ONE ].tpl, 'unit1' );
+	assert.equal( swapped.slots[ TWO ].tpl, 'unit0' );
+} );
+
+test( 'negative control: a look that records no attributes keeps the settings\' own slots, and one with no child open names no current child', () => {
+	assert.deepEqual( unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings } ).slots, run().slots );
+	const shut = unitSlots( { cfg: openCfg, units: [ a.u, b.u ], open: [ 0 ], m, finder, settings: recorded, attrs: {} } );
+	assert.equal( undefined, shut.slots[ `${ ONE } > .content` ] );
+	assert.match( shut.notes.join( ' ' ), /no slot for itemBackgroundOpen/ );
+} );

@@ -361,7 +361,7 @@ export function makeUnits( ctx ) {
 		// reads nothing of the box (one draft element is read by one block, lib/skeleton-double-claims.mjs).
 		const host = boxed ? ctx.nodeOfKey[ md.parent.key ] : null;
 		host && host !== node && [ 'draftRef', 'draftFingerprint', 'draftSlots', 'draftBandWrappers' ].forEach( ( k ) => delete host[ k ] );
-		const us = boxed && D.childSlots ? unitSlots( { cfg: D.childSlots, units: run.units.units, open: run.units.open, m, finder, settings: ctx.calSettings( D.block ), revealed: ctx.inventory?.revealed || [] } ) : null;
+		const us = boxed && D.childSlots ? unitSlots( { cfg: D.childSlots, units: run.units.units, open: run.units.open, m, finder, settings: ctx.calSettings( D.block ), revealed: ctx.inventory?.revealed || [], attrs: ctx.calParts?.( D.block )?.pathAttrs ?? null } ) : null;
 		if ( us && Object.keys( us.slots ).length ) {
 			node.draftSlots = us.slots;
 			Object.keys( us.states ).length && ( node.draftSlotStates = us.states );

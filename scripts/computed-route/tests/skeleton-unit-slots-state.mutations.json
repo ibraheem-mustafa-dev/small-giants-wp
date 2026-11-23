@@ -1,0 +1,7 @@
+[
+	{ "file": "lib/skeleton-child-slots.mjs", "find": "const child = attrs && cfg.currentState ? childrenByState( cfg, settings, attrs ) : { resting: stepOf( cfg.resting ), current: stepOf( cfg.current ) };", "replace": "const child = { resting: stepOf( cfg.resting ), current: stepOf( cfg.current ) };", "why": "the children are taken from the settings' first slots, which the record puts on the first child for every setting" },
+	{ "file": "lib/skeleton-child-slots.mjs", "find": "resting: steps.find( ( c ) => ! inState( attrs[ c ], cfg.currentState ) ) ?? null", "replace": "resting: steps[ 0 ] ?? null", "why": "the resting child is the first child whatever its state" },
+	{ "file": "lib/skeleton-child-slots.mjs", "find": "current: steps.find( ( c ) => inState( attrs[ c ], cfg.currentState ) ) ?? null", "replace": "current: steps[ 0 ] ?? null", "why": "the current child is the first child whatever its state" },
+	{ "file": "lib/skeleton-child-slots.mjs", "find": "open: [ [ 'open', null ], [ 'aria-expanded', 'true' ] ]", "replace": "open: [ [ 'open', null ] ]", "why": "an element opened by aria-expanded is not read as open" },
+	{ "file": "lib/skeleton-child-slots.mjs", "find": "undefined !== own?.[ a ] && ( null === v || own[ a ] === v )", "replace": "undefined !== own?.[ a ]", "why": "aria-expanded=\"false\" counts as open" }
+]

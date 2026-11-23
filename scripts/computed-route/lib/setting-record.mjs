@@ -576,6 +576,7 @@ function readRecord( block, client, { db = null, dir = SITE_LOOK_DIR, repo = REP
 		...( look?.link ? { link: look.link } : {} ),
 		...( look?.presence ? { presence: look.presence } : {} ),
 		elements: look?.elements || {},
+		...( look?.pathAttrs ? { pathAttrs: look.pathAttrs } : {} ),
 		...( look?.paintStates ? { paintStates: look.paintStates } : {} ),
 		dead: dead.sort(),
 		unplaced,
