@@ -165,21 +165,25 @@ class Tree(HTMLParser):
 
 
 def uid_map(html: str, short: str) -> dict:
-    """Each instance-id token -> the block class of the element carrying it (stable across renders)."""
+    """Each instance-id token -> the block class of the element carrying it (stable across renders). An element carries
+    a token in its class (a child block's `sgs-accordion-item-1a2b3c4d`): it maps to that element's block class that the
+    token starts with, else its first; a token only an attribute names (a `<style id>` a child prints ahead of its markup)
+    maps there only when no element's class carries it, so a child block's id never becomes the parent's."""
     m = {}
     first = re.search(r'<(?!style)[a-z][^>]*>', re.sub(r'<style.*?</style>', '', html, flags=re.S))
     for tok in UID_RE.findall(first.group(0) if first else ''):
         m[tok] = f'sgs-{short}'
-    for el in re.finditer(r'<[a-z][^>]*>', html):
-        t = el.group(0)
-        toks = UID_RE.findall(t)
-        if not toks:
-            continue
-        cls = re.search(r'class="([^"]*)"', t)
-        blocks = [c for c in (cls.group(1).split() if cls else []) if c.startswith('sgs-') and '__' not in c and '--' not in c and not UID_RE.fullmatch(c)]
-        for tok in toks:
-            if tok not in m:
-                m[tok] = blocks[0] if blocks else f'sgs-{short}'
+    tags = [el.group(0) for el in re.finditer(r'<[a-z][^>]*>', html)]
+    for in_class in (True, False):
+        for t in tags:
+            cls = re.search(r'class="([^"]*)"', t)
+            names = cls.group(1).split() if cls else []
+            toks = [x for x in names if UID_RE.fullmatch(x)] if in_class else UID_RE.findall(t)
+            blocks = [c for c in names if c.startswith('sgs-') and '__' not in c and '--' not in c and not UID_RE.fullmatch(c)]
+            for tok in toks:
+                if tok not in m:
+                    own = [c for c in blocks if tok.startswith(f'{c}-')]
+                    m[tok] = max(own, key=len) if own else blocks[0] if blocks else f'sgs-{short}'
     return m
 
 
@@ -443,12 +447,17 @@ def element_pairs(eb: dict, em: dict):
 
 
 def element_part(classes, short: str, token: str) -> str:
-    """The part an element is: ROOT for the block root, else its shortest part class (vocab.same_element's rule)."""
+    """The part an element is: ROOT for the block root, else its shortest part class (vocab.same_element's rule), else,
+    for the root of a child block the block renders (an accordion's item: `wp-block-sgs-accordion-item`, no part class of
+    its own), that block's own class (`sgs-accordion-item`), never the parent's ROOT."""
     cls = {c for c in classes if c != token}
     if f'sgs-{short}' in cls:
         return 'ROOT'
     parts = sorted((c for c in cls if c.startswith('sgs-') and '__' in c and '--' not in c), key=lambda c: (len(c), c))
-    return parts[0] if parts else 'ROOT'
+    if parts:
+        return parts[0]
+    child = sorted(c[len('wp-block-'):] for c in cls if c.startswith('wp-block-sgs-') and '__' not in c and c != f'wp-block-sgs-{short}' and c[len('wp-block-'):] in cls)
+    return child[0] if child else 'ROOT'
 
 
 def diff_placements(base, changed, short, sheets):

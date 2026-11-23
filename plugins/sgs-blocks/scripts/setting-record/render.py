@@ -96,6 +96,13 @@ def with_defaults(plugin: Path, short: str, attrs: dict) -> dict:
     return out
 
 
+def provided_context(plugin: Path, short: str, attrs: dict) -> dict:
+    """The block context a block hands its children (block.json `providesContext`: context name to attribute), as
+    WP_Block::render builds it: each named attribute's value from the block's attributes with their defaults applied; an
+    attribute the block does not hold gives nothing."""
+    return {name: attrs[a] for name, a in (block_json(plugin, short).get('providesContext') or {}).items() if a in attrs}
+
+
 def fill(v):
     """Placeholders replaced by their stand-in values, anywhere in a value."""
     if isinstance(v, str):
@@ -219,8 +226,21 @@ class Renderer:
         self.options = (fixture.get('harness') or {}).get('options')
         self.included = set()  # every plugin PHP file any render here loaded (the block's, its children's, its parents')
 
-    def render(self, slug: str, attrs: dict, content: str = '', inner=None) -> dict:
-        key_parts = [slug, attrs, content, inner, list(self.key_extra), self.post] + ([self.options] if self.options else [])
+    def render(self, slug: str, attrs: dict, content: str = '', inner=None, context=None) -> dict:
+        """One render, cached. `context`: the block context its ancestors hand it (render_inner), over any context the
+        fixture's `harness` stands in for the block's own place on a page."""
+        extra, key_extra = list(self.extra), list(self.key_extra)
+        if context:
+            own = (self.fixture.get('harness') or {}).get('context') or {}
+            merged = {**(own if isinstance(own, dict) else {}), **context}
+            if '--context-file' in extra:
+                i = extra.index('--context-file')
+                del extra[i:i + 2]
+                j = key_extra.index('--context-file')
+                del key_extra[j:j + 2]
+            extra += ['--context-file', str(standin_file(merged, 'json'))]
+            key_extra += ['context', merged]
+        key_parts = [slug, attrs, content, inner, key_extra, self.post] + ([self.options] if self.options else [])
         key = hashlib.md5(json.dumps(key_parts, sort_keys=True).encode()).hexdigest()
         cf = self.cache / f'{key}.json'
         if cf.is_file():
@@ -232,7 +252,7 @@ class Renderer:
         af.write_text(json.dumps(attrs), encoding='utf-8')
         inc = self.cache / f'{key}.included.json'
         cmd = ['php', '-d', f'auto_prepend_file={INCLUDED_HOOK}', str(self.harness), '--slug', slug, '--attrs-file', str(af),
-               '--render-children', *self.extra]
+               '--render-children', *extra]
         if content:
             cfile = self.cache / f'{key}.content.html'
             cfile.write_text(content, encoding='utf-8')
@@ -271,17 +291,25 @@ class Renderer:
             cf.write_text(json.dumps(res), encoding='utf-8')  # a failed render is retried next run, never cached
         return res
 
-    def render_inner(self, rows):
-        """Each fixture child rendered through its real render.php with its defaults, its own children first.
-        Returns (content html, inner-blocks rows)."""
+    def render_inner(self, rows, context=None):
+        """Each fixture child rendered through its real render.php with its defaults, its own children first, as WordPress
+        renders it inside its parent: `context` is the block context the ancestors hand down (provided_context, merged
+        down the tree), and a child receives the keys its block.json `usesContext` lists. Returns (content html,
+        inner-blocks rows)."""
+        context = context or {}
         html, out = [], []
         for row in rows or []:
             name = row['name']
             short = name.split('/', 1)[1]
             attrs = fill(row.get('attributes') or {})
-            sub_html, sub_rows = self.render_inner(row.get('innerBlocks'))
-            if (self.plugin / 'src' / 'blocks' / short / 'render.php').is_file():
-                r = self.render(name, with_defaults(self.plugin, short, attrs), sub_html, sub_rows)
+            has_render = (self.plugin / 'src' / 'blocks' / short / 'render.php').is_file()
+            meta = block_json(self.plugin, short) if (self.plugin / 'src' / 'blocks' / short / 'block.json').is_file() else {}
+            full = with_defaults(self.plugin, short, attrs) if meta else attrs
+            down = {**context, **(provided_context(self.plugin, short, full) if meta else {})}
+            sub_html, sub_rows = self.render_inner(row.get('innerBlocks'), down)
+            if has_render:
+                uses = {k: v for k, v in context.items() if k in (meta.get('usesContext') or [])}
+                r = self.render(name, full, sub_html, sub_rows, uses or None)
                 h = r.get('html', '') if r.get('ok') else f'<!-- child {name} failed: {r.get("error", "")[:200]} -->'
             else:
                 h = sub_html  # a static (save.js) child: its saved markup is not available offline
@@ -290,9 +318,22 @@ class Renderer:
         return ''.join(html), out
 
     def render_many(self, slug: str, jobs: dict, content: str, inner) -> dict:
-        """{job key: attrs} rendered in parallel; returns {job key: result}."""
+        """{job key: attrs} rendered in parallel; returns {job key: result}. `content` and `inner` are the fixture's
+        children rendered once (render_inner); a block that hands its children block context (`providesContext`) has them
+        rendered again for each job with the context that job's attributes give, so a setting that reaches its children
+        only through context changes what they print, as on a page."""
+        short = slug.split('/', 1)[1]
+        rows = [{'name': r['name'], 'attributes': r.get('attributes') or {}, **({'innerBlocks': r['innerBlocks']} if r.get('innerBlocks') else {})}
+                for r in inner or []]
+        gives = bool(rows) and bool(block_json(self.plugin, short).get('providesContext'))
+
+        def one(a):
+            if gives:
+                c, i = self.render_inner(rows, provided_context(self.plugin, short, a))
+                return self.render(slug, a, c, i)
+            return self.render(slug, a, content, inner)
         with ThreadPoolExecutor(WORKERS) as ex:
-            return dict(zip(jobs, ex.map(lambda a: self.render(slug, a, content, inner), jobs.values())))
+            return dict(zip(jobs, ex.map(one, jobs.values())))
 
 
 def last_json(text: str):
