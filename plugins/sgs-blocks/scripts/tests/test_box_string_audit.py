@@ -30,17 +30,17 @@ def box_findings(markup):
     return [f for f in A.scan_text('t/1', markup, A.load_schemas()) if f['type'] == 'box-string']
 
 
-def test_report_only_by_default_is_info(monkeypatch):
+def test_refuses_by_default_with_high(monkeypatch):
     monkeypatch.delenv('SGS_BOX_STRING_RULE', raising=False)
-    found = box_findings(BAD)
-    assert len(found) == 1 and found[0]['severity'] == 'INFO'
-
-
-def test_flip_on_refuses_with_high(monkeypatch):
-    monkeypatch.delenv('SGS_BOX_STRING_RULE', raising=False)
-    monkeypatch.setattr(R, 'BOX_STRING_ENFORCED', True)
     found = box_findings(BAD)
     assert len(found) == 1 and found[0]['severity'] == 'HIGH'
+
+
+def test_constant_off_only_reports_info(monkeypatch):
+    monkeypatch.delenv('SGS_BOX_STRING_RULE', raising=False)
+    monkeypatch.setattr(R, 'BOX_STRING_ENFORCED', False)
+    found = box_findings(BAD)
+    assert len(found) == 1 and found[0]['severity'] == 'INFO'
 
 
 def test_kill_switch_downgrades_the_flip(monkeypatch):

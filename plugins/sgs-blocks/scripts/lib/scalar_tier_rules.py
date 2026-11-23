@@ -29,9 +29,9 @@ BOX_RULES_FILE = HERE.parent / 'data' / 'box-string-rules.json'
 TIER_KEYS = ('desktop', 'tablet', 'mobile')
 SIDE_KEYS = ('top', 'right', 'bottom', 'left')
 
-# The refusal flip: False = the box-string rule only reports. Changed to True in the final commit, after every target's
-# sweep reports zero. SGS_BOX_STRING_RULE=report (or build-deploy.py --box-string-report-only) downgrades it back.
-BOX_STRING_ENFORCED = False
+# True = the box-string rule refuses (a HIGH finding fails the deploy's old-shape audit). False would only report it.
+# SGS_BOX_STRING_RULE=report (or build-deploy.py --box-string-report-only) downgrades a single run to report-only.
+BOX_STRING_ENFORCED = True
 
 
 def load_families(path=FAMILIES_FILE):
