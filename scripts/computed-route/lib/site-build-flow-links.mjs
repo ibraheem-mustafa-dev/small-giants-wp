@@ -4,8 +4,8 @@
 // (plugins/sgs-blocks/includes/buybox-linked-flow.php). A `live` product row covers every published product (they all
 // use the one single-product template); a `static` row's items are content written into the page, so it covers none.
 // The run changes only what it would make: a product holding another flow's slug (a person's choice) is reported and
-// left, a calibration reference product (`_sgs_cr_fixture`, lib/provision-product.mjs) keeps the framework's own buybox
-// the calibration reads, and a flow slug that resolves to no published flow stops the run before any write. The plan is
+// left, a reference product the retired calibration made (`_sgs_cr_fixture` meta, still on older sites) keeps its own
+// buybox, and a flow slug that resolves to no published flow stops the run before any write. The plan is
 // narrowed to the buy box and the products the flow prices (lib/site-build-flow-scope.mjs::scopePlan).
 import { scopePlan, shapePhp, flowAttributesPhp } from './site-build-flow-scope.mjs';
 

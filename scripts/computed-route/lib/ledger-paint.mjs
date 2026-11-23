@@ -1,6 +1,6 @@
 // The clone difference ledger's painted element (tools/clone-ledger.mjs): which live element of a block each property of a
-// paired draft element is compared on. A block paints a setting on one part of itself (its calibration's slot map,
-// cache/<block>.json `settings[attr]`: `slot`, `slots`, `property`, `state`), which need not be the element the draft
+// paired draft element is compared on. A block paints a setting on one part of itself (its setting record in the route's
+// keys, lib/setting-record.mjs::loadRecord `settings[attr]`: `slot`, `slots`, `property`, `state`), which need not be the element the draft
 // element pairs with: sgs/container pairs the draft section with its root and paints its padding on `.sgs-container__inner`.
 // The rule, for one target (a node's root or one of its slots) and one CSS property:
 //   1. The Fill writes of the node that answer the target (resting writes whose `readSlot`, else `slot`, is the target's
@@ -9,7 +9,7 @@
 //      on parts that do not include that slot: then the record's `slot`. The properties of the write that the record covers
 //      (the recorded property and its longhands; every property of the write when the slot map has no record) are compared
 //      on that part, or on the target's own element when the part is the target's.
-//   2. No such write, on a node's root, with the block's default paint (cache/<site>/<block>.paint.json `elements`): the
+//   2. No such write, on a node's root, with the block's default paint (the client's site look, `elements`): the
 //      slot map's resting settings covering the property, when none paints the root, name the parts it may live on; a single
 //      one of them (not a pseudo layer) whose default paint differs from the root's at every width is where the block's root
 //      look holds it, and the property is compared there.
@@ -30,7 +30,7 @@ const rest = ( rec ) => rec && ! rec.state && 'string' === typeof rec.slot;
 const slotsOf = ( rec ) => ( Array.isArray( rec.slots ) && rec.slots.length ? rec.slots : [ rec.slot ] );
 
 // Map property -> { slot, attr, from: 'write' | 'default paint' } for each property of `target` compared on another part of
-// its block. target: { slot }; writes: the node's Fill write rows; slotMap: the block's cache/<block>.json (or null);
+// its block. target: { slot }; writes: the node's Fill write rows; slotMap: the block's setting record (or null);
 // opts.paint: the block's default paint (or null); opts.targetSlots: the parts of the node that are targets of their own.
 export function paintSlots( target, writes, slotMap, { paint = null, targetSlots = new Set( [ '' ] ) } = {} ) {
 	const settings = slotMap?.settings || {};

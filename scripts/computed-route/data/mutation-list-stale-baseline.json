@@ -83,9 +83,6 @@
 		"const own = PROPS.filter( ( p ) => ! CONTEXT_PROPS.has( p ) );",
 		"( layer ? ids : [ ...new Set( [ ...ids, ...CONTEXT_PROPS ] ) ] ).map("
 	],
-	"tests/fixtures/fixture-completeness/mutations.json": [
-		"for ( const key of Object.keys( paint.elements || {} ) ) for ( const c of classesOf( key ) ) set.add( c );"
-	],
 	"tests/fixtures/form-fix/mutations.json": [
 		"walk( [ node ], ( n ) => linked.add( n ) );",
 		"'linked' === referenceOf( node, refs )?.kind",

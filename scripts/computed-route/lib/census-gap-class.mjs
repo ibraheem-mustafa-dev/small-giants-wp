@@ -48,13 +48,13 @@ export function baseClass( row ) {
 	return { class: row.fillClass, candidate: !! row.fillCandidate };
 }
 
-// FR-48-66 evidence for a row whose Fill reason is itself I-calibration, read from the calibration cache: the absent slot-map
-// file, the missing paint, or the paint key at the row's slot where no width holds a reading of the row's property. `files`
+// FR-48-66 evidence for a row whose Fill reason is itself I-calibration, read from the block's setting record and the
+// client's site look (`cal`, lib/setting-record.mjs::loadRecord): the absent record, the missing look, or the paint key at the row's slot where no width holds a reading of the row's property. `files`
 // is { slotMap, paint } (paths). A row whose reason names state settings the resolver found uncalibrated (data/census-mechanisms.json
-// uncalibratedSettingsPattern) cites those settings' absent slot-map entries, with any untestedStates note. The cache's paint is
+// uncalibratedSettingsPattern) cites those settings' absent slot-map entries, with any untestedStates note. The look's paint is
 // the default (resting) paint, so any other row in a state (hover, focus, any state other than `default`) has only the absent
 // slot map as evidence: its state paint was never looked at, so no paint
-// reading proves or disproves it. The readKey named is the paint file's own, else the slot map's. Null where the cache
+// reading proves or disproves it. The readKey named is the paint file's own, else the slot map's. Null where the look
 // does hold the reading, the row's state paint was not read, or no file is named: the reason is then unproven.
 export function calibrationEvidence( row, cal, files ) {
 	if ( ! files ) {
@@ -98,7 +98,7 @@ export function calibrationEvidence( row, cal, files ) {
 
 // Adds gapClass, gapCandidate, gapVia, gapAttribute and gapEvidence to every row. i: { db, calFor( client, surface, block ) ->
 // calibration | null, calFiles( client, surface, block ) -> { slotMap, paint } | null, freshness( slug ) -> { pass, class,
-// evidence } }. A row whose Fill reason is I-calibration takes its evidence from the cache (calibrationEvidence). A row whose block the framework DB does not hold (a class-name extension), or with no CSS property, keeps its base.
+// evidence } }. A row whose Fill reason is I-calibration takes its evidence from the record and the look (calibrationEvidence). A row whose block the framework DB does not hold (a class-name extension), or with no CSS property, keeps its base.
 export function classifyRows( rows, { db, calFor, calFiles = () => null, freshness } ) {
 	const ancestors = ancestorsOf( db );
 	const known = db.prepare( 'SELECT 1 AS found FROM blocks WHERE slug = ?' );

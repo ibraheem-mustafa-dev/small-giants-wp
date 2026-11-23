@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Lists every settled `equal` row of saved Fill reports whose baseline is the calibrated default and whose node sits in a
-// context other than the one calibration measured that default in (lib/equal-context.mjs::reportContexts), by kind of
+// Lists every settled `equal` row of saved Fill reports whose baseline is the block's default look and whose node sits in a
+// context other than the one that look was built in (lib/equal-context.mjs::reportContexts), by kind of
 // difference, block, part and property, and counts every surface's equal rows per baseline kind. Reads files only: the
 // report, the filled tree beside it, the setting record in the client's look and block.json; no browser, no site.
 //   node scripts/computed-route/tools/equal-context.mjs --client <slug> [--cache <dir>] [--out <folder>] [--json]
@@ -17,7 +17,6 @@ import { calibrationForNode } from '../lib/paint-state.mjs';
 import { blockSchema } from '../lib/resolve.mjs';
 import { walk, refOf } from '../lib/tree.mjs';
 
-const HERE = path.dirname( fileURLToPath( import.meta.url ) );
 const readJson = ( file ) => JSON.parse( fs.readFileSync( file, 'utf8' ) );
 
 // The equal rows of a report per baseline kind: a per-width baseline counts as `per-width`, a row with none as `none`.
@@ -71,7 +70,7 @@ export function groupFlagged( flagged ) {
 function main( argv ) {
 	const opt = ( name ) => ( argv.includes( name ) ? argv[ argv.indexOf( name ) + 1 ] : null );
 	const client = opt( '--client' );
-	const cache = path.resolve( opt( '--cache' ) || path.join( HERE, '..', 'cache' ) );
+	const cache = opt( '--cache' ) ? path.resolve( opt( '--cache' ) ) : null;
 	const out = opt( '--out' );
 	const taken = new Set( [ '--client', '--cache', '--out' ].flatMap( ( n ) => ( argv.includes( n ) ? [ argv.indexOf( n ), argv.indexOf( n ) + 1 ] : [] ) ) );
 	const files = argv.filter( ( a, i ) => ! taken.has( i ) && ! a.startsWith( '--' ) ).map( ( f ) => ( fs.statSync( f ).isDirectory() ? path.join( f, 'fill-report.json' ) : f ) );
