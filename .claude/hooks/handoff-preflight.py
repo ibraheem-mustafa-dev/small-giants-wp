@@ -18,6 +18,9 @@ Checks:
                         spec LEDGER names); none active but untouched for 14 days; and no
                         plans/<name>.md reference that points at a missing file. --commits names
                         this session's commits so a plan they add and leave unregistered is named.
+  6. doc-paths          no live doc names a repo path that does not exist, or a file that
+                        scripts/computed-route/tools/retire-calibration.mjs REMOVED lists (read from that
+                        file). handoff_doc_paths.py holds the rules, the exemptions and the full list.
 
 It never edits a file: detection only (a hook that rewrites a doc the agent just wrote
 fights the agent). Each failure names the file, the measured value and the fix.
@@ -31,6 +34,9 @@ from pathlib import Path
 
 _REPO = Path(__file__).resolve().parents[2]
 _CLAUDE = _REPO / ".claude"
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import handoff_doc_paths  # noqa: E402  (sibling module; the path line above makes it importable by script path)
 
 CAP_BYTES = 24576          # LEDGER.md
 MEMORY_CAP_BYTES = 16384   # auto-memory MEMORY.md index
@@ -213,20 +219,40 @@ _SPEC_REF_RE = re.compile(r"(?<![\w./-])(?:\.claude/)?(specs/[^\s`()\[\]<>*\"'#]
 
 
 def _plan_ages(root: Path, plan_files: list[Path]) -> dict[str, float]:
-    """Days since each plan was last committed; a plan with uncommitted edits counts as touched today."""
+    """Days since each plan was last committed; a plan with uncommitted edits counts as touched today.
+
+    Two git calls cover every plan touched in the last STALE_DAYS + 1 days (one `git status`, one date-limited
+    `git log` over the plans folder). Only a plan older than that, which is reported as stale, gets its own
+    `git log -1` to name how old it is."""
     import subprocess
     import time
+    repo = str(root.parent)
+    now = time.time()
     ages: dict[str, float] = {}
+    if not plan_files:
+        return ages
+    plans_dir = ":(glob)" + plan_files[0].parent.relative_to(root.parent).as_posix() + "/*.md"  # not plans/archive/
+    dirty = subprocess.run(["git", "-C", repo, "status", "--porcelain", "--", plans_dir],
+                           capture_output=True, text=True).stdout
+    dirty_names = {Path(line[3:].split(" -> ")[-1].strip('"')).name for line in dirty.splitlines() if len(line) > 3}
+    log = subprocess.run(["git", "-C", repo, "-c", "core.quotepath=false", "log", f"--since={STALE_DAYS + 1}.days.ago",
+                          "--format=@%ct", "--name-only", "--", plans_dir], capture_output=True, text=True).stdout
+    newest: dict[str, int] = {}
+    stamp = 0
+    for line in log.splitlines():
+        if line.startswith("@"):
+            stamp = int(line[1:])
+        elif line.strip():
+            newest.setdefault(Path(line.strip()).name, stamp)  # git log lists newest first
     for f in plan_files:
-        rel = f.relative_to(root.parent).as_posix()
-        dirty = subprocess.run(["git", "-C", str(root.parent), "status", "--porcelain", "--", rel],
-                               capture_output=True, text=True).stdout.strip()
-        if dirty:
+        if f.name in dirty_names:
             ages[f.name] = 0.0
-            continue
-        out = subprocess.run(["git", "-C", str(root.parent), "log", "-1", "--format=%ct", "--", rel],
-                             capture_output=True, text=True).stdout.strip()
-        ages[f.name] = (time.time() - int(out)) / 86400 if out else 0.0
+        elif f.name in newest:
+            ages[f.name] = (now - newest[f.name]) / 86400
+        else:
+            out = subprocess.run(["git", "-C", repo, "log", "-1", "--format=%ct", "--", f.relative_to(root.parent).as_posix()],
+                                 capture_output=True, text=True).stdout.strip()
+            ages[f.name] = (now - int(out)) / 86400 if out else 0.0
     return ages
 
 
@@ -303,8 +329,50 @@ def check_plans_folder(claude_dir: Path | None = None, ages: dict[str, float] | 
     )
 
 
+DOC_PATHS_SHOWN = 20
+
+
+def check_doc_paths(found: list | None = None, note: str = "") -> Result:
+    """Live docs with a dangling repo path or a retired name. `found` and `note` are injectable for the self-test."""
+    if found is None:
+        found, note = handoff_doc_paths.scan(_REPO)
+    if note:
+        return Result("doc-paths", False, f"not checked: {note}", "Make node available, or fix retire-calibration.mjs so it prints its REMOVED list.")
+    if not found:
+        return Result("doc-paths", True, "no live doc names a missing path or a retired name")
+    shown = "; ".join(str(f) for f in found[:DOC_PATHS_SHOWN])
+    more = f" (and {len(found) - DOC_PATHS_SHOWN} more: run `python .claude/hooks/handoff_doc_paths.py`)" if len(found) > DOC_PATHS_SHOWN else ""
+    return Result(
+        "doc-paths", False, f"{len(found)} finding(s): {shown}{more}",
+        "Repoint each path at the file that now owns it, or delete the line; for a retired name write what replaced it. "
+        "A path that is correct as written (another project's file) gets the marker dangling-ok in an HTML comment on its line.",
+    )
+
+
 CHECKS = (check_ledger_size, check_no_tombstones, check_no_dangling_links, check_memory_size,
-          check_plans_folder)
+          check_plans_folder, check_doc_paths)
+
+
+def _doc_paths_case(docs: dict[str, str], files: tuple[str, ...] = ("scripts/real.py", "CLAUDE.md"),
+                    removed: tuple[str, ...] = (), disk: tuple[str, ...] = (), hidden_folders: tuple[str, ...] = (),
+                    ignore_globs: tuple[str, ...] = ()) -> Result:
+    """The doc-paths check on a synthetic set of docs and repo files.
+
+    `removed` plays retire-calibration.mjs's REMOVED; `disk` are files that exist on disk but not in the git index (a
+    gitignored secret or build file); `hidden_folders` are hidden folders tracked code creates; `ignore_globs` are
+    path prefixes git ignores."""
+    with tempfile.TemporaryDirectory() as tmp:
+        for rel in disk:
+            target = Path(tmp) / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text("x", encoding="utf-8")
+        index = handoff_doc_paths.PathIndex(files, fs_roots=(Path(tmp),))
+        retired = handoff_doc_paths.retired_pattern(list(removed), {Path(f).name for f in files}, index.known)
+        found = handoff_doc_paths.find_problems(
+            docs, index, retired,
+            ignored=lambda paths: {p for p in paths if p.startswith(ignore_globs)} if ignore_globs else set(),
+            tool_state=lambda name: name in hidden_folders)
+    return check_doc_paths(found=found)
 
 
 def _plans_case(files: dict[str, str], ages: dict[str, float] | None = None,
@@ -366,6 +434,46 @@ def self_test() -> int:
          lambda: _plans_case({"LEDGER.md": "`plans/a.md`\n", "plans/a.md": "---\nstatus: active\n---\n"}, ages={"a.md": 30}),
          lambda: _plans_case({"LEDGER.md": "`plans/a.md` `plans/b.md`\n", "plans/a.md": "---\nstatus: parked\n---\n",
                               "plans/b.md": "---\nstatus: active\n---\n"}, ages={"a.md": 90, "b.md": 3})),
+        ("doc-paths: a path that does not exist",
+         lambda: _doc_paths_case({"CLAUDE.md": "Run `scripts/gone/missing.py` first.\n"}),
+         lambda: _doc_paths_case({"CLAUDE.md": "Run `scripts/real.py` first.\n"})),
+        ("doc-paths: a markdown link to a path that does not exist",
+         lambda: _doc_paths_case({"CLAUDE.md": "See [the guide](docs/guide-gone.md).\n"}),
+         lambda: _doc_paths_case({"CLAUDE.md": "See [the guide](scripts/real.py).\n"})),
+        ("doc-paths: a retired name",
+         lambda: _doc_paths_case({"CLAUDE.md": "Calibration lives in calibrate-block.mjs.\n"}, removed=("scripts/route/lib/calibrate-block.mjs",)),
+         lambda: _doc_paths_case({"CLAUDE.md": "The setting record replaced the browser pass.\n"}, removed=("scripts/route/lib/calibrate-block.mjs",))),
+        ("doc-paths: a retired name whose bare name another file still has is matched by its full path",
+         lambda: _doc_paths_case({"CLAUDE.md": "Run scripts/route/stage0.mjs.\n"}, files=("scripts/route/lib/stage0.mjs", "CLAUDE.md"),
+                                 removed=("scripts/route/stage0.mjs",)),
+         lambda: _doc_paths_case({"CLAUDE.md": "The kept module is stage0.mjs.\n"}, files=("scripts/route/lib/stage0.mjs", "CLAUDE.md"),
+                                 removed=("scripts/route/stage0.mjs",))),
+        ("doc-paths: a gitignored file that is present on disk counts as existing",
+         lambda: _doc_paths_case({"CLAUDE.md": "Credentials are in `.claude/secrets/other.env`.\n"}, disk=(".claude/secrets/site.env",)),
+         lambda: _doc_paths_case({"CLAUDE.md": "Credentials are in `.claude/secrets/site.env`.\n"}, disk=(".claude/secrets/site.env",))),
+        ("doc-paths: a folder is found by its tail, a file by its tail",
+         lambda: _doc_paths_case({"CLAUDE.md": "See `extensions/gone-folder/`.\n"}, files=("plugins/x/src/extensions/hover/a.js", "CLAUDE.md")),
+         lambda: _doc_paths_case({"CLAUDE.md": "See `extensions/hover/` and `hover/a.js`.\n"}, files=("plugins/x/src/extensions/hover/a.js", "CLAUDE.md"))),
+        ("doc-paths: a server or WordPress install path",
+         lambda: _doc_paths_case({"CLAUDE.md": "Run `scripts/gone/up.sh`.\n"}),
+         lambda: _doc_paths_case({"CLAUDE.md": "Uploaded as `themes/sgs-theme/theme.json` and `wp-content/debug.log`.\n"})),
+        ("doc-paths: output a run makes (build, qa, a dated run folder, a hidden tool folder, an ignored location)",
+         lambda: _doc_paths_case({"CLAUDE.md": "Written to `scripts/gone/out.json`.\n"}),
+         lambda: _doc_paths_case({"CLAUDE.md": "\n".join(["Written to `build/qa/apply/pending.json`.", "Kept in `sites/a/runs/2026-10-23T04-45-48/out.json`.",
+                                                       "Listed in `.sgs-delta/expected.sha256`.", "Copied from `intake/inventories/`.", ""])},
+                                 hidden_folders=(".sgs-delta",), ignore_globs=("intake/",))),
+        ("doc-paths: a sentence about another project, the server, or a path that does not exist",
+         lambda: _doc_paths_case({"CLAUDE.md": "Run `templates/email/send.php` first.\n"}),
+         lambda: _doc_paths_case({"CLAUDE.md": "\n".join(["Gutenberg's `columns/edit.js` swaps the placeholder.", "`scp -r a remote:b` creates `sgs-theme/sgs-theme/`.",
+                                                       "There is no `templates/email/` directory.", "`inc/old-preload.php` MUST be removed.", ""])})),
+        ("doc-paths: exemptions (URL, glob, E:/ and server paths, e.g. line, marker, placeholder, code fence)",
+         lambda: _doc_paths_case({"CLAUDE.md": "Run `scripts/gone/missing.py` first.\n"}),
+         lambda: _doc_paths_case({"CLAUDE.md": "\n".join([
+             "[x](https://example.com/a/b.md) `scripts/*.py` `E:/sgs-tmp/a/b.json` `wp-content/uploads/a.png` `/home/u1/x.log`",
+             "Name the file, e.g. `scripts/gone/missing.py`.",
+             "`other/project/file.js` <!-- dangling-ok -->",
+             "`path/file.php` and `round-N/report.json`",
+             "```", "`scripts/gone/in-a-fence.py`", "```", ""])})),
     ]
     failures = 0
     for name, bad_fn, good_fn in cases:
