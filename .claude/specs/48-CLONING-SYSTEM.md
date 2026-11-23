@@ -788,7 +788,7 @@ A client's draft becomes a working SGS site in six stages. Each stage has an ent
 
 **Exit:** `handoff-check.mjs` exits 0 on the client's handoff folder.
 
-Status: built. `handoff-check.mjs` passes on the Indus and Mama's exports (repackaged 2026-10-11, Spec 48A FR-48A-1), and the Indus mirror and its entries in `calibration-targets.json` exist (Appendix A step 13, `local-indus`, page 15). Stage 0's calibration (`stage0.mjs`, the calibration-debt baseline `calibration-baseline.json` and its schema) was removed on 2026-11-23 with calibration (setting-record plan Task 4).
+Status: built. `handoff-check.mjs` passes on the Indus and Mama's exports (repackaged 2026-10-11, Spec 48A FR-48A-1), and the Indus mirror and its entries in `calibration-targets.json` exist (Appendix A step 13, `local-indus`, page 15). Stage 0's calibration (the stage 0 script, removed in `b844f7f8f`, the calibration-debt baseline `calibration-baseline.json` and its schema) was removed on 2026-11-23 with calibration (setting-record plan Task 4).
 
 ### FR-48-17 — Stage 1: intake, closed by the review (Bean's marks are optional)
 **Entry:** stage 0's exit test passes.

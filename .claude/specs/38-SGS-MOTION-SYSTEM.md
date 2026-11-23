@@ -616,7 +616,7 @@ Canonical check: `prefersReducedMotion()` LIVE per call + `gsap.matchMedia` regi
 
 ### 11.1 Namespace claim
 
-This spec claims **`data-sgs-fx-*`** and deliberately leaves **`data-sgs-scroll-*` unclaimed**: scroll params are just fx params, and a second namespace would invent a V-vs-G boundary in markup that does not exist in the model. In-use namespaces this must not collide with: `data-sgs-animation*`, `data-sgs-path-draw*`, `data-sgs-parallax`, `data-magnet`, `data-spotlight`, `data-stagger`, `data-animation` (responsive-logo), and the global CSS custom property `--sgs-scroll-progress` (set by `assets/js/scroll-progress.js` — there is no `sgsScrollProgress` block attribute).
+This spec claims **`data-sgs-fx-*`** and deliberately leaves **`data-sgs-scroll-*` unclaimed**: scroll params are just fx params, and a second namespace would invent a V-vs-G boundary in markup that does not exist in the model. In-use namespaces this must not collide with: `data-sgs-animation*`, `data-sgs-path-draw*`, `data-sgs-parallax`, `data-magnet`, `data-spotlight`, `data-stagger`, `data-animation` (responsive-logo), and the global CSS custom property `--sgs-scroll-progress` (set by `plugins/sgs-blocks/src/shared/effects/fx-scroll-progress.js` — there is no `sgsScrollProgress` block attribute).
 
 ### 11.2 Grammar (attr-per-property — converter-suffix-compatible)
 
