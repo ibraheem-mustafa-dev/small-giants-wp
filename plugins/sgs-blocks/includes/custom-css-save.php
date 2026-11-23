@@ -88,20 +88,31 @@ function sgs_custom_css_site_hosts(): array {
 /**
  * The block comment delimiters of a post's content that open a block (or are void), with where their attributes sit.
  *
- * The pattern is the one WordPress's own `WP_Block_Parser` tokenises with, so both read the same delimiters; only the
- * delimiters are read, which keeps the rest of the content byte for byte as it was.
+ * The pattern is the one WordPress's own `WP_Block_Parser::next_token` tokenises with, and it is run the same way (one
+ * token at a time from the end of the last), so both read the same delimiters; only the delimiters are read, which keeps
+ * the rest of the content byte for byte as it was. When the pattern fails with an error part way through (a PCRE
+ * backtrack limit on a crafted comment), the tokens read so far are returned and `$complete` is false: the rest of the
+ * content cannot be read, so the caller must not trust it.
  *
- * @param string $content Unslashed post content.
+ * @param string    $content  Unslashed post content.
+ * @param bool|null $complete Set to false when a PCRE error stopped the read before the last delimiter.
  * @return array<int, array{start: int, length: int, name: string, attrs: array, json_start: int, json_length: int, insert_at: int}>
  */
-function sgs_custom_css_block_tokens( string $content ): array {
+function sgs_custom_css_block_tokens( string $content, ?bool &$complete = null ): array {
 	$pattern = '/<!--\s+(?P<closer>\/)?wp:(?P<namespace>[a-z][a-z0-9_-]*\/)?(?P<name>[a-z][a-z0-9_-]*)\s+(?P<attrs>{(?:(?:[^}]+|}+(?=})|(?!}\s+\/?-->).)*+)?}\s+)?(?P<void>\/)?-->/s';
-	if ( ! preg_match_all( $pattern, $content, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE ) ) {
-		return array();
-	}
-
-	$tokens = array();
-	foreach ( $matches as $match ) {
+	$tokens   = array();
+	$offset   = 0;
+	$complete = true;
+	while ( true ) {
+		$found = preg_match( $pattern, $content, $match, PREG_OFFSET_CAPTURE, $offset );
+		if ( 0 === $found ) {
+			break;
+		}
+		if ( false === $found ) {
+			$complete = false;
+			break;
+		}
+		$offset = $match[0][1] + strlen( $match[0][0] );
 		if ( isset( $match['closer'] ) && '' !== $match['closer'][0] ) {
 			continue;
 		}
@@ -176,14 +187,175 @@ function sgs_custom_css_valid_key( $key ): string {
 }
 
 /**
+ * The index just after the JSON string that starts at `$i`.
+ *
+ * @param string $json JSON text.
+ * @param int    $i    Index of the opening quote.
+ * @return int The index after the closing quote, or -1 when the string never ends.
+ */
+function sgs_custom_css_json_string_end( string $json, int $i ): int {
+	$len = strlen( $json );
+	for ( ++$i; $i < $len; $i++ ) {
+		if ( '\\' === $json[ $i ] ) {
+			++$i;
+		} elseif ( '"' === $json[ $i ] ) {
+			return $i + 1;
+		}
+	}
+	return -1;
+}
+
+/**
+ * The top-level members of a JSON object's text, with where each one sits, so one can be replaced without re-encoding the rest.
+ *
+ * @param string $json A JSON object's text, `{` to `}`.
+ * @return array<int, array{start: int, end: int, key: string, value_start: int}>|null The members in order (`start` is the
+ *         key's opening quote, `end` is just after the value), or null when the text is not a readable object.
+ */
+function sgs_custom_css_json_members( string $json ): ?array {
+	$len     = strlen( $json );
+	$last    = $len - 1;
+	$members = array();
+	if ( $len < 2 || '{' !== $json[0] || '}' !== $json[ $last ] ) {
+		return null;
+	}
+	$ws = " \t\n\r";
+	$i  = 1 + strspn( $json, $ws, 1 );
+	if ( $i === $last ) {
+		return $members;
+	}
+	while ( true ) {
+		if ( '"' !== ( $json[ $i ] ?? '' ) ) {
+			return null;
+		}
+		$key_start = $i;
+		$i         = sgs_custom_css_json_string_end( $json, $i );
+		$key       = $i < 0 ? null : json_decode( substr( $json, $key_start, $i - $key_start ) );
+		if ( ! is_string( $key ) ) {
+			return null;
+		}
+		$i += strspn( $json, $ws, $i );
+		if ( ':' !== ( $json[ $i ] ?? '' ) ) {
+			return null;
+		}
+		$i          += 1 + strspn( $json, $ws, $i + 1 );
+		$value_start = $i;
+		$first       = $json[ $i ] ?? '';
+		if ( '"' === $first ) {
+			$i = sgs_custom_css_json_string_end( $json, $i );
+		} elseif ( '{' === $first || '[' === $first ) {
+			$depth = 0;
+			for ( ; $i < $len; $i++ ) {
+				$c = $json[ $i ];
+				if ( '"' === $c ) {
+					$i = sgs_custom_css_json_string_end( $json, $i ) - 1;
+					if ( $i < 0 ) {
+						return null;
+					}
+				} elseif ( '{' === $c || '[' === $c ) {
+					++$depth;
+				} elseif ( '}' === $c || ']' === $c ) {
+					--$depth;
+					if ( 0 === $depth ) {
+						++$i;
+						break;
+					}
+				}
+			}
+		} else {
+			$i += strcspn( $json, ", \t\n\r}", $i );
+		}
+		if ( $i < 0 || $i > $last || $i === $value_start ) {
+			return null;
+		}
+		$members[] = array(
+			'start'       => $key_start,
+			'end'         => $i,
+			'key'         => $key,
+			'value_start' => $value_start,
+		);
+		$i += strspn( $json, $ws, $i );
+		if ( ',' === ( $json[ $i ] ?? '' ) ) {
+			$i += 1 + strspn( $json, $ws, $i + 1 );
+			continue;
+		}
+		return $i === $last ? $members : null;
+	}
+}
+
+/**
+ * Rewrite a block's attribute JSON so its Custom CSS attributes are exactly `$want`, leaving every other byte as it was.
+ *
+ * A Custom CSS member already holding the wanted value is kept as written, one holding another value is replaced in place,
+ * one not wanted is removed with its separator, and one wanted that the JSON lacks is added at the end.
+ *
+ * @param string $json A block's attribute JSON text, `{` to `}`.
+ * @param array  $want The Custom CSS attributes the block must carry.
+ * @return string|null The new JSON text, or null when no attribute is left. A text that cannot be read as an object holds no
+ *         attributes (WordPress reads it as none), so it is replaced by `$want` alone.
+ */
+function sgs_custom_css_rewrite_attr_json( string $json, array $want ): ?string {
+	$members = sgs_custom_css_json_members( $json );
+	if ( null === $members ) {
+		return empty( $want ) ? null : serialize_block_attributes( $want );
+	}
+	$names = array_flip( SGS_CUSTOM_CSS_ATTRS );
+	$out   = array();
+	$taken = array();
+	$prev  = 1;
+	foreach ( $members as $member ) {
+		$before = substr( $json, $prev, $member['start'] - $prev );
+		$prev   = $member['end'];
+		$text   = substr( $json, $member['start'], $member['end'] - $member['start'] );
+		if ( isset( $names[ $member['key'] ] ) ) {
+			$key = $member['key'];
+			if ( ! array_key_exists( $key, $want ) || isset( $taken[ $key ] ) ) {
+				continue;
+			}
+			$taken[ $key ] = true;
+			$value         = json_decode( substr( $json, $member['value_start'], $member['end'] - $member['value_start'] ), true );
+			if ( $value !== $want[ $key ] ) {
+				$text = substr( serialize_block_attributes( array( $key => $want[ $key ] ) ), 1, -1 );
+			}
+		}
+		$out[] = array( $before, $text );
+	}
+	$lead  = $members ? substr( $json, 1, $members[0]['start'] - 1 ) : '';
+	$tail  = $members ? substr( $json, $prev, strlen( $json ) - 1 - $prev ) : '';
+	$added = array();
+	foreach ( $want as $key => $value ) {
+		if ( ! isset( $taken[ $key ] ) ) {
+			$added[] = substr( serialize_block_attributes( array( $key => $value ) ), 1, -1 );
+		}
+	}
+	if ( empty( $out ) && empty( $added ) ) {
+		return null;
+	}
+	$body = '';
+	foreach ( $out as $n => $pair ) {
+		$body .= ( 0 === $n ? $lead : $pair[0] ) . $pair[1];
+	}
+	foreach ( $added as $text ) {
+		$body .= ( '' === $body ? $lead : ',' ) . $text;
+	}
+	return '{' . $body . $tail . '}';
+}
+
+/**
  * Give every block the Custom CSS the stored content holds for it, and nothing it was not given.
+ *
+ * Content whose block delimiters cannot all be read (a PCRE error on a crafted comment) is not trusted: the write is
+ * refused for this field and the stored content stays, so a user who may not write Custom CSS can neither add a rule nor
+ * remove one through content the restore cannot see into.
  *
  * @param string $content Unslashed content being saved.
  * @param string $stored  Unslashed content already stored.
  * @return string Content whose blocks carry exactly the stored Custom CSS attributes.
  */
 function sgs_custom_css_restore_from_stored( string $content, string $stored ): string {
-	if ( false === strpos( $content, 'sgsCustomCss' ) && false === strpos( $stored, 'sgsCustomCss' ) ) {
+	// A JSON unicode escape can spell the attribute name without the literal text (`sgs\u0043ustomCss`), so content
+	// holding one is read too.
+	if ( false === strpos( $content, 'sgsCustomCss' ) && false === strpos( $stored, 'sgsCustomCss' ) && false === strpos( $content, '\\u' ) ) {
 		return $content;
 	}
 
@@ -205,7 +377,10 @@ function sgs_custom_css_restore_from_stored( string $content, string $stored ): 
 		}
 	}
 
-	$incoming = sgs_custom_css_block_tokens( $content );
+	$incoming = sgs_custom_css_block_tokens( $content, $readable );
+	if ( ! $readable ) {
+		return $stored;
+	}
 	$wanted   = array();
 	$pending  = array();
 	foreach ( $incoming as $index => $token ) {
@@ -251,17 +426,17 @@ function sgs_custom_css_restore_from_stored( string $content, string $stored ): 
 		if ( sgs_custom_css_same_attrs( $have, $want ) ) {
 			continue;
 		}
-		$attrs = array_merge( array_diff_key( $token['attrs'], array_flip( SGS_CUSTOM_CSS_ATTRS ) ), $want );
-
 		if ( $token['json_start'] >= 0 ) {
-			// Replace the attribute JSON, or remove it and the space after it when no attribute is left.
+			// Change only the three Custom CSS members of the attribute JSON; remove it and the space after it when no
+			// attribute is left.
 			$offset      = $token['json_start'];
-			$length      = $token['json_length'] + ( empty( $attrs ) ? 1 : 0 );
-			$replacement = empty( $attrs ) ? '' : serialize_block_attributes( $attrs );
+			$replacement = sgs_custom_css_rewrite_attr_json( substr( $content, $offset, $token['json_length'] ), $want );
+			$length      = $token['json_length'] + ( null === $replacement ? 1 : 0 );
+			$replacement = $replacement ?? '';
 		} else {
 			$offset      = $token['insert_at'];
 			$length      = 0;
-			$replacement = serialize_block_attributes( $attrs ) . ' ';
+			$replacement = serialize_block_attributes( $want ) . ' ';
 		}
 		$result .= substr( $content, $was_at, $offset - $was_at ) . $replacement;
 		$was_at  = $offset + $length;

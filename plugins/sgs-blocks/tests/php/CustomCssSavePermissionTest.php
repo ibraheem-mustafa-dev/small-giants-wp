@@ -302,6 +302,69 @@ final class CustomCssSavePermissionTest extends TestCase {
 		}
 	}
 
+	// A save whose content the delimiter pattern cannot be read to the end of fails closed, and a block's other attribute bytes are never rewritten.
+
+	/** A block with a rule, then a comment token that exhausts the delimiter pattern's backtrack limit (about 500 KB). */
+	private function content_the_pattern_cannot_read(): string {
+		$good = '<!-- wp:sgs/container {"sgsCustomCss":"&selector{color:red}","sgsCustomCssId":"abcd1234"} -->x<!-- /wp:sgs/container -->';
+		return $good . '<!-- wp:a/b {' . str_repeat( '} ', 250000 ) . '} /-->';
+	}
+
+	public function test_content_the_delimiter_pattern_cannot_read_keeps_what_was_stored_and_no_new_css(): void {
+		$stored = $this->block( 'paragraph', array(), '<p>old</p>' );
+		$this->store( $stored );
+		$this->narrow_to_edit_css();
+		$good = '<!-- wp:sgs/container {"sgsCustomCss":"&selector{color:red}","sgsCustomCssId":"abcd1234"} -->x<!-- /wp:sgs/container -->';
+		$this->assertSame( $stored, $this->save( $this->content_the_pattern_cannot_read() ) );
+		// Control: the same block without the crafted token loses the rule.
+		$this->assertStringNotContainsString( 'sgsCustomCss', $this->save( $good ) );
+	}
+
+	public function test_content_the_delimiter_pattern_cannot_read_keeps_the_stored_rules_too(): void {
+		$stored = $this->block( 'sgs/container', $this->css( 'abcd1234', '&selector{color:red}' ), 'x' );
+		$this->store( $stored );
+		$this->narrow_to_edit_css();
+		$this->assertSame( $stored, $this->save( $this->content_the_pattern_cannot_read() ) );
+	}
+
+	public function test_the_tokeniser_reads_one_token_at_a_time_and_says_when_it_could_not_finish(): void {
+		$content = $this->content_the_pattern_cannot_read();
+		$tokens  = sgs_custom_css_block_tokens( $content, $complete );
+		$this->assertFalse( $complete );
+		$this->assertCount( 1, $tokens );
+		$this->assertSame( 'sgs/container', $tokens[0]['name'] );
+		sgs_custom_css_block_tokens( $this->page(), $complete );
+		$this->assertTrue( $complete );
+	}
+
+	public function test_a_json_unicode_escape_cannot_hide_the_attribute_name_from_the_gate(): void {
+		$this->store( '<!-- wp:paragraph --><p>a</p><!-- /wp:paragraph -->' );
+		$this->narrow_to_edit_css();
+		$sent = '<!-- wp:paragraph {"sgs' . chr( 92 ) . 'u0043ustomCss":"&selector{color:red}"} --><p>a</p><!-- /wp:paragraph -->';
+		$this->assertStringNotContainsString( 'ustomCss', $this->save( $sent ) );
+	}
+
+	public function test_a_restored_block_keeps_every_other_attribute_byte_for_byte(): void {
+		// WordPress writes `&` in an attribute as the six characters backslash-u-0026; the rule is stored that way.
+		$amp    = chr( 92 ) . 'u0026';
+		$stored = '<!-- wp:sgs/container {"style":{},"n":1.0,"u":"é","sgsCustomCss":"' . $amp . 'selector{color:red}","sgsCustomCssId":"abcd1234","list":[ 1, 2 ]} -->x<!-- /wp:sgs/container -->';
+		$this->store( $stored );
+		$this->narrow_to_edit_css();
+		$sent = str_replace( 'color:red', 'color:blue', $stored );
+		$this->assertSame( $stored, $this->save( $sent ) );
+		// A rule the user added to a block that had none comes off without touching the rest.
+		$plain = '<!-- wp:sgs/container {"style":{},"n":1.0,"gap": "1rem"} -->x<!-- /wp:sgs/container -->';
+		$this->store( $plain );
+		$added = '<!-- wp:sgs/container {"style":{},"n":1.0,"gap": "1rem","sgsCustomCss":"' . $amp . 'selector{color:red}","sgsCustomCssId":"abcd1234"} -->x<!-- /wp:sgs/container -->';
+		$this->assertSame( $plain, $this->save( $added ) );
+		// A stored rule comes back onto a block whose other attributes the save changed: only the three move.
+		$this->store( '<!-- wp:sgs/container {"sgsCustomCssId":"abcd1234","sgsCustomCss":"' . $amp . 'selector{color:red}"} -->x<!-- /wp:sgs/container -->' );
+		$this->assertSame(
+			'<!-- wp:sgs/container {"empty":{},"sgsCustomCssId":"abcd1234","sgsCustomCss":"' . $amp . 'selector{color:red}"} -->x<!-- /wp:sgs/container -->',
+			$this->save( '<!-- wp:sgs/container {"empty":{},"sgsCustomCssId":"abcd1234"} -->x<!-- /wp:sgs/container -->' )
+		);
+	}
+
 	public function test_a_post_write_goes_through_wp_insert_post_data_not_content_save_pre(): void {
 		$this->assertArrayNotHasKey( 'content_save_pre', $GLOBALS['sgs_t']['filters'] );
 		$this->assertArrayHasKey( 'wp_insert_post_data', $GLOBALS['sgs_t']['filters'] );
