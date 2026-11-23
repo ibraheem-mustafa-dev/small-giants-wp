@@ -1,7 +1,7 @@
 // Proves three calibration-to-Fill gaps closed (Track R lane R12c):
-// 1. A block's own paint of an inherited property (a button's `line-height: 1.2`) is read by calibration
-//    (lib/calibrate-read.mjs::readInstancesInPage, `_own:<prop>` beside `_fs`) and Fill's baseline prefers it over the
-//    parent's value (lib/fill-resolve-state.mjs::baselineFn), so a draft line height equal to the parent's is written.
+// 1. A block's own paint of an inherited property (a button's `line-height: 1.2`) is recorded as `_own:<prop>` beside `_fs`
+//    and Fill's baseline prefers it over the parent's value (lib/fill-resolve-state.mjs::baselineFn), so a draft line
+//    height equal to the parent's is written.
 // 2. Two elements of one node writing one setting with different values make a conflict row, never a silent overwrite
 //    (lib/fill-resolve-element.mjs::ownerKeeps); the element the setting sits on wins over a value carried from another.
 // 3. A state instance's look is recorded as values (lib/calibrate-instances.mjs::stateLook), so a default hover equal
@@ -9,44 +9,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'crypto';
-import { readInstancesInPage, ownAtOf } from '../lib/calibrate-read.mjs';
 import { READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED, READ_KEY } from '../lib/calibrate-props.mjs';
 import { slotFor } from '../lib/calibrate.mjs';
 import { baselineFn, ownPaint, partOwnPaint } from '../lib/fill-resolve-state.mjs';
 import { ownerKeeps, recordOwner, clashes } from '../lib/fill-resolve-element.mjs';
 import { stateLook } from '../lib/calibrate-instances.mjs';
-import { elementPath } from '../../parity/lib/ref-trace.mjs';
-
-// A body line height of 1.55 over a block whose own rule sets 1.2 on its root; its label inherits the root's; a second
-// element sets only a larger font size, so it carries the parent's ratio and paints no line height of its own.
-const HTML = `<style>
-	body { font-size: 16px; line-height: 1.55; color: rgb(10, 20, 30); }
-	.sgs-b { display: inline-flex; font-size: 17px; line-height: 1.2; }
-	.sgs-t { font-size: 20px; }
-</style>
-<div class="cr-ref-cal-0 sgs-b"><span class="sgs-b__label">Register</span></div>
-<div class="cr-ref-cal-1 sgs-b"><span class="sgs-b__label">Register</span></div>
-<p class="cr-ref-cal-2 sgs-t">Text</p>`;
-
-test( 'MUST FAIL (Register label 20.4px against 26.35px): the reader records a block\'s own paint of an inherited property on default instances only', async () => {
-	const { chromium } = await import( 'playwright' );
-	const browser = await chromium.launch();
-	try {
-		const page = await browser.newPage();
-		await page.setContent( HTML );
-		const [ def, marked, text ] = await page.evaluate( readInstancesInPage, [ 3, 'cr-ref-cal-', READ_PROPS, elementPath.toString(), CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, undefined, OWN_INHERITED, [ 0, 2 ] ] );
-		assert.equal( def[ '' ][ '_own:line-height' ], '20.4px', 'the root sets its own line height' );
-		assert.equal( def[ '' ][ '_fs' ], '17px' );
-		assert.equal( def[ '' ][ '_own:font-size' ], '17px' );
-		assert.equal( def[ '' ][ '_own:color' ], undefined, 'an inherited colour is not the block\'s own' );
-		assert.equal( def[ '.sgs-b__label' ][ '_own:line-height' ], undefined, 'the label inherits the root\'s' );
-		assert.equal( text[ '' ][ '_own:line-height' ], undefined, 'a ratio carried to a larger font size is inherited, not own' );
-		assert.equal( text[ '' ][ '_own:font-size' ], '20px' );
-		assert.ok( ! Object.keys( marked[ '' ] ).some( ( k ) => k.startsWith( '_own:' ) ), 'a marked instance carries no own key the slot finder could take as a change' );
-	} finally {
-		await browser.close();
-	}
-} );
 
 test( 'MUST FAIL: the read key covers the own-paint list, so every cache read without it re-measures', () => {
 	const old = createHash( 'md5' ).update( JSON.stringify( [ READ_PROPS, CAL_PSEUDO_PROPS, TEXT_PSEUDO_PROPS, INHERITED ] ) ).digest( 'hex' ).slice( 0, 12 );
@@ -166,12 +133,4 @@ test( 'MUST FAIL: the nearest part that paints the property wins over an outer o
 	const cal = { elements: { '': { 1440: {} }, '.a': { 1440: { '_own:color': 'rgb(1, 1, 1)', _fs: '16px' } }, '.a > .b': { 1440: { '_own:color': 'rgb(2, 2, 2)', _fs: '16px' } }, '.a > .b > .c': { 1440: {} } } };
 	assert.equal( partOwnPaint( cal, '.a > .b > .c', 1440, 'color' ), 'rgb(2, 2, 2)' );
 	assert.equal( partOwnPaint( cal, '.a > .c', 1440, 'color' ), 'rgb(1, 1, 1)' );
-} );
-
-// A paint state (a way the block renders whose resting paint differs from the default's) is read for its own inherited paint
-// too: the cart's pill trigger sets its own upper case, which the icon-only default instance never shows, so a draft's "Basket" in
-// normal case was judged equal to the inherited value and the clone printed BASKET (2026-11-19).
-test( 'MUST FAIL: the own paint of inherited properties is read on default and paint-state instances only', () => {
-	assert.deepEqual( ownAtOf( [ { isDefault: true }, { key: 'marked' }, { paintState: { name: 'pill' } }, { key: 'other' } ] ), [ 0, 2 ] );
-	assert.deepEqual( ownAtOf( [ { key: 'marked' } ] ), [], 'negative control: a marked instance carries no own paint' );
 } );

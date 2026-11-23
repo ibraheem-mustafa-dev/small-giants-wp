@@ -1,7 +1,4 @@
 [
-	{ "file": "lib/calibrate-read.mjs", "find": "const own = ownAt.includes( n );", "replace": "const own = false;", "why": "the old reader: no own paint of an inherited property is recorded" },
-	{ "file": "lib/calibrate-read.mjs", "find": "|| ( 'line-height' === p && fs && pfs && Math.abs(", "replace": "|| ( false && fs && pfs && Math.abs(", "why": "a line-height ratio carried to a larger font size is taken as the element's own" },
-	{ "file": "lib/calibrate-read.mjs", "find": "return Object.keys( out ).length ? { ...out, _fs: cs.fontSize } : out;", "replace": "return out;", "why": "the own line height is recorded without the font size it is a ratio of" },
 	{ "file": "lib/calibrate-props.mjs", "find": "TEXT_PSEUDO_PROPS, INHERITED, OWN_INHERITED ] )", "replace": "TEXT_PSEUDO_PROPS, INHERITED ] )", "why": "the read key ignores the own-paint list, so caches read without it stay current" },
 	{ "file": "lib/fill-resolve-state.mjs", "find": "\t\t\tif ( undefined !== own ) {", "replace": "\t\t\tif ( false ) {", "why": "the old baseline: an inherited property is always the parent's value" },
 	{ "file": "lib/fill-resolve-state.mjs", "find": "return 'line-height' === prop && fs && base && ! Number.isNaN( px )", "replace": "return false", "why": "the own line height is not carried as a ratio to the element's font size" },

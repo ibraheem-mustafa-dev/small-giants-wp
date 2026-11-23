@@ -21,7 +21,7 @@ test( 'MUST FAIL TO CALIBRATE: a state with no trigger is undefined, never rest'
 
 // The deploy key (§3.2): webpack's module number depends on the build folder, so two builds of one commit must hash
 // alike, while any real change to the bundle must not.
-import { normaliseBundle } from '../calibrate.mjs';
+import { normaliseBundle } from '../lib/deploy-hash.mjs';
 
 const bundle = ( id, attr ) => `var e={${ id }(){const e="${ attr }";}},t={};function r(n){return e[n]()}r(${ id }),document.x;`;
 
@@ -68,7 +68,7 @@ test( 'MUST FAIL TO REPLACE: a sandybrown run never replaces an eye-care-test sl
 
 // The deploy key reads local text files with LF endings (§3.2): the deploy builds from a clean LF checkout, so a CRLF
 // working copy of the same code must key alike, while a code change must not.
-import { localBlockHash } from '../calibrate.mjs';
+import { localBlockHash } from '../lib/deploy-hash.mjs';
 
 const buildDir = ( php ) => {
 	const d = fs.mkdtempSync( path.join( os.tmpdir(), 'cr-key-' ) );

@@ -162,11 +162,11 @@ test( 'MUST FAIL: the mutation checker and the test runner set SGS_NO_SITE for e
 } );
 
 const SPAWNS = "import { spawnSync } from 'child_process';\nconst CLI = path.join( HERE, '..', 'solve.mjs' );\nspawnSync( process.execPath, [ CLI, '--site', 'x' ] );\n";
-const ENTRIES = [ 'solve.mjs', 'calibrate.mjs', 'wp-build-page.js' ];
+const ENTRIES = [ 'solve.mjs', 'site-run.mjs', 'wp-build-page.js' ];
 
 test( 'MUST FAIL: spawnedEntryPoints finds an entry point named directly, through a bound constant, or in a command string', () => {
 	assert.deepEqual( spawnedEntryPoints( SPAWNS, ENTRIES ), [ 'solve.mjs' ] );
-	assert.deepEqual( spawnedEntryPoints( "spawnSync( 'node', [ 'scripts/computed-route/calibrate.mjs' ] );", ENTRIES ), [ 'calibrate.mjs' ] );
+	assert.deepEqual( spawnedEntryPoints( "spawnSync( 'node', [ 'scripts/computed-route/site-run.mjs' ] );", ENTRIES ), [ 'site-run.mjs' ] );
 	assert.deepEqual( spawnedEntryPoints( "execFileSync( process.execPath, [ path.join( ROOT, 'scripts', 'wp-build-page.js' ) ] );", ENTRIES ), [ 'wp-build-page.js' ] );
 	assert.deepEqual( spawnedEntryPoints( "exec( 'node scripts/computed-route/solve.mjs --site x' );", ENTRIES ), [ 'solve.mjs' ] );
 } );
@@ -175,7 +175,7 @@ test( 'negative control: spawning git, a regex exec, a comment and an unused con
 	assert.deepEqual( spawnedEntryPoints( "spawnSync( 'git', [ 'status' ] );", ENTRIES ), [] );
 	assert.deepEqual( spawnedEntryPoints( "const CLI = path.join( HERE, '..', 'solve.mjs' );\n/x/.exec( 'a' );\nspawnSync( 'git', [] );", ENTRIES ), [] );
 	assert.deepEqual( spawnedEntryPoints( "// spawnSync( process.execPath, [ 'solve.mjs' ] )\nconst a = 1;", ENTRIES ), [] );
-	assert.deepEqual( spawnedEntryPoints( "import { calibrateBlock } from '../lib/calibrate-block.mjs';", ENTRIES ), [] );
+	assert.deepEqual( spawnedEntryPoints( "import { runSite } from '../site-run.mjs';", ENTRIES ), [] );
 	assert.deepEqual( spawnedEntryPoints( 'const s = "spawnSync( process.execPath, [ \'solve.mjs\' ] )";', ENTRIES ), [], 'a call written inside a string is no call' );
 } );
 

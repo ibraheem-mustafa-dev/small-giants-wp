@@ -234,22 +234,10 @@
 		"why": "a protected site is written by content-sync --apply"
 	},
 	{
-		"file": "provision-calibration-refs.mjs",
-		"find": "assertUnprotected( o.site, targets );",
-		"replace": "",
-		"why": "a protected site is provisioned"
-	},
-	{
 		"file": "site-build.mjs",
 		"find": "assertUnprotected( site, targets );",
 		"replace": "",
 		"why": "a protected site is built by site-build --apply"
-	},
-	{
-		"file": "calibrate.mjs",
-		"find": "assertUnprotected( site, targets );",
-		"replace": "",
-		"why": "a protected site is calibrated"
 	},
 	{
 		"file": "solve.mjs",

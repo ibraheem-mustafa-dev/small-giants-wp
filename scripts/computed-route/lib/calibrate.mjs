@@ -1,7 +1,6 @@
 // Block calibration library (FR-47-2, R-47-6). Builds one calibration tree per block (a default instance plus one
 // marked instance per setting and marker), and works out from the readings which element and property each setting
 // paints (the slot map) and each element's default paint. Markers: lib/calibrate-markers.mjs; instance planning and
-// preconditions: lib/calibrate-instances.mjs; the browser reader: lib/calibrate-read.mjs.
 import { WIDTHS, INHERITED, CAL_PREFIX, longhands } from './calibrate-props.mjs';
 import { splitProperty } from './resolve.mjs';
 import { stateLook } from './calibrate-instances.mjs';
@@ -10,7 +9,6 @@ import { timingSet } from '../../parity/lib/compare.mjs';
 export { WIDTHS, MARKER_HEX, MARKER_RGB, MARKER_GRADIENT, MARKER_REST_GRADIENT, CAL_PREFIX, READ_PROPS, READ_KEY, INHERITED, longhands } from './calibrate-props.mjs';
 export { markersFor, formMarkers, FLUID_MARKERS, MARKER_REPEAT, MARKER_REPEAT_TRACKS, MARKER_DURATION_MS, MARKER_EASING, companionWidth, borderPartners, shadowPartners, SHADOW_SHAPE, KEYWORDS } from './calibrate-markers.mjs';
 export { STATE_TRIGGERS, triggerFor, planInstances, preconditionsFor, layoutModes, stateTarget, instanceCtx } from './calibrate-instances.mjs';
-export { readInstancesInPage, readAll, missedReason, SCROLL_Y } from './calibrate-read.mjs';
 export { MARKER_TEXT, MARKER_NUMBER, MARKER_SLUG, MARKER_URL, MARKER_PHONE, LINK_ATTRS, PRESENCE_ROLES, TEXT_ROLES, LINK_ROLES, contentRowsFor, contentMarkerFor, variantPresenceValues, structurePresenceValues, STRUCTURE_ROLES, planContentInstances, needlesOf, readContentInPage, readContentAll, presenceFrom, textFrom, linkFrom, collectContent } from './calibrate-content.mjs';
 export { elementPath } from '../../parity/lib/ref-trace.mjs';
 
@@ -254,7 +252,7 @@ function mergeLook( a = {}, b = {} ) {
 	return out;
 }
 
-// Folds one marker's reading into the block's results (calibrate.mjs). acc: { settings, dead, oneWidth }; inst:
+// Folds one marker's reading into the block's results. acc: { settings, dead, oneWidth }; inst:
 // { key, row, marker, variant }; s: its slotFor reading. A form marker with an acceptance rule (FORM_ACCEPT) records
 // its form only when its reading proves it. A probe (`marker.probe`, lib/calibrate-markers.mjs::formMarkers) exists
 // only to test its form: when it does not take, the setting is untouched (never dead, never oneWidth); when it takes

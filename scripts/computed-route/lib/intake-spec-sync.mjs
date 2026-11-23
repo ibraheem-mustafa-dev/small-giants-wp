@@ -11,7 +11,6 @@ export const DATA_DIR = path.join( HERE, '..', 'data' );
 // Appendix C's JSON blocks by bold label: the schema file each is generated into, and how the file wraps the block
 // ('body': the file is the block plus wrapper keys; 'items': the file is an array schema whose items is the block).
 export const LABELS = {
-	'Calibration baseline': { file: 'calibration-baseline.schema.json', shape: 'body' },
 	'Reading': { file: 'reading.schema.json', shape: 'body' },
 	'Construct registry': { file: 'construct-registry.schema.json', shape: 'body' },
 	'Page map row': { file: 'page-map.schema.json', shape: 'items' },

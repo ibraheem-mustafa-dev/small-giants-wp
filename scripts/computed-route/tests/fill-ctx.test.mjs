@@ -1,5 +1,5 @@
 // Context on both sides, and the flex item that does not shrink. Calibration records the context each default paint was
-// read in (lib/calibrate-read.mjs::readInstancesInPage: `_parentDisplay`, `_position`) and the comparison canons each side
+// read in (`_parentDisplay`, `_position`) and the comparison canons each side
 // in its own (lib/fill-prop.mjs::tiersDiffering, ::inOwnContext); Fill reads flex-shrink on the root's flex item, a
 // wrapper holding only it included (lib/fill-read.mjs::flexItemsInPage), and holds a draft item that does not shrink with
 // the block's fixed child sizing (lib/fill-dimensions.mjs::fixedSizing). Built on a frozen slice of the framework DB (tests/fixtures/frozen-db) with planted reads.
@@ -11,9 +11,6 @@ import { addRefs, refOf } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
 import { frozenDb } from './fixtures/frozen-db/frozen-db.mjs';
 import { tiersDiffering, inOwnContext, calibratedContext } from '../lib/fill-prop.mjs';
-import { readInstancesInPage } from '../lib/calibrate-read.mjs';
-import { READ_PROPS, PSEUDO_PROPS, TEXT_PSEUDO_PROPS, OWN_INHERITED } from '../lib/calibrate-props.mjs';
-import { elementPath } from '../../parity/lib/ref-trace.mjs';
 import { resolveFinder } from '../../parity/lib/collect.mjs';
 import { flexItemsInPage, applyFlexItems, jobsFor, PROPS } from '../lib/fill-read.mjs';
 import { dimensionWrites, NATURAL_SIZE } from '../lib/fill-dimensions.mjs';
@@ -77,20 +74,6 @@ const launch = async ( html ) => {
 	await page.setContent( html );
 	return { browser: page, page };
 };
-
-test( 'MUST FAIL: calibration records the parent\'s display and the position on a default instance\'s elements, never on a marked one', async () => {
-	const { browser, page } = await launch( `<div style="display:flex"><div class="cr-ref-cal-0" style="position:relative"><span>x</span></div></div><div class="cr-ref-cal-1"><span>y</span></div>` );
-	try {
-		const [ def, marked ] = await page.evaluate( readInstancesInPage, [ 2, 'cr-ref-cal-', READ_PROPS, elementPath.toString(), PSEUDO_PROPS, TEXT_PSEUDO_PROPS, undefined, OWN_INHERITED, [ 0 ] ] );
-		assert.equal( def[ '' ]._parentDisplay, 'flex' );
-		assert.equal( def[ '' ]._position, 'relative' );
-		assert.equal( def.span._parentDisplay, 'block' );
-		assert.equal( marked[ '' ]._parentDisplay, undefined, 'a marked instance carries no context, so the slot finder never sees it change' );
-		assert.ok( ! READ_PROPS.some( ( p ) => p.startsWith( '_' ) ), 'the context is no read property' );
-	} finally {
-		await browser.close();
-	}
-} );
 
 const ROW = `<div class="row" style="display:flex;width:200px">%ITEM%<p style="width:400px;margin:0">long words</p></div>`;
 const jobs = [ { id: '0:', finder: '.logo', owner: 0, root: true }, { id: '0:.in', finder: '.logo i', owner: 0, root: false } ];

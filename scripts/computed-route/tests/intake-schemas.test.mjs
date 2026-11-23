@@ -1,6 +1,6 @@
 // Spec 48 Appendix C ("Record formats", FR-48-35): the schema files in data/ are generated from Appendix C and this
 // test fails when the two disagree (lib/intake-spec-sync.mjs). Each labelled JSON block equals its schema file's body
-// (calibration baseline, reading, construct registry) or an array schema's items (page map row); the intake record's
+// (reading, construct registry) or an array schema's items (page map row); the intake record's
 // key table equals intake.schema.json's top-level required and properties; the construct-kind list has 19 kinds and
 // equals construct-registry.json's keys. Every schema compiles under the route's Ajv and accepts a valid sample.
 // The MUST FAIL cases run the same comparison on temp copies with one change; the real spec and schemas are never edited.

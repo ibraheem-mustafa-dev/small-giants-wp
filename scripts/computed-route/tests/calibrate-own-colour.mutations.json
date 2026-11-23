@@ -1,6 +1,0 @@
-[
-	{ "file": "lib/calibrate-read.mjs", "find": "( v === pv && ! ( 'color' === p && ownColour( el, cs, parent ) ) )", "replace": "v === pv", "why": "an own colour equal to the parent's is never recorded" },
-	{ "file": "lib/calibrate-read.mjs", "find": "\t\treturn PROBE !== v;\n", "replace": "\t\treturn true;\n", "why": "every colour equal to the parent's counts as own, inherited ones included" },
-	{ "file": "lib/calibrate-read.mjs", "find": "\t\tnull === before ? parent.removeAttribute( 'style' ) : parent.setAttribute( 'style', before );\n", "replace": "", "why": "the parent keeps the probe colour" },
-	{ "file": "lib/calibrate-read.mjs", "find": "null === before ? parent.removeAttribute( 'style' ) : parent.setAttribute( 'style', before );", "replace": "parent.removeAttribute( 'style' );", "why": "the parent's own inline style is lost" }
-]

@@ -1,7 +1,0 @@
-[
-	{"file": "lib/calibrate-chunk.mjs", "find": "heldFor( held, next, allDefaults() ).length + next.length > cap", "replace": "next.length > cap", "why": "the defaults and baselines a page carries would not count against the budget"},
-	{"file": "lib/calibrate-chunk.mjs", "find": "\t\tif ( page.length && ( next.length > size ||", "replace": "\t\tif ( ( next.length > size ||", "why": "a page whose defaults fill the budget would get no instance"},
-	{"file": "lib/calibrate-chunk.mjs", "find": "( next.length > size || heldFor(", "replace": "( heldFor(", "why": "a block of small instances would grow past its own chunk size"},
-	{"file": "lib/calibrate-chunk.mjs", "find": "queue.flatMap( ( list ) => list.filter( ( i ) => ! isHeld( i ) ) )", "replace": "queue[ 0 ].filter( ( i ) => ! isHeld( i ) )", "why": "only the first queued page's instances would be planned again, the rest lost"},
-	{"file": "lib/calibrate-chunk.mjs", "find": " || ( h.isBase && bases.has( h.baseKey ) ) );", "replace": " );", "why": "baselines would drop off the pages, leaving markers nothing to compare with"}
-]

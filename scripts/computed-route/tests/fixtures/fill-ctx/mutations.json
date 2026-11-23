@@ -36,24 +36,6 @@
 		"why": "a paint with no recorded context still gives one"
 	},
 	{
-		"file": "lib/calibrate-read.mjs",
-		"find": "...( own ? { ...ownOf( el, style ), ...contextOf( el, style ) } : {} )",
-		"replace": "...( own ? ownOf( el, style ) : {} ), ...contextOf( el, style )",
-		"why": "a marked instance carries the context too"
-	},
-	{
-		"file": "lib/calibrate-read.mjs",
-		"find": "_parentDisplay: el.parentElement ? getComputedStyle( el.parentElement ).display : 'block'",
-		"replace": "_parentDisplay: getComputedStyle( el ).display",
-		"why": "the element's own display recorded"
-	},
-	{
-		"file": "lib/calibrate-read.mjs",
-		"find": "_position: cs.position",
-		"replace": "_position: 'static'",
-		"why": "the position is not read"
-	},
-	{
 		"file": "lib/fill-read.mjs",
 		"find": "...SIDE_STYLES, ...FLEX_ITEM_PROPS ]",
 		"replace": "...SIDE_STYLES ]",

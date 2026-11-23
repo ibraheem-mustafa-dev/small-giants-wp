@@ -2,8 +2,8 @@
 // way than the block's default instance is judged against that way's default paint. The Indus rings are empty Floating
 // layers, inert as drawn (pointer-events none, the stylesheet's rule for a layer holding no blocks), while the default
 // instance holds blocks and takes pointer events; judged against it, every ring's pointer-events row read as a missing
-// setting though the page already matched. Calibration measures each state once (lib/calibrate-instances.mjs), keeps it
-// out of the merged default paint, and keys the paint file on it (calibrate.mjs::paintKeyOf).
+// setting though the page already matched. The setting record's fixtures plan each state as its own instance
+// (lib/calibrate-instances.mjs), kept out of the merged default paint.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fillTree } from '../lib/fill-resolve.mjs';
@@ -12,7 +12,6 @@ import { addRefs } from '../lib/tree.mjs';
 import { openDb } from '../lib/db.mjs';
 import { matchesPaintState, calibrationForNode } from '../lib/paint-state.mjs';
 import { planInstances, buildTree } from '../lib/calibrate.mjs';
-import { paintKeyOf, statePaint, missingPaintStates } from '../calibrate.mjs';
 import { withInnerRootAliases } from '../solve.mjs';
 
 const db = openDb();
@@ -101,37 +100,6 @@ test( 'calibration plans one paint-only instance per state, with its own attribu
 	assert.deepEqual( tree[ 0 ].innerBlocks.at( -1 ).innerBlocks, [], 'the state builds with its own (empty) inner blocks' );
 	const def = buildTree( BLOCK, fixture, instances.filter( ( i ) => i.isDefault ) );
 	assert.equal( def[ 0 ].innerBlocks.at( -1 ).innerBlocks.length, 1, 'control: the default instance keeps the fixture inner blocks' );
-} );
-
-test( 'the paint key changes with a block\'s paint states and is unchanged for a block without them', () => {
-	assert.equal( paintKeyOf( 'a', 'b', {} ), 'a-b' );
-	assert.equal( paintKeyOf( 'a', 'b', null ), 'a-b' );
-	const one = paintKeyOf( 'a', 'b', { paintStates: [ { name: 'empty' } ] } );
-	assert.match( one, /^a-b-[0-9a-f]{8}$/ );
-	assert.notEqual( one, paintKeyOf( 'a', 'b', { paintStates: [ { name: 'image' } ] } ) );
-} );
-
-test( 'MUST FAIL: a state that keeps only its render-shape properties leaves the default\'s other properties in place', () => {
-	const base = { block: BLOCK, elements: { '': { 1440: { 'pointer-events': 'auto', 'border-top-width': '0px', width: '200px' } } }, settings: {}, discovered: {},
-		paintStates: { empty: { when: EMPTY_WHEN, elements: { '': { 1440: { 'pointer-events': 'none' } } } } } };
-	const view = calibrationForNode( base, { attributes: {}, innerBlocks: [] } );
-	assert.deepEqual( view.elements[ '' ][ 1440 ], { 'pointer-events': 'none', 'border-top-width': '0px', width: '200px' }, 'merged property by property, not replaced whole' );
-} );
-
-test( 'MUST FAIL: a state naming its properties keeps only those, so the border and size it was drawn with never read as resting paint', () => {
-	const read = { '': { 1440: { 'pointer-events': 'none', 'user-select': 'none', 'border-top-width': '2px', width: '120px', _tag: 'span' } } };
-	assert.deepEqual( statePaint( read, [ 'pointer-events', 'user-select' ] ), { '': { 1440: { 'pointer-events': 'none', 'user-select': 'none' } } } );
-	assert.equal( statePaint( read, undefined ), read, 'a state with no props keeps its whole paint (the image-only layer, drawn with no extra settings)' );
-	const fixture = { attributes: {}, inner: [], paintStates: [ { name: 'empty', when: EMPTY_WHEN, props: [ 'pointer-events' ], attributes: {}, inner: [] } ] };
-	const ps = planInstances( BLOCK, { rows: [], schema: {}, snapshot: {}, fixture } ).instances.find( ( i ) => i.paintState );
-	assert.deepEqual( ps.paintState.props, [ 'pointer-events' ], 'the planned instance carries the props' );
-} );
-
-test( 'MUST FAIL: a declared state the run did not measure is named, so its paint is not written under a key that claims it', () => {
-	const fixture = { paintStates: [ { name: 'empty' }, { name: 'image' } ] };
-	assert.deepEqual( missingPaintStates( fixture, { image: {} } ), [ 'empty' ] );
-	assert.deepEqual( missingPaintStates( fixture, { empty: {}, image: {} } ), [] );
-	assert.deepEqual( missingPaintStates( {}, {} ), [], 'a block with no states misses none' );
 } );
 
 test( 'the solver\'s inner-root aliases reach a paint state\'s elements', () => {
